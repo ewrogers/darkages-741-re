@@ -1,7 +1,7 @@
-# 057 / 0x39: CMerchantPacket
+# 057 / 0x39: Merchant (`CMerchant`)
 
 - Direction: client to server
-- Internal packet name: `CMerchantPacket`
+- Internal name: `CMerchant`
 - Local behavioral alias: `DialogMenuChoice`
 - Related-game enum name: `MenuCode`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

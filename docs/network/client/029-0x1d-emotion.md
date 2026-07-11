@@ -1,7 +1,7 @@
-# 029 / 0x1d: CEmotionPacket
+# 029 / 0x1d: Emotion (`CEmotion`)
 
 - Direction: client to server
-- Internal packet name: `CEmotionPacket`
+- Internal name: `CEmotion`
 - Local behavioral alias: `Emote`
 - Related-game enum name: `Emotion`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

@@ -1,7 +1,7 @@
-# 074 / 0x4a: CExchangePacket
+# 074 / 0x4a: Exchange (`CExchange`)
 
 - Direction: client to server
-- Internal packet name: `CExchangePacket`
+- Internal name: `CExchange`
 - Local behavioral alias: `ExchangeAction`
 - Related-game enum name: `Exchange`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

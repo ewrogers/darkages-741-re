@@ -56,8 +56,8 @@ This explains the previously missing `0x1B EnterEditingMode`: it is not out-of-b
 
 The recovered packet-object registry contains no factories for server opcodes `0x00`, `0x01`, or `0x02`. All 61 calls to `net_register_server_packet_factory` originate in the one game registry constructor. Separately, the receive crypto switch recognizes `0x00` as raw and `0x01`/`0x02` as primary-key encrypted. The manual game handlers described above are a separate reason an opcode can be absent from the registry.
 
-- `0x00 SVersionCheckPacket` is consumed by the recovered raw handler `net_handle_s_version_check_raw` at `0x4B7F80`. Its subtype `0` installs the server-selected salt-table seed and replacement primary key. `0x02 SCheckPacket` remains without an isolated payload handler.
-- `0x01 SNewUserCheckPacket?` has confirmed framing/decrypt support, while the class name and lobby semantics remain uncertain.
+- `0x00 SVersionCheck` is consumed by the recovered raw handler `net_handle_s_version_check_raw` at `0x4B7F80`. Its subtype `0` installs the server-selected salt-table seed and replacement primary key. `0x02 SCheck` remains without an isolated payload handler.
+- `0x01 SNewUserCheck?` has confirmed framing/decrypt support, while the class name and lobby semantics remain uncertain.
 - `0x03 STransferServer` is locally RTTI-registered and is known to perform the lobby-to-game-server handoff.
 
 `0x00-0x02` are consumed after decryption by connection-state/raw-message paths rather than the recovered game-server packet factory. The raw `0x00` path is now located; a lobby capture remains the cleanest way to isolate `0x01` and `0x02` fully.

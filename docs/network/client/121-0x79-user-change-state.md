@@ -1,7 +1,7 @@
-# 121 / 0x79: CUserChangeStatePacket?
+# 121 / 0x79: User Change State (`CUserChangeState?`)
 
 - Direction: client to server
-- Internal packet name: `CUserChangeStatePacket?`
+- Internal name: `CUserChangeState?`
 - Local behavioral alias: `UserChangeState / SetStatus`
 - Related-game enum name: `UserChangeState`
 - Name provenance: Related-game internal enum name `UserChangeState` at the same opcode is corroborated by this client's bounded state selector; the C++ class spelling remains reconstructed.

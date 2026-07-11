@@ -1,7 +1,7 @@
-# 047 / 0x2f: CGroupTogglePacket?
+# 047 / 0x2f: Group Toggle (`CGroupToggle?`)
 
 - Direction: client to server
-- Internal packet name: `CGroupTogglePacket?`
+- Internal name: `CGroupToggle?`
 - Local behavioral alias: `GroupToggle / ToggleGroup`
 - Related-game enum name: `GroupToggle`
 - Name provenance: Related-game internal enum name `GroupToggle` at the same opcode, corroborated by this client's three local builders; the C++ class spelling remains reconstructed.

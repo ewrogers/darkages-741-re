@@ -1,7 +1,7 @@
-# 085 / 0x55: CBlackSmithPacket
+# 085 / 0x55: Black Smith (`CBlackSmith`)
 
 - Direction: client to server
-- Internal packet name: `CBlackSmithPacket`
+- Internal name: `CBlackSmith`
 - Local behavioral alias: `Manufacture`
 - Related-game enum name: `Manual`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.
@@ -17,5 +17,5 @@
 ## Current structural notes
 
 - Byte 0 of the untransformed body is opcode `0x55`.
-- The related-game enum labels `0x55` as `Manual`, but this client's local manufacture/blacksmith behavior and the leaked registered `CBlackSmithPacket` class agree with each other. The current `CBlackSmithPacket` name is therefore retained.
+- The related-game enum labels `0x55` as `Manual`, but this client's local manufacture/blacksmith behavior and the leaked registered `CBlackSmith` class agree with each other. The current `CBlackSmith` name is therefore retained.
 - Remaining payload fields still require caller analysis or runtime confirmation.

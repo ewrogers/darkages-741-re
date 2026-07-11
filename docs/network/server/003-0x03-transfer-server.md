@@ -32,5 +32,5 @@ The raw trace lists static reader call sites. Conditional variants and counted r
 - Packet class name: confirmed from Visual C++ RTTI.
 - Lobby role: the lobby server is known to send this packet to hand the client to a game server; this explains why `0x03` is present even though lobby-only `0x00-0x02` are absent from the game registry.
 - Primitive widths and byte order: confirmed from reader implementations.
-- The client reconnects to the supplied address/port and echoes the transfer token verbatim as the payload of raw `CTransferServerPacket 0x10`.
-- This packet does **not** directly install the packet salt selector or replacement primary key. Those are read by raw `SVersionCheckPacket 0x00`, subtype `0`. In a capture this setup may occur immediately after transfer on the new connection, making it appear to be part of `STransferServer`.
+- The client reconnects to the supplied address/port and echoes the transfer token verbatim as the payload of raw `CTransferServer 0x10`.
+- This packet does **not** directly install the packet salt selector or replacement primary key. Those are read by raw `SVersionCheck 0x00`, subtype `0`. In a capture this setup may occur immediately after transfer on the new connection, making it appear to be part of `STransferServer`.

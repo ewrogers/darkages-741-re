@@ -1,7 +1,7 @@
-# 036 / 0x24: CDropGoldPacket?
+# 036 / 0x24: Drop Gold (`CDropGold?`)
 
 - Direction: client to server
-- Internal packet name: `CDropGoldPacket?`
+- Internal name: `CDropGold?`
 - Local behavioral alias: `DropGold`
 - Related-game enum name: `DropGold`
 - Name provenance: Internal-style local name inferred from this client's behavior; no exact leaked class match is known yet.

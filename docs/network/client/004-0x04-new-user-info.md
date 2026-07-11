@@ -1,7 +1,7 @@
-# 004 / 0x04: CNewUserInfoPacket
+# 004 / 0x04: New User Info (`CNewUserInfo`)
 
 - Direction: client to server
-- Internal packet name: `CNewUserInfoPacket`
+- Internal name: `CNewUserInfo`
 - Local behavioral alias: `CreateCharacterAppearance`
 - Related-game enum name: `Login`
 - Name provenance: Leaked company/engine class name remapped by this client's local behavior; the sibling-game opcode differs.

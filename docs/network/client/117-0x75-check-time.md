@@ -1,7 +1,7 @@
-# 117 / 0x75: CCheckTimePacket?
+# 117 / 0x75: Check Time (`CCheckTime?`)
 
 - Direction: client to server
-- Internal packet name: `CCheckTimePacket?`
+- Internal name: `CCheckTime?`
 - Local behavioral alias: `CheckTime / SyncTicks`
 - Related-game enum name: `CheckTime`
 - Name provenance: Related-game internal enum name `CheckTime` at the same opcode is directly corroborated by this client's server-tick plus `timeGetTime()` reply; the C++ class spelling remains reconstructed.

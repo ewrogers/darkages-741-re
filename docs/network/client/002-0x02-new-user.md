@@ -1,7 +1,7 @@
-# 002 / 0x02: CNewUserPacket
+# 002 / 0x02: New User (`CNewUser`)
 
 - Direction: client to server
-- Internal packet name: `CNewUserPacket`
+- Internal name: `CNewUser`
 - Local behavioral alias: `CreateCharacterName`
 - Related-game enum name: `NewUser`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

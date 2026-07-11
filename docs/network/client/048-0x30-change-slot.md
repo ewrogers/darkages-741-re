@@ -1,7 +1,7 @@
-# 048 / 0x30: CChangeSlotPacket
+# 048 / 0x30: Change Slot (`CChangeSlot`)
 
 - Direction: client to server
-- Internal packet name: `CChangeSlotPacket`
+- Internal name: `CChangeSlot`
 - Local behavioral alias: `SwapSlot`
 - Related-game enum name: `ChangeSlot`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

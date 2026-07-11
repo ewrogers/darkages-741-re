@@ -58,7 +58,7 @@ The load order is:
 3. Try `maps/lod%d.map` for the requested identifier.
 4. Recalculate the CRC over the local grid.
 5. Attach the grid immediately when the checksum matches.
-6. Otherwise send [CMapCRCPacket `0x05`](../network/client/005-0x05-map-crc.md) with the local dimensions and checksum.
+6. Otherwise send [CMapCRC `0x05`](../network/client/005-0x05-map-crc.md) with the local dimensions and checksum.
 7. Apply server map data as it arrives.
 8. Calculate the final CRC, save the cache, and attach the completed grid.
 

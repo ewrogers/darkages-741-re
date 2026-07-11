@@ -1,7 +1,7 @@
-# 058 / 0x3a: CPursuitPacket
+# 058 / 0x3a: Pursuit (`CPursuit`)
 
 - Direction: client to server
-- Internal packet name: `CPursuitPacket`
+- Internal name: `CPursuit`
 - Local behavioral alias: `DialogChoice`
 - Related-game enum name: `Message`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

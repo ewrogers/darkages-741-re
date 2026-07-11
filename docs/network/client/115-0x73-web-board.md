@@ -1,7 +1,7 @@
-# 115 / 0x73: CWebBoardPacket
+# 115 / 0x73: Web Board (`CWebBoard`)
 
 - Direction: client to server
-- Internal packet name: `CWebBoardPacket`
+- Internal name: `CWebBoard`
 - Local behavioral alias: `WebBoard`
 - Related-game enum name: `WebBoard`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

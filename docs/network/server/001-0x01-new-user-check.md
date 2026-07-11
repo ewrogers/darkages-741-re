@@ -1,4 +1,4 @@
-# 001 / 0x01: New User Check (`SNewUserCheckPacket?`, lobby candidate)
+# 001 / 0x01: New User Check (`SNewUserCheck?`, lobby candidate)
 
 ## Identification
 
@@ -6,7 +6,7 @@
 |---|---|
 | Direction | Server to client |
 | Opcode | `0x01` |
-| Reconstructed class candidate | `SNewUserCheckPacket?` |
+| Reconstructed class candidate | `SNewUserCheck?` |
 | Related-game enum | `NewUserCheck` |
 | Current receive crypto switch | explicitly recognized as primary-key mode |
 | Current game-server RTTI registry | not registered |

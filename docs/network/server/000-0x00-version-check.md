@@ -1,4 +1,4 @@
-# 000 / 0x00: Version Check (`SVersionCheckPacket`, lobby)
+# 000 / 0x00: Version Check (`SVersionCheck`, lobby)
 
 ## Identification
 
@@ -6,7 +6,7 @@
 |---|---|
 | Direction | Server to client |
 | Opcode | `0x00` |
-| Internal class vocabulary | `SVersionCheckPacket` |
+| Internal class vocabulary | `SVersionCheck` |
 | Related-game enum | `VersionCheck` |
 | Current receive crypto switch | explicitly recognized as raw |
 | Current game-server RTTI registry | not registered |

@@ -1,7 +1,7 @@
-# 038 / 0x26: CChangePasswordPacket
+# 038 / 0x26: Change Password (`CChangePassword`)
 
 - Direction: client to server
-- Internal packet name: `CChangePasswordPacket`
+- Internal name: `CChangePassword`
 - Local behavioral alias: `ChangePassword`
 - Related-game enum name: `ChangePassword`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

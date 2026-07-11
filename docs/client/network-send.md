@@ -28,9 +28,9 @@ The recovered startup path has this producer-side order:
 
 1. Queue opcode `0x62`, whose complete pre-transform bytes spell the client codename `"baram"` (`0x62` + `"aram"`).
 2. Call `net_reset_client_packet_sequence` at `0x57993A`.
-3. Queue raw `0x00 CVersionPacket`.
+3. Queue raw `0x00 CVersion`.
 
-The `0x62` sender branch does not itself reset the counter. The surrounding handshake routine performs the reset after enqueueing it. `CVersionPacket` is raw and therefore neither contains nor consumes a sequence byte.
+The `0x62` sender branch does not itself reset the counter. The surrounding handshake routine performs the reset after enqueueing it. `CVersion` is raw and therefore neither contains nor consumes a sequence byte.
 
 Submission is asynchronous: `net_submit_client_packet` copies the body into communications event 6, `net_enqueue_communications_event` at `0x586210` releases the worker semaphore, and the producer continues without waiting. Consequently, the worker can encrypt queued `"baram"` after the producer has reset the shared counter. In that execution, `"baram"` carries sequence `0`, increments the counter to `1`, CVersion leaves it unchanged, and the next encrypted packet carries `1`. If `"baram"` is processed before the explicit reset, the next encrypted packet after CVersion instead carries `0`. A capture can distinguish the two by checking the sequence byte immediately following opcode `0x62`.
 

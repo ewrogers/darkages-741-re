@@ -1,7 +1,7 @@
-# 066 / 0x42: CExceptionPacket
+# 066 / 0x42: Exception (`CException`)
 
 - Direction: client to server
-- Internal packet name: `CExceptionPacket`
+- Internal name: `CException`
 - Local behavioral alias: `Exception`
 - Related-game enum name: `Exception`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

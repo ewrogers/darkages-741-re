@@ -1,7 +1,7 @@
-# 122 / 0x7a: CRequestFamilyNamePacket?
+# 122 / 0x7a: Request Family Name (`CRequestFamilyName?`)
 
 - Direction: client to server
-- Internal packet name: `CRequestFamilyNamePacket?`
+- Internal name: `CRequestFamilyName?`
 - Local behavioral alias: `RequestFamilyName / RequestFamilyList`
 - Related-game enum name: `RequestLoverName`
 - Name provenance: The related-game enum calls this opcode `RequestLoverName`; this client instead constructs `FamilyList`, loads `lfamily.txt`, and receives `SFamilyName`, so the local `FamilyName` terminology is stronger. The C++ class spelling remains reconstructed.

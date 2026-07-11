@@ -1,7 +1,7 @@
-# 012 / 0x0c: CPutRequestPacket
+# 012 / 0x0c: Put Request (`CPutRequest`)
 
 - Direction: client to server
-- Internal packet name: `CPutRequestPacket`
+- Internal name: `CPutRequest`
 - Local behavioral alias: `RequestEntity`
 - Related-game enum name: `PutGround`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

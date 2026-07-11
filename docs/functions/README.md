@@ -6,9 +6,9 @@ This report preserves useful IDA names without committing the binary database. I
 
 - Target: `Darkages.exe` reporting version `741`
 - Preferred image base: `0x400000`
-- Friendly functions exported: `502`
-- Functions with an IDA-inferred signature: `156`
-- Functions still using an unknown signature: `346`
+- Friendly functions exported: `549`
+- Functions with an IDA-inferred signature: `194`
+- Functions still using an unknown signature: `355`
 - Total functions in the IDA database at export time: `11585`
 
 The report includes friendly subsystem names such as `net_`, `ui_`, `render_`, `audio_`, and `config_`. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.
@@ -43,7 +43,8 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `config_` | `15` |
 | `file_` | `28` |
 | `map_` | `36` |
-| `net_` | `341` |
+| `net_` | `355` |
+| `object_` | `33` |
 | `render_` | `18` |
 | `startup_` | `7` |
 | `ui_` | `55` |
@@ -236,10 +237,20 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_encrypt_client_packet_body` | `0x567fb0` | `0x271` | `int __stdcall(char *, int, char *Src, char)` |
 | `net_enqueue_communications_event` | `0x586210` | `0x56` | `BOOL __thiscall(HANDLE *this, int, int, int)` |
 | `net_handle_s_bad_guy` | `0x5f7900` | `0x195` | `char __thiscall(void *this, void *packet)` |
+| `net_handle_s_change_direction` | `0x5f3bb0` | `0xc8` | `unsigned char __thiscall(void *this, const void *packet)` |
+| `net_handle_s_damage_effect` | `0x5f40f0` | `0x7e` | `unsigned char __thiscall(void *this, const void *packet)` |
+| `net_handle_s_draw_human_objects` | `0x5f3340` | `0x5f0` | `unsigned char __thiscall(void *this, const void *packet)` |
+| `net_handle_s_draw_objects` | `0x5f3150` | `0x1eb` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_enter_editing_mode` | `0x5f71c0` | `0x87` | unknown |
+| `net_handle_s_motion` | `0x5f3c80` | `0x17b` | `unsigned char __thiscall(void *this, const void *packet)` |
+| `net_handle_s_move` | `0x5f2fc0` | `0x13f` | `unsigned char __thiscall(void *this, const void *packet)` |
+| `net_handle_s_move_object` | `0x5f3930` | `0x27a` | `unsigned char __thiscall(void *this, const void *packet)` |
+| `net_handle_s_remove_objects` | `0x5f3100` | `0x4b` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_request_crc` | `0x5f2cf0` | `0xe4` | `char __stdcall(int)` |
 | `net_handle_s_show_paper` | `0x5f7250` | `0x87` | `char __stdcall(int)` |
 | `net_handle_s_transfer_server_packet` | `0x4b9510` | `0x162` | `char __stdcall(int)` |
+| `net_handle_s_user_appearance` | `0x5f2e90` | `0x67` | `unsigned char __thiscall(void *this, const void *packet)` |
+| `net_handle_s_user_position` | `0x5f2f00` | `0xb6` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_version_check_raw` | `0x4b7f80` | `0x494` | unknown |
 | `net_init_s_action_delay_factory` | `0x667a40` | `0x19` | unknown |
 | `net_init_s_add_equip_factory` | `0x667a60` | `0x19` | unknown |
@@ -376,6 +387,8 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_s_draw_human_objects_deserialize` | `0x598570` | `0x3e7` | unknown |
 | `net_s_draw_objects_ctor` | `0x598a40` | `0x64` | unknown |
 | `net_s_draw_objects_deserialize` | `0x598ab0` | `0x5b` | unknown |
+| `net_s_draw_objects_read_record` | `0x598b30` | `0x14a` | unknown |
+| `net_s_draw_objects_rewind` | `0x598b10` | `0x20` | unknown |
 | `net_s_effect_layer_ctor` | `0x598db0` | `0x21` | unknown |
 | `net_s_effect_layer_deserialize` | `0x598de0` | `0xa9` | unknown |
 | `net_s_exchange_ctor` | `0x598f50` | `0x21` | unknown |
@@ -473,6 +486,8 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_send_c_give` | `0x496d90` | `0xd6` | `void __thiscall(unsigned __int8 *this, int, int)` |
 | `net_send_c_login` | `0x4baa80` | `0x5d3` | `int __thiscall(void *this, const char *character_name, const char *password)` |
 | `net_send_c_portrait` | `0x5b1160` | `0x34` | `char __stdcall(int)` |
+| `net_send_c_put_request` | `0x5f4430` | `0x7a` | `int __thiscall(void *this, unsigned int object_id)` |
+| `net_send_c_refresh` | `0x5f4640` | `0x72` | `int __thiscall(void *this)` |
 | `net_send_c_request_family_name` | `0x4719b0` | `0x6e` | `int()` |
 | `net_send_c_request_homepage` | `0x4ba0c0` | `0x8c` | `int()` |
 | `net_send_c_spell_delay_request` | `0x49bab0` | `0x82` | `int __stdcall(char)` |
@@ -494,6 +509,44 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_write_u32_be` | `0x5641f0` | `0x65` | `_BYTE *__cdecl(unsigned int, _BYTE *)` |
 | `net_write_u8` | `0x564140` | `0x1d` | `_BYTE *__cdecl(unsigned int, _BYTE *)` |
 | `net_xor_packet_bytes` | `0x568230` | `0x12a` | `unsigned int __stdcall(int, unsigned int, unsigned int, int, int)` |
+
+## `object_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
+| `object_collect_out_of_range` | `0x5c7af0` | `0x1d4` | `void __thiscall(void *this, int center_y, int center_x, int range, unsigned char include_static)` |
+| `object_create_human` | `0x5ca140` | `0x373` | `void *__thiscall(void *this, void *out_shared, unsigned int object_id, int y, int x)` |
+| `object_create_item` | `0x5cac60` | `0x339` | `void *__thiscall(void *this, void *out_shared, unsigned int object_id, int y, int x, unsigned short item_id, unsigned char flags)` |
+| `object_create_monster` | `0x5ca4c0` | `0x363` | `void *__thiscall(void *this, void *out_shared, unsigned int object_id, int y, int x, unsigned char monster_class)` |
+| `object_create_self_user` | `0x5ca830` | `0x425` | `void *__thiscall(void *this, void *out_shared, unsigned int object_id, int y, int x)` |
+| `object_ctor` | `0x5db3f0` | `0x1df` | `void *__thiscall(void *this, unsigned int category, unsigned int object_id)` |
+| `object_detach` | `0x5c9450` | `0x1fe` | unknown |
+| `object_find` | `0x5c9810` | `0x6d` | `void *__thiscall(void *this, void *out_shared, unsigned int object_id)` |
+| `object_get_local_user_id` | `0x5c7110` | `0x14` | `unsigned int __thiscall(void *this)` |
+| `object_get_self_object_id` | `0x5c7150` | `0x14` | `unsigned int __thiscall(void *this)` |
+| `object_get_self_user` | `0x5eedb0` | `0xb5` | `void *__thiscall(void *this)` |
+| `object_handle_world_input_event` | `0x5f1480` | `0x106` | `unsigned char __thiscall(void *this, const void *input_event)` |
+| `object_human_apply_appearance` | `0x5e0070` | `0x44` | unknown |
+| `object_human_ctor` | `0x5ddfc0` | `0x56` | `void *__thiscall(void *this, unsigned int object_id)` |
+| `object_insert` | `0x5c8ea0` | `0x216` | unknown |
+| `object_item_ctor` | `0x5de280` | `0x153` | `void *__thiscall(void *this, int x, int y, unsigned short item_id, unsigned char flags, void *resource, unsigned int object_id)` |
+| `object_list_erase` | `0x5e6020` | `0x264` | unknown |
+| `object_list_find` | `0x5e73b0` | `0x1c8` | `void *__thiscall(void *this, void *out_shared, unsigned int object_id)` |
+| `object_list_insert` | `0x5e5d40` | `0x16c` | unknown |
+| `object_living_apply_monster_appearance` | `0x5e0370` | `0x1d3` | unknown |
+| `object_living_ctor` | `0x5df230` | `0x210` | `void *__thiscall(void *this, unsigned int category, unsigned int object_id)` |
+| `object_living_set_direction` | `0x5e0880` | `0x4c` | `void __thiscall(void *this, unsigned char direction)` |
+| `object_living_set_name` | `0x5df590` | `0x28` | `void __thiscall(void *this, const char *name)` |
+| `object_monster_ctor` | `0x5e2630` | `0x9b` | `void *__thiscall(void *this, unsigned int object_id, unsigned char monster_class)` |
+| `object_prune_out_of_range` | `0x5c7cd0` | `0x111` | `void __thiscall(void *this, int center_y, int center_x, int range, unsigned char include_static)` |
+| `object_rebuild_visible_area` | `0x5c7df0` | `0x13f` | `void __thiscall(void *this, int y, int x)` |
+| `object_reindex` | `0x5c92c0` | `0x18d` | unknown |
+| `object_remove_by_id` | `0x5c9fa0` | `0x195` | `void __thiscall(void *this, unsigned int object_id, unsigned char animate_removal)` |
+| `object_reset_movement_sync_state` | `0x5f4900` | `0x8c` | `void __thiscall(void *this, unsigned char keep_generation)` |
+| `object_set_local_user_id` | `0x5c70f0` | `0x19` | `void __thiscall(void *this, unsigned int object_id)` |
+| `object_set_self_object_id` | `0x5c7130` | `0x19` | `void __thiscall(void *this, unsigned int object_id)` |
+| `object_set_view_position` | `0x5eec70` | `0x65` | `void __thiscall(void *this, int y, int x, unsigned char rebuild_visible_state)` |
+| `object_user_ctor` | `0x5e4e60` | `0x9f` | `void *__thiscall(void *this, unsigned int object_id)` |
 
 ## `render_` functions
 

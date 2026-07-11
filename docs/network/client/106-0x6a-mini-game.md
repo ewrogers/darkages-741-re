@@ -1,7 +1,7 @@
-# 106 / 0x6a: CMiniGamePacket
+# 106 / 0x6a: Mini Game (`CMiniGame`)
 
 - Direction: client to server
-- Internal packet name: `CMiniGamePacket`
+- Internal name: `CMiniGame`
 - Local behavioral alias: `MiniGame`
 - Related-game enum name: `MiniGame`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

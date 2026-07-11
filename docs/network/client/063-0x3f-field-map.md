@@ -1,7 +1,7 @@
-# 063 / 0x3f: CFieldMapPacket?
+# 063 / 0x3f: Field Map (`CFieldMap?`)
 
 - Direction: client to server
-- Internal packet name: `CFieldMapPacket?`
+- Internal name: `CFieldMap?`
 - Local behavioral alias: `FieldMap / WorldMapClick`
 - Related-game enum name: `FieldMap`
 - Name provenance: Related-game internal enum name `FieldMap` at the same opcode, corroborated by this client's coordinate-based local builders; the C++ class spelling remains reconstructed.

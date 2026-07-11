@@ -1,7 +1,7 @@
-# 123 / 0x7b: CMetaDataPacket
+# 123 / 0x7b: Meta Data (`CMetaData`)
 
 - Direction: client to server
-- Internal packet name: `CMetaDataPacket`
+- Internal name: `CMetaData`
 - Local behavioral alias: `RequestMetadata`
 - Related-game enum name: `MetaData`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

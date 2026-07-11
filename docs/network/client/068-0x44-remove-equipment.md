@@ -1,7 +1,7 @@
-# 068 / 0x44: CRemoveEquipmentPacket
+# 068 / 0x44: Remove Equipment (`CRemoveEquipment`)
 
 - Direction: client to server
-- Internal packet name: `CRemoveEquipmentPacket`
+- Internal name: `CRemoveEquipment`
 - Local behavioral alias: `UnequipItem`
 - Related-game enum name: `RemoveEquip`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

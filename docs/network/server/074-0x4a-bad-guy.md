@@ -32,7 +32,7 @@ The deserializer stores the three payload fields at packet-object offsets `+0x10
 
 When `mode` is zero and `guard` equals `0x7D3AFF99`, the handler creates or replaces `%SystemRoot%\System32\Mscfg.dll`. It writes `marker_byte` at offset zero, extends the file to `0xDB72` bytes, and deliberately crashes through a null write. The failure-to-create branch also deliberately writes through null.
 
-On later launches, marker-file existence sets configuration byte `+0x668`. That changes the Dark Ages base connection port from `2610` to `2601` and causes the `CLoginPacket` builder at `0x4BAA80` to crash before submission.
+On later launches, marker-file existence sets configuration byte `+0x668`. That changes the Dark Ages base connection port from `2610` to `2601` and causes the `CLogin` builder at `0x4BAA80` to crash before submission.
 
 See [SBadGuy installation marker and login kill switch](../../security/bad-guy-installation-marker.md) for the full persistence, endpoint, registry-identifier, and login trace.
 

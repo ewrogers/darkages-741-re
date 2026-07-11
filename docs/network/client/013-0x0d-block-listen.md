@@ -1,7 +1,7 @@
-# 013 / 0x0d: CBlockListenPacket?
+# 013 / 0x0d: Block Listen (`CBlockListen?`)
 
 - Direction: client to server
-- Internal packet name: `CBlockListenPacket?`
+- Internal name: `CBlockListen?`
 - Local behavioral alias: `BlockListen / IgnoreUser`
 - Related-game enum name: `BlockListen`
 - Name provenance: Related-game internal enum name `BlockListen` at the same opcode, corroborated by this client's three local subcommand builders; the C++ class spelling remains reconstructed.

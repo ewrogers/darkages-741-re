@@ -1,7 +1,7 @@
-# 062 / 0x3e: CUseSkillPacket
+# 062 / 0x3e: Use Skill (`CUseSkill`)
 
 - Direction: client to server
-- Internal packet name: `CUseSkillPacket`
+- Internal name: `CUseSkill`
 - Local behavioral alias: `UseSkill`
 - Related-game enum name: `UseSkill`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

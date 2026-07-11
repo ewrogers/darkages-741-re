@@ -1,7 +1,7 @@
-# 059 / 0x3b: CBulletinPacket
+# 059 / 0x3b: Bulletin (`CBulletin`)
 
 - Direction: client to server
-- Internal packet name: `CBulletinPacket`
+- Internal name: `CBulletin`
 - Local behavioral alias: `BoardAction`
 - Related-game enum name: `Bulletin`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

@@ -1,7 +1,7 @@
-# 104 / 0x68: CRequestHomepagePacket?
+# 104 / 0x68: Request Homepage (`CRequestHomepage?`)
 
 - Direction: client to server
-- Internal packet name: `CRequestHomepagePacket?`
+- Internal name: `CRequestHomepage?`
 - Local behavioral alias: `RequestHomepage`
 - Related-game enum name: `SlotScroll`
 - Name provenance: Internal-style local name inferred from this client's behavior; no exact leaked class match is known yet.

@@ -1,8 +1,8 @@
-# 027 / 0x1B: SEnterEditingModePacket?
+# 027 / 0x1B: Enter Editing Mode (`SEnterEditingMode?`)
 
 - Direction: server to client
 - Internal/related name: `EnterEditingMode`
-- Reconstructed C++ class name: `SEnterEditingModePacket?`
+- Reconstructed C++ class name: `SEnterEditingMode?`
 - Name provenance: related-engine internal enum name, confirmed by this client's local behavior and its paired `0x23 ExitEditingMode` response
 - Receive handling: default derived-key transform, followed by a manual raw-body handler
 - RTTI factory: none in the recovered 61-entry game registry
@@ -29,7 +29,7 @@ The meanings of the three configuration bytes are not yet named confidently. The
 
 ## Paired client packet
 
-See [CExitEditingModePacket? (`0x23`)](../client/035-0x23-exit-editing-mode.md). Its post-transform plaintext body is:
+See [CExitEditingMode? (`0x23`)](../client/035-0x23-exit-editing-mode.md). Its post-transform plaintext body is:
 
 ```text
 23 [u8 editor_mode] [u16be text_length] [text bytes...]

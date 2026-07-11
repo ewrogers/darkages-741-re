@@ -1,7 +1,7 @@
-# 098 / 0x62: CRequestSequencePacket?
+# 098 / 0x62: Request Sequence (`CRequestSequence?`)
 
 - Direction: client to server
-- Internal packet name: `CRequestSequencePacket?`
+- Internal name: `CRequestSequence?`
 - Local behavioral alias: `Client codename ("baram") / RequestSequence?`
 - Name provenance: Internal-style local name inferred from this client's behavior; no exact leaked class match is known yet.
 - Evidence: concrete pre-version builder at `sub_579090` (`0x579821`)
@@ -10,7 +10,7 @@
 
 ## Builder call sites
 
-- `sub_579090` at `0x579090`; submitted at `0x579821` immediately before `CVersionPacket` is built.
+- `sub_579090` at `0x579090`; submitted at `0x579821` immediately before `CVersion` is built.
 
 ## Current structural notes
 

@@ -1,7 +1,7 @@
-# 017 / 0x11: CChangeDirPacket
+# 017 / 0x11: Change Dir (`CChangeDir`)
 
 - Direction: client to server
-- Internal packet name: `CChangeDirPacket`
+- Internal name: `CChangeDir`
 - Local behavioral alias: `Turn`
 - Related-game enum name: `ChangeDirection`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

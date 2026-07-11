@@ -74,7 +74,7 @@ for i = 0..8:
 
 ## Server-selected salt/mask table
 
-The raw `SVersionCheckPacket 0x00`, subtype `0`, supplies:
+The raw `SVersionCheck 0x00`, subtype `0`, supplies:
 
 ```text
 u8  opcode = 0x00
@@ -237,11 +237,11 @@ low byte of challenge
 high byte of challenge
 ```
 
-starting from zero. It returns the result as `u16be` in `CReplyCRCPacket 0x45`.
+starting from zero. It returns the result as `u16be` in `CReplyCRC 0x45`.
 
 ### Map checksum
 
-`net_calculate_map_crc16` walks map records in row-major order. Each record contains three 16-bit values, and each word is fed low byte then high byte. The resulting 16-bit value is cached locally and transmitted in the three-byte checksum field of `CMapCRCPacket 0x05`.
+`net_calculate_map_crc16` walks map records in row-major order. Each record contains three 16-bit values, and each word is fed low byte then high byte. The resulting 16-bit value is cached locally and transmitted in the three-byte checksum field of `CMapCRC 0x05`.
 
 ## IDA anchors
 

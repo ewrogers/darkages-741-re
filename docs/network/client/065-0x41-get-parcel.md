@@ -1,7 +1,7 @@
-# 065 / 0x41: CGetParcelPacket?
+# 065 / 0x41: Get Parcel (`CGetParcel?`)
 
 - Direction: client to server
-- Internal packet name: `CGetParcelPacket?`
+- Internal name: `CGetParcel?`
 - Local behavioral alias: `GetParcel / DismissParcel`
 - Related-game enum name: `GetParcel`
 - Name provenance: Related-game internal enum name `GetParcel` at the same opcode; local behavior supports the parcel operation, but a fixed builder is not yet isolated.

@@ -1,7 +1,7 @@
-# 015 / 0x0f: CUseSpellPacket
+# 015 / 0x0f: Use Spell (`CUseSpell`)
 
 - Direction: client to server
-- Internal packet name: `CUseSpellPacket`
+- Internal name: `CUseSpell`
 - Local behavioral alias: `CastSpell`
 - Related-game enum name: `UseSpell`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

@@ -1,7 +1,7 @@
-# 079 / 0x4f: CSendPortraitPacket?
+# 079 / 0x4f: Send Portrait (`CSendPortrait?`)
 
 - Direction: client to server
-- Internal packet name: `CSendPortraitPacket?`
+- Internal name: `CSendPortrait?`
 - Local behavioral alias: `SendPortrait / UserPortrait`
 - Related-game enum name: `SendPortrait`
 - Name provenance: Related-game internal enum name `SendPortrait` at the same opcode is corroborated by this client's JPEG/EPF and `profile.txt` upload builder; the C++ class spelling remains reconstructed.

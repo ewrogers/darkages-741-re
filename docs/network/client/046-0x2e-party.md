@@ -1,7 +1,7 @@
-# 046 / 0x2e: CPartyPacket
+# 046 / 0x2e: Party (`CParty`)
 
 - Direction: client to server
-- Internal packet name: `CPartyPacket`
+- Internal name: `CParty`
 - Local behavioral alias: `GroupInvite`
 - Related-game enum name: `Group`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

@@ -1,7 +1,7 @@
-# 087 / 0x57: CMultiServerPacket
+# 087 / 0x57: Multi Server (`CMultiServer`)
 
 - Direction: client to server
-- Internal packet name: `CMultiServerPacket`
+- Internal name: `CMultiServer`
 - Local behavioral alias: `RequestServerTable`
 - Related-game enum name: `Multi`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

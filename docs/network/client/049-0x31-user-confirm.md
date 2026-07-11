@@ -1,7 +1,7 @@
-# 049 / 0x31: CUserConfirmPacket
+# 049 / 0x31: User Confirm (`CUserConfirm`)
 
 - Direction: client to server
-- Internal packet name: `CUserConfirmPacket`
+- Internal name: `CUserConfirm`
 - Local behavioral alias: `ConfirmUser`
 - Related-game enum name: `Confirm`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

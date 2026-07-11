@@ -9,7 +9,7 @@ export:
   scope: Friendly snake_case names with subsystem prefixes
   signature_source: IDA type information
   total_database_functions: 11585
-  exported_functions: 502
+  exported_functions: 549
 function_groups:
   audio_:
     - name: audio_initialize_miles_driver
@@ -672,10 +672,42 @@ function_groups:
       address: "0x5f7900"
       size: "0x195"
       signature: "char __thiscall(void *this, void *packet)"
+    - name: net_handle_s_change_direction
+      address: "0x5f3bb0"
+      size: "0xc8"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
+    - name: net_handle_s_damage_effect
+      address: "0x5f40f0"
+      size: "0x7e"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
+    - name: net_handle_s_draw_human_objects
+      address: "0x5f3340"
+      size: "0x5f0"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
+    - name: net_handle_s_draw_objects
+      address: "0x5f3150"
+      size: "0x1eb"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
     - name: net_handle_s_enter_editing_mode
       address: "0x5f71c0"
       size: "0x87"
       signature: null
+    - name: net_handle_s_motion
+      address: "0x5f3c80"
+      size: "0x17b"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
+    - name: net_handle_s_move
+      address: "0x5f2fc0"
+      size: "0x13f"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
+    - name: net_handle_s_move_object
+      address: "0x5f3930"
+      size: "0x27a"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
+    - name: net_handle_s_remove_objects
+      address: "0x5f3100"
+      size: "0x4b"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
     - name: net_handle_s_request_crc
       address: "0x5f2cf0"
       size: "0xe4"
@@ -688,6 +720,14 @@ function_groups:
       address: "0x4b9510"
       size: "0x162"
       signature: "char __stdcall(int)"
+    - name: net_handle_s_user_appearance
+      address: "0x5f2e90"
+      size: "0x67"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
+    - name: net_handle_s_user_position
+      address: "0x5f2f00"
+      size: "0xb6"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
     - name: net_handle_s_version_check_raw
       address: "0x4b7f80"
       size: "0x494"
@@ -1232,6 +1272,14 @@ function_groups:
       address: "0x598ab0"
       size: "0x5b"
       signature: null
+    - name: net_s_draw_objects_read_record
+      address: "0x598b30"
+      size: "0x14a"
+      signature: null
+    - name: net_s_draw_objects_rewind
+      address: "0x598b10"
+      size: "0x20"
+      signature: null
     - name: net_s_effect_layer_ctor
       address: "0x598db0"
       size: "0x21"
@@ -1620,6 +1668,14 @@ function_groups:
       address: "0x5b1160"
       size: "0x34"
       signature: "char __stdcall(int)"
+    - name: net_send_c_put_request
+      address: "0x5f4430"
+      size: "0x7a"
+      signature: "int __thiscall(void *this, unsigned int object_id)"
+    - name: net_send_c_refresh
+      address: "0x5f4640"
+      size: "0x72"
+      signature: "int __thiscall(void *this)"
     - name: net_send_c_request_family_name
       address: "0x4719b0"
       size: "0x6e"
@@ -1704,6 +1760,139 @@ function_groups:
       address: "0x568230"
       size: "0x12a"
       signature: "unsigned int __stdcall(int, unsigned int, unsigned int, int, int)"
+  object_:
+    - name: object_collect_out_of_range
+      address: "0x5c7af0"
+      size: "0x1d4"
+      signature: "void __thiscall(void *this, int center_y, int center_x, int range, unsigned char include_static)"
+    - name: object_create_human
+      address: "0x5ca140"
+      size: "0x373"
+      signature: "void *__thiscall(void *this, void *out_shared, unsigned int object_id, int y, int x)"
+    - name: object_create_item
+      address: "0x5cac60"
+      size: "0x339"
+      signature: "void *__thiscall(void *this, void *out_shared, unsigned int object_id, int y, int x, unsigned short item_id, unsigned char flags)"
+    - name: object_create_monster
+      address: "0x5ca4c0"
+      size: "0x363"
+      signature: "void *__thiscall(void *this, void *out_shared, unsigned int object_id, int y, int x, unsigned char monster_class)"
+    - name: object_create_self_user
+      address: "0x5ca830"
+      size: "0x425"
+      signature: "void *__thiscall(void *this, void *out_shared, unsigned int object_id, int y, int x)"
+    - name: object_ctor
+      address: "0x5db3f0"
+      size: "0x1df"
+      signature: "void *__thiscall(void *this, unsigned int category, unsigned int object_id)"
+    - name: object_detach
+      address: "0x5c9450"
+      size: "0x1fe"
+      signature: null
+    - name: object_find
+      address: "0x5c9810"
+      size: "0x6d"
+      signature: "void *__thiscall(void *this, void *out_shared, unsigned int object_id)"
+    - name: object_get_local_user_id
+      address: "0x5c7110"
+      size: "0x14"
+      signature: "unsigned int __thiscall(void *this)"
+    - name: object_get_self_object_id
+      address: "0x5c7150"
+      size: "0x14"
+      signature: "unsigned int __thiscall(void *this)"
+    - name: object_get_self_user
+      address: "0x5eedb0"
+      size: "0xb5"
+      signature: "void *__thiscall(void *this)"
+    - name: object_handle_world_input_event
+      address: "0x5f1480"
+      size: "0x106"
+      signature: "unsigned char __thiscall(void *this, const void *input_event)"
+    - name: object_human_apply_appearance
+      address: "0x5e0070"
+      size: "0x44"
+      signature: null
+    - name: object_human_ctor
+      address: "0x5ddfc0"
+      size: "0x56"
+      signature: "void *__thiscall(void *this, unsigned int object_id)"
+    - name: object_insert
+      address: "0x5c8ea0"
+      size: "0x216"
+      signature: null
+    - name: object_item_ctor
+      address: "0x5de280"
+      size: "0x153"
+      signature: "void *__thiscall(void *this, int x, int y, unsigned short item_id, unsigned char flags, void *resource, unsigned int object_id)"
+    - name: object_list_erase
+      address: "0x5e6020"
+      size: "0x264"
+      signature: null
+    - name: object_list_find
+      address: "0x5e73b0"
+      size: "0x1c8"
+      signature: "void *__thiscall(void *this, void *out_shared, unsigned int object_id)"
+    - name: object_list_insert
+      address: "0x5e5d40"
+      size: "0x16c"
+      signature: null
+    - name: object_living_apply_monster_appearance
+      address: "0x5e0370"
+      size: "0x1d3"
+      signature: null
+    - name: object_living_ctor
+      address: "0x5df230"
+      size: "0x210"
+      signature: "void *__thiscall(void *this, unsigned int category, unsigned int object_id)"
+    - name: object_living_set_direction
+      address: "0x5e0880"
+      size: "0x4c"
+      signature: "void __thiscall(void *this, unsigned char direction)"
+    - name: object_living_set_name
+      address: "0x5df590"
+      size: "0x28"
+      signature: "void __thiscall(void *this, const char *name)"
+    - name: object_monster_ctor
+      address: "0x5e2630"
+      size: "0x9b"
+      signature: "void *__thiscall(void *this, unsigned int object_id, unsigned char monster_class)"
+    - name: object_prune_out_of_range
+      address: "0x5c7cd0"
+      size: "0x111"
+      signature: "void __thiscall(void *this, int center_y, int center_x, int range, unsigned char include_static)"
+    - name: object_rebuild_visible_area
+      address: "0x5c7df0"
+      size: "0x13f"
+      signature: "void __thiscall(void *this, int y, int x)"
+    - name: object_reindex
+      address: "0x5c92c0"
+      size: "0x18d"
+      signature: null
+    - name: object_remove_by_id
+      address: "0x5c9fa0"
+      size: "0x195"
+      signature: "void __thiscall(void *this, unsigned int object_id, unsigned char animate_removal)"
+    - name: object_reset_movement_sync_state
+      address: "0x5f4900"
+      size: "0x8c"
+      signature: "void __thiscall(void *this, unsigned char keep_generation)"
+    - name: object_set_local_user_id
+      address: "0x5c70f0"
+      size: "0x19"
+      signature: "void __thiscall(void *this, unsigned int object_id)"
+    - name: object_set_self_object_id
+      address: "0x5c7130"
+      size: "0x19"
+      signature: "void __thiscall(void *this, unsigned int object_id)"
+    - name: object_set_view_position
+      address: "0x5eec70"
+      size: "0x65"
+      signature: "void __thiscall(void *this, int y, int x, unsigned char rebuild_visible_state)"
+    - name: object_user_ctor
+      address: "0x5e4e60"
+      size: "0x9f"
+      signature: "void *__thiscall(void *this, unsigned int object_id)"
   render_:
     - name: render_allocate_palette_id
       address: "0x548610"

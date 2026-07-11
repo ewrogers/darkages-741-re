@@ -1,7 +1,7 @@
-# 108 / 0x6c: CItemShopPacket
+# 108 / 0x6c: Item Shop (`CItemShop`)
 
 - Direction: client to server
-- Internal packet name: `CItemShopPacket`
+- Internal name: `CItemShop`
 - Local behavioral alias: `ItemShop`
 - Related-game enum name: `CashShop`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

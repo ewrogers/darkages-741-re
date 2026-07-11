@@ -29,4 +29,5 @@ The raw trace lists static reader call sites. Conditional variants and counted r
 - Opcode registration: confirmed from the client registry.
 - Packet class name: confirmed from Visual C++ RTTI.
 - Primitive widths and byte order: confirmed from reader implementations.
-- Semantic field names: pending server-source or capture verification.
+- `net_dispatch_game_server_message` at `0x5ED990` does not dispatch opcode `0x21` to a handler in this build.
+- There is no local evidence that this packet completes `CRefresh` processing.

@@ -1,7 +1,7 @@
-# 042 / 0x2a: CGiveGoldPacket?
+# 042 / 0x2a: Give Gold (`CGiveGold?`)
 
 - Direction: client to server
-- Internal packet name: `CGiveGoldPacket?`
+- Internal name: `CGiveGold?`
 - Local behavioral alias: `GiveGold`
 - Related-game enum name: `GiveGold`
 - Name provenance: Internal-style local name inferred from this client's behavior; no exact leaked class match is known yet.

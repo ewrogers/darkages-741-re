@@ -1,7 +1,7 @@
-# 016 / 0x10: CTransferServerPacket
+# 016 / 0x10: Transfer Server (`CTransferServer`)
 
 - Direction: client to server
-- Internal packet name: `CTransferServerPacket`
+- Internal name: `CTransferServer`
 - Local behavioral alias: `Authenticate`
 - Related-game enum name: `TransferServer`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

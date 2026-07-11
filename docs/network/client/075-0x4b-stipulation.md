@@ -1,7 +1,7 @@
-# 075 / 0x4b: CStipulationPacket
+# 075 / 0x4b: Stipulation (`CStipulation`)
 
 - Direction: client to server
-- Internal packet name: `CStipulationPacket`
+- Internal name: `CStipulation`
 - Local behavioral alias: `RequestLoginNotice`
 - Related-game enum name: `Stipulation`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

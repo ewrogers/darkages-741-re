@@ -1,7 +1,7 @@
-# 086 / 0x56: CHumanInfoRequestPacket
+# 086 / 0x56: Human Info Request (`CHumanInfoRequest`)
 
 - Direction: client to server
-- Internal packet name: `CHumanInfoRequestPacket`
+- Internal name: `CHumanInfoRequest`
 - Local behavioral alias: `RequestUserId`
 - Name provenance: Leaked company/engine class name remapped by this client's local behavior; the sibling-game opcode differs.
 - Evidence: user-researched local command; fixed builder call site not yet isolated

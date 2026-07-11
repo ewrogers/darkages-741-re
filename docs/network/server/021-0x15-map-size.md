@@ -39,6 +39,6 @@ The raw trace lists static reader call sites. Conditional variants and counted r
 
 ## Client handling
 
-`map_handle_s_map_size` at `0x5F1BF0` compares this state with the active grid and local `maps/lod%d.map` cache. When the cache does not match, it sends CMapCRCPacket `0x05` with the local dimensions and checksum. See [Map loading and rendering](../../map/loading-and-rendering.md).
+`map_handle_s_map_size` at `0x5F1BF0` compares this state with the active grid and local `maps/lod%d.map` cache. When the cache does not match, it sends CMapCRC `0x05` with the local dimensions and checksum. See [Map loading and rendering](../../map/loading-and-rendering.md).
 
 The map identifier, dimensions, checksum, and name uses are confirmed by the handler. The exact meanings of the two flag bytes remain incomplete.

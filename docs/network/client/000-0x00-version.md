@@ -1,7 +1,7 @@
-# 000 / 0x00: CVersionPacket
+# 000 / 0x00: Version (`CVersion`)
 
 - Direction: client to server
-- Internal packet name: `CVersionPacket`
+- Internal name: `CVersion`
 - Local behavioral alias: `Version`
 - Related-game enum name: `Version`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

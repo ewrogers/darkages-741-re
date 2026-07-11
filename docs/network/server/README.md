@@ -2,7 +2,7 @@
 
 The client registers **61** RTTI-backed receive opcodes in `net_register_server_packet_factories` at `0x595F00`. This is not the complete set of supported server opcodes: the active game dispatcher also recognizes some packets directly from the preserved post-decrypt body.
 
-Names are recovered from Visual C++ RTTI and are therefore stronger than guesses, although friendly protocol names may be changed later. Payload models describe bytes after the opcode and before any encryption trailer removed by the client.
+Names are recovered from Visual C++ RTTI and are therefore stronger than guesses, although friendly protocol names may be changed later. Concrete display names omit the redundant class suffix. Payload models describe bytes after the opcode and before any encryption trailer removed by the client.
 
 ## Lobby/login packets outside the game registry
 
@@ -10,9 +10,9 @@ The loaded game-server factory registry does **not** register opcodes `0x00`, `0
 
 | Opcode | Internal/related name | Current status |
 |---:|---|---|
-| [0x00](./000-0x00-version-check.md) | `SVersionCheckPacket` / `VersionCheck` | raw handler recovered; subtype 0 installs salt selector and replacement key |
-| [0x01](./001-0x01-new-user-check.md) | `SNewUserCheckPacket?` / `NewUserCheck` | local decrypt support confirmed; semantics/handler uncertain |
-| [0x02](./002-0x02-check.md) | `SCheckPacket` / `LoginCheck` / `LoginResult` | local decrypt support confirmed; payload handler not yet isolated |
+| [0x00](./000-0x00-version-check.md) | `SVersionCheck` / `VersionCheck` | raw handler recovered; subtype 0 installs salt selector and replacement key |
+| [0x01](./001-0x01-new-user-check.md) | `SNewUserCheck?` / `NewUserCheck` | local decrypt support confirmed; semantics/handler uncertain |
+| [0x02](./002-0x02-check.md) | `SCheck` / `LoginCheck` / `LoginResult` | local decrypt support confirmed; payload handler not yet isolated |
 | [0x03](./003-0x03-transfer-server.md) | `STransferServer` | locally RTTI-registered; the lobby can use it to hand the client to a game server |
 
 The 61-entry table below remains the source of truth for packet-object support in the currently recovered game-server registry.
@@ -25,12 +25,12 @@ These six opcodes are checked by the game dispatcher but are absent from the 61-
 
 | Opcode | Internal/related name | Raw handler | Current status |
 |---:|---|---:|---|
-| [0x1B](./027-0x1b-enter-editing-mode.md) | `SEnterEditingModePacket?` / `EnterEditingMode` | `net_handle_s_enter_editing_mode` (`0x5F71C0`) | confirmed local parser; opens the paper editor |
-| 0x31 | `SBulletinPacket?` / `BoardResult` | `0x5F6CB0` | manual handler confirmed; payload audit pending |
-| 0x34 | `SObjectInfoReplyPacket?` / `UserProfile` | `0x5F1590` | manual handler confirmed; payload audit pending |
+| [0x1B](./027-0x1b-enter-editing-mode.md) | `SEnterEditingMode?` / `EnterEditingMode` | `net_handle_s_enter_editing_mode` (`0x5F71C0`) | confirmed local parser; opens the paper editor |
+| 0x31 | `SBulletin?` / `BoardResult` | `0x5F6CB0` | manual handler confirmed; payload audit pending |
+| 0x34 | `SObjectInfoReply?` / `UserProfile` | `0x5F1590` | manual handler confirmed; payload audit pending |
 | [0x35](./053-0x35-show-paper.md) | `SShowPaper` | `net_handle_s_show_paper` (`0x5F7250`) | confirmed; read-only paper UI, dismissed locally without a client packet |
-| 0x36 | `SUserListPacket?` / `WorldList` | `0x5F7B80` | manual handler confirmed; payload audit pending |
-| 0x4F | `SMercPacket?` | `0x5F6BF0` | manual handler confirmed; payload audit pending |
+| 0x36 | `SUserList?` / `WorldList` | `0x5F7B80` | manual handler confirmed; payload audit pending |
+| 0x4F | `SMerc?` | `0x5F6BF0` | manual handler confirmed; payload audit pending |
 
 The same dispatcher also performs raw-body checks for registered opcodes `0x06`, `0x2E`, `0x3B`, `0x3C`, and `0x42`. Those packets therefore have both an RTTI object and a raw-body path available to downstream code.
 

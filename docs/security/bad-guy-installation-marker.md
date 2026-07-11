@@ -1,6 +1,6 @@
 # SBadGuy installation marker and login kill switch
 
-`SBadGuy` is a persistent client-side kill switch. When its guard fields are valid, the handler attempts to create `%SystemRoot%\System32\Mscfg.dll` and deliberately crashes. If marker creation succeeds, later launches detect that file, select TCP port `2601` instead of `2610`, and deliberately crash again before submitting `CLoginPacket`.
+`SBadGuy` is a persistent client-side kill switch. When its guard fields are valid, the handler attempts to create `%SystemRoot%\System32\Mscfg.dll` and deliberately crashes. If marker creation succeeds, later launches detect that file, select TCP port `2601` instead of `2610`, and deliberately crash again before submitting `CLogin`.
 
 This strongly supports the installation soft-ban interpretation. The client cannot show whether a GM command, an automated server rule, or another server-side action sends the packet.
 
@@ -75,7 +75,7 @@ This makes the marker visible to the service through endpoint selection even bef
 
 `net_send_c_login` at `0x4BAA80` checks `config + 0x668` before building opcode `0x03`. When the marker is present, it calls `memset(NULL, 0, 100)`. The call to `net_submit_client_packet` at `0x4BB00B` is therefore unreachable in a normal marked process.
 
-The marker bit is not serialized as a field in `CLoginPacket`. The client crashes before sending that packet.
+The marker bit is not serialized as a field in `CLogin`. The client crashes before sending that packet.
 
 ## Registry installation identifiers
 
@@ -88,7 +88,7 @@ The client also maintains two installation identifiers. These are separate from 
 
 If the primary value is absent or invalid, the client generates four bytes with `rand()` and stores them. `config_derive_install_id_checksum16` at `0x436E10` derives the 16-bit value with a custom recurrence and a `0x1021` lookup table. The second registry value stores that result with random padding and a byte-wise XOR using `0xAC`, `0xAD`, `0xAE`, and `0xAF`.
 
-`net_send_c_login` loads the primary 32-bit identifier and the derived 16-bit identifier, applies additional per-login obfuscation, and writes them into `CLoginPacket` as `u32be` and `u16be` fields. These values behave like an installation fingerprint, not the persistent ban flag itself.
+`net_send_c_login` loads the primary 32-bit identifier and the derived 16-bit identifier, applies additional per-login obfuscation, and writes them into `CLogin` as `u32be` and `u16be` fields. These values behave like an installation fingerprint, not the persistent ban flag itself.
 
 See [Client installation identifier](client-installation-id.md) for the exact registry validation, secondary-value packing, per-login XOR masks, and integrity recurrence.
 
@@ -99,7 +99,7 @@ See [Client installation identifier](client-installation-id.md) for the exact re
 | `SBadGuy` deliberately crashes the client | Confirmed on both marker creation success and failure paths |
 | The effect persists across launches | Confirmed when marker creation succeeds, through the `Mscfg.dll` existence check |
 | A marked installation uses another endpoint | Confirmed, port `2601` replaces `2610` |
-| A marked installation crashes during login | Confirmed before `CLoginPacket` submission |
+| A marked installation crashes during login | Confirmed before `CLogin` submission |
 | Registry identifiers are sent during login | Confirmed after local obfuscation |
 | The registry identifiers are the ban flag | Not supported; the file-existence byte at `config + 0x668` is the kill-switch flag |
 | GMs are the source of the packet | Not provable from the client binary |

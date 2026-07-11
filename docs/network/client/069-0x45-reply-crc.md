@@ -1,7 +1,7 @@
-# 069 / 0x45: CReplyCRCPacket
+# 069 / 0x45: Reply CRC (`CReplyCRC`)
 
 - Direction: client to server
-- Internal packet name: `CReplyCRCPacket`
+- Internal name: `CReplyCRC`
 - Local behavioral alias: `Heartbeat / CRC challenge reply`
 - Related-game enum name: `ReplyCRC`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.
@@ -15,7 +15,7 @@
 
 ## Current structural notes
 
-The handler reads a `u16be` challenge from the incoming `SRequestCRCPacket`, then emits this 3-byte untransformed body:
+The handler reads a `u16be` challenge from the incoming `SRequestCRC`, then emits this 3-byte untransformed body:
 
 | Offset | Type | Meaning |
 |---:|---|---|
@@ -23,4 +23,4 @@ The handler reads a `u16be` challenge from the incoming `SRequestCRCPacket`, the
 | 1 | `u16be` | CRC-16 reply |
 
 - The reply starts with CRC state zero and applies `net_crc16_update` at `0x5B8F30` first to the challenge's low byte, then to its high byte.
-- This local request/reply path confirms the leaked internal name `CReplyCRCPacket`; the earlier behavioral label `Heartbeat` described when it occurs, not what the packet class does.
+- This local request/reply path confirms the leaked internal name `CReplyCRC`; the earlier behavioral label `Heartbeat` described when it occurs, not what the packet class does.

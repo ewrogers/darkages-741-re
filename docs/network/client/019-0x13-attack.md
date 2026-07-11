@@ -1,7 +1,7 @@
-# 019 / 0x13: CAttackPacket
+# 019 / 0x13: Attack (`CAttack`)
 
 - Direction: client to server
-- Internal packet name: `CAttackPacket`
+- Internal name: `CAttack`
 - Local behavioral alias: `Assail`
 - Related-game enum name: `Attack`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

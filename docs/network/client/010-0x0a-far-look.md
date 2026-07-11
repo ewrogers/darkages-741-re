@@ -1,7 +1,7 @@
-# 010 / 0x0a: CFarLookPacket?
+# 010 / 0x0a: Far Look (`CFarLook?`)
 
 - Direction: client to server
-- Internal packet name: `CFarLookPacket?`
+- Internal name: `CFarLook?`
 - Local behavioral alias: `FarLook / LookTile`
 - Related-game enum name: `FarLook`
 - Name provenance: Related-game internal enum name `FarLook` at the same opcode; local builder confirmation is still missing, so the C++ class spelling remains reconstructed.

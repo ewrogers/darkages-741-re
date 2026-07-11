@@ -4,7 +4,7 @@ Most small configuration files are ordinary text. The confirmed transforms are l
 
 ## `Darkages.cfg`
 
-`config_read_settings_file` (`0x432660`) reads `Darkages.cfg` as plain text with labels such as `Version`, `Port`, `Speed`, `KeyBoard`, `Sound Volume`, and `Music Volume`. The version field is a configuration schema revision, not the network version reported by `CVersionPacket`.
+`config_read_settings_file` (`0x432660`) reads `Darkages.cfg` as plain text with labels such as `Version`, `Port`, `Speed`, `KeyBoard`, `Sound Volume`, and `Music Volume`. The version field is a configuration schema revision, not the network version reported by `CVersion`.
 
 No descrambler is used for this file.
 

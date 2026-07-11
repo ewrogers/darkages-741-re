@@ -1,7 +1,7 @@
-# 011 / 0x0b: CQuitPacket
+# 011 / 0x0b: Quit (`CQuit`)
 
 - Direction: client to server
-- Internal packet name: `CQuitPacket`
+- Internal name: `CQuit`
 - Local behavioral alias: `RequestExit`
 - Related-game enum name: `Quit`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

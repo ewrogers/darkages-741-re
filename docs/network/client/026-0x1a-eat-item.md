@@ -1,7 +1,7 @@
-# 026 / 0x1a: CEatItemPacket?
+# 026 / 0x1a: Eat Item (`CEatItem?`)
 
 - Direction: client to server
-- Internal packet name: `CEatItemPacket?`
+- Internal name: `CEatItem?`
 - Local behavioral alias: `EatItem`
 - Name provenance: Internal-style local name inferred from this client's behavior; no exact leaked class match is known yet.
 - Evidence: user-researched local command; fixed builder call site not yet isolated

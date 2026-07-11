@@ -1,6 +1,6 @@
 # Client installation identifier
 
-The client creates a random 32-bit installation identifier, derives a related 16-bit check value, and stores both under disguised `CLSID` registry values. `CLoginPacket` sends obfuscated forms of both values plus a random nonce and integrity value.
+The client creates a random 32-bit installation identifier, derives a related 16-bit check value, and stores both under disguised `CLSID` registry values. `CLogin` sends obfuscated forms of both values plus a random nonce and integrity value.
 
 The registry values are installation fingerprints. They are not the `SBadGuy` kill-switch flag, which is based on marker-file existence.
 
@@ -68,9 +68,9 @@ When reading an existing value, the client repeats those four XOR operations and
 
 If the secondary value remains invalid after an attempted write, the client keeps the freshly derived 16-bit value in memory for that process.
 
-The client checks registry API success, type, and nonzero value. It does not compare an existing decoded secondary value with a freshly derived value. A server can perform that relationship check after recovering both values from `CLoginPacket`, but server-side validation is not visible in this binary.
+The client checks registry API success, type, and nonzero value. It does not compare an existing decoded secondary value with a freshly derived value. A server can perform that relationship check after recovering both values from `CLogin`, but server-side validation is not visible in this binary.
 
-## CLoginPacket encoding
+## CLogin encoding
 
 `net_send_c_login` at `0x4BAA80` builds the following plaintext body before the normal packet transform:
 

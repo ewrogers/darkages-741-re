@@ -7,6 +7,7 @@ These notes document the version-741 client and its packet-processing behavior.
 - [Client startup and subsystem order](client/startup.md)
 - [File formats, transforms, and compression](file-formats/README.md)
 - [User interface layouts, runtime, and pane classes](ui/README.md)
+- [Objects, view range, refresh, and self-player initialization](objects/README.md)
 - [Endpoint resolution and fallback order](network/endpoint-resolution.md)
 - [Client receive pipeline](client/network-receive.md)
 - [Client send pipeline](client/network-send.md)
@@ -15,7 +16,7 @@ These notes document the version-741 client and its packet-processing behavior.
 - [Server packet registry](network/server/README.md)
 - [Client packet send index](network/client/README.md)
 
-SPacket names come from Microsoft Visual C++ RTTI in this client. CPacket documentation combines leaked registered class names with user-provided related-engine terminology. The version-741 builders and callers remain authoritative. Each page records its provenance. A trailing `?` marks a reconstructed C++ class spelling, even when a related-engine symbol provides strong terminology evidence.
+SPacket names come from Microsoft Visual C++ RTTI in this client. CPacket documentation combines leaked registered class names with user-provided related-engine terminology. Concrete names omit the redundant class suffix, so the docs use forms such as `SUserPosition` and `CVersion`. The generic terms `SPacket` and `CPacket` remain unchanged. The version-741 builders and callers remain authoritative. Each page records its provenance. A trailing `?` marks a reconstructed C++ class spelling, even when a related-engine symbol provides strong terminology evidence.
 
 ## Address convention
 

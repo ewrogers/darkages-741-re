@@ -1,7 +1,7 @@
-# 045 / 0x2d: CSelfLookPacket
+# 045 / 0x2d: Self Look (`CSelfLook`)
 
 - Direction: client to server
-- Internal packet name: `CSelfLookPacket`
+- Internal name: `CSelfLook`
 - Local behavioral alias: `RequestProfile`
 - Related-game enum name: `SelfLook`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.

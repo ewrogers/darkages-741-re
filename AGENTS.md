@@ -109,6 +109,7 @@ After connecting, verify the session with a small read-only request such as look
 - `docs/network/`: combined opcode index plus client and server packet pages
 - `docs/security/`: anti-abuse, installation identity, and deliberate termination behavior
 - `docs/ui/`: UI layout grammar, loading, input, rendering, and pane classes
+- `docs/objects/`: dynamic object classes, lifecycle, view range, runtime fields, and self-player initialization
 - `ida/README.md`: IDA naming and sharing notes
 - `ida/exports/functions.yaml`: version-controlled friendly IDA names and signatures
 - `ida/exports/ui-pane-classes.yaml`: version-controlled pane RTTI, layout, and usage export
@@ -189,6 +190,8 @@ Do not present a static IDA address as a stable runtime address without explaini
 ## Packet documentation
 
 `SPacket` means server-to-client. `CPacket` means client-to-server.
+
+Use `SPacket` and `CPacket` only as generic direction terms. Concrete display names omit the redundant `Packet` suffix, even when the original RTTI or leaked template included it. Write `SUserPosition`, `CVersion`, and `CRefresh`, not their suffixed forms. Packet page and navigation titles use the friendly name followed by the concrete class name, such as `User Position (SUserPosition)` or `Version (CVersion)`.
 
 Packet filenames use a zero-padded decimal prefix followed by lowercase hexadecimal:
 

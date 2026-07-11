@@ -1,7 +1,7 @@
-# 053 / 0x35: SShowPaper
+# 053 / 0x35: Show Paper (`SShowPaper`)
 
 - Direction: server to client
-- Internal packet name: `SShowPaper`
+- Internal name: `SShowPaper`
 - Name provenance: user-provided internal name, independently confirmed by this client's read-only paper UI and close paths
 - Receive handling: default derived-key transform, followed by a manual raw-body handler
 - RTTI factory: none in the recovered 61-entry game registry

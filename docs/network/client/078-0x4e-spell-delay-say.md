@@ -1,7 +1,7 @@
-# 078 / 0x4e: CSpellDelaySayPacket?
+# 078 / 0x4e: Spell Delay Say (`CSpellDelaySay?`)
 
 - Direction: client to server
-- Internal packet name: `CSpellDelaySayPacket?`
+- Internal name: `CSpellDelaySay?`
 - Local behavioral alias: `SpellDelaySay / SpellChant`
 - Related-game enum name: `SpellDelaySay`
 - Name provenance: Related-game internal enum name `SpellDelaySay` at the same opcode is corroborated by this client's length-prefixed chant text; the C++ class spelling remains reconstructed.

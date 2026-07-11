@@ -1,7 +1,7 @@
-# 067 / 0x43: CObjectInfoRequestPacket
+# 067 / 0x43: Object Info Request (`CObjectInfoRequest`)
 
 - Direction: client to server
-- Internal packet name: `CObjectInfoRequestPacket`
+- Internal name: `CObjectInfoRequest`
 - Local behavioral alias: `Interact`
 - Related-game enum name: `RequestBubbleInfo`
 - Name provenance: Leaked company/engine class name corroborated by this client's opcode and local behavior.
