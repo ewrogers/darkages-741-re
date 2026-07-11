@@ -1,0 +1,80 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "docs/**"
+      - "ida/exports/**"
+      - "tools/check_docs.py"
+      - "tools/render_function_report.py"
+      - "book.toml"
+      - "requirements-docs.txt"
+      - "README.md"
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install mdBook
+        env:
+          MDBOOK_VERSION: 0.5.4
+        run: |
+          curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error \
+            "https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
+            --output mdbook.tar.gz
+          tar -xzf mdbook.tar.gz
+          chmod +x mdbook
+          echo "$PWD" >> "$GITHUB_PATH"
+
+      - name: Install documentation dependencies
+        run: python3 -m pip install --disable-pip-version-check -r requirements-docs.txt
+
+      - name: Check documentation conventions
+        run: |
+          python3 tools/render_function_report.py --check
+          python3 tools/check_docs.py
+
+      - name: Build mdBook
+        run: mdbook build
+
+      - name: Configure GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+
+      - name: Upload GitHub Pages artifact
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./book
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

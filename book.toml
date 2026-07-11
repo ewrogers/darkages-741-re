@@ -1,0 +1,26 @@
+[book]
+title = "Dark Ages RE 741"
+authors = ["Erik Rogers", "Dark Ages RE contributors"]
+description = "Reverse-engineering notes for the Dark Ages version-741 client."
+language = "en"
+src = "docs"
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+site-url = "/darkages-re-741/"
+default-theme = "navy"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/ewrogers/darkages-re-741"
+git-repository-icon = "fab-github"
+edit-url-template = "https://github.com/ewrogers/darkages-re-741/edit/main/docs/{path}"
+no-section-label = true
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.search]
+enable = true

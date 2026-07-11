@@ -1,0 +1,19 @@
+* text=auto
+
+*.md text eol=lf
+*.cs text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+*.i64 binary
+*.idb binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pcap binary
+*.pcapng binary

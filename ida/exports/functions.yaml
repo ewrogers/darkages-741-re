@@ -1,0 +1,1413 @@
+schema_version: 1
+target:
+  file: Darkages.exe
+  reported_version: 741
+  size: 3112960
+  sha256: 054A5D6ADC56099C6BFD9D2A58675AFF62DC788B63209A3D906492F5B89E96C6
+  preferred_image_base: "0x400000"
+export:
+  scope: Friendly snake_case names with net_, ui_, or config_ prefixes
+  signature_source: IDA type information
+  total_database_functions: 11583
+  exported_functions: 350
+functions:
+  - name: config_client_settings_ctor
+    address: "0x431ff0"
+    size: "0x30a"
+    signature: "void *__thiscall(void *this, const char *filename)"
+  - name: config_derive_install_id_checksum16
+    address: "0x436e10"
+    size: "0xd3"
+    signature: "unsigned __int16 __cdecl(unsigned int install_id)"
+  - name: config_detect_bad_guy_marker
+    address: "0x431ed0"
+    size: "0xd6"
+    signature: "void __cdecl(void *config)"
+  - name: config_init_dark_ages_endpoint_and_install_ids
+    address: "0x433380"
+    size: "0x49b"
+    signature: "void __thiscall(void *this)"
+  - name: config_read_settings_file
+    address: "0x432660"
+    size: "0x6f6"
+    signature: null
+  - name: config_write_settings_file
+    address: "0x432340"
+    size: "0x319"
+    signature: null
+  - name: net_advance_spell_delay_say_sequence
+    address: "0x49b870"
+    size: "0x90"
+    signature: "char __thiscall(int this, int, int, int)"
+  - name: net_build_c_spell_delay_say_step
+    address: "0x49bb40"
+    size: "0x1a1"
+    signature: "size_t __fastcall(size_t, int, unsigned __int8)"
+  - name: net_build_packet_key_table
+    address: "0x5684b0"
+    size: "0x8d"
+    signature: "int __stdcall(char *Str)"
+  - name: net_build_packet_salt_table
+    address: "0x568650"
+    size: "0x1ee"
+    signature: null
+  - name: net_calculate_c_login_checksum16
+    address: "0x4bcad0"
+    size: "0x5c"
+    signature: "unsigned __int16 __cdecl(const unsigned __int8 *data, int length)"
+  - name: net_calculate_dialog_crc16
+    address: "0x568870"
+    size: "0x5c"
+    signature: "__int16 __cdecl(int, int)"
+  - name: net_calculate_map_crc16
+    address: "0x5b9180"
+    size: "0x176"
+    signature: "int __thiscall(_DWORD)"
+  - name: net_connect_and_initialize_transport
+    address: "0x565210"
+    size: "0x172f"
+    signature: null
+  - name: net_crc16_update
+    address: "0x5b8f30"
+    size: "0x28"
+    signature: "int __cdecl(unsigned __int8, unsigned __int16)"
+  - name: net_create_s_action_delay
+    address: "0x5970e0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_add_equip
+    address: "0x597210"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_add_inventory
+    address: "0x597380"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_add_skill
+    address: "0x597510"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_add_spell
+    address: "0x597640"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_add_user
+    address: "0x5977b0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_advertisement
+    address: "0x5978b0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_bad_guy
+    address: "0x597a10"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_block_input
+    address: "0x597b40"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_bounce
+    address: "0x597c70"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_browser
+    address: "0x597da0"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_change_direction
+    address: "0x597f30"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_change_hour
+    address: "0x598050"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_change_weather
+    address: "0x598160"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_check_time
+    address: "0x598270"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_damage_effect
+    address: "0x598380"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_draw_human_objects
+    address: "0x5984c0"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_draw_objects
+    address: "0x5989c0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_effect_layer
+    address: "0x598d30"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_exchange
+    address: "0x598ed0"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_family_name
+    address: "0x599100"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_field_map
+    address: "0x599210"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_group
+    address: "0x599440"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_item_shop
+    address: "0x599640"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_level_point
+    address: "0x599940"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_manual
+    address: "0x599a60"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_map
+    address: "0x599c60"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_map_part
+    address: "0x599dc0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_map_size
+    address: "0x599ee0"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_message
+    address: "0x59a050"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_mini_game
+    address: "0x59a1c0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_motion
+    address: "0x59a370"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_move
+    address: "0x59a4a0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_move_object
+    address: "0x59a600"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_multi
+    address: "0x59a740"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_num_users
+    address: "0x59a870"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_pursuit_message
+    address: "0x59a980"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_quit
+    address: "0x59aca0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_remove_equip
+    address: "0x59adb0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_remove_inventory
+    address: "0x59aec0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_remove_objects
+    address: "0x59afd0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_remove_skill
+    address: "0x59b0e0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_remove_spell
+    address: "0x59b1f0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_request_crc
+    address: "0x59b300"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_request_portrait
+    address: "0x59b410"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_say
+    address: "0x59b510"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_screen_menu
+    address: "0x59b640"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_screen_shot
+    address: "0x59b8b0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_self_look
+    address: "0x59b9c0"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_self_save_ok
+    address: "0x59bd80"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_sound_effect
+    address: "0x59be80"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_spell_delay_cancel
+    address: "0x59bfc0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_spelled
+    address: "0x59c0c0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_static_object_state
+    address: "0x59c1e0"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_status
+    address: "0x59c360"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_stipulation
+    address: "0x59c830"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_transfer_server
+    address: "0x59c990"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_user_appearance
+    address: "0x59cac0"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_user_position
+    address: "0x59cc20"
+    size: "0x74"
+    signature: null
+  - name: net_create_s_web_board
+    address: "0x59cd40"
+    size: "0x77"
+    signature: null
+  - name: net_create_s_window_change
+    address: "0x59cf50"
+    size: "0x74"
+    signature: null
+  - name: net_create_server_packet_by_opcode
+    address: "0x596780"
+    size: "0x5b"
+    signature: null
+  - name: net_decrypt_server_packet_body
+    address: "0x567de0"
+    size: "0x1cc"
+    signature: null
+  - name: net_derive_packet_key
+    address: "0x568540"
+    size: "0x10d"
+    signature: null
+  - name: net_deserialize_server_packet
+    address: "0x5963f0"
+    size: "0xcb"
+    signature: null
+  - name: net_disconnect_transport
+    address: "0x5647d0"
+    size: "0x96"
+    signature: "void __thiscall(int this, int, __int16)"
+  - name: net_dispatch_communications_event
+    address: "0x5643d0"
+    size: "0x154"
+    signature: "void __thiscall(_BYTE *this, int, char *, void *)"
+  - name: net_dispatch_game_server_message
+    address: "0x5ed990"
+    size: "0x7fd"
+    signature: "char __thiscall(_DWORD *this, int)"
+  - name: net_dispatch_message_to_active_client
+    address: "0x464f40"
+    size: "0xdf"
+    signature: null
+  - name: net_dispatch_or_queue_received_message
+    address: "0x4670f0"
+    size: "0x3b"
+    signature: "int __stdcall(void *Src)"
+  - name: net_dispatch_received_message
+    address: "0x4647c0"
+    size: "0x40e"
+    signature: null
+  - name: net_encrypt_client_packet_body
+    address: "0x567fb0"
+    size: "0x271"
+    signature: "int __stdcall(char *, int, char *Src, char)"
+  - name: net_enqueue_communications_event
+    address: "0x586210"
+    size: "0x56"
+    signature: "BOOL __thiscall(HANDLE *this, int, int, int)"
+  - name: net_handle_s_bad_guy
+    address: "0x5f7900"
+    size: "0x195"
+    signature: "char __thiscall(void *this, void *packet)"
+  - name: net_handle_s_enter_editing_mode
+    address: "0x5f71c0"
+    size: "0x87"
+    signature: null
+  - name: net_handle_s_request_crc
+    address: "0x5f2cf0"
+    size: "0xe4"
+    signature: "char __stdcall(int)"
+  - name: net_handle_s_show_paper
+    address: "0x5f7250"
+    size: "0x87"
+    signature: "char __stdcall(int)"
+  - name: net_handle_s_transfer_server_packet
+    address: "0x4b9510"
+    size: "0x162"
+    signature: "char __stdcall(int)"
+  - name: net_handle_s_version_check_raw
+    address: "0x4b7f80"
+    size: "0x494"
+    signature: null
+  - name: net_init_s_action_delay_factory
+    address: "0x667a40"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_add_equip_factory
+    address: "0x667a60"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_add_inventory_factory
+    address: "0x667a80"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_add_skill_factory
+    address: "0x667aa0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_add_spell_factory
+    address: "0x667ac0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_add_user_factory
+    address: "0x667ae0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_advertisement_factory
+    address: "0x667b00"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_bad_guy_factory
+    address: "0x667b20"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_block_input_factory
+    address: "0x667b40"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_bounce_factory
+    address: "0x667b60"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_browser_factory
+    address: "0x667b80"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_change_direction_factory
+    address: "0x667ba0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_change_hour_factory
+    address: "0x667bc0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_change_weather_factory
+    address: "0x667be0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_check_time_factory
+    address: "0x667c00"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_damage_effect_factory
+    address: "0x667c20"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_draw_human_objects_factory
+    address: "0x667c40"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_draw_objects_factory
+    address: "0x667c60"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_effect_layer_factory
+    address: "0x667c80"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_exchange_factory
+    address: "0x667ca0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_family_name_factory
+    address: "0x667cc0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_field_map_factory
+    address: "0x667ce0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_group_factory
+    address: "0x667d00"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_item_shop_factory
+    address: "0x667d20"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_level_point_factory
+    address: "0x667d40"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_manual_factory
+    address: "0x667d60"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_map_factory
+    address: "0x667d80"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_map_part_factory
+    address: "0x667da0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_map_size_factory
+    address: "0x667dc0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_message_factory
+    address: "0x667de0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_mini_game_factory
+    address: "0x667e00"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_motion_factory
+    address: "0x667e20"
+    size: "0x19"
+    signature: "int()"
+  - name: net_init_s_move_factory
+    address: "0x667e40"
+    size: "0x19"
+    signature: "int()"
+  - name: net_init_s_move_object_factory
+    address: "0x667e60"
+    size: "0x19"
+    signature: "int()"
+  - name: net_init_s_multi_factory
+    address: "0x667e80"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_num_users_factory
+    address: "0x667ea0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_pursuit_message_factory
+    address: "0x667ec0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_quit_factory
+    address: "0x667ee0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_remove_equip_factory
+    address: "0x667f00"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_remove_inventory_factory
+    address: "0x667f20"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_remove_objects_factory
+    address: "0x667f40"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_remove_skill_factory
+    address: "0x667f60"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_remove_spell_factory
+    address: "0x667f80"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_request_crc_factory
+    address: "0x667fa0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_request_portrait_factory
+    address: "0x667fc0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_say_factory
+    address: "0x667fe0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_screen_menu_factory
+    address: "0x668000"
+    size: "0x19"
+    signature: "int()"
+  - name: net_init_s_screen_shot_factory
+    address: "0x668020"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_self_look_factory
+    address: "0x668040"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_self_save_ok_factory
+    address: "0x668060"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_sound_effect_factory
+    address: "0x668080"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_spell_delay_cancel_factory
+    address: "0x6680a0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_spelled_factory
+    address: "0x6680c0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_static_object_state_factory
+    address: "0x6680e0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_status_factory
+    address: "0x668100"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_stipulation_factory
+    address: "0x668120"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_transfer_server_factory
+    address: "0x668140"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_user_appearance_factory
+    address: "0x668160"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_user_position_factory
+    address: "0x668180"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_web_board_factory
+    address: "0x6681a0"
+    size: "0x19"
+    signature: null
+  - name: net_init_s_window_change_factory
+    address: "0x6681c0"
+    size: "0x19"
+    signature: null
+  - name: net_invoke_packet_factory
+    address: "0x54ed50"
+    size: "0x20"
+    signature: null
+  - name: net_maybe_build_c_profile_packet
+    address: "0x54ce10"
+    size: "0x755"
+    signature: "void *__cdecl(_DWORD *)"
+  - name: net_md5_bytes_to_hex
+    address: "0x4c7cd0"
+    size: "0xa7"
+    signature: null
+  - name: net_md5_digest
+    address: "0x4c7e30"
+    size: "0x41"
+    signature: "int __cdecl(void *Src, int)"
+  - name: net_md5_hex
+    address: "0x4c7d80"
+    size: "0x59"
+    signature: "int __cdecl(char *Str)"
+  - name: net_packet_factory_registry_ctor
+    address: "0x596610"
+    size: "0xa2"
+    signature: null
+  - name: net_packet_factory_registry_dtor
+    address: "0x5966c0"
+    size: "0x6f"
+    signature: null
+  - name: net_packet_reader_advance
+    address: "0x595ee0"
+    size: "0x1c"
+    signature: null
+  - name: net_packet_reader_current_ptr
+    address: "0x595e50"
+    size: "0x17"
+    signature: null
+  - name: net_packet_reader_init
+    address: "0x595bf0"
+    size: "0x29"
+    signature: null
+  - name: net_packet_reader_init_from_remaining
+    address: "0x595e90"
+    size: "0x27"
+    signature: null
+  - name: net_packet_reader_read_bytes
+    address: "0x595d20"
+    size: "0x3e"
+    signature: "int __thiscall(_DWORD *this, void *, int Size)"
+  - name: net_packet_reader_read_u16_be
+    address: "0x595c60"
+    size: "0x34"
+    signature: "__int16 __thiscall(_DWORD *this)"
+  - name: net_packet_reader_read_u16_sized_bytes
+    address: "0x595dc0"
+    size: "0x30"
+    signature: "int __stdcall(void *)"
+  - name: net_packet_reader_read_u24_be
+    address: "0x595ca0"
+    size: "0x32"
+    signature: null
+  - name: net_packet_reader_read_u32_be
+    address: "0x595ce0"
+    size: "0x32"
+    signature: "int __thiscall(_DWORD *this)"
+  - name: net_packet_reader_read_u8
+    address: "0x595c20"
+    size: "0x32"
+    signature: "int __thiscall(_DWORD)"
+  - name: net_packet_reader_read_u8_sized_bytes
+    address: "0x595d90"
+    size: "0x30"
+    signature: "size_t __thiscall(_DWORD *this, void *)"
+  - name: net_packet_reader_read_u8_string
+    address: "0x595df0"
+    size: "0x2a"
+    signature: "int __stdcall(void *)"
+  - name: net_packet_reader_remaining_size
+    address: "0x595e70"
+    size: "0x17"
+    signature: "int __thiscall(_DWORD *this)"
+  - name: net_packet_reader_rewind
+    address: "0x595ec0"
+    size: "0x15"
+    signature: null
+  - name: net_packet_reader_take_view
+    address: "0x595d60"
+    size: "0x29"
+    signature: null
+  - name: net_parse_s_enter_editing_mode_payload
+    address: "0x54a530"
+    size: "0x14f"
+    signature: null
+  - name: net_parse_s_show_paper_payload
+    address: "0x54a680"
+    size: "0x14f"
+    signature: "int __thiscall(_WORD *this, int)"
+  - name: net_poll_receive
+    address: "0x564300"
+    size: "0xc8"
+    signature: null
+  - name: net_process_incoming_transport_data
+    address: "0x564870"
+    size: "0x2c"
+    signature: "int __thiscall(_DWORD, _DWORD)"
+  - name: net_queue_received_packet_bytes
+    address: "0x467060"
+    size: "0x67"
+    signature: "int __stdcall(void *Src, size_t Size)"
+  - name: net_queue_set_packet_salt_seed
+    address: "0x568380"
+    size: "0x1d"
+    signature: null
+  - name: net_queue_set_primary_packet_key
+    address: "0x5683a0"
+    size: "0x4c"
+    signature: "int __stdcall(size_t Size, void *Src)"
+  - name: net_read_u16_be
+    address: "0x564270"
+    size: "0x17"
+    signature: null
+  - name: net_read_u24_be
+    address: "0x564290"
+    size: "0x26"
+    signature: null
+  - name: net_read_u32_be
+    address: "0x5642c0"
+    size: "0x38"
+    signature: null
+  - name: net_receive_binary_framed_data
+    address: "0x567070"
+    size: "0x707"
+    signature: null
+  - name: net_receive_legacy_framed_data
+    address: "0x566e00"
+    size: "0x26b"
+    signature: null
+  - name: net_register_server_packet_factories
+    address: "0x595f00"
+    size: "0x422"
+    signature: null
+  - name: net_register_server_packet_factory
+    address: "0x596730"
+    size: "0x4e"
+    signature: null
+  - name: net_release_server_packet
+    address: "0x5964c0"
+    size: "0x85"
+    signature: null
+  - name: net_reset_client_packet_sequence
+    address: "0x563de0"
+    size: "0x12"
+    signature: "int __thiscall(_DWORD)"
+  - name: net_s_action_delay_ctor
+    address: "0x597160"
+    size: "0x21"
+    signature: null
+  - name: net_s_action_delay_deserialize
+    address: "0x597190"
+    size: "0x37"
+    signature: null
+  - name: net_s_add_equip_ctor
+    address: "0x597290"
+    size: "0x21"
+    signature: null
+  - name: net_s_add_equip_deserialize
+    address: "0x5972c0"
+    size: "0x7e"
+    signature: null
+  - name: net_s_add_inventory_ctor
+    address: "0x597400"
+    size: "0x21"
+    signature: null
+  - name: net_s_add_inventory_deserialize
+    address: "0x597430"
+    size: "0x91"
+    signature: null
+  - name: net_s_add_skill_ctor
+    address: "0x597590"
+    size: "0x21"
+    signature: null
+  - name: net_s_add_skill_deserialize
+    address: "0x5975c0"
+    size: "0x3f"
+    signature: null
+  - name: net_s_add_spell_ctor
+    address: "0x5976c0"
+    size: "0x21"
+    signature: null
+  - name: net_s_add_spell_deserialize
+    address: "0x5976f0"
+    size: "0x7c"
+    signature: null
+  - name: net_s_add_user_ctor
+    address: "0x597830"
+    size: "0x21"
+    signature: null
+  - name: net_s_add_user_deserialize
+    address: "0x597860"
+    size: "0xd"
+    signature: null
+  - name: net_s_advertisement_ctor
+    address: "0x597930"
+    size: "0x21"
+    signature: null
+  - name: net_s_advertisement_deserialize
+    address: "0x597960"
+    size: "0x66"
+    signature: null
+  - name: net_s_bad_guy_ctor
+    address: "0x597a90"
+    size: "0x21"
+    signature: null
+  - name: net_s_bad_guy_deserialize
+    address: "0x597ac0"
+    size: "0x37"
+    signature: null
+  - name: net_s_block_input_ctor
+    address: "0x597bc0"
+    size: "0x21"
+    signature: null
+  - name: net_s_block_input_deserialize
+    address: "0x597bf0"
+    size: "0x34"
+    signature: null
+  - name: net_s_bounce_ctor
+    address: "0x597cf0"
+    size: "0x21"
+    signature: null
+  - name: net_s_bounce_deserialize
+    address: "0x597d20"
+    size: "0x33"
+    signature: null
+  - name: net_s_browser_ctor
+    address: "0x597e20"
+    size: "0x21"
+    signature: null
+  - name: net_s_browser_deserialize
+    address: "0x597e50"
+    size: "0x9a"
+    signature: null
+  - name: net_s_change_direction_ctor
+    address: "0x597fb0"
+    size: "0x21"
+    signature: null
+  - name: net_s_change_direction_deserialize
+    address: "0x597fe0"
+    size: "0x29"
+    signature: null
+  - name: net_s_change_hour_ctor
+    address: "0x5980d0"
+    size: "0x21"
+    signature: null
+  - name: net_s_change_hour_deserialize
+    address: "0x598100"
+    size: "0x1b"
+    signature: null
+  - name: net_s_change_weather_ctor
+    address: "0x5981e0"
+    size: "0x21"
+    signature: null
+  - name: net_s_change_weather_deserialize
+    address: "0x598210"
+    size: "0x1b"
+    signature: null
+  - name: net_s_check_time_ctor
+    address: "0x5982f0"
+    size: "0x21"
+    signature: null
+  - name: net_s_check_time_deserialize
+    address: "0x598320"
+    size: "0x1b"
+    signature: null
+  - name: net_s_damage_effect_ctor
+    address: "0x598400"
+    size: "0x21"
+    signature: null
+  - name: net_s_damage_effect_deserialize
+    address: "0x598430"
+    size: "0x45"
+    signature: null
+  - name: net_s_draw_human_objects_ctor
+    address: "0x598540"
+    size: "0x21"
+    signature: null
+  - name: net_s_draw_human_objects_deserialize
+    address: "0x598570"
+    size: "0x3e7"
+    signature: null
+  - name: net_s_draw_objects_ctor
+    address: "0x598a40"
+    size: "0x64"
+    signature: null
+  - name: net_s_draw_objects_deserialize
+    address: "0x598ab0"
+    size: "0x5b"
+    signature: null
+  - name: net_s_effect_layer_ctor
+    address: "0x598db0"
+    size: "0x21"
+    signature: null
+  - name: net_s_effect_layer_deserialize
+    address: "0x598de0"
+    size: "0xa9"
+    signature: null
+  - name: net_s_exchange_ctor
+    address: "0x598f50"
+    size: "0x21"
+    signature: null
+  - name: net_s_exchange_deserialize
+    address: "0x598f80"
+    size: "0x13b"
+    signature: null
+  - name: net_s_family_name_ctor
+    address: "0x599180"
+    size: "0x21"
+    signature: null
+  - name: net_s_family_name_deserialize
+    address: "0x5991b0"
+    size: "0x1c"
+    signature: null
+  - name: net_s_field_map_ctor
+    address: "0x599290"
+    size: "0x21"
+    signature: null
+  - name: net_s_field_map_deserialize
+    address: "0x5992c0"
+    size: "0x13f"
+    signature: null
+  - name: net_s_group_ctor
+    address: "0x5994c0"
+    size: "0x21"
+    signature: null
+  - name: net_s_group_deserialize
+    address: "0x5994f0"
+    size: "0x10b"
+    signature: null
+  - name: net_s_item_shop_ctor
+    address: "0x5996c0"
+    size: "0x6f"
+    signature: null
+  - name: net_s_item_shop_deserialize
+    address: "0x599730"
+    size: "0x4a"
+    signature: null
+  - name: net_s_level_point_ctor
+    address: "0x5999c0"
+    size: "0x21"
+    signature: null
+  - name: net_s_level_point_deserialize
+    address: "0x5999f0"
+    size: "0x29"
+    signature: null
+  - name: net_s_manual_ctor
+    address: "0x599ae0"
+    size: "0x21"
+    signature: null
+  - name: net_s_manual_deserialize
+    address: "0x599b10"
+    size: "0x104"
+    signature: null
+  - name: net_s_map_ctor
+    address: "0x599ce0"
+    size: "0x21"
+    signature: null
+  - name: net_s_map_deserialize
+    address: "0x599d10"
+    size: "0x67"
+    signature: null
+  - name: net_s_map_part_ctor
+    address: "0x599e40"
+    size: "0x21"
+    signature: null
+  - name: net_s_map_part_deserialize
+    address: "0x599e70"
+    size: "0x2a"
+    signature: null
+  - name: net_s_map_size_ctor
+    address: "0x599f60"
+    size: "0x21"
+    signature: null
+  - name: net_s_map_size_deserialize
+    address: "0x599f90"
+    size: "0x71"
+    signature: null
+  - name: net_s_message_ctor
+    address: "0x59a0d0"
+    size: "0x21"
+    signature: null
+  - name: net_s_message_deserialize
+    address: "0x59a100"
+    size: "0x7e"
+    signature: null
+  - name: net_s_mini_game_ctor
+    address: "0x59a240"
+    size: "0x21"
+    signature: null
+  - name: net_s_mini_game_deserialize
+    address: "0x59a270"
+    size: "0xa2"
+    signature: null
+  - name: net_s_motion_ctor
+    address: "0x59a3f0"
+    size: "0x21"
+    signature: null
+  - name: net_s_motion_deserialize
+    address: "0x59a420"
+    size: "0x3b"
+    signature: null
+  - name: net_s_move_ctor
+    address: "0x59a520"
+    size: "0x21"
+    signature: null
+  - name: net_s_move_deserialize
+    address: "0x59a550"
+    size: "0x65"
+    signature: null
+  - name: net_s_move_object_ctor
+    address: "0x59a680"
+    size: "0x21"
+    signature: null
+  - name: net_s_move_object_deserialize
+    address: "0x59a6b0"
+    size: "0x47"
+    signature: null
+  - name: net_s_multi_ctor
+    address: "0x59a7c0"
+    size: "0x21"
+    signature: null
+  - name: net_s_multi_deserialize
+    address: "0x59a7f0"
+    size: "0x33"
+    signature: null
+  - name: net_s_num_users_ctor
+    address: "0x59a8f0"
+    size: "0x21"
+    signature: null
+  - name: net_s_num_users_deserialize
+    address: "0x59a920"
+    size: "0x1c"
+    signature: null
+  - name: net_s_pursuit_message_ctor
+    address: "0x59aa00"
+    size: "0x67"
+    signature: null
+  - name: net_s_pursuit_message_deserialize
+    address: "0x59aa70"
+    size: "0x186"
+    signature: null
+  - name: net_s_quit_ctor
+    address: "0x59ad20"
+    size: "0x21"
+    signature: null
+  - name: net_s_quit_deserialize
+    address: "0x59ad50"
+    size: "0x1b"
+    signature: null
+  - name: net_s_remove_equip_ctor
+    address: "0x59ae30"
+    size: "0x21"
+    signature: null
+  - name: net_s_remove_equip_deserialize
+    address: "0x59ae60"
+    size: "0x20"
+    signature: null
+  - name: net_s_remove_inventory_ctor
+    address: "0x59af40"
+    size: "0x21"
+    signature: null
+  - name: net_s_remove_inventory_deserialize
+    address: "0x59af70"
+    size: "0x1b"
+    signature: null
+  - name: net_s_remove_objects_ctor
+    address: "0x59b050"
+    size: "0x21"
+    signature: null
+  - name: net_s_remove_objects_deserialize
+    address: "0x59b080"
+    size: "0x1b"
+    signature: null
+  - name: net_s_remove_skill_ctor
+    address: "0x59b160"
+    size: "0x21"
+    signature: null
+  - name: net_s_remove_skill_deserialize
+    address: "0x59b190"
+    size: "0x1b"
+    signature: null
+  - name: net_s_remove_spell_ctor
+    address: "0x59b270"
+    size: "0x21"
+    signature: null
+  - name: net_s_remove_spell_deserialize
+    address: "0x59b2a0"
+    size: "0x1b"
+    signature: null
+  - name: net_s_request_crc_ctor
+    address: "0x59b380"
+    size: "0x21"
+    signature: null
+  - name: net_s_request_crc_deserialize
+    address: "0x59b3b0"
+    size: "0x1c"
+    signature: null
+  - name: net_s_request_portrait_ctor
+    address: "0x59b490"
+    size: "0x21"
+    signature: null
+  - name: net_s_request_portrait_deserialize
+    address: "0x59b4c0"
+    size: "0xd"
+    signature: null
+  - name: net_s_say_ctor
+    address: "0x59b590"
+    size: "0x21"
+    signature: null
+  - name: net_s_say_deserialize
+    address: "0x59b5c0"
+    size: "0x38"
+    signature: null
+  - name: net_s_screen_menu_ctor
+    address: "0x59b6c0"
+    size: "0x67"
+    signature: null
+  - name: net_s_screen_menu_deserialize
+    address: "0x59b730"
+    size: "0xe2"
+    signature: null
+  - name: net_s_screen_shot_ctor
+    address: "0x59b930"
+    size: "0x21"
+    signature: null
+  - name: net_s_screen_shot_deserialize
+    address: "0x59b960"
+    size: "0x1b"
+    signature: null
+  - name: net_s_self_look_ctor
+    address: "0x59ba40"
+    size: "0x21"
+    signature: null
+  - name: net_s_self_look_deserialize
+    address: "0x59ba70"
+    size: "0x2c4"
+    signature: null
+  - name: net_s_self_save_ok_ctor
+    address: "0x59be00"
+    size: "0x21"
+    signature: null
+  - name: net_s_self_save_ok_deserialize
+    address: "0x59be30"
+    size: "0xd"
+    signature: null
+  - name: net_s_sound_effect_ctor
+    address: "0x59bf00"
+    size: "0x21"
+    signature: null
+  - name: net_s_sound_effect_deserialize
+    address: "0x59bf30"
+    size: "0x4c"
+    signature: null
+  - name: net_s_spell_delay_cancel_ctor
+    address: "0x59c040"
+    size: "0x21"
+    signature: null
+  - name: net_s_spell_delay_cancel_deserialize
+    address: "0x59c070"
+    size: "0xd"
+    signature: null
+  - name: net_s_spelled_ctor
+    address: "0x59c140"
+    size: "0x21"
+    signature: null
+  - name: net_s_spelled_deserialize
+    address: "0x59c170"
+    size: "0x2a"
+    signature: null
+  - name: net_s_static_object_state_ctor
+    address: "0x59c260"
+    size: "0x21"
+    signature: null
+  - name: net_s_static_object_state_deserialize
+    address: "0x59c290"
+    size: "0x8d"
+    signature: null
+  - name: net_s_status_ctor
+    address: "0x59c3e0"
+    size: "0x21"
+    signature: null
+  - name: net_s_status_deserialize
+    address: "0x59c410"
+    size: "0x3dc"
+    signature: null
+  - name: net_s_stipulation_ctor
+    address: "0x59c8b0"
+    size: "0x21"
+    signature: null
+  - name: net_s_stipulation_deserialize
+    address: "0x59c8e0"
+    size: "0x68"
+    signature: null
+  - name: net_s_transfer_server_ctor
+    address: "0x59ca10"
+    size: "0x21"
+    signature: null
+  - name: net_s_transfer_server_deserialize
+    address: "0x59ca40"
+    size: "0x3f"
+    signature: null
+  - name: net_s_user_appearance_ctor
+    address: "0x59cb40"
+    size: "0x21"
+    signature: null
+  - name: net_s_user_appearance_deserialize
+    address: "0x59cb70"
+    size: "0x61"
+    signature: null
+  - name: net_s_user_position_ctor
+    address: "0x59cca0"
+    size: "0x21"
+    signature: null
+  - name: net_s_user_position_deserialize
+    address: "0x59ccd0"
+    size: "0x2b"
+    signature: null
+  - name: net_s_web_board_ctor
+    address: "0x59cdc0"
+    size: "0x21"
+    signature: null
+  - name: net_s_web_board_deserialize
+    address: "0x59cdf0"
+    size: "0x115"
+    signature: null
+  - name: net_s_window_change_ctor
+    address: "0x59cfd0"
+    size: "0x21"
+    signature: null
+  - name: net_s_window_change_deserialize
+    address: "0x59d000"
+    size: "0x1b"
+    signature: null
+  - name: net_send_c_add_stat
+    address: "0x5755c0"
+    size: "0xb5"
+    signature: "int __fastcall(int)"
+  - name: net_send_c_block_listen_action_1
+    address: "0x550aa0"
+    size: "0x80"
+    signature: "int()"
+  - name: net_send_c_block_listen_action_2
+    address: "0x550c60"
+    size: "0x136"
+    signature: "int __thiscall(void *this, const char *Src)"
+  - name: net_send_c_block_listen_action_3
+    address: "0x550ee0"
+    size: "0x136"
+    signature: "int __thiscall(void *this, const char *Src)"
+  - name: net_send_c_check_time
+    address: "0x5f7830"
+    size: "0xcc"
+    signature: "char __stdcall(int)"
+  - name: net_send_c_exit_editing_mode
+    address: "0x54a7d0"
+    size: "0x1d7"
+    signature: "int __thiscall(int this)"
+  - name: net_send_c_field_map_request
+    address: "0x430d30"
+    size: "0xe5"
+    signature: "int __stdcall(unsigned __int16, unsigned __int16, unsigned __int16)"
+  - name: net_send_c_field_map_selection
+    address: "0x476390"
+    size: "0xfc"
+    signature: "int __thiscall(int this)"
+  - name: net_send_c_give
+    address: "0x496d90"
+    size: "0xd6"
+    signature: "void __thiscall(unsigned __int8 *this, int, int)"
+  - name: net_send_c_login
+    address: "0x4baa80"
+    size: "0x5d3"
+    signature: "int __thiscall(void *this, const char *character_name, const char *password)"
+  - name: net_send_c_portrait
+    address: "0x5b1160"
+    size: "0x34"
+    signature: "char __stdcall(int)"
+  - name: net_send_c_request_family_name
+    address: "0x4719b0"
+    size: "0x6e"
+    signature: "int()"
+  - name: net_send_c_request_homepage
+    address: "0x4ba0c0"
+    size: "0x8c"
+    signature: "int()"
+  - name: net_send_c_spell_delay_request
+    address: "0x49bab0"
+    size: "0x82"
+    signature: "int __stdcall(char)"
+  - name: net_send_c_spell_delay_say
+    address: "0x499330"
+    size: "0xea"
+    signature: "size_t __thiscall(const char *this)"
+  - name: net_send_c_user_change_state
+    address: "0x5fc790"
+    size: "0x90"
+    signature: "int __thiscall(_DWORD *this, int)"
+  - name: net_send_client_packet
+    address: "0x5648a0"
+    size: "0x777"
+    signature: "int __thiscall(int this, char *, __int16)"
+  - name: net_set_primary_packet_key
+    address: "0x5683f0"
+    size: "0xbd"
+    signature: "int __stdcall(size_t Size, void *Src)"
+  - name: net_socket_ctor
+    address: "0x563910"
+    size: "0x342"
+    signature: "_DWORD *__thiscall(_DWORD *this, int)"
+  - name: net_socket_dtor
+    address: "0x563c60"
+    size: "0xc3"
+    signature: "int __thiscall(_DWORD *this)"
+  - name: net_socket_scalar_deleting_dtor
+    address: "0x5688d0"
+    size: "0x2c"
+    signature: "_DWORD *__thiscall(_DWORD *this, char)"
+  - name: net_submit_client_packet
+    address: "0x563e00"
+    size: "0x262"
+    signature: "int __thiscall(int this, char *Src, __int16)"
+  - name: net_transport_read_byte
+    address: "0x567870"
+    size: "0x2f2"
+    signature: "char __thiscall(int this, _BYTE *)"
+  - name: net_wrap_received_packet_message
+    address: "0x468220"
+    size: "0xbe"
+    signature: null
+  - name: net_write_c_packet_39_header
+    address: "0x52c1c0"
+    size: "0xa1"
+    signature: "__int16 __thiscall(int this, int, unsigned __int16)"
+  - name: net_write_c_packet_3a_header
+    address: "0x52c270"
+    size: "0xc7"
+    signature: "__int16 __thiscall(int this, int, unsigned __int16)"
+  - name: net_write_c_packet_54_header
+    address: "0x45d550"
+    size: "0x8c"
+    signature: "int __thiscall(_DWORD *this, int, unsigned __int8)"
+  - name: net_write_u16_be
+    address: "0x564160"
+    size: "0x32"
+    signature: "_BYTE *__cdecl(unsigned int, _BYTE *)"
+  - name: net_write_u24_be
+    address: "0x5641a0"
+    size: "0x4a"
+    signature: null
+  - name: net_write_u32_be
+    address: "0x5641f0"
+    size: "0x65"
+    signature: "_BYTE *__cdecl(unsigned int, _BYTE *)"
+  - name: net_write_u8
+    address: "0x564140"
+    size: "0x1d"
+    signature: "_BYTE *__cdecl(unsigned int, _BYTE *)"
+  - name: net_xor_packet_bytes
+    address: "0x568230"
+    size: "0x12a"
+    signature: "unsigned int __stdcall(int, unsigned int, unsigned int, int, int)"
+  - name: ui_dismiss_paper_window
+    address: "0x54a9f0"
+    size: "0x34"
+    signature: "int __thiscall(_DWORD, _DWORD)"
+  - name: ui_handle_paper_close_action
+    address: "0x54a9b0"
+    size: "0x39"
+    signature: "int __thiscall(_DWORD *this, int, int)"
+  - name: ui_open_paper_window
+    address: "0x54a470"
+    size: "0xb7"
+    signature: "_DWORD *__thiscall(_DWORD *this, int, int)"
