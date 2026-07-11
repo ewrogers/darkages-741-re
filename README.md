@@ -1,4 +1,4 @@
-# darkages-re-741
+# Dark Ages 7.41 Reverse Engineering
 
 Community reverse-engineering notes and tooling for the Dark Ages client that reports protocol/client version **741**.
 

@@ -1,4 +1,4 @@
-# Dark Ages protocol notes
+# Dark Ages 7.41 Reverse Engineering
 
 These notes document the version-741 client and its packet-processing behavior.
 
