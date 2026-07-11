@@ -139,6 +139,15 @@ classes:
   address: '0x6cc4d8'
   kind: concrete
   rtti: .?AVChatInputPane@@
+  category: public say and shout text input
+  functions:
+    constructor:
+      name: chat_input_pane_ctor
+      address: '0x54fca0'
+    submit:
+      name: chat_input_send_say
+      address: '0x54fd90'
+  confidence: confirmed by RTTI, vtable, key routing, and CSay construction
 - name: ChattingPane
   address: '0x6c4a2c'
   kind: concrete
@@ -321,6 +330,15 @@ classes:
   address: '0x6c6b10'
   kind: concrete
   rtti: .?AVGameMessagePane@@
+  category: upper-left colored message overlay
+  functions:
+    constructor:
+      name: chat_game_message_pane_ctor
+      address: '0x47c2a0'
+    append_rgb:
+      name: chat_game_message_pane_append_rgb
+      address: '0x47c5c0'
+  confidence: confirmed by RTTI, singleton registration, and SMessage routing
 - name: GiveGoldDialogPane
   address: '0x6c741c'
   kind: concrete
@@ -940,6 +958,15 @@ classes:
   address: '0x6cc600'
   kind: concrete
   rtti: .?AVScorePane@@
+  category: score text overlay and SMessage type 18 target
+  functions:
+    constructor:
+      name: ui_score_pane_ctor
+      address: '0x551260'
+    append_rgb:
+      name: ui_score_pane_append_rgb
+      address: '0x5516c0'
+  confidence: confirmed by RTTI, singleton registration, and SMessage type 18 routing
 - name: ScreenPane
   address: '0x6d104c'
   kind: concrete
@@ -1225,6 +1252,12 @@ classes:
   address: '0x6cc518'
   kind: concrete
   rtti: .?AVTellInputPane@@
+  category: private tell or whisper text input
+  functions:
+    submit:
+      name: chat_tell_input_send
+      address: '0x550590'
+  confidence: confirmed by RTTI, vtable, and CTell construction
 - name: TellReceiverInputPane
   address: '0x6cc4f4'
   kind: concrete
@@ -1317,10 +1350,22 @@ classes:
   address: '0x6c5bfc'
   kind: concrete
   rtti: .?AVWindowMessageDialogPane@@
+  category: SMessage look and message popup
+  functions:
+    constructor:
+      name: ui_window_message_dialog_ctor
+      address: '0x4488c0'
+  confidence: confirmed by RTTI, vtable, and SMessage type routing
 - name: World::BalloonPane
   address: '0x6d325c'
   kind: concrete
   rtti: .?AVBalloonPane@World@@
+  category: object-attached speech balloon
+  functions:
+    constructor:
+      name: chat_world_balloon_pane_ctor
+      address: '0x5c4f00'
+  confidence: confirmed by RTTI, vtable, and SSay routing
 - name: WorldControllerPane
   address: '0x6d327c'
   kind: concrete

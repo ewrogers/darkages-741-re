@@ -103,6 +103,7 @@ After connecting, verify the session with a small read-only request such as look
 
 - `docs/README.md`: documentation entry point
 - `docs/client/`: client implementation details, networking, crypto, and CRC
+- `docs/chat/`: chat input, speech balloons, message overlays, channel routing, and look popups
 - `docs/file-formats/`: archive, compression, configuration, NFO, profile, and table formats
 - `docs/functions/`: generated friendly function index and contribution guide
 - `docs/map/`: map loading, tile rendering, SOTP flags, and collision

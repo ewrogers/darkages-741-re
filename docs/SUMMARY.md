@@ -43,6 +43,12 @@
   - [Self-player initialization](objects/self-player.md)
   - [Runtime layout](objects/runtime-layout.md)
 
+# Chat and messages
+
+- [Chat and message display](chat/README.md)
+  - [Speech balloons and message routing](chat/receive-and-display.md)
+  - [Chat input and outgoing packets](chat/input-and-send.md)
+
 # User interface
 
 - [User interface](ui/README.md)

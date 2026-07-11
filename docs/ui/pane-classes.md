@@ -9,7 +9,7 @@ The machine-readable source is `ida/exports/ui-pane-classes.yaml`. Addresses are
 - RTTI records containing `Pane`: `302`
 - Concrete class records: `263`
 - Template and singleton wrapper records: `39`
-- Records with recovered layout or usage context: `16`
+- Records with recovered layout or usage context: `22`
 
 The wrapper records are useful. A `Singleton<T>` record is evidence that the engine manages one shared instance of `T`, but it is not a second pane implementation.
 
@@ -44,7 +44,7 @@ Layout associations are listed only when the local executable references that ar
 | `ButtonGroupViewPane` | `0x6cb0b4` | class | unknown | RTTI name only |
 | `ChangePasswordDialogPane` | `0x6c9c78` | class | `setoa.dat:_npw.txt` | password change dialog<br>constructor: ui_change_password_dialog_ctor at 0x4bb2a0 |
 | `CharInputPane` | `0x6cc558` | class | unknown | RTTI name only |
-| `ChatInputPane` | `0x6cc4d8` | class | unknown | RTTI name only |
+| `ChatInputPane` | `0x6cc4d8` | class | unknown | public say and shout text input<br>constructor: chat_input_pane_ctor at 0x54fca0<br>submit: chat_input_send_say at 0x54fd90 |
 | `ChattingPane` | `0x6c4a2c` | class | unknown | RTTI name only |
 | `ChattingPane2` | `0x6d2964` | class | unknown | RTTI name only |
 | `ChattingPaneInterface` | `0x6d28dc` | class | unknown | RTTI name only |
@@ -85,7 +85,7 @@ Layout associations are listed only when the local executable references that ar
 | `FishingDialogPane` | `0x6c6a90` | class | unknown | RTTI name only |
 | `FishingGetPane` | `0x6c6a70` | class | unknown | RTTI name only |
 | `FishingImpactPane` | `0x6c6a50` | class | unknown | RTTI name only |
-| `GameMessagePane` | `0x6c6b10` | class | unknown | RTTI name only |
+| `GameMessagePane` | `0x6c6b10` | class | unknown | upper-left colored message overlay<br>constructor: chat_game_message_pane_ctor at 0x47c2a0<br>append_rgb: chat_game_message_pane_append_rgb at 0x47c5c0 |
 | `GiveGoldDialogPane` | `0x6c741c` | class | unknown | RTTI name only |
 | `GroupAdDialogPane` | `0x6cb144` | class | unknown | RTTI name only |
 | `GroupAdInfoDialogPane` | `0x6cb1a0` | class | unknown | RTTI name only |
@@ -215,7 +215,7 @@ Layout associations are listed only when the local executable references that ar
 | `RopeSkipping::ResultPane` | `0x6cad64` | class | unknown | RTTI name only |
 | `RopeSkipping::SkipCountPane` | `0x6cac6c` | class | unknown | RTTI name only |
 | `RopeSkipping::TitlePane` | `0x6cac44` | class | unknown | RTTI name only |
-| `ScorePane` | `0x6cc600` | class | unknown | RTTI name only |
+| `ScorePane` | `0x6cc600` | class | unknown | score text overlay and SMessage type 18 target<br>constructor: ui_score_pane_ctor at 0x551260<br>append_rgb: ui_score_pane_append_rgb at 0x5516c0 |
 | `ScreenPane` | `0x6d104c` | class | unknown | RTTI name only |
 | `ScrollableControlPane` | `0x6c59c4` | class | unknown | RTTI name only |
 | `ScrollablePane` | `0x6c4688` | class | unknown | RTTI name only |
@@ -284,7 +284,7 @@ Layout associations are listed only when the local executable references that ar
 | `TabButtonPane` | `0x6cb10c` | class | unknown | RTTI name only |
 | `TabPane<LayeredImage>` | `0x6cb20c` | wrapper | unknown | RTTI name only |
 | `TaskListPane` | `0x6ca0cc` | class | unknown | RTTI name only |
-| `TellInputPane` | `0x6cc518` | class | unknown | RTTI name only |
+| `TellInputPane` | `0x6cc518` | class | unknown | private tell or whisper text input<br>submit: chat_tell_input_send at 0x550590 |
 | `TellReceiverInputPane` | `0x6cc4f4` | class | unknown | RTTI name only |
 | `TerminalPane2` | `0x6d1bfc` | class | unknown | RTTI name only |
 | `TextBoxPane` | `0x6d1d04` | class | unknown | RTTI name only |
@@ -307,8 +307,8 @@ Layout associations are listed only when the local executable references that ar
 | `UserLookPane` | `0x6c5f18` | class | unknown | RTTI name only |
 | `UserShapeControlPane` | `0x6ca2c0` | class | unknown | RTTI name only |
 | `VirusAlertPane` | `0x6cc39c` | class | unknown | RTTI name only |
-| `WindowMessageDialogPane` | `0x6c5bfc` | class | unknown | RTTI name only |
-| `World::BalloonPane` | `0x6d325c` | class | unknown | RTTI name only |
+| `WindowMessageDialogPane` | `0x6c5bfc` | class | unknown | SMessage look and message popup<br>constructor: ui_window_message_dialog_ctor at 0x4488c0 |
+| `World::BalloonPane` | `0x6d325c` | class | unknown | object-attached speech balloon<br>constructor: chat_world_balloon_pane_ctor at 0x5c4f00 |
 | `WorldControllerPane` | `0x6d327c` | class | unknown | RTTI name only |
 | `WorldMapImagePane` | `0x6cb380` | class | unknown | RTTI name only |
 | `WorldMapInfo_DA_Pane` | `0x6cb3a0` | class | unknown | RTTI name only |

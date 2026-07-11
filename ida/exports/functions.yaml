@@ -9,7 +9,7 @@ export:
   scope: Friendly snake_case names with subsystem prefixes
   signature_source: IDA type information
   total_database_functions: 11585
-  exported_functions: 549
+  exported_functions: 568
 function_groups:
   audio_:
     - name: audio_initialize_miles_driver
@@ -20,6 +20,51 @@ function_groups:
       address: "0x568f20"
       size: "0x9d"
       signature: "void *__thiscall(void *this)"
+  chat_:
+    - name: chat_append_game_message_palette
+      address: "0x4803a0"
+      size: "0x3e"
+      signature: null
+    - name: chat_append_game_message_rgb
+      address: "0x4803e0"
+      size: "0x2f"
+      signature: "int __cdecl(char *Str, char, char, char)"
+    - name: chat_game_message_pane_append_rgb
+      address: "0x47c5c0"
+      size: "0x122"
+      signature: "int __stdcall(char *Str, char, int, char, int)"
+    - name: chat_game_message_pane_ctor
+      address: "0x47c2a0"
+      size: "0x23b"
+      signature: null
+    - name: chat_game_message_pane_singleton
+      address: "0x480470"
+      size: "0xa"
+      signature: null
+    - name: chat_input_pane_ctor
+      address: "0x54fca0"
+      size: "0xed"
+      signature: "int __stdcall(__int16, __int16, int, int, char, char *Str, int)"
+    - name: chat_input_send_say
+      address: "0x54fd90"
+      size: "0x244"
+      signature: "int __thiscall(_BYTE *this)"
+    - name: chat_open_say_input
+      address: "0x54f840"
+      size: "0x18c"
+      signature: "int __cdecl(int, int, int, int, char, char *Str, int)"
+    - name: chat_show_object_balloon
+      address: "0x5cbf90"
+      size: "0x2a1"
+      signature: null
+    - name: chat_tell_input_send
+      address: "0x550590"
+      size: "0x185"
+      signature: "int __thiscall(const char *this)"
+    - name: chat_world_balloon_pane_ctor
+      address: "0x5c4f00"
+      size: "0x3bd"
+      signature: null
   config_:
     - name: config_apply_command_line_endpoint_override
       address: "0x433010"
@@ -692,6 +737,10 @@ function_groups:
       address: "0x5f71c0"
       size: "0x87"
       signature: null
+    - name: net_handle_s_message
+      address: "0x5f6d80"
+      size: "0x3fe"
+      signature: null
     - name: net_handle_s_motion
       address: "0x5f3c80"
       size: "0x17b"
@@ -712,6 +761,10 @@ function_groups:
       address: "0x5f2cf0"
       size: "0xe4"
       signature: "char __stdcall(int)"
+    - name: net_handle_s_say
+      address: "0x5f3e00"
+      size: "0xa9"
+      signature: null
     - name: net_handle_s_show_paper
       address: "0x5f7250"
       size: "0x87"
@@ -2208,11 +2261,35 @@ function_groups:
       address: "0x54a470"
       size: "0xb7"
       signature: "_DWORD *__thiscall(_DWORD *this, int, int)"
+    - name: ui_palette_get_rgb
+      address: "0x593d40"
+      size: "0x5b"
+      signature: null
     - name: ui_portrait_text_input_dialog_ctor
       address: "0x5b11a0"
       size: "0x226"
       signature: null
+    - name: ui_score_pane_append_rgb
+      address: "0x5516c0"
+      size: "0x122"
+      signature: "int __stdcall(char *Str, char, int, char, int)"
+    - name: ui_score_pane_append_s_message
+      address: "0x552120"
+      size: "0x84"
+      signature: "int __stdcall(const char *, __int16)"
+    - name: ui_score_pane_ctor
+      address: "0x551260"
+      size: "0x23b"
+      signature: null
+    - name: ui_score_pane_handle_s_message
+      address: "0x5521b0"
+      size: "0x39"
+      signature: "char __stdcall(int)"
     - name: ui_skill_spell_info_dialog_ctor
       address: "0x5ae090"
       size: "0x583"
       signature: null
+    - name: ui_window_message_dialog_ctor
+      address: "0x4488c0"
+      size: "0x549"
+      signature: "int __stdcall(int, void *Src, int, char)"
