@@ -9,7 +9,7 @@ The machine-readable source is `ida/exports/ui-pane-classes.yaml`. Addresses are
 - RTTI records containing `Pane`: `302`
 - Concrete class records: `263`
 - Template and singleton wrapper records: `39`
-- Records with recovered layout or usage context: `22`
+- Records with recovered layout or usage context: `23`
 
 The wrapper records are useful. A `Singleton<T>` record is evidence that the engine manages one shared instance of `T`, but it is not a second pane implementation.
 
@@ -182,7 +182,7 @@ Layout associations are listed only when the local executable references that ar
 | `NumLineInputPane` | `0x6d1d3c` | class | unknown | RTTI name only |
 | `OptionPane` | `0x6cbc94` | class | unknown | RTTI name only |
 | `Pane` | `0x6c4088` | class | unknown | RTTI name only |
-| `PopupMenuPane` | `0x6cc178` | class | unknown | RTTI name only |
+| `PopupMenuPane` | `0x6cc178` | class | unknown | world object context menu<br>constructor: ui_popup_menu_pane_ctor at 0x54c010<br>open_for_object: input_open_object_popup_menu at 0x54bdb0 |
 | `PortraitControlPane` | `0x6c49c4` | class | unknown | RTTI name only |
 | `PortraitTextInputDialogPane` | `0x6d2b44` | class | `setoa.dat:_nui_pi.txt` | portrait text input dialog<br>constructor: ui_portrait_text_input_dialog_ctor at 0x5b11a0 |
 | `ProgressBarControlPane` | `0x6c58bc` | class | unknown | RTTI name only |

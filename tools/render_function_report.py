@@ -52,7 +52,7 @@ def render(data):
         f"- Functions still using an unknown signature: `{len(functions) - known_signatures}`",
         f"- Total functions in the IDA database at export time: `{export['total_database_functions']}`",
         "",
-        "The report includes friendly subsystem names such as `net_`, `ui_`, `render_`, `audio_`, and `config_`. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.",
+        "The report includes friendly subsystem names such as `net_`, `input_`, `ui_`, `render_`, `audio_`, and `config_`. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.",
         "",
         "## Reading the report",
         "",

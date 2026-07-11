@@ -9,7 +9,7 @@ export:
   scope: Friendly snake_case names with subsystem prefixes
   signature_source: IDA type information
   total_database_functions: 11585
-  exported_functions: 568
+  exported_functions: 606
 function_groups:
   audio_:
     - name: audio_initialize_miles_driver
@@ -239,6 +239,131 @@ function_groups:
       address: "0x6043b0"
       size: "0x9c"
       signature: "int __cdecl(unsigned __int8 *destination, unsigned int *destination_size, const unsigned __int8 *source, unsigned int source_size)"
+  input_:
+    - name: input_apply_world_direction
+      address: "0x5f0c40"
+      size: "0xd4"
+      signature: null
+    - name: input_begin_server_block
+      address: "0x466cc0"
+      size: "0x40"
+      signature: null
+    - name: input_client_window_proc
+      address: "0x4a9c30"
+      size: "0x257"
+      signature: "int __stdcall(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)"
+    - name: input_dispatch_event_through_pane_tree
+      address: "0x464d50"
+      size: "0x1ee"
+      signature: null
+    - name: input_dispatch_event_to_pane
+      address: "0x464f40"
+      size: "0xdf"
+      signature: null
+    - name: input_emit_char_event
+      address: "0x467fe0"
+      size: "0xc6"
+      signature: null
+    - name: input_emit_key_down_event
+      address: "0x467c10"
+      size: "0x218"
+      signature: null
+    - name: input_emit_key_up_event
+      address: "0x467e30"
+      size: "0x1aa"
+      signature: null
+    - name: input_emit_left_button_down_event
+      address: "0x4673f0"
+      size: "0x28b"
+      signature: null
+    - name: input_emit_left_button_up_event
+      address: "0x467680"
+      size: "0x102"
+      signature: null
+    - name: input_emit_mouse_move_event
+      address: "0x4672f0"
+      size: "0xf8"
+      signature: null
+    - name: input_emit_mouse_wheel_event
+      address: "0x467b30"
+      size: "0xd8"
+      signature: null
+    - name: input_emit_right_button_down_event
+      address: "0x467790"
+      size: "0x28a"
+      signature: null
+    - name: input_emit_right_button_up_event
+      address: "0x467a20"
+      size: "0x102"
+      signature: null
+    - name: input_end_server_block
+      address: "0x466d00"
+      size: "0x10"
+      signature: null
+    - name: input_event_ctor
+      address: "0x466680"
+      size: "0x26"
+      signature: null
+    - name: input_handle_world_ground_pointer_event
+      address: "0x5efbe0"
+      size: "0x2dd"
+      signature: null
+    - name: input_handle_world_input_event
+      address: "0x5f1480"
+      size: "0x106"
+      signature: "unsigned char __thiscall(void *this, const void *input_event)"
+    - name: input_handle_world_key_event
+      address: "0x5f0d20"
+      size: "0x728"
+      signature: null
+    - name: input_handle_world_object_action
+      address: "0x5ef120"
+      size: "0x235"
+      signature: null
+    - name: input_manager_ctor
+      address: "0x4667e0"
+      size: "0x29d"
+      signature: null
+    - name: input_manager_singleton
+      address: "0x427380"
+      size: "0xa"
+      signature: null
+    - name: input_map_world_move_key
+      address: "0x5f0b50"
+      size: "0x55"
+      signature: null
+    - name: input_move_to_world_object
+      address: "0x5f4a70"
+      size: "0x36a"
+      signature: null
+    - name: input_open_object_popup_menu
+      address: "0x54bdb0"
+      size: "0x1d9"
+      signature: null
+    - name: input_run_message_pump
+      address: "0x4ac750"
+      size: "0x165"
+      signature: null
+    - name: input_translate_win32_message
+      address: "0x48e980"
+      size: "0xa6e"
+      signature: null
+    - name: input_try_move_self
+      address: "0x5f09e0"
+      size: "0x16a"
+      signature: "void __thiscall(void *this, unsigned char direction)"
+    - name: input_turn_self
+      address: "0x5f0900"
+      size: "0x4a"
+      signature: "void __thiscall(void *this, unsigned char direction)"
+    - name: input_world_pane_handle_key_event
+      address: "0x5ce530"
+      size: "0x53"
+      signature: null
+    - name: input_world_pane_handle_pointer_event
+      address: "0x5ce4e0"
+      size: "0x4e"
+      signature: null
   map_:
     - name: map_build_static_world_objects
       address: "0x5cd730"
@@ -693,10 +818,6 @@ function_groups:
       address: "0x5ed990"
       size: "0x7fd"
       signature: "char __thiscall(_DWORD *this, int)"
-    - name: net_dispatch_message_to_active_client
-      address: "0x464f40"
-      size: "0xdf"
-      signature: null
     - name: net_dispatch_or_queue_received_message
       address: "0x4670f0"
       size: "0x3b"
@@ -717,6 +838,10 @@ function_groups:
       address: "0x5f7900"
       size: "0x195"
       signature: "char __thiscall(void *this, void *packet)"
+    - name: net_handle_s_block_input
+      address: "0x5f7aa0"
+      size: "0x40"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
     - name: net_handle_s_change_direction
       address: "0x5f3bb0"
       size: "0xc8"
@@ -1681,6 +1806,10 @@ function_groups:
       address: "0x5755c0"
       size: "0xb5"
       signature: "int __fastcall(int)"
+    - name: net_send_c_attack
+      address: "0x5f44b0"
+      size: "0x59"
+      signature: "void __thiscall(void *this)"
     - name: net_send_c_block_listen_action_1
       address: "0x550aa0"
       size: "0x80"
@@ -1693,6 +1822,10 @@ function_groups:
       address: "0x550ee0"
       size: "0x136"
       signature: "int __thiscall(void *this, const char *Src)"
+    - name: net_send_c_change_dir
+      address: "0x5f4510"
+      size: "0x70"
+      signature: "void __thiscall(void *this, unsigned char direction)"
     - name: net_send_c_check_time
       address: "0x5f7830"
       size: "0xcc"
@@ -1717,6 +1850,14 @@ function_groups:
       address: "0x4baa80"
       size: "0x5d3"
       signature: "int __thiscall(void *this, const char *character_name, const char *password)"
+    - name: net_send_c_move
+      address: "0x5f4580"
+      size: "0xb9"
+      signature: "void __thiscall(void *this, unsigned char direction)"
+    - name: net_send_c_object_info_request
+      address: "0x5f4730"
+      size: "0xbb"
+      signature: "void __thiscall(void *this, unsigned int object_id)"
     - name: net_send_c_portrait
       address: "0x5b1160"
       size: "0x34"
@@ -1858,10 +1999,6 @@ function_groups:
       address: "0x5eedb0"
       size: "0xb5"
       signature: "void *__thiscall(void *this)"
-    - name: object_handle_world_input_event
-      address: "0x5f1480"
-      size: "0x106"
-      signature: "unsigned char __thiscall(void *this, const void *input_event)"
     - name: object_human_apply_appearance
       address: "0x5e0070"
       size: "0x44"
@@ -2109,6 +2246,10 @@ function_groups:
       address: "0x54a9b0"
       size: "0x39"
       signature: "int __thiscall(_DWORD *this, int, int)"
+    - name: ui_hide_loading_clock_overlay
+      address: "0x42e890"
+      size: "0x2c"
+      signature: null
     - name: ui_hot_key_pane_ctor
       address: "0x488320"
       size: "0x3f2"
@@ -2217,6 +2358,10 @@ function_groups:
       address: "0x482140"
       size: "0x1a6"
       signature: null
+    - name: ui_loading_clock_pane_ctor
+      address: "0x42e8c0"
+      size: "0x1a6"
+      signature: "void *__thiscall(void *this)"
     - name: ui_login_dialog_ctor
       address: "0x4ba180"
       size: "0x610"
@@ -2265,6 +2410,10 @@ function_groups:
       address: "0x593d40"
       size: "0x5b"
       signature: null
+    - name: ui_popup_menu_pane_ctor
+      address: "0x54c010"
+      size: "0x26d"
+      signature: null
     - name: ui_portrait_text_input_dialog_ctor
       address: "0x5b11a0"
       size: "0x226"
@@ -2285,6 +2434,10 @@ function_groups:
       address: "0x5521b0"
       size: "0x39"
       signature: "char __stdcall(int)"
+    - name: ui_show_loading_clock_overlay
+      address: "0x42e800"
+      size: "0x8b"
+      signature: null
     - name: ui_skill_spell_info_dialog_ctor
       address: "0x5ae090"
       size: "0x583"

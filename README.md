@@ -20,6 +20,7 @@ This is an independent interoperability and preservation effort. It is not affil
 - Endpoint hostname resolution, numeric caches, and connection fallback order
 - Legacy and extended fastfile archives, including metadata XOR and zlib 1.1.3 decompression
 - Declarative UI layouts, pane construction, input dispatch, EPF/SPF image loading, and 302 pane-related RTTI records
+- Win32 message routing, internal input events, focus and modal priority, keyboard shortcuts, mouse modifiers, and world actions
 - A version-controlled [friendly function index](docs/functions/README.md) generated from IDA exports
 
 Start with the [documentation index](docs/README.md), the [combined SPacket/CPacket opcode list](docs/network/README.md), or the [client security notes](docs/security/README.md).
@@ -53,6 +54,7 @@ docs/
   client/             Startup, client internals, send/receive paths, crypto, and CRC
   file-formats/       Resource archives, compression, configuration, NFO markers, and tables
   functions/          Friendly IDA function index and contribution workflow
+  input/              Win32, keyboard, mouse, modal, and world input routing
   network/            Combined opcode index plus client and server packet pages
   security/           Anti-abuse, installation identity, and kill-switch behavior
   ui/                 Layout grammar, runtime behavior, and pane class catalog
@@ -89,7 +91,7 @@ A question mark in documentation marks a reconstructed or uncertain name. IDA id
 
 ## IDA workflow
 
-Network functions use the `net_` prefix and other subsystems use similarly clear snake_case prefixes such as `ui_`, `audio_`, or `render_`.
+Network functions use the `net_` prefix and other subsystems use similarly clear snake_case prefixes such as `input_`, `ui_`, `audio_`, or `render_`.
 
 Keep the local IDA database under `ida/workspace/`. IDA databases and temporary sidecars are ignored because they are large, non-mergeable, and may embed material from the original executable. Collaborative names and signatures belong in `ida/exports/functions.yaml` and the generated [friendly function index](docs/functions/README.md). Pane RTTI and layout associations belong in `ida/exports/ui-pane-classes.yaml` and the generated [pane class catalog](docs/ui/pane-classes.md). See [the IDA workspace notes](ida/README.md).
 

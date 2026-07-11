@@ -24,7 +24,7 @@ no payload
 
 ## Callers and behavior
 
-`object_handle_world_input_event` at `0x5F1480` sends this packet for the internal F5 key event code `0x89`. Ctrl+R with modifier value `2` is an alternate shortcut. Before sending, both paths call `object_reset_movement_sync_state` at `0x5F4900` to clear pending movement synchronization records.
+`input_handle_world_input_event` at `0x5F1480` sends this packet for the internal F5 key event code `0x89`. Ctrl+R with modifier value exactly `2` is an alternate shortcut. Before sending, both paths call `object_reset_movement_sync_state` at `0x5F4900` to clear pending movement synchronization records. The complete route is documented under [keyboard input](../../input/keyboard-and-packets.md).
 
 `net_handle_s_move` at `0x5F2FC0` also sends `CRefresh` when an authoritative position result disagrees with the local `WorldObject_User` coordinates.
 

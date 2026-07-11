@@ -106,6 +106,7 @@ After connecting, verify the session with a small read-only request such as look
 - `docs/chat/`: chat input, speech balloons, message overlays, channel routing, and look popups
 - `docs/file-formats/`: archive, compression, configuration, NFO, profile, and table formats
 - `docs/functions/`: generated friendly function index and contribution guide
+- `docs/input/`: Win32 messages, internal events, focus, keyboard, mouse, modifiers, and world actions
 - `docs/map/`: map loading, tile rendering, SOTP flags, and collision
 - `docs/network/`: combined opcode index plus client and server packet pages
 - `docs/security/`: anti-abuse, installation identity, and deliberate termination behavior
@@ -141,7 +142,7 @@ Ask the project owner for tribal knowledge when in-game behavior would resolve a
 
 - Use lowercase `snake_case`.
 - Prefix network functions with `net_`.
-- Use clear subsystem prefixes such as `ui_`, `render_`, `audio_`, `file_`, or `map_` after the subsystem is established.
+- Use clear subsystem prefixes such as `ui_`, `input_`, `render_`, `audio_`, `file_`, or `map_` after the subsystem is established.
 - Use `maybe_` for useful but uncertain IDA names.
 - Documentation may use a trailing `?` for a reconstructed class or field name.
 - Preserve a useful existing name unless stronger evidence improves it.

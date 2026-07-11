@@ -11,9 +11,12 @@
 
 ## Builder call sites
 
-- `0x5f4510`
+- `net_send_c_change_dir` at `0x5F4510`
 
-## Current structural notes
+## Plaintext body
 
-- Byte 0 of the untransformed body is opcode `0x11`.
-- Payload layout is documented only where recovered from local code; remaining fields still require caller analysis or runtime confirmation.
+```text
+11 direction:u8
+```
+
+`input_turn_self` at `0x5F0900` updates the local self object before sending this packet.

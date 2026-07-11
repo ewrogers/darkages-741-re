@@ -14,7 +14,7 @@ The entire `ida/workspace/` directory and common IDA database extensions are int
 
 - Use lowercase `snake_case`.
 - Prefix network functions with `net_`.
-- Use subsystem prefixes such as `ui_`, `render_`, `audio_`, and `file_` when the subsystem is established.
+- Use subsystem prefixes such as `input_`, `ui_`, `render_`, `audio_`, and `file_` when the subsystem is established.
 - Use `maybe_` for a useful but uncertain IDA symbol; documentation can use a trailing `?`.
 - Add comments explaining packet opcodes, field layouts, important branches, and the evidence behind non-obvious names.
 - Treat the version-741 client as authoritative when a related engine or later game disagrees.

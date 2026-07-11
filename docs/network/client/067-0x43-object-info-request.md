@@ -14,10 +14,16 @@
 - `0x4cd350`
 - `0x534a90`
 - `0x5aa0e0`
-- `0x5f4730`
+- `net_send_c_object_info_request` at `0x5F4730`
 - `0x5f47f0`
 
 ## Current structural notes
 
 - Byte 0 of the untransformed body is opcode `0x43`.
-- Payload layout is documented only where recovered from local code; remaining fields still require caller analysis or runtime confirmation.
+- The world-click builder at `0x5F4730` emits subtype `1` followed by `object_id:u32be`.
+
+```text
+43 01 object_id:u32be
+```
+
+An ordinary left-click on another world object reaches this builder. Ctrl+left-click on another user opens a local `PopupMenuPane` instead and sends no immediate packet.

@@ -9,6 +9,7 @@ These notes document the version-741 client and its packet-processing behavior.
 - [User interface layouts, runtime, and pane classes](ui/README.md)
 - [Objects, view range, refresh, and self-player initialization](objects/README.md)
 - [Chat, speech balloons, message overlays, and look popups](chat/README.md)
+- [Win32, keyboard, mouse, modal, and world input routing](input/README.md)
 - [Endpoint resolution and fallback order](network/endpoint-resolution.md)
 - [Client receive pipeline](client/network-receive.md)
 - [Client send pipeline](client/network-send.md)

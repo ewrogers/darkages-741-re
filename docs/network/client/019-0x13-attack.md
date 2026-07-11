@@ -11,9 +11,12 @@
 
 ## Builder call sites
 
-- `0x5f44b0`
+- `net_send_c_attack` at `0x5F44B0`
 
-## Current structural notes
+## Plaintext body
 
-- Byte 0 of the untransformed body is opcode `0x13`.
-- Payload layout is documented only where recovered from local code; remaining fields still require caller analysis or runtime confirmation.
+```text
+13
+```
+
+The local Space-key path reaches this payload-free sender through `input_handle_world_key_event` at `0x5F0D20`.

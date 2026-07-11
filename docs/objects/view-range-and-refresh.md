@@ -42,7 +42,7 @@ This means an object moving out of view can remain indexed briefly until a serve
 
 ## F5 and `CRefresh`
 
-`object_handle_world_input_event` at `0x5F1480` recognizes the internal F5 event code `0x89`. Ctrl+R is an alternate shortcut when the event modifier byte is `2`.
+`input_handle_world_input_event` at `0x5F1480` recognizes the internal F5 event code `0x89`. Ctrl+R is an alternate shortcut when the event modifier byte is exactly `2`. See [Keyboard behavior and outgoing packets](../input/keyboard-and-packets.md).
 
 Both shortcuts perform the same two calls:
 

@@ -1,5 +1,7 @@
 # UI loading, input, and rendering
 
+Win32 messages, internal event values, focus and modal priority, keyboard shortcuts, mouse modifiers, and world actions are documented in the dedicated [input subsystem](../input/README.md). This page focuses on UI construction and runtime pane behavior.
+
 The UI runtime combines archive layouts with compiled C++ pane behavior. A layout supplies named presentation data. A pane constructor selects those names and creates the runtime hierarchy.
 
 ## Construction pipeline

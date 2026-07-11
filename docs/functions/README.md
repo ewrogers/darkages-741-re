@@ -6,12 +6,12 @@ This report preserves useful IDA names without committing the binary database. I
 
 - Target: `Darkages.exe` reporting version `741`
 - Preferred image base: `0x400000`
-- Friendly functions exported: `568`
-- Functions with an IDA-inferred signature: `204`
-- Functions still using an unknown signature: `364`
+- Friendly functions exported: `606`
+- Functions with an IDA-inferred signature: `213`
+- Functions still using an unknown signature: `393`
 - Total functions in the IDA database at export time: `11585`
 
-The report includes friendly subsystem names such as `net_`, `ui_`, `render_`, `audio_`, and `config_`. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.
+The report includes friendly subsystem names such as `net_`, `input_`, `ui_`, `render_`, `audio_`, and `config_`. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.
 
 ## Reading the report
 
@@ -43,12 +43,13 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `chat_` | `11` |
 | `config_` | `15` |
 | `file_` | `28` |
+| `input_` | `31` |
 | `map_` | `36` |
-| `net_` | `357` |
-| `object_` | `33` |
+| `net_` | `361` |
+| `object_` | `32` |
 | `render_` | `18` |
 | `startup_` | `7` |
-| `ui_` | `61` |
+| `ui_` | `65` |
 
 ## `audio_` functions
 
@@ -125,6 +126,42 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `file_spf_view_init` | `0x4021d0` | `0xca` | `void *__thiscall(void *this, const void *entry_data)` |
 | `file_xor_u32_words` | `0x471dc0` | `0x3e` | `void __cdecl(void *data, unsigned int size, unsigned int key)` |
 | `file_zlib_uncompress` | `0x6043b0` | `0x9c` | `int __cdecl(unsigned __int8 *destination, unsigned int *destination_size, const unsigned __int8 *source, unsigned int source_size)` |
+
+## `input_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
+| `input_apply_world_direction` | `0x5f0c40` | `0xd4` | unknown |
+| `input_begin_server_block` | `0x466cc0` | `0x40` | unknown |
+| `input_client_window_proc` | `0x4a9c30` | `0x257` | `int __stdcall(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)` |
+| `input_dispatch_event_through_pane_tree` | `0x464d50` | `0x1ee` | unknown |
+| `input_dispatch_event_to_pane` | `0x464f40` | `0xdf` | unknown |
+| `input_emit_char_event` | `0x467fe0` | `0xc6` | unknown |
+| `input_emit_key_down_event` | `0x467c10` | `0x218` | unknown |
+| `input_emit_key_up_event` | `0x467e30` | `0x1aa` | unknown |
+| `input_emit_left_button_down_event` | `0x4673f0` | `0x28b` | unknown |
+| `input_emit_left_button_up_event` | `0x467680` | `0x102` | unknown |
+| `input_emit_mouse_move_event` | `0x4672f0` | `0xf8` | unknown |
+| `input_emit_mouse_wheel_event` | `0x467b30` | `0xd8` | unknown |
+| `input_emit_right_button_down_event` | `0x467790` | `0x28a` | unknown |
+| `input_emit_right_button_up_event` | `0x467a20` | `0x102` | unknown |
+| `input_end_server_block` | `0x466d00` | `0x10` | unknown |
+| `input_event_ctor` | `0x466680` | `0x26` | unknown |
+| `input_handle_world_ground_pointer_event` | `0x5efbe0` | `0x2dd` | unknown |
+| `input_handle_world_input_event` | `0x5f1480` | `0x106` | `unsigned char __thiscall(void *this, const void *input_event)` |
+| `input_handle_world_key_event` | `0x5f0d20` | `0x728` | unknown |
+| `input_handle_world_object_action` | `0x5ef120` | `0x235` | unknown |
+| `input_manager_ctor` | `0x4667e0` | `0x29d` | unknown |
+| `input_manager_singleton` | `0x427380` | `0xa` | unknown |
+| `input_map_world_move_key` | `0x5f0b50` | `0x55` | unknown |
+| `input_move_to_world_object` | `0x5f4a70` | `0x36a` | unknown |
+| `input_open_object_popup_menu` | `0x54bdb0` | `0x1d9` | unknown |
+| `input_run_message_pump` | `0x4ac750` | `0x165` | unknown |
+| `input_translate_win32_message` | `0x48e980` | `0xa6e` | unknown |
+| `input_try_move_self` | `0x5f09e0` | `0x16a` | `void __thiscall(void *this, unsigned char direction)` |
+| `input_turn_self` | `0x5f0900` | `0x4a` | `void __thiscall(void *this, unsigned char direction)` |
+| `input_world_pane_handle_key_event` | `0x5ce530` | `0x53` | unknown |
+| `input_world_pane_handle_pointer_event` | `0x5ce4e0` | `0x4e` | unknown |
 
 ## `map_` functions
 
@@ -248,12 +285,12 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_disconnect_transport` | `0x5647d0` | `0x96` | `void __thiscall(int this, int, __int16)` |
 | `net_dispatch_communications_event` | `0x5643d0` | `0x154` | `void __thiscall(_BYTE *this, int, char *, void *)` |
 | `net_dispatch_game_server_message` | `0x5ed990` | `0x7fd` | `char __thiscall(_DWORD *this, int)` |
-| `net_dispatch_message_to_active_client` | `0x464f40` | `0xdf` | unknown |
 | `net_dispatch_or_queue_received_message` | `0x4670f0` | `0x3b` | `int __stdcall(void *Src)` |
 | `net_dispatch_received_message` | `0x4647c0` | `0x40e` | unknown |
 | `net_encrypt_client_packet_body` | `0x567fb0` | `0x271` | `int __stdcall(char *, int, char *Src, char)` |
 | `net_enqueue_communications_event` | `0x586210` | `0x56` | `BOOL __thiscall(HANDLE *this, int, int, int)` |
 | `net_handle_s_bad_guy` | `0x5f7900` | `0x195` | `char __thiscall(void *this, void *packet)` |
+| `net_handle_s_block_input` | `0x5f7aa0` | `0x40` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_change_direction` | `0x5f3bb0` | `0xc8` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_damage_effect` | `0x5f40f0` | `0x7e` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_draw_human_objects` | `0x5f3340` | `0x5f0` | `unsigned char __thiscall(void *this, const void *packet)` |
@@ -495,15 +532,19 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_s_window_change_ctor` | `0x59cfd0` | `0x21` | unknown |
 | `net_s_window_change_deserialize` | `0x59d000` | `0x1b` | unknown |
 | `net_send_c_add_stat` | `0x5755c0` | `0xb5` | `int __fastcall(int)` |
+| `net_send_c_attack` | `0x5f44b0` | `0x59` | `void __thiscall(void *this)` |
 | `net_send_c_block_listen_action_1` | `0x550aa0` | `0x80` | `int()` |
 | `net_send_c_block_listen_action_2` | `0x550c60` | `0x136` | `int __thiscall(void *this, const char *Src)` |
 | `net_send_c_block_listen_action_3` | `0x550ee0` | `0x136` | `int __thiscall(void *this, const char *Src)` |
+| `net_send_c_change_dir` | `0x5f4510` | `0x70` | `void __thiscall(void *this, unsigned char direction)` |
 | `net_send_c_check_time` | `0x5f7830` | `0xcc` | `char __stdcall(int)` |
 | `net_send_c_exit_editing_mode` | `0x54a7d0` | `0x1d7` | `int __thiscall(int this)` |
 | `net_send_c_field_map_request` | `0x430d30` | `0xe5` | `int __stdcall(unsigned __int16, unsigned __int16, unsigned __int16)` |
 | `net_send_c_field_map_selection` | `0x476390` | `0xfc` | `int __thiscall(int this)` |
 | `net_send_c_give` | `0x496d90` | `0xd6` | `void __thiscall(unsigned __int8 *this, int, int)` |
 | `net_send_c_login` | `0x4baa80` | `0x5d3` | `int __thiscall(void *this, const char *character_name, const char *password)` |
+| `net_send_c_move` | `0x5f4580` | `0xb9` | `void __thiscall(void *this, unsigned char direction)` |
+| `net_send_c_object_info_request` | `0x5f4730` | `0xbb` | `void __thiscall(void *this, unsigned int object_id)` |
 | `net_send_c_portrait` | `0x5b1160` | `0x34` | `char __stdcall(int)` |
 | `net_send_c_put_request` | `0x5f4430` | `0x7a` | `int __thiscall(void *this, unsigned int object_id)` |
 | `net_send_c_refresh` | `0x5f4640` | `0x72` | `int __thiscall(void *this)` |
@@ -544,7 +585,6 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `object_get_local_user_id` | `0x5c7110` | `0x14` | `unsigned int __thiscall(void *this)` |
 | `object_get_self_object_id` | `0x5c7150` | `0x14` | `unsigned int __thiscall(void *this)` |
 | `object_get_self_user` | `0x5eedb0` | `0xb5` | `void *__thiscall(void *this)` |
-| `object_handle_world_input_event` | `0x5f1480` | `0x106` | `unsigned char __thiscall(void *this, const void *input_event)` |
 | `object_human_apply_appearance` | `0x5e0070` | `0x44` | unknown |
 | `object_human_ctor` | `0x5ddfc0` | `0x56` | `void *__thiscall(void *this, unsigned int object_id)` |
 | `object_insert` | `0x5c8ea0` | `0x216` | unknown |
@@ -621,6 +661,7 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `ui_dismiss_paper_window` | `0x54a9f0` | `0x34` | `int __thiscall(_DWORD, _DWORD)` |
 | `ui_event_info_dialog_ctor` | `0x5af460` | `0x3f6` | unknown |
 | `ui_handle_paper_close_action` | `0x54a9b0` | `0x39` | `int __thiscall(_DWORD *this, int, int)` |
+| `ui_hide_loading_clock_overlay` | `0x42e890` | `0x2c` | unknown |
 | `ui_hot_key_pane_ctor` | `0x488320` | `0x3f2` | unknown |
 | `ui_image_button_ctor` | `0x439640` | `0xb4` | unknown |
 | `ui_image_button_draw` | `0x439860` | `0x141` | unknown |
@@ -648,6 +689,7 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `ui_layout_read_tag` | `0x4a9290` | `0x8f` | unknown |
 | `ui_layout_read_token` | `0x4a9040` | `0x1ee` | unknown |
 | `ui_layout_select_control` | `0x482140` | `0x1a6` | unknown |
+| `ui_loading_clock_pane_ctor` | `0x42e8c0` | `0x1a6` | `void *__thiscall(void *this)` |
 | `ui_login_dialog_ctor` | `0x4ba180` | `0x610` | unknown |
 | `ui_login_dialog_handle_control_action` | `0x4ba8c0` | `0xe8` | unknown |
 | `ui_login_dialog_handle_key_event` | `0x4ba810` | `0xad` | unknown |
@@ -660,10 +702,12 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `ui_nui_skill_spell_pane_ctor` | `0x5b80c0` | `0x2d8` | unknown |
 | `ui_open_paper_window` | `0x54a470` | `0xb7` | `_DWORD *__thiscall(_DWORD *this, int, int)` |
 | `ui_palette_get_rgb` | `0x593d40` | `0x5b` | unknown |
+| `ui_popup_menu_pane_ctor` | `0x54c010` | `0x26d` | unknown |
 | `ui_portrait_text_input_dialog_ctor` | `0x5b11a0` | `0x226` | unknown |
 | `ui_score_pane_append_rgb` | `0x5516c0` | `0x122` | `int __stdcall(char *Str, char, int, char, int)` |
 | `ui_score_pane_append_s_message` | `0x552120` | `0x84` | `int __stdcall(const char *, __int16)` |
 | `ui_score_pane_ctor` | `0x551260` | `0x23b` | unknown |
 | `ui_score_pane_handle_s_message` | `0x5521b0` | `0x39` | `char __stdcall(int)` |
+| `ui_show_loading_clock_overlay` | `0x42e800` | `0x8b` | unknown |
 | `ui_skill_spell_info_dialog_ctor` | `0x5ae090` | `0x583` | unknown |
 | `ui_window_message_dialog_ctor` | `0x4488c0` | `0x549` | `int __stdcall(int, void *Src, int, char)` |

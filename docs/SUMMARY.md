@@ -56,6 +56,14 @@
   - [UI loading, input, and rendering](ui/runtime.md)
   - [UI pane class catalog](ui/pane-classes.md)
 
+# Input
+
+- [Input subsystem](input/README.md)
+  - [Win32 message routing](input/win32-message-routing.md)
+  - [Internal events, focus, and modals](input/internal-events-and-focus.md)
+  - [Keyboard behavior and outgoing packets](input/keyboard-and-packets.md)
+  - [Mouse behavior and world interaction](input/mouse-and-world.md)
+
 # Network protocol
 
 - [Combined packet opcode list](network/README.md)

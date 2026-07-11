@@ -817,6 +817,15 @@ classes:
   address: '0x6cc178'
   kind: concrete
   rtti: .?AVPopupMenuPane@@
+  category: world object context menu
+  functions:
+    constructor:
+      name: ui_popup_menu_pane_ctor
+      address: '0x54c010'
+    open_for_object:
+      name: input_open_object_popup_menu
+      address: '0x54bdb0'
+  confidence: confirmed by RTTI and Ctrl+left-click caller
 - name: PortraitControlPane
   address: '0x6c49c4'
   kind: concrete

@@ -44,7 +44,7 @@ The important order inside `startup_initialize_client` is:
 |---:|---|
 | `0x4A9FCF` | Start Winsock 1.1 and require an exact 1.1 result |
 | `0x4AA001` | Capture timer baselines and a legacy Windows version label |
-| `0x4AA010` | Register the window class with procedure `sub_4A9C30` |
+| `0x4AA010` | Register the window class with `input_client_window_proc` at `0x4A9C30` |
 | `0x4AA18B` / `0x4AA1CC` | Create the windowed or fullscreen-style window |
 | `0x4AA229` | Adjust the process working set from physical memory size |
 | `0x4AA22F` | Change the working directory to the executable directory |
