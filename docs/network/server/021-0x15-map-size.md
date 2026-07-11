@@ -15,13 +15,13 @@
 ## Preliminary payload model
 
 ```text
-1. u16be
-2. u8
-3. u8
-4. u8
-5. u8
-6. u24be
-7. string[u8 length]
+1. u16be map_id
+2. u8 width
+3. u8 height
+4. u8 map_flags
+5. u8 unknown
+6. u24be expected_checksum
+7. string[u8 length] map_name
 ```
 
 ## Raw reader-call trace
@@ -35,4 +35,10 @@ The raw trace lists static reader call sites. Conditional variants and counted r
 - Opcode registration: confirmed from the client registry.
 - Packet class name: confirmed from Visual C++ RTTI.
 - Primitive widths and byte order: confirmed from reader implementations.
-- Semantic field names: pending server-source or capture verification.
+- Semantic field names: map identifier, dimensions, checksum, and name confirmed by handler use; two flag bytes remain incomplete.
+
+## Client handling
+
+`map_handle_s_map_size` at `0x5F1BF0` compares this state with the active grid and local `maps/lod%d.map` cache. When the cache does not match, it sends CMapCRCPacket `0x05` with the local dimensions and checksum. See [Map loading and rendering](../../map/loading-and-rendering.md).
+
+The map identifier, dimensions, checksum, and name uses are confirmed by the handler. The exact meanings of the two flag bytes remain incomplete.

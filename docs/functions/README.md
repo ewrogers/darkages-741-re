@@ -1,15 +1,15 @@
 # Friendly function index
 
-This report preserves useful IDA names without committing the binary database. It is generated from `ida/exports/functions.yaml` and sorted by function name.
+This report preserves useful IDA names without committing the binary database. It is generated from `ida/exports/functions.yaml` and grouped by subsystem prefix. Functions are sorted by name inside each group.
 
 ## Scope
 
 - Target: `Darkages.exe` reporting version `741`
 - Preferred image base: `0x400000`
-- Friendly functions exported: `436`
-- Functions with an IDA-inferred signature: `105`
-- Functions still using an unknown signature: `331`
-- Total functions in the IDA database at export time: `11583`
+- Friendly functions exported: `502`
+- Functions with an IDA-inferred signature: `156`
+- Functions still using an unknown signature: `346`
+- Total functions in the IDA database at export time: `11585`
 
 The report includes friendly subsystem names such as `net_`, `ui_`, `render_`, `audio_`, and `config_`. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.
 
@@ -33,14 +33,32 @@ When you identify or improve a function:
 6. Update any focused subsystem or packet documentation affected by the discovery.
 7. Run `python tools/check_docs.py` and `mdbook build`.
 
-Keep the YAML function list sorted by `name`. New subsystem prefixes are welcome when they are clear and consistently applied.
+Keep subsystem prefixes and the functions within each group sorted by name. New prefixes are welcome when they are clear and consistently applied.
 
-## Functions
+## Subsystem summary
+
+| Prefix | Functions |
+|---|---:|
+| `audio_` | `2` |
+| `config_` | `15` |
+| `file_` | `28` |
+| `map_` | `36` |
+| `net_` | `341` |
+| `render_` | `18` |
+| `startup_` | `7` |
+| `ui_` | `55` |
+
+## `audio_` functions
 
 | Function | Address | Size | IDA-inferred signature |
 |---|---:|---:|---|
 | `audio_initialize_miles_driver` | `0x5693f0` | `0x7b` | `void *__thiscall(void *this)` |
 | `audio_system_ctor` | `0x568f20` | `0x9d` | `void *__thiscall(void *this)` |
+
+## `config_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
 | `config_apply_command_line_endpoint_override` | `0x433010` | `0x366` | `unsigned __int8 __thiscall(void *this)` |
 | `config_build_character_profile_path` | `0x592de0` | `0x9b` | `void __cdecl(char *path, unsigned int path_size)` |
 | `config_client_settings_ctor` | `0x431ff0` | `0x30a` | `void *__thiscall(void *this, const char *filename)` |
@@ -56,6 +74,15 @@ Keep the YAML function list sorted by `name`. New subsystem prefixes are welcome
 | `config_save_multi_server_table` | `0x55a490` | `0x1b5` | `void __thiscall(void *this)` |
 | `config_swap_multi_server_text_pairs` | `0x55a650` | `0x18c` | `void __thiscall(void *this)` |
 | `config_write_settings_file` | `0x432340` | `0x319` | unknown |
+
+## `file_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
+| `file_efa_decode_frame` | `0x457030` | `0x57c` | unknown |
+| `file_efa_load_frame` | `0x456fa0` | `0x82` | unknown |
+| `file_efa_read_header` | `0x456f30` | `0x6a` | `unsigned __int8 __cdecl(const char *name, unsigned int *frame_count, unsigned int *frame_delay, void *archive)` |
+| `file_effect_table_load` | `0x458ed0` | `0x332` | unknown |
 | `file_fastfile_close_entry` | `0x472760` | `0x2d` | `void __thiscall(void *this, void *entry)` |
 | `file_fastfile_ctor` | `0x471cd0` | `0x85` | `void *__thiscall(void *this)` |
 | `file_fastfile_get_entry_data` | `0x472900` | `0x61` | `void *__thiscall(void *this, void *entry)` |
@@ -64,8 +91,68 @@ Keep the YAML function list sorted by `name`. New subsystem prefixes are welcome
 | `file_fastfile_open_archive` | `0x471e00` | `0x4c2` | `int __thiscall(void *this, const char *filename, unsigned int handle_capacity, unsigned int xor_key)` |
 | `file_fastfile_open_entry` | `0x472470` | `0x2a8` | `void *__thiscall(void *this, const char *name)` |
 | `file_fastfile_read_entry` | `0x472790` | `0xca` | `int __thiscall(void *this, void *entry, void *destination, unsigned int size)` |
+| `file_hea_load` | `0x4875b0` | `0xdb` | `unsigned __int8 __thiscall(void *this, const char *name, void *archive)` |
+| `file_hea_view_ctor` | `0x487310` | `0x2b` | `void *__thiscall(void *this)` |
+| `file_hpf_codec_singleton` | `0x4ae480` | `0xa` | `void *__cdecl()` |
+| `file_hpf_decode_symbol` | `0x431c40` | `0xdb` | `unsigned int __thiscall(void *this)` |
+| `file_hpf_decompress` | `0x4319b0` | `0x1c4` | `void __thiscall(void *this, const void *source, unsigned int source_size, void **output, unsigned int *output_size)` |
+| `file_hpf_decompress_legacy` | `0x431860` | `0x145` | `void __thiscall(void *this, const void *source, unsigned int source_size, void **output, unsigned int *output_size)` |
+| `file_hpf_decompress_stub` | `0x431840` | `0x1f` | `void __thiscall(void *this, const void *source, unsigned int source_size, void **output, unsigned int *output_size)` |
+| `file_hpf_tree_initialize` | `0x431b80` | `0xb5` | `void __thiscall(void *this)` |
+| `file_hpf_update_tree` | `0x431d20` | `0xf8` | `void __thiscall(void *this, unsigned int symbol)` |
+| `file_mpf_load` | `0x50f490` | `0x3ac` | `unsigned __int8 __thiscall(void *this, void *archive, const char *name, int *palette_out)` |
+| `file_mpf_view_ctor` | `0x50f160` | `0x75` | `void *__thiscall(void *this)` |
+| `file_palette_map_read_record` | `0x547810` | `0x2cb` | `unsigned __int8 __thiscall(void *this, int *first, int *second, int *third)` |
+| `file_spf_resolve_frame` | `0x4022a0` | `0x189` | `unsigned __int8 __thiscall(void *this, unsigned int frame_index, void *output, int display_variant)` |
+| `file_spf_view_init` | `0x4021d0` | `0xca` | `void *__thiscall(void *this, const void *entry_data)` |
 | `file_xor_u32_words` | `0x471dc0` | `0x3e` | `void __cdecl(void *data, unsigned int size, unsigned int key)` |
 | `file_zlib_uncompress` | `0x6043b0` | `0x9c` | `int __cdecl(unsigned __int8 *destination, unsigned int *destination_size, const unsigned __int8 *source, unsigned int source_size)` |
+
+## `map_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
+| `map_build_static_world_objects` | `0x5cd730` | `0x792` | `void __thiscall(void *this)` |
+| `map_build_tile_layers` | `0x5cd3c0` | `0x36d` | `void __thiscall(void *this)` |
+| `map_can_move_direction` | `0x5effe0` | `0x914` | `unsigned __int8 __thiscall(void *this, int x, int y, unsigned __int8 direction, unsigned __int16 check_static)` |
+| `map_decode_palette_tile` | `0x4c7390` | `0x10b` | `unsigned __int8 __thiscall(void *this, unsigned __int16 tile_index, unsigned __int16 *destination)` |
+| `map_direction_delta` | `0x5be580` | `0x65` | `__int64 __cdecl(char direction)` |
+| `map_ensure_cache_directory` | `0x5b9640` | `0x12` | `void __cdecl()` |
+| `map_finish_loading` | `0x5f2de0` | `0x61` | `void __thiscall(void *this, unsigned __int8 success)` |
+| `map_format_cache_filename` | `0x5b9660` | `0x1e` | `int __cdecl(int map_id, char *buffer, unsigned int buffer_size)` |
+| `map_format_hpf_filename` | `0x5fd850` | `0x3f` | `int __cdecl(int resource_id, int resource_type, char *buffer, unsigned int buffer_size)` |
+| `map_get_collision_level` | `0x5cf5e0` | `0x232` | `unsigned __int8 __thiscall(void *this, int x, int y)` |
+| `map_grid_get_ground_tile` | `0x5b9300` | `0x64` | `unsigned __int16 __thiscall(void *this, int x, int y)` |
+| `map_grid_get_static_a` | `0x5b9370` | `0x65` | `unsigned __int16 __thiscall(void *this, int x, int y)` |
+| `map_grid_get_static_b` | `0x5b93e0` | `0x65` | `unsigned __int16 __thiscall(void *this, int x, int y)` |
+| `map_grid_initialize` | `0x5b9030` | `0x99` | `void __thiscall(void *this, unsigned int width, unsigned int height)` |
+| `map_grid_load_file` | `0x5b9450` | `0x1ea` | `unsigned __int8 __thiscall(void *this, unsigned __int16 map_id)` |
+| `map_grid_save_file` | `0x5b9680` | `0xfd` | `unsigned __int8 __thiscall(void *this)` |
+| `map_grid_set_id` | `0x5b90d0` | `0x17` | `void __thiscall(void *this, unsigned __int16 map_id)` |
+| `map_grid_set_tile` | `0x5b90f0` | `0x88` | `void __thiscall(void *this, int x, int y, unsigned __int16 ground, unsigned __int16 static_a, unsigned __int16 static_b)` |
+| `map_handle_s_map_part` | `0x5f2840` | `0x21a` | `unsigned __int8 __thiscall(void *this, const void *packet)` |
+| `map_handle_s_map_row` | `0x5f2a60` | `0x28a` | `unsigned __int8 __thiscall(void *this, const void *packet)` |
+| `map_handle_s_map_size` | `0x5f1bf0` | `0x56d` | `unsigned __int8 __thiscall(void *this, const void *packet)` |
+| `map_load_animation_tables` | `0x5873a0` | `0x3aa` | unknown |
+| `map_load_ground_attribute_table` | `0x58b8c0` | `0x68` | unknown |
+| `map_load_hea_resource` | `0x5c7870` | `0xc3` | `void __thiscall(void *this, int resource_id)` |
+| `map_load_hpf_resource` | `0x5fd700` | `0x144` | unknown |
+| `map_load_sotp_collision_flags` | `0x5cf4f0` | `0xe4` | `void __thiscall(void *this)` |
+| `map_load_sotp_render_flags` | `0x5cf3b0` | `0xe7` | `void __thiscall(void *this)` |
+| `map_sotp_get_collision_flags` | `0x5cf4a0` | `0x43` | `unsigned __int8 __thiscall(void *this, int static_tile_id)` |
+| `map_sotp_get_render_flags` | `0x5cf360` | `0x43` | `unsigned __int8 __thiscall(void *this, int static_tile_id)` |
+| `map_step_coordinate` | `0x5be600` | `0x41` | `__int64 __cdecl(int y, int x, unsigned __int8 direction)` |
+| `map_tile_bank_ctor` | `0x4c7280` | `0xb1` | `void *__thiscall(void *this, const char *name, int bank_kind)` |
+| `map_tile_bank_manager_ctor` | `0x4c7560` | `0x211` | unknown |
+| `map_tile_layer_add` | `0x5fa540` | `0x1a0` | `unsigned __int8 __thiscall(void *this, unsigned __int16 tile_id, int x, int y, int orientation)` |
+| `map_world_attach_grid` | `0x5c7970` | `0x175` | `void __thiscall(void *this, void *map_grid)` |
+| `map_world_pane_ctor` | `0x5c64f0` | `0x7ec` | `void *__thiscall(void *this)` |
+| `map_world_static_object_ctor` | `0x5e42f0` | `0x169` | `void *__thiscall(void *this, int tile_id, unsigned __int8 orientation, int rendering_context, unsigned __int8 render_flags, unsigned __int8 extra_flag)` |
+
+## `net_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
 | `net_advance_spell_delay_say_sequence` | `0x49b870` | `0x90` | `char __thiscall(int this, int, int, int)` |
 | `net_build_c_spell_delay_say_step` | `0x49bb40` | `0x1a1` | `size_t __fastcall(size_t, int, unsigned __int8)` |
 | `net_build_packet_key_table` | `0x5684b0` | `0x8d` | `int __stdcall(char *Str)` |
@@ -407,12 +494,34 @@ Keep the YAML function list sorted by `name`. New subsystem prefixes are welcome
 | `net_write_u32_be` | `0x5641f0` | `0x65` | `_BYTE *__cdecl(unsigned int, _BYTE *)` |
 | `net_write_u8` | `0x564140` | `0x1d` | `_BYTE *__cdecl(unsigned int, _BYTE *)` |
 | `net_xor_packet_bytes` | `0x568230` | `0x12a` | `unsigned int __stdcall(int, unsigned int, unsigned int, int, int)` |
+
+## `render_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
+| `render_allocate_palette_id` | `0x548610` | `0x32` | `int __thiscall(void *this)` |
 | `render_blit_image` | `0x44fb80` | `0x1848` | unknown |
+| `render_convert_rgb24_palette` | `0x593b00` | `0xae` | `void __thiscall(void *this, unsigned __int16 *destination, const unsigned __int8 *rgb)` |
 | `render_decode_image_entry` | `0x48b530` | `0x65f` | unknown |
 | `render_detect_display_mode` | `0x57a640` | `0xc1` | `int __cdecl()` |
+| `render_effect_load_frame` | `0x457fd0` | `0x655` | `unsigned __int8 __thiscall(void *this, int frame_index)` |
+| `render_effect_resource_ctor` | `0x4575b0` | `0x799` | unknown |
 | `render_initialize_directdraw` | `0x4495d0` | `0x6bd` | unknown |
 | `render_initialize_video_system` | `0x593f30` | `0x313` | `int __thiscall(void *this, HWND window, int width, int height, int display_mode, int flags)` |
+| `render_load_effect_palette_table` | `0x546c30` | `0x2aa` | unknown |
 | `render_load_image_frame` | `0x48bbc0` | `0xbe` | unknown |
+| `render_load_item_palette_table` | `0x546980` | `0x261` | unknown |
+| `render_load_map_tile_palette_table` | `0x547210` | `0x32d` | unknown |
+| `render_load_pal_family_table` | `0x546440` | `0x484` | unknown |
+| `render_load_static_palette_table` | `0x546ee0` | `0x32d` | unknown |
+| `render_register_rgb24_palette` | `0x548650` | `0x68` | `unsigned __int16 *__thiscall(void *this, int palette_id, const void *rgb)` |
+| `render_select_mpf_frame` | `0x48d0e0` | `0x492` | unknown |
+| `render_write_screenshot_bmp` | `0x5537f0` | `0x7c9` | unknown |
+
+## `startup_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
 | `startup_handle_debug_option_stub` | `0x57a460` | `0x5` | `void __cdecl(const char *option_text)` |
 | `startup_initialize_client` | `0x4a9f80` | `0x20d4` | `int __thiscall(void *this, HINSTANCE hInstance, int hPrevInstance, int command_line, int nCmdShow, void *startup_config)` |
 | `startup_initialize_time_and_os_version` | `0x4a9690` | `0x20c` | `void __cdecl()` |
@@ -420,6 +529,11 @@ Keep the YAML function list sorted by `name`. New subsystem prefixes are welcome
 | `startup_run_pending_patcher` | `0x57a330` | `0x123` | `void __cdecl()` |
 | `startup_set_working_directory_to_executable` | `0x4ad3a0` | `0x134` | `void __cdecl()` |
 | `startup_win_main` | `0x57a710` | `0x395` | `int __stdcall(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)` |
+
+## `ui_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
 | `ui_agreement_dialog_ctor` | `0x402430` | `0x427` | unknown |
 | `ui_build_main_layout_geometry` | `0x5aa880` | `0x11a8` | unknown |
 | `ui_bulletin_dialog_ctor` | `0x41d8b0` | `0x434` | unknown |

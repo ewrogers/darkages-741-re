@@ -11,7 +11,7 @@
 
 ## Builder call sites
 
-- `0x5f1bf0` : emitted by the server map-size handler when the cached map id, dimensions, or checksum do not match
+- `map_handle_s_map_size` at `0x5F1BF0`: emitted when the cached map identifier, dimensions, or checksum do not match
 
 ## Current structural notes
 
@@ -29,3 +29,4 @@ The recovered untransformed body is 10 bytes:
 - The checksum is recovered through `net_calculate_map_crc16` at `0x5B9180` and serialized by `net_write_u24_be` at `0x5641A0`.
 - Although the local checksum value is held as a 16-bit value at this call site, the wire field is explicitly three bytes wide.
 - This strongly supports the leaked internal name `CMapCRCPacket` despite its opcode moving from `0x35` in the sibling game to `0x05` here.
+- The complete cache selection and download flow is documented in [Map loading and rendering](../../map/loading-and-rendering.md).

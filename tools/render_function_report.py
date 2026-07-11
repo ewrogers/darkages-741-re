@@ -18,8 +18,22 @@ def markdown_code(value):
     return f"`{value.replace('|', '\\|').replace('`', '\\`')}`"
 
 
+def grouped_functions(data):
+    groups = data["function_groups"]
+    return list(groups.items())
+
+
+def flatten_functions(data):
+    return [
+        function
+        for _, functions in grouped_functions(data)
+        for function in functions
+    ]
+
+
 def render(data):
-    functions = sorted(data["functions"], key=lambda item: item["name"])
+    groups = grouped_functions(data)
+    functions = flatten_functions(data)
     known_signatures = sum(1 for item in functions if item["signature"])
     target = data["target"]
     export = data["export"]
@@ -27,7 +41,7 @@ def render(data):
     lines = [
         "# Friendly function index",
         "",
-        "This report preserves useful IDA names without committing the binary database. It is generated from `ida/exports/functions.yaml` and sorted by function name.",
+        "This report preserves useful IDA names without committing the binary database. It is generated from `ida/exports/functions.yaml` and grouped by subsystem prefix. Functions are sorted by name inside each group.",
         "",
         "## Scope",
         "",
@@ -60,19 +74,33 @@ def render(data):
         "6. Update any focused subsystem or packet documentation affected by the discovery.",
         "7. Run `python tools/check_docs.py` and `mdbook build`.",
         "",
-        "Keep the YAML function list sorted by `name`. New subsystem prefixes are welcome when they are clear and consistently applied.",
+        "Keep subsystem prefixes and the functions within each group sorted by name. New prefixes are welcome when they are clear and consistently applied.",
         "",
-        "## Functions",
+        "## Subsystem summary",
         "",
-        "| Function | Address | Size | IDA-inferred signature |",
-        "|---|---:|---:|---|",
+        "| Prefix | Functions |",
+        "|---|---:|",
     ]
 
-    for function in functions:
-        lines.append(
-            f"| `{function['name']}` | `{function['address']}` | "
-            f"`{function['size']}` | {markdown_code(function['signature'])} |"
+    for prefix, group in groups:
+        lines.append(f"| `{prefix}` | `{len(group)}` |")
+
+    for prefix, group in groups:
+        lines.extend(
+            [
+                "",
+                f"## `{prefix}` functions",
+                "",
+                "| Function | Address | Size | IDA-inferred signature |",
+                "|---|---:|---:|---|",
+            ]
         )
+
+        for function in group:
+            lines.append(
+                f"| `{function['name']}` | `{function['address']}` | "
+                f"`{function['size']}` | {markdown_code(function['signature'])} |"
+            )
 
     lines.append("")
     return "\n".join(lines)
@@ -88,12 +116,26 @@ def main():
     args = parser.parse_args()
 
     data = yaml.safe_load(SOURCE.read_text(encoding="utf-8"))
-    names = [item["name"] for item in data["functions"]]
-    if names != sorted(names):
-        print("Function export must be sorted by name.")
+    groups = grouped_functions(data)
+    prefixes = [prefix for prefix, _ in groups]
+    if prefixes != sorted(prefixes):
+        print("Function export groups must be sorted by prefix.")
         return 1
+    functions = flatten_functions(data)
+    names = [item["name"] for item in functions]
+    for prefix, group in groups:
+        group_names = [item["name"] for item in group]
+        if group_names != sorted(group_names):
+            print(f"Function export group {prefix} must be sorted by name.")
+            return 1
+        if any(not name.startswith(prefix) for name in group_names):
+            print(f"Function export group {prefix} contains a mismatched name.")
+            return 1
     if len(names) != len(set(names)):
         print("Function export contains a duplicate name.")
+        return 1
+    if data["export"]["exported_functions"] != len(functions):
+        print("Function export count does not match the catalog.")
         return 1
     expected = render(data)
 
@@ -101,12 +143,12 @@ def main():
         if not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != expected:
             print("Function report is stale. Run tools/render_function_report.py.")
             return 1
-        print(f"Function report is current for {len(data['functions'])} functions.")
+        print(f"Function report is current for {len(functions)} functions.")
         return 0
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(expected, encoding="utf-8", newline="\n")
-    print(f"Wrote {OUTPUT.relative_to(ROOT)} with {len(data['functions'])} functions.")
+    print(f"Wrote {OUTPUT.relative_to(ROOT)} with {len(functions)} functions.")
     return 0
 
 

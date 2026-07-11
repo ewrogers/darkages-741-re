@@ -25,7 +25,15 @@
 - [File formats](file-formats/README.md)
   - [Fastfile .dat archives](file-formats/fastfile-archives.md)
   - [Compression](file-formats/compression.md)
+  - [Graphics and animation files](file-formats/graphics-and-animation-files.md)
+  - [Table files](file-formats/table-files.md)
   - [Configuration, NFO, profile, and table files](file-formats/config-and-table-files.md)
+
+# Maps
+
+- [Map subsystem](map/README.md)
+  - [Map loading and rendering](map/loading-and-rendering.md)
+  - [Collision and SOTP flags](map/collision.md)
 
 # User interface
 

@@ -93,7 +93,7 @@ Enter or Space activation reaches `ui_image_button_handle_key_event` at `0x43859
 - EPF entries use header and frame metadata before the requested frame is made available to the blitter.
 - Effect resources containing names such as `Efct` or `Mefc` have additional table handling.
 
-The image formats themselves still need a field-level pass. This page records only the confirmed UI loading path and should not be treated as a complete EPF or SPF specification.
+The field layouts, palette behavior, and compression results are documented in [Graphics and animation files](../file-formats/graphics-and-animation-files.md).
 
 ## New in-game pane set
 

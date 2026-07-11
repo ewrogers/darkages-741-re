@@ -31,3 +31,9 @@ The raw trace lists static reader call sites. Conditional variants and counted r
 - Packet class name: confirmed from Visual C++ RTTI.
 - Primitive widths and byte order: confirmed from reader implementations.
 - Semantic field names: pending server-source or capture verification.
+
+## Client handling
+
+`map_handle_s_map_part` at `0x5F2840` applies this packet as a rectangular update. Its data view begins with four `u8` rectangle values, followed by three `u16be` tile identifiers per cell in row-major order. The client stores the values as ground, static A, and static B. See [Map loading and rendering](../../map/loading-and-rendering.md).
+
+The existing `u16be` field in the packet class appears to cover the first two byte-sized rectangle components. Exact names for all four rectangle values still need a capture or server-side definition.

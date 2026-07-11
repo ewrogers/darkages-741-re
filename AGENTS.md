@@ -105,6 +105,7 @@ After connecting, verify the session with a small read-only request such as look
 - `docs/client/`: client implementation details, networking, crypto, and CRC
 - `docs/file-formats/`: archive, compression, configuration, NFO, profile, and table formats
 - `docs/functions/`: generated friendly function index and contribution guide
+- `docs/map/`: map loading, tile rendering, SOTP flags, and collision
 - `docs/network/`: combined opcode index plus client and server packet pages
 - `docs/security/`: anti-abuse, installation identity, and deliberate termination behavior
 - `docs/ui/`: UI layout grammar, loading, input, rendering, and pane classes
@@ -158,9 +159,11 @@ When a new subsystem is reversed:
 
 1. Choose a clear snake_case subsystem prefix.
 2. Rename and comment functions in IDA.
-3. Add the friendly functions to `ida/exports/functions.yaml`, sorted by name.
+3. Add the friendly functions to the matching prefix group in `ida/exports/functions.yaml`, sorted by name within that group.
 4. Run `python tools/render_function_report.py`.
 5. Add focused subsystem documentation when the table alone is not enough.
+
+Keep prefix groups sorted by prefix. A function belongs in the group matching the beginning of its name, such as `file_`, `net_`, `render_`, or `ui_`. Add a new group when a newly reversed subsystem has a clear, durable prefix.
 
 ## Address and evidence requirements
 

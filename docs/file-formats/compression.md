@@ -1,8 +1,12 @@
 # Compression
 
-The confirmed file compression in the version-741 client is used by extended fastfile `.dat` archives. The client contains a zlib-compatible decompressor and identifies its embedded implementation with the literal version string `1.1.3`.
+Confirmed file compression in the version-741 client appears in extended fastfile `.dat` archives, EFA effect frames, and HPF map resources. The client contains a zlib-compatible decompressor and identifies its embedded implementation with the literal version string `1.1.3`.
 
 No separate compressor is used by the archive-loading path. The client only expands chunks that were compressed when the archive was built.
+
+EFA reuses the same zlib wrapper once per effect frame. HPF is unrelated to zlib and uses the adaptive binary-tree codec documented in [Graphics and animation files](graphics-and-animation-files.md#hpf).
+
+For new content, EFA frames can be produced with an ordinary zlib compressor. HPF requires the recovered adaptive-tree encoder. Both write paths are documented with pseudocode on the graphics format page.
 
 ## Decompression entry point
 
@@ -118,12 +122,29 @@ The archive operations occur in this order:
 
 The XOR step transforms metadata. It does not decrypt or decompress the chunk payload. No payload XOR was observed in this loader.
 
+## EFA frame compression
+
+`file_efa_decode_frame` at `0x457030` locates a 64-byte frame descriptor, allocates the descriptor's decoded size, and calls `file_zlib_uncompress` on that frame's source slice. Each frame is an independent zlib stream.
+
+The source offset is relative to the payload after the 64-byte file header and complete 64-byte frame table. A local `efct231.efa` check expanded frame 0 from 529 bytes to 41,040 bytes.
+
+See [EFA](graphics-and-animation-files.md#efa) for the complete descriptor and decoder pseudocode.
+
+## HPF adaptive tree compression
+
+`file_hpf_decompress` at `0x4319B0` recognizes magic `0xff02aa55`, reads bits least-significant bit first, and rotates its binary tree after every symbol. Symbol `0x100` terminates the stream. If the magic is absent, the routine copies the input unchanged.
+
+This is a separate codec, not a zlib option and not encryption. See [HPF](graphics-and-animation-files.md#hpf) for the initialization, update algorithm, and decode loop.
+
+The inverse writer walks from each symbol leaf to the root, reverses the path, emits right edges as one and left edges as zero, then applies the same tree rotation. It writes bits least-significant bit first and finishes with symbol `0x100`. This writer reproduced the original 59-byte `stc00000.hpf` sample exactly after a decode and re-encode cycle.
+
 ## Confidence and open questions
 
 - Confirmed local: `file_zlib_uncompress` is at `0x6043B0`.
 - Confirmed local: the client contains the version string `1.1.3` and uses a zlib-compatible wrapper call.
-- Confirmed local: compressed and uncompressed sizes come from each decoded chunk descriptor.
-- Open: the meaning of descriptor field `unknown_0c`.
-- Open: whether all archives use the same zlib stream framing and compression settings.
+- Confirmed local: compressed and uncompressed sizes come from each decoded fastfile or EFA descriptor.
+- Confirmed local: HPF is a separate adaptive-tree codec.
+- Open: the meaning of fastfile chunk descriptor field `unknown_0c`.
+- Open: whether all extended archives use identical zlib compression settings.
 
 See [Fastfile `.dat` archives](fastfile-archives.md) for the surrounding container layout and metadata XOR algorithm.
