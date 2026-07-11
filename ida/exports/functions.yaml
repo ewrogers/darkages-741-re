@@ -9,7 +9,7 @@ export:
   scope: Friendly snake_case names with subsystem prefixes
   signature_source: IDA type information
   total_database_functions: 11583
-  exported_functions: 382
+  exported_functions: 436
 functions:
   - name: audio_initialize_miles_driver
     address: "0x5693f0"
@@ -1483,6 +1483,14 @@ functions:
     address: "0x568230"
     size: "0x12a"
     signature: "unsigned int __stdcall(int, unsigned int, unsigned int, int, int)"
+  - name: render_blit_image
+    address: "0x44fb80"
+    size: "0x1848"
+    signature: null
+  - name: render_decode_image_entry
+    address: "0x48b530"
+    size: "0x65f"
+    signature: null
   - name: render_detect_display_mode
     address: "0x57a640"
     size: "0xc1"
@@ -1495,6 +1503,10 @@ functions:
     address: "0x593f30"
     size: "0x313"
     signature: "int __thiscall(void *this, HWND window, int width, int height, int display_mode, int flags)"
+  - name: render_load_image_frame
+    address: "0x48bbc0"
+    size: "0xbe"
+    signature: null
   - name: startup_handle_debug_option_stub
     address: "0x57a460"
     size: "0x5"
@@ -1523,19 +1535,223 @@ functions:
     address: "0x57a710"
     size: "0x395"
     signature: "int __stdcall(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)"
+  - name: ui_agreement_dialog_ctor
+    address: "0x402430"
+    size: "0x427"
+    signature: null
+  - name: ui_build_main_layout_geometry
+    address: "0x5aa880"
+    size: "0x11a8"
+    signature: null
+  - name: ui_bulletin_dialog_ctor
+    address: "0x41d8b0"
+    size: "0x434"
+    signature: null
+  - name: ui_change_password_dialog_ctor
+    address: "0x4bb2a0"
+    size: "0x56f"
+    signature: null
+  - name: ui_control_definition_add_color
+    address: "0x4a5950"
+    size: "0x20"
+    signature: null
+  - name: ui_control_definition_add_image
+    address: "0x4a5890"
+    size: "0x20"
+    signature: null
+  - name: ui_control_definition_add_value
+    address: "0x4a58b0"
+    size: "0x20"
+    signature: null
+  - name: ui_control_definition_reset
+    address: "0x4a5610"
+    size: "0x121"
+    signature: null
+  - name: ui_control_definition_set_name
+    address: "0x4a5770"
+    size: "0xd0"
+    signature: null
+  - name: ui_control_definition_set_rect
+    address: "0x4a5860"
+    size: "0x2b"
+    signature: null
+  - name: ui_control_definition_set_type
+    address: "0x4a5840"
+    size: "0x18"
+    signature: null
+  - name: ui_create_user_dialog_ctor
+    address: "0x43c370"
+    size: "0xd05"
+    signature: null
   - name: ui_dismiss_paper_window
     address: "0x54a9f0"
     size: "0x34"
     signature: "int __thiscall(_DWORD, _DWORD)"
+  - name: ui_event_info_dialog_ctor
+    address: "0x5af460"
+    size: "0x3f6"
+    signature: null
   - name: ui_handle_paper_close_action
     address: "0x54a9b0"
     size: "0x39"
     signature: "int __thiscall(_DWORD *this, int, int)"
+  - name: ui_hot_key_pane_ctor
+    address: "0x488320"
+    size: "0x3f2"
+    signature: null
+  - name: ui_image_button_ctor
+    address: "0x439640"
+    size: "0xb4"
+    signature: null
+  - name: ui_image_button_draw
+    address: "0x439860"
+    size: "0x141"
+    signature: null
+  - name: ui_image_button_handle_key_event
+    address: "0x438590"
+    size: "0x68"
+    signature: null
+  - name: ui_image_button_initialize_images
+    address: "0x439700"
+    size: "0x123"
+    signature: null
+  - name: ui_image_button_invalidate
+    address: "0x4383a0"
+    size: "0x1a"
+    signature: null
+  - name: ui_image_button_set_visual_state
+    address: "0x438340"
+    size: "0x5a"
+    signature: null
+  - name: ui_image_library_singleton
+    address: "0x404a00"
+    size: "0xa"
+    signature: null
   - name: ui_language_table_ctor
     address: "0x4a4aa0"
     size: "0x196"
     signature: "void *__thiscall(void *this)"
+  - name: ui_layout_build_image_button_scratch
+    address: "0x4828a0"
+    size: "0x32"
+    signature: null
+  - name: ui_layout_build_image_button_spec
+    address: "0x4828e0"
+    size: "0x1f3"
+    signature: null
+  - name: ui_layout_cache_lookup
+    address: "0x481ce0"
+    size: "0x10f"
+    signature: null
+  - name: ui_layout_cache_store
+    address: "0x481e60"
+    size: "0x1a0"
+    signature: null
+  - name: ui_layout_create_image_button
+    address: "0x4832e0"
+    size: "0xae"
+    signature: null
+  - name: ui_layout_find_control_definition
+    address: "0x481e30"
+    size: "0x27"
+    signature: null
+  - name: ui_layout_get_control_rect
+    address: "0x482630"
+    size: "0x77"
+    signature: null
+  - name: ui_layout_get_image_entry
+    address: "0x4826e0"
+    size: "0x153"
+    signature: null
+  - name: ui_layout_get_image_entry_into_scratch
+    address: "0x482b90"
+    size: "0x2c"
+    signature: null
+  - name: ui_layout_get_value_entry
+    address: "0x482870"
+    size: "0x2c"
+    signature: null
+  - name: ui_layout_load_from_archive
+    address: "0x482340"
+    size: "0x2e4"
+    signature: null
+  - name: ui_layout_manager_singleton
+    address: "0x402ac0"
+    size: "0xa"
+    signature: null
+  - name: ui_layout_parse_control_block
+    address: "0x4a81f0"
+    size: "0x621"
+    signature: null
+  - name: ui_layout_read_integer
+    address: "0x4a9560"
+    size: "0x77"
+    signature: null
+  - name: ui_layout_read_quoted_string
+    address: "0x4a93c0"
+    size: "0x23"
+    signature: null
+  - name: ui_layout_read_tag
+    address: "0x4a9290"
+    size: "0x8f"
+    signature: null
+  - name: ui_layout_read_token
+    address: "0x4a9040"
+    size: "0x1ee"
+    signature: null
+  - name: ui_layout_select_control
+    address: "0x482140"
+    size: "0x1a6"
+    signature: null
+  - name: ui_login_dialog_ctor
+    address: "0x4ba180"
+    size: "0x610"
+    signature: null
+  - name: ui_login_dialog_handle_control_action
+    address: "0x4ba8c0"
+    size: "0xe8"
+    signature: null
+  - name: ui_login_dialog_handle_key_event
+    address: "0x4ba810"
+    size: "0xad"
+    signature: null
+  - name: ui_main_menu_pane_ctor
+    address: "0x4b6c70"
+    size: "0x746"
+    signature: null
+  - name: ui_nui_album_pane_ctor
+    address: "0x5b2a70"
+    size: "0x617"
+    signature: null
+  - name: ui_nui_event_pane_ctor
+    address: "0x5b3ee0"
+    size: "0x332"
+    signature: null
+  - name: ui_nui_family_pane_ctor
+    address: "0x5b4fb0"
+    size: "0x2bf"
+    signature: null
+  - name: ui_nui_intro_pane_ctor
+    address: "0x5b59f0"
+    size: "0x1003"
+    signature: null
+  - name: ui_nui_legend_pane_ctor
+    address: "0x5b7aa0"
+    size: "0x1c9"
+    signature: null
+  - name: ui_nui_skill_spell_pane_ctor
+    address: "0x5b80c0"
+    size: "0x2d8"
+    signature: null
   - name: ui_open_paper_window
     address: "0x54a470"
     size: "0xb7"
     signature: "_DWORD *__thiscall(_DWORD *this, int, int)"
+  - name: ui_portrait_text_input_dialog_ctor
+    address: "0x5b11a0"
+    size: "0x226"
+    signature: null
+  - name: ui_skill_spell_info_dialog_ctor
+    address: "0x5ae090"
+    size: "0x583"
+    signature: null

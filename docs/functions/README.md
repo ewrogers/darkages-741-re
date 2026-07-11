@@ -6,12 +6,12 @@ This report preserves useful IDA names without committing the binary database. I
 
 - Target: `Darkages.exe` reporting version `741`
 - Preferred image base: `0x400000`
-- Friendly functions exported: `382`
+- Friendly functions exported: `436`
 - Functions with an IDA-inferred signature: `105`
-- Functions still using an unknown signature: `277`
+- Functions still using an unknown signature: `331`
 - Total functions in the IDA database at export time: `11583`
 
-The report currently includes friendly `net_`, `ui_`, and `config_` names. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.
+The report includes friendly subsystem names such as `net_`, `ui_`, `render_`, `audio_`, and `config_`. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.
 
 ## Reading the report
 
@@ -407,9 +407,12 @@ Keep the YAML function list sorted by `name`. New subsystem prefixes are welcome
 | `net_write_u32_be` | `0x5641f0` | `0x65` | `_BYTE *__cdecl(unsigned int, _BYTE *)` |
 | `net_write_u8` | `0x564140` | `0x1d` | `_BYTE *__cdecl(unsigned int, _BYTE *)` |
 | `net_xor_packet_bytes` | `0x568230` | `0x12a` | `unsigned int __stdcall(int, unsigned int, unsigned int, int, int)` |
+| `render_blit_image` | `0x44fb80` | `0x1848` | unknown |
+| `render_decode_image_entry` | `0x48b530` | `0x65f` | unknown |
 | `render_detect_display_mode` | `0x57a640` | `0xc1` | `int __cdecl()` |
 | `render_initialize_directdraw` | `0x4495d0` | `0x6bd` | unknown |
 | `render_initialize_video_system` | `0x593f30` | `0x313` | `int __thiscall(void *this, HWND window, int width, int height, int display_mode, int flags)` |
+| `render_load_image_frame` | `0x48bbc0` | `0xbe` | unknown |
 | `startup_handle_debug_option_stub` | `0x57a460` | `0x5` | `void __cdecl(const char *option_text)` |
 | `startup_initialize_client` | `0x4a9f80` | `0x20d4` | `int __thiscall(void *this, HINSTANCE hInstance, int hPrevInstance, int command_line, int nCmdShow, void *startup_config)` |
 | `startup_initialize_time_and_os_version` | `0x4a9690` | `0x20c` | `void __cdecl()` |
@@ -417,7 +420,58 @@ Keep the YAML function list sorted by `name`. New subsystem prefixes are welcome
 | `startup_run_pending_patcher` | `0x57a330` | `0x123` | `void __cdecl()` |
 | `startup_set_working_directory_to_executable` | `0x4ad3a0` | `0x134` | `void __cdecl()` |
 | `startup_win_main` | `0x57a710` | `0x395` | `int __stdcall(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)` |
+| `ui_agreement_dialog_ctor` | `0x402430` | `0x427` | unknown |
+| `ui_build_main_layout_geometry` | `0x5aa880` | `0x11a8` | unknown |
+| `ui_bulletin_dialog_ctor` | `0x41d8b0` | `0x434` | unknown |
+| `ui_change_password_dialog_ctor` | `0x4bb2a0` | `0x56f` | unknown |
+| `ui_control_definition_add_color` | `0x4a5950` | `0x20` | unknown |
+| `ui_control_definition_add_image` | `0x4a5890` | `0x20` | unknown |
+| `ui_control_definition_add_value` | `0x4a58b0` | `0x20` | unknown |
+| `ui_control_definition_reset` | `0x4a5610` | `0x121` | unknown |
+| `ui_control_definition_set_name` | `0x4a5770` | `0xd0` | unknown |
+| `ui_control_definition_set_rect` | `0x4a5860` | `0x2b` | unknown |
+| `ui_control_definition_set_type` | `0x4a5840` | `0x18` | unknown |
+| `ui_create_user_dialog_ctor` | `0x43c370` | `0xd05` | unknown |
 | `ui_dismiss_paper_window` | `0x54a9f0` | `0x34` | `int __thiscall(_DWORD, _DWORD)` |
+| `ui_event_info_dialog_ctor` | `0x5af460` | `0x3f6` | unknown |
 | `ui_handle_paper_close_action` | `0x54a9b0` | `0x39` | `int __thiscall(_DWORD *this, int, int)` |
+| `ui_hot_key_pane_ctor` | `0x488320` | `0x3f2` | unknown |
+| `ui_image_button_ctor` | `0x439640` | `0xb4` | unknown |
+| `ui_image_button_draw` | `0x439860` | `0x141` | unknown |
+| `ui_image_button_handle_key_event` | `0x438590` | `0x68` | unknown |
+| `ui_image_button_initialize_images` | `0x439700` | `0x123` | unknown |
+| `ui_image_button_invalidate` | `0x4383a0` | `0x1a` | unknown |
+| `ui_image_button_set_visual_state` | `0x438340` | `0x5a` | unknown |
+| `ui_image_library_singleton` | `0x404a00` | `0xa` | unknown |
 | `ui_language_table_ctor` | `0x4a4aa0` | `0x196` | `void *__thiscall(void *this)` |
+| `ui_layout_build_image_button_scratch` | `0x4828a0` | `0x32` | unknown |
+| `ui_layout_build_image_button_spec` | `0x4828e0` | `0x1f3` | unknown |
+| `ui_layout_cache_lookup` | `0x481ce0` | `0x10f` | unknown |
+| `ui_layout_cache_store` | `0x481e60` | `0x1a0` | unknown |
+| `ui_layout_create_image_button` | `0x4832e0` | `0xae` | unknown |
+| `ui_layout_find_control_definition` | `0x481e30` | `0x27` | unknown |
+| `ui_layout_get_control_rect` | `0x482630` | `0x77` | unknown |
+| `ui_layout_get_image_entry` | `0x4826e0` | `0x153` | unknown |
+| `ui_layout_get_image_entry_into_scratch` | `0x482b90` | `0x2c` | unknown |
+| `ui_layout_get_value_entry` | `0x482870` | `0x2c` | unknown |
+| `ui_layout_load_from_archive` | `0x482340` | `0x2e4` | unknown |
+| `ui_layout_manager_singleton` | `0x402ac0` | `0xa` | unknown |
+| `ui_layout_parse_control_block` | `0x4a81f0` | `0x621` | unknown |
+| `ui_layout_read_integer` | `0x4a9560` | `0x77` | unknown |
+| `ui_layout_read_quoted_string` | `0x4a93c0` | `0x23` | unknown |
+| `ui_layout_read_tag` | `0x4a9290` | `0x8f` | unknown |
+| `ui_layout_read_token` | `0x4a9040` | `0x1ee` | unknown |
+| `ui_layout_select_control` | `0x482140` | `0x1a6` | unknown |
+| `ui_login_dialog_ctor` | `0x4ba180` | `0x610` | unknown |
+| `ui_login_dialog_handle_control_action` | `0x4ba8c0` | `0xe8` | unknown |
+| `ui_login_dialog_handle_key_event` | `0x4ba810` | `0xad` | unknown |
+| `ui_main_menu_pane_ctor` | `0x4b6c70` | `0x746` | unknown |
+| `ui_nui_album_pane_ctor` | `0x5b2a70` | `0x617` | unknown |
+| `ui_nui_event_pane_ctor` | `0x5b3ee0` | `0x332` | unknown |
+| `ui_nui_family_pane_ctor` | `0x5b4fb0` | `0x2bf` | unknown |
+| `ui_nui_intro_pane_ctor` | `0x5b59f0` | `0x1003` | unknown |
+| `ui_nui_legend_pane_ctor` | `0x5b7aa0` | `0x1c9` | unknown |
+| `ui_nui_skill_spell_pane_ctor` | `0x5b80c0` | `0x2d8` | unknown |
 | `ui_open_paper_window` | `0x54a470` | `0xb7` | `_DWORD *__thiscall(_DWORD *this, int, int)` |
+| `ui_portrait_text_input_dialog_ctor` | `0x5b11a0` | `0x226` | unknown |
+| `ui_skill_spell_info_dialog_ctor` | `0x5ae090` | `0x583` | unknown |

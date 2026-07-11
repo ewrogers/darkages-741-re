@@ -19,6 +19,7 @@ This is an independent interoperability and preservation effort. It is not affil
 - WinMain, window, Miles audio, DirectDraw, archive, profile, and table initialization
 - Endpoint hostname resolution, numeric caches, and connection fallback order
 - Legacy and extended fastfile archives, including metadata XOR and zlib 1.1.3 decompression
+- Declarative UI layouts, pane construction, input dispatch, EPF/SPF image loading, and 302 pane-related RTTI records
 - A version-controlled [friendly function index](docs/functions/README.md) generated from IDA exports
 
 Start with the [documentation index](docs/README.md), the [combined SPacket/CPacket opcode list](docs/network/README.md), or the [client security notes](docs/security/README.md).
@@ -33,6 +34,7 @@ For local preview:
 cargo install mdbook --locked
 python -m pip install -r requirements-docs.txt
 python tools/render_function_report.py --check
+python tools/render_ui_pane_report.py --check
 python tools/check_docs.py
 mdbook serve --open
 ```
@@ -53,6 +55,7 @@ docs/
   functions/          Friendly IDA function index and contribution workflow
   network/            Combined opcode index plus client and server packet pages
   security/           Anti-abuse, installation identity, and kill-switch behavior
+  ui/                 Layout grammar, runtime behavior, and pane class catalog
 ida/
   README.md           IDA workflow and naming conventions
   exports/            Version-controlled names and signatures exported from IDA
@@ -88,7 +91,7 @@ A question mark in documentation marks a reconstructed or uncertain name. IDA id
 
 Network functions use the `net_` prefix and other subsystems use similarly clear snake_case prefixes such as `ui_`, `audio_`, or `render_`.
 
-Keep the local IDA database under `ida/workspace/`. IDA databases and temporary sidecars are ignored because they are large, non-mergeable, and may embed material from the original executable. Collaborative names and signatures belong in `ida/exports/functions.yaml` and the generated [friendly function index](docs/functions/README.md). See [the IDA workspace notes](ida/README.md).
+Keep the local IDA database under `ida/workspace/`. IDA databases and temporary sidecars are ignored because they are large, non-mergeable, and may embed material from the original executable. Collaborative names and signatures belong in `ida/exports/functions.yaml` and the generated [friendly function index](docs/functions/README.md). Pane RTTI and layout associations belong in `ida/exports/ui-pane-classes.yaml` and the generated [pane class catalog](docs/ui/pane-classes.md). See [the IDA workspace notes](ida/README.md).
 
 ## Contributing
 

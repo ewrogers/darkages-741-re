@@ -107,8 +107,10 @@ After connecting, verify the session with a small read-only request such as look
 - `docs/functions/`: generated friendly function index and contribution guide
 - `docs/network/`: combined opcode index plus client and server packet pages
 - `docs/security/`: anti-abuse, installation identity, and deliberate termination behavior
+- `docs/ui/`: UI layout grammar, loading, input, rendering, and pane classes
 - `ida/README.md`: IDA naming and sharing notes
 - `ida/exports/functions.yaml`: version-controlled friendly IDA names and signatures
+- `ida/exports/ui-pane-classes.yaml`: version-controlled pane RTTI, layout, and usage export
 - `ida/workspace/`: local ignored IDA database
 
 Read the relevant indexes before starting a new analysis. Extend existing pages instead of creating competing sources of truth.
@@ -124,8 +126,9 @@ Read the relevant indexes before starting a new analysis. Extend existing pages 
 7. Update useful IDA names and comments when confidence is sufficient.
 8. Update `ida/exports/functions.yaml` when a friendly function name, address, size, or signature changes.
 9. Run `python tools/render_function_report.py` to refresh the function index.
-10. Update the matching Markdown documentation in the same task.
-11. Validate links and any reference code before finishing.
+10. Run `python tools/render_ui_pane_report.py` when pane class context changes.
+11. Update the matching Markdown documentation in the same task.
+12. Validate links and any reference code before finishing.
 
 If the binary and a related-engine list disagree, keep the local opcode and behavior. Record the related name as context with its provenance.
 

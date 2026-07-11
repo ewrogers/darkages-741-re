@@ -27,6 +27,13 @@
   - [Compression](file-formats/compression.md)
   - [Configuration, NFO, profile, and table files](file-formats/config-and-table-files.md)
 
+# User interface
+
+- [User interface](ui/README.md)
+  - [Declarative UI layout files](ui/layout-files.md)
+  - [UI loading, input, and rendering](ui/runtime.md)
+  - [UI pane class catalog](ui/pane-classes.md)
+
 # Network protocol
 
 - [Combined packet opcode list](network/README.md)

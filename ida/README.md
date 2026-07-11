@@ -25,8 +25,11 @@ Commit durable findings in one or both of these forms:
 
 1. Human-readable pages under `docs/` with addresses and evidence.
 2. Machine-readable names and signatures in `ida/exports/functions.yaml`.
-3. Reproducible scripts under a future `ida/scripts/` directory.
+3. Pane RTTI and layout associations in `ida/exports/ui-pane-classes.yaml`.
+4. Reproducible scripts under `tools/` or a future `ida/scripts/` directory.
 
 Run `python tools/render_function_report.py` after changing the function export. The generated report is [docs/functions/README.md](../docs/functions/README.md).
+
+Run `python tools/render_ui_pane_report.py` after changing the pane export. The generated report is [docs/ui/pane-classes.md](../docs/ui/pane-classes.md). With the matching executable available locally, `python tools/export_ui_pane_classes.py C:\path\to\Darkages.exe` refreshes RTTI records while preserving curated context fields. The exporter verifies the executable hash.
 
 Do not commit the original `Darkages.exe`, the IDA database, or expanded `.id0/.id1/.id2/.nam/.til` working files.
