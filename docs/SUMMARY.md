@@ -15,13 +15,22 @@
 # Client internals
 
 - [Client notes](client/README.md)
+- [Client startup](client/startup.md)
 - [Network receive and dispatch](client/network-receive.md)
 - [Network send and framing](client/network-send.md)
 - [Packet encryption and CRC](client/packet-crypto-and-crc.md)
 
+# File formats
+
+- [File formats](file-formats/README.md)
+  - [Fastfile .dat archives](file-formats/fastfile-archives.md)
+  - [Compression](file-formats/compression.md)
+  - [Configuration, NFO, profile, and table files](file-formats/config-and-table-files.md)
+
 # Network protocol
 
 - [Combined packet opcode list](network/README.md)
+- [Endpoint resolution and fallback order](network/endpoint-resolution.md)
 - [Client packet index](network/client/README.md)
   - [000 / 0x00: CVersionPacket](network/client/000-0x00-version.md)
   - [002 / 0x02: CNewUserPacket](network/client/002-0x02-new-user.md)

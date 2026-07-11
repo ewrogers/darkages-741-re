@@ -6,11 +6,27 @@ target:
   sha256: 054A5D6ADC56099C6BFD9D2A58675AFF62DC788B63209A3D906492F5B89E96C6
   preferred_image_base: "0x400000"
 export:
-  scope: Friendly snake_case names with net_, ui_, or config_ prefixes
+  scope: Friendly snake_case names with subsystem prefixes
   signature_source: IDA type information
   total_database_functions: 11583
-  exported_functions: 350
+  exported_functions: 382
 functions:
+  - name: audio_initialize_miles_driver
+    address: "0x5693f0"
+    size: "0x7b"
+    signature: "void *__thiscall(void *this)"
+  - name: audio_system_ctor
+    address: "0x568f20"
+    size: "0x9d"
+    signature: "void *__thiscall(void *this)"
+  - name: config_apply_command_line_endpoint_override
+    address: "0x433010"
+    size: "0x366"
+    signature: "unsigned __int8 __thiscall(void *this)"
+  - name: config_build_character_profile_path
+    address: "0x592de0"
+    size: "0x9b"
+    signature: "void __cdecl(char *path, unsigned int path_size)"
   - name: config_client_settings_ctor
     address: "0x431ff0"
     size: "0x30a"
@@ -23,18 +39,86 @@ functions:
     address: "0x431ed0"
     size: "0xd6"
     signature: "void __cdecl(void *config)"
+  - name: config_detect_region_from_nfo_markers
+    address: "0x434f00"
+    size: "0x419"
+    signature: "unsigned __int8 __thiscall(void *this)"
   - name: config_init_dark_ages_endpoint_and_install_ids
     address: "0x433380"
     size: "0x49b"
     signature: "void __thiscall(void *this)"
+  - name: config_init_taiwan_endpoint
+    address: "0x4338a0"
+    size: "0x225"
+    signature: "void __thiscall(void *this)"
+  - name: config_load_multi_server_table
+    address: "0x55a240"
+    size: "0x24a"
+    signature: "void __thiscall(void *this)"
+  - name: config_load_profile_file
+    address: "0x54da60"
+    size: "0x8a"
+    signature: "unsigned __int8 __thiscall(void *this)"
+  - name: config_profile_ctor
+    address: "0x54d920"
+    size: "0xa3"
+    signature: "void *__thiscall(void *this, const char *filename)"
   - name: config_read_settings_file
     address: "0x432660"
     size: "0x6f6"
     signature: null
+  - name: config_save_multi_server_table
+    address: "0x55a490"
+    size: "0x1b5"
+    signature: "void __thiscall(void *this)"
+  - name: config_swap_multi_server_text_pairs
+    address: "0x55a650"
+    size: "0x18c"
+    signature: "void __thiscall(void *this)"
   - name: config_write_settings_file
     address: "0x432340"
     size: "0x319"
     signature: null
+  - name: file_fastfile_close_entry
+    address: "0x472760"
+    size: "0x2d"
+    signature: "void __thiscall(void *this, void *entry)"
+  - name: file_fastfile_ctor
+    address: "0x471cd0"
+    size: "0x85"
+    signature: "void *__thiscall(void *this)"
+  - name: file_fastfile_get_entry_data
+    address: "0x472900"
+    size: "0x61"
+    signature: "void *__thiscall(void *this, void *entry)"
+  - name: file_fastfile_get_entry_size
+    address: "0x472be0"
+    size: "0x26"
+    signature: "int __thiscall(void *this, void *entry)"
+  - name: file_fastfile_get_main_archive
+    address: "0x472c70"
+    size: "0x86"
+    signature: "void *__cdecl()"
+  - name: file_fastfile_open_archive
+    address: "0x471e00"
+    size: "0x4c2"
+    signature: "int __thiscall(void *this, const char *filename, unsigned int handle_capacity, unsigned int xor_key)"
+  - name: file_fastfile_open_entry
+    address: "0x472470"
+    size: "0x2a8"
+    signature: "void *__thiscall(void *this, const char *name)"
+  - name: file_fastfile_read_entry
+    address: "0x472790"
+    size: "0xca"
+    signature: "int __thiscall(void *this, void *entry, void *destination, unsigned int size)"
+  - name: file_xor_u32_words
+    address: "0x471dc0"
+    size: "0x3e"
+    signature: "void __cdecl(void *data, unsigned int size, unsigned int key)"
+  - name: file_zlib_uncompress
+    address: "0x6043b0"
+    size: "0x9c"
+    signature: "int __cdecl(unsigned __int8 *destination, unsigned int *destination_size, const unsigned __int8 *source, unsigned int source_size)"
   - name: net_advance_spell_delay_say_sequence
     address: "0x49b870"
     size: "0x90"
@@ -1399,6 +1483,46 @@ functions:
     address: "0x568230"
     size: "0x12a"
     signature: "unsigned int __stdcall(int, unsigned int, unsigned int, int, int)"
+  - name: render_detect_display_mode
+    address: "0x57a640"
+    size: "0xc1"
+    signature: "int __cdecl()"
+  - name: render_initialize_directdraw
+    address: "0x4495d0"
+    size: "0x6bd"
+    signature: null
+  - name: render_initialize_video_system
+    address: "0x593f30"
+    size: "0x313"
+    signature: "int __thiscall(void *this, HWND window, int width, int height, int display_mode, int flags)"
+  - name: startup_handle_debug_option_stub
+    address: "0x57a460"
+    size: "0x5"
+    signature: "void __cdecl(const char *option_text)"
+  - name: startup_initialize_client
+    address: "0x4a9f80"
+    size: "0x20d4"
+    signature: "int __thiscall(void *this, HINSTANCE hInstance, int hPrevInstance, int command_line, int nCmdShow, void *startup_config)"
+  - name: startup_initialize_time_and_os_version
+    address: "0x4a9690"
+    size: "0x20c"
+    signature: "void __cdecl()"
+  - name: startup_parse_dash_options
+    address: "0x57a550"
+    size: "0xed"
+    signature: "void __cdecl(const char *command_line)"
+  - name: startup_run_pending_patcher
+    address: "0x57a330"
+    size: "0x123"
+    signature: "void __cdecl()"
+  - name: startup_set_working_directory_to_executable
+    address: "0x4ad3a0"
+    size: "0x134"
+    signature: "void __cdecl()"
+  - name: startup_win_main
+    address: "0x57a710"
+    size: "0x395"
+    signature: "int __stdcall(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)"
   - name: ui_dismiss_paper_window
     address: "0x54a9f0"
     size: "0x34"
@@ -1407,6 +1531,10 @@ functions:
     address: "0x54a9b0"
     size: "0x39"
     signature: "int __thiscall(_DWORD *this, int, int)"
+  - name: ui_language_table_ctor
+    address: "0x4a4aa0"
+    size: "0x196"
+    signature: "void *__thiscall(void *this)"
   - name: ui_open_paper_window
     address: "0x54a470"
     size: "0xb7"

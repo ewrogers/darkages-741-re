@@ -103,6 +103,7 @@ After connecting, verify the session with a small read-only request such as look
 
 - `docs/README.md`: documentation entry point
 - `docs/client/`: client implementation details, networking, crypto, and CRC
+- `docs/file-formats/`: archive, compression, configuration, NFO, profile, and table formats
 - `docs/functions/`: generated friendly function index and contribution guide
 - `docs/network/`: combined opcode index plus client and server packet pages
 - `docs/security/`: anti-abuse, installation identity, and deliberate termination behavior

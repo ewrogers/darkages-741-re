@@ -16,6 +16,9 @@ This is an independent interoperability and preservation effort. It is not affil
 - Recovered MSVC RTTI names, IDA function names, handler addresses, and behavioral evidence
 - Editable-paper and read-only-paper UI/network behavior
 - Security behavior including the persistent `SBadGuy` installation marker and login kill switch
+- WinMain, window, Miles audio, DirectDraw, archive, profile, and table initialization
+- Endpoint hostname resolution, numeric caches, and connection fallback order
+- Legacy and extended fastfile archives, including metadata XOR and zlib 1.1.3 decompression
 - A version-controlled [friendly function index](docs/functions/README.md) generated from IDA exports
 
 Start with the [documentation index](docs/README.md), the [combined SPacket/CPacket opcode list](docs/network/README.md), or the [client security notes](docs/security/README.md).
@@ -45,7 +48,8 @@ IDA Free is sufficient for this 32-bit x86 client. The [agent instructions](AGEN
 ```text
 docs/
   SUMMARY.md          mdBook navigation and chapter order
-  client/             Client internals, send/receive paths, crypto, and CRC
+  client/             Startup, client internals, send/receive paths, crypto, and CRC
+  file-formats/       Resource archives, compression, configuration, NFO markers, and tables
   functions/          Friendly IDA function index and contribution workflow
   network/            Combined opcode index plus client and server packet pages
   security/           Anti-abuse, installation identity, and kill-switch behavior
@@ -56,7 +60,7 @@ ida/
 book.toml             mdBook configuration
 ```
 
-Future format research should grow into focused directories under `docs/`, such as `docs/formats/`, `docs/graphics/`, or `docs/audio/`, with parsers and verification tools kept in a top-level `tools/` directory.
+Future format research should extend `docs/file-formats/` or grow into focused directories such as `docs/graphics/` and `docs/audio/`, with parsers and verification tools kept in a top-level `tools/` directory.
 
 ## Evidence and naming
 

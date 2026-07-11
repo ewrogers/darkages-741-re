@@ -6,9 +6,9 @@ This report preserves useful IDA names without committing the binary database. I
 
 - Target: `Darkages.exe` reporting version `741`
 - Preferred image base: `0x400000`
-- Friendly functions exported: `350`
-- Functions with an IDA-inferred signature: `74`
-- Functions still using an unknown signature: `276`
+- Friendly functions exported: `382`
+- Functions with an IDA-inferred signature: `105`
+- Functions still using an unknown signature: `277`
 - Total functions in the IDA database at export time: `11583`
 
 The report currently includes friendly `net_`, `ui_`, and `config_` names. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.
@@ -39,12 +39,33 @@ Keep the YAML function list sorted by `name`. New subsystem prefixes are welcome
 
 | Function | Address | Size | IDA-inferred signature |
 |---|---:|---:|---|
+| `audio_initialize_miles_driver` | `0x5693f0` | `0x7b` | `void *__thiscall(void *this)` |
+| `audio_system_ctor` | `0x568f20` | `0x9d` | `void *__thiscall(void *this)` |
+| `config_apply_command_line_endpoint_override` | `0x433010` | `0x366` | `unsigned __int8 __thiscall(void *this)` |
+| `config_build_character_profile_path` | `0x592de0` | `0x9b` | `void __cdecl(char *path, unsigned int path_size)` |
 | `config_client_settings_ctor` | `0x431ff0` | `0x30a` | `void *__thiscall(void *this, const char *filename)` |
 | `config_derive_install_id_checksum16` | `0x436e10` | `0xd3` | `unsigned __int16 __cdecl(unsigned int install_id)` |
 | `config_detect_bad_guy_marker` | `0x431ed0` | `0xd6` | `void __cdecl(void *config)` |
+| `config_detect_region_from_nfo_markers` | `0x434f00` | `0x419` | `unsigned __int8 __thiscall(void *this)` |
 | `config_init_dark_ages_endpoint_and_install_ids` | `0x433380` | `0x49b` | `void __thiscall(void *this)` |
+| `config_init_taiwan_endpoint` | `0x4338a0` | `0x225` | `void __thiscall(void *this)` |
+| `config_load_multi_server_table` | `0x55a240` | `0x24a` | `void __thiscall(void *this)` |
+| `config_load_profile_file` | `0x54da60` | `0x8a` | `unsigned __int8 __thiscall(void *this)` |
+| `config_profile_ctor` | `0x54d920` | `0xa3` | `void *__thiscall(void *this, const char *filename)` |
 | `config_read_settings_file` | `0x432660` | `0x6f6` | unknown |
+| `config_save_multi_server_table` | `0x55a490` | `0x1b5` | `void __thiscall(void *this)` |
+| `config_swap_multi_server_text_pairs` | `0x55a650` | `0x18c` | `void __thiscall(void *this)` |
 | `config_write_settings_file` | `0x432340` | `0x319` | unknown |
+| `file_fastfile_close_entry` | `0x472760` | `0x2d` | `void __thiscall(void *this, void *entry)` |
+| `file_fastfile_ctor` | `0x471cd0` | `0x85` | `void *__thiscall(void *this)` |
+| `file_fastfile_get_entry_data` | `0x472900` | `0x61` | `void *__thiscall(void *this, void *entry)` |
+| `file_fastfile_get_entry_size` | `0x472be0` | `0x26` | `int __thiscall(void *this, void *entry)` |
+| `file_fastfile_get_main_archive` | `0x472c70` | `0x86` | `void *__cdecl()` |
+| `file_fastfile_open_archive` | `0x471e00` | `0x4c2` | `int __thiscall(void *this, const char *filename, unsigned int handle_capacity, unsigned int xor_key)` |
+| `file_fastfile_open_entry` | `0x472470` | `0x2a8` | `void *__thiscall(void *this, const char *name)` |
+| `file_fastfile_read_entry` | `0x472790` | `0xca` | `int __thiscall(void *this, void *entry, void *destination, unsigned int size)` |
+| `file_xor_u32_words` | `0x471dc0` | `0x3e` | `void __cdecl(void *data, unsigned int size, unsigned int key)` |
+| `file_zlib_uncompress` | `0x6043b0` | `0x9c` | `int __cdecl(unsigned __int8 *destination, unsigned int *destination_size, const unsigned __int8 *source, unsigned int source_size)` |
 | `net_advance_spell_delay_say_sequence` | `0x49b870` | `0x90` | `char __thiscall(int this, int, int, int)` |
 | `net_build_c_spell_delay_say_step` | `0x49bb40` | `0x1a1` | `size_t __fastcall(size_t, int, unsigned __int8)` |
 | `net_build_packet_key_table` | `0x5684b0` | `0x8d` | `int __stdcall(char *Str)` |
@@ -386,6 +407,17 @@ Keep the YAML function list sorted by `name`. New subsystem prefixes are welcome
 | `net_write_u32_be` | `0x5641f0` | `0x65` | `_BYTE *__cdecl(unsigned int, _BYTE *)` |
 | `net_write_u8` | `0x564140` | `0x1d` | `_BYTE *__cdecl(unsigned int, _BYTE *)` |
 | `net_xor_packet_bytes` | `0x568230` | `0x12a` | `unsigned int __stdcall(int, unsigned int, unsigned int, int, int)` |
+| `render_detect_display_mode` | `0x57a640` | `0xc1` | `int __cdecl()` |
+| `render_initialize_directdraw` | `0x4495d0` | `0x6bd` | unknown |
+| `render_initialize_video_system` | `0x593f30` | `0x313` | `int __thiscall(void *this, HWND window, int width, int height, int display_mode, int flags)` |
+| `startup_handle_debug_option_stub` | `0x57a460` | `0x5` | `void __cdecl(const char *option_text)` |
+| `startup_initialize_client` | `0x4a9f80` | `0x20d4` | `int __thiscall(void *this, HINSTANCE hInstance, int hPrevInstance, int command_line, int nCmdShow, void *startup_config)` |
+| `startup_initialize_time_and_os_version` | `0x4a9690` | `0x20c` | `void __cdecl()` |
+| `startup_parse_dash_options` | `0x57a550` | `0xed` | `void __cdecl(const char *command_line)` |
+| `startup_run_pending_patcher` | `0x57a330` | `0x123` | `void __cdecl()` |
+| `startup_set_working_directory_to_executable` | `0x4ad3a0` | `0x134` | `void __cdecl()` |
+| `startup_win_main` | `0x57a710` | `0x395` | `int __stdcall(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)` |
 | `ui_dismiss_paper_window` | `0x54a9f0` | `0x34` | `int __thiscall(_DWORD, _DWORD)` |
 | `ui_handle_paper_close_action` | `0x54a9b0` | `0x39` | `int __thiscall(_DWORD *this, int, int)` |
+| `ui_language_table_ctor` | `0x4a4aa0` | `0x196` | `void *__thiscall(void *this)` |
 | `ui_open_paper_window` | `0x54a470` | `0xb7` | `_DWORD *__thiscall(_DWORD *this, int, int)` |

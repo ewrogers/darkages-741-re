@@ -2,6 +2,8 @@
 
 `SPacket` means server-to-client and `CPacket` means client-to-server.
 
+Connection setup, hostname lookup, endpoint caches, and retry order are documented in [Endpoint resolution and fallback order](endpoint-resolution.md).
+
 ## SPackets: server to client
 
 The 61 names in the main table below are recovered from MSVC RTTI and the factory registry at `0x595F00`. They are the RTTI-backed subset, not the complete supported opcode set.

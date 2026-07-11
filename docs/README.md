@@ -4,6 +4,9 @@ These notes document the version-741 client and its packet-processing behavior.
 
 - [Combined SPacket/CPacket opcode master list](network/README.md)
 - [Friendly function index](functions/README.md)
+- [Client startup and subsystem order](client/startup.md)
+- [File formats, transforms, and compression](file-formats/README.md)
+- [Endpoint resolution and fallback order](network/endpoint-resolution.md)
 - [Client receive pipeline](client/network-receive.md)
 - [Client send pipeline](client/network-send.md)
 - [Packet encryption, decryption, and CRC reconstruction](client/packet-crypto-and-crc.md)
