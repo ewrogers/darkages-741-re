@@ -41,4 +41,4 @@ The raw trace lists static reader call sites. Conditional variants and counted r
 
 `map_handle_s_map_size` at `0x5F1BF0` compares this state with the active grid and local `maps/lod%d.map` cache. When the cache does not match, it sends CMapCRC `0x05` with the local dimensions and checksum. See [Map loading and rendering](../../map/loading-and-rendering.md).
 
-The map identifier, dimensions, checksum, and name uses are confirmed by the handler. The exact meanings of the two flag bytes remain incomplete.
+The map identifier, dimensions, checksum, and name uses are confirmed by the handler. The low nibble of `map_flags` is a mode value. Mode `3` forces an always-dark viewport and enables per-human light masks; the other modes still have incomplete non-lighting behavior. The second flag byte remains incomplete. See [Map lighting and masks](../../map/lighting.md).

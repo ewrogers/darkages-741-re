@@ -9,7 +9,7 @@ The machine-readable source is `ida/exports/ui-pane-classes.yaml`. Addresses are
 - RTTI records containing `Pane`: `302`
 - Concrete class records: `263`
 - Template and singleton wrapper records: `39`
-- Records with recovered layout or usage context: `23`
+- Records with recovered layout or usage context: `25`
 
 The wrapper records are useful. A `Singleton<T>` record is evidence that the engine manages one shared instance of `T`, but it is not a second pane implementation.
 
@@ -76,7 +76,7 @@ Layout associations are listed only when the local executable references that ar
 | `EventViewPane` | `0x6cb300` | class | unknown | RTTI name only |
 | `ExchangeItemListPane` | `0x6c63bc` | class | unknown | RTTI name only |
 | `ExGroupViewPane` | `0x6cb180` | class | unknown | RTTI name only |
-| `ExtraStatusInfoPane` | `0x6d1b08` | class | unknown | RTTI name only |
+| `ExtraStatusInfoPane` | `0x6d1b08` | class | `setoa.dat:_nstatus.txt` | extended character status pane<br>constructor: ui_extra_status_info_pane_ctor at 0x575680<br>server dispatch: ui_extra_status_dispatch_server_message at 0x576040<br>SStatus handler: ui_extra_status_apply_s_status at 0x575fb0<br>formatter: ui_extra_status_format_values at 0x575aa0<br>Displays attack and defense elements, magic resistance, armor class, damage, and hit from SStatus 0x08. |
 | `FamilyListDialogPane` | `0x6c690c` | class | unknown | RTTI name only |
 | `FieldMapBalloonPane` | `0x6c6934` | class | unknown | RTTI name only |
 | `FieldMapPane` | `0x6c6958` | class | unknown | RTTI name only |
@@ -277,7 +277,7 @@ Layout associations are listed only when the local executable references that ar
 | `StaffPane` | `0x6c42e0` | class | unknown | RTTI name only |
 | `StaticTextControlPane` | `0x6c5a0c` | class | unknown | RTTI name only |
 | `StaticTextControlPane2` | `0x6c5a30` | class | unknown | RTTI name only |
-| `StatusInfoPane` | `0x6d1abc` | class | unknown | RTTI name only |
+| `StatusInfoPane` | `0x6d1abc` | class | `setoa.dat:_nstatus.txt` | primary character status pane<br>constructor: ui_status_info_pane_ctor at 0x573810<br>server dispatch: ui_status_info_dispatch_server_message at 0x573f90<br>SStatus handler: ui_status_info_apply_s_status at 0x574b30<br>formatter: ui_status_info_format_values at 0x5752d0<br>Displays attributes, vitality, mental, experience, ability experience, game points, gold, level, and ability from SStatus 0x08. |
 | `StringListPane` | `0x6c48ac` | class | unknown | RTTI name only |
 | `StringSpellInputPane` | `0x6c7534` | class | unknown | RTTI name only |
 | `SystemButtonsPane` | `0x6d28a0` | class | unknown | RTTI name only |

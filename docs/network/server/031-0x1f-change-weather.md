@@ -30,3 +30,7 @@ The raw trace lists static reader call sites. Conditional variants and counted r
 - Packet class name: confirmed from Visual C++ RTTI.
 - Primitive widths and byte order: confirmed from reader implementations.
 - Semantic field names: pending server-source or capture verification.
+
+## Local dispatch status
+
+The packet class is registered and deserializes one byte, but `net_dispatch_game_server_message` at `0x5ED990` has no opcode `0x1F` handler branch. The current client therefore does not route this class into the recovered world-lighting pipeline. Opcode `0x20` `SChangeHour` is the active server lighting update.

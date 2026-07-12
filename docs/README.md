@@ -8,6 +8,7 @@ These notes document the version-741 client and its packet-processing behavior.
 - [File formats, transforms, and compression](file-formats/README.md)
 - [User interface layouts, runtime, and pane classes](ui/README.md)
 - [Objects, view range, refresh, and self-player initialization](objects/README.md)
+- [Map lighting, HEA masks, time profiles, and lantern light sources](map/lighting.md)
 - [Chat, speech balloons, message overlays, and look popups](chat/README.md)
 - [Win32, keyboard, mouse, modal, and world input routing](input/README.md)
 - [Endpoint resolution and fallback order](network/endpoint-resolution.md)

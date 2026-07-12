@@ -14,6 +14,7 @@ Start with:
 
 - [Map loading and rendering](loading-and-rendering.md)
 - [Collision and SOTP flags](collision.md)
+- [Map lighting and masks](lighting.md)
 - [Graphics and animation files](../file-formats/graphics-and-animation-files.md) for HPF, HEA, palette, and raw tile-bank formats
 - [Packet encryption and CRC](../client/packet-crypto-and-crc.md) for the map checksum routine
 

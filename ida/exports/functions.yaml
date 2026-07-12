@@ -9,7 +9,7 @@ export:
   scope: Friendly snake_case names with subsystem prefixes
   signature_source: IDA type information
   total_database_functions: 11585
-  exported_functions: 606
+  exported_functions: 644
 function_groups:
   audio_:
     - name: audio_initialize_miles_driver
@@ -179,6 +179,10 @@ function_groups:
       address: "0x4875b0"
       size: "0xdb"
       signature: "unsigned __int8 __thiscall(void *this, const char *name, void *archive)"
+    - name: file_hea_prepare_region_rows
+      address: "0x487380"
+      size: "0x22e"
+      signature: null
     - name: file_hea_view_ctor
       address: "0x487310"
       size: "0x2b"
@@ -363,6 +367,67 @@ function_groups:
     - name: input_world_pane_handle_pointer_event
       address: "0x5ce4e0"
       size: "0x4e"
+      signature: null
+  lighting_:
+    - name: lighting_apply_map_mode
+      address: "0x5f26c0"
+      size: "0xdc"
+      signature: null
+    - name: lighting_apply_viewport_tint
+      address: "0x5ce350"
+      size: "0x184"
+      signature: null
+    - name: lighting_attach_mask_to_object
+      address: "0x5cca80"
+      size: "0x2b5"
+      signature: null
+    - name: lighting_build_viewport_mask
+      address: "0x5c8760"
+      size: "0x738"
+      signature: null
+    - name: lighting_decode_hea_mask_region
+      address: "0x5c8540"
+      size: "0x217"
+      signature: null
+    - name: lighting_fill_mask_rect
+      address: "0x5b8b50"
+      size: "0x10f"
+      signature: null
+    - name: lighting_invalidate_object_region
+      address: "0x5cd000"
+      size: "0x1f9"
+      signature: null
+    - name: lighting_invalidate_removed_object_region
+      address: "0x5cd200"
+      size: "0xdd"
+      signature: null
+    - name: lighting_lookup_map_profile
+      address: "0x4aead0"
+      size: "0x151"
+      signature: null
+    - name: lighting_merge_mask_max
+      address: "0x6036b0"
+      size: "0x93"
+      signature: null
+    - name: lighting_metadata_ctor
+      address: "0x4ae8d0"
+      size: "0xa4"
+      signature: null
+    - name: lighting_metadata_singleton
+      address: "0x5f65c0"
+      size: "0xa"
+      signature: null
+    - name: lighting_object_mask_ctor
+      address: "0x5b8c90"
+      size: "0xe8"
+      signature: null
+    - name: lighting_request_metadata
+      address: "0x4aea80"
+      size: "0x49"
+      signature: null
+    - name: lighting_update_for_server_hour
+      address: "0x5ef360"
+      size: "0x1ad"
       signature: null
   map_:
     - name: map_build_static_world_objects
@@ -846,6 +911,10 @@ function_groups:
       address: "0x5f3bb0"
       size: "0xc8"
       signature: "unsigned char __thiscall(void *this, const void *packet)"
+    - name: net_handle_s_change_hour
+      address: "0x5f2160"
+      size: "0x26"
+      signature: "unsigned char __thiscall(void *this, const void *packet)"
     - name: net_handle_s_damage_effect
       address: "0x5f40f0"
       size: "0x7e"
@@ -894,6 +963,10 @@ function_groups:
       address: "0x5f7250"
       size: "0x87"
       signature: "char __stdcall(int)"
+    - name: net_handle_s_status
+      address: "0x5f1a10"
+      size: "0x5a"
+      signature: null
     - name: net_handle_s_transfer_server_packet
       address: "0x4b9510"
       size: "0x162"
@@ -1750,6 +1823,10 @@ function_groups:
       address: "0x59c3e0"
       size: "0x21"
       signature: null
+    - name: net_s_status_decode_state
+      address: "0x5638f0"
+      size: "0x11"
+      signature: null
     - name: net_s_status_deserialize
       address: "0x59c410"
       size: "0x3dc"
@@ -2088,6 +2165,22 @@ function_groups:
       address: "0x548610"
       size: "0x32"
       signature: "int __thiscall(void *this)"
+    - name: render_blend_rgb555_mask
+      address: "0x603f00"
+      size: "0x129"
+      signature: null
+    - name: render_blend_rgb555_pixel
+      address: "0x6040c0"
+      size: "0x82"
+      signature: "unsigned short __cdecl(unsigned short source, unsigned short tint, unsigned char light)"
+    - name: render_blend_rgb565_mask
+      address: "0x603a90"
+      size: "0x129"
+      signature: null
+    - name: render_blend_rgb565_pixel
+      address: "0x604030"
+      size: "0x82"
+      signature: "unsigned short __cdecl(unsigned short source, unsigned short tint, unsigned char light)"
     - name: render_blit_image
       address: "0x44fb80"
       size: "0x1848"
@@ -2152,6 +2245,10 @@ function_groups:
       address: "0x48d0e0"
       size: "0x492"
       signature: null
+    - name: render_world_frame_with_lighting
+      address: "0x5ce280"
+      size: "0xc3"
+      signature: null
     - name: render_write_screenshot_bmp
       address: "0x5537f0"
       size: "0x7c9"
@@ -2189,6 +2286,18 @@ function_groups:
     - name: ui_agreement_dialog_ctor
       address: "0x402430"
       size: "0x427"
+      signature: null
+    - name: ui_bottom_buttons_apply_s_status
+      address: "0x41bb80"
+      size: "0x81"
+      signature: null
+    - name: ui_bottom_status_apply_s_status
+      address: "0x59d6c0"
+      size: "0x109"
+      signature: null
+    - name: ui_bottom_status_dispatch_server_message
+      address: "0x59d1d0"
+      size: "0x114"
       signature: null
     - name: ui_build_main_layout_geometry
       address: "0x5aa880"
@@ -2241,6 +2350,22 @@ function_groups:
     - name: ui_event_info_dialog_ctor
       address: "0x5af460"
       size: "0x3f6"
+      signature: null
+    - name: ui_extra_status_apply_s_status
+      address: "0x575fb0"
+      size: "0x82"
+      signature: null
+    - name: ui_extra_status_dispatch_server_message
+      address: "0x576040"
+      size: "0x55"
+      signature: null
+    - name: ui_extra_status_format_values
+      address: "0x575aa0"
+      size: "0x147"
+      signature: null
+    - name: ui_extra_status_info_pane_ctor
+      address: "0x575680"
+      size: "0x192"
       signature: null
     - name: ui_handle_paper_close_action
       address: "0x54a9b0"
@@ -2434,6 +2559,10 @@ function_groups:
       address: "0x5521b0"
       size: "0x39"
       signature: "char __stdcall(int)"
+    - name: ui_self_profile_apply_s_status
+      address: "0x5b0c40"
+      size: "0xcc"
+      signature: null
     - name: ui_show_loading_clock_overlay
       address: "0x42e800"
       size: "0x8b"
@@ -2442,7 +2571,32 @@ function_groups:
       address: "0x5ae090"
       size: "0x583"
       signature: null
+    - name: ui_status_info_apply_s_status
+      address: "0x574b30"
+      size: "0x21a"
+      signature: null
+    - name: ui_status_info_dispatch_server_message
+      address: "0x573f90"
+      size: "0x9e"
+      signature: null
+    - name: ui_status_info_format_values
+      address: "0x5752d0"
+      size: "0x2e1"
+      signature: null
+    - name: ui_status_info_pane_ctor
+      address: "0x573810"
+      size: "0x2fc"
+      signature: null
     - name: ui_window_message_dialog_ctor
       address: "0x4488c0"
       size: "0x549"
       signature: "int __stdcall(int, void *Src, int, char)"
+  world_:
+    - name: world_user_func_apply_s_status
+      address: "0x5fcfd0"
+      size: "0x1e2"
+      signature: null
+    - name: world_user_func_ctor
+      address: "0x5fc5f0"
+      size: "0x191"
+      signature: null

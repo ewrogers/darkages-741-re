@@ -7,6 +7,7 @@ The client uses a mix of memory-mapped resource archives and small text configur
 - [Graphics and animation files](graphics-and-animation-files.md)
 - [Table files](table-files.md)
 - [Configuration, NFO, profile, and table files](config-and-table-files.md)
+- [Metadata files](metadata-files.md)
 - [Declarative UI layout files](../ui/layout-files.md)
 - [Map cache, tile resources, and rendering](../map/loading-and-rendering.md)
 - [SOTP static collision and rendering flags](../map/collision.md)

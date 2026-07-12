@@ -21,6 +21,7 @@ This is an independent interoperability and preservation effort. It is not affil
 - Legacy and extended fastfile archives, including metadata XOR and zlib 1.1.3 decompression
 - Declarative UI layouts, pane construction, input dispatch, EPF/SPF image loading, and 302 pane-related RTTI records
 - Win32 message routing, internal input events, focus and modal priority, keyboard shortcuts, mouse modifiers, and world actions
+- Time-of-day lighting metadata, HEA spatial masks, lantern EPF masks, and RGB555/RGB565 viewport blending
 - A version-controlled [friendly function index](docs/functions/README.md) generated from IDA exports
 
 Start with the [documentation index](docs/README.md), the [combined SPacket/CPacket opcode list](docs/network/README.md), or the [client security notes](docs/security/README.md).

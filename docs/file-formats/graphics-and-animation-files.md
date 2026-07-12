@@ -502,7 +502,16 @@ payload = table_b
         * read_u32_le(file + 0x24);
 ```
 
-The first table partitions a coordinate range. The second is a `u32` matrix of indices into the following `u16` payload. Map routines use these tables to build pointers for a clipped rectangle. Some payload helpers treat the high byte as a level or magnitude and the low six bits as flags. More semantic field names need runtime confirmation.
+The first table partitions a coordinate range. The second is a `u32` matrix of indices into the following `u16` payload. `file_hea_prepare_region_rows` at `0x487380` uses both tables to build payload pointers for a clipped viewport rectangle.
+
+The payload is a row-oriented light-mask RLE stream. Each little-endian token is:
+
+```text
+bits 15..8: run length
+bits  7..0: light value
+```
+
+`lighting_decode_hea_mask_region` at `0x5C8540` caps each light value to the current global map-light value, then writes the run into an 8-bit viewport mask. A value of `32` leaves the rendered viewport unchanged during the final blend; `0` produces the full tint color.
 
 The observed `000108.hea` header contains values including 640, 480, 40, 3520, 2080, and a table-A count of 4. The parser does not decompress, decrypt, or copy the stored tables.
 
@@ -521,6 +530,35 @@ write_u16_array_le(payload, payload_count);
 ```
 
 The client does not store an explicit payload count at this layer. The enclosing fastfile entry size provides the final boundary, so a standalone tool must calculate it from the bytes remaining after both tables.
+
+An encoder can form one row's payload by grouping adjacent equal light values into runs of at most 255 pixels:
+
+```c
+void write_hea_rle_row(const u8 *row, int width)
+{
+    int x;
+
+    x = 0;
+    while (x < width) {
+        int run;
+        u8 light;
+        u16 token;
+
+        light = row[x];
+        run = 1;
+        while (x + run < width && row[x + run] == light && run < 255)
+            run++;
+
+        token = (u16)((run << 8) | light);
+        write_u16_le(token);
+        x += run;
+    }
+}
+```
+
+The authoring tool must also build table B so every spatial row lookup points at the correct payload token. The exact high-level algorithm that generated the original partition and lookup tables remains under investigation, so new HEA files should begin from compatible table geometry.
+
+HEA lighting use is documented in [Map lighting and masks](../map/lighting.md).
 
 ## PAL
 
@@ -573,6 +611,7 @@ This always produces 768 bytes. A RIFF PAL writer instead uses the standard 24-b
 | `file_efa_decode_frame` | `0x457030` | Inflate and interpret one EFA frame |
 | `render_effect_resource_ctor` | `0x4575B0` | Select EFA or EPF effect resources |
 | `file_hea_load` | `0x4875B0` | Build a zero-copy HEA view |
+| `file_hea_prepare_region_rows` | `0x487380` | Resolve HEA payload rows for a clipped viewport |
 | `render_decode_image_entry` | `0x48B530` | Resolve EPF and SPF image entries |
 | `render_select_mpf_frame` | `0x48D0E0` | Select an MPF directional animation frame |
 | `map_decode_palette_tile` | `0x4C7390` | Decode a raw map tile to 16-bit pixels |
@@ -580,4 +619,5 @@ This always produces 768 bytes. A RIFF PAL writer instead uses the standard 24-b
 | `render_register_rgb24_palette` | `0x548650` | Register and convert a 768-byte palette |
 | `render_write_screenshot_bmp` | `0x5537F0` | Write a standard 16-bit screenshot BMP |
 | `map_load_hea_resource` | `0x5C7870` | Load the current numbered HEA map resource |
+| `lighting_decode_hea_mask_region` | `0x5C8540` | Decode HEA run tokens into the light mask |
 | `map_load_hpf_resource` | `0x5FD700` | Load and decode an `stc` or `sts` HPF entry |

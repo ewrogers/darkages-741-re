@@ -41,7 +41,7 @@ The same dispatcher also performs raw-body checks for registered opcodes `0x06`,
 | [0x05](./005-0x05-user-appearance.md) | SUserAppearance | u32be, u8, u8, u8, u8, u8 | `0x59CB70` |
 | [0x06](./006-0x06-map.md) | SMap | u8, u8, u8, u8, remaining-view | `0x599D10` |
 | [0x07](./007-0x07-draw-objects.md) | SDrawObjects | u16be value subreader over all remaining payload bytes Note: the apparent loop in this method does not consume fields; detailed object records are handled downstream. | `0x598AB0` |
-| [0x08](./008-0x08-status.md) | SStatus | u8 presence_flags if flags[group A]: 5 x u8, 2 x u32be, 7 x u8, 2 x u16be, u32be if flags[group B]: 2 x u32be if flags[group C]: 6 x u32be if flags[group D]: 13 x u8 other decoded bits toggle state without consuming additional bytes Flag-mask semantic names are still provisional. | `0x59C410` |
+| [0x08](./008-0x08-status.md) | SStatus | `u8 flags`, then conditional fixed character (`0x20`), current vitals (`0x10`), experience/currency (`0x08`), and extended status (`0x04`) groups. High bits encode a client state; `0x02` and `0x01` consume no bytes. | `0x59C410` |
 | [0x0A](./010-0x0a-message.md) | SMessage | u8 message_type if message_type == 0x11: u8, u8, string[u8 length] u16be data_length bytes[data_length] | `0x59A100` |
 | [0x0B](./011-0x0b-move.md) | SMove | u8, u16be, u16be, u16be, u16be, u8 | `0x59A550` |
 | [0x0C](./012-0x0c-move-object.md) | SMoveObject | u32be, u16be, u16be, u8 | `0x59A6B0` |

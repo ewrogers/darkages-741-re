@@ -121,6 +121,8 @@ Static map art also references numbered resources:
 - `map_load_hpf_resource` at `0x5FD700` loads `stc%05d.hpf` or `sts%05d.hpf` and applies the HPF adaptive-tree decoder.
 - `map_load_hea_resource` at `0x5C7870` loads `%06d.hea` spatial lookup data.
 
+HEA supplies the optional static spatial darkness mask used by the map-lighting compositor. Time profiles, map-mode gating, lantern masks, and the final color blend are documented in [Map lighting and masks](lighting.md).
+
 The binary layouts and encoder pseudocode are documented in [Graphics and animation files](../file-formats/graphics-and-animation-files.md).
 
 ## SOTP rendering metadata
@@ -146,3 +148,5 @@ The current asset only uses high-nibble values `0x00` and `0x80`. The code prove
 | `map_handle_s_map_row` | `0x5F2A60` | Apply one server map row |
 | `map_finish_loading` | `0x5F2DE0` | Publish the completed map to the world pane |
 | `map_tile_layer_add` | `0x5FA540` | Add a tile placement to a render layer |
+| `lighting_apply_map_mode` | `0x5F26C0` | Apply the `SMapSize` low-nibble lighting mode |
+| `lighting_build_viewport_mask` | `0x5C8760` | Build HEA, flat, and object light masks |

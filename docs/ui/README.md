@@ -5,6 +5,7 @@ The version-741 UI is a C++ pane hierarchy backed by declarative text layouts st
 - [Declarative layout files](layout-files.md)
 - [UI loading, input, and rendering](runtime.md)
 - [UI pane class catalog](pane-classes.md)
+- [SStatus character and bottom-bar field mapping](../network/server/008-0x08-status.md)
 
 The executable retains Microsoft Visual C++ RTTI names for hundreds of pane and control classes. These names are authoritative internal names from this client, not names inferred from another game.
 

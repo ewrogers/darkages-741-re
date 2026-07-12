@@ -28,12 +28,14 @@
   - [Graphics and animation files](file-formats/graphics-and-animation-files.md)
   - [Table files](file-formats/table-files.md)
   - [Configuration, NFO, profile, and table files](file-formats/config-and-table-files.md)
+  - [Metadata files](file-formats/metadata-files.md)
 
 # Maps
 
 - [Map subsystem](map/README.md)
   - [Map loading and rendering](map/loading-and-rendering.md)
   - [Collision and SOTP flags](map/collision.md)
+  - [Map lighting and masks](map/lighting.md)
 
 # World objects
 

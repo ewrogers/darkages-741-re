@@ -46,10 +46,12 @@ The raw trace lists static reader call sites. Conditional variants and counted r
 
 The handler also applies the visible name and related name/group overlays, then finalizes the actor's displayed state.
 
+One `u8` in the normal appearance variant is stored at packet-object offset `+0x260` and used as the actor light-mask number. It defaults to `1`. When the current map mode is `3`, values greater than zero load `mask1%02d.epf` and attach the resulting light mask to the human object. See [Map lighting and masks](../../map/lighting.md).
+
 ## Verification status
 
 - Opcode registration: confirmed from the client registry.
 - Packet class name: confirmed from Visual C++ RTTI.
 - Primitive widths and byte order: confirmed from reader implementations.
 - Object identity, coordinates, self split, and appearance variant: confirmed from the handler.
-- Several packed appearance fields and both strings: not fully named.
+- The object light-mask number is confirmed from its renderer use. Several other packed appearance fields and both strings are not fully named.

@@ -6,9 +6,9 @@ This report preserves useful IDA names without committing the binary database. I
 
 - Target: `Darkages.exe` reporting version `741`
 - Preferred image base: `0x400000`
-- Friendly functions exported: `606`
-- Functions with an IDA-inferred signature: `213`
-- Functions still using an unknown signature: `393`
+- Friendly functions exported: `644`
+- Functions with an IDA-inferred signature: `216`
+- Functions still using an unknown signature: `428`
 - Total functions in the IDA database at export time: `11585`
 
 The report includes friendly subsystem names such as `net_`, `input_`, `ui_`, `render_`, `audio_`, and `config_`. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.
@@ -42,14 +42,16 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `audio_` | `2` |
 | `chat_` | `11` |
 | `config_` | `15` |
-| `file_` | `28` |
+| `file_` | `29` |
 | `input_` | `31` |
+| `lighting_` | `15` |
 | `map_` | `36` |
-| `net_` | `361` |
+| `net_` | `364` |
 | `object_` | `32` |
-| `render_` | `18` |
+| `render_` | `23` |
 | `startup_` | `7` |
-| `ui_` | `65` |
+| `ui_` | `77` |
+| `world_` | `2` |
 
 ## `audio_` functions
 
@@ -111,6 +113,7 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `file_fastfile_open_entry` | `0x472470` | `0x2a8` | `void *__thiscall(void *this, const char *name)` |
 | `file_fastfile_read_entry` | `0x472790` | `0xca` | `int __thiscall(void *this, void *entry, void *destination, unsigned int size)` |
 | `file_hea_load` | `0x4875b0` | `0xdb` | `unsigned __int8 __thiscall(void *this, const char *name, void *archive)` |
+| `file_hea_prepare_region_rows` | `0x487380` | `0x22e` | unknown |
 | `file_hea_view_ctor` | `0x487310` | `0x2b` | `void *__thiscall(void *this)` |
 | `file_hpf_codec_singleton` | `0x4ae480` | `0xa` | `void *__cdecl()` |
 | `file_hpf_decode_symbol` | `0x431c40` | `0xdb` | `unsigned int __thiscall(void *this)` |
@@ -162,6 +165,26 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `input_turn_self` | `0x5f0900` | `0x4a` | `void __thiscall(void *this, unsigned char direction)` |
 | `input_world_pane_handle_key_event` | `0x5ce530` | `0x53` | unknown |
 | `input_world_pane_handle_pointer_event` | `0x5ce4e0` | `0x4e` | unknown |
+
+## `lighting_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
+| `lighting_apply_map_mode` | `0x5f26c0` | `0xdc` | unknown |
+| `lighting_apply_viewport_tint` | `0x5ce350` | `0x184` | unknown |
+| `lighting_attach_mask_to_object` | `0x5cca80` | `0x2b5` | unknown |
+| `lighting_build_viewport_mask` | `0x5c8760` | `0x738` | unknown |
+| `lighting_decode_hea_mask_region` | `0x5c8540` | `0x217` | unknown |
+| `lighting_fill_mask_rect` | `0x5b8b50` | `0x10f` | unknown |
+| `lighting_invalidate_object_region` | `0x5cd000` | `0x1f9` | unknown |
+| `lighting_invalidate_removed_object_region` | `0x5cd200` | `0xdd` | unknown |
+| `lighting_lookup_map_profile` | `0x4aead0` | `0x151` | unknown |
+| `lighting_merge_mask_max` | `0x6036b0` | `0x93` | unknown |
+| `lighting_metadata_ctor` | `0x4ae8d0` | `0xa4` | unknown |
+| `lighting_metadata_singleton` | `0x5f65c0` | `0xa` | unknown |
+| `lighting_object_mask_ctor` | `0x5b8c90` | `0xe8` | unknown |
+| `lighting_request_metadata` | `0x4aea80` | `0x49` | unknown |
+| `lighting_update_for_server_hour` | `0x5ef360` | `0x1ad` | unknown |
 
 ## `map_` functions
 
@@ -292,6 +315,7 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_handle_s_bad_guy` | `0x5f7900` | `0x195` | `char __thiscall(void *this, void *packet)` |
 | `net_handle_s_block_input` | `0x5f7aa0` | `0x40` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_change_direction` | `0x5f3bb0` | `0xc8` | `unsigned char __thiscall(void *this, const void *packet)` |
+| `net_handle_s_change_hour` | `0x5f2160` | `0x26` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_damage_effect` | `0x5f40f0` | `0x7e` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_draw_human_objects` | `0x5f3340` | `0x5f0` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_draw_objects` | `0x5f3150` | `0x1eb` | `unsigned char __thiscall(void *this, const void *packet)` |
@@ -304,6 +328,7 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_handle_s_request_crc` | `0x5f2cf0` | `0xe4` | `char __stdcall(int)` |
 | `net_handle_s_say` | `0x5f3e00` | `0xa9` | unknown |
 | `net_handle_s_show_paper` | `0x5f7250` | `0x87` | `char __stdcall(int)` |
+| `net_handle_s_status` | `0x5f1a10` | `0x5a` | unknown |
 | `net_handle_s_transfer_server_packet` | `0x4b9510` | `0x162` | `char __stdcall(int)` |
 | `net_handle_s_user_appearance` | `0x5f2e90` | `0x67` | `unsigned char __thiscall(void *this, const void *packet)` |
 | `net_handle_s_user_position` | `0x5f2f00` | `0xb6` | `unsigned char __thiscall(void *this, const void *packet)` |
@@ -518,6 +543,7 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_s_static_object_state_ctor` | `0x59c260` | `0x21` | unknown |
 | `net_s_static_object_state_deserialize` | `0x59c290` | `0x8d` | unknown |
 | `net_s_status_ctor` | `0x59c3e0` | `0x21` | unknown |
+| `net_s_status_decode_state` | `0x5638f0` | `0x11` | unknown |
 | `net_s_status_deserialize` | `0x59c410` | `0x3dc` | unknown |
 | `net_s_stipulation_ctor` | `0x59c8b0` | `0x21` | unknown |
 | `net_s_stipulation_deserialize` | `0x59c8e0` | `0x68` | unknown |
@@ -612,6 +638,10 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | Function | Address | Size | IDA-inferred signature |
 |---|---:|---:|---|
 | `render_allocate_palette_id` | `0x548610` | `0x32` | `int __thiscall(void *this)` |
+| `render_blend_rgb555_mask` | `0x603f00` | `0x129` | unknown |
+| `render_blend_rgb555_pixel` | `0x6040c0` | `0x82` | `unsigned short __cdecl(unsigned short source, unsigned short tint, unsigned char light)` |
+| `render_blend_rgb565_mask` | `0x603a90` | `0x129` | unknown |
+| `render_blend_rgb565_pixel` | `0x604030` | `0x82` | `unsigned short __cdecl(unsigned short source, unsigned short tint, unsigned char light)` |
 | `render_blit_image` | `0x44fb80` | `0x1848` | unknown |
 | `render_convert_rgb24_palette` | `0x593b00` | `0xae` | `void __thiscall(void *this, unsigned __int16 *destination, const unsigned __int8 *rgb)` |
 | `render_decode_image_entry` | `0x48b530` | `0x65f` | unknown |
@@ -628,6 +658,7 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `render_load_static_palette_table` | `0x546ee0` | `0x32d` | unknown |
 | `render_register_rgb24_palette` | `0x548650` | `0x68` | `unsigned __int16 *__thiscall(void *this, int palette_id, const void *rgb)` |
 | `render_select_mpf_frame` | `0x48d0e0` | `0x492` | unknown |
+| `render_world_frame_with_lighting` | `0x5ce280` | `0xc3` | unknown |
 | `render_write_screenshot_bmp` | `0x5537f0` | `0x7c9` | unknown |
 
 ## `startup_` functions
@@ -647,6 +678,9 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | Function | Address | Size | IDA-inferred signature |
 |---|---:|---:|---|
 | `ui_agreement_dialog_ctor` | `0x402430` | `0x427` | unknown |
+| `ui_bottom_buttons_apply_s_status` | `0x41bb80` | `0x81` | unknown |
+| `ui_bottom_status_apply_s_status` | `0x59d6c0` | `0x109` | unknown |
+| `ui_bottom_status_dispatch_server_message` | `0x59d1d0` | `0x114` | unknown |
 | `ui_build_main_layout_geometry` | `0x5aa880` | `0x11a8` | unknown |
 | `ui_bulletin_dialog_ctor` | `0x41d8b0` | `0x434` | unknown |
 | `ui_change_password_dialog_ctor` | `0x4bb2a0` | `0x56f` | unknown |
@@ -660,6 +694,10 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `ui_create_user_dialog_ctor` | `0x43c370` | `0xd05` | unknown |
 | `ui_dismiss_paper_window` | `0x54a9f0` | `0x34` | `int __thiscall(_DWORD, _DWORD)` |
 | `ui_event_info_dialog_ctor` | `0x5af460` | `0x3f6` | unknown |
+| `ui_extra_status_apply_s_status` | `0x575fb0` | `0x82` | unknown |
+| `ui_extra_status_dispatch_server_message` | `0x576040` | `0x55` | unknown |
+| `ui_extra_status_format_values` | `0x575aa0` | `0x147` | unknown |
+| `ui_extra_status_info_pane_ctor` | `0x575680` | `0x192` | unknown |
 | `ui_handle_paper_close_action` | `0x54a9b0` | `0x39` | `int __thiscall(_DWORD *this, int, int)` |
 | `ui_hide_loading_clock_overlay` | `0x42e890` | `0x2c` | unknown |
 | `ui_hot_key_pane_ctor` | `0x488320` | `0x3f2` | unknown |
@@ -708,6 +746,18 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `ui_score_pane_append_s_message` | `0x552120` | `0x84` | `int __stdcall(const char *, __int16)` |
 | `ui_score_pane_ctor` | `0x551260` | `0x23b` | unknown |
 | `ui_score_pane_handle_s_message` | `0x5521b0` | `0x39` | `char __stdcall(int)` |
+| `ui_self_profile_apply_s_status` | `0x5b0c40` | `0xcc` | unknown |
 | `ui_show_loading_clock_overlay` | `0x42e800` | `0x8b` | unknown |
 | `ui_skill_spell_info_dialog_ctor` | `0x5ae090` | `0x583` | unknown |
+| `ui_status_info_apply_s_status` | `0x574b30` | `0x21a` | unknown |
+| `ui_status_info_dispatch_server_message` | `0x573f90` | `0x9e` | unknown |
+| `ui_status_info_format_values` | `0x5752d0` | `0x2e1` | unknown |
+| `ui_status_info_pane_ctor` | `0x573810` | `0x2fc` | unknown |
 | `ui_window_message_dialog_ctor` | `0x4488c0` | `0x549` | `int __stdcall(int, void *Src, int, char)` |
+
+## `world_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
+| `world_user_func_apply_s_status` | `0x5fcfd0` | `0x1e2` | unknown |
+| `world_user_func_ctor` | `0x5fc5f0` | `0x191` | unknown |

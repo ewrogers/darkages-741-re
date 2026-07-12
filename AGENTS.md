@@ -107,7 +107,7 @@ After connecting, verify the session with a small read-only request such as look
 - `docs/file-formats/`: archive, compression, configuration, NFO, profile, and table formats
 - `docs/functions/`: generated friendly function index and contribution guide
 - `docs/input/`: Win32 messages, internal events, focus, keyboard, mouse, modifiers, and world actions
-- `docs/map/`: map loading, tile rendering, SOTP flags, and collision
+- `docs/map/`: map loading, tile rendering, SOTP flags, collision, lighting, and masks
 - `docs/network/`: combined opcode index plus client and server packet pages
 - `docs/security/`: anti-abuse, installation identity, and deliberate termination behavior
 - `docs/ui/`: UI layout grammar, loading, input, rendering, and pane classes
