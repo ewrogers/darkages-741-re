@@ -12,6 +12,8 @@ Outgoing packets are assembled as an unframed body whose first byte is the CPack
 
 The size field counts the transformed body, including its opcode and any sequence/integrity trailer. It does not include the three framing bytes.
 
+The logical length passed to `net_submit_client_packet` includes the opcode and excludes its local trailing zero. The function adds that sentinel itself. It is the preferred logical egress hook because monitoring, blocking, and replacement occur before wrapper, transform, and framing state. See [Hooks and injection](../event-proxy/hooks-and-injection.md#logical-cpacket-egress).
+
 ## Common transformation policy
 
 - No common transform: `0x00`, `0x10`, `0x48`.

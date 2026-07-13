@@ -2,7 +2,7 @@
 
 ## Input manager state
 
-`input_manager_singleton` at `0x427380` returns the global manager stored in `dword_6D9260`. Its constructor is `input_manager_ctor` at `0x4667E0`.
+`input_manager_singleton` at `0x427380` returns the global manager stored in `input_manager_instance` at `0x6D9260`. Its constructor is `input_manager_ctor` at `0x4667E0`.
 
 Important recovered offsets are:
 
@@ -29,7 +29,7 @@ Pointer event flags also include `0x10` while the left button is held and `0x20`
 
 ## Event objects
 
-`input_event_ctor` at `0x466680` initializes the common event object. The event type is a signed byte at `+0x0C` and starts as `0xFF`.
+`input_event_ctor` at `0x466680` initializes the common `0xA8`-byte event object. The event type is a signed byte at `+0x0C` and starts as `0xFF`.
 
 Confirmed event values are:
 
@@ -54,7 +54,7 @@ Double-click detection uses at most `1000` milliseconds and a Manhattan coordina
 
 ## Dispatch order
 
-`net_dispatch_received_message` at `0x4647C0` is a generic client message dispatcher despite its current project name. Its observed priority is:
+`input_dispatch_event` at `0x4647C0` is the central logical-event dispatcher. Its observed priority is:
 
 1. A temporary key-sequence capture can consume matching key events.
 2. The active focused or modal pane at application offset `+0x40` receives the event first.
@@ -63,6 +63,8 @@ Double-click detection uses at most `1000` milliseconds and a Manhattan coordina
 5. World input receives events that survive the UI layers.
 
 The pane-tree walk performs hit testing, coordinate conversion, and child traversal. The value at pane offset `+0x184` participates in pane priority or stacking decisions.
+
+`input_dispatch_or_queue_event` at `0x4670F0` dispatches directly only when called on the thread stored in `app_main_thread_id` at `0x740400`. Other producers copy the complete event into the application's synchronized queue. `input_process_main_thread_events_and_timers` at `0x464180` drains those copies on the main thread.
 
 `input_dispatch_event_to_pane` at `0x464F40` selects a vtable slot by message family:
 

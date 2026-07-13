@@ -6,6 +6,16 @@
 
 - [Friendly function index](functions/README.md)
 
+# Architecture
+
+- [Client architecture overview](architecture/overview.md)
+
+# Event proxy
+
+- [Event proxy architecture](event-proxy/architecture.md)
+- [Hooks and injection](event-proxy/hooks-and-injection.md)
+- [Version profiles](event-proxy/version-profiles.md)
+
 # Client security
 
 - [Client security behavior](security/README.md)

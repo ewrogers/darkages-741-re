@@ -27,10 +27,13 @@ net_decrypt_server_packet_body (0x567DE0)
     optional packet transformation/decryption
     |
 net_queue_received_packet_bytes (0x467060)
-    copy/queue completed packet
+    copy decoded body and construct event type 0x13
     |
-net_dispatch_received_message (0x4647C0)
-    message dispatch
+input_dispatch_or_queue_event (0x4670F0)
+    copy off-thread events into the synchronized main queue
+    |
+input_dispatch_event (0x4647C0)
+    final main-thread logical event dispatch
     |
 net_deserialize_server_packet (0x5963F0)
     opcode registry and packet-object deserialization
@@ -47,6 +50,10 @@ The received-message wrapper retains two useful representations:
 |---:|---|
 | `+0x14` | raw post-decrypt packet body, beginning with the opcode |
 | `+0x1C` | optional RTTI-deserialized packet object |
+
+The complete event object is `0xA8` bytes. Its raw body pointer is client-owned. `input_dispatch_event_on_main_thread` at `0x463F70` frees that body after dispatch, including when the central dispatcher reports that the event was consumed.
+
+`net_queue_received_packet_bytes` is the preferred decoded receive hook. Its input begins with the opcode, its length excludes the local trailing zero, and it makes its own `length + 1` copy before returning. See [Hooks and injection](../event-proxy/hooks-and-injection.md#decoded-spacket-ingress).
 
 An unregistered opcode can therefore produce no object at `+0x1C` and still be handled from the raw body at `+0x14`. `net_dispatch_game_server_message` manually checks unregistered opcodes `0x1B`, `0x31`, `0x34`, `0x35`, `0x36`, and `0x4F`. It also checks registered opcodes `0x06`, `0x2E`, `0x3B`, `0x3C`, and `0x42` through the raw representation.
 

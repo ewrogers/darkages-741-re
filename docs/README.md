@@ -4,6 +4,9 @@ These notes document the version-741 client and its packet-processing behavior.
 
 - [Combined SPacket/CPacket opcode master list](network/README.md)
 - [Friendly function index](functions/README.md)
+- [Client architecture and thread ownership](architecture/overview.md)
+- [Event proxy architecture, hooks, and injection](event-proxy/architecture.md)
+- [Version-741 hook profile](event-proxy/version-profiles.md)
 - [Client startup and subsystem order](client/startup.md)
 - [File formats, transforms, and compression](file-formats/README.md)
 - [User interface layouts, runtime, and pane classes](ui/README.md)

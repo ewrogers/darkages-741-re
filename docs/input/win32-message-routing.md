@@ -2,7 +2,7 @@
 
 ## Message pump
 
-`input_run_message_pump` at `0x4AC750` is a nonblocking `PeekMessageA` loop. It records the main thread ID in `dword_740400`, removes one message at a time, optionally runs a filter callback stored at application offset `+0x1014C`, then calls `TranslateMessage` and `DispatchMessageA`.
+`input_run_message_pump` at `0x4AC750` is a nonblocking `PeekMessageA` loop. It records the main thread ID in `app_main_thread_id` at `0x740400`, removes one message at a time, optionally runs a filter callback stored at application offset `+0x1014C`, then calls `TranslateMessage` and `DispatchMessageA`.
 
 The filter consumes a message by returning zero. When the queue is empty, the client runs its guarded idle or frame callback and checks its exit fields.
 
@@ -39,6 +39,8 @@ for (;;) {
 | Winsock event | `0x0401` | `FD_READ` value `1` enters socket receive; `FD_CLOSE` value `0x20` closes the transport |
 | Custom | `0x0472` | Runs a guarded client maintenance callback; exact purpose is not yet named |
 | Custom dispatch | `0x073C` | Dispatches the message object passed in `wParam` on the main thread, then releases it |
+
+The main HWND is stored at `0x73D938`. A proxy can register its own private window message, post it to this HWND, and handle it in a window-procedure detour to execute bounded commands on the main thread. The existing `0x073C` message takes ownership of a client-allocated event object and should not be reused with foreign allocations.
 
 ## Win32 input translator
 

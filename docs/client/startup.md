@@ -12,7 +12,7 @@ The client enters its own code at `startup_win_main` (`0x57A710`). The normal pa
 4. Create the named mutex `Nexon.SingleInstance`. A second instance exits immediately.
 5. Read `HKCU\Software\KRU\Dark Ages\DisplayMode`. If it is absent, probe DirectDraw and write the selected mode back to the registry.
 6. Call `startup_initialize_client` (`0x4A9F80`).
-7. On success, enter the application loop at `sub_4AC750` and later shut down through `sub_4AC060`.
+7. On success, enter the application loop at `input_run_message_pump` (`0x4AC750`) and later shut down through `app_shutdown` (`0x4AC060`).
 8. If the post-game advertisement fields are set, launch `ad.exe` with the recorded arguments.
 
 The base logical resolution is 640 by 480. `render_detect_display_mode` (`0x57A640`) accepts 16-bit or 32-bit desktop modes. It returns mode 2 at 1280 by 960 or larger, mode 1 below that threshold, and mode 0 for an unsupported depth.
@@ -54,11 +54,15 @@ The important order inside `startup_initialize_client` is:
 | `0x4AB05E` | Show the window |
 | `0x4AB0F2` | Initialize DirectDraw and render surfaces |
 | `0x4AB241` | Load `msg.tbl` from the national archive or disk |
+| `0x4AB376` | Construct the application dispatcher and publish `app_instance` |
+| `0x4AB3DD` | Construct the input manager and its communications worker |
 | `0x4AB891` | Choose and load the regional profile |
 | `0x4ABA61` | Load `Legend.pal` and finish the primary render setup |
 | `0x4ABC3B` | Resolve the local hostname and mark a local `10.x.x.x` address |
 
 `startup_set_working_directory_to_executable` (`0x4AD3A0`) parses the executable path from `GetCommandLineA`, removes the filename, and calls `SetCurrentDirectoryA`. Relative data, music, patch, and configuration paths therefore resolve beside the executable.
+
+The input manager owns the communications object at offset `+0x0C`. During `app_shutdown`, the input manager and communications worker are deleted before the application dispatcher. See [Client architecture](../architecture/overview.md) for the object graph and shutdown consequences.
 
 ## Required archives
 

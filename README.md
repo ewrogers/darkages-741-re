@@ -21,10 +21,11 @@ This is an independent interoperability and preservation effort. It is not affil
 - Legacy and extended fastfile archives, including metadata XOR and zlib 1.1.3 decompression
 - Declarative UI layouts, pane construction, input dispatch, EPF/SPF image loading, and 302 pane-related RTTI records
 - Win32 message routing, internal input events, focus and modal priority, keyboard shortcuts, mouse modifiers, and world actions
+- Main-thread and communications-worker event architecture, validated hook points, ownership rules, and injection adapters
 - Time-of-day lighting metadata, HEA spatial masks, lantern EPF masks, and RGB555/RGB565 viewport blending
 - A version-controlled [friendly function index](docs/functions/README.md) generated from IDA exports
 
-Start with the [documentation index](docs/README.md), the [combined SPacket/CPacket opcode list](docs/network/README.md), or the [client security notes](docs/security/README.md).
+Start with the [documentation index](docs/README.md), the [client architecture overview](docs/architecture/overview.md), the [combined SPacket/CPacket opcode list](docs/network/README.md), or the [client security notes](docs/security/README.md).
 
 ## Documentation site
 
@@ -52,7 +53,9 @@ IDA Free is sufficient for this 32-bit x86 client. The [agent instructions](AGEN
 ```text
 docs/
   SUMMARY.md          mdBook navigation and chapter order
+  architecture/       Thread ownership, object graph, lifecycle, and main data flows
   client/             Startup, client internals, send/receive paths, crypto, and CRC
+  event-proxy/        Hook contracts, execution pumps, injection adapters, and profiles
   file-formats/       Resource archives, compression, configuration, NFO markers, and tables
   functions/          Friendly IDA function index and contribution workflow
   input/              Win32, keyboard, mouse, modal, and world input routing
