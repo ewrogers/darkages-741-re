@@ -9,8 +9,13 @@ export:
   scope: Friendly snake_case names with subsystem prefixes
   signature_source: IDA type information
   total_database_functions: 11585
-  exported_functions: 644
+  exported_functions: 662
 function_groups:
+  app_:
+    - name: app_shutdown
+      address: "0x4ac060"
+      size: "0x6eb"
+      signature: "void __cdecl(void)"
   audio_:
     - name: audio_initialize_miles_driver
       address: "0x5693f0"
@@ -256,6 +261,14 @@ function_groups:
       address: "0x4a9c30"
       size: "0x257"
       signature: "int __stdcall(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)"
+    - name: input_dispatch_event
+      address: "0x4647c0"
+      size: "0x40e"
+      signature: "unsigned char __thiscall(void *this, void *event)"
+    - name: input_dispatch_event_on_main_thread
+      address: "0x463f70"
+      size: "0x7b"
+      signature: "void __thiscall(void *this, void *event)"
     - name: input_dispatch_event_through_pane_tree
       address: "0x464d50"
       size: "0x1ee"
@@ -264,6 +277,14 @@ function_groups:
       address: "0x464f40"
       size: "0xdf"
       signature: null
+    - name: input_dispatch_event_to_pane_tree
+      address: "0x464cf0"
+      size: "0x58"
+      signature: null
+    - name: input_dispatch_or_queue_event
+      address: "0x4670f0"
+      size: "0x3b"
+      signature: "int __stdcall(const void *event)"
     - name: input_emit_char_event
       address: "0x467fe0"
       size: "0xc6"
@@ -308,6 +329,26 @@ function_groups:
       address: "0x466680"
       size: "0x26"
       signature: null
+    - name: input_event_dtor
+      address: "0x4666b0"
+      size: "0x23"
+      signature: null
+    - name: input_event_is_application
+      address: "0x4667a0"
+      size: "0x38"
+      signature: null
+    - name: input_event_is_keyboard_text
+      address: "0x466720"
+      size: "0x38"
+      signature: null
+    - name: input_event_is_network
+      address: "0x466760"
+      size: "0x38"
+      signature: null
+    - name: input_event_is_pointer
+      address: "0x4666e0"
+      size: "0x37"
+      signature: null
     - name: input_handle_world_ground_pointer_event
       address: "0x5efbe0"
       size: "0x2dd"
@@ -328,6 +369,10 @@ function_groups:
       address: "0x4667e0"
       size: "0x29d"
       signature: null
+    - name: input_manager_dtor
+      address: "0x466a80"
+      size: "0xb1"
+      signature: null
     - name: input_manager_singleton
       address: "0x427380"
       size: "0xa"
@@ -343,6 +388,22 @@ function_groups:
     - name: input_open_object_popup_menu
       address: "0x54bdb0"
       size: "0x1d9"
+      signature: null
+    - name: input_pop_queued_event_copy
+      address: "0x463d60"
+      size: "0xa7"
+      signature: null
+    - name: input_process_main_thread_events_and_timers
+      address: "0x464180"
+      size: "0x2a3"
+      signature: "void __thiscall(void *this)"
+    - name: input_queue_event_copy
+      address: "0x463d10"
+      size: "0x4e"
+      signature: null
+    - name: input_queue_event_to_main_thread
+      address: "0x463f50"
+      size: "0x19"
       signature: null
     - name: input_run_message_pump
       address: "0x4ac750"
@@ -883,14 +944,6 @@ function_groups:
       address: "0x5ed990"
       size: "0x7fd"
       signature: "char __thiscall(_DWORD *this, int)"
-    - name: net_dispatch_or_queue_received_message
-      address: "0x4670f0"
-      size: "0x3b"
-      signature: "int __stdcall(void *Src)"
-    - name: net_dispatch_received_message
-      address: "0x4647c0"
-      size: "0x40e"
-      signature: null
     - name: net_encrypt_client_packet_body
       address: "0x567fb0"
       size: "0x271"
@@ -1326,15 +1379,19 @@ function_groups:
     - name: net_poll_receive
       address: "0x564300"
       size: "0xc8"
-      signature: null
+      signature: "void __thiscall(void *this)"
     - name: net_process_incoming_transport_data
       address: "0x564870"
       size: "0x2c"
       signature: "int __thiscall(_DWORD, _DWORD)"
+    - name: net_queue_receive_poll
+      address: "0x563dc0"
+      size: "0x19"
+      signature: null
     - name: net_queue_received_packet_bytes
       address: "0x467060"
       size: "0x67"
-      signature: "int __stdcall(void *Src, size_t Size)"
+      signature: "void __stdcall(const void *source, int size)"
     - name: net_queue_set_packet_salt_seed
       address: "0x568380"
       size: "0x1d"
@@ -1990,7 +2047,7 @@ function_groups:
     - name: net_submit_client_packet
       address: "0x563e00"
       size: "0x262"
-      signature: "int __thiscall(int this, char *Src, __int16)"
+      signature: "void __thiscall(void *this, const unsigned char *source, short size)"
     - name: net_transport_read_byte
       address: "0x567870"
       size: "0x2f2"
@@ -2591,6 +2648,23 @@ function_groups:
       address: "0x4488c0"
       size: "0x549"
       signature: "int __stdcall(int, void *Src, int, char)"
+  util_:
+    - name: util_ring_buffer_push_wait
+      address: "0x54eb00"
+      size: "0xaa"
+      signature: null
+    - name: util_worker_thread_ctor
+      address: "0x585b10"
+      size: "0x283"
+      signature: null
+    - name: util_worker_thread_dtor
+      address: "0x585da0"
+      size: "0x230"
+      signature: null
+    - name: util_worker_thread_loop
+      address: "0x586350"
+      size: "0x1ba"
+      signature: null
   world_:
     - name: world_user_func_apply_s_status
       address: "0x5fcfd0"
