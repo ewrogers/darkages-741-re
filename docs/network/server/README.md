@@ -19,7 +19,7 @@ The 61-entry table below remains the source of truth for packet-object support i
 
 ## Manual raw-body handlers outside the RTTI registry
 
-`input_dispatch_event` retains both the raw post-decrypt body and, when available, the packet object created by `net_deserialize_server_packet`. `net_dispatch_game_server_message` at `0x5ED990` uses both representations. Consequently, an opcode may be supported even when no factory is registered for it.
+`event_dispatch` retains both the raw post-decrypt body and, when available, the packet object created by `net_deserialize_server_packet`. `net_dispatch_game_server_message` at `0x5ED990` uses both representations. Consequently, an opcode may be supported even when no factory is registered for it.
 
 These six opcodes are checked by the game dispatcher but are absent from the 61-entry RTTI registry:
 

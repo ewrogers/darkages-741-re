@@ -9,8 +9,8 @@ input_run_message_pump (0x4AC750)
   -> input_client_window_proc (0x4A9C30)
      -> input_translate_win32_message (0x48E980)
         -> input_emit_*_event (0x4672F0 and nearby)
-           -> input_dispatch_or_queue_event (0x4670F0)
-              -> input_dispatch_event (0x4647C0)
+           -> event_dispatch_or_queue (0x4670F0)
+              -> event_dispatch (0x4647C0)
                  -> focused or modal pane
                  -> visible pane tree
                  -> world handlers when not consumed

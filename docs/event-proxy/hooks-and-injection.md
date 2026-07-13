@@ -6,18 +6,18 @@ The safest hook points expose logical data before the client transfers ownership
 
 | Hook | Address | ABI | Block result | Replacement lifetime |
 |---|---:|---|---|---|
-| `input_dispatch_event` | `0x4647C0` | `u8 __thiscall(void *app, void *event)` | Skip original, return `1` | Event is client-owned; copy anything retained |
-| `net_queue_received_packet_bytes` | `0x467060` | `void __stdcall(const void *body, int length)` | Skip original | Original copies synchronously |
+| `event_dispatch` | `0x4647C0` | `u8 __thiscall(void *event_dispatcher, void *event)` | Skip original, return `1` | Event is client-owned; copy anything retained |
+| `event_post_socket_bytes` | `0x467060` | `void __thiscall(void *event_manager, const void *body, int length)` | Skip original | Original copies synchronously |
 | `net_submit_client_packet` | `0x563E00` | `void __thiscall(void *communications, const u8 *body, s16 length)` | Skip original | Original copies synchronously |
 | `net_poll_receive` | `0x564300` | `void __thiscall(void *communications)` | Not a policy hook | Proxy queue owns commands until drained |
 | `input_client_window_proc` | `0x4A9C30` | Win32 `WNDPROC` | Return a result for the private proxy message only | Proxy queue owns commands until drained |
 | `app_shutdown` | `0x4AC060` | `void __cdecl(void)` | Call original after proxy teardown | No new work after entry |
 
-`input_dispatch_event_through_pane_tree` at `0x464D50` is useful for pane diagnostics, but it is recursive and may observe one logical event more than once. It is not the primary event hook.
+`event_dispatch_hierarchy` at `0x464D50` is useful for pane diagnostics, but it is recursive and may observe one logical event more than once. It is not the primary event hook.
 
 ## Central logical event hook
 
-Every final logical event reaches `input_dispatch_event` on the main thread. The event object is `0xA8` bytes and begins with this confirmed common header:
+Every final logical event reaches `event_dispatch` on the main thread. The event object is `0xA8` bytes and begins with this confirmed common header:
 
 ```c
 struct InputEventHeader {
@@ -58,7 +58,7 @@ The central dispatcher may translate pointer coordinates and may create and rele
 
 ### Blocking and cleanup
 
-Returning `1` means consumed. The caller, `input_dispatch_event_on_main_thread` at `0x463F70`, still performs payload cleanup after the central dispatcher returns.
+Returning `1` means consumed. The caller, `event_dispatcher_process_event` at `0x463F70`, still performs payload cleanup after the central dispatcher returns.
 
 For network event type `0x13`, the caller frees the raw buffer at `+0x14` with the communications object's allocator. The central dispatcher owns only the temporary packet object at `+0x1C`. A hook that blocks the event must not free either field.
 
@@ -66,7 +66,7 @@ Use decoded ingress for network-body replacement. Replacing a network pointer in
 
 ## Decoded SPacket ingress
 
-`net_queue_received_packet_bytes` is called after a complete frame has been transformed. Its input is:
+`event_post_socket_bytes` is called as an EventMan method after a complete frame has been transformed. Its input is:
 
 ```text
 [u8 opcode] [payload...]
@@ -113,7 +113,8 @@ void hook_server_body(const u8 *body, int length)
 Execute this adapter through the communications command pump:
 
 ```c
-net_queue_received_packet_bytes(body, length);
+event_manager = event_manager_get_instance();
+event_post_socket_bytes(event_manager, body, length);
 ```
 
 The adapter uses the client's allocator, creates the correct event, and queues a full `0xA8` copy to the main thread because the call originates on the communications worker. Normal event cleanup later releases the raw body.
@@ -174,15 +175,15 @@ For deterministic logical events, post a proxy command to the main-thread pump a
 
 | Address | Emitter |
 |---:|---|
-| `0x4672F0` | `input_emit_mouse_move_event` |
-| `0x4673F0` | `input_emit_left_button_down_event` |
-| `0x467680` | `input_emit_left_button_up_event` |
-| `0x467790` | `input_emit_right_button_down_event` |
-| `0x467A20` | `input_emit_right_button_up_event` |
-| `0x467B30` | `input_emit_mouse_wheel_event` |
-| `0x467C10` | `input_emit_key_down_event` |
-| `0x467E30` | `input_emit_key_up_event` |
-| `0x467FE0` | `input_emit_char_event` |
+| `0x4672F0` | `event_dispatch_mouse_move` |
+| `0x4673F0` | `event_dispatch_left_button_down` |
+| `0x467680` | `event_dispatch_left_button_up` |
+| `0x467790` | `event_dispatch_right_button_down` |
+| `0x467A20` | `event_dispatch_right_button_up` |
+| `0x467B30` | `event_dispatch_mouse_wheel` |
+| `0x467C10` | `event_dispatch_key_down` |
+| `0x467E30` | `event_dispatch_key_up` |
+| `0x467FE0` | `event_dispatch_char` |
 
 These functions update input-manager state as well as dispatching. Their complete argument types are not yet proven, so validate each call signature from native callers before exposing it as a controller command.
 

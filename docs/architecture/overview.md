@@ -6,32 +6,32 @@ This split determines where monitoring and injection code may safely run.
 
 ## Object graph
 
-`startup_initialize_client` at `0x4A9F80` constructs the application dispatcher first, then the input manager and communications object.
+`startup_initialize_client` at `0x4A9F80` constructs the EventDispatcher first, then EventMan and its communications object.
 
 | Static address or offset | Meaning |
 |---:|---|
 | `0x73D938` | Main window handle, currently named `hWndParent` in IDA |
-| `0x73D944` | Published application dispatcher pointer, `app_instance` |
-| `0x6D9220` | Second published application pointer, `app_singleton` |
-| `0x6D9260` | Input manager pointer, `input_manager_instance` |
+| `0x73D944` | Published EventDispatcher pointer, `event_dispatcher_instance` |
+| `0x6D9220` | Second published EventDispatcher pointer, `event_dispatcher_singleton` |
+| `0x6D9260` | EventMan pointer, `event_manager_instance` |
 | `0x73D958` | Communications object pointer, `net_communications_instance` |
 | `0x740400` | Main thread ID, `app_main_thread_id` |
-| input manager `+0x0C` | Owned communications object |
+| EventMan `+0x0C` | Owned communications object |
 | communications `+0x480CC` | TCP socket |
 
-The application object is `0x1BC` bytes. The input manager is `0x45C` bytes. The communications object is `0x780E4` bytes.
+The EventDispatcher object is `0x1BC` bytes. EventMan is `0x45C` bytes. The communications object is `0x780E4` bytes.
 
 ## Main thread
 
 `input_run_message_pump` at `0x4AC750` uses `PeekMessageA`. A Win32 message is translated by `input_client_window_proc` at `0x4A9C30` and `input_translate_win32_message` at `0x48E980`. Mouse, keyboard, character, and IME messages become the client's own `0xA8`-byte event objects.
 
-When the Win32 queue is empty, application vtable slot `+0x08` calls `input_process_main_thread_events_and_timers` at `0x464180`. That function:
+When the Win32 queue is empty, EventDispatcher vtable slot `+0x08` calls `event_dispatcher_tick` at `0x464180`. That function:
 
 1. Drains copied events from the synchronized application queue.
 2. Dispatches each event on the main thread.
 3. Processes up to 40 due timers.
 
-The final common routing point is `input_dispatch_event` at `0x4647C0`. It routes focused or modal panes first, then the visible pane hierarchy. Network receive is event type `0x13`, so decoded packets join the same main-thread event system as input.
+The final common routing point is `event_dispatch` at `0x4647C0`. It routes focused or modal panes first, then the visible pane hierarchy. Network receive is event type `0x13`, so decoded packets join the same main-thread event system as input.
 
 ## Communications worker
 
@@ -57,17 +57,17 @@ After every wait cycle, including a semaphore wake with no native queue record, 
 WSOCK32 recv
   -> net_receive_binary_framed_data (0x567070)
   -> net_decrypt_server_packet_body (0x567DE0)
-  -> net_queue_received_packet_bytes (0x467060)
-  -> net_wrap_received_packet_message (0x468220)
-  -> input_dispatch_or_queue_event (0x4670F0)
+  -> event_post_socket_bytes (0x467060)
+  -> event_queue_socket_packet (0x468220)
+  -> event_dispatch_or_queue (0x4670F0)
   -> synchronized 0xA8 event copy
-  -> input_process_main_thread_events_and_timers (0x464180)
-  -> input_dispatch_event (0x4647C0)
+  -> event_dispatcher_tick (0x464180)
+  -> event_dispatch (0x4647C0)
 ```
 
-`net_queue_received_packet_bytes` receives a decoded logical body beginning with the opcode. It allocates `length + 1` bytes from the client allocator, copies the body, and appends a zero byte. The wrapper places that buffer at event offset `+0x14`, the logical length at `+0x18`, and an initially null packet object at `+0x1C`.
+`event_post_socket_bytes` receives a decoded logical body beginning with the opcode. It allocates `length + 1` bytes from the client allocator, copies the body, and appends a zero byte. `event_queue_socket_packet` places that buffer at event offset `+0x14`, the logical length at `+0x18`, and an initially null packet object at `+0x1C`.
 
-`input_dispatch_or_queue_event` compares the current thread ID with `app_main_thread_id`. Events produced by the communications worker are copied into the synchronized queue. Main-thread producers dispatch directly.
+`event_dispatch_or_queue` compares the current thread ID with `app_main_thread_id`. Events produced by the communications worker are copied into the synchronized EventDispatcher queue. Main-thread producers dispatch directly.
 
 ## Send flow
 
@@ -85,8 +85,8 @@ packet builder
 
 ## Shutdown order
 
-`app_shutdown` at `0x4AC060` is the process-level shutdown boundary. At `0x4AC2B3` it deletes the input manager, which destroys the communications object and worker before the application dispatcher is deleted.
+`app_shutdown` at `0x4AC060` is the process-level shutdown boundary. At `0x4AC2B3` it deletes EventMan, which destroys the communications object and worker before EventDispatcher is deleted.
 
-The worker base destructor at `0x585DA0` can use `TerminateThread`. Any injected work, hooks, or controller queues must therefore stop and drain before the original shutdown path destroys the input manager.
+The worker base destructor at `0x585DA0` can use `TerminateThread`. Any injected work, hooks, or controller queues must therefore stop and drain before the original shutdown path destroys EventMan.
 
 See [Event proxy architecture](../event-proxy/architecture.md) for the implementation consequences and [version profiles](../event-proxy/version-profiles.md) for exact addresses and validation bytes.

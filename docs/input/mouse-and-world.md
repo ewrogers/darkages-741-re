@@ -56,4 +56,4 @@ This is a client-side convenience path. The server still receives ordinary `CMov
 
 ## Double-click and wheel
 
-The input manager generates separate left and right double-click event types. Whether they cause an action depends on the pane under the pointer. The mouse wheel is similarly converted into internal type `7` and routed to the focused or hit-tested pane before the world.
+EventMan generates separate left and right double-click event types. Whether they cause an action depends on the pane under the pointer. The mouse wheel is similarly converted into internal type `7` and routed to the focused or hit-tested pane before the world.

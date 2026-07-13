@@ -2,9 +2,9 @@
 
 ## Scan-code translation
 
-`input_emit_key_down_event` at `0x467C10` receives the hardware scan code extracted from bits `16..23` of Win32 `lParam`. If the extended-key bit at bit `24` is set, the translator adds `0x80` before lookup.
+`event_dispatch_key_down` at `0x467C10` receives the hardware scan code extracted from bits `16..23` of Win32 `lParam`. If the extended-key bit at bit `24` is set, the translator adds `0x80` before lookup.
 
-The normal and shifted translation tables are stored inside the input manager. Confirmed internal arrow codes are:
+The normal and shifted translation tables are stored inside EventMan. Confirmed internal arrow codes are:
 
 | Key | Extended scan | Internal code |
 |---|---:|---:|

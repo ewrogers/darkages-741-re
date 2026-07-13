@@ -37,7 +37,7 @@ The raw trace lists static reader call sites. Conditional variants and counted r
 
 The handler reads the state byte stored at packet offset `+0x10`:
 
-- State `0` calls `input_begin_server_block` at `0x466CC0`. Held mouse buttons are released internally, then a centered loading-clock overlay is shown.
-- State `1` calls `input_end_server_block` at `0x466D00` and removes the overlay.
+- State `0` calls `event_manager_begin_input_block` at `0x466CC0`. Held mouse buttons are released internally, then a centered loading-clock overlay is shown.
+- State `1` calls `event_manager_end_input_block` at `0x466D00` and removes the overlay.
 
 `ui_loading_clock_pane_ctor` at `0x42E8C0` loads `lodclk.epf`. The conditional second payload byte is not used by this handler, so its meaning remains unknown.

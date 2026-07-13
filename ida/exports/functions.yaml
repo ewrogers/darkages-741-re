@@ -131,6 +131,135 @@ function_groups:
       address: "0x432340"
       size: "0x319"
       signature: null
+  event_:
+    - name: event_ctor
+      address: "0x466680"
+      size: "0x26"
+      signature: null
+    - name: event_dispatch
+      address: "0x4647c0"
+      size: "0x40e"
+      signature: "unsigned char __thiscall(void *event_dispatcher, void *event)"
+    - name: event_dispatch_char
+      address: "0x467fe0"
+      size: "0xc6"
+      signature: null
+    - name: event_dispatch_hierarchy
+      address: "0x464d50"
+      size: "0x1ee"
+      signature: null
+    - name: event_dispatch_key_down
+      address: "0x467c10"
+      size: "0x218"
+      signature: null
+    - name: event_dispatch_key_up
+      address: "0x467e30"
+      size: "0x1aa"
+      signature: null
+    - name: event_dispatch_left_button_down
+      address: "0x4673f0"
+      size: "0x28b"
+      signature: null
+    - name: event_dispatch_left_button_up
+      address: "0x467680"
+      size: "0x102"
+      signature: null
+    - name: event_dispatch_mouse_move
+      address: "0x4672f0"
+      size: "0xf8"
+      signature: null
+    - name: event_dispatch_mouse_wheel
+      address: "0x467b30"
+      size: "0xd8"
+      signature: null
+    - name: event_dispatch_or_queue
+      address: "0x4670f0"
+      size: "0x3b"
+      signature: "void __stdcall(const void *event)"
+    - name: event_dispatch_pane_tree
+      address: "0x464cf0"
+      size: "0x58"
+      signature: null
+    - name: event_dispatch_right_button_down
+      address: "0x467790"
+      size: "0x28a"
+      signature: null
+    - name: event_dispatch_right_button_up
+      address: "0x467a20"
+      size: "0x102"
+      signature: null
+    - name: event_dispatch_to_pane
+      address: "0x464f40"
+      size: "0xdf"
+      signature: null
+    - name: event_dispatcher_pop_event_copy
+      address: "0x463d60"
+      size: "0xa7"
+      signature: null
+    - name: event_dispatcher_process_event
+      address: "0x463f70"
+      size: "0x7b"
+      signature: "void __thiscall(void *event_dispatcher, void *event)"
+    - name: event_dispatcher_queue_event_copy
+      address: "0x463d10"
+      size: "0x4e"
+      signature: "void __thiscall(void *event_dispatcher, const void *event)"
+    - name: event_dispatcher_queue_event_to_main_thread
+      address: "0x463f50"
+      size: "0x19"
+      signature: "void __thiscall(void *event_dispatcher, const void *event)"
+    - name: event_dispatcher_tick
+      address: "0x464180"
+      size: "0x2a3"
+      signature: "void __thiscall(void *event_dispatcher)"
+    - name: event_dtor
+      address: "0x4666b0"
+      size: "0x23"
+      signature: null
+    - name: event_is_application
+      address: "0x4667a0"
+      size: "0x38"
+      signature: null
+    - name: event_is_keyboard_text
+      address: "0x466720"
+      size: "0x38"
+      signature: null
+    - name: event_is_network
+      address: "0x466760"
+      size: "0x38"
+      signature: null
+    - name: event_is_pointer
+      address: "0x4666e0"
+      size: "0x37"
+      signature: null
+    - name: event_manager_begin_input_block
+      address: "0x466cc0"
+      size: "0x40"
+      signature: null
+    - name: event_manager_ctor
+      address: "0x4667e0"
+      size: "0x29d"
+      signature: null
+    - name: event_manager_dtor
+      address: "0x466a80"
+      size: "0xb1"
+      signature: null
+    - name: event_manager_end_input_block
+      address: "0x466d00"
+      size: "0x10"
+      signature: null
+    - name: event_manager_get_instance
+      address: "0x427380"
+      size: "0xa"
+      signature: "void *__cdecl(void)"
+    - name: event_post_socket_bytes
+      address: "0x467060"
+      size: "0x67"
+      signature: "void __thiscall(void *event_manager, const unsigned __int8 *body, int length)"
+    - name: event_queue_socket_packet
+      address: "0x468220"
+      size: "0xbe"
+      signature: "void __thiscall(void *event_manager, unsigned __int8 *body, int length)"
   file_:
     - name: file_efa_decode_frame
       address: "0x457030"
@@ -253,102 +382,10 @@ function_groups:
       address: "0x5f0c40"
       size: "0xd4"
       signature: null
-    - name: input_begin_server_block
-      address: "0x466cc0"
-      size: "0x40"
-      signature: null
     - name: input_client_window_proc
       address: "0x4a9c30"
       size: "0x257"
       signature: "int __stdcall(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)"
-    - name: input_dispatch_event
-      address: "0x4647c0"
-      size: "0x40e"
-      signature: "unsigned char __thiscall(void *this, void *event)"
-    - name: input_dispatch_event_on_main_thread
-      address: "0x463f70"
-      size: "0x7b"
-      signature: "void __thiscall(void *this, void *event)"
-    - name: input_dispatch_event_through_pane_tree
-      address: "0x464d50"
-      size: "0x1ee"
-      signature: null
-    - name: input_dispatch_event_to_pane
-      address: "0x464f40"
-      size: "0xdf"
-      signature: null
-    - name: input_dispatch_event_to_pane_tree
-      address: "0x464cf0"
-      size: "0x58"
-      signature: null
-    - name: input_dispatch_or_queue_event
-      address: "0x4670f0"
-      size: "0x3b"
-      signature: "int __stdcall(const void *event)"
-    - name: input_emit_char_event
-      address: "0x467fe0"
-      size: "0xc6"
-      signature: null
-    - name: input_emit_key_down_event
-      address: "0x467c10"
-      size: "0x218"
-      signature: null
-    - name: input_emit_key_up_event
-      address: "0x467e30"
-      size: "0x1aa"
-      signature: null
-    - name: input_emit_left_button_down_event
-      address: "0x4673f0"
-      size: "0x28b"
-      signature: null
-    - name: input_emit_left_button_up_event
-      address: "0x467680"
-      size: "0x102"
-      signature: null
-    - name: input_emit_mouse_move_event
-      address: "0x4672f0"
-      size: "0xf8"
-      signature: null
-    - name: input_emit_mouse_wheel_event
-      address: "0x467b30"
-      size: "0xd8"
-      signature: null
-    - name: input_emit_right_button_down_event
-      address: "0x467790"
-      size: "0x28a"
-      signature: null
-    - name: input_emit_right_button_up_event
-      address: "0x467a20"
-      size: "0x102"
-      signature: null
-    - name: input_end_server_block
-      address: "0x466d00"
-      size: "0x10"
-      signature: null
-    - name: input_event_ctor
-      address: "0x466680"
-      size: "0x26"
-      signature: null
-    - name: input_event_dtor
-      address: "0x4666b0"
-      size: "0x23"
-      signature: null
-    - name: input_event_is_application
-      address: "0x4667a0"
-      size: "0x38"
-      signature: null
-    - name: input_event_is_keyboard_text
-      address: "0x466720"
-      size: "0x38"
-      signature: null
-    - name: input_event_is_network
-      address: "0x466760"
-      size: "0x38"
-      signature: null
-    - name: input_event_is_pointer
-      address: "0x4666e0"
-      size: "0x37"
-      signature: null
     - name: input_handle_world_ground_pointer_event
       address: "0x5efbe0"
       size: "0x2dd"
@@ -365,18 +402,6 @@ function_groups:
       address: "0x5ef120"
       size: "0x235"
       signature: null
-    - name: input_manager_ctor
-      address: "0x4667e0"
-      size: "0x29d"
-      signature: null
-    - name: input_manager_dtor
-      address: "0x466a80"
-      size: "0xb1"
-      signature: null
-    - name: input_manager_singleton
-      address: "0x427380"
-      size: "0xa"
-      signature: null
     - name: input_map_world_move_key
       address: "0x5f0b50"
       size: "0x55"
@@ -388,22 +413,6 @@ function_groups:
     - name: input_open_object_popup_menu
       address: "0x54bdb0"
       size: "0x1d9"
-      signature: null
-    - name: input_pop_queued_event_copy
-      address: "0x463d60"
-      size: "0xa7"
-      signature: null
-    - name: input_process_main_thread_events_and_timers
-      address: "0x464180"
-      size: "0x2a3"
-      signature: "void __thiscall(void *this)"
-    - name: input_queue_event_copy
-      address: "0x463d10"
-      size: "0x4e"
-      signature: null
-    - name: input_queue_event_to_main_thread
-      address: "0x463f50"
-      size: "0x19"
       signature: null
     - name: input_run_message_pump
       address: "0x4ac750"
@@ -1388,10 +1397,6 @@ function_groups:
       address: "0x563dc0"
       size: "0x19"
       signature: null
-    - name: net_queue_received_packet_bytes
-      address: "0x467060"
-      size: "0x67"
-      signature: "void __stdcall(const void *source, int size)"
     - name: net_queue_set_packet_salt_seed
       address: "0x568380"
       size: "0x1d"
@@ -2052,10 +2057,6 @@ function_groups:
       address: "0x567870"
       size: "0x2f2"
       signature: "char __thiscall(int this, _BYTE *)"
-    - name: net_wrap_received_packet_message
-      address: "0x468220"
-      size: "0xbe"
-      signature: null
     - name: net_write_c_packet_39_header
       address: "0x52c1c0"
       size: "0xa1"

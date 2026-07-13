@@ -8,8 +8,8 @@ The client remains the owner of its native queues, packet transforms, allocators
 
 | Layer | Primary hook | Thread | Purpose |
 |---|---|---|---|
-| Logical event | `input_dispatch_event` at `0x4647C0` | Main | Observe or consume all input, network, and application events |
-| Decoded ingress | `net_queue_received_packet_bytes` at `0x467060` | Communications during native receive | Observe, block, replace, or inject decoded SPacket bodies |
+| Logical event | `event_dispatch` at `0x4647C0` | Main | Observe or consume all input, network, and application events |
+| Decoded ingress | `event_post_socket_bytes` at `0x467060` | Communications during native receive | Observe, block, replace, or inject decoded SPacket bodies |
 | Logical egress | `net_submit_client_packet` at `0x563E00` | Producer thread | Observe, block, or replace untransformed CPacket bodies |
 | Main execution | `input_client_window_proc` at `0x4A9C30` | Main | Drain commands posted with a private registered window message |
 | Communications execution | `net_poll_receive` at `0x564300` | Communications | Drain bounded commands after a worker wake |
@@ -45,7 +45,7 @@ Register a process-unique message with `RegisterWindowMessageA`. Post that messa
 
 Standard `WM_KEY*`, `WM_CHAR`, and `WM_MOUSE*` messages may also be posted directly when Win32-faithful input is desired.
 
-`input_process_main_thread_events_and_timers` at `0x464180` is a viable fallback pump, but a private window message gives an explicit wake and avoids adding work to every idle tick.
+`event_dispatcher_tick` at `0x464180` is a viable fallback pump, but a private window message gives an explicit wake and avoids adding work to every idle tick.
 
 ### Communications-thread wake
 
@@ -104,7 +104,7 @@ The `app_shutdown` detour should perform this sequence once:
 7. Restore detours and IAT entries.
 8. Call the original `app_shutdown`.
 
-`input_manager_dtor` at `0x466A80` is the last object-level boundary before the communications object is deleted. It is useful as a defensive assertion or last-chance gate, but process shutdown should begin at `app_shutdown`.
+`event_manager_dtor` at `0x466A80` is the last object-level boundary before the communications object is deleted. It is useful as a defensive assertion or last-chance gate, but process shutdown should begin at `app_shutdown`.
 
 ## Recommended implementation phases
 

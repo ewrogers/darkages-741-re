@@ -1,8 +1,10 @@
 # Internal events, focus, and modals
 
-## Input manager state
+## EventMan state
 
-`input_manager_singleton` at `0x427380` returns the global manager stored in `input_manager_instance` at `0x6D9260`. Its constructor is `input_manager_ctor` at `0x4667E0`.
+The local binary identifies these objects in startup diagnostics: `"create EventDispatcher"` at `0x677EC8` and `"create EventMan"` at `0x677EF4`. The `event_` names therefore follow both local evidence and the established 4.21 subsystem convention.
+
+`event_manager_get_instance` at `0x427380` returns the global EventMan stored in `event_manager_instance` at `0x6D9260`. Its constructor is `event_manager_ctor` at `0x4667E0`.
 
 Important recovered offsets are:
 
@@ -29,23 +31,23 @@ Pointer event flags also include `0x10` while the left button is held and `0x20`
 
 ## Event objects
 
-`input_event_ctor` at `0x466680` initializes the common `0xA8`-byte event object. The event type is a signed byte at `+0x0C` and starts as `0xFF`.
+`event_ctor` at `0x466680` initializes the common `0xA8`-byte Event object. The event type is a signed byte at `+0x0C` and starts as `0xFF`.
 
 Confirmed event values are:
 
 | Type | Meaning | Emitter |
 |---:|---|---|
-| `0` | Mouse move | `input_emit_mouse_move_event` at `0x4672F0` |
-| `1` | Left button down | `input_emit_left_button_down_event` at `0x4673F0` |
+| `0` | Mouse move | `event_dispatch_mouse_move` at `0x4672F0` |
+| `1` | Left button down | `event_dispatch_left_button_down` at `0x4673F0` |
 | `2` | Left double-click | Same emitter |
-| `3` | Left button up | `input_emit_left_button_up_event` at `0x467680` |
-| `4` | Right button down | `input_emit_right_button_down_event` at `0x467790` |
+| `3` | Left button up | `event_dispatch_left_button_up` at `0x467680` |
+| `4` | Right button down | `event_dispatch_right_button_down` at `0x467790` |
 | `5` | Right double-click | Same emitter |
-| `6` | Right button up | `input_emit_right_button_up_event` at `0x467A20` |
-| `7` | Mouse wheel | `input_emit_mouse_wheel_event` at `0x467B30` |
-| `8` | Key down | `input_emit_key_down_event` at `0x467C10` |
-| `9` | Key up | `input_emit_key_up_event` at `0x467E30` |
-| `0x0B` | Character input | `input_emit_char_event` at `0x467FE0` |
+| `6` | Right button up | `event_dispatch_right_button_up` at `0x467A20` |
+| `7` | Mouse wheel | `event_dispatch_mouse_wheel` at `0x467B30` |
+| `8` | Key down | `event_dispatch_key_down` at `0x467C10` |
+| `9` | Key up | `event_dispatch_key_up` at `0x467E30` |
+| `0x0B` | Character input | `event_dispatch_char` at `0x467FE0` |
 | `0x13` | Network receive | Existing receive pipeline |
 
 IME-related values around this range still need names tied to each constructor.
@@ -54,19 +56,19 @@ Double-click detection uses at most `1000` milliseconds and a Manhattan coordina
 
 ## Dispatch order
 
-`input_dispatch_event` at `0x4647C0` is the central logical-event dispatcher. Its observed priority is:
+`event_dispatch` at `0x4647C0` is the central logical-event dispatcher. Its observed priority is:
 
 1. A temporary key-sequence capture can consume matching key events.
 2. The active focused or modal pane at application offset `+0x40` receives the event first.
 3. Pointer coordinates are converted to that pane's local coordinate space.
-4. If the pane does not consume the event, `input_dispatch_event_through_pane_tree` at `0x464D50` walks visible and active panes.
+4. If the pane does not consume the event, `event_dispatch_hierarchy` at `0x464D50` walks visible and active panes.
 5. World input receives events that survive the UI layers.
 
 The pane-tree walk performs hit testing, coordinate conversion, and child traversal. The value at pane offset `+0x184` participates in pane priority or stacking decisions.
 
-`input_dispatch_or_queue_event` at `0x4670F0` dispatches directly only when called on the thread stored in `app_main_thread_id` at `0x740400`. Other producers copy the complete event into the application's synchronized queue. `input_process_main_thread_events_and_timers` at `0x464180` drains those copies on the main thread.
+`event_dispatch_or_queue` at `0x4670F0` dispatches directly only when called on the thread stored in `app_main_thread_id` at `0x740400`. Other producers copy the complete Event into EventDispatcher's synchronized queue. `event_dispatcher_tick` at `0x464180` drains those copies on the main thread.
 
-`input_dispatch_event_to_pane` at `0x464F40` selects a vtable slot by message family:
+`event_dispatch_to_pane` at `0x464F40` selects a vtable slot by message family:
 
 | Family | Pane vtable offset |
 |---|---:|
@@ -81,7 +83,7 @@ This explains modal behavior without separate Win32 windows. A dialog is a pane 
 
 `net_handle_s_block_input` at `0x5F7AA0` handles `SBlockInput` opcode `0x51`:
 
-- State `0` calls `input_begin_server_block` at `0x466CC0`. It emits releases for held left or right buttons and shows a centered loading-clock overlay.
-- State `1` calls `input_end_server_block` at `0x466D00` and removes the overlay.
+- State `0` calls `event_manager_begin_input_block` at `0x466CC0`. It emits releases for held left or right buttons and shows a centered loading-clock overlay.
+- State `1` calls `event_manager_end_input_block` at `0x466D00` and removes the overlay.
 
 `ui_loading_clock_pane_ctor` at `0x42E8C0` loads `lodclk.epf`. The show and hide entry points are `ui_show_loading_clock_overlay` at `0x42E800` and `ui_hide_loading_clock_overlay` at `0x42E890`.

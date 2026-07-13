@@ -7,8 +7,8 @@ This report preserves useful IDA names without committing the binary database. I
 - Target: `Darkages.exe` reporting version `741`
 - Preferred image base: `0x400000`
 - Friendly functions exported: `662`
-- Functions with an IDA-inferred signature: `221`
-- Functions still using an unknown signature: `441`
+- Functions with an IDA-inferred signature: `225`
+- Functions still using an unknown signature: `437`
 - Total functions in the IDA database at export time: `11585`
 
 The report includes friendly subsystem names such as `net_`, `input_`, `ui_`, `render_`, `audio_`, and `config_`. Generic `sub_...` functions, imports, compiler helpers, and library symbols are excluded until they receive a project name.
@@ -43,11 +43,12 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `audio_` | `2` |
 | `chat_` | `11` |
 | `config_` | `15` |
+| `event_` | `32` |
 | `file_` | `29` |
-| `input_` | `45` |
+| `input_` | `15` |
 | `lighting_` | `15` |
 | `map_` | `36` |
-| `net_` | `363` |
+| `net_` | `361` |
 | `object_` | `32` |
 | `render_` | `23` |
 | `startup_` | `7` |
@@ -104,6 +105,43 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `config_swap_multi_server_text_pairs` | `0x55a650` | `0x18c` | `void __thiscall(void *this)` |
 | `config_write_settings_file` | `0x432340` | `0x319` | unknown |
 
+## `event_` functions
+
+| Function | Address | Size | IDA-inferred signature |
+|---|---:|---:|---|
+| `event_ctor` | `0x466680` | `0x26` | unknown |
+| `event_dispatch` | `0x4647c0` | `0x40e` | `unsigned char __thiscall(void *event_dispatcher, void *event)` |
+| `event_dispatch_char` | `0x467fe0` | `0xc6` | unknown |
+| `event_dispatch_hierarchy` | `0x464d50` | `0x1ee` | unknown |
+| `event_dispatch_key_down` | `0x467c10` | `0x218` | unknown |
+| `event_dispatch_key_up` | `0x467e30` | `0x1aa` | unknown |
+| `event_dispatch_left_button_down` | `0x4673f0` | `0x28b` | unknown |
+| `event_dispatch_left_button_up` | `0x467680` | `0x102` | unknown |
+| `event_dispatch_mouse_move` | `0x4672f0` | `0xf8` | unknown |
+| `event_dispatch_mouse_wheel` | `0x467b30` | `0xd8` | unknown |
+| `event_dispatch_or_queue` | `0x4670f0` | `0x3b` | `void __stdcall(const void *event)` |
+| `event_dispatch_pane_tree` | `0x464cf0` | `0x58` | unknown |
+| `event_dispatch_right_button_down` | `0x467790` | `0x28a` | unknown |
+| `event_dispatch_right_button_up` | `0x467a20` | `0x102` | unknown |
+| `event_dispatch_to_pane` | `0x464f40` | `0xdf` | unknown |
+| `event_dispatcher_pop_event_copy` | `0x463d60` | `0xa7` | unknown |
+| `event_dispatcher_process_event` | `0x463f70` | `0x7b` | `void __thiscall(void *event_dispatcher, void *event)` |
+| `event_dispatcher_queue_event_copy` | `0x463d10` | `0x4e` | `void __thiscall(void *event_dispatcher, const void *event)` |
+| `event_dispatcher_queue_event_to_main_thread` | `0x463f50` | `0x19` | `void __thiscall(void *event_dispatcher, const void *event)` |
+| `event_dispatcher_tick` | `0x464180` | `0x2a3` | `void __thiscall(void *event_dispatcher)` |
+| `event_dtor` | `0x4666b0` | `0x23` | unknown |
+| `event_is_application` | `0x4667a0` | `0x38` | unknown |
+| `event_is_keyboard_text` | `0x466720` | `0x38` | unknown |
+| `event_is_network` | `0x466760` | `0x38` | unknown |
+| `event_is_pointer` | `0x4666e0` | `0x37` | unknown |
+| `event_manager_begin_input_block` | `0x466cc0` | `0x40` | unknown |
+| `event_manager_ctor` | `0x4667e0` | `0x29d` | unknown |
+| `event_manager_dtor` | `0x466a80` | `0xb1` | unknown |
+| `event_manager_end_input_block` | `0x466d00` | `0x10` | unknown |
+| `event_manager_get_instance` | `0x427380` | `0xa` | `void *__cdecl(void)` |
+| `event_post_socket_bytes` | `0x467060` | `0x67` | `void __thiscall(void *event_manager, const unsigned __int8 *body, int length)` |
+| `event_queue_socket_packet` | `0x468220` | `0xbe` | `void __thiscall(void *event_manager, unsigned __int8 *body, int length)` |
+
 ## `file_` functions
 
 | Function | Address | Size | IDA-inferred signature |
@@ -143,44 +181,14 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | Function | Address | Size | IDA-inferred signature |
 |---|---:|---:|---|
 | `input_apply_world_direction` | `0x5f0c40` | `0xd4` | unknown |
-| `input_begin_server_block` | `0x466cc0` | `0x40` | unknown |
 | `input_client_window_proc` | `0x4a9c30` | `0x257` | `int __stdcall(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)` |
-| `input_dispatch_event` | `0x4647c0` | `0x40e` | `unsigned char __thiscall(void *this, void *event)` |
-| `input_dispatch_event_on_main_thread` | `0x463f70` | `0x7b` | `void __thiscall(void *this, void *event)` |
-| `input_dispatch_event_through_pane_tree` | `0x464d50` | `0x1ee` | unknown |
-| `input_dispatch_event_to_pane` | `0x464f40` | `0xdf` | unknown |
-| `input_dispatch_event_to_pane_tree` | `0x464cf0` | `0x58` | unknown |
-| `input_dispatch_or_queue_event` | `0x4670f0` | `0x3b` | `int __stdcall(const void *event)` |
-| `input_emit_char_event` | `0x467fe0` | `0xc6` | unknown |
-| `input_emit_key_down_event` | `0x467c10` | `0x218` | unknown |
-| `input_emit_key_up_event` | `0x467e30` | `0x1aa` | unknown |
-| `input_emit_left_button_down_event` | `0x4673f0` | `0x28b` | unknown |
-| `input_emit_left_button_up_event` | `0x467680` | `0x102` | unknown |
-| `input_emit_mouse_move_event` | `0x4672f0` | `0xf8` | unknown |
-| `input_emit_mouse_wheel_event` | `0x467b30` | `0xd8` | unknown |
-| `input_emit_right_button_down_event` | `0x467790` | `0x28a` | unknown |
-| `input_emit_right_button_up_event` | `0x467a20` | `0x102` | unknown |
-| `input_end_server_block` | `0x466d00` | `0x10` | unknown |
-| `input_event_ctor` | `0x466680` | `0x26` | unknown |
-| `input_event_dtor` | `0x4666b0` | `0x23` | unknown |
-| `input_event_is_application` | `0x4667a0` | `0x38` | unknown |
-| `input_event_is_keyboard_text` | `0x466720` | `0x38` | unknown |
-| `input_event_is_network` | `0x466760` | `0x38` | unknown |
-| `input_event_is_pointer` | `0x4666e0` | `0x37` | unknown |
 | `input_handle_world_ground_pointer_event` | `0x5efbe0` | `0x2dd` | unknown |
 | `input_handle_world_input_event` | `0x5f1480` | `0x106` | `unsigned char __thiscall(void *this, const void *input_event)` |
 | `input_handle_world_key_event` | `0x5f0d20` | `0x728` | unknown |
 | `input_handle_world_object_action` | `0x5ef120` | `0x235` | unknown |
-| `input_manager_ctor` | `0x4667e0` | `0x29d` | unknown |
-| `input_manager_dtor` | `0x466a80` | `0xb1` | unknown |
-| `input_manager_singleton` | `0x427380` | `0xa` | unknown |
 | `input_map_world_move_key` | `0x5f0b50` | `0x55` | unknown |
 | `input_move_to_world_object` | `0x5f4a70` | `0x36a` | unknown |
 | `input_open_object_popup_menu` | `0x54bdb0` | `0x1d9` | unknown |
-| `input_pop_queued_event_copy` | `0x463d60` | `0xa7` | unknown |
-| `input_process_main_thread_events_and_timers` | `0x464180` | `0x2a3` | `void __thiscall(void *this)` |
-| `input_queue_event_copy` | `0x463d10` | `0x4e` | unknown |
-| `input_queue_event_to_main_thread` | `0x463f50` | `0x19` | unknown |
 | `input_run_message_pump` | `0x4ac750` | `0x165` | unknown |
 | `input_translate_win32_message` | `0x48e980` | `0xa6e` | unknown |
 | `input_try_move_self` | `0x5f09e0` | `0x16a` | `void __thiscall(void *this, unsigned char direction)` |
@@ -441,7 +449,6 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_poll_receive` | `0x564300` | `0xc8` | `void __thiscall(void *this)` |
 | `net_process_incoming_transport_data` | `0x564870` | `0x2c` | `int __thiscall(_DWORD, _DWORD)` |
 | `net_queue_receive_poll` | `0x563dc0` | `0x19` | unknown |
-| `net_queue_received_packet_bytes` | `0x467060` | `0x67` | `void __stdcall(const void *source, int size)` |
 | `net_queue_set_packet_salt_seed` | `0x568380` | `0x1d` | unknown |
 | `net_queue_set_primary_packet_key` | `0x5683a0` | `0x4c` | `int __stdcall(size_t Size, void *Src)` |
 | `net_read_u16_be` | `0x564270` | `0x17` | unknown |
@@ -607,7 +614,6 @@ Keep subsystem prefixes and the functions within each group sorted by name. New 
 | `net_socket_scalar_deleting_dtor` | `0x5688d0` | `0x2c` | `_DWORD *__thiscall(_DWORD *this, char)` |
 | `net_submit_client_packet` | `0x563e00` | `0x262` | `void __thiscall(void *this, const unsigned char *source, short size)` |
 | `net_transport_read_byte` | `0x567870` | `0x2f2` | `char __thiscall(int this, _BYTE *)` |
-| `net_wrap_received_packet_message` | `0x468220` | `0xbe` | unknown |
 | `net_write_c_packet_39_header` | `0x52c1c0` | `0xa1` | `__int16 __thiscall(int this, int, unsigned __int16)` |
 | `net_write_c_packet_3a_header` | `0x52c270` | `0xc7` | `__int16 __thiscall(int this, int, unsigned __int16)` |
 | `net_write_c_packet_54_header` | `0x45d550` | `0x8c` | `int __thiscall(_DWORD *this, int, unsigned __int8)` |
