@@ -11,7 +11,7 @@ binaryninja/workspace/Darkages.exe.bndb
 Reusable source files belong here instead:
 
 - `binaryninja/scripts/`: import, export, validation, and repeatable analysis scripts
-- `analysis/exports/`: mergeable YAML or JSON produced by those scripts
+- `analysis/exports/`: mergeable YAML produced by those scripts
 - `docs/`: conclusions and evidence written for humans
 
 Keep scripts cross-platform. Use `pathlib` or Binary Ninja APIs instead of hard-coded separators and machine-specific installation paths. Prefer user symbols and user types for durable human conclusions.

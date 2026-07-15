@@ -1,0 +1,162 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x00431ED0"
+    end_address: "0x00431FA6"
+    name: maybe_security_check_mscfg_marker
+    confidence: medium
+    evidence: Tests for Mscfg.dll under the system directory and sets config +0x668. The project owner identifies it as an SBadGuy client-ID-ban marker; that provenance awaits packet-handler verification.
+  - address: "0x00431FF0"
+    end_address: "0x004322FA"
+    name: app_config_ctor
+    confidence: high
+    evidence: Constructs Config, loads Darkages.cfg, selects a distribution mode, and dispatches endpoint initialization.
+  - address: "0x00433010"
+    end_address: "0x00433376"
+    name: net_parse_endpoint_override
+    confidence: high
+    evidence: Parses a positional IPv4 address or hostname and optional port, but no active mode-1 path calls it.
+  - address: "0x00433380"
+    end_address: "0x0043381B"
+    name: net_configure_default_endpoint
+    confidence: high
+    evidence: Resolves da0.kru.com, applies the hardcoded IPv4 fallback, and selects port 2610 or 2601.
+  - address: "0x00434EB0"
+    end_address: "0x00434EED"
+    name: app_get_distribution_mode
+    confidence: high
+    evidence: Caches and returns the distribution mode selected by app_select_distribution_mode.
+  - address: "0x00434EF0"
+    end_address: "0x00434EFD"
+    name: app_select_distribution_mode
+    confidence: high
+    evidence: Returns the constant distribution mode 1 in this target.
+  - address: "0x004AD3A0"
+    end_address: "0x004AD4D4"
+    name: app_set_working_directory_from_executable
+    confidence: high
+    evidence: Derives the executable directory from GetCommandLineA and makes it the process working directory.
+  - address: "0x005643D0"
+    end_address: "0x00564524"
+    name: net_socket_dispatch
+    confidence: high
+    evidence: Thread::Socket vtable method that dispatches open, close, reconnect, send, and receive operations.
+  - address: "0x005645C0"
+    end_address: "0x00564696"
+    name: net_open_transport
+    confidence: high
+    evidence: Selects the TCP connection path when the configured transport selector is 5.
+  - address: "0x005646A0"
+    end_address: "0x005646D3"
+    name: net_close_transport
+    confidence: high
+    evidence: Closes the active socket and auxiliary transport handle when present.
+  - address: "0x00565210"
+    end_address: "0x0056693F"
+    name: net_connect_and_initialize_transport
+    confidence: high
+    evidence: Initializes Winsock, connects to the configured endpoint, performs the active retry, and registers asynchronous socket events.
+  - address: "0x00566D90"
+    end_address: "0x00566DC1"
+    name: net_close_socket
+    confidence: high
+    evidence: Calls closesocket and restores the socket field to INVALID_SOCKET.
+  - address: "0x0057A460"
+    end_address: "0x0057A465"
+    name: app_handle_d_option_stub
+    confidence: high
+    evidence: Empty function called for the suffix of an uppercase -D command-line token.
+  - address: "0x0057A550"
+    end_address: "0x0057A63D"
+    name: app_parse_command_line
+    confidence: high
+    evidence: Scans the WinMain command tail for space-delimited dash tokens and recognizes only uppercase D.
+data_symbols:
+  - address: "0x0073D950"
+    name: app_config
+    confidence: high
+    evidence: Global Config pointer used by endpoint setup and the socket connection routine.
+comments:
+  - address: "0x00431F65"
+    text: Build %SystemRoot%\System32\Mscfg.dll and test whether it exists. The resulting flag later selects TCP port 2601 instead of 2610; the marker's wider purpose is not yet confirmed in the new analysis.
+  - address: "0x00431F82"
+    text: Mscfg.dll exists. Set config +0x668 so endpoint setup and retry use TCP port 2601.
+  - address: "0x00432253"
+    text: Original distribution-mode 1 endpoint initializer call. A verified runtime patch can retarget this five-byte CALL to net_parse_endpoint_override while preserving mode 1 for downstream behavior.
+  - address: "0x00433029"
+    text: "Dormant positional endpoint parser: reads the full command line as Darkages.exe <IPv4-or-hostname> [port]. Mode 1 never calls this function."
+  - address: "0x004330B3"
+    text: First positional argument after the executable is treated as dotted IPv4 when it begins with a digit; otherwise it is resolved as a hostname.
+  - address: "0x00433213"
+    text: "Dormant hostname-override DNS failure fallback: set 210.101.85.25:2610, clear the accepted-override flags, and return false."
+  - address: "0x0043326C"
+    text: Parse the optional second positional argument as a port. Missing or zero selects port 23 and marks the default-port condition.
+  - address: "0x00433312"
+    text: "No usable positional endpoint: set 52.88.55.94:2610, clear the accepted-override flags, and return false."
+  - address: "0x00433396"
+    text: Active mode 1 endpoint lookup. Resolve da0.kru.com and copy only the first returned IPv4 address.
+  - address: "0x004333C2"
+    text: Initial DNS lookup failed. Use the hardcoded IPv4 fallback 52.88.55.94.
+  - address: "0x004333E3"
+    text: Set the normal mode 1 TCP port to 2610 before checking the Mscfg.dll marker flag.
+  - address: "0x00433401"
+    text: "Mscfg.dll marker present: replace the normal port 2610 with 2601."
+  - address: "0x00434EF7"
+    text: Build selector is hardcoded to distribution mode 1. This makes alternate-mode command-line endpoint parsers unreachable in normal v741 execution.
+  - address: "0x004AD3B3"
+    text: Read the full command line only to derive the executable directory and make it the process working directory; this is not an option parser.
+  - address: "0x0056463D"
+    text: Transport selector 5 opens the TCP path and begins the initial endpoint connection.
+  - address: "0x0056537E"
+    text: Initialize Winsock 1.1. Startup failure or a returned version other than 1.1 terminates the process.
+  - address: "0x005653CD"
+    text: socket(AF_INET, SOCK_STREAM) failed. Map WSAGetLastError to a networkError message and raise the client's fatal exception path.
+  - address: "0x005655D0"
+    text: Primary blocking TCP connect using config IPv4 and htons(base port + signed port offset). Mode 1 uses 2610 normally or 2601 when marked.
+  - address: "0x005655F4"
+    text: Primary connect failure enters the hardcoded da0.kru.com retry block here. The verified connect-or-fail runtime patch replaces this complete 10-byte MOV with a JMP to shared socket and Winsock cleanup at 0x5668FF.
+  - address: "0x00565622"
+    text: Primary connect failed. Resolve da0.kru.com again so DNS rotation or recovery can provide a fresh first IPv4 address.
+  - address: "0x00565686"
+    text: Fresh DNS lookup failed after the primary connect failure. The active path terminates the process with exit code 0.
+  - address: "0x00565779"
+    text: Second and final active-mode TCP connect attempt using the freshly resolved da0.kru.com address.
+  - address: "0x005657C1"
+    text: Second connect failed. Close the socket and return with INVALID_SOCKET; this routine shows no error dialog and makes no third active-mode attempt.
+  - address: "0x005668FF"
+    text: "Shared connection-failure cleanup: close the current socket, store INVALID_SOCKET, call WSACleanup, and return. The connect-or-fail runtime patch targets this block."
+  - address: "0x005657D0"
+    text: Second connect succeeded. A one-time side path records the selected IPv4 and port in iplookup.tbl; failure to open that file shows a damaged-file message and exits.
+  - address: "0x005658E1"
+    text: Alternate distribution-mode mServer.tbl rotation begins here. Hardcoded mode 1 does not enter this fallback loop.
+  - address: "0x005668ED"
+    text: On a successful mode 1 connection, register WSAAsyncSelect message 0x401 for FD_READ | FD_CLOSE. Registration failure terminates the process.
+  - address: "0x00566D93"
+    text: Close the active Winsock socket and restore the socket field to INVALID_SOCKET.
+  - address: "0x0057A5D4"
+    text: Copy one dash-prefixed token, delimited only by ASCII space. Only an uppercase D token is recognized.
+  - address: "0x0057A60D"
+    text: Recognized -D... token. The suffix is passed to app_handle_d_option_stub, which immediately returns and changes no state.
+  - address: "0x0057A7A3"
+    text: Parse the WinMain command tail. In this binary the only recognized dash token is -D..., and its handler is a no-op.
+runtime_patches:
+  - id: enable-command-line-endpoint
+    rva: "0x00032253"
+    static_address: "0x00432253"
+    file_offset_for_reference_only: "0x00031653"
+    original_bytes: E8 28 11 00 00
+    replacement_bytes: E8 B8 0D 00 00
+    effect: Redirect mode 1 endpoint initialization to the existing positional IPv4-or-hostname and port parser while preserving mode 1 for downstream behavior.
+  - id: disable-official-endpoint-fallback
+    rva: "0x001655F4"
+    static_address: "0x005655F4"
+    file_offset_for_reference_only: "0x001649F4"
+    original_bytes: C7 85 94 FB FF FF 00 00 00 00
+    replacement_bytes: E9 06 13 00 00 90 90 90 90 90
+    effect: On primary connect failure, jump directly to shared socket and Winsock cleanup instead of resolving da0.kru.com and attempting a second connection.

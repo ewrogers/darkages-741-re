@@ -21,6 +21,18 @@ HLIL and Pseudo C make control flow easier to read, but they are reconstructions
 
 Use Binary Ninja user symbols, comments, and types for conclusions that should persist. When automation applies those changes, prefer user APIs rather than auto-analysis APIs.
 
+## Text encoding and localization
+
+The client originated in the Korean market, so an untranslated message may use Windows code page 949 rather than ASCII or UTF-8. This matters especially for byte strings passed to `MessageBoxA`, which interprets them through the active Windows ANSI code page.
+
+Do not treat `????` as proof that the original text is lost. First inspect the bytes at the referenced address:
+
+- Non-ASCII bytes may still decode as CP949 even if Binary Ninja or Windows displays them incorrectly.
+- Literal `0x3F` bytes mean question marks were already stored or substituted, so the original text cannot be recovered from that string alone.
+- A dynamically built message may lose characters during an earlier conversion. Trace the producer and its selected code page.
+
+For recoverable text, record the address, raw bytes, encoding, original Korean, English translation, and translation provenance. Keep the decoding tentative until both the byte sequence and code use support it.
+
 ## Recording a result
 
 A useful function record includes its user symbol, static virtual address, role, callers or callees when relevant, inferred signature, confidence, and evidence. Documentation should distinguish static image addresses from ASLR-adjusted runtime addresses and allocated pointers.

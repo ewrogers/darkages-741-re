@@ -60,7 +60,7 @@ mdbook build
 
 ## Current status
 
-The project currently contains the analysis workspace policy, contributor workflow, and core methodology. Verified subsystem findings will be added with their supporting Binary Ninja evidence. The first subsystem analysis should establish the export schema and add the corresponding documentation in the same change.
+Verified client analysis documents the [single-instance guard and intro video state machine](docs/client/startup.md), including ASLR-safe runtime launcher patches, and the [command-line and initial connection paths](docs/network/initial-connection.md). Matching Binary Ninja user symbols, comments, evidence notes, and patch records are stored in [`analysis/exports/startup.yaml`](analysis/exports/startup.yaml) and [`analysis/exports/network.yaml`](analysis/exports/network.yaml).
 
 ## License
 

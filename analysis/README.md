@@ -10,7 +10,7 @@ A Binary Ninja `.bndb` is the local analysis database. It can be opened directly
 
 Committed exports belong in `analysis/exports/` and should:
 
-- Use deterministic UTF-8 YAML or JSON
+- Use deterministic UTF-8 YAML
 - Include a schema version
 - Include the target filename, size, and SHA-256
 - Use static virtual addresses in a documented format
@@ -20,4 +20,4 @@ Committed exports belong in `analysis/exports/` and should:
 - Omit absolute local paths and volatile timestamps
 - Round-trip through checked-in scripts under `binaryninja/scripts/`
 
-The export schema will be established with the first verified subsystem. Until then, this directory intentionally contains no inherited symbols or types.
+[`exports/startup.yaml`](exports/startup.yaml) establishes schema version `1`. Additional focused manifests, such as [`exports/network.yaml`](exports/network.yaml), use the same deterministic format. No symbol or conclusion is inherited from archived material without revalidation.

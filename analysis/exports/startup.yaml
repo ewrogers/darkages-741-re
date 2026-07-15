@@ -1,0 +1,96 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0042DFF0"
+    end_address: "0x0042E16C"
+    name: ui_intro_video_pane_ctor
+    confidence: high
+    evidence: Initializes the CIPane vtable and Bink-backed video state.
+  - address: "0x0042E1F0"
+    end_address: "0x0042E28E"
+    name: ui_intro_video_begin_sequence
+    confidence: high
+    evidence: Stores two clip resources and starts the first clip.
+  - address: "0x0042E2D0"
+    end_address: "0x0042E43B"
+    name: render_bink_open_clip
+    confidence: high
+    evidence: Calls BinkOpen, configures playback, and registers the frame timer.
+  - address: "0x0042E440"
+    end_address: "0x0042E571"
+    name: render_bink_present_frame
+    confidence: high
+    evidence: Uses BinkWait, BinkDoFrame, BinkCopyToBuffer, and BinkNextFrame.
+  - address: "0x0042E600"
+    end_address: "0x0042E6F2"
+    name: event_intro_video_frame_timer
+    confidence: high
+    evidence: Advances the two clips and posts intro state 2 when playback finishes.
+  - address: "0x0042E7D0"
+    end_address: "0x0042E7DA"
+    name: ui_get_intro_video_pane
+    confidence: high
+    evidence: Returns the global CIPane instance at 0x006DA3A0.
+  - address: "0x004ACA50"
+    end_address: "0x004ACDF1"
+    name: event_handle_intro_state
+    confidence: high
+    evidence: Dispatches intro states 0, 1, and 2 around Bink playback.
+  - address: "0x0057A710"
+    end_address: "0x0057AAA5"
+    name: app_winmain
+    confidence: high
+    evidence: Called by the CRT startup wrapper with the WinMain argument set.
+data_symbols:
+  - address: "0x006DA3A0"
+    name: ui_intro_video_pane
+    confidence: high
+    evidence: Global returned by ui_get_intro_video_pane.
+  - address: "0x00740404"
+    name: maybe_app_intro_video_active
+    confidence: medium
+    evidence: Set entering intro state 1 and cleared entering state 2; wider uses remain unverified.
+  - address: "0x007AAC2C"
+    name: app_single_instance_mutex
+    confidence: high
+    evidence: Receives the Nexon.SingleInstance CreateMutexA handle and is closed during shutdown.
+comments:
+  - address: "0x0042E600"
+    text: Bink frame timer. Advances from the first clip to the second, then posts intro state 2 after both clips finish.
+  - address: "0x004ACA85"
+    text: Intro state transition. Original push 1 enters Bink playback; changing the immediate to 2 reuses the normal post-video state and skips allocation/playback safely.
+  - address: "0x004ACAF1"
+    text: Fetch the global intro video pane; the following call starts CIf.bik and CIb.bik.
+  - address: "0x004ACAF8"
+    text: Begin the two-clip intro sequence using CIf.bik followed by CIb.bik.
+  - address: "0x0057A7C3"
+    text: Create the named Nexon.SingleInstance mutex and preserve its handle for normal shutdown cleanup.
+  - address: "0x0057A7D4"
+    text: ERROR_ALREADY_EXISTS (0xB7) means another client already owns the named mutex.
+  - address: "0x0057A7D9"
+    text: Single-instance gate. Original JNE +7 continues only when the mutex was newly created; a one-byte 0x75 to 0xEB patch always takes the normal startup path.
+  - address: "0x0057AA65"
+    text: Close app_single_instance_mutex during normal shutdown, then clear the global handle.
+runtime_patches:
+  - id: skip-intro-videos
+    rva: "0x000ACA85"
+    static_address: "0x004ACA85"
+    file_offset_for_reference_only: "0x000ABE85"
+    original_bytes: 6A 01
+    replacement_bytes: 6A 02
+    changed_byte_rva: "0x000ACA86"
+    effect: Post intro state 2 instead of playback state 1.
+  - id: allow-multiple-clients
+    rva: "0x0017A7D9"
+    static_address: "0x0057A7D9"
+    file_offset_for_reference_only: "0x00179BD9"
+    original_bytes: 75 07
+    replacement_bytes: EB 07
+    changed_byte_rva: "0x0017A7D9"
+    effect: Always take the normal startup path after the named mutex check.

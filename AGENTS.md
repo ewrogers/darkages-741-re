@@ -98,11 +98,13 @@ Do not encode machine-specific plugin paths or credentials in committed files.
 - `docs/SUMMARY.md`: mdBook navigation
 - `docs/getting-started.md`: local client, Binary Ninja, and MCP setup
 - `docs/methodology.md`: evidence and reverse-engineering method
+- `docs/client/`: verified client behavior and runtime patch documentation
 - `analysis/`: policy and version-controlled analysis exports
 - `analysis/exports/`: deterministic symbols, functions, types, and comments exported from Binary Ninja
 - `binaryninja/README.md`: Binary Ninja workspace and database policy
 - `binaryninja/scripts/`: reusable import, export, and analysis scripts
 - `binaryninja/workspace/`: local ignored `.bndb` files
+- `examples/windows/`: small Windows C99 examples derived from verified analysis
 - `client/`: complete local ignored client installation
 - `legacy/`: archived prior repository content
 
@@ -122,6 +124,8 @@ Add focused documentation directories only when direct Binary Ninja evidence jus
 10. Record uncertainty, contradictory evidence, and provenance.
 11. Validate links, exports, scripts, and the mdBook build before finishing.
 
+When command-line or regional behavior is involved, identify the active build or distribution selector before presenting a parser as usable. Document dormant parsers separately. For connection analysis, distinguish configuration-time endpoint fallbacks from connect-time retries, and record whether each failure returns, reports an error, retries, or terminates the process.
+
 If the binary and any related source disagree, keep the local behavior. Record the related name or behavior only as context with its provenance.
 
 Ask the project owner for tribal knowledge when in-game behavior would resolve an ambiguity. Treat the answer as behavioral evidence and still connect it to the local code where possible.
@@ -140,13 +144,37 @@ Ask the project owner for tribal knowledge when in-game behavior would resolve a
 
 When scripting Binary Ninja changes, prefer user symbols, user types, and other `_user_` APIs for human conclusions that must survive reanalysis. Auto-analysis results can be replaced when analysis is rerun or upgraded.
 
-Do not patch executable bytes unless the user explicitly asks for a patch. Renaming, typing, and commenting the local analysis database are normal project work.
+## Text encoding and localization
+
+The client originated in the Korean market and may contain untranslated or incorrectly rendered Korean text. Treat text shown as `????`, especially near `MessageBoxA`, as an encoding question rather than assuming the literal text is known.
+
+- Inspect and preserve the raw bytes and their static address before interpreting the string.
+- Test non-ASCII byte strings as Windows code page 949, also called Unified Hangul Code, when the byte sequence supports it.
+- Distinguish Binary Ninja display behavior, Windows active-ANSI-code-page behavior, dynamic conversion loss, and literal `0x3F` bytes stored in the executable.
+- Remember that `MessageBoxA` interprets text through the process environment's active ANSI code page, so the same bytes may render differently under another Windows system locale.
+- Trace string-building and conversion calls when the message is produced dynamically.
+- If the text is recoverable, document the original Korean, an English translation, the encoding, and the translation provenance. Do not present a speculative decoding as confirmed.
+- If the executable contains literal replacement question marks, state that the original text is not recoverable from that string alone.
+
+Do not patch executable bytes unless the user explicitly asks to apply a patch. A request to find, explain, or document a patch authorizes analysis and documentation only. It does not authorize Binary Ninja byte patching, saving a modified executable, or creating a patched copy. Renaming, typing, and commenting the local analysis database are normal project work.
+
+## Runtime patch documentation
+
+When a finding is intended for a launcher that patches process memory:
+
+- Record the static Binary Ninja address, preferred image base, module-relative RVA, original bytes, and replacement bytes.
+- Treat file offsets as reference information only. A launcher must use the actual loaded module base plus the RVA because ASLR can relocate the image.
+- Verify the exact target fingerprint and original instruction bytes before writing.
+- Prefer a same-size instruction change that follows an existing valid control-flow or state-machine path.
+- Explain why the chosen patch is narrower and safer than nearby alternatives.
+- Require a suspended launch, temporary page protection change, instruction-cache flush, protection restoration, and fail-closed cleanup.
+- Never write the original executable as part of runtime-patch research.
 
 ## Version-controlled analysis
 
 The `.bndb` is not the collaboration format. It is binary, snapshot-based local state and is intentionally ignored.
 
-Commit analysis that other contributors need in `analysis/exports/` using deterministic YAML or JSON. Export files should be reviewable and mergeable. Every export format must include a schema version and the target fingerprint.
+Commit analysis that other contributors need in `analysis/exports/` using deterministic YAML. Export files should be reviewable and mergeable. Every export format must include a schema version and the target fingerprint.
 
 For a function, preserve as much of the following as the export supports:
 

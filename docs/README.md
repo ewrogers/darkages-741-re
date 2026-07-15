@@ -14,4 +14,4 @@ Reported client version: 741
 Architecture: 32-bit x86 Windows PE
 ```
 
-Start with [Getting Started](getting-started.md), then read the [Analysis Method](methodology.md).
+Start with [Getting Started](getting-started.md), then read the [Analysis Method](methodology.md). Verified client analysis currently covers the [single-instance guard and intro videos](client/startup.md) plus [command-line behavior and the initial server connection](network/initial-connection.md).
