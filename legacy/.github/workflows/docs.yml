@@ -7,9 +7,11 @@ on:
   pull_request:
     paths:
       - "docs/**"
-      - "analysis/**"
-      - "binaryninja/scripts/**"
+      - "ida/exports/**"
+      - "tools/check_docs.py"
+      - "tools/render_function_report.py"
       - "book.toml"
+      - "requirements-docs.txt"
       - "README.md"
       - "AGENTS.md"
       - "CLAUDE.md"
@@ -40,6 +42,14 @@ jobs:
           tar -xzf mdbook.tar.gz
           chmod +x mdbook
           echo "$PWD" >> "$GITHUB_PATH"
+
+      - name: Install documentation dependencies
+        run: python3 -m pip install --disable-pip-version-check -r requirements-docs.txt
+
+      - name: Check documentation conventions
+        run: |
+          python3 tools/render_function_report.py --check
+          python3 tools/check_docs.py
 
       - name: Build mdBook
         run: mdbook build

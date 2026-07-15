@@ -1,0 +1,78 @@
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vs/
+.vscode/
+*.user
+*.suo
+*~
+
+# Local secrets and machine-specific settings
+.env
+.env.*
+!.env.example
+
+# IDA databases and generated workspace files
+*.i64
+*.idb
+*.id0
+*.id1
+*.id2
+*.nam
+*.til
+*.dmp
+*.asm
+*.lst
+/ida/workspace/
+
+# Original client/server binaries and proprietary game data
+*.exe
+*.dll
+*.bak
+*.dat
+*.bin
+*.map
+*.mus
+*.wav
+*.mp3
+*.bmp
+*.cfg
+*.prf
+*.tbl
+*.nfo
+*.pak
+*.zip
+*.7z
+*.rar
+/artifacts/
+/inputs/
+
+# Packet captures may contain credentials or character/account data.
+# Add only deliberately sanitized fixtures with git add -f.
+*.pcap
+*.pcapng
+/captures/private/
+
+# Logs and temporary output
+*.log
+*.tmp
+*.temp
+/tmp/
+/out/
+/build/
+/book/
+
+# Common future tooling outputs
+bin/
+obj/
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+coverage/
+TestResults/

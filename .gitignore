@@ -1,33 +1,32 @@
 # Operating-system and editor files
 .DS_Store
 Thumbs.db
-Desktop.ini
-.idea/
-.vs/
-.vscode/
-*.user
-*.suo
+*.swp
+*.swo
 *~
+.idea/
+.vscode/
 
-# Local secrets and machine-specific settings
-.env
-.env.*
-!.env.example
+# Local Dark Ages client installation. Never commit any part of it.
+/client/
 
-# IDA databases and generated workspace files
-*.i64
-*.idb
-*.id0
-*.id1
-*.id2
-*.nam
-*.til
+# Binary Ninja local analysis state
+/binaryninja/workspace/
+/binaryninja/projects/
+*.bndb
+*.bndb-*
+*.bndb.*
+
+# Private inputs, captures, and generated artifacts
+/inputs/
+/captures/
+/artifacts/
+*.pcap
+*.pcapng
 *.dmp
-*.asm
-*.lst
-/ida/workspace/
+*.log
 
-# Original client/server binaries and proprietary game data
+# Original binaries and proprietary game data outside client/
 *.exe
 *.dll
 *.bak
@@ -46,33 +45,15 @@ Desktop.ini
 *.zip
 *.7z
 *.rar
-/artifacts/
-/inputs/
 
-# Packet captures may contain credentials or character/account data.
-# Add only deliberately sanitized fixtures with git add -f.
-*.pcap
-*.pcapng
-/captures/private/
-
-# Logs and temporary output
-*.log
-*.tmp
-*.temp
-/tmp/
-/out/
-/build/
+# Documentation and common tooling output
 /book/
-
-# Common future tooling outputs
-bin/
-obj/
-node_modules/
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 .venv/
 venv/
-coverage/
-TestResults/
+dist/
+build/

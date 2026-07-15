@@ -4,9 +4,9 @@ These instructions apply to the entire repository.
 
 ## Project goal
 
-This project documents the Dark Ages client that reports version `741`. The goal is to crowdsource a clear, evidence-based understanding of the client, server protocol, packet encryption, CRC routines, runtime memory structures, UI behavior, and future file formats.
+This project documents the Dark Ages client that reports version `741`. The new book is a clean Binary Ninja-based analysis. Its goal is to build a clear, evidence-based understanding of the client, server protocol, packet encryption, CRC routines, runtime memory structures, UI behavior, and file formats.
 
-The version-741 client is the local source of truth. Related games, leaked names, packet captures, and external implementations can provide useful context, but they do not override what this binary does.
+The version-741 client is the local source of truth. Related games, leaked names, packet captures, external implementations, and archived prior work can provide context, but they do not override what this binary does.
 
 Target executable fingerprint:
 
@@ -15,9 +15,20 @@ File: Darkages.exe
 Size: 3,112,960 bytes
 SHA-256: 054A5D6ADC56099C6BFD9D2A58675AFF62DC788B63209A3D906492F5B89E96C6
 Reported client version: 741
+Architecture: 32-bit x86 Windows PE
 ```
 
-Do not commit the executable or original game assets.
+Do not commit the executable, original game assets, `.bndb` files, or other client-derived binary workspace state.
+
+## Clean-slate rule
+
+`legacy/` contains the previous project. Treat it only as a collection of leads.
+
+- Do not copy a legacy conclusion into the new book without rechecking it in Binary Ninja.
+- Do not import old friendly names in bulk.
+- When a legacy page points to useful evidence, follow the evidence from the matching binary again.
+- If new evidence contradicts legacy material, document the new result and leave the archive unchanged.
+- Keep new documentation outside `legacy/`.
 
 ## Language and voice
 
@@ -54,119 +65,101 @@ u16 read_u16_be(const u8 *p)
 }
 ```
 
-## IDA Free and MCP setup
+## Binary Ninja and MCP setup
 
-IDA Free is enough for this project. The target is a 32-bit x86 Windows client, and IDA Free supports x86 analysis, decompilation, and saved databases.
+Binary Ninja is the analysis tool for this project. The target remains a 32-bit x86 Windows client, but the analysis workstation may run Windows, macOS, or Linux.
 
 Requirements:
 
-- [IDA Free 9.0 or newer](https://hex-rays.com/ida-free)
-- [0xshlomil/ida-free-mcp](https://github.com/0xshlomil/ida-free-mcp)
+- [Binary Ninja](https://binary.ninja/) with plugin support
+- [fosdickio/binary_ninja_mcp](https://github.com/fosdickio/binary_ninja_mcp)
+- Python 3.12 or newer
 - A legally obtained copy of the matching client executable
 - An MCP-capable agent or editor
 
-Setup:
+Binary Ninja Free does not support plugins. The MCP workflow therefore requires a paid Non-Commercial/Personal, Commercial, or Ultimate license. Non-Commercial/Personal supports plugins while the GUI is running. Headless plugin execution requires Commercial or Ultimate.
 
-1. Install IDA Free from Hex-Rays.
-2. Download the matching prebuilt plugin from the [ida-free-mcp releases](https://github.com/0xshlomil/ida-free-mcp/releases). Building from source is optional.
-3. Copy `ida_mcp.dll` on Windows, or the matching library for another platform, into an IDA `plugins` directory. Follow the plugin repository if the filename or install location changes.
-4. Place a private IDA database at `ida/workspace/Darkages.exe.i64`, or create a new database by loading the matching executable in IDA. The workspace directory is intentionally ignored by Git.
-5. Open the database in IDA.
-6. Start the plugin with `Edit > Plugins > MCP` or `Ctrl+Alt+M`.
-7. Connect the MCP client to `http://127.0.0.1:13337/mcp`.
+Initial setup:
 
-Claude Code can register it with:
+1. Install Binary Ninja for the local platform.
+2. Install `binary_ninja_mcp` through Binary Ninja's Plugin Manager or follow the plugin repository's manual installation instructions.
+3. Place the complete private client under `client/`.
+4. Verify `client/Darkages.exe` against the required size and SHA-256.
+5. Open `client/Darkages.exe` in Binary Ninja.
+6. Save the analysis database as `binaryninja/workspace/Darkages.exe.bndb`.
+7. Click the MCP plugin button in the lower-left corner of the Binary Ninja GUI and configure the MCP client as described by the plugin.
+8. Verify the session with a small read-only request such as reading the entry point, listing imports, or inspecting one known address.
 
-```text
-claude mcp add --transport http ida-mcp http://127.0.0.1:13337/mcp
-```
-
-Other MCP clients can use:
-
-```json
-{
-  "mcpServers": {
-    "ida-mcp": {
-      "url": "http://127.0.0.1:13337/mcp"
-    }
-  }
-}
-```
-
-Press `Ctrl+Alt+M` again to stop the server. If several IDA instances are open, the plugin can choose a later port. It records active instances under `~/.ida-mcp/instances/`.
-
-The plugin's `decompile` tool works with IDA Free through the GUI decompiler. A diagnostic result such as `init_hexrays_plugin: false` is expected in IDA Free and does not by itself mean decompilation is broken.
-
-After connecting, verify the session with a small read-only request such as looking up a known function, listing imports, or disassembling an address.
+Do not encode machine-specific plugin paths or credentials in committed files.
 
 ## Repository map
 
-- `docs/README.md`: documentation entry point
-- `docs/client/`: client implementation details, networking, crypto, and CRC
-- `docs/chat/`: chat input, speech balloons, message overlays, channel routing, and look popups
-- `docs/file-formats/`: archive, compression, configuration, NFO, profile, and table formats
-- `docs/functions/`: generated friendly function index and contribution guide
-- `docs/input/`: Win32 messages, internal events, focus, keyboard, mouse, modifiers, and world actions
-- `docs/map/`: map loading, tile rendering, SOTP flags, collision, lighting, and masks
-- `docs/network/`: combined opcode index plus client and server packet pages
-- `docs/security/`: anti-abuse, installation identity, and deliberate termination behavior
-- `docs/ui/`: UI layout grammar, loading, input, rendering, and pane classes
-- `docs/objects/`: dynamic object classes, lifecycle, view range, runtime fields, and self-player initialization
-- `ida/README.md`: IDA naming and sharing notes
-- `ida/exports/functions.yaml`: version-controlled friendly IDA names and signatures
-- `ida/exports/ui-pane-classes.yaml`: version-controlled pane RTTI, layout, and usage export
-- `ida/workspace/`: local ignored IDA database
+- `docs/README.md`: new documentation entry point
+- `docs/SUMMARY.md`: mdBook navigation
+- `docs/getting-started.md`: local client, Binary Ninja, and MCP setup
+- `docs/methodology.md`: evidence and reverse-engineering method
+- `analysis/`: policy and version-controlled analysis exports
+- `analysis/exports/`: deterministic symbols, functions, types, and comments exported from Binary Ninja
+- `binaryninja/README.md`: Binary Ninja workspace and database policy
+- `binaryninja/scripts/`: reusable import, export, and analysis scripts
+- `binaryninja/workspace/`: local ignored `.bndb` files
+- `client/`: complete local ignored client installation
+- `legacy/`: archived prior repository content
 
-Read the relevant indexes before starting a new analysis. Extend existing pages instead of creating competing sources of truth.
+Add focused documentation directories only when direct Binary Ninja evidence justifies them. Extend an existing page instead of creating a competing source of truth.
 
 ## Reverse-engineering workflow
 
-1. Confirm that the loaded database matches the target build.
-2. Search existing docs, names, and comments before naming anything new.
-3. Start from direct evidence such as an opcode comparison, packet reader call, string, import, vtable, caller, or runtime observation.
-4. Trace callers and callees. Check cross-references and nearby branches.
-5. Use decompiler output as a convenience, not as unquestioned truth. Verify important layouts, constants, and control flow against disassembly.
-6. Record conditional fields and loops exactly. Do not flatten variant payloads into one unconditional structure.
-7. Update useful IDA names and comments when confidence is sufficient.
-8. Update `ida/exports/functions.yaml` when a friendly function name, address, size, or signature changes.
-9. Run `python tools/render_function_report.py` to refresh the function index.
-10. Run `python tools/render_ui_pane_report.py` when pane class context changes.
-11. Update the matching Markdown documentation in the same task.
-12. Validate links and any reference code before finishing.
+1. Confirm that the opened file matches the target fingerprint.
+2. Search the new docs, committed analysis exports, Binary Ninja user symbols, and comments before naming anything.
+3. Search `legacy/` separately for possible leads. Treat every result as unverified.
+4. Start from direct evidence such as an opcode comparison, packet reader call, string, import, vtable, caller, or runtime observation.
+5. Trace callers and callees. Check cross-references and nearby branches.
+6. Use HLIL and decompiled C as conveniences. Verify important layouts, constants, register use, stack behavior, and control flow against MLIL, LLIL, or disassembly.
+7. Apply useful user symbols, types, and comments in Binary Ninja when confidence is sufficient.
+8. Export durable analysis into `analysis/exports/` with a checked-in script when an export format exists.
+9. Update the matching Markdown documentation in the same task.
+10. Record uncertainty, contradictory evidence, and provenance.
+11. Validate links, exports, scripts, and the mdBook build before finishing.
 
-If the binary and a related-engine list disagree, keep the local opcode and behavior. Record the related name as context with its provenance.
+If the binary and any related source disagree, keep the local behavior. Record the related name or behavior only as context with its provenance.
 
-Ask the project owner for tribal knowledge when in-game behavior would resolve an ambiguity. Treat that answer as behavioral evidence and still connect it to the local code where possible.
+Ask the project owner for tribal knowledge when in-game behavior would resolve an ambiguity. Treat the answer as behavioral evidence and still connect it to the local code where possible.
 
-## IDA naming and comments
+## Binary Ninja naming and comments
 
 - Use lowercase `snake_case`.
 - Prefix network functions with `net_`.
 - Use clear subsystem prefixes such as `ui_`, `input_`, `render_`, `audio_`, `file_`, or `map_` after the subsystem is established.
-- Use `maybe_` for useful but uncertain IDA names.
+- Use `maybe_` for useful but uncertain Binary Ninja names.
 - Documentation may use a trailing `?` for a reconstructed class or field name.
 - Preserve a useful existing name unless stronger evidence improves it.
-- Do not rename a function from a related-game name alone.
+- Do not rename a function from a legacy or related-game name alone.
 - Add comments at important opcode checks, packet field reads, loop boundaries, mode branches, key derivation, and state writes.
 - Comments should explain intent and evidence, not restate the instruction.
 
-Do not patch executable bytes unless the user explicitly asks for a patch. Renaming, typing, and commenting the analysis database are normal project work.
+When scripting Binary Ninja changes, prefer user symbols, user types, and other `_user_` APIs for human conclusions that must survive reanalysis. Auto-analysis results can be replaced when analysis is rerun or upgraded.
 
-## Function catalog
+Do not patch executable bytes unless the user explicitly asks for a patch. Renaming, typing, and commenting the local analysis database are normal project work.
 
-The ignored IDA database is not the only record of discovered names. Keep `ida/exports/functions.yaml` and `docs/functions/README.md` synchronized with useful IDA changes.
+## Version-controlled analysis
 
-The catalog includes friendly project names, static addresses, function sizes, and IDA-inferred prototypes. A missing prototype is recorded as `null`. Treat inferred calling conventions and argument types as working assumptions until callers, register use, and stack cleanup confirm them.
+The `.bndb` is not the collaboration format. It is binary, snapshot-based local state and is intentionally ignored.
 
-When a new subsystem is reversed:
+Commit analysis that other contributors need in `analysis/exports/` using deterministic YAML or JSON. Export files should be reviewable and mergeable. Every export format must include a schema version and the target fingerprint.
 
-1. Choose a clear snake_case subsystem prefix.
-2. Rename and comment functions in IDA.
-3. Add the friendly functions to the matching prefix group in `ida/exports/functions.yaml`, sorted by name within that group.
-4. Run `python tools/render_function_report.py`.
-5. Add focused subsystem documentation when the table alone is not enough.
+For a function, preserve as much of the following as the export supports:
 
-Keep prefix groups sorted by prefix. A function belongs in the group matching the beginning of its name, such as `file_`, `net_`, `render_`, or `ui_`. Add a new group when a newly reversed subsystem has a clear, durable prefix.
+- User-defined project name
+- Static virtual address
+- Function size or range
+- Type or inferred signature
+- Confidence
+- Short evidence or provenance note
+
+Keep export records sorted deterministically. Avoid absolute local paths, timestamps that change on every run, opaque Binary Ninja object identifiers, or auto-analysis noise. Put the matching exporter and importer in `binaryninja/scripts/`.
+
+Do not invent an export schema during an unrelated task. Establish the first schema alongside the first verified subsystem and test a round trip against a fresh local database.
 
 ## Address and evidence requirements
 
@@ -174,7 +167,7 @@ Preserve memory and code addresses in documentation whenever they are known and 
 
 For a function or global, record:
 
-- Current IDA name
+- Current Binary Ninja user symbol, if one exists
 - Static virtual address, such as `0x567DE0`
 - Role in the control flow
 - Important callers or callees when relevant
@@ -187,13 +180,13 @@ For runtime pointers, distinguish clearly between:
 - Object-relative offsets such as `this + 0x638`
 - Values that move because of ASLR or allocation
 
-Do not present a static IDA address as a stable runtime address without explaining the image base or relocation requirement.
+Do not present a static Binary Ninja address as a stable runtime address without explaining the image base or relocation requirement.
 
 ## Packet documentation
 
 `SPacket` means server-to-client. `CPacket` means client-to-server.
 
-Use `SPacket` and `CPacket` only as generic direction terms. Concrete display names omit the redundant `Packet` suffix, even when the original RTTI or leaked template included it. Write `SUserPosition`, `CVersion`, and `CRefresh`, not their suffixed forms. Packet page and navigation titles use the friendly name followed by the concrete class name, such as `User Position (SUserPosition)` or `Version (CVersion)`.
+Use `SPacket` and `CPacket` only as generic direction terms. Concrete display names omit the redundant `Packet` suffix, even when related material includes it. Write `SUserPosition`, `CVersion`, and `CRefresh`, not their suffixed forms. Packet page and navigation titles use the friendly name followed by the concrete class name, such as `User Position (SUserPosition)` or `Version (CVersion)`.
 
 Packet filenames use a zero-padded decimal prefix followed by lowercase hexadecimal:
 
@@ -214,12 +207,12 @@ Each packet page should include as much of the following as is known:
 - Paired request or response packets
 - Unknown fields and the reason they remain unknown
 
-Keep the master indexes synchronized with packet pages.
+Keep master indexes synchronized with packet pages.
 
 ## Source-of-truth rules
 
 - Derive encryption, CRC, packet layouts, and memory mappings from this client unless the user explicitly asks for an external comparison.
-- Do not silently copy algorithms or field names from online implementations.
+- Do not silently copy algorithms or field names from `legacy/` or online implementations.
 - Leaked or related-engine names can improve terminology, but mark their provenance.
 - Runtime captures can confirm behavior, sizes, sequencing, and encryption state.
 - Preserve contradictory evidence instead of forcing an early conclusion.
@@ -227,12 +220,13 @@ Keep the master indexes synchronized with packet pages.
 ## Repository hygiene
 
 - Preserve unrelated user changes.
-- Do not commit IDA databases, original binaries, game archives, credentials, character data, or unsanitized captures.
-- Small sanitized fixtures are acceptable when they are necessary to reproduce a parser or test.
+- Do not commit anything under `client/` or `binaryninja/workspace/`.
+- Do not commit `.bndb` files, original binaries, game archives, credentials, character data, or unsanitized captures.
+- Small sanitized fixtures are acceptable when necessary to reproduce a parser or test. Add ignored binary fixtures deliberately with `git add -f` only after review.
 - Keep generated files and tool output out of the documentation tree.
 - Use relative Markdown links inside the repository.
 - Do not commit or push unless the user asks.
 
 ## Completion standard
 
-A reverse-engineering task is complete when the local behavior is explained, relevant IDA names or comments are updated, documentation is synchronized, uncertainty is visible, and basic validation has passed.
+A reverse-engineering task is complete when the local behavior is explained from Binary Ninja evidence, useful user symbols or comments are updated, durable analysis is exported when supported, documentation is synchronized, uncertainty is visible, and basic validation has passed.
