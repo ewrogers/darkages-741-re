@@ -28,6 +28,17 @@ def _sort_records(manifest: dict[str, Any]) -> None:
     for key in ("functions", "data_symbols", "comments"):
         manifest[key].sort(key=lambda record: _address(record["address"]))
     manifest["runtime_patches"].sort(key=lambda record: _address(record["rva"]))
+    for direction in manifest.get("packet_indexes", {}).values():
+        direction.get("packets", []).sort(
+            key=lambda record: _address(record["opcode"])
+        )
+
+
+def _packet_record_count(manifest: dict[str, Any]) -> int:
+    return sum(
+        len(direction.get("packets", []))
+        for direction in manifest.get("packet_indexes", {}).values()
+    )
 
 
 def load_manifest(path: str | os.PathLike[str]) -> dict[str, Any]:
@@ -105,6 +116,7 @@ def import_manifest(
         "functions": len(manifest["functions"]),
         "data_symbols": len(manifest["data_symbols"]),
         "comments": len(manifest["comments"]),
+        "packet_records": _packet_record_count(manifest),
     }
 
 
@@ -156,4 +168,5 @@ def export_manifest(
         "functions": len(manifest["functions"]),
         "data_symbols": len(manifest["data_symbols"]),
         "comments": len(manifest["comments"]),
+        "packet_records": _packet_record_count(manifest),
     }

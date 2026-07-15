@@ -1,8 +1,8 @@
 # Dark Ages 7.41 Reverse Engineering
 
-This repository documents the Dark Ages version-741 client through evidence-based reverse engineering in Binary Ninja. Binary Ninja MCP provides agent-assisted access to the local analysis workspace.
+This repository documents the matching Dark Ages client through evidence-based reverse engineering in Binary Ninja. Binary Ninja MCP provides agent-assisted access to the local analysis workspace.
 
-Material under [`legacy/`](legacy/NOTICE.md) is retained for reference. It may provide useful leads, but every claim must be independently verified against the version-741 client in Binary Ninja.
+Material under [`legacy/`](legacy/NOTICE.md) is retained for reference. It may provide useful leads, but every claim must be independently verified against the target client in Binary Ninja.
 
 ## Target build
 
@@ -28,7 +28,7 @@ Share durable analysis through reviewable text exports and documentation instead
 | `binaryninja/workspace/` | Local `.bndb` databases and Binary Ninja project state | No |
 | `binaryninja/scripts/` | Reusable Binary Ninja import, export, and analysis scripts | Yes |
 | `analysis/exports/` | Deterministic symbols, types, comments, and function metadata | Yes |
-| `docs/` | The new evidence-based book | Yes |
+| `docs/` | The evidence-based book | Yes |
 | `legacy/` | Reference material, used only for hints | Yes |
 
 See [Binary Ninja workspace notes](binaryninja/README.md) and [analysis export policy](analysis/README.md).
@@ -38,7 +38,7 @@ See [Binary Ninja workspace notes](binaryninja/README.md) and [analysis export p
 - [Binary Ninja](https://binary.ninja/) with a license that supports plugins. Binary Ninja Free does not load plugins, so the MCP workflow requires a paid Non-Commercial/Personal, Commercial, or Ultimate edition.
 - [fosdickio/binary_ninja_mcp](https://github.com/fosdickio/binary_ninja_mcp)
 - Python 3.12 or newer, as required by the MCP plugin
-- A legally obtained copy of the matching version 7.41 client
+- A legally obtained copy of the matching client
 - An MCP-capable agent or editor
 - [mdBook](https://rust-lang.github.io/mdBook/) to build the documentation locally
 
@@ -60,7 +60,7 @@ mdbook build
 
 ## Current status
 
-Verified client analysis documents the [single-instance guard and intro video state machine](docs/client/startup.md), including ASLR-safe runtime launcher patches, and the [command-line and initial connection paths](docs/network/initial-connection.md). Matching Binary Ninja user symbols, comments, evidence notes, and patch records are stored in [`analysis/exports/startup.yaml`](analysis/exports/startup.yaml) and [`analysis/exports/network.yaml`](analysis/exports/network.yaml).
+Verified analysis covers the [startup controls](docs/client/startup.md), [initial connection](docs/network/initial-connection.md), [network architecture](docs/network/architecture.md), [packet transforms](docs/network/packet-transforms.md), and direction-specific [client](docs/network/client/README.md) and [server](docs/network/server/README.md) packet indexes. Durable Binary Ninja analysis and packet metadata are stored as YAML under [`analysis/exports/`](analysis/exports/README.md).
 
 ## License
 

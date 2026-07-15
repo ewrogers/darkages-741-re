@@ -1,6 +1,6 @@
 # Binary Ninja workspace
 
-Binary Ninja stores saved analysis in `.bndb` files. Save the local version-741 database at:
+Binary Ninja stores saved analysis in `.bndb` files. Save the local analysis database at:
 
 ```text
 binaryninja/workspace/Darkages.exe.bndb

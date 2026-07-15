@@ -108,7 +108,7 @@ comments:
   - address: "0x00433401"
     text: "Mscfg.dll marker present: replace the normal port 2610 with 2601."
   - address: "0x00434EF7"
-    text: Build selector is hardcoded to distribution mode 1. This makes alternate-mode command-line endpoint parsers unreachable in normal v741 execution.
+    text: Build selector is hardcoded to distribution mode 1. This makes alternate-mode command-line endpoint parsers unreachable in normal execution.
   - address: "0x004AD3B3"
     text: Read the full command line only to derive the executable directory and make it the process working directory; this is not an option parser.
   - address: "0x0056463D"

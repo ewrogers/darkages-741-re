@@ -1,0 +1,332 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0043F780"
+    name: net_dispatch_create_user_events
+    confidence: high
+    evidence: "CreateUserDialogPane routes decoded early-session byte buffers, including SNewUserCheck opcode 0x01, outside the packet factory."
+  - address: "0x0043F820"
+    name: net_handle_new_user_check
+    confidence: high
+    evidence: "Routes SNewUserCheck to a state-specific account-creation result parser."
+  - address: "0x004647C0"
+    name: event_process_queued_event
+    confidence: high
+    evidence: "Processes queued application events and constructs decoded server packet objects for event type 0x13."
+  - address: "0x00467060"
+    name: net_post_decoded_server_packet_event
+    confidence: high
+    evidence: "Copies a decoded opcode-first server body and queues it as network packet event type 0x13."
+  - address: "0x00468220"
+    name: net_queue_server_packet_event
+    confidence: high
+    evidence: "Builds and enqueues the event object used for a decoded server packet body."
+  - address: "0x004B7F80"
+    name: net_handle_version_check
+    confidence: high
+    evidence: "Handles SVersionCheck opcode 0x00 outside the RTTI packet factory; subtype 0 queues a seed-table selector and replacement static key."
+  - address: "0x004B8420"
+    name: net_handle_login_check
+    confidence: high
+    evidence: "Handles SLoginCheck opcode 0x02; status zero enters session setup and failures carry a display message."
+  - address: "0x004B8B70"
+    name: net_dispatch_main_menu_events
+    confidence: high
+    evidence: "MainMenuPane routes decoded SVersionCheck and SLoginCheck byte buffers outside the packet factory."
+  - address: "0x004BAA80"
+    name: net_send_login_request
+    confidence: high
+    evidence: "Builds and submits client login opcode 0x03, then persists the submitted character name."
+  - address: "0x004C7D80"
+    name: crypto_md5_hex_string
+    confidence: high
+    evidence: "Hashes a NUL-terminated string and returns lowercase MD5 hexadecimal text."
+  - address: "0x004C7E30"
+    name: crypto_md5_bytes
+    confidence: high
+    evidence: "Hashes an explicit byte span and retains the raw MD5 digest."
+  - address: "0x004E4D80"
+    name: net_dispatch_metadata_events
+    confidence: high
+    evidence: "MetaTableManager recognizes decoded SMetaData opcode 0x6F outside the packet factory."
+  - address: "0x004E4EA0"
+    name: net_handle_metadata
+    confidence: high
+    evidence: "Parses SMetaData table entries and validates or applies named metadata blobs."
+  - address: "0x00563910"
+    name: net_socket_ctor
+    confidence: high
+    evidence: "Constructs the Socket object and initializes packet-transform state."
+  - address: "0x00563DE0"
+    name: net_reset_client_packet_sequence
+    confidence: high
+    evidence: "Resets the rolling outbound transformed-packet selector to zero."
+  - address: "0x00563E00"
+    name: net_submit_client_packet
+    confidence: high
+    evidence: "Copies opcode-first client bodies into socket event command 6; adds special CRC wrappers for 0x39 and 0x3A."
+  - address: "0x00564140"
+    name: net_write_u8
+    confidence: high
+    evidence: "Writes one byte to a packet body."
+  - address: "0x00564160"
+    name: net_write_u16be
+    confidence: high
+    evidence: "Writes a 16-bit value in network byte order."
+  - address: "0x005641F0"
+    name: net_write_u32be
+    confidence: high
+    evidence: "Writes a 32-bit value in network byte order."
+  - address: "0x00564260"
+    name: net_read_u8
+    confidence: high
+    evidence: "Reads one byte from an opcode-first packet body."
+  - address: "0x00564270"
+    name: net_read_u16be
+    confidence: high
+    evidence: "Reads a 16-bit big-endian value from an opcode-first packet body."
+  - address: "0x005642C0"
+    name: net_read_u32be
+    confidence: high
+    evidence: "Reads a 32-bit big-endian value from an opcode-first packet body."
+  - address: "0x00564870"
+    name: net_receive_pending_data
+    confidence: high
+    evidence: "Selects the binary or compatibility receive state machine."
+  - address: "0x005648A0"
+    name: net_send_client_packet
+    confidence: high
+    evidence: "Selects the outbound opcode transform, adds the 0xAA and u16be frame header, and calls Winsock send."
+  - address: "0x00565130"
+    name: net_send_text
+    confidence: high
+    evidence: "Sends a NUL-terminated string through the active transport."
+  - address: "0x005651B0"
+    name: net_send_byte
+    confidence: high
+    evidence: "Sends one byte through the active transport."
+  - address: "0x00567070"
+    name: net_receive_frames
+    confidence: high
+    evidence: "Reads server frames, selects inbound transform mode by opcode, and posts decoded bodies."
+  - address: "0x00567870"
+    name: net_read_transport_byte
+    confidence: high
+    evidence: "Refills the TCP buffer with recv and returns one buffered transport byte."
+  - address: "0x00567DE0"
+    name: net_decrypt_server_packet
+    confidence: high
+    evidence: "Reverses server seed-table and static or derived key XOR passes."
+  - address: "0x00567FB0"
+    name: net_encrypt_client_packet
+    confidence: high
+    evidence: "Adds the rolling selector, applies XOR passes, and appends MD5 and seed trailer bytes."
+  - address: "0x00568230"
+    name: net_xor_packet_bytes
+    confidence: high
+    evidence: "Common 32-bit and remainder XOR engine for expanded byte keys and seed-table words."
+  - address: "0x00568380"
+    name: net_queue_seed_xor_table_selector
+    confidence: high
+    evidence: "Queues the server-supplied selector so the socket path can rebuild the 256-entry seed XOR table."
+  - address: "0x005683A0"
+    name: net_queue_static_key
+    confidence: high
+    evidence: "Queues a server-supplied key and explicit length so the socket path can replace the static key."
+  - address: "0x005683F0"
+    name: net_set_static_key
+    confidence: high
+    evidence: "Stores a runtime static key and copies it four times into the expanded key buffer."
+  - address: "0x005684B0"
+    name: net_build_md5_salt_source
+    confidence: high
+    evidence: "Builds the 1024-byte salt source through repeated lowercase MD5-hex expansion of session_character_name."
+  - address: "0x00568540"
+    name: net_derive_packet_key
+    confidence: high
+    evidence: "Derives nine per-packet key bytes from two seeds and the MD5 salt source."
+  - address: "0x00568650"
+    name: net_build_seed_xor_table
+    confidence: high
+    evidence: "Builds one of ten deterministic 256-entry repeated-byte XOR tables for selectors 0 through 9; selector 0 is the compiled default."
+  - address: "0x005959D0"
+    name: net_server_packet_base_ctor
+    confidence: high
+    evidence: "Constructs the base server packet object and stores its opcode."
+  - address: "0x00595A00"
+    name: net_get_server_packet_opcode
+    confidence: high
+    evidence: "Returns the opcode stored in a server packet base object."
+  - address: "0x00595A50"
+    name: net_client_packet_base_ctor
+    confidence: high
+    evidence: "Constructs the base client packet object and stores its opcode."
+  - address: "0x00595B10"
+    name: net_packet_reader_ctor
+    confidence: high
+    evidence: "Constructs the bounded reader used by server packet deserializers."
+  - address: "0x00595F00"
+    name: net_server_packet_factory_ctor
+    confidence: high
+    evidence: "Registers 61 opcode-specific server packet constructors in a 256-entry factory."
+  - address: "0x005963F0"
+    name: net_deserialize_server_packet
+    confidence: high
+    evidence: "Creates the registered server packet class and invokes its deserializer."
+  - address: "0x00596780"
+    name: net_create_server_packet
+    confidence: high
+    evidence: "Calls the registered constructor for a server opcode."
+  - address: "0x005ED990"
+    name: net_dispatch_server_packet
+    confidence: high
+    evidence: "Routes parsed server packet objects to gameplay handlers by opcode."
+data_symbols:
+  - address: "0x006D11D8"
+    name: net_derived_key_length
+    confidence: high
+    evidence: "Constant derived-key length of nine bytes."
+  - address: "0x006D11E0"
+    name: net_seed_xor_table
+    confidence: high
+    evidence: "256 repeated-byte words. The executable initializes selector 0 identity values; server bootstrap can select algorithms 0 through 9."
+  - address: "0x0073D910"
+    name: session_character_name
+    confidence: high
+    evidence: "Active character name persisted by the login sender and passed to net_build_md5_salt_source during session setup."
+  - address: "0x007AA840"
+    name: net_md5_salt_source
+    confidence: high
+    evidence: "Pointer to the allocated 1024-byte MD5-derived salt source."
+  - address: "0x007AA844"
+    name: net_derived_key_bytes
+    confidence: high
+    evidence: "Nine derived key bytes plus a terminator."
+  - address: "0x007AA850"
+    name: net_static_key_bytes
+    confidence: high
+    evidence: "Runtime source buffer. The constructor restores the readable literal after expanding the actual default key, so this buffer can be misleading after initialization."
+  - address: "0x007AA85C"
+    name: net_static_key_length
+    confidence: high
+    evidence: "Runtime length used by the static-key XOR cycle."
+  - address: "0x007AA860"
+    name: net_client_packet_sequence
+    confidence: high
+    evidence: "Rolling outbound selector byte incremented for each transformed client packet."
+  - address: "0x007AA864"
+    name: net_static_key_expanded
+    confidence: high
+    evidence: "Working default bytes 55 72 6B E5 6E 49 74 A3 49 copied four times for the 32-bit XOR engine; server bootstrap can replace them."
+  - address: "0x007AA894"
+    name: net_derived_key_expanded
+    confidence: high
+    evidence: "Derived nine-byte key copied four times for the 32-bit XOR engine."
+comments:
+  - address: "0x0043E3C9"
+    text: "SNewUserCheck status byte. Status 0 advances creation; statuses 3 through 11 carry a one-byte message length followed by message bytes."
+  - address: "0x0043F7DC"
+    text: "Decoded server opcode 0x01 is SNewUserCheck. CreateUserDialogPane handles it directly as a byte buffer instead of constructing an RTTI packet class."
+  - address: "0x00464982"
+    text: "Use decoded body byte 0 as the server opcode, create the registered server packet class, and deserialize through its vtable."
+  - address: "0x004B77A8"
+    text: "Build the 1024-byte MD5 salt source from session_character_name after entering the game session. Project-owner protocol knowledge confirms the character name is the seed."
+  - address: "0x004B8038"
+    text: "For raw server opcode 0x00 subtype 0, body byte 6 selects seed-table algorithm 0 through 9."
+  - address: "0x004B805F"
+    text: "For raw server opcode 0x00 subtype 0, body byte 7 is the replacement static-key length."
+  - address: "0x004B806A"
+    text: "For raw server opcode 0x00 subtype 0, the replacement static key begins at body byte 8."
+  - address: "0x004B847C"
+    text: "SLoginCheck status byte. Zero enters the game session; nonzero responses carry a one-byte message length and message."
+  - address: "0x004B8BD9"
+    text: "Decoded server opcode 0x00 is SVersionCheck. MainMenuPane routes it directly without an RTTI packet object."
+  - address: "0x004B8C00"
+    text: "Decoded server opcode 0x02 is SLoginCheck. MainMenuPane routes it directly without an RTTI packet object."
+  - address: "0x004BB024"
+    text: "Persist the submitted login name as the session character name. This global later seeds the MD5 salt-source builder."
+  - address: "0x004E4DB8"
+    text: "Decoded server opcode 0x6F is SMetaData. MetaTableManager handles it directly as a byte buffer instead of constructing an RTTI packet class."
+  - address: "0x004E4EC7"
+    text: "SMetaData operation byte. Operation 0 validates and applies one metadata blob; operation 1 rebuilds a counted metadata-name table."
+  - address: "0x005639C9"
+    text: "Set working default static-key byte 7 to 0xA3 before expanding the key."
+  - address: "0x005639E9"
+    text: "Set working default static-key byte 3 to 0xE5 before expanding the key."
+  - address: "0x00563A1B"
+    text: "Copy the actual nine-byte default key 55 72 6B E5 6E 49 74 A3 49 into the expanded static-key buffer."
+  - address: "0x00563A88"
+    text: "Restore the readable source buffer only after the working key has been copied; the expanded key retains bytes E5 and A3."
+  - address: "0x00563E00"
+    text: "Submit an opcode-first client packet to the socket event queue. Builders throughout the client converge here before framing and transformation."
+  - address: "0x005648FB"
+    text: "Read the outbound opcode and select raw, static-key, or derived-key handling. This direction has its own opcode policy."
+  - address: "0x0056492A"
+    text: "Outbound raw set: 0x00, 0x10, and 0x48 bypass the common transform."
+  - address: "0x00564945"
+    text: "Outbound static-key set: 0x02, 0x03, 0x04, 0x0B, 0x26, 0x2D, 0x3A, 0x42, 0x43, 0x4B, 0x57, 0x62, 0x68, 0x71, 0x73, and 0x7B."
+  - address: "0x00564972"
+    text: "All other outbound opcodes use the derived 9-byte key mode."
+  - address: "0x00564A00"
+    text: "Build the binary frame as 0xAA followed by u16be transformed-body length and the opcode-first body."
+  - address: "0x00564A67"
+    text: "Main Winsock send call for framed client packets."
+  - address: "0x00567190"
+    text: "Read the two-byte frame body length in big-endian order."
+  - address: "0x005672BF"
+    text: "Select inbound transform mode from the server opcode. The inbound policy differs from the outbound policy."
+  - address: "0x005672E5"
+    text: "Inbound raw set: 0x00, 0x03, and 0x40."
+  - address: "0x00567334"
+    text: "Inbound static-key set: 0x01, 0x02, 0x0A, 0x56, 0x60, 0x62, 0x66, and 0x6F."
+  - address: "0x00567382"
+    text: "All other inbound opcodes use the derived 9-byte key mode."
+  - address: "0x005673D5"
+    text: "Queue the decoded opcode-first server body as event type 0x13 for the main event path."
+  - address: "0x00567918"
+    text: "Refill the 0x18000-byte TCP receive buffer with recv when no buffered bytes remain."
+  - address: "0x00567FC1"
+    text: "Preserve the client opcode, append the rolling selector byte, transform the payload, and add the outbound authentication and seed trailer."
+  - address: "0x005680B8"
+    text: "Mode 0 XORs with the static key; mode 1 XORs with the per-packet derived 9-byte key."
+  - address: "0x005681A1"
+    text: "MD5 the outbound opcode, selector, and transformed payload; append digest bytes 13, 3, 11, and 7 before the three encoded seed bytes."
+  - address: "0x005684CE"
+    text: "Build a 1024-byte salt source by repeated lowercase MD5-hex expansion of the runtime seed string."
+  - address: "0x00568572"
+    text: "Derive nine key bytes from the 1024-byte MD5 salt source using the 16-bit and 8-bit packet seed values."
+  - address: "0x0056867B"
+    text: "Generate a 256-entry repeated-byte XOR table. Selectors 0 through 9 choose deterministic mappings; some mappings contain duplicate byte values and are not permutations."
+  - address: "0x0056869B"
+    text: "Selector 0: identity mapping, b = i."
+  - address: "0x005686A6"
+    text: "Selector 1: center-out mapping, b = 0x80 + ((i & 1) ? -((i + 1) / 2) : ((i + 1) / 2))."
+  - address: "0x005686DB"
+    text: "Selector 2: reverse mapping, b = 0xFF - i."
+  - address: "0x005686EB"
+    text: "Selector 3: b = 0x80 + ((i & 1) ? -((0xFF - i) / 2) : ((0xFF - i) / 2))."
+  - address: "0x00568722"
+    text: "Selector 4: b = (i / 16) * (i / 16)."
+  - address: "0x00568747"
+    text: "Selector 5: b = (u8)(i * 2)."
+  - address: "0x00568764"
+    text: "Selector 6: b = 0xFF - (u8)(i * 2)."
+  - address: "0x00568786"
+    text: "Selector 7: b = i <= 0x7F ? 0xFF - 2*i : 2*i - 0x100."
+  - address: "0x005687AC"
+    text: "Selector 8: b = i <= 0x7F ? 2*i : 0x1FF - 2*i."
+  - address: "0x005687CD"
+    text: "Selector 9: n = (i - 0x80) / 8 with signed truncation toward zero; b = 0xFF - (u8)(n*n)."
+  - address: "0x00595F4F"
+    text: "Register opcode-specific server packet constructors in the 256-entry factory. Derived server packet names are recoverable through RTTI."
+  - address: "0x00596469"
+    text: "Construct a packet reader over the decoded body and invoke the packet class deserializer at vtable slot +8."
+  - address: "0x005ED9B3"
+    text: "Dispatch the parsed server packet to gameplay handlers by the opcode stored in the server packet base object."
+runtime_patches: []

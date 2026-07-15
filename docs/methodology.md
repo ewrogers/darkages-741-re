@@ -1,6 +1,6 @@
 # Analysis Method
 
-Lead with what the version-741 client does, then show how the code supports the conclusion.
+Lead with what the target client does, then show how the code supports the conclusion.
 
 ## Evidence order
 

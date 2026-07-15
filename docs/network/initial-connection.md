@@ -1,6 +1,6 @@
 # Command line and initial connection
 
-The version-741 target does not expose a working command-line IP or port override. The executable contains a positional endpoint parser, but the active build selector returns distribution mode `1` unconditionally. Mode `1` initializes its endpoint from `da0.kru.com` instead of calling that parser.
+The target client does not expose a working command-line IP or port override. The executable contains a positional endpoint parser, but the active build selector returns distribution mode `1` unconditionally. Mode `1` initializes its endpoint from `da0.kru.com` instead of calling that parser.
 
 All addresses below are static virtual addresses for image base `0x00400000`.
 

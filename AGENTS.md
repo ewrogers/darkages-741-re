@@ -6,7 +6,7 @@ These instructions apply to the entire repository.
 
 This project documents the Dark Ages client that reports version `741`. The new book is a clean Binary Ninja-based analysis. Its goal is to build a clear, evidence-based understanding of the client, server protocol, packet encryption, CRC routines, runtime memory structures, UI behavior, and file formats.
 
-The version-741 client is the local source of truth. Related games, leaked names, packet captures, external implementations, and archived prior work can provide context, but they do not override what this binary does.
+The target client is the local source of truth. Related games, leaked names, packet captures, external implementations, and archived prior work can provide context, but they do not override what this binary does.
 
 Target executable fingerprint:
 
@@ -99,6 +99,7 @@ Do not encode machine-specific plugin paths or credentials in committed files.
 - `docs/getting-started.md`: local client, Binary Ninja, and MCP setup
 - `docs/methodology.md`: evidence and reverse-engineering method
 - `docs/client/`: verified client behavior and runtime patch documentation
+- `docs/network/`: connection, transport, transform, and packet documentation
 - `analysis/`: policy and version-controlled analysis exports
 - `analysis/exports/`: deterministic symbols, functions, types, and comments exported from Binary Ninja
 - `binaryninja/README.md`: Binary Ninja workspace and database policy
@@ -135,6 +136,7 @@ Ask the project owner for tribal knowledge when in-game behavior would resolve a
 - Use lowercase `snake_case`.
 - Prefix network functions with `net_`.
 - Use clear subsystem prefixes such as `ui_`, `input_`, `render_`, `audio_`, `file_`, or `map_` after the subsystem is established.
+- Reserve `app_` for application-wide lifecycle or configuration state. Use `session_`, `game_`, or `character_` for state owned by those narrower lifetimes or subsystems.
 - Use `maybe_` for useful but uncertain Binary Ninja names.
 - Documentation may use a trailing `?` for a reconstructed class or field name.
 - Preserve a useful existing name unless stronger evidence improves it.
@@ -214,7 +216,15 @@ Do not present a static Binary Ninja address as a stable runtime address without
 
 `SPacket` means server-to-client. `CPacket` means client-to-server.
 
+Write the word `packet` in full in documentation and user-defined symbols. Do not abbreviate it. Quote a compiler-recovered abbreviation only when the exact spelling is necessary evidence.
+
 Use `SPacket` and `CPacket` only as generic direction terms. Concrete display names omit the redundant `Packet` suffix, even when related material includes it. Write `SUserPosition`, `CVersion`, and `CRefresh`, not their suffixed forms. Packet page and navigation titles use the friendly name followed by the concrete class name, such as `User Position (SUserPosition)` or `Version (CVersion)`.
+
+Preserve exact server class names recovered through RTTI even when a friendlier behavioral label is useful. Client packet names supplied by the project owner are protocol vocabulary, not compiler-recovered RTTI. Record that provenance and keep descriptive aliases separate when the names differ. Do not force paired client and server names to match.
+
+Some control bodies may resemble an opcode-first packet without representing a normal packet class. Document their exact bytes, framing path, and sequence effects instead of forcing them into the ordinary packet model.
+
+Every client packet page should include a known send-site list. Record each direct static call address, its containing function, and an exact RTTI pane or subsystem owner when one can be reached reliably. Distinguish a direct virtual-method owner from an owner found through caller traversal. State when the owner is unresolved, and do not imply that static cross-references cover indirect or queued runtime calls.
 
 Packet filenames use a zero-padded decimal prefix followed by lowercase hexadecimal:
 
@@ -237,12 +247,22 @@ Each packet page should include as much of the following as is known:
 
 Keep master indexes synchronized with packet pages.
 
+Keep client and server opcode evidence separate. The server direction may have RTTI-backed concrete class names. The client direction has no recovered derived packet RTTI classes, so each friendly client name must cite builder behavior or related-name provenance.
+
+Do not treat absence from the server packet factory as proof that an opcode is unused. Search decoded-body event consumers in UI panes, session state, and manager classes. An RTTI-backed owner may handle a raw decoded buffer without constructing a concrete RTTI packet object. Record the packet name provenance separately from the owner class RTTI.
+
+Record the common transform as `raw`, `static`, or `derived` on each packet page. Do not infer one direction's opcode policy from the other direction.
+
+When documenting common packet encryption, distinguish the static key, the per-packet 9-byte derived key, the 1024-byte MD5 salt source, the 256-entry seed XOR table, the rolling selector, and direction-specific trailers. Do not collapse these into a single generic salt or key.
+
 ## Source-of-truth rules
 
 - Derive encryption, CRC, packet layouts, and memory mappings from this client unless the user explicitly asks for an external comparison.
 - Do not silently copy algorithms or field names from `legacy/` or online implementations.
 - Leaked or related-engine names can improve terminology, but mark their provenance.
 - Runtime captures can confirm behavior, sizes, sequencing, and encryption state.
+- For negotiated protocol state, document the compiled default separately from values selected or supplied by the server.
+- Treat seed-table selectors outside the locally handled range `0` through `9` as invalid, even if the client reaches an undefined implementation path.
 - Preserve contradictory evidence instead of forcing an early conclusion.
 
 ## Repository hygiene
