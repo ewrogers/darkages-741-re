@@ -51,6 +51,78 @@ functions:
     name: net_request_family_name
     confidence: high
     evidence: "EquipPane reaches this opcode-only 0x7A request paired with SFamilyName."
+  - address: "0x004919E0"
+    name: ui_new_spell_inventory_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class NewSpellInventoryPane and initializes its 90-entry spell-item pointer array."
+  - address: "0x00492070"
+    name: ui_spell_inventory_create_spell_item
+    confidence: high
+    evidence: "Allocates SpellInvItemPane and passes the SAddSpell slot, icon, argument type, name, prompt, and cast-line count to its constructor."
+  - address: "0x00492140"
+    name: ui_spell_inventory_remove_slot
+    confidence: high
+    evidence: "Converts a one-based spell slot to the inventory container's zero-based index and removes the corresponding UI item."
+  - address: "0x00492160"
+    name: ui_spell_inventory_handle_network_event
+    confidence: high
+    evidence: "NewSpellInventoryPane network-event handler routes RTTI SAddSpell and SRemoveSpell objects to the matching UI paths."
+  - address: "0x00492200"
+    name: ui_spell_inventory_add_spell_from_packet
+    confidence: high
+    evidence: "Accepts SAddSpell slots 1 through 90, replaces the existing UI entry, and constructs a new SpellInvItemPane."
+  - address: "0x004922B0"
+    name: ui_spell_inventory_remove_spell_from_packet
+    confidence: high
+    evidence: "Accepts SRemoveSpell slots 1 through 90 and removes the slot when its SpellInvItemPane pointer is non-null."
+  - address: "0x00493460"
+    name: ui_inventory_remove_item_at
+    confidence: high
+    evidence: "Checks a zero-based inventory index, releases its live UI item through the shared UI owner, and clears the pointer entry."
+  - address: "0x00499DE0"
+    name: ui_spell_inventory_item_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class SpellInvItemPane and retains slot, icon, argument type, 128-byte name and prompt buffers, and cast_lines."
+  - address: "0x0049A4E0"
+    name: ui_spell_begin_target_selection
+    confidence: high
+    evidence: "Handles spell argument type 2 by creating a DraggedSpellInvItemPane for target selection."
+  - address: "0x0049A670"
+    name: ui_spell_inventory_activate
+    confidence: high
+    evidence: "Dispatches SpellInvItemPane activation by argument types 1 through 7; type 8 is not handled in this switch."
+  - address: "0x0049A720"
+    name: ui_spell_open_string_input
+    confidence: high
+    evidence: "Handles spell argument type 1 by opening RTTI class StringSpellInputPane with the SAddSpell prompt."
+  - address: "0x0049A950"
+    name: ui_spell_open_number_inputs
+    confidence: high
+    evidence: "Opens NumberArgsSpellInputPane for one through four numeric values selected by spell argument types 7, 6, 4, and 3."
+  - address: "0x0049B6F0"
+    name: ui_spell_delay_control_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class SpellDelayControlPane and initializes the queued-cast state."
+  - address: "0x0049B870"
+    name: ui_spell_delay_timer_callback
+    confidence: high
+    evidence: "Advances configured cast lines on one-second ticks, then sends the spell name and submits the queued CUseSpell on the final tick."
+  - address: "0x0049B900"
+    name: ui_start_spell_cast
+    confidence: high
+    evidence: "Queues CUseSpell, loads SpellBook.cfg cast text, and either submits immediately or begins the CSpellDelayRequest and CSpellDelaySay sequence."
+  - address: "0x0049BAB0"
+    name: net_send_spell_delay_request
+    confidence: high
+    evidence: "Builds CSpellDelayRequest as opcode 0x4D followed by the one-byte cast-line count."
+  - address: "0x0049BB40"
+    name: net_send_spell_delay_say
+    confidence: high
+    evidence: "Builds CSpellDelaySay as opcode 0x4E followed by a string8 configured cast line or the final spell name."
+  - address: "0x0049BD80"
+    name: ui_load_spell_cast_lines
+    confidence: high
+    evidence: "Loads up to ten 256-byte per-spell cast strings from the current character's SpellBook.cfg data."
   - address: "0x004A03B0"
     name: net_request_cash_shop
     confidence: high
@@ -131,6 +203,30 @@ functions:
     name: net_send_confirm
     confidence: high
     evidence: "UserConfirmPane calls this opcode 0x31 confirmation builder."
+  - address: "0x00595C20"
+    name: net_packet_reader_read_u8
+    confidence: high
+    evidence: "Reads one byte from a decoded server packet and advances the reader by one."
+  - address: "0x00595C60"
+    name: net_packet_reader_read_u16be
+    confidence: high
+    evidence: "Reads a big-endian 16-bit value from a decoded server packet and advances the reader by two."
+  - address: "0x00595DF0"
+    name: net_packet_reader_read_string8
+    confidence: high
+    evidence: "Reads a one-byte-length-prefixed byte string and appends a local NUL to the destination."
+  - address: "0x00597640"
+    name: net_create_add_spell_server_packet
+    confidence: high
+    evidence: "Allocates a 0x224-byte RTTI SAddSpell object and calls its concrete constructor."
+  - address: "0x005976C0"
+    name: net_add_spell_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x17 to the server packet base and installs the exact SAddSpell vtable."
+  - address: "0x005976F0"
+    name: net_deserialize_add_spell_server_packet
+    confidence: high
+    evidence: "Reads slot, u16be icon, argument type, string8 name, string8 prompt, and cast_lines into SAddSpell."
   - address: "0x00597A10"
     name: net_create_bad_guy_server_packet
     confidence: high
@@ -143,6 +239,18 @@ functions:
     name: net_deserialize_bad_guy_server_packet
     confidence: high
     evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32be guard."
+  - address: "0x0059B1F0"
+    name: net_create_remove_spell_server_packet
+    confidence: high
+    evidence: "Allocates a 0x14-byte RTTI SRemoveSpell object and calls its concrete constructor."
+  - address: "0x0059B270"
+    name: net_remove_spell_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x18 to the server packet base and installs the exact SRemoveSpell vtable."
+  - address: "0x0059B2A0"
+    name: net_deserialize_remove_spell_server_packet
+    confidence: high
+    evidence: "Reads the one-byte SRemoveSpell slot into object offset +0x10."
   - address: "0x005BA040"
     name: ui_map_loading_pane_ctor
     confidence: high
@@ -151,6 +259,14 @@ functions:
     name: ui_map_loading_set_progress
     confidence: high
     evidence: "Stores the SMapPart transfer percentage in MapLoadingPane and invalidates the pane for redraw."
+  - address: "0x005F1AF0"
+    name: net_handle_add_spell_server_packet
+    confidence: high
+    evidence: "Forwards decoded SAddSpell fields to the WorldUserFunc session model stored by WorldPane."
+  - address: "0x005F1B30"
+    name: net_handle_remove_spell_server_packet
+    confidence: high
+    evidence: "Forwards decoded SRemoveSpell to WorldUserFunc vtable slot +0x14."
   - address: "0x005F2A60"
     name: net_handle_map_part
     confidence: high
@@ -191,6 +307,26 @@ functions:
     name: net_handle_bad_guy_server_packet
     confidence: high
     evidence: "Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths."
+  - address: "0x005FC5F0"
+    name: session_world_user_func_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class WorldUserFunc and clears its fixed inventory, spell, and skill arrays."
+  - address: "0x005FCC50"
+    name: session_store_spell_entry
+    confidence: high
+    evidence: "Stores one 0x206-byte spell record at WorldUserFunc + 0x4DFA + (slot - 1) * 0x206."
+  - address: "0x005FCCD0"
+    name: session_clear_spell_entry
+    confidence: high
+    evidence: "Clears a spell record's present flag, argument type, name[0], and prompt[0] without overwriting the icon or remaining string bytes."
+  - address: "0x005FD260"
+    name: session_add_spell_from_packet
+    confidence: high
+    evidence: "Accepts SAddSpell slots 1 through 89 and argument types 1 through 8 before updating WorldUserFunc spell storage."
+  - address: "0x005FD2E0"
+    name: session_remove_spell_from_packet
+    confidence: high
+    evidence: "Accepts SRemoveSpell slots 1 through 89 before clearing the matching WorldUserFunc spell record."
   - address: "0x00667B20"
     name: net_register_bad_guy_server_packet_factory
     confidence: high
@@ -211,6 +347,42 @@ comments:
     text: "Write CreateUserDialogPane +0x678 as the hair-color palette index 0 through 13."
   - address: "0x0043ECB9"
     text: "The active USA distribution stores literal none as the third CNewUser string. Japan mode 13 can read the Email control instead."
+  - address: "0x00492147"
+    text: "Convert the one-based protocol slot to the inventory container's zero-based index."
+  - address: "0x004921B6"
+    text: "NewSpellInventoryPane routes RTTI SRemoveSpell opcode 0x18 to its UI removal path."
+  - address: "0x00492270"
+    text: "The spell inventory UI independently builds a SpellInvItemPane from SAddSpell."
+  - address: "0x004922A1"
+    text: "The UI item receives cast_lines, which is not retained in the WorldUserFunc spell record."
+  - address: "0x004922BC"
+    text: "Read the one-based SRemoveSpell slot from packet object offset +0x10."
+  - address: "0x0049230E"
+    text: "Only an in-range UI slot with a live SpellInvItemPane is removed."
+  - address: "0x004934A6"
+    text: "Locate the live UI item pointer for the checked zero-based inventory index."
+  - address: "0x0049351F"
+    text: "Release the live spell item through the shared UI ownership manager."
+  - address: "0x00493527"
+    text: "Clear the inventory entry pointer after releasing the SpellInvItemPane."
+  - address: "0x0049A6A9"
+    text: "Dispatches spell activation by spell_args_type: string, target, numeric fields, or no argument."
+  - address: "0x0049B897"
+    text: "Each timer tick advances one cast line; the final tick submits the queued CUseSpell."
+  - address: "0x0049B94D"
+    text: "The cast scheduler only assigns cast line counts at or below 10."
+  - address: "0x0049B9D0"
+    text: "A delayed cast advances on a 1000 ms timer."
+  - address: "0x0049B9F0"
+    text: "Delayed casting first sends CSpellDelayRequest, then the first configured cast line."
+  - address: "0x0049BA0A"
+    text: "Zero-line path: the delay-say helper emits nothing because total_lines is zero, then the queued CUseSpell is submitted immediately."
+  - address: "0x0049BAD3"
+    text: "Builds CSpellDelayRequest (0x4D) with the cast line count."
+  - address: "0x0049BB68"
+    text: "CSpellDelaySay is only constructed when total_lines is nonzero. Zero-line casts return without sending opcode 0x4E."
+  - address: "0x0049BB79"
+    text: "Builds CSpellDelaySay (0x4E) from a configured cast line or the spell name."
   - address: "0x004BA957"
     text: "LoginDialogPane action 0 reads attached controls 2 (Name) and 3 (Password) and sends CLogin."
   - address: "0x004BAAB2"
@@ -263,16 +435,34 @@ comments:
     text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
   - address: "0x005962D3"
     text: "The factory installs no constructor for server opcode 0x58 or 0x67. Both remain raw decoded bodies with a null packet-object slot."
+  - address: "0x005976FA"
+    text: "SAddSpell body begins with a one-byte spell slot."
+  - address: "0x00597708"
+    text: "Reads the spell icon as a big-endian 16-bit value."
+  - address: "0x00597717"
+    text: "Reads spell_args_type. The accepted session range is 1 through 8."
+  - address: "0x0059772C"
+    text: "Reads the spell name as a one-byte-length-prefixed string and appends a local NUL."
+  - address: "0x00597744"
+    text: "Reads the prompt as a one-byte-length-prefixed string and appends a local NUL."
+  - address: "0x00597755"
+    text: "Reads cast_lines as one byte. The UI retains it for delayed casting."
   - address: "0x00597A9C"
     text: "Construct RTTI class SBadGuy with server opcode 0x4A."
   - address: "0x00597AD2"
     text: "SBadGuy body bytes 1 and 2 are u8 mode and marker byte."
   - address: "0x00597AE6"
     text: "SBadGuy ends with a u32be guard value."
+  - address: "0x0059B2AA"
+    text: "SRemoveSpell contains one body field: the one-byte spell slot at object offset +0x10."
+  - address: "0x005EDC2D"
+    text: "Dispatch RTTI packet SRemoveSpell opcode 0x18 to net_handle_remove_spell_server_packet."
   - address: "0x005EDF3D"
     text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
   - address: "0x005EE185"
     text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x58 or 0x67."
+  - address: "0x005F1B5A"
+    text: "Forward the SRemoveSpell object to WorldUserFunc vtable slot +0x14."
   - address: "0x005F2AEB"
     text: "Create MapLoadingPane on the first SMapPart body when a map transfer is active."
   - address: "0x005F2C31"
@@ -293,6 +483,24 @@ comments:
     text: "After successfully closing the marker, call the invalid-memory clearing path to terminate the client."
   - address: "0x005F7A80"
     text: "Marker creation failed, including when it already exists. Write through null to terminate the client."
+  - address: "0x005FCC59"
+    text: "Spell record address is WorldUserFunc + 0x4DFA + (slot - 1) * 0x206."
+  - address: "0x005FCCD9"
+    text: "Spell record address is WorldUserFunc + 0x4DFA + (slot - 1) * 0x206."
+  - address: "0x005FCCF6"
+    text: "Removal clears the present flag but does not overwrite the retained icon."
+  - address: "0x005FCCFC"
+    text: "Removal clears spell_args_type."
+  - address: "0x005FCD03"
+    text: "Removal writes a NUL only to name[0]; the remaining name bytes are left untouched."
+  - address: "0x005FCD0A"
+    text: "Removal writes a NUL only to prompt[0]; the remaining prompt bytes are left untouched."
+  - address: "0x005FD27F"
+    text: "Session spell storage accepts slots 1 through 89."
+  - address: "0x005FD291"
+    text: "Session spell storage accepts spell argument types 1 through 8."
+  - address: "0x005FD302"
+    text: "Session removal accepts spell slots 1 through 89; other values are ignored."
   - address: "0x00667B38"
     text: "Register the SBadGuy constructor in the server_packet_factory initialization path."
 runtime_patches: []
@@ -712,16 +920,16 @@ packet_indexes:
         builder: "0x0049BAB0"
         opcode_confidence: high
         name_confidence: low
-        evidence: "Representative builder 0x0049BAB0 writes opcode 0x4D and submits the body."
+        evidence: "SpellDelayControlPane builder 0x0049BAB0 writes opcode 0x4D followed by the one-byte SAddSpell cast-line count."
         page: "docs/network/client/077-0x4d-spell-delay-request.md"
       - opcode: "0x4E"
         friendly_name: "Spell Delay Say"
         class_name: "CSpellDelaySay"
         transform: derived
-        builder: "0x00499330"
+        builder: "0x0049BB40"
         opcode_confidence: high
         name_confidence: low
-        evidence: "Representative builder 0x00499330 writes opcode 0x4E and submits the body."
+        evidence: "SpellDelayControlPane builder 0x0049BB40 writes opcode 0x4E and a string8 configured cast line or final spell name."
         page: "docs/network/client/078-0x4e-spell-delay-say.md"
       - opcode: "0x4F"
         friendly_name: "Send Portrait"
@@ -1050,7 +1258,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x005976C0 passes opcode 0x17 to the server packet base and installs the SAddSpell vtable."
+        evidence: "RTTI constructor 0x005976C0 binds opcode 0x17. Deserializer 0x005976F0 reads u8 slot, u16be icon, u8 argument type, string8 name, string8 prompt, and u8 cast_lines. WorldUserFunc and NewSpellInventoryPane consume the decoded object."
         page: "docs/network/server/023-0x17-add-spell.md"
       - opcode: "0x18"
         friendly_name: "Remove Spell"
@@ -1060,7 +1268,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059B270 passes opcode 0x18 to the server packet base and installs the SRemoveSpell vtable."
+        evidence: "RTTI constructor 0x0059B270 binds opcode 0x18. Deserializer 0x0059B2A0 reads one u8 slot. WorldUserFunc clears the session record for slots 1 through 89, while NewSpellInventoryPane releases and nulls the UI item for slots 1 through 90."
         page: "docs/network/server/024-0x18-remove-spell.md"
       - opcode: "0x19"
         friendly_name: "Sound Effect"

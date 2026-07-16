@@ -125,6 +125,81 @@ struct SBrowserFields {
 
 The apparent overlap is variant storage. A subtype or mode determines which fields are valid. Packet wire layouts remain on the individual packet pages.
 
+## Character spell state
+
+The logged-in world keeps a gameplay copy of each spell and a separate UI copy. `WorldPane + 0x2CC` points to the RTTI class `WorldUserFunc`, which owns fixed arrays for inventory items, spells, and skills.
+
+```c
+struct SessionSpellEntry {
+    u8 present;                     // +0x000
+    u8 padding_001;
+    u16 icon;                       // +0x002
+    u8 spell_args_type;             // +0x004
+    char name[256];                 // +0x005
+    char prompt[256];               // +0x105
+    u8 padding_205;
+};                                  // size 0x206
+
+struct WorldUserFuncCharacterFields {
+    u8 unknown_0000[0x1092];
+    u8 inventory[60][0x106];        // +0x1092
+    SessionSpellEntry spells[89];   // +0x4DFA, slots 1 through 89
+    u8 skills[89][0x104];           // +0x10210
+};
+```
+
+`session_store_spell_entry` calculates a spell address as `this + 0x4DFA + (slot - 1) * 0x206`. It stores the fields supplied by [`SAddSpell`](../network/server/023-0x17-add-spell.md) except `cast_lines`.
+
+[`SRemoveSpell`](../network/server/024-0x18-remove-spell.md) performs a logical clear of the same record. It sets `present`, `spell_args_type`, `name[0]`, and `prompt[0]` to zero. It does not overwrite `icon` or the remaining bytes in either string buffer.
+
+The UI representation keeps that missing value:
+
+```c
+struct SpellInvItemPaneFields {
+    u8 pane_base[0x190];
+    u8 slot;                        // +0x190
+    u8 padding_191;
+    u16 icon;                       // +0x192
+    u8 spell_args_type;             // +0x194
+    char name[128];                 // +0x195
+    char prompt[128];               // +0x215
+    u8 cast_lines;                  // +0x295
+    u8 state_296;                   // exact purposes unknown
+    u8 state_297;
+};
+
+struct NewSpellInventoryPaneFields {
+    u8 pane_base[0x190];
+    s32 capacity;                   // +0x190, initialized to 90
+    SpellInvItemPane **items;       // +0x194, 90 pointers
+};
+
+struct SkillSpellInventoryPaneFields {
+    u8 pane_base[0x224];
+    Pane *skill_inventory;          // +0x224
+    NewSpellInventoryPane *spells;  // +0x228
+};
+```
+
+The UI accepts slots 1 through 90, one more than `WorldUserFunc`. Removing a live UI spell releases its `SpellInvItemPane` and sets the corresponding pointer to null. No use for slot 90 has been established.
+
+Timed casting is owned by the RTTI class `SpellDelayControlPane`:
+
+```c
+struct SpellDelayControlPaneFields {
+    u8 pane_base[0x190];
+    u8 total_lines;                 // +0x190
+    u8 current_line;                // +0x191
+    char cast_text[10][256];        // +0x192, loaded from SpellBook.cfg
+    u8 queued_use_spell[0x8000];    // +0xB92
+    char spell_name[256];           // +0x8B92
+    u16 queued_body_length;         // +0x8C92
+    bool pending;                   // +0x8C94
+};
+```
+
+Its timer callback receives the usual adjusted `TimerHandler` pointer at `this + 0x11C`. It converts that pointer back to the complete pane before advancing the cast sequence.
+
 ## Event pane tree
 
 `EventHandlerList` stores a flattened preorder tree. The dispatcher owns it at offset `+0x60`.
