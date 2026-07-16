@@ -4,6 +4,9 @@
 - [Getting Started](getting-started.md)
 - [Analysis Method](methodology.md)
 - [Startup Controls](client/startup.md)
+- [UI and Event Architecture](ui/event-and-pane-system.md)
+  - [Pane Registry and RTTI Inventory](ui/pane-registry.md)
+  - [Injected Event Proxy Design](ui/event-proxy.md)
 - [Command Line and Initial Connection](network/initial-connection.md)
 - [Network Architecture](network/architecture.md)
   - [Packet Transforms](network/packet-transforms.md)
@@ -136,3 +139,7 @@
     - [Screen Shot (SScreenShot)](network/server/107-0x6b-screen-shot.md)
     - [Family Name (SFamilyName)](network/server/109-0x6d-family-name.md)
     - [Meta Data (SMetaData)](network/server/111-0x6f-meta-data.md)
+
+# Appendices
+
+- [Pane Type and Inheritance](appendix/pane-types.md)

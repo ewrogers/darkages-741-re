@@ -16,9 +16,9 @@ functions:
     confidence: high
     evidence: "Routes SNewUserCheck to a state-specific account-creation result parser."
   - address: "0x004647C0"
-    name: event_process_queued_event
+    name: event_dispatch
     confidence: high
-    evidence: "Processes queued application events and constructs decoded server packet objects for event type 0x13."
+    evidence: "Centrally dispatches logical events and constructs decoded server packet objects for event type 0x13."
   - address: "0x00467060"
     name: net_post_decoded_server_packet_event
     confidence: high

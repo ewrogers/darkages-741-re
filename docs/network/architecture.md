@@ -34,7 +34,7 @@ The same socket class retains an older printable compatibility transport using `
 | `net_receive_frames` | `0x00567070` | Consumes a sync byte, reads `body_size:u16be`, collects the body, and selects its transform |
 | `net_decrypt_server_packet` | `0x00567DE0` | Reverses the server transform and removes its seed trailer |
 | `net_post_decoded_server_packet_event` | `0x00467060` | Copies the decoded opcode-first body into event type `0x13` |
-| `event_process_queued_event` | `0x004647C0` | Retains the decoded body and creates a server packet object when the opcode has a registered constructor |
+| `event_dispatch` | `0x004647C0` | Retains the decoded body and creates a server packet object when the opcode has a registered constructor |
 | UI or manager event handlers | varies | Consume selected decoded bodies directly when no packet class is registered |
 | `net_dispatch_server_packet` | `0x005ED990` | Routes registered, parsed gameplay packets to handlers |
 
@@ -62,3 +62,5 @@ For tooling that observes rather than changes protocol behavior:
 - The Winsock calls see only framed wire bytes.
 
 The decoded event path is usually the safest place to inspect packet contents because it avoids reimplementing framing and both XOR modes. The two indexes deliberately remain direction-specific because the same opcode can have a different name and transform policy in each direction.
+
+See [UI and event architecture](../ui/event-and-pane-system.md) for the main-thread queue, pane virtual slots, capture path, and pane-tree propagation used by type `0x13`.

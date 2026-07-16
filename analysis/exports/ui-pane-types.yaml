@@ -1,0 +1,5957 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+source:
+  kind: msvc_x86_rtti
+  description: "Complete Object Locator, Class Hierarchy Descriptor, Base Class Array, and Base Class Descriptor records"
+pane_type_count: 332
+pane_types:
+  - name: "_EventListPane"
+    decorated_name: ".?AV_EventListPane@@"
+    direct_bases:
+      - "nui_ElemListPane"
+    pane_lineage:
+      - "_EventListPane"
+      - "nui_ElemListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "nui_ElemListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A6670"
+      - "0x006A66D4"
+  - name: "_temp_::GroupAlertPane"
+    decorated_name: ".?AVGroupAlertPane@_temp_@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "_temp_::GroupAlertPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A81C4"
+      - "0x006A8224"
+  - name: "AddItemDialog"
+    decorated_name: ".?AVAddItemDialog@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "AddItemDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069A3E4"
+      - "0x0069A440"
+  - name: "AddItemWithCountDialog"
+    decorated_name: ".?AVAddItemWithCountDialog@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "AddItemWithCountDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069A4C8"
+      - "0x0069A524"
+  - name: "AddToBlockListenInputPane"
+    decorated_name: ".?AVAddToBlockListenInputPane@@"
+    direct_bases:
+      - "LineInputPane"
+    pane_lineage:
+      - "AddToBlockListenInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2824"
+      - "0x006A2880"
+  - name: "AgreementDialogPane"
+    decorated_name: ".?AVAgreementDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<AgreementDialogPane>"
+    pane_lineage:
+      - "AgreementDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<AgreementDialogPane>"
+    complete_object_locators:
+      - "0x00696AC8"
+      - "0x00696CD4"
+  - name: "AlbumInfoPane"
+    decorated_name: ".?AVAlbumInfoPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "AlbumInfoPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A08E0"
+      - "0x006A0938"
+  - name: "AlbumPicDialogPane"
+    decorated_name: ".?AVAlbumPicDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "AlbumPicDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A651C"
+      - "0x006A6578"
+  - name: "AlbumViewPane"
+    decorated_name: ".?AVAlbumViewPane@@"
+    direct_bases:
+      - "ScrollablePane"
+    pane_lineage:
+      - "AlbumViewPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A094C"
+      - "0x006A09A8"
+  - name: "AlertPane"
+    decorated_name: ".?AVAlertPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006995EC"
+      - "0x00699600"
+  - name: "AlphaScreenPane"
+    decorated_name: ".?AVAlphaScreenPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "AlphaScreenPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00696D30"
+      - "0x00696D88"
+  - name: "AlphaScreenPaneSegmented"
+    decorated_name: ".?AVAlphaScreenPaneSegmented@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "AlphaScreenPaneSegmented"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00696D9C"
+      - "0x00696DF4"
+  - name: "AnimationPane"
+    decorated_name: ".?AVAnimationPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "AnimationPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00696E08"
+      - "0x00696E60"
+  - name: "ArgsLineInputPane"
+    decorated_name: ".?AVArgsLineInputPane@@"
+    direct_bases:
+      - "LineInputPane"
+    pane_lineage:
+      - "ArgsLineInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3B80"
+      - "0x006A3B94"
+  - name: "ArgumentedTextInputMenuDialog"
+    decorated_name: ".?AVArgumentedTextInputMenuDialog@@"
+    direct_bases:
+      - "TextInputMenuDialog"
+    pane_lineage:
+      - "ArgumentedTextInputMenuDialog"
+      - "TextInputMenuDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TextInputMenuDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DA48"
+      - "0x0069DAAC"
+  - name: "ArgumentedTextMenuDialog"
+    decorated_name: ".?AVArgumentedTextMenuDialog@@"
+    direct_bases:
+      - "TextMenuDialog"
+    pane_lineage:
+      - "ArgumentedTextMenuDialog"
+      - "TextMenuDialog"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TextMenuDialog"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D8E0"
+      - "0x0069D948"
+  - name: "ArgumentedTextMenuDialogEx"
+    decorated_name: ".?AVArgumentedTextMenuDialogEx@@"
+    direct_bases:
+      - "TextMenuDialogEx"
+    pane_lineage:
+      - "ArgumentedTextMenuDialogEx"
+      - "TextMenuDialogEx"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TextMenuDialogEx"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D754"
+      - "0x0069D7B8"
+  - name: "ArgumentedTextMenuPane"
+    decorated_name: ".?AVArgumentedTextMenuPane@@"
+    direct_bases:
+      - "TaskListPane"
+    pane_lineage:
+      - "ArgumentedTextMenuPane"
+      - "TaskListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "TaskListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D95C"
+      - "0x0069D9C0"
+  - name: "ArticleDialog"
+    decorated_name: ".?AVArticleDialog@@"
+    direct_bases:
+      - "BulletinDialogPane"
+    pane_lineage:
+      - "ArticleDialog"
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00697DEC"
+      - "0x00697E4C"
+  - name: "ArticleListDialog"
+    decorated_name: ".?AVArticleListDialog@@"
+    direct_bases:
+      - "BulletinDialogPane"
+    pane_lineage:
+      - "ArticleListDialog"
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00697D04"
+      - "0x00697D64"
+  - name: "ArticleListPane"
+    decorated_name: ".?AVArticleListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "ArticleListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00697D78"
+      - "0x00697DD8"
+  - name: "BkStoryPane"
+    decorated_name: ".?AVBkStoryPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "BkStoryPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069707C"
+      - "0x006970D4"
+  - name: "BlockListenInputPane"
+    decorated_name: ".?AVBlockListenInputPane@@"
+    direct_bases:
+      - "CharInputPane"
+      - "Singleton<BlockListenInputPane>"
+    pane_lineage:
+      - "BlockListenInputPane"
+      - "CharInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "CharInputPane"
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<BlockListenInputPane>"
+    complete_object_locators:
+      - "0x006A2714"
+      - "0x006A2810"
+  - name: "BoardListDialog"
+    decorated_name: ".?AVBoardListDialog@@"
+    direct_bases:
+      - "BulletinDialogPane"
+    pane_lineage:
+      - "BoardListDialog"
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00697B90"
+      - "0x00697BF0"
+  - name: "BoardListPane"
+    decorated_name: ".?AVBoardListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "BoardListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00697C04"
+      - "0x00697CF0"
+  - name: "BrowserControlPane"
+    decorated_name: ".?AVBrowserControlPane@@"
+    direct_bases:
+      - "ControlPane"
+      - "Singleton<BrowserControlPane>"
+      - "IOleClientSite"
+      - "IOleInPlaceSite"
+      - "DWebBrowserEvents2"
+      - "IDocHostUIHandler"
+      - "IDocHostShowUI"
+    pane_lineage:
+      - "BrowserControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<BrowserControlPane>"
+      - "IOleClientSite"
+      - "IUnknown"
+      - "IOleInPlaceSite"
+      - "IOleWindow"
+      - "DWebBrowserEvents2"
+      - "IDispatch"
+      - "IDocHostUIHandler"
+      - "IDocHostShowUI"
+    complete_object_locators:
+      - "0x006972AC"
+      - "0x006976E4"
+      - "0x006976F8"
+      - "0x0069770C"
+      - "0x00697720"
+      - "0x00697734"
+      - "0x00697748"
+  - name: "BrowserDialogPane"
+    decorated_name: ".?AVBrowserDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<BrowserDialogPane>"
+    pane_lineage:
+      - "BrowserDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<BrowserDialogPane>"
+    complete_object_locators:
+      - "0x006971E8"
+      - "0x00697298"
+  - name: "BtmButtonsPane_A"
+    decorated_name: ".?AVBtmButtonsPane_A@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "BtmButtonsPane_A"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006979F4"
+      - "0x00697A4C"
+  - name: "BulletinBangNotifyDialog"
+    decorated_name: ".?AVBulletinBangNotifyDialog@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "BulletinBangNotifyDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006983F8"
+      - "0x00698454"
+  - name: "BulletinDialogPane"
+    decorated_name: ".?AVBulletinDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00697B20"
+      - "0x00697B7C"
+  - name: "BulletinSession"
+    decorated_name: ".?AVBulletinSession@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<BulletinSession>"
+    pane_lineage:
+      - "BulletinSession"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<BulletinSession>"
+    complete_object_locators:
+      - "0x00697A60"
+      - "0x00697B0C"
+  - name: "ButtonControlPane"
+    decorated_name: ".?AVButtonControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698E8C"
+      - "0x00698EE8"
+  - name: "ButtonGroupViewPane"
+    decorated_name: ".?AVButtonGroupViewPane@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<ButtonGroupViewPane>"
+    pane_lineage:
+      - "ButtonGroupViewPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<ButtonGroupViewPane>"
+    complete_object_locators:
+      - "0x0069FF84"
+      - "0x006A0034"
+  - name: "ChangePasswordDialogPane"
+    decorated_name: ".?AVChangePasswordDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "ChangePasswordDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069CFD8"
+      - "0x0069D034"
+  - name: "CharInputPane"
+    decorated_name: ".?AVCharInputPane@@"
+    direct_bases:
+      - "LineInputPane"
+    pane_lineage:
+      - "CharInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3B58"
+      - "0x006A3B6C"
+  - name: "ChatInputPane"
+    decorated_name: ".?AVChatInputPane@@"
+    direct_bases:
+      - "LineInputPane"
+    pane_lineage:
+      - "ChatInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A25C4"
+      - "0x006A2620"
+  - name: "ChattingPane"
+    decorated_name: ".?AVChattingPane@@"
+    direct_bases:
+      - "TextEditPane"
+    pane_lineage:
+      - "ChattingPane"
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006987D0"
+      - "0x00698878"
+  - name: "ChattingPane2"
+    decorated_name: ".?AVChattingPane2@@"
+    direct_bases:
+      - "ChattingPane"
+    pane_lineage:
+      - "ChattingPane2"
+      - "ChattingPane"
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ChattingPane"
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A5F38"
+      - "0x006A5F9C"
+  - name: "CIPane"
+    decorated_name: ".?AVCIPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<CIPane>"
+    pane_lineage:
+      - "CIPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<CIPane>"
+    complete_object_locators:
+      - "0x0069888C"
+      - "0x00698938"
+  - name: "ClientItemMenuDialog"
+    decorated_name: ".?AVClientItemMenuDialog@@"
+    direct_bases:
+      - "TaskListDialog"
+    pane_lineage:
+      - "ClientItemMenuDialog"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DBD4"
+      - "0x0069DC38"
+  - name: "ClientSkillMenuDialog"
+    decorated_name: ".?AVClientSkillMenuDialog@@"
+    direct_bases:
+      - "TaskListDialog"
+    pane_lineage:
+      - "ClientSkillMenuDialog"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DDB4"
+      - "0x0069DE18"
+  - name: "ClientSpellMenuDialog"
+    decorated_name: ".?AVClientSpellMenuDialog@@"
+    direct_bases:
+      - "TaskListDialog"
+    pane_lineage:
+      - "ClientSpellMenuDialog"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DCC4"
+      - "0x0069DD28"
+  - name: "ClockPane"
+    decorated_name: ".?AVClockPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<ClockPane>"
+    pane_lineage:
+      - "ClockPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<ClockPane>"
+    complete_object_locators:
+      - "0x0069894C"
+      - "0x006989F8"
+  - name: "CommandLineInputPane"
+    decorated_name: ".?AVCommandLineInputPane@@"
+    direct_bases:
+      - "LineInputPane"
+    pane_lineage:
+      - "CommandLineInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698AF8"
+      - "0x00698B98"
+  - name: "ConfirmDeleteAlert"
+    decorated_name: ".?AVConfirmDeleteAlert@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "ConfirmDeleteAlert"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698310"
+      - "0x00698370"
+  - name: "ControlPane"
+    decorated_name: ".?AVControlPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698DF4"
+      - "0x00698E08"
+  - name: "CreateUserDialogPane"
+    decorated_name: ".?AVCreateUserDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<CreateUserDialogPane>"
+    pane_lineage:
+      - "CreateUserDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<CreateUserDialogPane>"
+    complete_object_locators:
+      - "0x006993E8"
+      - "0x00699498"
+  - name: "DeleteFromBlockListenInputPane"
+    decorated_name: ".?AVDeleteFromBlockListenInputPane@@"
+    direct_bases:
+      - "LineInputPane"
+    pane_lineage:
+      - "DeleteFromBlockListenInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2894"
+      - "0x006A28F0"
+  - name: "DeleteReplyAlert"
+    decorated_name: ".?AVDeleteReplyAlert@@"
+    direct_bases:
+      - "AlertPane"
+      - "Singleton<DeleteReplyAlert>"
+    pane_lineage:
+      - "DeleteReplyAlert"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<DeleteReplyAlert>"
+    complete_object_locators:
+      - "0x00697E60"
+      - "0x00697F5C"
+  - name: "DescPane"
+    decorated_name: ".?AVDescPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<DescPane>"
+    pane_lineage:
+      - "DescPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<DescPane>"
+    complete_object_locators:
+      - "0x0069C7E0"
+      - "0x0069C88C"
+  - name: "DialogPane"
+    decorated_name: ".?AVDialogPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006995C4"
+      - "0x006995D8"
+  - name: "DraggedInvItemPane"
+    decorated_name: ".?AVDraggedInvItemPane@@"
+    direct_bases:
+      - "DraggedPane"
+    pane_lineage:
+      - "DraggedInvItemPane"
+      - "DraggedPane"
+      - "Pane"
+    all_bases:
+      - "DraggedPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C24C"
+      - "0x0069C2A8"
+  - name: "DraggedMapItemPane"
+    decorated_name: ".?AVDraggedMapItemPane@@"
+    direct_bases:
+      - "DraggedPane"
+    pane_lineage:
+      - "DraggedMapItemPane"
+      - "DraggedPane"
+      - "Pane"
+    all_bases:
+      - "DraggedPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C328"
+      - "0x0069C384"
+  - name: "DraggedPane"
+    decorated_name: ".?AVDraggedPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "DraggedPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006997F8"
+      - "0x00699850"
+  - name: "DraggedPicPane"
+    decorated_name: ".?AVDraggedPicPane@@"
+    direct_bases:
+      - "DraggedPane"
+    pane_lineage:
+      - "DraggedPicPane"
+      - "DraggedPane"
+      - "Pane"
+    all_bases:
+      - "DraggedPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A09BC"
+      - "0x006A0A18"
+  - name: "DraggedSkillInvItemPane"
+    decorated_name: ".?AVDraggedSkillInvItemPane@@"
+    direct_bases:
+      - "DraggedPane"
+    pane_lineage:
+      - "DraggedSkillInvItemPane"
+      - "DraggedPane"
+      - "Pane"
+    all_bases:
+      - "DraggedPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C404"
+      - "0x0069C460"
+  - name: "DraggedSpellInvItemPane"
+    decorated_name: ".?AVDraggedSpellInvItemPane@@"
+    direct_bases:
+      - "DraggedPane"
+    pane_lineage:
+      - "DraggedSpellInvItemPane"
+      - "DraggedPane"
+      - "Pane"
+    all_bases:
+      - "DraggedPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C4E0"
+      - "0x0069C53C"
+  - name: "DraggedWorldItemPane"
+    decorated_name: ".?AVDraggedWorldItemPane@@"
+    direct_bases:
+      - "DraggedPane"
+    pane_lineage:
+      - "DraggedWorldItemPane"
+      - "DraggedPane"
+      - "Pane"
+    all_bases:
+      - "DraggedPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A7C0C"
+      - "0x006A7C68"
+  - name: "DropGoldDialogPane"
+    decorated_name: ".?AVDropGoldDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "DropGoldDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C16C"
+      - "0x0069C1C8"
+  - name: "EditablePaperPane"
+    decorated_name: ".?AVEditablePaperPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "EditablePaperPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2210"
+      - "0x006A226C"
+  - name: "EmoticonSelectPane_A"
+    decorated_name: ".?AVEmoticonSelectPane_A@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "EmoticonSelectPane_A"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069999C"
+      - "0x006999F4"
+  - name: "EmployeeDialogPane"
+    decorated_name: ".?AVEmployeeDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<EmployeeDialogPane>"
+    pane_lineage:
+      - "EmployeeDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<EmployeeDialogPane>"
+    complete_object_locators:
+      - "0x00699AE8"
+      - "0x00699B98"
+  - name: "EmployeeItemPropertyDialogPane"
+    decorated_name: ".?AVEmployeeItemPropertyDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "EmployeeItemPropertyDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699A08"
+      - "0x00699A64"
+  - name: "EmployeeQuantityInputDialogPane"
+    decorated_name: ".?AVEmployeeQuantityInputDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "EmployeeQuantityInputDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699A78"
+      - "0x00699AD4"
+  - name: "EquipPane"
+    decorated_name: ".?AVEquipPane@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<EquipPane>"
+    pane_lineage:
+      - "EquipPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<EquipPane>"
+    complete_object_locators:
+      - "0x00699BAC"
+      - "0x00699C5C"
+  - name: "EventInfoDialogPane"
+    decorated_name: ".?AVEventInfoDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "EventInfoDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A6378"
+      - "0x006A63D4"
+  - name: "EventInfoPane"
+    decorated_name: ".?AVEventInfoPane@@"
+    direct_bases:
+      - "SessionLayeredTabPane"
+    pane_lineage:
+      - "EventInfoPane"
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A05C8"
+      - "0x006A0630"
+  - name: "EventListPane"
+    decorated_name: ".?AVEventListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "EventListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A06B4"
+      - "0x006A0714"
+  - name: "EventViewPane"
+    decorated_name: ".?AVEventViewPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "EventViewPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0644"
+      - "0x006A06A0"
+  - name: "ExchangeDialog"
+    decorated_name: ".?AVExchangeDialog@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "ExchangeDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069A300"
+      - "0x0069A35C"
+  - name: "ExchangeItemListPane"
+    decorated_name: ".?AVExchangeItemListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "ExchangeItemListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069A370"
+      - "0x0069A3D0"
+  - name: "ExGroupViewPane"
+    decorated_name: ".?AVExGroupViewPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "ExGroupViewPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0208"
+      - "0x006A0260"
+  - name: "ExTextButtonControl"
+    decorated_name: ".?AVExTextButtonControl@@"
+    direct_bases:
+      - "ButtonControlPane"
+    pane_lineage:
+      - "ExTextButtonControl"
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A1274"
+      - "0x006A12D4"
+  - name: "ExtraStatusInfoPane"
+    decorated_name: ".?AVExtraStatusInfoPane@@"
+    direct_bases:
+      - "Pane"
+      - "StatusInfo"
+      - "Singleton<ExtraStatusInfoPane>"
+    pane_lineage:
+      - "ExtraStatusInfoPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "StatusInfo"
+      - "Singleton<ExtraStatusInfoPane>"
+    complete_object_locators:
+      - "0x006A3654"
+      - "0x006A3704"
+      - "0x006A3718"
+  - name: "FaceMenuDialog"
+    decorated_name: ".?AVFaceMenuDialog@@"
+    direct_bases:
+      - "MerchantDialogPane"
+    pane_lineage:
+      - "FaceMenuDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DE2C"
+      - "0x0069DE8C"
+  - name: "FamilyListDialogPane"
+    decorated_name: ".?AVFamilyListDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "FamilyListDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069ACDC"
+      - "0x0069AD38"
+  - name: "FieldMapBalloonPane"
+    decorated_name: ".?AVFieldMapBalloonPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "FieldMapBalloonPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069AD4C"
+      - "0x0069ADA4"
+  - name: "FieldMapPane"
+    decorated_name: ".?AVFieldMapPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "FieldMapPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069ADB8"
+      - "0x0069AE10"
+  - name: "FieldMapPointPane"
+    decorated_name: ".?AVFieldMapPointPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "FieldMapPointPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069AE24"
+      - "0x0069AE7C"
+  - name: "FindFarmpet::FindFarmpetPane"
+    decorated_name: ".?AVFindFarmpetPane@FindFarmpet@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "FindFarmpet::FindFarmpetPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069E6D4"
+      - "0x0069E72C"
+  - name: "FishingDialogPane"
+    decorated_name: ".?AVFishingDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "FishingDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069B094"
+      - "0x0069B0F0"
+  - name: "FishingGetPane"
+    decorated_name: ".?AVFishingGetPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "FishingGetPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069B028"
+      - "0x0069B080"
+  - name: "FishingImpactPane"
+    decorated_name: ".?AVFishingImpactPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "FishingImpactPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069AFBC"
+      - "0x0069B014"
+  - name: "FriendListDialog"
+    decorated_name: ".?AVFriendListDialog@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<FriendListDialog>"
+    pane_lineage:
+      - "FriendListDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<FriendListDialog>"
+    complete_object_locators:
+      - "0x006A1EDC"
+      - "0x006A1F8C"
+  - name: "GameMessagePane"
+    decorated_name: ".?AVGameMessagePane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<GameMessagePane>"
+    pane_lineage:
+      - "GameMessagePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<GameMessagePane>"
+    complete_object_locators:
+      - "0x0069B1A4"
+      - "0x0069B250"
+  - name: "GameSettingDialog"
+    decorated_name: ".?AVGameSettingDialog@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<GameSettingDialog>"
+    pane_lineage:
+      - "GameSettingDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<GameSettingDialog>"
+    complete_object_locators:
+      - "0x006A1E18"
+      - "0x006A1EC8"
+  - name: "GiveGoldDialogPane"
+    decorated_name: ".?AVGiveGoldDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "GiveGoldDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C1DC"
+      - "0x0069C238"
+  - name: "GroupAdDialogPane"
+    decorated_name: ".?AVGroupAdDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "GroupAdDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0124"
+      - "0x006A0180"
+  - name: "GroupAdInfoDialogPane"
+    decorated_name: ".?AVGroupAdInfoDialogPane@@"
+    direct_bases:
+      - "GroupAdDialogPane"
+    pane_lineage:
+      - "GroupAdInfoDialogPane"
+      - "GroupAdDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "GroupAdDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0274"
+      - "0x006A02D4"
+  - name: "GroupAdPane"
+    decorated_name: ".?AVGroupAdPane@@"
+    direct_bases:
+      - "GroupAdDialogPane"
+    pane_lineage:
+      - "GroupAdPane"
+      - "GroupAdDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "GroupAdDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0194"
+      - "0x006A01F4"
+  - name: "GroupListPane"
+    decorated_name: ".?AVGroupListPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "GroupListPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A00B4"
+      - "0x006A0110"
+  - name: "GroupViewPane"
+    decorated_name: ".?AVGroupViewPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "GroupViewPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699C70"
+      - "0x00699CC8"
+  - name: "GUIBackPane"
+    decorated_name: ".?AVGUIBackPane@@"
+    direct_bases:
+      - "Pane"
+      - "GUIBackPane_Interface"
+      - "InventoryControl_Interface"
+      - "Singleton<GUIBackPane>"
+    pane_lineage:
+      - "GUIBackPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "GUIBackPane_Interface"
+      - "InventoryControl_Interface"
+      - "Singleton<GUIBackPane>"
+    complete_object_locators:
+      - "0x006A56F0"
+      - "0x006A57DC"
+      - "0x006A57F0"
+      - "0x006A5804"
+  - name: "GUIBackPane::_BtmButtonsPane"
+    decorated_name: ".?AV_BtmButtonsPane@GUIBackPane@@"
+    direct_bases:
+      - "BtmButtonsPane_A"
+    pane_lineage:
+      - "GUIBackPane::_BtmButtonsPane"
+      - "BtmButtonsPane_A"
+      - "Pane"
+    all_bases:
+      - "BtmButtonsPane_A"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A5818"
+      - "0x006A5874"
+  - name: "GUIBackPane::_EmoticonSelectPane"
+    decorated_name: ".?AV_EmoticonSelectPane@GUIBackPane@@"
+    direct_bases:
+      - "EmoticonSelectPane_A"
+    pane_lineage:
+      - "GUIBackPane::_EmoticonSelectPane"
+      - "EmoticonSelectPane_A"
+      - "Pane"
+    all_bases:
+      - "EmoticonSelectPane_A"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A58FC"
+      - "0x006A5958"
+  - name: "GUIBackPane::_ShowUsersPane"
+    decorated_name: ".?AV_ShowUsersPane@GUIBackPane@@"
+    direct_bases:
+      - "ShowUsersPane_A"
+    pane_lineage:
+      - "GUIBackPane::_ShowUsersPane"
+      - "ShowUsersPane_A"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "ShowUsersPane_A"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A5888"
+      - "0x006A58E8"
+  - name: "GUIBackPane::_SpelledViewPane"
+    decorated_name: ".?AV_SpelledViewPane@GUIBackPane@@"
+    direct_bases:
+      - "SpelledViewPane_A"
+    pane_lineage:
+      - "GUIBackPane::_SpelledViewPane"
+      - "SpelledViewPane_A"
+      - "Pane"
+    all_bases:
+      - "SpelledViewPane_A"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A596C"
+      - "0x006A59C8"
+  - name: "GUIInfoPane"
+    decorated_name: ".?AVGUIInfoPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "GUIInfoPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0CE4"
+      - "0x006A0D3C"
+  - name: "GUIOptionPane"
+    decorated_name: ".?AVGUIOptionPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "GUIOptionPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A5C7C"
+      - "0x006A5CD8"
+  - name: "HelpDialog"
+    decorated_name: ".?AVHelpDialog@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "HelpDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A4054"
+      - "0x006A40B0"
+  - name: "HelpInfoPane"
+    decorated_name: ".?AVHelpInfoPane@@"
+    direct_bases:
+      - "SessionLayeredTabPane"
+    pane_lineage:
+      - "HelpInfoPane"
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0BFC"
+      - "0x006A0C64"
+  - name: "HotKeyPane"
+    decorated_name: ".?AVHotKeyPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "HotKeyPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069B58C"
+      - "0x0069B5E4"
+  - name: "HumanImageControlPane"
+    decorated_name: ".?AVHumanImageControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "HumanImageControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069B5F8"
+      - "0x0069B654"
+  - name: "ImageButtonControlPane"
+    decorated_name: ".?AVImageButtonControlPane@@"
+    direct_bases:
+      - "ButtonControlPane"
+    pane_lineage:
+      - "ImageButtonControlPane"
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698FE4"
+      - "0x00699044"
+  - name: "ImageButtonExControlPane"
+    decorated_name: ".?AVImageButtonExControlPane@@"
+    direct_bases:
+      - "ImageButtonControlPane"
+    pane_lineage:
+      - "ImageButtonExControlPane"
+      - "ImageButtonControlPane"
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ImageButtonControlPane"
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699058"
+      - "0x006990BC"
+  - name: "ImageControlPane"
+    decorated_name: ".?AVImageControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "ImageControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699378"
+      - "0x006993D4"
+  - name: "ImageFieldMapPointPane"
+    decorated_name: ".?AVImageFieldMapPointPane@@"
+    direct_bases:
+      - "FieldMapPointPane"
+    pane_lineage:
+      - "ImageFieldMapPointPane"
+      - "FieldMapPointPane"
+      - "Pane"
+    all_bases:
+      - "FieldMapPointPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069AF00"
+      - "0x0069AF5C"
+  - name: "ImagePane"
+    decorated_name: ".?AVImagePane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "ImagePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069BBFC"
+      - "0x0069BC54"
+  - name: "IMECandidatePane"
+    decorated_name: ".?AVIMECandidatePane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<IMECandidatePane>"
+    pane_lineage:
+      - "IMECandidatePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<IMECandidatePane>"
+    complete_object_locators:
+      - "0x0069BC68"
+      - "0x0069BD14"
+  - name: "InputBirthdateDialogPane"
+    decorated_name: ".?AVInputBirthdateDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "InputBirthdateDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D048"
+      - "0x0069D0A4"
+  - name: "InventoryNumberShortcutPane"
+    decorated_name: ".?AVInventoryNumberShortcutPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "InventoryNumberShortcutPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A55F4"
+      - "0x006A564C"
+  - name: "InventoryPane_A"
+    decorated_name: ".?AVInventoryPane_A@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "InventoryPane_A"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069BDC8"
+      - "0x0069BE20"
+  - name: "InventorySelectButtonsPane"
+    decorated_name: ".?AVInventorySelectButtonsPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "InventorySelectButtonsPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A5BA4"
+      - "0x006A5BFC"
+  - name: "InvItemPane"
+    decorated_name: ".?AVInvItemPane@@"
+    direct_bases:
+      - "ItemPane"
+    pane_lineage:
+      - "InvItemPane"
+      - "ItemPane"
+      - "Pane"
+    all_bases:
+      - "ItemPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C0FC"
+      - "0x0069C158"
+  - name: "ItemBuyAlertPane"
+    decorated_name: ".?AVItemBuyAlertPane@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "ItemBuyAlertPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DB38"
+      - "0x0069DB98"
+  - name: "ItemDragPane"
+    decorated_name: ".?AVItemDragPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "ItemDragPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A7BA0"
+      - "0x006A7BF8"
+  - name: "ItemImageControlPane"
+    decorated_name: ".?AVItemImageControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "ItemImageControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069E398"
+      - "0x0069E3F4"
+  - name: "ItemInventoryPane"
+    decorated_name: ".?AVItemInventoryPane@@"
+    direct_bases:
+      - "InventoryPane_A"
+    pane_lineage:
+      - "ItemInventoryPane"
+      - "InventoryPane_A"
+      - "Pane"
+    all_bases:
+      - "InventoryPane_A"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A5FB0"
+      - "0x006A600C"
+  - name: "ItemListPane"
+    decorated_name: ".?AVItemListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "ItemListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DBAC"
+      - "0x0069DBC0"
+  - name: "ItemListPane_New"
+    decorated_name: ".?AVItemListPane_New@@"
+    direct_bases:
+      - "ItemListPane"
+    pane_lineage:
+      - "ItemListPane_New"
+      - "ItemListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ItemListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D47C"
+      - "0x0069D52C"
+  - name: "ItemPane"
+    decorated_name: ".?AVItemPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "ItemPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C090"
+      - "0x0069C0E8"
+  - name: "ItemShop::IconInvControlPane"
+    decorated_name: ".?AVIconInvControlPane@ItemShop@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "ItemShop::IconInvControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C8A0"
+      - "0x0069C8FC"
+  - name: "ItemShop::SBGetAlertPane"
+    decorated_name: ".?AVSBGetAlertPane@ItemShop@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "ItemShop::SBGetAlertPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C910"
+      - "0x0069C970"
+  - name: "ItemShop::ShopDialogPane"
+    decorated_name: ".?AVShopDialogPane@ItemShop@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<ItemShop::ShopDialogPane>"
+    pane_lineage:
+      - "ItemShop::ShopDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<ItemShop::ShopDialogPane>"
+    complete_object_locators:
+      - "0x0069CA48"
+      - "0x0069CAF8"
+  - name: "ItemShop::ShoppingBagDialogPane"
+    decorated_name: ".?AVShoppingBagDialogPane@ItemShop@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<ItemShop::ShoppingBagDialogPane>"
+    pane_lineage:
+      - "ItemShop::ShoppingBagDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<ItemShop::ShoppingBagDialogPane>"
+    complete_object_locators:
+      - "0x0069C984"
+      - "0x0069CA34"
+  - name: "KeyboardInfoPane"
+    decorated_name: ".?AVKeyboardInfoPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "KeyboardInfoPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0C78"
+      - "0x006A0CD0"
+  - name: "LayeredTabImagePane"
+    decorated_name: ".?AVLayeredTabImagePane@@"
+    direct_bases:
+      - "ImagePane"
+    pane_lineage:
+      - "LayeredTabImagePane"
+      - "ImagePane"
+      - "Pane"
+    all_bases:
+      - "ImagePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3808"
+      - "0x006A3864"
+  - name: "LayeredTabPane"
+    decorated_name: ".?AVLayeredTabPane@@"
+    direct_bases:
+      - "TabPane<LayeredImage>"
+    pane_lineage:
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3878"
+      - "0x006A388C"
+  - name: "LegendDialogPane"
+    decorated_name: ".?AVLegendDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "LegendDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698604"
+      - "0x00698660"
+  - name: "LegendInfoPane"
+    decorated_name: ".?AVLegendInfoPane@@"
+    direct_bases:
+      - "SessionLayeredTabPane"
+    pane_lineage:
+      - "LegendInfoPane"
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A03F4"
+      - "0x006A045C"
+  - name: "LegendListPane"
+    decorated_name: ".?AVLegendListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "LegendListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698590"
+      - "0x006985F0"
+  - name: "LineInputPane"
+    decorated_name: ".?AVLineInputPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3B30"
+      - "0x006A3B44"
+  - name: "ListPane"
+    decorated_name: ".?AVListPane@@"
+    direct_bases:
+      - "ScrollablePane"
+    pane_lineage:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069CD00"
+      - "0x0069CD14"
+  - name: "LoadUsersPane"
+    decorated_name: ".?AVLoadUsersPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<LoadUsersPane>"
+    pane_lineage:
+      - "LoadUsersPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<LoadUsersPane>"
+    complete_object_locators:
+      - "0x006A2DA0"
+      - "0x006A2E4C"
+  - name: "LoginDialogPane"
+    decorated_name: ".?AVLoginDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "LoginDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069CF68"
+      - "0x0069CFC4"
+  - name: "LogoPane"
+    decorated_name: ".?AVLogoPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<LogoPane>"
+    pane_lineage:
+      - "LogoPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<LogoPane>"
+    complete_object_locators:
+      - "0x0069CD84"
+      - "0x0069CE30"
+  - name: "LogoShowPane"
+    decorated_name: ".?AVLogoShowPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "LogoShowPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069CE44"
+      - "0x0069CE9C"
+  - name: "MacroDialog"
+    decorated_name: ".?AVMacroDialog@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<MacroDialog>"
+    pane_lineage:
+      - "MacroDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<MacroDialog>"
+    complete_object_locators:
+      - "0x006A1D54"
+      - "0x006A1E04"
+  - name: "MailDeleteReplyAlert"
+    decorated_name: ".?AVMailDeleteReplyAlert@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "MailDeleteReplyAlert"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006981B4"
+      - "0x00698214"
+  - name: "MailDialog"
+    decorated_name: ".?AVMailDialog@@"
+    direct_bases:
+      - "BulletinDialogPane"
+    pane_lineage:
+      - "MailDialog"
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698140"
+      - "0x006981A0"
+  - name: "MailListDialog"
+    decorated_name: ".?AVMailListDialog@@"
+    direct_bases:
+      - "BulletinDialogPane"
+    pane_lineage:
+      - "MailListDialog"
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698058"
+      - "0x006980B8"
+  - name: "MailListPane"
+    decorated_name: ".?AVMailListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "MailListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006980CC"
+      - "0x0069812C"
+  - name: "MailTransferReplyAlert"
+    decorated_name: ".?AVMailTransferReplyAlert@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "MailTransferReplyAlert"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069829C"
+      - "0x006982FC"
+  - name: "MainMenuPane"
+    decorated_name: ".?AVMainMenuPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "MainMenuPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069CEFC"
+      - "0x0069CF54"
+  - name: "ManufactureDialogPane"
+    decorated_name: ".?AVManufactureDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<ManufactureDialogPane>"
+    pane_lineage:
+      - "ManufactureDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<ManufactureDialogPane>"
+    complete_object_locators:
+      - "0x0069D0B8"
+      - "0x0069D168"
+  - name: "MapItem_Pane"
+    decorated_name: ".?AVMapItem_Pane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "MapItem_Pane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C2BC"
+      - "0x0069C314"
+  - name: "MapLoadingPane"
+    decorated_name: ".?AVMapLoadingPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<MapLoadingPane>"
+    pane_lineage:
+      - "MapLoadingPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<MapLoadingPane>"
+    complete_object_locators:
+      - "0x006A6B34"
+      - "0x006A6BE0"
+  - name: "MerchantDialogPane"
+    decorated_name: ".?AVMerchantDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D6B8"
+      - "0x0069D6CC"
+  - name: "MerchantSession"
+    decorated_name: ".?AVMerchantSession@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "MerchantSession"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D64C"
+      - "0x0069D6A4"
+  - name: "MessageDialog"
+    decorated_name: ".?AVMessageDialog@@"
+    direct_bases:
+      - "MessageDialogBase"
+    pane_lineage:
+      - "MessageDialog"
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DFF8"
+      - "0x0069E058"
+  - name: "MessageDialogBase"
+    decorated_name: ".?AVMessageDialogBase@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DF88"
+      - "0x0069DFE4"
+  - name: "MetaTableManager"
+    decorated_name: ".?AVMetaTableManager@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<MetaTableManager>"
+    pane_lineage:
+      - "MetaTableManager"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<MetaTableManager>"
+    complete_object_locators:
+      - "0x0069E550"
+      - "0x0069E5FC"
+  - name: "MFGSAlertPane"
+    decorated_name: ".?AVMFGSAlertPane@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "MFGSAlertPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069E660"
+      - "0x0069E6C0"
+  - name: "MidiPlayer"
+    decorated_name: ".?AVMidiPlayer@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "MidiPlayer"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069FC84"
+      - "0x0069FCDC"
+  - name: "MiniGame::AbstractGameControlPane"
+    decorated_name: ".?AVAbstractGameControlPane@MiniGame@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069FDE8"
+      - "0x0069FDFC"
+  - name: "MiniGame::BrowserGameControlPane"
+    decorated_name: ".?AVBrowserGameControlPane@MiniGame@@"
+    direct_bases:
+      - "MiniGame::AbstractGameControlPane"
+    pane_lineage:
+      - "MiniGame::BrowserGameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069FE10"
+      - "0x0069FE70"
+  - name: "MiniGame::GameDialogPane"
+    decorated_name: ".?AVGameDialogPane@MiniGame@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "MiniGame::GameDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069FE84"
+      - "0x0069FEE0"
+  - name: "MonsterImageControlPane"
+    decorated_name: ".?AVMonsterImageControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "MonsterImageControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069E328"
+      - "0x0069E384"
+  - name: "MonsterInfoPane"
+    decorated_name: ".?AVMonsterInfoPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "MonsterInfoPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0A2C"
+      - "0x006A0A88"
+  - name: "MonsterListPane"
+    decorated_name: ".?AVMonsterListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "MonsterListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0A9C"
+      - "0x006A0AFC"
+  - name: "MyItemListPane"
+    decorated_name: ".?AVMyItemListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "MyItemListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069A454"
+      - "0x0069A4B4"
+  - name: "NewArticleDialog"
+    decorated_name: ".?AVNewArticleDialog@@"
+    direct_bases:
+      - "BulletinDialogPane"
+    pane_lineage:
+      - "NewArticleDialog"
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00697F70"
+      - "0x00697FD0"
+  - name: "NewChatting2Pane"
+    decorated_name: ".?AVNewChatting2Pane@@"
+    direct_bases:
+      - "NewChattingPane_Tpl"
+    pane_lineage:
+      - "NewChatting2Pane"
+      - "NewChattingPane_Tpl"
+      - "Pane"
+    all_bases:
+      - "NewChattingPane_Tpl"
+      - "ChattingPaneInterface"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A5EB0"
+      - "0x006A5F10"
+      - "0x006A5F24"
+  - name: "NewChattingPane"
+    decorated_name: ".?AVNewChattingPane@@"
+    direct_bases:
+      - "NewChattingPane_Tpl"
+    pane_lineage:
+      - "NewChattingPane"
+      - "NewChattingPane_Tpl"
+      - "Pane"
+    all_bases:
+      - "NewChattingPane_Tpl"
+      - "ChattingPaneInterface"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A5E28"
+      - "0x006A5E88"
+      - "0x006A5E9C"
+  - name: "NewChattingPane_Tpl"
+    decorated_name: ".?AVNewChattingPane_Tpl@@"
+    direct_bases:
+      - "ChattingPaneInterface"
+      - "Pane"
+    pane_lineage:
+      - "NewChattingPane_Tpl"
+      - "Pane"
+    all_bases:
+      - "ChattingPaneInterface"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A5D34"
+      - "0x006A5E00"
+      - "0x006A5E14"
+  - name: "NewExtraStatusInfoPane"
+    decorated_name: ".?AVNewExtraStatusInfoPane@@"
+    direct_bases:
+      - "ExtraStatusInfoPane"
+      - "StatusInfoInterface"
+    pane_lineage:
+      - "NewExtraStatusInfoPane"
+      - "ExtraStatusInfoPane"
+      - "Pane"
+    all_bases:
+      - "ExtraStatusInfoPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "StatusInfo"
+      - "Singleton<ExtraStatusInfoPane>"
+      - "StatusInfoInterface"
+    complete_object_locators:
+      - "0x006A5AE4"
+      - "0x006A5B68"
+      - "0x006A5B7C"
+      - "0x006A5B90"
+  - name: "NewInventoryPane<SkillInvItemPane>"
+    decorated_name: ".?AV?$NewInventoryPane@VSkillInvItemPane@@@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "NewInventoryPane<SkillInvItemPane>"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069BF9C"
+      - "0x0069BFB0"
+  - name: "NewInventoryPane<SpellInvItemPane>"
+    decorated_name: ".?AV?$NewInventoryPane@VSpellInvItemPane@@@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "NewInventoryPane<SpellInvItemPane>"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069BFC4"
+      - "0x0069BFD8"
+  - name: "NewLegendDialogPane"
+    decorated_name: ".?AVNewLegendDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+      - "LegendInterface"
+    pane_lineage:
+      - "NewLegendDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "LegendInterface"
+    complete_object_locators:
+      - "0x0069872C"
+      - "0x006987A8"
+      - "0x006987BC"
+  - name: "NewMailDialog"
+    decorated_name: ".?AVNewMailDialog@@"
+    direct_bases:
+      - "BulletinDialogPane"
+    pane_lineage:
+      - "NewMailDialog"
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "BulletinDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698228"
+      - "0x00698288"
+  - name: "NewPatchPane"
+    decorated_name: ".?AVNewPatchPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "NewPatchPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0D50"
+      - "0x006A0DA8"
+  - name: "NewSkillInventoryPane"
+    decorated_name: ".?AVNewSkillInventoryPane@@"
+    direct_bases:
+      - "NewInventoryPane<SkillInvItemPane>"
+    pane_lineage:
+      - "NewSkillInventoryPane"
+      - "NewInventoryPane<SkillInvItemPane>"
+      - "Pane"
+    all_bases:
+      - "NewInventoryPane<SkillInvItemPane>"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069BE34"
+      - "0x0069BED4"
+  - name: "NewSpellInventoryPane"
+    decorated_name: ".?AVNewSpellInventoryPane@@"
+    direct_bases:
+      - "NewInventoryPane<SpellInvItemPane>"
+    pane_lineage:
+      - "NewSpellInventoryPane"
+      - "NewInventoryPane<SpellInvItemPane>"
+      - "Pane"
+    all_bases:
+      - "NewInventoryPane<SpellInvItemPane>"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069BEE8"
+      - "0x0069BF88"
+  - name: "NewStatusInfoPane"
+    decorated_name: ".?AVNewStatusInfoPane@@"
+    direct_bases:
+      - "StatusInfoPane"
+      - "StatusInfoInterface"
+    pane_lineage:
+      - "NewStatusInfoPane"
+      - "StatusInfoPane"
+      - "Pane"
+    all_bases:
+      - "StatusInfoPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "StatusInfo"
+      - "Singleton<StatusInfoPane>"
+      - "StatusInfoInterface"
+    complete_object_locators:
+      - "0x006A5A24"
+      - "0x006A5AA8"
+      - "0x006A5ABC"
+      - "0x006A5AD0"
+  - name: "NewSystemMessagePane"
+    decorated_name: ".?AVNewSystemMessagePane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "NewSystemMessagePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A6100"
+      - "0x006A6158"
+  - name: "NewSystemMessageTextPane"
+    decorated_name: ".?AVNewSystemMessageTextPane@@"
+    direct_bases:
+      - "TextEditPane"
+    pane_lineage:
+      - "NewSystemMessageTextPane"
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A608C"
+      - "0x006A60EC"
+  - name: "NewWorldMapInfoPane"
+    decorated_name: ".?AVNewWorldMapInfoPane@@"
+    direct_bases:
+      - "SessionLayeredTabPane"
+    pane_lineage:
+      - "NewWorldMapInfoPane"
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0B80"
+      - "0x006A0BE8"
+  - name: "NexonClubAuthAlertPane"
+    decorated_name: ".?AVNexonClubAuthAlertPane@@"
+    direct_bases:
+      - "AlertPane"
+      - "Singleton<NexonClubAuthAlertPane>"
+    pane_lineage:
+      - "NexonClubAuthAlertPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<NexonClubAuthAlertPane>"
+    complete_object_locators:
+      - "0x006A0DBC"
+      - "0x006A0E70"
+  - name: "NexonclubDialog"
+    decorated_name: ".?AVNexonclubDialog@@"
+    direct_bases:
+      - "MessageDialogBase"
+    pane_lineage:
+      - "NexonclubDialog"
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0E84"
+      - "0x006A0EE4"
+  - name: "NoNexonClubIDWarningPane"
+    decorated_name: ".?AVNoNexonClubIDWarningPane@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "NoNexonClubIDWarningPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006994AC"
+      - "0x0069950C"
+  - name: "NPC_Merchant_MessageDialog"
+    decorated_name: ".?AVNPC_Merchant_MessageDialog@@"
+    direct_bases:
+      - "NPCMessageDialog"
+    pane_lineage:
+      - "NPC_Merchant_MessageDialog"
+      - "NPCMessageDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "NPCMessageDialog"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A14E8"
+      - "0x006A1548"
+  - name: "NPC_Pursuit_MessageDialog"
+    decorated_name: ".?AVNPC_Pursuit_MessageDialog@@"
+    direct_bases:
+      - "NPCMessageDialog"
+    pane_lineage:
+      - "NPC_Pursuit_MessageDialog"
+      - "NPCMessageDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "NPCMessageDialog"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A18F0"
+      - "0x006A1950"
+  - name: "NPC_Pursuit_NexonIdDialog"
+    decorated_name: ".?AVNPC_Pursuit_NexonIdDialog@@"
+    direct_bases:
+      - "NPCMenuDialog"
+    pane_lineage:
+      - "NPC_Pursuit_NexonIdDialog"
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A1C70"
+      - "0x006A1CD0"
+  - name: "NPC_Pursuit_TextInputMenuDialog"
+    decorated_name: ".?AVNPC_Pursuit_TextInputMenuDialog@@"
+    direct_bases:
+      - "NPCMenuDialog"
+    pane_lineage:
+      - "NPC_Pursuit_TextInputMenuDialog"
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A1BFC"
+      - "0x006A1C5C"
+  - name: "NPCIllustPane"
+    decorated_name: ".?AVNPCIllustPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "NPCIllustPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0F64"
+      - "0x006A0FBC"
+  - name: "NPCListMenuDialog"
+    decorated_name: ".?AVNPCListMenuDialog@@"
+    direct_bases:
+      - "NPCMenuDialog"
+    pane_lineage:
+      - "NPCListMenuDialog"
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A135C"
+      - "0x006A13BC"
+  - name: "NPCListMenuPane"
+    decorated_name: ".?AVNPCListMenuPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "NPCListMenuPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A13D0"
+      - "0x006A1430"
+  - name: "NPCMenuDialog"
+    decorated_name: ".?AVNPCMenuDialog@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A10AC"
+      - "0x006A1108"
+  - name: "NPCMessageDialog"
+    decorated_name: ".?AVNPCMessageDialog@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "NPCMessageDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A103C"
+      - "0x006A1098"
+  - name: "NPCServerItemMenuDialog"
+    decorated_name: ".?AVNPCServerItemMenuDialog@@"
+    direct_bases:
+      - "NPCMenuDialog"
+    pane_lineage:
+      - "NPCServerItemMenuDialog"
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A187C"
+      - "0x006A18DC"
+  - name: "NPCSession"
+    decorated_name: ".?AVNPCSession@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "NPCSession"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0EF8"
+      - "0x006A0F50"
+  - name: "NPCTextInputMenuDialog"
+    decorated_name: ".?AVNPCTextInputMenuDialog@@"
+    direct_bases:
+      - "NPCMenuDialog"
+    pane_lineage:
+      - "NPCTextInputMenuDialog"
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A12E8"
+      - "0x006A1348"
+  - name: "NPCTextMenuDialog"
+    decorated_name: ".?AVNPCTextMenuDialog@@"
+    direct_bases:
+      - "NPCMenuDialog"
+    pane_lineage:
+      - "NPCTextMenuDialog"
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "NPCMenuDialog"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A1200"
+      - "0x006A1260"
+  - name: "NPCTilePane"
+    decorated_name: ".?AVNPCTilePane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "NPCTilePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0FD0"
+      - "0x006A1028"
+  - name: "nui_AlbumPane"
+    decorated_name: ".?AVnui_AlbumPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "nui_AlbumPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A658C"
+      - "0x006A65E8"
+  - name: "nui_ElemListPane"
+    decorated_name: ".?AVnui_ElemListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "nui_ElemListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A65FC"
+      - "0x006A665C"
+  - name: "nui_EventPane"
+    decorated_name: ".?AVnui_EventPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "nui_EventPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A66E8"
+      - "0x006A6744"
+  - name: "nui_EventPaneImpl"
+    decorated_name: ".?AVnui_EventPaneImpl@@"
+    direct_bases:
+      - "nui_EventPane"
+    pane_lineage:
+      - "nui_EventPaneImpl"
+      - "nui_EventPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "nui_EventPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A6758"
+      - "0x006A67B8"
+  - name: "nui_FamilyPane"
+    decorated_name: ".?AVnui_FamilyPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "nui_FamilyPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A67CC"
+      - "0x006A6828"
+  - name: "nui_IntroPane"
+    decorated_name: ".?AVnui_IntroPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "nui_IntroPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A683C"
+      - "0x006A6898"
+  - name: "nui_LegendPane"
+    decorated_name: ".?AVnui_LegendPane@@"
+    direct_bases:
+      - "DialogPane"
+      - "LegendInterface"
+    pane_lineage:
+      - "nui_LegendPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "LegendInterface"
+    complete_object_locators:
+      - "0x006A68AC"
+      - "0x006A690C"
+      - "0x006A6920"
+  - name: "nui_SkillSpellPane"
+    decorated_name: ".?AVnui_SkillSpellPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "nui_SkillSpellPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A69AC"
+      - "0x006A6A08"
+  - name: "NumberArgsSpellInputPane"
+    decorated_name: ".?AVNumberArgsSpellInputPane@@"
+    direct_bases:
+      - "ArgsLineInputPane"
+    pane_lineage:
+      - "NumberArgsSpellInputPane"
+      - "ArgsLineInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "ArgsLineInputPane"
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C5C0"
+      - "0x0069C668"
+  - name: "NumLineInputPane"
+    decorated_name: ".?AVNumLineInputPane@@"
+    direct_bases:
+      - "LineInputPane"
+    pane_lineage:
+      - "NumLineInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3BA8"
+      - "0x006A3C04"
+  - name: "OptionPane"
+    decorated_name: ".?AVOptionPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "OptionPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A1CE4"
+      - "0x006A1D40"
+  - name: "Pane"
+    decorated_name: ".?AVPane@@"
+    direct_bases:
+      - "Canvas"
+      - "TimerHandler"
+    pane_lineage:
+      - "Pane"
+    all_bases:
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A21E8"
+      - "0x006A21FC"
+  - name: "PopupMenuPane"
+    decorated_name: ".?AVPopupMenuPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<PopupMenuPane>"
+    pane_lineage:
+      - "PopupMenuPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<PopupMenuPane>"
+    complete_object_locators:
+      - "0x006A2280"
+      - "0x006A232C"
+  - name: "PortraitControlPane"
+    decorated_name: ".?AVPortraitControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "PortraitControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698674"
+      - "0x006986D0"
+  - name: "PortraitTextInputDialogPane"
+    decorated_name: ".?AVPortraitTextInputDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "PortraitTextInputDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A63E8"
+      - "0x006A6444"
+  - name: "ProgressBarControlPane"
+    decorated_name: ".?AVProgressBarControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "ProgressBarControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698E1C"
+      - "0x00698E78"
+  - name: "ProgressBarControlPaneEx"
+    decorated_name: ".?AVProgressBarControlPaneEx@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "ProgressBarControlPaneEx"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699308"
+      - "0x00699364"
+  - name: "Puzzle::BalloonPane"
+    decorated_name: ".?AVBalloonPane@Puzzle@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "Puzzle::BalloonPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069EF98"
+      - "0x0069EFF0"
+  - name: "Puzzle::GameControlPane"
+    decorated_name: ".?AVGameControlPane@Puzzle@@"
+    direct_bases:
+      - "MiniGame::AbstractGameControlPane"
+    pane_lineage:
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069EABC"
+      - "0x0069EB64"
+  - name: "Puzzle::HelpPane"
+    decorated_name: ".?AVHelpPane@Puzzle@@"
+    direct_bases:
+      - "Puzzle::GameControlPane"
+    pane_lineage:
+      - "Puzzle::HelpPane"
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069EE48"
+      - "0x0069EEAC"
+  - name: "Puzzle::ImageCutPane"
+    decorated_name: ".?AVImageCutPane@Puzzle@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "Puzzle::ImageCutPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F004"
+      - "0x0069F05C"
+  - name: "Puzzle::LevelPane"
+    decorated_name: ".?AVLevelPane@Puzzle@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "Puzzle::LevelPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069EF2C"
+      - "0x0069EF84"
+  - name: "Puzzle::PlayPane"
+    decorated_name: ".?AVPlayPane@Puzzle@@"
+    direct_bases:
+      - "Puzzle::GameControlPane"
+    pane_lineage:
+      - "Puzzle::PlayPane"
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069EBF0"
+      - "0x0069EC54"
+  - name: "Puzzle::PuzzlePane"
+    decorated_name: ".?AVPuzzlePane@Puzzle@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "Puzzle::PuzzlePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F0E0"
+      - "0x0069F138"
+  - name: "Puzzle::PuzzlePane::Tile"
+    decorated_name: ".?AVTile@PuzzlePane@Puzzle@@"
+    direct_bases:
+      - "Puzzle::TilePane"
+    pane_lineage:
+      - "Puzzle::PuzzlePane::Tile"
+      - "Puzzle::TilePane"
+      - "Puzzle::ImageCutPane"
+      - "Pane"
+    all_bases:
+      - "Puzzle::TilePane"
+      - "Puzzle::ImageCutPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F14C"
+      - "0x0069F1AC"
+  - name: "Puzzle::RankingPane"
+    decorated_name: ".?AVRankingPane@Puzzle@@"
+    direct_bases:
+      - "Puzzle::GameControlPane"
+    pane_lineage:
+      - "Puzzle::RankingPane"
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069ECE0"
+      - "0x0069ED44"
+  - name: "Puzzle::ResultPane"
+    decorated_name: ".?AVResultPane@Puzzle@@"
+    direct_bases:
+      - "Puzzle::GameControlPane"
+    pane_lineage:
+      - "Puzzle::ResultPane"
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069ED58"
+      - "0x0069EDBC"
+  - name: "Puzzle::SendResultPane"
+    decorated_name: ".?AVSendResultPane@Puzzle@@"
+    direct_bases:
+      - "Puzzle::GameControlPane"
+    pane_lineage:
+      - "Puzzle::SendResultPane"
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069EDD0"
+      - "0x0069EE34"
+  - name: "Puzzle::SettingPane"
+    decorated_name: ".?AVSettingPane@Puzzle@@"
+    direct_bases:
+      - "Puzzle::GameControlPane"
+    pane_lineage:
+      - "Puzzle::SettingPane"
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069EC68"
+      - "0x0069ECCC"
+  - name: "Puzzle::TilePane"
+    decorated_name: ".?AVTilePane@Puzzle@@"
+    direct_bases:
+      - "Puzzle::ImageCutPane"
+    pane_lineage:
+      - "Puzzle::TilePane"
+      - "Puzzle::ImageCutPane"
+      - "Pane"
+    all_bases:
+      - "Puzzle::ImageCutPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F070"
+      - "0x0069F0CC"
+  - name: "Puzzle::TimePane"
+    decorated_name: ".?AVTimePane@Puzzle@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "Puzzle::TimePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069EEC0"
+      - "0x0069EF18"
+  - name: "Puzzle::TitlePane"
+    decorated_name: ".?AVTitlePane@Puzzle@@"
+    direct_bases:
+      - "Puzzle::GameControlPane"
+    pane_lineage:
+      - "Puzzle::TitlePane"
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "Puzzle::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069EB78"
+      - "0x0069EBDC"
+  - name: "QuantityInputDialogPane"
+    decorated_name: ".?AVQuantityInputDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "QuantityInputDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A238C"
+      - "0x006A23E8"
+  - name: "QuestionMessageDialog"
+    decorated_name: ".?AVQuestionMessageDialog@@"
+    direct_bases:
+      - "MessageDialogBase"
+    pane_lineage:
+      - "QuestionMessageDialog"
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069E0E4"
+      - "0x0069E144"
+  - name: "QuestionMessageFaceDialog"
+    decorated_name: ".?AVQuestionMessageFaceDialog@@"
+    direct_bases:
+      - "MessageDialogBase"
+    pane_lineage:
+      - "QuestionMessageFaceDialog"
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069E158"
+      - "0x0069E1B8"
+  - name: "RadioGroupControlPane"
+    decorated_name: ".?AVRadioGroupControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "RadioGroupControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006990D0"
+      - "0x0069912C"
+  - name: "ReconnectDialogPane"
+    decorated_name: ".?AVReconnectDialogPane@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "ReconnectDialogPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2448"
+      - "0x006A24A8"
+  - name: "RopeSkipping::CountdownPane"
+    decorated_name: ".?AVCountdownPane@RopeSkipping@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "RopeSkipping::CountdownPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F6C4"
+      - "0x0069F71C"
+  - name: "RopeSkipping::GameControlPane"
+    decorated_name: ".?AVGameControlPane@RopeSkipping@@"
+    direct_bases:
+      - "MiniGame::AbstractGameControlPane"
+    pane_lineage:
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F500"
+      - "0x0069F560"
+  - name: "RopeSkipping::GameoverPane"
+    decorated_name: ".?AVGameoverPane@RopeSkipping@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "RopeSkipping::GameoverPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F730"
+      - "0x0069F788"
+  - name: "RopeSkipping::GradePane"
+    decorated_name: ".?AVGradePane@RopeSkipping@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "RopeSkipping::GradePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F658"
+      - "0x0069F6B0"
+  - name: "RopeSkipping::HelpPane"
+    decorated_name: ".?AVHelpPane@RopeSkipping@@"
+    direct_bases:
+      - "RopeSkipping::GameControlPane"
+    pane_lineage:
+      - "RopeSkipping::HelpPane"
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F954"
+      - "0x0069F9B8"
+  - name: "RopeSkipping::PlayPane"
+    decorated_name: ".?AVPlayPane@RopeSkipping@@"
+    direct_bases:
+      - "RopeSkipping::GameControlPane"
+    pane_lineage:
+      - "RopeSkipping::PlayPane"
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F7EC"
+      - "0x0069F850"
+  - name: "RopeSkipping::RankingPane"
+    decorated_name: ".?AVRankingPane@RopeSkipping@@"
+    direct_bases:
+      - "RopeSkipping::GameControlPane"
+    pane_lineage:
+      - "RopeSkipping::RankingPane"
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F8DC"
+      - "0x0069F940"
+  - name: "RopeSkipping::ResultPane"
+    decorated_name: ".?AVResultPane@RopeSkipping@@"
+    direct_bases:
+      - "RopeSkipping::GameControlPane"
+    pane_lineage:
+      - "RopeSkipping::ResultPane"
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F864"
+      - "0x0069F8C8"
+  - name: "RopeSkipping::SkipCountPane"
+    decorated_name: ".?AVSkipCountPane@RopeSkipping@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "RopeSkipping::SkipCountPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F5EC"
+      - "0x0069F644"
+  - name: "RopeSkipping::TitlePane"
+    decorated_name: ".?AVTitlePane@RopeSkipping@@"
+    direct_bases:
+      - "RopeSkipping::GameControlPane"
+    pane_lineage:
+      - "RopeSkipping::TitlePane"
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "RopeSkipping::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069F574"
+      - "0x0069F5D8"
+  - name: "SafeQuitAlert"
+    decorated_name: ".?AVSafeQuitAlert@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "SafeQuitAlert"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A1FA0"
+      - "0x006A2000"
+  - name: "ScorePane"
+    decorated_name: ".?AVScorePane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<ScorePane>"
+    pane_lineage:
+      - "ScorePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<ScorePane>"
+    complete_object_locators:
+      - "0x006A2904"
+      - "0x006A29B0"
+  - name: "ScreenDimmer"
+    decorated_name: ".?AVScreenDimmer@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "ScreenDimmer"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2A84"
+      - "0x006A2ADC"
+  - name: "ScreenPane"
+    decorated_name: ".?AVScreenPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "ScreenPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2A18"
+      - "0x006A2A70"
+  - name: "ScrollableControlPane"
+    decorated_name: ".?AVScrollableControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "ScrollableControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699140"
+      - "0x0069919C"
+  - name: "ScrollablePane"
+    decorated_name: ".?AVScrollablePane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2B5C"
+      - "0x006A2B70"
+  - name: "ScrollPane"
+    decorated_name: ".?AVScrollPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "ScrollPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2AF0"
+      - "0x006A2B48"
+  - name: "ServerItemMenuDialog"
+    decorated_name: ".?AVServerItemMenuDialog@@"
+    direct_bases:
+      - "TaskListDialog"
+    pane_lineage:
+      - "ServerItemMenuDialog"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DAC0"
+      - "0x0069DB24"
+  - name: "ServerItemMenuDialog2"
+    decorated_name: ".?AVServerItemMenuDialog2@@"
+    direct_bases:
+      - "TaskListDialog"
+    pane_lineage:
+      - "ServerItemMenuDialog2"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DF10"
+      - "0x0069DF74"
+  - name: "ServerItemMenuDialog3"
+    decorated_name: ".?AVServerItemMenuDialog3@@"
+    direct_bases:
+      - "TaskListDialog"
+    pane_lineage:
+      - "ServerItemMenuDialog3"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D540"
+      - "0x0069D638"
+  - name: "ServerSelectDialogPane"
+    decorated_name: ".?AVServerSelectDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "ServerSelectDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2B84"
+      - "0x006A2BE0"
+  - name: "ServerSkillMenuDialog"
+    decorated_name: ".?AVServerSkillMenuDialog@@"
+    direct_bases:
+      - "TaskListDialog"
+    pane_lineage:
+      - "ServerSkillMenuDialog"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DD3C"
+      - "0x0069DDA0"
+  - name: "ServerSpellMenuDialog"
+    decorated_name: ".?AVServerSpellMenuDialog@@"
+    direct_bases:
+      - "TaskListDialog"
+    pane_lineage:
+      - "ServerSpellMenuDialog"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DC4C"
+      - "0x0069DCB0"
+  - name: "SessionLayeredTabPane"
+    decorated_name: ".?AVSessionLayeredTabPane@@"
+    direct_bases:
+      - "LayeredTabPane"
+    pane_lineage:
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A02E8"
+      - "0x006A03E0"
+  - name: "ShowUsersListPane"
+    decorated_name: ".?AVShowUsersListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "ShowUsersListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2BF4"
+      - "0x006A2C54"
+  - name: "ShowUsersPane"
+    decorated_name: ".?AVShowUsersPane@@"
+    direct_bases:
+      - "ShowUsersPane_A"
+      - "Singleton<ShowUsersPane>"
+    pane_lineage:
+      - "ShowUsersPane"
+      - "ShowUsersPane_A"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "ShowUsersPane_A"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<ShowUsersPane>"
+    complete_object_locators:
+      - "0x006A2C68"
+      - "0x006A2D64"
+  - name: "ShowUsersPane_A"
+    decorated_name: ".?AVShowUsersPane_A@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "ShowUsersPane_A"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2D78"
+      - "0x006A2D8C"
+  - name: "SimpleMessageDialog"
+    decorated_name: ".?AVSimpleMessageDialog@@"
+    direct_bases:
+      - "MessageDialog"
+    pane_lineage:
+      - "SimpleMessageDialog"
+      - "MessageDialog"
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MessageDialog"
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069E06C"
+      - "0x0069E0D0"
+  - name: "SimpleQuestionMessageDialog"
+    decorated_name: ".?AVSimpleQuestionMessageDialog@@"
+    direct_bases:
+      - "MessageDialogBase"
+    pane_lineage:
+      - "SimpleQuestionMessageDialog"
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069E1CC"
+      - "0x0069E22C"
+  - name: "SimpleTextMessageDialog"
+    decorated_name: ".?AVSimpleTextMessageDialog@@"
+    direct_bases:
+      - "MessageDialogBase"
+    pane_lineage:
+      - "SimpleTextMessageDialog"
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069E2B4"
+      - "0x0069E314"
+  - name: "SkillbookDialog"
+    decorated_name: ".?AVSkillbookDialog@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "SkillbookDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A323C"
+      - "0x006A3298"
+  - name: "SkillInvItemPane"
+    decorated_name: ".?AVSkillInvItemPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "SkillInvItemPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C398"
+      - "0x0069C3F0"
+  - name: "SkillSpellInfoDialogPane"
+    decorated_name: ".?AVSkillSpellInfoDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "SkillSpellInfoDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A6308"
+      - "0x006A6364"
+  - name: "SkillSpellInventoryPane"
+    decorated_name: ".?AVSkillSpellInventoryPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "SkillSpellInventoryPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A6020"
+      - "0x006A6078"
+  - name: "SkillSpellListPane"
+    decorated_name: ".?AVSkillSpellListPane@@"
+    direct_bases:
+      - "nui_ElemListPane"
+    pane_lineage:
+      - "SkillSpellListPane"
+      - "nui_ElemListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "nui_ElemListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A6934"
+      - "0x006A6998"
+  - name: "SnowParticle_::SnowParticlePane"
+    decorated_name: ".?AVSnowParticlePane@SnowParticle_@@"
+    direct_bases:
+      - "ImagePane"
+    pane_lineage:
+      - "SnowParticle_::SnowParticlePane"
+      - "ImagePane"
+      - "Pane"
+    all_bases:
+      - "ImagePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A6D5C"
+      - "0x006A6DB8"
+  - name: "SpellbookDialog"
+    decorated_name: ".?AVSpellbookDialog@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "SpellbookDialog"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A31CC"
+      - "0x006A3228"
+  - name: "SpellDelayControlPane"
+    decorated_name: ".?AVSpellDelayControlPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<SpellDelayControlPane>"
+    pane_lineage:
+      - "SpellDelayControlPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<SpellDelayControlPane>"
+    complete_object_locators:
+      - "0x0069C67C"
+      - "0x0069C728"
+  - name: "SpelledViewPane_A"
+    decorated_name: ".?AVSpelledViewPane_A@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "SpelledViewPane_A"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3160"
+      - "0x006A31B8"
+  - name: "SpellInvItemPane"
+    decorated_name: ".?AVSpellInvItemPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "SpellInvItemPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C474"
+      - "0x0069C4CC"
+  - name: "SpellSkillInfoPane"
+    decorated_name: ".?AVSpellSkillInfoPane@@"
+    direct_bases:
+      - "SessionLayeredTabPane"
+    pane_lineage:
+      - "SpellSkillInfoPane"
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "SessionLayeredTabPane"
+      - "LayeredTabPane"
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0470"
+      - "0x006A04D8"
+  - name: "SpellSkillPropertyPane"
+    decorated_name: ".?AVSpellSkillPropertyPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "SpellSkillPropertyPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0558"
+      - "0x006A05B4"
+  - name: "SpellSkillViewPane"
+    decorated_name: ".?AVSpellSkillViewPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "SpellSkillViewPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A04EC"
+      - "0x006A0544"
+  - name: "StackNiye::GameControlPane"
+    decorated_name: ".?AVGameControlPane@StackNiye@@"
+    direct_bases:
+      - "MiniGame::AbstractGameControlPane"
+    pane_lineage:
+      - "StackNiye::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069FB98"
+      - "0x0069FBF8"
+  - name: "StackNiye::PlayPane"
+    decorated_name: ".?AVPlayPane@StackNiye@@"
+    direct_bases:
+      - "StackNiye::GameControlPane"
+    pane_lineage:
+      - "StackNiye::PlayPane"
+      - "StackNiye::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "StackNiye::GameControlPane"
+      - "MiniGame::AbstractGameControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069FC0C"
+      - "0x0069FC70"
+  - name: "StaffPane"
+    decorated_name: ".?AVStaffPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "StaffPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006970E8"
+      - "0x00697140"
+  - name: "StaticTextControlPane"
+    decorated_name: ".?AVStaticTextControlPane@@"
+    direct_bases:
+      - "TextEditControlPane"
+    pane_lineage:
+      - "StaticTextControlPane"
+      - "TextEditControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "TextEditControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699220"
+      - "0x00699280"
+  - name: "StaticTextControlPane2"
+    decorated_name: ".?AVStaticTextControlPane2@@"
+    direct_bases:
+      - "TextEditControlPane"
+    pane_lineage:
+      - "StaticTextControlPane2"
+      - "TextEditControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "TextEditControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699294"
+      - "0x006992F4"
+  - name: "StatusInfoPane"
+    decorated_name: ".?AVStatusInfoPane@@"
+    direct_bases:
+      - "Pane"
+      - "StatusInfo"
+      - "Singleton<StatusInfoPane>"
+    pane_lineage:
+      - "StatusInfoPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "StatusInfo"
+      - "Singleton<StatusInfoPane>"
+    complete_object_locators:
+      - "0x006A3560"
+      - "0x006A362C"
+      - "0x006A3640"
+  - name: "StringListPane"
+    decorated_name: ".?AVStringListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "StringListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698384"
+      - "0x006983E4"
+  - name: "StringSpellInputPane"
+    decorated_name: ".?AVStringSpellInputPane@@"
+    direct_bases:
+      - "LineInputPane"
+    pane_lineage:
+      - "StringSpellInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069C550"
+      - "0x0069C5AC"
+  - name: "SystemButtonsPane"
+    decorated_name: ".?AVSystemButtonsPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "SystemButtonsPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A5C10"
+      - "0x006A5C68"
+  - name: "TabButtonPane"
+    decorated_name: ".?AVTabButtonPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "TabButtonPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0048"
+      - "0x006A00A0"
+  - name: "TabPane<LayeredImage>"
+    decorated_name: ".?AV?$TabPane@ULayeredImage@@@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "TabPane<LayeredImage>"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A38A0"
+      - "0x006A38B4"
+  - name: "TaskListDialog"
+    decorated_name: ".?AVTaskListDialog@@"
+    direct_bases:
+      - "MerchantDialogPane"
+    pane_lineage:
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D7CC"
+      - "0x0069D7E0"
+  - name: "TaskListPane"
+    decorated_name: ".?AVTaskListPane@@"
+    direct_bases:
+      - "ListPane"
+    pane_lineage:
+      - "TaskListPane"
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ListPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D7F4"
+      - "0x0069D854"
+  - name: "TellInputPane"
+    decorated_name: ".?AVTellInputPane@@"
+    direct_bases:
+      - "LineInputPane"
+    pane_lineage:
+      - "TellInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A26A4"
+      - "0x006A2700"
+  - name: "TellReceiverInputPane"
+    decorated_name: ".?AVTellReceiverInputPane@@"
+    direct_bases:
+      - "LineInputPane"
+    pane_lineage:
+      - "TellReceiverInputPane"
+      - "LineInputPane"
+      - "Pane"
+    all_bases:
+      - "LineInputPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2634"
+      - "0x006A2690"
+  - name: "TerminalPane2"
+    decorated_name: ".?AVTerminalPane2@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<TerminalPane2>"
+    pane_lineage:
+      - "TerminalPane2"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<TerminalPane2>"
+    complete_object_locators:
+      - "0x006A38C8"
+      - "0x006A3974"
+  - name: "TextBoxPane"
+    decorated_name: ".?AVTextBoxPane@@"
+    direct_bases:
+      - "TextEditPane"
+    pane_lineage:
+      - "TextBoxPane"
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3A48"
+      - "0x006A3AA8"
+  - name: "TextButtonControlPane"
+    decorated_name: ".?AVTextButtonControlPane@@"
+    direct_bases:
+      - "ButtonControlPane"
+    pane_lineage:
+      - "TextButtonControlPane"
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698EFC"
+      - "0x00698F5C"
+  - name: "TextButtonExControlPane"
+    decorated_name: ".?AVTextButtonExControlPane@@"
+    direct_bases:
+      - "ButtonControlPane"
+    pane_lineage:
+      - "TextButtonExControlPane"
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ButtonControlPane"
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00698F70"
+      - "0x00698FD0"
+  - name: "TextEditControlPane"
+    decorated_name: ".?AVTextEditControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "TextEditControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006991B0"
+      - "0x0069920C"
+  - name: "TextEditPane"
+    decorated_name: ".?AVTextEditPane@@"
+    direct_bases:
+      - "ScrollablePane"
+    pane_lineage:
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3988"
+      - "0x006A399C"
+  - name: "TextFieldMapPointPane"
+    decorated_name: ".?AVTextFieldMapPointPane@@"
+    direct_bases:
+      - "FieldMapPointPane"
+    pane_lineage:
+      - "TextFieldMapPointPane"
+      - "FieldMapPointPane"
+      - "Pane"
+    all_bases:
+      - "FieldMapPointPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069AE90"
+      - "0x0069AEEC"
+  - name: "TextInputMenuDialog"
+    decorated_name: ".?AVTextInputMenuDialog@@"
+    direct_bases:
+      - "MerchantDialogPane"
+    pane_lineage:
+      - "TextInputMenuDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D9D4"
+      - "0x0069DA34"
+  - name: "TextLinePane"
+    decorated_name: ".?AVTextLinePane@@"
+    direct_bases:
+      - "TextEditPane"
+    pane_lineage:
+      - "TextLinePane"
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+    all_bases:
+      - "TextEditPane"
+      - "ScrollablePane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3ABC"
+      - "0x006A3B1C"
+  - name: "TextMenuDialog"
+    decorated_name: ".?AVTextMenuDialog@@"
+    direct_bases:
+      - "TaskListDialog"
+    pane_lineage:
+      - "TextMenuDialog"
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "TaskListDialog"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D868"
+      - "0x0069D8CC"
+  - name: "TextMenuDialogEx"
+    decorated_name: ".?AVTextMenuDialogEx@@"
+    direct_bases:
+      - "MerchantDialogPane"
+    pane_lineage:
+      - "TextMenuDialogEx"
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MerchantDialogPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069D6E0"
+      - "0x0069D740"
+  - name: "TextMessageDialog"
+    decorated_name: ".?AVTextMessageDialog@@"
+    direct_bases:
+      - "MessageDialogBase"
+    pane_lineage:
+      - "TextMessageDialog"
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "MessageDialogBase"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069E240"
+      - "0x0069E2A0"
+  - name: "ToolTipPane"
+    decorated_name: ".?AVToolTipPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<ToolTipPane>"
+    pane_lineage:
+      - "ToolTipPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<ToolTipPane>"
+    complete_object_locators:
+      - "0x006A3CE4"
+      - "0x006A3D90"
+  - name: "TownInfoPane"
+    decorated_name: ".?AVTownInfoPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "TownInfoPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0B10"
+      - "0x006A0B6C"
+  - name: "TownMapPane"
+    decorated_name: ".?AVTownMapPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<TownMapPane>"
+    pane_lineage:
+      - "TownMapPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<TownMapPane>"
+    complete_object_locators:
+      - "0x006A3DA4"
+      - "0x006A3E50"
+  - name: "TransferReplyAlert"
+    decorated_name: ".?AVTransferReplyAlert@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "TransferReplyAlert"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00697FE4"
+      - "0x00698044"
+  - name: "TransferServerProgress"
+    decorated_name: ".?AVTransferServerProgress@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<TransferServerProgress>"
+    pane_lineage:
+      - "TransferServerProgress"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<TransferServerProgress>"
+    complete_object_locators:
+      - "0x006A3E64"
+      - "0x006A3F10"
+  - name: "UnitelPane"
+    decorated_name: ".?AVUnitelPane@@"
+    direct_bases:
+      - "Pane"
+      - "Singleton<UnitelPane>"
+    pane_lineage:
+      - "UnitelPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<UnitelPane>"
+    complete_object_locators:
+      - "0x00698CEC"
+      - "0x00698D98"
+  - name: "UrlAlertPane"
+    decorated_name: ".?AVUrlAlertPane@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "UrlAlertPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3F24"
+      - "0x006A3F84"
+  - name: "UserConfirmPane"
+    decorated_name: ".?AVUserConfirmPane@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "UserConfirmPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A3F98"
+      - "0x006A3FF8"
+  - name: "UserInfoPane"
+    decorated_name: ".?AVUserInfoPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "UserInfoPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A61D8"
+      - "0x006A6230"
+  - name: "UserInfoPane_ForOthers"
+    decorated_name: ".?AVUserInfoPane_ForOthers@@"
+    direct_bases:
+      - "UserInfoPane"
+      - "Singleton<UserInfoPane_ForOthers>"
+    pane_lineage:
+      - "UserInfoPane_ForOthers"
+      - "UserInfoPane"
+      - "Pane"
+    all_bases:
+      - "UserInfoPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<UserInfoPane_ForOthers>"
+    complete_object_locators:
+      - "0x006A6458"
+      - "0x006A6508"
+  - name: "UserInfoPane_ForUser"
+    decorated_name: ".?AVUserInfoPane_ForUser@@"
+    direct_bases:
+      - "UserInfoPane"
+      - "Singleton<UserInfoPane_ForUser>"
+    pane_lineage:
+      - "UserInfoPane_ForUser"
+      - "UserInfoPane"
+      - "Pane"
+    all_bases:
+      - "UserInfoPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<UserInfoPane_ForUser>"
+    complete_object_locators:
+      - "0x006A6244"
+      - "0x006A62F4"
+  - name: "UserInfoTabPane"
+    decorated_name: ".?AVUserInfoTabPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "UserInfoTabPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A616C"
+      - "0x006A61C4"
+  - name: "UserLookPane"
+    decorated_name: ".?AVUserLookPane@@"
+    direct_bases:
+      - "DialogPane"
+      - "Singleton<UserLookPane>"
+    pane_lineage:
+      - "UserLookPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "Singleton<UserLookPane>"
+    complete_object_locators:
+      - "0x00699CDC"
+      - "0x00699D8C"
+  - name: "UserShapeControlPane"
+    decorated_name: ".?AVUserShapeControlPane@@"
+    direct_bases:
+      - "ControlPane"
+    pane_lineage:
+      - "UserShapeControlPane"
+      - "ControlPane"
+      - "Pane"
+    all_bases:
+      - "ControlPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x0069DEA0"
+      - "0x0069DEFC"
+  - name: "VirusAlertPane"
+    decorated_name: ".?AVVirusAlertPane@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "VirusAlertPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A2508"
+      - "0x006A2568"
+  - name: "WindowMessageDialogPane"
+    decorated_name: ".?AVWindowMessageDialogPane@@"
+    direct_bases:
+      - "DialogPane"
+    pane_lineage:
+      - "WindowMessageDialogPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699688"
+      - "0x006996E4"
+  - name: "World::BalloonPane"
+    decorated_name: ".?AVBalloonPane@World@@"
+    direct_bases:
+      - "Pane"
+      - "zz::_RefCnt"
+    pane_lineage:
+      - "World::BalloonPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "zz::_RefCnt"
+    complete_object_locators:
+      - "0x006A7268"
+      - "0x006A72E0"
+      - "0x006A72F4"
+  - name: "WorldBackFixedImage"
+    decorated_name: ".?AVWorldBackFixedImage@@"
+    direct_bases:
+      - "WorldBackImage"
+    pane_lineage:
+      - "WorldBackFixedImage"
+      - "WorldBackImage"
+      - "Pane"
+    all_bases:
+      - "WorldBackImage"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A7154"
+      - "0x006A71B0"
+  - name: "WorldBackGradation"
+    decorated_name: ".?AVWorldBackGradation@@"
+    direct_bases:
+      - "WorldBackImage"
+    pane_lineage:
+      - "WorldBackGradation"
+      - "WorldBackImage"
+      - "Pane"
+    all_bases:
+      - "WorldBackImage"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A7074"
+      - "0x006A70D0"
+  - name: "WorldBackImage"
+    decorated_name: ".?AVWorldBackImage@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "WorldBackImage"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A7008"
+      - "0x006A7060"
+  - name: "WorldBackPattern"
+    decorated_name: ".?AVWorldBackPattern@@"
+    direct_bases:
+      - "WorldBackImage"
+    pane_lineage:
+      - "WorldBackPattern"
+      - "WorldBackImage"
+      - "Pane"
+    all_bases:
+      - "WorldBackImage"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A70E4"
+      - "0x006A7140"
+  - name: "WorldControllerPane"
+    decorated_name: ".?AVWorldControllerPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "WorldControllerPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A7308"
+      - "0x006A7360"
+  - name: "WorldMapImagePane"
+    decorated_name: ".?AVWorldMapImagePane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "WorldMapImagePane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0804"
+      - "0x006A085C"
+  - name: "WorldMapInfo_DA_Pane"
+    decorated_name: ".?AVWorldMapInfo_DA_Pane@@"
+    direct_bases:
+      - "WorldMapInfoPane"
+    pane_lineage:
+      - "WorldMapInfo_DA_Pane"
+      - "WorldMapInfoPane"
+      - "Pane"
+    all_bases:
+      - "WorldMapInfoPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0870"
+      - "0x006A08CC"
+  - name: "WorldMapInfo_Normal_Pane"
+    decorated_name: ".?AVWorldMapInfo_Normal_Pane@@"
+    direct_bases:
+      - "WorldMapInfoPane"
+    pane_lineage:
+      - "WorldMapInfo_Normal_Pane"
+      - "WorldMapInfoPane"
+      - "Pane"
+    all_bases:
+      - "WorldMapInfoPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0794"
+      - "0x006A07F0"
+  - name: "WorldMapInfoPane"
+    decorated_name: ".?AVWorldMapInfoPane@@"
+    direct_bases:
+      - "Pane"
+    pane_lineage:
+      - "WorldMapInfoPane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x006A0728"
+      - "0x006A0780"
+  - name: "WorldMinimapPane_Impl"
+    decorated_name: ".?AVWorldMinimapPane_Impl@@"
+    direct_bases:
+      - "Pane"
+      - "WorldMinimapInterface"
+    pane_lineage:
+      - "WorldMinimapPane_Impl"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "WorldMinimapInterface"
+      - "zz::_RefCnt"
+    complete_object_locators:
+      - "0x006A75DC"
+      - "0x006A7658"
+      - "0x006A766C"
+  - name: "WorldObject_Name_Pane"
+    decorated_name: ".?AVWorldObject_Name_Pane@@"
+    direct_bases:
+      - "Pane"
+      - "zz::_RefCnt"
+    pane_lineage:
+      - "WorldObject_Name_Pane"
+      - "Pane"
+    all_bases:
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "zz::_RefCnt"
+    complete_object_locators:
+      - "0x006A7DFC"
+      - "0x006A7E58"
+      - "0x006A7E6C"
+  - name: "WorldPane"
+    decorated_name: ".?AVWorldPane@@"
+    direct_bases:
+      - "WorldControllerPane"
+      - "WorldPane_MiscPacketProcessor"
+      - "Singleton<WorldPane>"
+    pane_lineage:
+      - "WorldPane"
+      - "WorldControllerPane"
+      - "Pane"
+    all_bases:
+      - "WorldControllerPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "WorldPane_MiscPacketProcessor"
+      - "Singleton<WorldPane>"
+    complete_object_locators:
+      - "0x006A800C"
+      - "0x006A8110"
+  - name: "WorldPane_Impl"
+    decorated_name: ".?AVWorldPane_Impl@@"
+    direct_bases:
+      - "WorldPane"
+      - "MapInterface"
+      - "MapUserInterface"
+      - "Singleton<WorldPane_Impl>"
+    pane_lineage:
+      - "WorldPane_Impl"
+      - "WorldPane"
+      - "WorldControllerPane"
+      - "Pane"
+    all_bases:
+      - "WorldPane"
+      - "WorldControllerPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+      - "WorldPane_MiscPacketProcessor"
+      - "Singleton<WorldPane>"
+      - "MapInterface"
+      - "MapUserInterface"
+      - "Singleton<WorldPane_Impl>"
+    complete_object_locators:
+      - "0x006A82C8"
+      - "0x006A83C4"
+      - "0x006A83D8"
+      - "0x006A83EC"
+  - name: "YesNoAlertPane"
+    decorated_name: ".?AVYesNoAlertPane@@"
+    direct_bases:
+      - "AlertPane"
+    pane_lineage:
+      - "YesNoAlertPane"
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+    all_bases:
+      - "AlertPane"
+      - "DialogPane"
+      - "Pane"
+      - "Canvas"
+      - "TimerHandler"
+      - "LObject"
+    complete_object_locators:
+      - "0x00699614"
+      - "0x00699674"

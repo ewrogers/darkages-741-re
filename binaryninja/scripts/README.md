@@ -19,3 +19,11 @@ export_manifest(bv, "analysis/exports/packets.yaml", "client/Darkages.exe")
 ```
 
 The script updates only addresses already listed in the manifest. Packet records are normalized but do not change the Binary Ninja database. Runtime patch records are documentation for a launcher and are never applied by this script.
+
+`export_pane_rtti.py` independently validates the private executable fingerprint, decodes the 32-bit MSVC RTTI hierarchy, and regenerates the Pane type manifest and appendix:
+
+```text
+python binaryninja/scripts/export_pane_rtti.py --binary client/Darkages.exe --yaml analysis/exports/ui-pane-types.yaml --markdown docs/appendix/pane-types.md
+```
+
+It reads the client but never writes client bytes.

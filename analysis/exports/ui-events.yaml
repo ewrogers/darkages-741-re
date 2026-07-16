@@ -1,0 +1,581 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0041AE80"
+    name: event_get_dispatcher
+    confidence: high
+    evidence: "Returns event_dispatcher_singleton_ptr."
+  - address: "0x00427380"
+    name: input_get_event_manager
+    confidence: high
+    evidence: "Returns input_event_manager_singleton_ptr."
+  - address: "0x00445260"
+    name: ui_dialog_pane_ctor
+    confidence: high
+    evidence: "Constructs DialogPane over Pane and initializes its control collection and interaction fields."
+  - address: "0x00445670"
+    name: ui_dialog_add_control
+    confidence: high
+    evidence: "Creates DialogPane +0x594 on first use and inserts the supplied control pointer."
+  - address: "0x00445A20"
+    name: ui_dialog_handle_pointer_event
+    confidence: high
+    evidence: "DialogPane primary-vtable +0x48 implementation for hit testing, child dispatch, hover, pressed state, and actions."
+  - address: "0x00445FF0"
+    name: ui_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "DialogPane primary-vtable +0x4C implementation for focus traversal and focused-control dispatch."
+  - address: "0x004462D0"
+    name: ui_dialog_handle_application_event
+    confidence: high
+    evidence: "DialogPane primary-vtable +0x54 implementation that forwards application and IME events to the focused control."
+  - address: "0x004468C0"
+    name: ui_dialog_hit_test_control
+    confidence: high
+    evidence: "Walks DialogPane controls, checks each rectangle, and calls control virtual +0x78 for a local hit-zone code."
+  - address: "0x00446BC0"
+    name: ui_dialog_set_focused_control
+    confidence: high
+    evidence: "Transitions DialogPane +0x5AC between control indexes and invokes old/new focus hooks."
+  - address: "0x00446CD0"
+    name: ui_dialog_focus_previous_control
+    confidence: high
+    evidence: "Searches backward with wrapping for an enabled, focusable control."
+  - address: "0x00446DD0"
+    name: ui_dialog_focus_next_control
+    confidence: high
+    evidence: "Searches forward with wrapping for an enabled, focusable control."
+  - address: "0x00446FE0"
+    name: ui_dialog_dispatch_pointer_to_control
+    confidence: high
+    evidence: "Converts pointer coordinates to control-local space, calls control virtual +0x48, and restores the event."
+  - address: "0x00463820"
+    name: event_dispatcher_ctor
+    confidence: high
+    evidence: "Constructs the 0x1BC-byte EventDispatcher, queue, timer list, packet factory, capture state, and EventHandlerList."
+  - address: "0x00463D10"
+    name: event_queue_push_copy
+    confidence: high
+    evidence: "Copies exactly 0xA8 event bytes into the synchronized pointer queue."
+  - address: "0x00463D60"
+    name: event_queue_pop_copy
+    confidence: high
+    evidence: "Removes one queued event and copies exactly 0xA8 bytes to the caller."
+  - address: "0x00463E40"
+    name: event_register_pane
+    confidence: high
+    evidence: "Sets Pane +0x188 bit 0x02 and inserts the pane through EventHandlerList."
+  - address: "0x00463E80"
+    name: event_unregister_pane
+    confidence: high
+    evidence: "Clears Pane +0x188 bit 0x02 and removes the pane subtree from EventHandlerList."
+  - address: "0x00463F50"
+    name: event_enqueue
+    confidence: high
+    evidence: "Thin synchronized queue wrapper used when an event originates off the main thread."
+  - address: "0x00463F70"
+    name: event_dispatch_immediate
+    confidence: high
+    evidence: "Validates and centrally dispatches an Event, then performs family-specific owned-payload cleanup."
+  - address: "0x00464050"
+    name: ui_pane_schedule_timer
+    confidence: high
+    evidence: "Schedules a timer for a Pane by passing its TimerHandler subobject at +0x11C."
+  - address: "0x00464180"
+    name: event_dispatcher_tick
+    confidence: high
+    evidence: "Main-thread tick that drains queued events and invokes at most 0x28 due TimerHandler callbacks."
+  - address: "0x00464430"
+    name: event_dispatcher_tick_virtual
+    confidence: high
+    evidence: "Calls EventDispatcher primary-vtable +0x08, which resolves to event_dispatcher_tick."
+  - address: "0x00464450"
+    name: event_register_pane_internal
+    confidence: high
+    evidence: "Calls EventHandlerList virtual insert and refreshes dispatcher state."
+  - address: "0x004644B0"
+    name: event_unregister_pane_internal
+    confidence: high
+    evidence: "Calls EventHandlerList virtual subtree removal and refreshes dispatcher state."
+  - address: "0x00464520"
+    name: event_schedule_timer
+    confidence: high
+    evidence: "Inserts a five-dword TimerHandler entry into the dispatcher list ordered by due time."
+  - address: "0x00464630"
+    name: event_cancel_timers
+    confidence: high
+    evidence: "Notifies TimerHandler virtual +0x0C, removes matching timer entries, and refreshes next-due time."
+  - address: "0x00464740"
+    name: ui_pane_cancel_timers
+    confidence: high
+    evidence: "Converts a Pane pointer to TimerHandler +0x11C and cancels matching timers."
+  - address: "0x00464780"
+    name: input_set_capture_pane
+    confidence: high
+    evidence: "Stores EventDispatcher +0x40 and calls SetCapture or ReleaseCapture on the main window."
+  - address: "0x004647C0"
+    name: event_dispatch
+    confidence: high
+    evidence: "Central dispatcher for capture, type 0x13 deserialization, pane-tree traversal, and type 0x14 special handling."
+  - address: "0x00464CF0"
+    name: event_dispatch_pane_tree
+    confidence: high
+    evidence: "Begins a root EventHandlerList iterator and invokes recursive pane-tree dispatch."
+  - address: "0x00464D50"
+    name: event_dispatch_pane_subtree
+    confidence: high
+    evidence: "Traverses immediate siblings and descendants child-first, with local pointer coordinates and consumed-result stopping."
+  - address: "0x00464F40"
+    name: event_dispatch_to_pane
+    confidence: high
+    evidence: "Maps pointer, keyboard/text, network, and application event families to Pane vtable slots."
+  - address: "0x00465AF0"
+    name: event_handler_list_ctor
+    confidence: high
+    evidence: "Constructs RTTI-backed EventHandlerList with a 0x0C-byte entry array and 16 iterator slots."
+  - address: "0x00465C50"
+    name: event_handler_list_insert
+    confidence: high
+    evidence: "Inserts a pane at parent depth plus one in the flattened preorder tree."
+  - address: "0x00465D80"
+    name: event_handler_list_remove_subtree
+    confidence: high
+    evidence: "Removes one entry and all following descendants with greater depth."
+  - address: "0x00465E10"
+    name: event_handler_list_begin_children
+    confidence: high
+    evidence: "Initializes a mutation-aware iterator at root depth or one depth below an existing iterator."
+  - address: "0x00466050"
+    name: event_handler_list_end_iterator
+    confidence: high
+    evidence: "Marks an EventHandlerList iterator slot unused."
+  - address: "0x00466080"
+    name: event_handler_list_next
+    confidence: high
+    evidence: "Returns the current pane entry and advances the depth-aware iterator."
+  - address: "0x00466190"
+    name: event_handler_list_advance_sibling
+    confidence: high
+    evidence: "Skips descendants and stops at the next valid entry with the iterator's target depth."
+  - address: "0x00466680"
+    name: event_ctor
+    confidence: high
+    evidence: "Constructs Event and initializes its signed type byte at +0x0C to 0xFF."
+  - address: "0x004666E0"
+    name: event_is_pointer
+    confidence: high
+    evidence: "Returns true for event types 0x00 through 0x07."
+  - address: "0x00466720"
+    name: event_is_keyboard_or_text
+    confidence: high
+    evidence: "Returns true for event types 0x08 through 0x0C."
+  - address: "0x00466760"
+    name: event_is_network
+    confidence: high
+    evidence: "Returns true only for event type 0x13."
+  - address: "0x004667A0"
+    name: event_is_application
+    confidence: high
+    evidence: "Returns true for event types 0x0D through 0x12."
+  - address: "0x004667E0"
+    name: input_event_manager_ctor
+    confidence: high
+    evidence: "Constructs RTTI EventMan state, key tables, pointer state, and the socket object."
+  - address: "0x00466B40"
+    name: input_repeat_pointer_move_timer
+    confidence: high
+    evidence: "EventMan TimerHandler callback that emits stored pointer coordinates and reschedules after 20 ms."
+  - address: "0x00466C80"
+    name: input_post_pointer_move
+    confidence: high
+    evidence: "Public EventMan entry that honors input blocking before updating coordinates and emitting pointer type 0x00."
+  - address: "0x00466D10"
+    name: input_post_left_button_down
+    confidence: high
+    evidence: "Public EventMan entry that honors input blocking before setting left-button state and emitting type 0x01 or 0x02."
+  - address: "0x00466D50"
+    name: input_post_left_button_up
+    confidence: high
+    evidence: "Public EventMan entry that clears left-button state before emitting pointer type 0x03."
+  - address: "0x00466D80"
+    name: input_post_right_button_down
+    confidence: high
+    evidence: "Public EventMan entry that honors input blocking before setting right-button state and emitting type 0x04 or 0x05."
+  - address: "0x00466DC0"
+    name: input_post_right_button_up
+    confidence: high
+    evidence: "Public EventMan entry that clears right-button state before emitting pointer type 0x06."
+  - address: "0x00466DF0"
+    name: input_post_mouse_wheel
+    confidence: high
+    evidence: "Public EventMan entry that honors input blocking before forwarding a Win32 wheel delta and message time."
+  - address: "0x00466E20"
+    name: input_post_key_down
+    confidence: high
+    evidence: "Public EventMan entry that honors input blocking before updating keyboard state and emitting type 0x08."
+  - address: "0x00466E60"
+    name: input_post_key_up
+    confidence: high
+    evidence: "Public EventMan entry that updates keyboard state and emits type 0x09."
+  - address: "0x00466E90"
+    name: input_post_character
+    confidence: high
+    evidence: "Public EventMan entry that emits one character as text event type 0x0B."
+  - address: "0x00466EB0"
+    name: input_post_ime_open_status_change
+    confidence: high
+    evidence: "Public EventMan entry that emits IME open-status event type 0x0D."
+  - address: "0x00466ED0"
+    name: input_post_committed_text
+    confidence: high
+    evidence: "Public EventMan entry that copies a NUL-terminated committed-text string into event type 0x0B."
+  - address: "0x00466EF0"
+    name: input_post_ime_composition_start
+    confidence: high
+    evidence: "Public EventMan entry that emits IME composition-start event type 0x0E."
+  - address: "0x00466F30"
+    name: input_post_ime_composition_end
+    confidence: high
+    evidence: "Public EventMan entry that emits IME composition-end event type 0x0F."
+  - address: "0x00466F50"
+    name: input_post_ime_candidate_list_data
+    confidence: high
+    evidence: "Public EventMan entry for candidate-list event type 0x10; its pointer ownership requires the native IME path."
+  - address: "0x00466F80"
+    name: input_post_ime_candidate_list_close
+    confidence: high
+    evidence: "Public EventMan entry that emits candidate-list-close event type 0x11."
+  - address: "0x00466FA0"
+    name: input_post_alternate_key
+    confidence: medium
+    evidence: "Public EventMan entry for type 0x0C; the exact semantic distinction from normal key events remains unresolved."
+  - address: "0x004670F0"
+    name: event_dispatch_or_queue
+    confidence: high
+    evidence: "Dispatches on app_main_thread_id and copies the Event into the queue from any other thread."
+  - address: "0x004672F0"
+    name: input_emit_pointer_move
+    confidence: high
+    evidence: "Builds pointer event type 0x00 from EventMan coordinates, flags, and message time."
+  - address: "0x004673F0"
+    name: input_emit_left_button_down
+    confidence: high
+    evidence: "Builds type 0x01 or synthesized double-click type 0x02 and sets the left-held flag."
+  - address: "0x00467680"
+    name: input_emit_left_button_up
+    confidence: high
+    evidence: "Builds pointer event type 0x03 and clears the left-held flag."
+  - address: "0x00467790"
+    name: input_emit_right_button_down
+    confidence: high
+    evidence: "Builds type 0x04 or synthesized double-click type 0x05 and sets the right-held flag."
+  - address: "0x00467A20"
+    name: input_emit_right_button_up
+    confidence: high
+    evidence: "Builds pointer event type 0x06 and clears the right-held flag."
+  - address: "0x00467B30"
+    name: input_emit_mouse_wheel
+    confidence: high
+    evidence: "Builds pointer event type 0x07 and normalizes the Win32 wheel delta by 120."
+  - address: "0x00467C10"
+    name: input_emit_key_down
+    confidence: high
+    evidence: "Updates scan-code and modifier state and builds keyboard event type 0x08."
+  - address: "0x00467E30"
+    name: input_emit_key_up
+    confidence: high
+    evidence: "Updates scan-code and modifier state and builds keyboard event type 0x09."
+  - address: "0x00467FE0"
+    name: input_emit_character
+    confidence: high
+    evidence: "Builds text event type 0x0B with the character, message time, and current modifiers."
+  - address: "0x00468390"
+    name: input_emit_ime_open_status_change
+    confidence: high
+    evidence: "Builds application event type 0x0D from an IME open-status value and message time."
+  - address: "0x00468420"
+    name: input_emit_committed_text
+    confidence: high
+    evidence: "Builds type 0x0B and copies at most 0x7F bytes of committed text into the Event object."
+  - address: "0x00468550"
+    name: input_emit_ime_composition_start
+    confidence: high
+    evidence: "Builds IME composition-start event type 0x0E."
+  - address: "0x004685F0"
+    name: input_emit_ime_composition_update
+    confidence: high
+    evidence: "Builds type 0x0A and copies at most 0x7F bytes of composition text into the Event object."
+  - address: "0x004686F0"
+    name: input_emit_ime_composition_end
+    confidence: high
+    evidence: "Builds IME composition-end event type 0x0F."
+  - address: "0x00468790"
+    name: input_emit_alternate_key
+    confidence: medium
+    evidence: "Builds keyboard-family type 0x0C after translating the scan code through EventMan key tables."
+  - address: "0x004688A0"
+    name: input_emit_ime_candidate_list_data
+    confidence: high
+    evidence: "Builds candidate-list event type 0x10 with pointer-bearing candidate data."
+  - address: "0x00468940"
+    name: input_emit_ime_candidate_list_close
+    confidence: high
+    evidence: "Builds candidate-list-close event type 0x11."
+  - address: "0x0048E980"
+    name: input_translate_win32_message
+    confidence: high
+    evidence: "Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events."
+  - address: "0x004A9C30"
+    name: app_window_proc
+    confidence: high
+    evidence: "Window procedure that sends messages through the input translator before application-specific handling."
+  - address: "0x004AC750"
+    name: app_run_message_loop
+    confidence: high
+    evidence: "Records the main thread, drains PeekMessageA, and runs the EventDispatcher tick each loop."
+  - address: "0x00549490"
+    name: ui_pane_ctor
+    confidence: high
+    evidence: "Constructs Pane over Canvas and a secondary TimerHandler at +0x11C; initializes visible true at +0x130."
+  - address: "0x00549BC0"
+    name: ui_pane_accepts_input
+    confidence: high
+    evidence: "Returns true when Pane +0x130 is visible and its active region is non-empty."
+  - address: "0x00549C00"
+    name: ui_pane_show
+    confidence: high
+    evidence: "Sets Pane +0x130 visible and invalidates its region when required."
+  - address: "0x00549C40"
+    name: ui_pane_hide
+    confidence: high
+    evidence: "Clears Pane +0x130 visible, invalidates affected content, and releases owned mouse capture."
+  - address: "0x0054A130"
+    name: ui_pane_capture_mouse
+    confidence: high
+    evidence: "Sets this pane as EventDispatcher capture owner and records Pane +0x178 true."
+  - address: "0x0054A160"
+    name: ui_pane_release_mouse_capture
+    confidence: high
+    evidence: "Clears EventDispatcher capture owner and records Pane +0x178 false."
+  - address: "0x0054A190"
+    name: ui_pane_has_mouse_capture
+    confidence: high
+    evidence: "Returns Pane +0x178."
+  - address: "0x0054A270"
+    name: ui_pane_register_screen
+    confidence: high
+    evidence: "Pane primary-vtable +0x38 wrapper that inserts the pane into HierList<Screen>."
+  - address: "0x0054A2C0"
+    name: ui_pane_unregister_screen
+    confidence: high
+    evidence: "Pane primary-vtable +0x3C wrapper that removes the pane from HierList<Screen>."
+  - address: "0x0054A310"
+    name: ui_pane_register_event_handler
+    confidence: high
+    evidence: "Pane primary-vtable +0x40 wrapper for insertion into EventHandlerList."
+  - address: "0x0054A360"
+    name: ui_pane_unregister_event_handler
+    confidence: high
+    evidence: "Pane primary-vtable +0x44 wrapper for removal from EventHandlerList."
+  - address: "0x005522B0"
+    name: ui_screen_hierarchy_ctor
+    confidence: high
+    evidence: "Constructs the RTTI-backed HierList<Screen> used for spatial pane parentage."
+  - address: "0x00552370"
+    name: ui_screen_hierarchy_insert
+    confidence: high
+    evidence: "Adds a pane with spatial sibling and parent placement and sets Pane +0x188 bit 0x01."
+  - address: "0x005525D0"
+    name: ui_screen_hierarchy_queue_remove
+    confidence: high
+    evidence: "Clears Pane +0x188 bit 0x01 and queues or performs HierList<Screen> removal."
+  - address: "0x005528C0"
+    name: ui_screen_hierarchy_get_absolute_origin
+    confidence: high
+    evidence: "Accumulates pane origins through spatial parents until ui_screen_root_pane_ptr."
+  - address: "0x00553260"
+    name: ui_screen_hierarchy_find
+    confidence: high
+    evidence: "Recursively finds the HierList<Screen> node for a pane and optionally returns its owner list and index."
+  - address: "0x00553350"
+    name: ui_screen_pane_ctor
+    confidence: high
+    evidence: "Constructs the startup RTTI ScreenPane root with primary Pane and secondary TimerHandler vtables."
+data_symbols:
+  - address: "0x006D9220"
+    name: event_dispatcher_singleton_ptr
+    confidence: high
+    evidence: "Returned by the EventDispatcher singleton accessor and used by the main message loop."
+  - address: "0x006D9260"
+    name: input_event_manager_singleton_ptr
+    confidence: high
+    evidence: "Returned by the EventMan/InputMan singleton accessor used by Win32 input translation."
+  - address: "0x006FCD24"
+    name: event_current_timer_due_time
+    confidence: high
+    evidence: "Set to the due time of the timer currently being processed."
+  - address: "0x006FCD2C"
+    name: event_dispatch_max_pane_priority
+    confidence: high
+    evidence: "Scratch maximum of Pane +0x184 across the active traversal branch."
+  - address: "0x0073D938"
+    name: app_main_window
+    confidence: high
+    evidence: "HWND passed to SetCapture and ReleaseCapture paths."
+  - address: "0x0073D944"
+    name: event_dispatcher_ptr
+    confidence: high
+    evidence: "Application-owned pointer to the allocated EventDispatcher."
+  - address: "0x0073D948"
+    name: ui_screen_hierarchy_ptr
+    confidence: high
+    evidence: "Application-owned pointer to the RTTI-backed HierList<Screen>."
+  - address: "0x0073D94C"
+    name: ui_screen_root_pane_ptr
+    confidence: high
+    evidence: "Startup ScreenPane inserted as a null-parent root in both screen and event hierarchies."
+  - address: "0x00740400"
+    name: app_main_thread_id
+    confidence: high
+    evidence: "Written from GetCurrentThreadId at message-loop startup and used by event_dispatch_or_queue."
+comments:
+  - address: "0x004456FE"
+    text: "DialogPane child-control collection pointer at object offset +0x594."
+  - address: "0x00446CB8"
+    text: "Focused control index is stored at DialogPane +0x5AC."
+  - address: "0x004642B0"
+    text: "Timer callback budget is 0x28 per main-thread tick."
+  - address: "0x004643C2"
+    text: "Invoke TimerHandler virtual +0x08 with timer id and two payload values."
+  - address: "0x00464A8C"
+    text: "Captured pane receives pointer events in pane-local coordinates before normal tree routing."
+  - address: "0x00464B5C"
+    text: "Fallback to EventHandlerList pane-tree traversal."
+  - address: "0x00464E60"
+    text: "Create an iterator over this pane's immediate children. Sibling iteration skips deeper descendants."
+  - address: "0x00464EED"
+    text: "Dispatch current pane after its descendants. A true result consumes the event and stops traversal."
+  - address: "0x00464F92"
+    text: "Pane virtual +0x48: pointer event types 0x00 through 0x07."
+  - address: "0x00464FC3"
+    text: "Pane virtual +0x4C: keyboard and text event types 0x08 through 0x0C."
+  - address: "0x00464FE8"
+    text: "Pane virtual +0x54: application and IME event types 0x0D through 0x12."
+  - address: "0x0046500D"
+    text: "Pane virtual +0x50: network event type 0x13."
+runtime_patches: []
+event_types:
+  - type: "0x00"
+    name: pointer_move
+    confidence: high
+  - type: "0x01"
+    name: left_button_down
+    confidence: high
+  - type: "0x02"
+    name: left_button_double_click
+    confidence: high
+  - type: "0x03"
+    name: left_button_up
+    confidence: high
+  - type: "0x04"
+    name: right_button_down
+    confidence: high
+  - type: "0x05"
+    name: right_button_double_click
+    confidence: high
+  - type: "0x06"
+    name: right_button_up
+    confidence: high
+  - type: "0x07"
+    name: mouse_wheel
+    confidence: high
+  - type: "0x08"
+    name: key_down
+    confidence: high
+  - type: "0x09"
+    name: key_up
+    confidence: high
+  - type: "0x0A"
+    name: ime_composition_update
+    confidence: high
+  - type: "0x0B"
+    name: character_or_committed_text
+    confidence: high
+  - type: "0x0C"
+    name: maybe_alternate_translated_key
+    confidence: medium
+  - type: "0x0D"
+    name: ime_open_status_change
+    confidence: high
+  - type: "0x0E"
+    name: ime_composition_start
+    confidence: high
+  - type: "0x0F"
+    name: ime_composition_end
+    confidence: high
+  - type: "0x10"
+    name: ime_candidate_list_data
+    confidence: high
+  - type: "0x11"
+    name: ime_candidate_list_close
+    confidence: high
+  - type: "0x12"
+    name: unknown_application_event
+    confidence: low
+  - type: "0x13"
+    name: network
+    confidence: high
+  - type: "0x14"
+    name: intro_state
+    confidence: high
+vtable_slots:
+  pane_primary:
+    show: "0x1C"
+    hide: "0x20"
+    register_screen: "0x38"
+    unregister_screen: "0x3C"
+    register_event_handler: "0x40"
+    unregister_event_handler: "0x44"
+    pointer_event: "0x48"
+    keyboard_text_event: "0x4C"
+    network_event: "0x50"
+    application_ime_event: "0x54"
+    dialog_action: "0x64"
+  timer_handler_secondary:
+    callback: "0x08"
+    cancel_notification: "0x0C"
+object_layouts:
+  Event:
+    size: "0xA8"
+    type: "0x0C"
+  EventDispatcher:
+    size: "0x1BC"
+    next_timer_due: "0x34"
+    timer_list: "0x38"
+    captured_pane: "0x40"
+    packet_factory: "0x4C"
+    input_priority_barrier: "0x50"
+    event_handler_list: "0x60"
+  Pane:
+    timer_handler_subobject: "0x11C"
+    visible: "0x130"
+    input_priority: "0x184"
+    event_handler_flags: "0x188"
+    screen_hierarchy_registered_bit: "0x01"
+    event_handler_registered_bit: "0x02"
+  DialogPane:
+    controls: "0x594"
+    focused_control_index: "0x5AC"
+  HierList_Screen:
+    root_pane_global: "0x0073D94C"
+    hierarchy_global: "0x0073D948"
+rtti_inventory:
+  pane_vtable_types: 302
+  singleton_specializations: 86
+  pane_or_dialog_singletons_by_name_filter: 39

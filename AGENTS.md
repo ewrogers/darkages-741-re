@@ -146,6 +146,30 @@ Ask the project owner for tribal knowledge when in-game behavior would resolve a
 
 When scripting Binary Ninja changes, prefer user symbols, user types, and other `_user_` APIs for human conclusions that must survive reanalysis. Auto-analysis results can be replaced when analysis is rerun or upgraded.
 
+## UI and event documentation
+
+Treat the UI as several connected mechanisms instead of assuming one universal scene graph.
+
+- Distinguish the spatial `HierList<Screen>`, the runtime `EventHandlerList` pane tree, a `DialogPane` local control collection, and `Singleton<T>` access wrappers.
+- Record an exact RTTI class name separately from a reconstructed method or field name. RTTI proves the class spelling, not the method's purpose.
+- For a pane event handler, record the primary-vtable slot, event family, consumed return behavior, coordinate space, and base implementation being overridden.
+- Track registration, visibility, input priority, mouse capture, control focus, and object validity as separate states.
+- Record secondary-base offsets. `Pane` uses a `TimerHandler` subobject at `this + 0x11C`, so a timer callback may receive an adjusted `this` pointer.
+- When documenting propagation, state whether traversal is child-first or parent-first and where a true return stops it.
+- For dialogs, preserve control attachment order when the collection index becomes the action or focus ID.
+- Do not infer the live pane tree from the static RTTI inventory. Use registration code or runtime observation to establish live parent, sibling, and visibility state.
+- Distinguish vtable name-search results from distinct complete-object RTTI classes. Derive inheritance from the MSVC Class Hierarchy Descriptor and Base Class Array, not from a qualified vtable display name alone.
+
+For injected event or network proxies:
+
+- Verify the executable fingerprint and resolve static targets as module-base-relative RVAs.
+- Keep IPC and configuration parsing outside hooks. Hooks may consult local bounded state but must not wait for another process.
+- Queue external commands and invoke client event or packet producers from the main-thread dispatcher tick.
+- Prefer native `EventMan` producers for pointer, keyboard, text, and IME events so client state and ownership rules remain intact.
+- Treat pointer-bearing event variants as unsafe for generic IPC until construction and cleanup are fully verified.
+- Make rule failure fail-open, bound command and telemetry queues, and drop telemetry rather than blocking the client.
+- Keep persistent proxy rules in YAML. A compact fixed binary IPC format is acceptable when the controller owns YAML parsing.
+
 ## Text encoding and localization
 
 The client originated in the Korean market and may contain untranslated or incorrectly rendered Korean text. Treat text shown as `????`, especially near `MessageBoxA`, as an encoding question rather than assuming the literal text is known.
