@@ -51,6 +51,30 @@ functions:
     name: net_request_family_name
     confidence: high
     evidence: "EquipPane reaches this opcode-only 0x7A request paired with SFamilyName."
+  - address: "0x00491050"
+    name: ui_new_skill_inventory_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class NewSkillInventoryPane with a 90-entry NewInventoryPane<SkillInvItemPane> base."
+  - address: "0x004915B0"
+    name: ui_skill_inventory_create_skill_item
+    confidence: high
+    evidence: "Allocates a 0x348-byte SkillInvItemPane from the SAddSkill slot, icon, and name, then inserts it at slot - 1."
+  - address: "0x00491670"
+    name: ui_skill_inventory_remove_slot
+    confidence: high
+    evidence: "Converts a one-based skill slot to the skill inventory's zero-based removal index."
+  - address: "0x00491690"
+    name: ui_skill_inventory_handle_network_event
+    confidence: high
+    evidence: "NewSkillInventoryPane network-event handler routes RTTI SAddSkill and SRemoveSkill objects to their UI paths."
+  - address: "0x00491730"
+    name: ui_skill_inventory_add_skill_from_packet
+    confidence: high
+    evidence: "Accepts SAddSkill slots 1 through 90, replaces an existing UI item, and constructs a new SkillInvItemPane."
+  - address: "0x004917D0"
+    name: ui_skill_inventory_remove_skill_from_packet
+    confidence: high
+    evidence: "Accepts SRemoveSkill slots 1 through 90 and removes the slot when its SkillInvItemPane pointer is non-null."
   - address: "0x004919E0"
     name: ui_new_spell_inventory_pane_ctor
     confidence: high
@@ -75,10 +99,30 @@ functions:
     name: ui_spell_inventory_remove_spell_from_packet
     confidence: high
     evidence: "Accepts SRemoveSpell slots 1 through 90 and removes the slot when its SpellInvItemPane pointer is non-null."
+  - address: "0x00492B30"
+    name: ui_skill_inventory_set_item_at
+    confidence: high
+    evidence: "Replaces a checked zero-based skill inventory entry and attaches the new SkillInvItemPane to its visible slot."
+  - address: "0x00492C00"
+    name: ui_skill_inventory_remove_item_at
+    confidence: high
+    evidence: "Checks a zero-based skill inventory index, releases its live UI item, and clears the pointer entry."
   - address: "0x00493460"
     name: ui_inventory_remove_item_at
     confidence: high
     evidence: "Checks a zero-based inventory index, releases its live UI item through the shared UI owner, and clears the pointer entry."
+  - address: "0x00498940"
+    name: ui_skill_inventory_item_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class SkillInvItemPane and retains the SAddSkill icon, name, and one-based slot."
+  - address: "0x004992F0"
+    name: ui_skill_inventory_activate
+    confidence: high
+    evidence: "Checks SkillInvItemPane state, sends any configured skill text, and reaches the CUseSkill sender."
+  - address: "0x00499420"
+    name: net_send_use_skill
+    confidence: high
+    evidence: "Builds CUseSkill as opcode 0x3E followed by the one-byte slot retained from SAddSkill."
   - address: "0x00499DE0"
     name: ui_spell_inventory_item_ctor
     confidence: high
@@ -215,6 +259,18 @@ functions:
     name: net_packet_reader_read_string8
     confidence: high
     evidence: "Reads a one-byte-length-prefixed byte string and appends a local NUL to the destination."
+  - address: "0x00597510"
+    name: net_create_add_skill_server_packet
+    confidence: high
+    evidence: "Allocates a 0x118-byte RTTI SAddSkill object and calls its concrete constructor."
+  - address: "0x00597590"
+    name: net_add_skill_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x2C to the server packet base and installs the exact SAddSkill vtable."
+  - address: "0x005975C0"
+    name: net_deserialize_add_skill_server_packet
+    confidence: high
+    evidence: "Reads u8 slot, u16be icon, and string8 name into SAddSkill."
   - address: "0x00597640"
     name: net_create_add_spell_server_packet
     confidence: high
@@ -239,6 +295,18 @@ functions:
     name: net_deserialize_bad_guy_server_packet
     confidence: high
     evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32be guard."
+  - address: "0x0059B0E0"
+    name: net_create_remove_skill_server_packet
+    confidence: high
+    evidence: "Allocates a 0x14-byte RTTI SRemoveSkill object and calls its concrete constructor."
+  - address: "0x0059B160"
+    name: net_remove_skill_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x2D to the server packet base and installs the exact SRemoveSkill vtable."
+  - address: "0x0059B190"
+    name: net_deserialize_remove_skill_server_packet
+    confidence: high
+    evidence: "Reads the one-byte SRemoveSkill slot into object offset +0x10."
   - address: "0x0059B1F0"
     name: net_create_remove_spell_server_packet
     confidence: high
@@ -267,6 +335,14 @@ functions:
     name: net_handle_remove_spell_server_packet
     confidence: high
     evidence: "Forwards decoded SRemoveSpell to WorldUserFunc vtable slot +0x14."
+  - address: "0x005F1B70"
+    name: net_handle_add_skill_server_packet
+    confidence: high
+    evidence: "Forwards decoded SAddSkill to WorldUserFunc vtable slot +0x18."
+  - address: "0x005F1BB0"
+    name: net_handle_remove_skill_server_packet
+    confidence: high
+    evidence: "Forwards decoded SRemoveSkill to WorldUserFunc vtable slot +0x1C."
   - address: "0x005F2A60"
     name: net_handle_map_part
     confidence: high
@@ -319,6 +395,14 @@ functions:
     name: session_clear_spell_entry
     confidence: high
     evidence: "Clears a spell record's present flag, argument type, name[0], and prompt[0] without overwriting the icon or remaining string bytes."
+  - address: "0x005FCD20"
+    name: session_store_skill_entry
+    confidence: high
+    evidence: "Stores one 0x104-byte skill record at WorldUserFunc + 0x10210 + (slot - 1) * 0x104."
+  - address: "0x005FCD80"
+    name: session_clear_skill_entry
+    confidence: high
+    evidence: "Clears a skill record's present flag and name[0] without overwriting its icon or remaining name bytes."
   - address: "0x005FD260"
     name: session_add_spell_from_packet
     confidence: high
@@ -327,6 +411,14 @@ functions:
     name: session_remove_spell_from_packet
     confidence: high
     evidence: "Accepts SRemoveSpell slots 1 through 89 before clearing the matching WorldUserFunc spell record."
+  - address: "0x005FD320"
+    name: session_add_skill_from_packet
+    confidence: high
+    evidence: "Accepts SAddSkill slots 1 through 89 before storing the icon and name in WorldUserFunc."
+  - address: "0x005FD370"
+    name: session_remove_skill_from_packet
+    confidence: high
+    evidence: "Accepts SRemoveSkill slots 1 through 89 before clearing the matching WorldUserFunc skill record."
   - address: "0x00667B20"
     name: net_register_bad_guy_server_packet_factory
     confidence: high
@@ -347,6 +439,26 @@ comments:
     text: "Write CreateUserDialogPane +0x678 as the hair-color palette index 0 through 13."
   - address: "0x0043ECB9"
     text: "The active USA distribution stores literal none as the third CNewUser string. Japan mode 13 can read the Email control instead."
+  - address: "0x0049107D"
+    text: "NewSkillInventoryPane uses a 90-entry UI inventory."
+  - address: "0x004915DF"
+    text: "Allocate a 0x348-byte RTTI SkillInvItemPane."
+  - address: "0x00491654"
+    text: "Insert the skill item at the zero-based index slot - 1."
+  - address: "0x004916C3"
+    text: "NewSkillInventoryPane routes RTTI SAddSkill opcode 0x2C to its insertion path."
+  - address: "0x004916E6"
+    text: "NewSkillInventoryPane routes RTTI SRemoveSkill opcode 0x2D to its removal path."
+  - address: "0x0049175A"
+    text: "The UI accepts SAddSkill slots 1 through 90."
+  - address: "0x0049178E"
+    text: "Replace an existing SkillInvItemPane before inserting the new SAddSkill item."
+  - address: "0x004917B4"
+    text: "Create the UI skill item from slot, icon, and name."
+  - address: "0x004917FA"
+    text: "The UI accepts SRemoveSkill slots 1 through 90."
+  - address: "0x0049182E"
+    text: "Only a live SkillInvItemPane is removed; an empty slot is ignored."
   - address: "0x00492147"
     text: "Convert the one-based protocol slot to the inventory container's zero-based index."
   - address: "0x004921B6"
@@ -359,12 +471,26 @@ comments:
     text: "Read the one-based SRemoveSpell slot from packet object offset +0x10."
   - address: "0x0049230E"
     text: "Only an in-range UI slot with a live SpellInvItemPane is removed."
+  - address: "0x00492CBF"
+    text: "Release the live SkillInvItemPane through the shared UI ownership manager."
+  - address: "0x00492CC7"
+    text: "Clear the skill inventory pointer entry after releasing its item."
   - address: "0x004934A6"
     text: "Locate the live UI item pointer for the checked zero-based inventory index."
   - address: "0x0049351F"
     text: "Release the live spell item through the shared UI ownership manager."
   - address: "0x00493527"
     text: "Clear the inventory entry pointer after releasing the SpellInvItemPane."
+  - address: "0x004989AE"
+    text: "Store the one-based skill slot at SkillInvItemPane +0x312."
+  - address: "0x004989BB"
+    text: "Store the skill icon at SkillInvItemPane +0x190."
+  - address: "0x004989D4"
+    text: "Copy the skill name into the 128-byte UI buffer at SkillInvItemPane +0x192."
+  - address: "0x00499450"
+    text: "Build CUseSkill opcode 0x3E."
+  - address: "0x00499473"
+    text: "CUseSkill carries the one-byte slot stored by SAddSkill."
   - address: "0x0049A6A9"
     text: "Dispatches spell activation by spell_args_type: string, target, numeric fields, or no argument."
   - address: "0x0049B897"
@@ -435,6 +561,12 @@ comments:
     text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
   - address: "0x005962D3"
     text: "The factory installs no constructor for server opcode 0x58 or 0x67. Both remain raw decoded bodies with a null packet-object slot."
+  - address: "0x005975D2"
+    text: "SAddSkill body begins with a one-byte skill slot."
+  - address: "0x005975E0"
+    text: "Read the skill icon as a big-endian 16-bit value."
+  - address: "0x005975EE"
+    text: "Read the skill name as a one-byte-length-prefixed string and append a local NUL."
   - address: "0x005976FA"
     text: "SAddSpell body begins with a one-byte spell slot."
   - address: "0x00597708"
@@ -453,16 +585,26 @@ comments:
     text: "SBadGuy body bytes 1 and 2 are u8 mode and marker byte."
   - address: "0x00597AE6"
     text: "SBadGuy ends with a u32be guard value."
+  - address: "0x0059B19A"
+    text: "SRemoveSkill contains one body field: the one-byte skill slot at object offset +0x10."
   - address: "0x0059B2AA"
     text: "SRemoveSpell contains one body field: the one-byte spell slot at object offset +0x10."
   - address: "0x005EDC2D"
     text: "Dispatch RTTI packet SRemoveSpell opcode 0x18 to net_handle_remove_spell_server_packet."
+  - address: "0x005EDC56"
+    text: "Dispatch RTTI packet SAddSkill opcode 0x2C to net_handle_add_skill_server_packet."
+  - address: "0x005EDC7F"
+    text: "Dispatch RTTI packet SRemoveSkill opcode 0x2D to net_handle_remove_skill_server_packet."
   - address: "0x005EDF3D"
     text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
   - address: "0x005EE185"
     text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x58 or 0x67."
   - address: "0x005F1B5A"
     text: "Forward the SRemoveSpell object to WorldUserFunc vtable slot +0x14."
+  - address: "0x005F1B9A"
+    text: "Forward SAddSkill to WorldUserFunc vtable slot +0x18."
+  - address: "0x005F1BDA"
+    text: "Forward SRemoveSkill to WorldUserFunc vtable slot +0x1C."
   - address: "0x005F2AEB"
     text: "Create MapLoadingPane on the first SMapPart body when a map transfer is active."
   - address: "0x005F2C31"
@@ -495,12 +637,28 @@ comments:
     text: "Removal writes a NUL only to name[0]; the remaining name bytes are left untouched."
   - address: "0x005FCD0A"
     text: "Removal writes a NUL only to prompt[0]; the remaining prompt bytes are left untouched."
+  - address: "0x005FCD46"
+    text: "Mark the 0x104-byte WorldUserFunc skill record present."
+  - address: "0x005FCD50"
+    text: "Store the SAddSkill icon in the session skill record."
+  - address: "0x005FCD6F"
+    text: "Copy the SAddSkill name into the session record's 256-byte name buffer."
+  - address: "0x005FCDA6"
+    text: "Removal clears the skill present flag but leaves the old icon intact."
+  - address: "0x005FCDAC"
+    text: "Removal writes a NUL only to skill name[0]; the remaining bytes are left untouched."
   - address: "0x005FD27F"
     text: "Session spell storage accepts slots 1 through 89."
   - address: "0x005FD291"
     text: "Session spell storage accepts spell argument types 1 through 8."
   - address: "0x005FD302"
     text: "Session removal accepts spell slots 1 through 89; other values are ignored."
+  - address: "0x005FD342"
+    text: "Session skill insertion accepts slots 1 through 89; other values are ignored."
+  - address: "0x005FD35B"
+    text: "Store the SAddSkill icon and name in the matching WorldUserFunc skill record."
+  - address: "0x005FD392"
+    text: "Session skill removal accepts slots 1 through 89; other values are ignored."
   - address: "0x00667B38"
     text: "Register the SBadGuy constructor in the server_packet_factory initialization path."
 runtime_patches: []
@@ -830,7 +988,7 @@ packet_indexes:
         builder: "0x00499420"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x00499420 writes opcode 0x3E and submits the body."
+        evidence: "SkillInvItemPane builder 0x00499420 writes opcode 0x3E followed by the one-byte slot originally supplied by SAddSkill."
         page: "docs/network/client/062-0x3e-use-skill.md"
       - opcode: "0x3F"
         friendly_name: "Field Map"
@@ -1338,7 +1496,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597590 passes opcode 0x2C to the server packet base and installs the SAddSkill vtable."
+        evidence: "RTTI constructor 0x00597590 binds opcode 0x2C. Deserializer 0x005975C0 reads u8 slot, u16be icon, and string8 name. WorldUserFunc and NewSkillInventoryPane consume the decoded object."
         page: "docs/network/server/044-0x2c-add-skill.md"
       - opcode: "0x2D"
         friendly_name: "Remove Skill"
@@ -1348,7 +1506,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059B160 passes opcode 0x2D to the server packet base and installs the SRemoveSkill vtable."
+        evidence: "RTTI constructor 0x0059B160 binds opcode 0x2D. Deserializer 0x0059B190 reads one u8 slot. WorldUserFunc clears the session record for slots 1 through 89, while NewSkillInventoryPane releases and nulls the UI item for slots 1 through 90."
         page: "docs/network/server/045-0x2d-remove-skill.md"
       - opcode: "0x2E"
         friendly_name: "Field Map"

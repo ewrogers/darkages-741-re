@@ -1,29 +1,24 @@
 # Use Skill (`CUseSkill`)
 
+`CUseSkill` activates the skill in one skillbook slot. `SkillInvItemPane` uses the one-based slot originally supplied by `SAddSkill`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x3E` (62) |
-| Encoding | session key |
-| Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
-
-## Purpose
-
-The client sends this message for **use skill**.
-
-## Sent by
-
-Known static callers lead to:
-
-- `Pane::SkillInvItemPane`
+| Transform | derived |
+| UI owner | RTTI class `SkillInvItemPane` |
+| Name provenance | Related class vocabulary matched to the locally confirmed builder |
 
 ## Body
 
-```text
-packet CUseSkill {
-    u8 opcode                 // 0x3E
-    ...                         // fields pending
-}
+```c
+struct CUseSkillBody {
+    u8 opcode;                         // 0x3E
+    u8 slot;
+};
 ```
 
-Field order, variants, state effects, and paired packets remain to be traced.
+`net_send_use_skill` writes the two meaningful bytes. The common submission helper supplies the encrypted client packet's trailing zero.
+
+The normal activation path checks two item-state flags before sending. Their exact game-facing meanings remain unresolved. The paired skill definition is [Add Skill (`SAddSkill`)](../server/044-0x2c-add-skill.md).

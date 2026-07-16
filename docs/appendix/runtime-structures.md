@@ -176,7 +176,7 @@ struct NewSpellInventoryPaneFields {
 
 struct SkillSpellInventoryPaneFields {
     u8 pane_base[0x224];
-    Pane *skill_inventory;          // +0x224
+    NewSkillInventoryPane *skills;  // +0x224
     NewSpellInventoryPane *spells;  // +0x228
 };
 ```
@@ -199,6 +199,50 @@ struct SpellDelayControlPaneFields {
 ```
 
 Its timer callback receives the usual adjusted `TimerHandler` pointer at `this + 0x11C`. It converts that pointer back to the complete pane before advancing the cast sequence.
+
+## Character skill state
+
+`WorldUserFunc` stores 89 skill records immediately after its spell array. The session record contains only the fields needed by gameplay lookup:
+
+```c
+struct SessionSkillEntry {
+    u8 present;                     // +0x000
+    u8 padding_001;
+    u16 icon;                       // +0x002
+    char name[256];                 // +0x004
+};                                  // size 0x104
+
+struct WorldUserFuncSkillFields {
+    u8 unknown_0000[0x10210];
+    SessionSkillEntry skills[89];   // +0x10210, slots 1 through 89
+};
+```
+
+[`SAddSkill`](../network/server/044-0x2c-add-skill.md) sets `present`, stores the icon, and copies the name. [`SRemoveSkill`](../network/server/045-0x2d-remove-skill.md) clears `present` and `name[0]` without overwriting the icon or remaining name bytes.
+
+The skill inventory UI holds a larger object for each visible entry:
+
+```c
+struct SkillInvItemPaneFields {
+    u8 pane_base[0x190];
+    u16 icon;                       // +0x190
+    char name[128];                 // +0x192
+    u8 unknown_212[0x100];
+    u8 slot;                        // +0x312, one-based
+    u8 unknown_313[0x0F];
+    u8 state_322;                   // exact purpose unknown
+    u8 state_323;                   // exact purpose unknown
+    u8 unknown_324[0x24];
+};                                  // size 0x348
+
+struct NewSkillInventoryPaneFields {
+    u8 pane_base[0x190];
+    s32 capacity;                   // +0x190, initialized to 90
+    SkillInvItemPane **items;       // +0x194, 90 pointers
+};
+```
+
+The UI replaces an existing item before insertion. Removal releases the live `SkillInvItemPane` and writes null to its pointer entry. As with spells, the UI accepts slot 90 while the session model stops at slot 89.
 
 ## Event pane tree
 
