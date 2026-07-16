@@ -54,7 +54,7 @@ functions:
   - address: "0x004BAA80"
     name: net_send_login_request
     confidence: high
-    evidence: "Builds and submits client login opcode 0x03, then persists the submitted character name."
+    evidence: "Builds CLogin opcode 0x03 with two u8-length credential strings and a 16-byte masked installation block, submits it through the static-key path, then persists the submitted character name."
   - address: "0x004C7D80"
     name: crypto_md5_hex_string
     confidence: high
@@ -215,6 +215,18 @@ functions:
     name: net_dispatch_server_packet
     confidence: high
     evidence: "Routes parsed server packet objects to gameplay handlers by opcode."
+  - address: "0x00622873"
+    name: crt_time
+    confidence: high
+    evidence: "Reads the current Windows FILETIME and converts it to Unix-epoch seconds; CLogin passes the result to crt_srand."
+  - address: "0x006275DE"
+    name: crt_srand
+    confidence: high
+    evidence: "Stores the seed used by the client runtime random-number state."
+  - address: "0x006275F0"
+    name: crt_rand
+    confidence: high
+    evidence: "Implements the Microsoft runtime linear-congruential update and returns a 15-bit value."
 data_symbols:
   - address: "0x006D11D8"
     name: net_derived_key_length

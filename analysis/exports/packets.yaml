@@ -59,6 +59,18 @@ functions:
     name: net_send_alive
     confidence: high
     evidence: "MainMenuPane timer paths send opcode 0x71 and schedule another callback after 30 seconds."
+  - address: "0x004BA180"
+    name: ui_login_dialog_ctor
+    confidence: high
+    evidence: "Constructs RTTI class LoginDialogPane from _nlogin.txt and attaches OK, Cancel, Name, and Password controls."
+  - address: "0x004BA810"
+    name: ui_login_dialog_handle_key_event
+    confidence: high
+    evidence: "Moves focus from Name to Password when Enter is pressed and otherwise delegates supported keyboard events to DialogPane."
+  - address: "0x004BA8C0"
+    name: ui_login_dialog_handle_action
+    confidence: high
+    evidence: "Action 0 reads LoginDialogPane controls 2 and 3 and sends CLogin; action 1 closes the dialog."
   - address: "0x004BB2A0"
     name: ui_change_password_dialog_ctor
     confidence: high
@@ -87,6 +99,10 @@ functions:
     name: ui_input_birthdate_dialog_ctor
     confidence: high
     evidence: "Constructs RTTI class InputBirthdateDialogPane from _npw2.txt for the regional password-change verification branch."
+  - address: "0x004BCAD0"
+    name: net_calculate_login_block_integrity
+    confidence: high
+    evidence: "Applies the custom 0x1021-table recurrence over the first 12 CLogin installation-block bytes."
   - address: "0x004C26D0"
     name: net_send_manual_action
     confidence: high
@@ -115,6 +131,18 @@ functions:
     name: net_send_confirm
     confidence: high
     evidence: "UserConfirmPane calls this opcode 0x31 confirmation builder."
+  - address: "0x00597A10"
+    name: net_create_bad_guy_server_packet
+    confidence: high
+    evidence: "Allocates a 0x18-byte RTTI SBadGuy object and calls its concrete constructor."
+  - address: "0x00597A90"
+    name: net_bad_guy_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x4A to the common server packet base and installs the exact SBadGuy vtable."
+  - address: "0x00597AC0"
+    name: net_deserialize_bad_guy_server_packet
+    confidence: high
+    evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32be guard."
   - address: "0x005BA040"
     name: ui_map_loading_pane_ctor
     confidence: high
@@ -159,6 +187,14 @@ functions:
     name: net_send_check_time
     confidence: high
     evidence: "Direct response to SCheckTime opcode 0x68; echoes a server value and appends timeGetTime()."
+  - address: "0x005F7900"
+    name: net_handle_bad_guy_server_packet
+    confidence: high
+    evidence: "Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths."
+  - address: "0x00667B20"
+    name: net_register_bad_guy_server_packet_factory
+    confidence: high
+    evidence: "Registers the RTTI-backed SBadGuy constructor with the server_packet_factory startup path."
 data_symbols: []
 comments:
   - address: "0x0043D8AF"
@@ -175,6 +211,30 @@ comments:
     text: "Write CreateUserDialogPane +0x678 as the hair-color palette index 0 through 13."
   - address: "0x0043ECB9"
     text: "The active USA distribution stores literal none as the third CNewUser string. Japan mode 13 can read the Email control instead."
+  - address: "0x004BA957"
+    text: "LoginDialogPane action 0 reads attached controls 2 (Name) and 3 (Password) and sends CLogin."
+  - address: "0x004BAAB2"
+    text: "The Mscfg marker flag at app_config + 0x668 reaches an invalid-memory clearing call before CLogin construction, so normal submission cannot continue."
+  - address: "0x004BAB04"
+    text: "CLogin begins with u8-length character-name and password byte strings."
+  - address: "0x004BAE27"
+    text: "Begin the 16-byte CLogin installation block with two linked per-login random bytes."
+  - address: "0x004BAE56"
+    text: "Block byte 1 is (random_a + 0x3B) XOR random_b; random_b selects the bytewise masks for the remaining fields."
+  - address: "0x004BAE85"
+    text: "Write the masked registry-backed 32-bit installation ID in big-endian order."
+  - address: "0x004BAEB5"
+    text: "Write the masked 16-bit derivative of the installation ID in big-endian order."
+  - address: "0x004BAEE4"
+    text: "Write the masked per-login 32-bit nonce in big-endian order and retain the encoded value at app_config + 0x430."
+  - address: "0x004BAF16"
+    text: "Calculate the custom integrity value over the first 12 installation-block bytes."
+  - address: "0x004BAFAD"
+    text: "Write the separately masked 16-bit integrity value in big-endian order."
+  - address: "0x004BAFCD"
+    text: "The meaningful installation block ends with constant 1. net_submit_client_packet supplies the following transmitted zero."
+  - address: "0x004BB00B"
+    text: "Submit CLogin through the static-key transform; the common helper appends the final zero before encryption."
   - address: "0x004BB765"
     text: "Initial focus is control 2 (Name). Attachment order is OK=0, Cancel=1, Name=2, Password=3, NewPassword=4, Confirm=5."
   - address: "0x004BB8DB"
@@ -203,6 +263,14 @@ comments:
     text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
   - address: "0x005962D3"
     text: "The factory installs no constructor for server opcode 0x58 or 0x67. Both remain raw decoded bodies with a null packet-object slot."
+  - address: "0x00597A9C"
+    text: "Construct RTTI class SBadGuy with server opcode 0x4A."
+  - address: "0x00597AD2"
+    text: "SBadGuy body bytes 1 and 2 are u8 mode and marker byte."
+  - address: "0x00597AE6"
+    text: "SBadGuy ends with a u32be guard value."
+  - address: "0x005EDF3D"
+    text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
   - address: "0x005EE185"
     text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x58 or 0x67."
   - address: "0x005F2AEB"
@@ -211,6 +279,22 @@ comments:
     text: "Set map-transfer progress to (part_index + 1) * 100 / total_parts."
   - address: "0x005F2C87"
     text: "The final map part closes the loading pane, updates and writes the map cache, then applies the completed map."
+  - address: "0x005F793D"
+    text: "Apply the client-installation soft ban only when mode is 0 and the u32be guard equals 0x7D3AFF99."
+  - address: "0x005F79D9"
+    text: "Build %SystemRoot%\\System32\\Mscfg.dll from split Msc, fg, .d, and ll fragments. Nearby yummy and rocks strings are unused."
+  - address: "0x005F79FA"
+    text: "Create Mscfg.dll with CREATE_NEW, read/write access, and no sharing. Existing-file or permission failure takes the forced-termination branch."
+  - address: "0x005F7A25"
+    text: "Write the packet marker byte at file offset zero."
+  - address: "0x005F7A3B"
+    text: "Seek to absolute offset 0xDB72 and set end-of-file, producing a 0xDB72-byte marker."
+  - address: "0x005F7A66"
+    text: "After successfully closing the marker, call the invalid-memory clearing path to terminate the client."
+  - address: "0x005F7A80"
+    text: "Marker creation failed, including when it already exists. Write through null to terminate the client."
+  - address: "0x00667B38"
+    text: "Register the SBadGuy constructor in the server_packet_factory initialization path."
 runtime_patches: []
 packet_indexes:
   client_to_server:
@@ -241,7 +325,7 @@ packet_indexes:
         builder: "0x004BAA80"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "net_send_login_request at 0x004BAA80 writes opcode 0x03, submits the body, and persists the name used to seed the MD5 salt source."
+        evidence: "LoginDialogPane calls builder 0x004BAA80, which writes two u8-length credential strings and a 16-byte installation block containing masked persistent IDs, random data, a custom integrity value, constants 1 and 0, then persists the name used to seed the MD5 salt source. A supplied successful-login capture validates the complete meaningful layout without retaining credentials."
         page: "docs/network/client/003-0x03-login.md"
       - opcode: "0x04"
         friendly_name: "New User Appearance"
@@ -1276,7 +1360,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597A90 passes opcode 0x4A to the server packet base and installs the SBadGuy vtable."
+        evidence: "RTTI constructor 0x00597A90 installs SBadGuy for opcode 0x4A. Its deserializer reads u8 mode, u8 marker byte, and u32be guard. Mode 0 with guard 0x7D3AFF99 creates the persistent Mscfg.dll client-installation soft-ban marker and forces termination; later launches select port 2601 and stop CLogin before submission."
         page: "docs/network/server/074-0x4a-bad-guy.md"
       - opcode: "0x4B"
         friendly_name: "Bounce"

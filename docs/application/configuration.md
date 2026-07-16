@@ -38,9 +38,17 @@ backup IP:  52.88.55.94
 port:       2610
 ```
 
-If `%SystemRoot%\System32\Mscfg.dll` exists, the port becomes `2601`. This file is not a library used by the client. The server creates it after an `SBadGuy` client-ban response so later connections use the wrong port.
+If `%SystemRoot%\System32\Mscfg.dll` exists, the port becomes `2601`. This file is not a library used by the client. The [`SBadGuy`](../network/server/074-0x4a-bad-guy.md) handler creates it as a persistent client-installation soft-ban marker.
+
+The [Good Guy runtime patch](../appendix/runtime-patches.md#ignore-the-local-bad-guy-marker-good-guy) keeps the marker-present flag clear. It restores the normal endpoint and login path for later launches while leaving the file and installation IDs unchanged.
 
 The `Port: 5` setting in `Darkages.cfg` selects the transport labeled `PPP or LAN`. It does not mean TCP port 5. Selectors 1 through 4 are the compiled `MODEM COM1` through `MODEM COM4` paths described in [Network transport](../network/transport.md). The final TCP port is the base port plus a normally zero signed offset from the configuration object.
+
+## Installation identity
+
+The default endpoint initializer also loads or creates a persistent 32-bit installation ID under `HKCR\NXKRI.Ctrl.1`, value `CLSID`. It derives a related 16-bit value and keeps a disguised registry copy under `HKCR\KRIHC.Ctrl.1`.
+
+These values are separate from the `Mscfg.dll` marker. [`CLogin`](../network/client/003-0x03-login.md) masks both values with fresh random bytes and sends them in its installation block.
 
 ## Choosing an endpoint
 

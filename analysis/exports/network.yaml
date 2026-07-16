@@ -9,9 +9,9 @@ target:
 functions:
   - address: "0x00431ED0"
     end_address: "0x00431FA6"
-    name: maybe_security_check_mscfg_marker
-    confidence: medium
-    evidence: Tests for Mscfg.dll under the system directory and sets config +0x668. The project owner identifies it as an SBadGuy client-ID-ban marker; that provenance awaits packet-handler verification.
+    name: app_detect_bad_guy_marker
+    confidence: high
+    evidence: Reconstructs %SystemRoot%\System32\Mscfg.dll and sets config +0x668 from file existence alone. app_config_ctor calls it before endpoint selection; the SBadGuy handler creates the same path.
   - address: "0x00431FF0"
     end_address: "0x004322FA"
     name: app_config_ctor
@@ -26,7 +26,7 @@ functions:
     end_address: "0x0043381B"
     name: net_configure_default_endpoint
     confidence: high
-    evidence: Resolves da0.kru.com, applies the hardcoded IPv4 fallback, and selects port 2610 or 2601.
+    evidence: Resolves da0.kru.com, applies the hardcoded IPv4 fallback, selects port 2610 or 2601, and loads or creates the registry-backed installation identifiers later sent by CLogin.
   - address: "0x00433820"
     end_address: "0x00433894"
     name: net_configure_singapore_endpoint
@@ -107,6 +107,11 @@ functions:
     name: maybe_app_configure_distribution_mode_12
     confidence: medium
     evidence: Dormant mode 12 handler with no matching marker return; sets connection flags without installing an endpoint.
+  - address: "0x00436E10"
+    end_address: "0x00436EE3"
+    name: app_derive_installation_id16
+    confidence: high
+    evidence: Applies the client's custom 0x1021-table recurrence to the four little-endian bytes of the persistent 32-bit installation ID.
   - address: "0x00467000"
     end_address: "0x0046705C"
     name: net_post_raw_server_bytes_event
@@ -278,9 +283,11 @@ data_symbols:
     evidence: Signed 16-bit value 741 sent as u16be in CVersion and displayed elsewhere as Version 7.41.
 comments:
   - address: "0x00431F65"
-    text: Build %SystemRoot%\System32\Mscfg.dll and test whether it exists. The resulting flag later selects TCP port 2601 instead of 2610; the marker's wider purpose is not yet confirmed in the new analysis.
-  - address: "0x00431F82"
-    text: Mscfg.dll exists. Set config +0x668 so endpoint setup and retry use TCP port 2601.
+    text: Build the same %SystemRoot%\System32\Mscfg.dll path created by the SBadGuy handler.
+  - address: "0x00431F76"
+    text: Checks only whether Mscfg.dll exists. Its size and marker byte are not read.
+  - address: "0x00431F85"
+    text: Mscfg.dll exists. Set app_config +0x668 so the soft-ban behavior persists for this launch. The documented Good Guy runtime patch replaces this complete seven-byte write of 1 with a write of 0, preserving initialization while ignoring the marker.
   - address: "0x004320BF"
     text: This build caches distribution mode 1. The compiled marker scanner is not called by the active selector.
   - address: "0x00432155"
@@ -305,6 +312,10 @@ comments:
     text: Set the normal mode 1 TCP port to 2610 before checking the Mscfg.dll marker flag.
   - address: "0x00433401"
     text: "Mscfg.dll marker present: replace the normal port 2610 with 2601."
+  - address: "0x00433478"
+    text: "Open HKCR\\NXKRI.Ctrl.1 and load or create the REG_DWORD CLSID used as the persistent 32-bit installation identifier."
+  - address: "0x004335F9"
+    text: "Open HKCR\\KRIHC.Ctrl.1 and load or create the disguised derivative of the installation identifier."
   - address: "0x00434EF7"
     text: Build selector is hardcoded to distribution mode 1. This makes alternate-mode command-line endpoint parsers unreachable in normal execution.
   - address: "0x00434F28"
@@ -450,6 +461,13 @@ comments:
   - address: "0x0059CA6E"
     text: Read a u8-length-prefixed opaque handoff token into STransferServer and NUL-terminate its local copy.
 runtime_patches:
+  - id: good-guy-ignore-bad-guy-marker
+    rva: "0x00031F85"
+    static_address: "0x00431F85"
+    file_offset_for_reference_only: "0x00031385"
+    original_bytes: C6 82 68 06 00 00 01
+    replacement_bytes: C6 82 68 06 00 00 00
+    effect: Keep app_config +0x668 clear when Mscfg.dll exists, preserving the normal port and CLogin path without skipping field initialization. A live SBadGuy still terminates the current process.
   - id: enable-command-line-endpoint
     rva: "0x00032253"
     static_address: "0x00432253"
