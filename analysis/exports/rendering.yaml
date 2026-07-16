@@ -415,10 +415,22 @@ functions:
     name: render_item_object
     confidence: high
     evidence: Draws a ground item with its normal or faded blend state.
+  - address: "0x005DEF70"
+    name: render_copy_human_appearance_record
+    confidence: high
+    evidence: Copies and normalizes the decoded 0x30-byte human appearance record before it becomes live world state.
   - address: "0x005DF950"
     name: render_living_object
     confidence: high
     evidence: Draws a living sprite with normal, highlighted, or transparent state.
+  - address: "0x005E0070"
+    name: render_human_apply_appearance
+    confidence: high
+    evidence: Copies the packet-owned appearance record and forwards it to the live human object.
+  - address: "0x005E00C0"
+    name: render_human_apply_appearance_record
+    confidence: high
+    evidence: Stores the appearance record, applies collision state, creates the HumanObjectImageSession, and refreshes the object.
   - address: "0x005E42F0"
     name: render_static_object_ctor
     confidence: high
@@ -430,7 +442,7 @@ functions:
   - address: "0x005EFFE0"
     name: map_can_move_direction
     confidence: high
-    evidence: Checks bounds, dynamic occupants, and direction-specific SOTP masks for a proposed move.
+    evidence: Checks bounds, the saved appearance action lock, dynamic occupants, and direction-specific SOTP masks for a proposed move.
   - address: "0x005F1BF0"
     name: net_handle_s_map_size
     confidence: high
@@ -455,6 +467,26 @@ functions:
     name: file_format_static_tile_path
     confidence: high
     evidence: Formats stcNNNNN.hpf for base art or stsNNNNN.hpf for alternate art.
+  - address: "0x005FD8D0"
+    name: render_select_human_part_sprite
+    confidence: high
+    evidence: Selects the sprite ID for each of the 21 human body and equipment categories.
+  - address: "0x005FDA90"
+    name: render_format_human_part_filename
+    confidence: high
+    evidence: Builds gendered human-part EPF filenames; body resource 5 resolves through MM005 or WM005 motion files.
+  - address: "0x006000D0"
+    name: render_human_stand_motion_data_ctor
+    confidence: high
+    evidence: Constructs standing-motion data and resolves up to 21 body and equipment sprite parts.
+  - address: "0x00600670"
+    name: render_create_human_stand_motion_data
+    confidence: high
+    evidence: Allocates the initial standing-motion data for a human image session.
+  - address: "0x00602240"
+    name: render_human_image_session_ctor
+    confidence: high
+    evidence: Constructs the RTTI-backed HumanObjectImageSession and retains its decoded 0x30-byte appearance record.
 data_symbols:
   - address: "0x006D395C"
     name: map_move_direction_masks
@@ -539,6 +571,8 @@ comments:
     text: Effect drawing uses the common software Image blitter with a blend mode stored on the effect object.
   - address: "0x005DD470"
     text: Advance the effect frame through the sequence loaded from Effect.tbl and request the matching cached image.
+  - address: "0x005E0119"
+    text: Decoded body resource 2 makes this human nonblocking in local dynamic-object collision. Other body resources, including swimming resource 5, remain blocking.
   - address: "0x005E47FF"
     text: Original JE enters the static draw body when the hidden flag is zero. EB 00 falls into the existing jump to the normal epilogue and hides every static map object.
   - address: "0x005E4880"
@@ -551,6 +585,10 @@ comments:
     text: SMapSize flag 0x80 selects alternate ground and static art, with base-art fallback for missing records or resources.
   - address: "0x005F26C0"
     text: Apply the weather mode saved from SMapSize. Mode 1 creates snow particles, mode 2 has no local setup, and mode 3 changes lighting state.
+  - address: "0x005FDB6E"
+    text: Body resource IDs 1 and 5 use the M filename family. Swimming variants therefore resolve through MM005 or WM005 motion files.
+  - address: "0x006022A9"
+    text: Retain the decoded 0x30-byte human appearance record used to select body, equipment, dye, and motion resources.
 runtime_patches:
   - id: hide-static-map-art
     rva: "0x001E47FF"

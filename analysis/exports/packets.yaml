@@ -7,6 +7,10 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x0041B690"
+    name: ui_bottom_buttons_handle_network_event
+    confidence: high
+    evidence: "BtmButtonsPane_A network-event handler routes SStatus to the parcel and mail-indicator updater."
   - address: "0x0043C370"
     name: ui_create_user_dialog_ctor
     confidence: high
@@ -63,6 +67,14 @@ functions:
     name: net_request_family_name
     confidence: high
     evidence: "EquipPane reaches this opcode-only 0x7A request paired with SFamilyName."
+  - address: "0x004900C0"
+    name: ui_inventory_pane_handle_network_event
+    confidence: high
+    evidence: "InventoryPane_A and ItemInventoryPane route SStatus progression blocks to their local gold-display updater."
+  - address: "0x00490F10"
+    name: ui_inventory_update_gold_from_status_packet
+    confidence: high
+    evidence: "Copies SStatus gold into the inventory pane and redraws its currency display."
   - address: "0x00491050"
     name: ui_new_skill_inventory_pane_ctor
     confidence: high
@@ -235,6 +247,14 @@ functions:
     name: net_send_manual_action
     confidence: high
     evidence: "ManufactureDialogPane calls this opcode 0x55 crafting action builder."
+  - address: "0x004CAC20"
+    name: ui_server_item_menu_dialog_handle_network_event
+    confidence: high
+    evidence: "TaskListDialog::ServerItemMenuDialog3 network-event handler accepts SStatus updates containing progression and currency."
+  - address: "0x004CAC90"
+    name: ui_server_item_menu_update_gold_from_status_packet
+    confidence: high
+    evidence: "Copies SStatus gold into the server-item menu dialog and redraws its currency display."
   - address: "0x004CD350"
     name: net_request_object_info
     confidence: high
@@ -247,6 +267,14 @@ functions:
     name: net_send_pursuit_selection
     confidence: high
     evidence: "MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method."
+  - address: "0x0053A270"
+    name: ui_npc_server_item_menu_handle_network_event
+    confidence: high
+    evidence: "NPCMenuDialog::NPCServerItemMenuDialog routes SStatus progression blocks to its gold-display updater."
+  - address: "0x0053A2D0"
+    name: ui_npc_server_item_menu_update_gold_from_status_packet
+    confidence: high
+    evidence: "Copies SStatus gold into the NPC server-item menu and redraws the dialog."
   - address: "0x00542E60"
     name: net_send_user_setting
     confidence: high
@@ -255,6 +283,30 @@ functions:
     name: net_send_multi_server_selection
     confidence: high
     evidence: "ServerSelectDialogPane sends opcode 0x57 with the selected configured server index."
+  - address: "0x00573F90"
+    name: ui_status_info_handle_network_event
+    confidence: high
+    evidence: "StatusInfoPane routes SStatus to its partial character-sheet updater."
+  - address: "0x00574B30"
+    name: ui_status_info_update_from_status_packet
+    confidence: high
+    evidence: "Copies each present SStatus block into StatusInfoPane, including stat-button state, weight, progression, elements, and one unknown post-resistance byte."
+  - address: "0x005752D0"
+    name: ui_status_info_format_values
+    confidence: high
+    evidence: "Formats the main character-sheet values retained by StatusInfoPane after SStatus updates."
+  - address: "0x00575AA0"
+    name: ui_extra_status_info_format_values
+    confidence: high
+    evidence: "Formats attack and defense element names, magic resistance in ten-percent units, signed armor class, damage, and hit."
+  - address: "0x00575FB0"
+    name: ui_extra_status_info_update_from_status_packet
+    confidence: high
+    evidence: "Copies the SStatus modifiers block into ExtraStatusInfoPane's compact combat-stat fields."
+  - address: "0x00576040"
+    name: ui_extra_status_info_handle_network_event
+    confidence: high
+    evidence: "ExtraStatusInfoPane routes SStatus to its combat-stat updater."
   - address: "0x005922A0"
     name: net_send_confirm
     confidence: high
@@ -327,6 +379,18 @@ functions:
     name: net_deserialize_bad_guy_server_packet
     confidence: high
     evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32be guard."
+  - address: "0x005984C0"
+    name: net_create_draw_human_objects_server_packet
+    confidence: high
+    evidence: "Allocates a 0x264-byte RTTI SDrawHumanObjects object and invokes its concrete constructor."
+  - address: "0x00598540"
+    name: net_draw_human_objects_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x33 to the server packet base and installs the exact SDrawHumanObjects vtable."
+  - address: "0x00598570"
+    name: net_deserialize_draw_human_objects_server_packet
+    confidence: high
+    evidence: "Parses the human object prefix, disguise variant, packed normal-human appearance, strings, and remaining appearance fields."
   - address: "0x0059ADB0"
     name: net_create_remove_equip_server_packet
     confidence: high
@@ -363,6 +427,42 @@ functions:
     name: net_deserialize_remove_spell_server_packet
     confidence: high
     evidence: "Reads the one-byte SRemoveSpell slot into object offset +0x10."
+  - address: "0x0059C360"
+    name: net_create_status_server_packet
+    confidence: high
+    evidence: "Allocates a 0x7C-byte RTTI SStatus object and invokes its concrete constructor."
+  - address: "0x0059C3E0"
+    name: net_status_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x08 to the server packet base and installs the exact SStatus vtable."
+  - address: "0x0059C410"
+    name: net_deserialize_status_server_packet
+    confidence: high
+    evidence: "Parses SStatus privilege and conditional stats, vitals, progression, modifiers, standalone state, and mail-state fields."
+  - address: "0x0059CAC0"
+    name: net_create_user_appearance_server_packet
+    confidence: high
+    evidence: "Allocates the fixed-size RTTI SUserAppearance object and invokes its concrete constructor."
+  - address: "0x0059CB40"
+    name: net_user_appearance_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x05 to the server packet base and installs the exact SUserAppearance vtable."
+  - address: "0x0059CB70"
+    name: net_deserialize_user_appearance_server_packet
+    confidence: high
+    evidence: "Reads u32be self object ID followed by four unknown full-update bytes and one appearance-state byte."
+  - address: "0x0059D1D0"
+    name: ui_gui_back_pane_handle_network_event
+    confidence: high
+    evidence: "GUIBackPane routes SStatus packets containing vitals to its health and mana bar updater."
+  - address: "0x0059D6C0"
+    name: ui_gui_back_pane_update_vitals_from_status_packet
+    confidence: high
+    evidence: "Copies current and maximum health and mana from SStatus into GUIBackPane bar targets."
+  - address: "0x005B0C40"
+    name: ui_user_info_update_status_from_packet
+    confidence: high
+    evidence: "Updates UserInfoPane's five attributes and signed armor class from present SStatus blocks."
   - address: "0x005B1070"
     name: ui_user_info_add_equipment_from_packet
     confidence: high
@@ -379,6 +479,22 @@ functions:
     name: ui_map_loading_set_progress
     confidence: high
     evidence: "Stores the SMapPart transfer percentage in MapLoadingPane and invalidates the pane for redraw."
+  - address: "0x005C7600"
+    name: ui_world_pane_set_blinded
+    confidence: high
+    evidence: "Forwards the SStatus-derived blinded state from WorldPane to the world renderer."
+  - address: "0x005D2DC0"
+    name: render_world_set_blinded
+    confidence: high
+    evidence: "Stores the world-renderer blinded boolean and schedules the affected view for redraw."
+  - address: "0x005F09E0"
+    name: map_try_move_local_player
+    confidence: high
+    evidence: "Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before moving locally and sending CMove."
+  - address: "0x005F1A10"
+    name: net_handle_status_server_packet
+    confidence: high
+    evidence: "Applies global SStatus effects by updating WorldUserFunc and setting blinded only when the raw blind code equals 0x08."
   - address: "0x005F1AF0"
     name: net_handle_add_spell_server_packet
     confidence: high
@@ -403,6 +519,14 @@ functions:
     name: map_finish_transfer
     confidence: high
     evidence: "Closes MapLoadingPane and either applies the completed map or schedules the alternate completion path."
+  - address: "0x005F2E90"
+    name: net_handle_user_appearance_server_packet
+    confidence: high
+    evidence: "Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage."
+  - address: "0x005F3340"
+    name: net_handle_draw_human_objects_server_packet
+    confidence: high
+    evidence: "Creates or refreshes WorldObject_User for self and WorldObject_Human for other normal or disguised human records."
   - address: "0x005F4430"
     name: net_send_put_ground
     confidence: high
@@ -455,6 +579,10 @@ functions:
     name: session_clear_skill_entry
     confidence: high
     evidence: "Clears a skill record's present flag and name[0] without overwriting its icon or remaining name bytes."
+  - address: "0x005FCFD0"
+    name: session_update_from_status_packet
+    confidence: high
+    evidence: "Copies present SStatus privilege, core stats, vitals, total experience, gold, weight, and retained unknown bytes into WorldUserFunc."
   - address: "0x005FD260"
     name: session_add_spell_from_packet
     confidence: high
@@ -471,16 +599,28 @@ functions:
     name: session_remove_skill_from_packet
     confidence: high
     evidence: "Accepts SRemoveSkill slots 1 through 89 before clearing the matching WorldUserFunc skill record."
+  - address: "0x005FD3B0"
+    name: session_update_from_user_appearance_packet
+    confidence: high
+    evidence: "Stores SUserAppearance state & 0x7F; bit 0 locks movement and actions, while wire bit 0x80 suppresses other self-field updates."
   - address: "0x00667B20"
     name: net_register_bad_guy_server_packet_factory
     confidence: high
     evidence: "Registers the RTTI-backed SBadGuy constructor with the server_packet_factory startup path."
 data_symbols:
+  - address: "0x006D15E0"
+    name: status_field_flag_masks
+    confidence: high
+    evidence: "Seven bytes contain the SStatus masks 0x20, 0x10, 0x08, 0x04, 0x02, 0x02, and 0x01 used by the deserializer."
   - address: "0x006D2A10"
     name: equipment_slot_to_ui_index
     confidence: high
     evidence: "Nineteen signed entries map wire slot 0 to -1 and slots 1 through 18 to UI indices 0 through 17."
 comments:
+  - address: "0x0041BB8A"
+    text: "Only process the parcel/mail indicator when the SStatus 0x01 state is valid for this modifiers update."
+  - address: "0x0041BB95"
+    text: "A nonzero high nibble of the mail-state byte starts the flashing new-mail indicator; zero stops it."
   - address: "0x0043D8AF"
     text: "Japan mode 13 CNewUser variant begins with opcode 0x02 and appends app_japan_distribution_isp_selector as u16be after the three length-prefixed strings."
   - address: "0x0043DAE6"
@@ -625,6 +765,10 @@ comments:
     text: "CChangePassword body begins with opcode 0x26 followed by u8-length name, existing password, and new password."
   - address: "0x004BC1EA"
     text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
+  - address: "0x00575AF2"
+    text: "Attack and defense elements are unchecked indexes into a ten-string table. Valid wire values are 0 through 9."
+  - address: "0x00575B47"
+    text: "Display magic resistance as raw_value * 10 percent."
   - address: "0x005962D3"
     text: "The factory installs no constructor for server opcode 0x58 or 0x67. Both remain raw decoded bodies with a null packet-object slot."
   - address: "0x005972CA"
@@ -659,12 +803,58 @@ comments:
     text: "SBadGuy body bytes 1 and 2 are u8 mode and marker byte."
   - address: "0x00597AE6"
     text: "SBadGuy ends with a u32be guard value."
+  - address: "0x00598612"
+    text: "Read the packed human appearance variant. Its high nibble selects gender and a body-resource family; the low nibble is retained separately."
+  - address: "0x00598843"
+    text: "Decode packed appearance high nibble. Values 8 and 9 select body resource 5 with male and female resource prefixes respectively."
+  - address: "0x0059891A"
+    text: "Appearance variant 8 selects male body resource 5. Variant 9 selects the female form; local MM005 and WM005 frames are head-sized swimming art."
   - address: "0x0059AE6A"
     text: "SRemoveEquip body is one u8 slot, widened to u16 in the packet object."
   - address: "0x0059B19A"
     text: "SRemoveSkill contains one body field: the one-byte skill slot at object offset +0x10."
   - address: "0x0059B2AA"
     text: "SRemoveSpell contains one body field: the one-byte spell slot at object offset +0x10."
+  - address: "0x0059C44D"
+    text: "Read the SStatus field byte. Bits 0x20, 0x10, 0x08, and 0x04 gate variable blocks; 0x02 and 0x01 are standalone state flags; the high two bits encode privilege level."
+  - address: "0x0059C45A"
+    text: "Decode privilege_level as (fields & 0xC0) >> 6. The client retains values 0 through 3 rather than deriving one admin boolean."
+  - address: "0x0059C514"
+    text: "Fields bit 0x20 begins the 28-byte stats block."
+  - address: "0x0059C51E"
+    text: "Read and retain three leading stats bytes. The supplied 7.41 trace consistently carries 02 00 00; the client does not validate them."
+  - address: "0x0059C61D"
+    text: "Read the final stats value as an opaque u32be word. The client stores it but no static read was found."
+  - address: "0x0059C630"
+    text: "Fields bit 0x10 begins current health and current mana, both u32be."
+  - address: "0x0059C65B"
+    text: "Fields bit 0x08 begins six u32be progression and currency values: experience, next level, ability points, next ability, game points, and gold."
+  - address: "0x0059C6C2"
+    text: "Fields bit 0x04 begins the 13-byte modifiers block."
+  - address: "0x0059C6CC"
+    text: "Retain the first modifiers byte. It is 00 in all supplied packets and has no identified consumer."
+  - address: "0x0059C6DA"
+    text: "Retain the blindness code. WorldPane treats exactly 08 as blinded and all other values as not blinded."
+  - address: "0x0059C6E8"
+    text: "Read three retained modifier bytes. They are 00 00 00 in all supplied packets and have no identified consumer."
+  - address: "0x0059C712"
+    text: "Read the raw mail-state byte. The parser derives low-nibble-present and high-nibble-present booleans."
+  - address: "0x0059C720"
+    text: "Read attack element. ExtraStatusInfoPane indexes the exact strings None, Fire, Water, Wind, Earth, Light, Dark, Wood, Metal, and Undead."
+  - address: "0x0059C746"
+    text: "Read magic-resist units. ExtraStatusInfoPane displays this value multiplied by 10 with a percent sign."
+  - address: "0x0059C759"
+    text: "Read an unknown modifiers byte between magic resistance and armor class. StatusInfoPane copies it to app_config +0x444, but no read of that destination was found."
+  - address: "0x0059C767"
+    text: "Read armor class as a byte. UI consumers later sign-extend it as s8."
+  - address: "0x0059C796"
+    text: "Fields bit 0x02 becomes packet-object state only. The game has a Swimming skill, but no SStatus consumer connects this bit to movement or swimming rendering."
+  - address: "0x0059C7A8"
+    text: "Fields bit 0x01, together with a present modifiers block, enables the parcel/mail UI update and nibble-derived mail state."
+  - address: "0x0059CB82"
+    text: "SUserAppearance begins with the local player's u32be object ID."
+  - address: "0x0059CBBA"
+    text: "Read appearance_state. Bit 0x80 marks a state-only update; the session stores the remaining low seven bits."
   - address: "0x005B10D3"
     text: "UserInfoPane maps wire slots through a 19-entry table: slot 0 -> -1; slots 1..18 -> view indices 0..17."
   - address: "0x005B1138"
@@ -679,6 +869,12 @@ comments:
     text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
   - address: "0x005EE185"
     text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x58 or 0x67."
+  - address: "0x005F00C2"
+    text: "Reject movement immediately when WorldUserFunc appearance-state bit 0 is set, before dynamic-object and SOTP collision checks."
+  - address: "0x005F0AF4"
+    text: "Normal local movement uses direction-specific dynamic-object and SOTP collision checks. It does not inspect ground tile IDs or search the skillbook for Swimming."
+  - address: "0x005F1A27"
+    text: "Only blindness code 08 enables the world blind-render state."
   - address: "0x005F1B5A"
     text: "Forward the SRemoveSpell object to WorldUserFunc vtable slot +0x14."
   - address: "0x005F1B9A"
@@ -691,6 +887,10 @@ comments:
     text: "Set map-transfer progress to (part_index + 1) * 100 / total_parts."
   - address: "0x005F2C87"
     text: "The final map part closes the loading pane, updates and writes the map cache, then applies the completed map."
+  - address: "0x005F2EA2"
+    text: "When appearance_state bit 0x80 is clear, refresh the two self-object IDs. A state-only update leaves them unchanged."
+  - address: "0x005F2EEA"
+    text: "Always forward SUserAppearance to WorldUserFunc, including state-only updates."
   - address: "0x005F793D"
     text: "Apply the client-installation soft ban only when mode is 0 and the u32be guard equals 0x7D3AFF99."
   - address: "0x005F79D9"
@@ -727,6 +927,10 @@ comments:
     text: "Removal clears the skill present flag but leaves the old icon intact."
   - address: "0x005FCDAC"
     text: "Removal writes a NUL only to skill name[0]; the remaining bytes are left untouched."
+  - address: "0x005FD0E7"
+    text: "Store the opaque stats u32 in WorldUserFunc. The value is write-only in the static client paths checked."
+  - address: "0x005FD150"
+    text: "Copy six retained modifier bytes, including blind code and raw mail state, into WorldUserFunc. The four reserved bytes are not consumed elsewhere."
   - address: "0x005FD27F"
     text: "Session spell storage accepts slots 1 through 89."
   - address: "0x005FD291"
@@ -739,6 +943,10 @@ comments:
     text: "Store the SAddSkill icon and name in the matching WorldUserFunc skill record."
   - address: "0x005FD392"
     text: "Session skill removal accepts slots 1 through 89; other values are ignored."
+  - address: "0x005FD3CC"
+    text: "Store appearance_state & 0x7F at WorldUserFunc +0x15C88. Bit 0 of this stored state blocks local movement and several actions."
+  - address: "0x005FD3DC"
+    text: "Bit 0x80 means the packet only changes the stored low-seven-bit state. Other self appearance fields remain unchanged."
   - address: "0x00667B38"
     text: "Register the SBadGuy constructor in the server_packet_factory initialization path."
 runtime_patches: []
@@ -1356,7 +1564,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059CB40 passes opcode 0x05 to the server packet base and installs the SUserAppearance vtable."
+        evidence: "RTTI constructor 0x0059CB40 installs opcode 0x05. Deserializer 0x0059CB70 reads self ID and five bytes; handler 0x005F2E90 supports full and state-only action-state updates."
         page: "docs/network/server/005-0x05-user-appearance.md"
       - opcode: "0x06"
         friendly_name: "Map"
@@ -1386,7 +1594,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059C3E0 passes opcode 0x08 to the server packet base and installs the SStatus vtable."
+        evidence: "RTTI constructor 0x0059C3E0 installs opcode 0x08. Deserializer 0x0059C410 uses one flag byte to parse optional stats, vitals, progression, and modifiers blocks plus privilege and mail state."
         page: "docs/network/server/008-0x08-status.md"
       - opcode: "0x0A"
         friendly_name: "Message"
@@ -1636,7 +1844,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00598540 passes opcode 0x33 to the server packet base and installs the SDrawHumanObjects vtable."
+        evidence: "RTTI constructor 0x00598540 installs opcode 0x33. Deserializer 0x00598570 decodes normal and disguised human records; packed variants 8 and 9 select the gendered body-resource 5 swimming form."
         page: "docs/network/server/051-0x33-draw-human-objects.md"
       - opcode: "0x37"
         friendly_name: "Add Equip"

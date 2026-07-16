@@ -279,6 +279,140 @@ struct UserInfoEquipmentFields {
 
 The static `equipment_slot_to_ui_index` table contains 19 signed entries. Slot `0` maps to `-1`; slots `1` through `18` map to indices `0` through `17`. The child view receives maximum durability before current durability, matching the order stored by `EquipPane` even though the wire packet sends current first.
 
+## Character status state
+
+[`SStatus`](../network/server/008-0x08-status.md) is a partial-update packet, so its fields are copied into several long-lived objects according to the packet's block flags. `WorldUserFunc` is the main session-owned copy:
+
+```c
+struct WorldUserStatusFields {
+    u8 unrelated_0000[0x104C];
+    s32 privilege_level;             // +0x104C
+    u32 self_object_id;              // +0x1050, SUserAppearance-owned
+    u8 appearance_unknown_0;         // +0x1054, SUserAppearance-owned
+    u8 retained_stats[3];            // +0x1055
+    u8 level;                        // +0x1058
+    u8 ability_level;                // +0x1059
+    u8 unrelated_105A[2];
+    u32 gold;                        // +0x105C
+    u32 total_experience;            // +0x1060
+    u16 strength;                    // +0x1064
+    u8 unrelated_1066[2];
+    u16 dexterity;                   // +0x1068
+    u16 wisdom;                      // +0x106A
+    u16 constitution;                // +0x106C
+    u16 intelligence;                // +0x106E
+    u16 stat_points;                 // +0x1070
+    u8 unrelated_1072[2];
+    u32 opaque_status_word;          // +0x1074
+    u32 health;                      // +0x1078
+    u32 max_health;                  // +0x107C
+    u32 mana;                        // +0x1080
+    u32 max_mana;                    // +0x1084
+    u8 appearance_unknown_1;         // +0x1088, SUserAppearance-owned
+    u8 appearance_unknown_2;         // +0x1089, SUserAppearance-owned
+    u8 appearance_unknown_3;         // +0x108A, SUserAppearance-owned
+    u8 unrelated_108B;
+    u8 retained_modifier_0;          // +0x108C
+    u8 blind_code;                   // +0x108D
+    u8 retained_modifiers[3];        // +0x108E
+    u8 mail_state;                   // +0x1091
+    u8 unrelated_1092[0x14BEE];
+    u32 max_weight;                  // +0x15C80
+    u32 weight;                      // +0x15C84
+    u8 appearance_action_state;      // +0x15C88, SUserAppearance-owned
+};
+```
+
+The wire values for attributes, stat points, and weight are widened in this model. `has_stat_points`, experience-to-next values, ability totals, game points, elements, magic resistance, the unknown byte after magic resistance, armor class, damage, hit, and the derived mail booleans are not copied here. The `SUserAppearance` fields shown in the same range are owned by a separate updater and are not changed by `SStatus`.
+
+`StatusInfoPane` keeps the broader character-sheet view:
+
+```c
+struct StatusInfoPaneStatusFields {
+    u8 pane_base[0x198];
+    u32 gold;                        // +0x198
+    u32 health;                      // +0x19C
+    u32 max_health;                  // +0x1A0
+    u32 mana;                        // +0x1A4
+    u32 max_mana;                    // +0x1A8
+    u32 total_experience;            // +0x1AC
+    u32 opaque_status_word;          // +0x1B0
+    u16 retained_stats_0;            // +0x1B4
+    u16 retained_stats_1;            // +0x1B6
+    u16 retained_stats_2;            // +0x1B8
+    u16 level;                       // +0x1BA
+    u16 strength;                    // +0x1BC
+    u16 dexterity;                   // +0x1BE
+    u16 wisdom;                      // +0x1C0
+    u16 constitution;                // +0x1C2
+    u16 intelligence;                // +0x1C4
+    u8 unrelated_1C6[2];
+    u16 attack_element;              // +0x1C8
+    u16 defense_element;             // +0x1CA
+    u16 magic_resist_units;          // +0x1CC
+    u8 unrelated_1CE[2];
+    u32 to_next_level;               // +0x1D0
+    u32 game_points;                 // +0x1D4
+    u32 to_next_ability;             // +0x1D8
+    u32 ability_level;               // +0x1DC
+    u32 total_ability;               // +0x1E0
+    u32 max_weight;                  // +0x1E4
+    u32 weight;                      // +0x1E8
+    u8 stat_points;                  // +0x1EC
+    bool has_stat_points;            // +0x1ED
+};
+```
+
+`ExtraStatusInfoPane` owns the compact combat view:
+
+```c
+struct ExtraStatusInfoPaneStatusFields {
+    u8 pane_base[0x4F8];
+    s8 armor_class;                  // +0x4F8
+    u8 damage_modifier;              // +0x4F9
+    u8 hit_modifier;                 // +0x4FA
+    u8 unrelated_4FB;
+    u16 attack_element;              // +0x4FC
+    u16 defense_element;             // +0x4FE
+    u16 magic_resist_units;          // +0x500
+};
+```
+
+`BtmButtonsPane_A` keeps the mail indicator state at `+0x1C4` and its blink phase at `+0x1C5`. When the high nibble of an active `mail_state` is nonzero, it runs timer `0x01000000` every 500 ms and alternates the mailbox image.
+
+The retained stats bytes, retained modifier bytes, and `opaque_status_word` are written into these models but have no identified readers in the traced status paths. They remain named by storage behavior rather than an assumed game meaning.
+
+## Local user appearance and swimming state
+
+[`SUserAppearance`](../network/server/005-0x05-user-appearance.md) owns the self-object and action-state fields embedded in `WorldUserFunc`. A full update writes `self_object_id`, the four unknown appearance bytes, and `appearance_action_state`. A state-only update writes only the action state.
+
+The stored action state is `wire_appearance_state & 0x7F`. Bit `0x01` rejects local movement and several other actions. The wire bit `0x80` is not retained; it tells the updater to leave the other self fields unchanged.
+
+Visible human appearance is stored separately in each world object:
+
+```c
+struct HumanAppearanceRecord {
+    u8 gender_resource_prefix;       // +0x00, 0 = M and 1 = W
+    u8 unknown_01[5];
+    u16 body_resource;               // +0x06
+    u8 unknown_08[0x27];
+    u8 additional_appearance_flag;   // +0x2F
+};                                  // size 0x30
+
+struct WorldObjectHumanAppearanceFields {
+    u8 world_object_base[0x90];
+    HumanObjectImageSession *image_session; // +0x90
+    u8 unknown_094[0x10];
+    HumanAppearanceRecord appearance;       // +0xA4
+    bool nonblocking_human;                 // +0xD4
+    bool unknown_appearance_flag;           // +0xD5
+};
+```
+
+`WorldObject_User` and `WorldObject_Human` both use this appearance record. Packed [`SDrawHumanObjects`](../network/server/051-0x33-draw-human-objects.md) variants `8` and `9` decode to body resource `5` with M and W prefixes. `HumanObjectImageSession` then loads the small `MM005` or `WM005` motion family used for the swimming form.
+
+Body resource `2` sets `nonblocking_human`; swimming body resource `5` does not. This dynamic-object collision flag is separate from the self action lock and from static `SOTP.DAT` collision.
+
 ## Event pane tree
 
 `EventHandlerList` stores a flattened preorder tree. The dispatcher owns it at offset `+0x60`.

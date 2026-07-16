@@ -26,6 +26,8 @@ The low nibble can block movement by direction:
 
 `map_can_move_direction` checks dynamic occupants first. It then reads the two static tile IDs on the source and destination edges and tests the bit for the requested direction. Static tile ID `0x2710` is treated as empty.
 
+This is not the Swimming check. The local movement path first obeys the action state supplied through `SUserAppearance`, then applies ordinary character and static-tile collision. It does not classify the ground tile or look for the Swimming skill. See [Movement and swimming](../systems/movement-and-swimming.md) for the complete flow.
+
 The matching `SOTP.DAT` contains only four byte values:
 
 | Byte | Count | Meaning |

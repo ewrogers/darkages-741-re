@@ -115,6 +115,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
+| `ui_bottom_buttons_handle_network_event` | `0x0041B690` | high | BtmButtonsPane_A network-event handler routes SStatus to the parcel and mail-indicator updater. |
 | `ui_new_legend_dialog_action` | `0x0042CA50` | high | The RTTI-backed NewLegendDialogPane action normalizes line breaks, ends profile text at the fifth break, and saves profile.txt. |
 | `ui_intro_video_pane_ctor` | `0x0042DFF0` | high | Initializes the CIPane vtable and Bink-backed video state. |
 | `ui_intro_video_begin_sequence` | `0x0042E1F0` | high | Stores two clip resources and starts the first clip. |
@@ -152,6 +153,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_layout_create_image_button` | `0x004828A0` | high | Creates an ImageButtonControlPane from a named layout definition. |
 | `ui_layout_build_image_button` | `0x004828E0` | high | Reads a rectangle, optional skin value, and up to three image states before constructing the button. |
 | `ui_image_pane_draw_content` | `0x0048DD30` | high | Draws an ImagePane image into the pane's own canvas. |
+| `ui_inventory_pane_handle_network_event` | `0x004900C0` | high | InventoryPane_A and ItemInventoryPane route SStatus progression blocks to their local gold-display updater. |
+| `ui_inventory_update_gold_from_status_packet` | `0x00490F10` | high | Copies SStatus gold into the inventory pane and redraws its currency display. |
 | `ui_new_skill_inventory_pane_ctor` | `0x00491050` | high | Constructs exact RTTI class NewSkillInventoryPane with a 90-entry NewInventoryPane&lt;SkillInvItemPane&gt; base. |
 | `ui_skill_inventory_create_skill_item` | `0x004915B0` | high | Allocates a 0x348-byte SkillInvItemPane from the SAddSkill slot, icon, and name, then inserts it at slot - 1. |
 | `ui_skill_inventory_remove_slot` | `0x00491670` | high | Converts a one-based skill slot to the skill inventory's zero-based removal index. |
@@ -187,7 +190,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_change_password_handle_action` | `0x004BB840` | high | Handles ChangePasswordDialogPane action 0 as submit and action 1 as cancel. |
 | `ui_change_password_submit` | `0x004BBA50` | high | Checks new-password confirmation locally, then sends directly in distribution modes 1 and 15 or opens the regional birthdate step. |
 | `ui_input_birthdate_dialog_ctor` | `0x004BC220` | high | Constructs RTTI class InputBirthdateDialogPane from _npw2.txt for the regional password-change verification branch. |
+| `ui_server_item_menu_dialog_handle_network_event` | `0x004CAC20` | high | TaskListDialog::ServerItemMenuDialog3 network-event handler accepts SStatus updates containing progression and currency. |
+| `ui_server_item_menu_update_gold_from_status_packet` | `0x004CAC90` | high | Copies SStatus gold into the server-item menu dialog and redraws its currency display. |
 | `ui_new_patch_pane_ctor` | `0x005283E0` | high | Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff. |
+| `ui_npc_server_item_menu_handle_network_event` | `0x0053A270` | high | NPCMenuDialog::NPCServerItemMenuDialog routes SStatus progression blocks to its gold-display updater. |
+| `ui_npc_server_item_menu_update_gold_from_status_packet` | `0x0053A2D0` | high | Copies SStatus gold into the NPC server-item menu and redraws the dialog. |
 | `ui_pane_ctor` | `0x00549490` | high | Constructs Pane over Canvas and a secondary TimerHandler at +0x11C; initializes visible true at +0x130. |
 | `ui_pane_accepts_input` | `0x00549BC0` | high | Returns true when Pane +0x130 is visible and its active region is non-empty. |
 | `ui_pane_show` | `0x00549C00` | high | Sets Pane +0x130 visible and invalidates its region when required. |
@@ -207,14 +214,23 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_screen_hierarchy_get_absolute_origin` | `0x005528C0` | high | Accumulates pane origins through spatial parents until ui_screen_root_pane_ptr. |
 | `ui_screen_hierarchy_find` | `0x00553260` | high | Recursively finds the HierList&lt;Screen&gt; node for a pane and optionally returns its owner list and index. |
 | `ui_screen_pane_ctor` | `0x00553350` | high | Constructs the startup RTTI ScreenPane root with primary Pane and secondary TimerHandler vtables. |
+| `ui_status_info_handle_network_event` | `0x00573F90` | high | StatusInfoPane routes SStatus to its partial character-sheet updater. |
+| `ui_status_info_update_from_status_packet` | `0x00574B30` | high | Copies each present SStatus block into StatusInfoPane, including stat-button state, weight, progression, elements, and one unknown post-resistance byte. |
+| `ui_status_info_format_values` | `0x005752D0` | high | Formats the main character-sheet values retained by StatusInfoPane after SStatus updates. |
+| `ui_extra_status_info_format_values` | `0x00575AA0` | high | Formats attack and defense element names, magic resistance in ten-percent units, signed armor class, damage, and hit. |
+| `ui_extra_status_info_update_from_status_packet` | `0x00575FB0` | high | Copies the SStatus modifiers block into ExtraStatusInfoPane's compact combat-stat fields. |
+| `ui_extra_status_info_handle_network_event` | `0x00576040` | high | ExtraStatusInfoPane routes SStatus to its combat-stat updater. |
 | `ui_terminal_pane_handle_server_data` | `0x00579090` | high | TerminalPane2 primary-vtable slot +0x50 scans initial wire bytes, handles ESC C and ESC S plus Telnet terminal negotiation, and queues CHello and CVersion. |
 | `ui_text_insert_formatted` | `0x0057B300` | high | Forwards a NUL-terminated string to the rich text insertion and markup path. |
 | `ui_text_insert_color_markup` | `0x0057D310` | high | Recognizes lowercase three-byte {=a through {=x tokens and changes the following run's palette index. |
+| `ui_gui_back_pane_handle_network_event` | `0x0059D1D0` | high | GUIBackPane routes SStatus packets containing vitals to its health and mana bar updater. |
+| `ui_gui_back_pane_update_vitals_from_status_packet` | `0x0059D6C0` | high | Copies current and maximum health and mana from SStatus into GUIBackPane bar targets. |
 | `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Handles GUIBackPane pointer input; BTN_HELP is present in the hover path but has no click action. |
 | `ui_user_info_apply_portrait_body` | `0x005ACD10` | high | Decodes a portrait/profile body into UserInfoPane state and refreshes its portrait canvas and text. |
 | `ui_user_info_handle_server_packet` | `0x005AD160` | high | The UserInfoPane vtable event handler sends the local portrait response when the decoded opcode is 0x49. |
 | `ui_user_info_refresh_local_portrait` | `0x005AD5D0` | high | Builds the local portrait body and reapplies it to UserInfoPane without calling the network submitter. |
 | `ui_user_info_timer` | `0x005AD600` | high | Timer 0x1241 calls the local portrait refresh after the profile editor saves. |
+| `ui_user_info_update_status_from_packet` | `0x005B0C40` | high | Updates UserInfoPane's five attributes and signed armor class from present SStatus blocks. |
 | `ui_user_info_add_equipment_from_packet` | `0x005B1070` | high | Maps SAddEquip slots 1 through 18 to UserInfoPane child-view indices 0 through 17 and forwards the visible item fields. |
 | `ui_user_info_remove_equipment_from_packet` | `0x005B1100` | high | Maps a checked SRemoveEquip slot and asks the UserInfoPane child equipment view to clear that entry. |
 | `ui_portrait_text_dialog_ctor` | `0x005B11A0` | high | Constructs RTTI-backed PortraitTextInputDialogPane from _nui_pi.txt and loads profile.txt. |
@@ -222,6 +238,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_map_loading_pane_ctor` | `0x005BA040` | high | Constructs RTTI class MapLoadingPane from _nloadm.txt and registers it as a visible screen pane. |
 | `ui_map_loading_set_progress` | `0x005BA330` | high | Stores the SMapPart transfer percentage in MapLoadingPane and invalidates the pane for redraw. |
 | `ui_snow_particle_pane_ctor` | `0x005BD710` | high | Constructs one ImagePane-backed snow particle from a snowaNN.epf resource. |
+| `ui_world_pane_set_blinded` | `0x005C7600` | high | Forwards the SStatus-derived blinded state from WorldPane to the world renderer. |
 | `ui_world_pane_draw_to_target` | `0x005CE350` | high | Copies WorldPane output to its target and applies an optional post-copy pixel effect. |
 | `ui_world_pane_draw_content` | `0x005F27A0` | high | WorldPane content hook that draws the world when ready or clears the pane. |
 | `ui_has_map_loading_pane` | `0x005F6470` | high | Reports whether the global MapLoadingPane pointer is non-null. |
@@ -360,6 +377,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_deserialize_bad_guy_server_packet` | `0x00597AC0` | high | Reads SBadGuy as u8 mode, u8 marker byte, and u32be guard. |
 | `net_deserialize_browser_packet` | `0x00597E50` | high | Parses SBrowser subtypes 1 and 2 as two u16be-length byte strings and subtype 3 as one u8-length homepage URL. |
 | `net_decode_s_change_weather` | `0x00598210` | high | Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer. |
+| `net_create_draw_human_objects_server_packet` | `0x005984C0` | high | Allocates a 0x264-byte RTTI SDrawHumanObjects object and invokes its concrete constructor. |
+| `net_draw_human_objects_server_packet_ctor` | `0x00598540` | high | Passes opcode 0x33 to the server packet base and installs the exact SDrawHumanObjects vtable. |
+| `net_deserialize_draw_human_objects_server_packet` | `0x00598570` | high | Parses the human object prefix, disguise variant, packed normal-human appearance, strings, and remaining appearance fields. |
 | `net_decode_s_map_size` | `0x00599F90` | high | Reads map ID, dimensions, flags, secondary mode, checksum, and map name from SMapSize. |
 | `net_create_remove_equip_server_packet` | `0x0059ADB0` | high | Allocates a 0x14-byte RTTI SRemoveEquip object and calls its concrete constructor. |
 | `net_remove_equip_server_packet_ctor` | `0x0059AE30` | high | Passes opcode 0x38 to the server packet base and installs the exact SRemoveEquip vtable. |
@@ -373,16 +393,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_server_request_portrait_ctor` | `0x0059B490` | high | Constructs RTTI-backed SRequestPortrait and passes opcode 0x49 to the server packet base. |
 | `net_server_request_portrait_deserialize` | `0x0059B4C0` | high | Returns without reading fields, which confirms that SRequestPortrait has no body after the opcode. |
 | `net_server_sound_effect_deserialize` | `0x0059BF30` | high | Reads one SSoundEffect command byte and a second music byte only for command 0xFF. |
+| `net_create_status_server_packet` | `0x0059C360` | high | Allocates a 0x7C-byte RTTI SStatus object and invokes its concrete constructor. |
+| `net_status_server_packet_ctor` | `0x0059C3E0` | high | Passes opcode 0x08 to the server packet base and installs the exact SStatus vtable. |
+| `net_deserialize_status_server_packet` | `0x0059C410` | high | Parses SStatus privilege and conditional stats, vitals, progression, modifiers, standalone state, and mail-state fields. |
 | `net_deserialize_stipulation_packet` | `0x0059C8E0` | high | Parses SStipulation mode 0 as a u32be greeting CRC32 and mode 1 as u16be length plus compressed bytes. |
 | `net_deserialize_transfer_server_packet` | `0x0059CA40` | high | Parses STransferServer as a u32be IPv4 value, u16be port, and u8-length opaque handoff token. |
+| `net_create_user_appearance_server_packet` | `0x0059CAC0` | high | Allocates the fixed-size RTTI SUserAppearance object and invokes its concrete constructor. |
+| `net_user_appearance_server_packet_ctor` | `0x0059CB40` | high | Passes opcode 0x05 to the server packet base and installs the exact SUserAppearance vtable. |
+| `net_deserialize_user_appearance_server_packet` | `0x0059CB70` | high | Reads u32be self object ID followed by four unknown full-update bytes and one appearance-state byte. |
 | `net_send_portrait_profile` | `0x005B1160` | high | Calls net_build_send_portrait and submits the result through net_submit_client_packet. |
 | `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode. |
+| `net_handle_status_server_packet` | `0x005F1A10` | high | Applies global SStatus effects by updating WorldUserFunc and setting blinded only when the raw blind code equals 0x08. |
 | `net_handle_add_spell_server_packet` | `0x005F1AF0` | high | Forwards decoded SAddSpell fields to the WorldUserFunc session model stored by WorldPane. |
 | `net_handle_remove_spell_server_packet` | `0x005F1B30` | high | Forwards decoded SRemoveSpell to WorldUserFunc vtable slot +0x14. |
 | `net_handle_add_skill_server_packet` | `0x005F1B70` | high | Forwards decoded SAddSkill to WorldUserFunc vtable slot +0x18. |
 | `net_handle_remove_skill_server_packet` | `0x005F1BB0` | high | Forwards decoded SRemoveSkill to WorldUserFunc vtable slot +0x1C. |
 | `net_handle_s_map_size` | `0x005F1BF0` | high | Applies map dimensions, seasonal art, weather mode, local map cache, and map setup state. |
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes the raw decoded SMapPart body, creates MapLoadingPane, applies repeated map records, updates percentage progress, and finalizes the last part. |
+| `net_handle_user_appearance_server_packet` | `0x005F2E90` | high | Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage. |
+| `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes WorldObject_User for self and WorldObject_Human for other normal or disguised human records. |
 | `net_send_put_ground` | `0x005F4430` | high | Builds opcode 0x0C with one u32be value. |
 | `net_send_change_direction` | `0x005F4510` | high | WorldPane paths call this opcode 0x11 direction builder. |
 | `net_send_refresh_user` | `0x005F4640` | high | WorldPane paths call this opcode-only 0x38 builder. |
@@ -452,6 +481,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_world_pane_content` | `0x005CE280` | high | Advances the visual frame and draws the world into the WorldPane canvas. |
 | `render_use_base_ground_bank` | `0x005D2B70` | high | Selects tilea.bmp for the ground cache. |
 | `render_use_alternate_ground_bank` | `0x005D2B90` | high | Selects tileas.bmp with tilea.bmp fallback for the ground cache. |
+| `render_world_set_blinded` | `0x005D2DC0` | high | Stores the world-renderer blinded boolean and schedules the affected view for redraw. |
 | `render_world_object` | `0x005D3190` | high | Calls the WorldObject virtual draw method at primary vtable slot 0x18. |
 | `render_world_layer_queue` | `0x005D31D0` | high | Walks one sorted queue of visible world objects. |
 | `render_collect_world_objects` | `0x005D3740` | high | Clips visible objects and assigns them to one of 32 draw-layer queues. |
@@ -462,9 +492,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_effect_object` | `0x005DD380` | high | Draws a world effect frame with its selected software blend mode. |
 | `render_update_effect_frame` | `0x005DD470` | high | Advances a world effect through its Effect.tbl frame sequence. |
 | `render_item_object` | `0x005DE620` | high | Draws a ground item with its normal or faded blend state. |
+| `render_copy_human_appearance_record` | `0x005DEF70` | high | Copies and normalizes the decoded 0x30-byte human appearance record before it becomes live world state. |
 | `render_living_object` | `0x005DF950` | high | Draws a living sprite with normal, highlighted, or transparent state. |
+| `render_human_apply_appearance` | `0x005E0070` | high | Copies the packet-owned appearance record and forwards it to the live human object. |
+| `render_human_apply_appearance_record` | `0x005E00C0` | high | Stores the appearance record, applies collision state, creates the HumanObjectImageSession, and refreshes the object. |
 | `render_static_object_ctor` | `0x005E42F0` | high | Stores the static tile ID, side, image cache, SOTP render flags, and draw state. |
 | `render_static_object` | `0x005E47E0` | high | Draws a fixed world object with its SOTP-selected software blend mode. |
+| `render_select_human_part_sprite` | `0x005FD8D0` | high | Selects the sprite ID for each of the 21 human body and equipment categories. |
+| `render_format_human_part_filename` | `0x005FDA90` | high | Builds gendered human-part EPF filenames; body resource 5 resolves through MM005 or WM005 motion files. |
+| `render_human_stand_motion_data_ctor` | `0x006000D0` | high | Constructs standing-motion data and resolves up to 21 body and equipment sprite parts. |
+| `render_create_human_stand_motion_data` | `0x00600670` | high | Allocates the initial standing-motion data for a human image session. |
+| `render_human_image_session_ctor` | `0x00602240` | high | Constructs the RTTI-backed HumanObjectImageSession and retains its decoded 0x30-byte appearance record. |
 
 ## Audio
 
@@ -590,7 +628,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_load_sotp_collision_flags` | `0x005CF4F0` | high | Loads SOTP.DAT into a one-based low-nibble collision table. |
 | `map_get_collision_level` | `0x005CF5E0` | high | Combines dynamic occupants and the two static SOTP masks at one map cell. |
 | `map_get_tile_pixels` | `0x005D7610` | high | Gets one decoded ground-tile diamond from MapTileImageLib. |
-| `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds, dynamic occupants, and direction-specific SOTP masks for a proposed move. |
+| `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds, the saved appearance action lock, dynamic occupants, and direction-specific SOTP masks for a proposed move. |
+| `map_try_move_local_player` | `0x005F09E0` | high | Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before moving locally and sending CMove. |
 | `map_apply_weather_mode` | `0x005F26C0` | high | Creates snow for mode 1, performs no local setup for mode 2, and changes lighting state for mode 3. |
 | `map_finish_transfer` | `0x005F2DE0` | high | Closes MapLoadingPane and either applies the completed map or schedules the alternate completion path. |
 | `file_load_static_tile_pixmap` | `0x005FD500` | high | Opens and decodes one base or alternate static HPF resource into a pixmap view. |
@@ -623,10 +662,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `session_clear_spell_entry` | `0x005FCCD0` | high | Clears a spell record's present flag, argument type, name[0], and prompt[0] without overwriting the icon or remaining string bytes. |
 | `session_store_skill_entry` | `0x005FCD20` | high | Stores one 0x104-byte skill record at WorldUserFunc + 0x10210 + (slot - 1) * 0x104. |
 | `session_clear_skill_entry` | `0x005FCD80` | high | Clears a skill record's present flag and name[0] without overwriting its icon or remaining name bytes. |
+| `session_update_from_status_packet` | `0x005FCFD0` | high | Copies present SStatus privilege, core stats, vitals, total experience, gold, weight, and retained unknown bytes into WorldUserFunc. |
 | `session_add_spell_from_packet` | `0x005FD260` | high | Accepts SAddSpell slots 1 through 89 and argument types 1 through 8 before updating WorldUserFunc spell storage. |
 | `session_remove_spell_from_packet` | `0x005FD2E0` | high | Accepts SRemoveSpell slots 1 through 89 before clearing the matching WorldUserFunc spell record. |
 | `session_add_skill_from_packet` | `0x005FD320` | high | Accepts SAddSkill slots 1 through 89 before storing the icon and name in WorldUserFunc. |
 | `session_remove_skill_from_packet` | `0x005FD370` | high | Accepts SRemoveSkill slots 1 through 89 before clearing the matching WorldUserFunc skill record. |
+| `session_update_from_user_appearance_packet` | `0x005FD3B0` | high | Stores SUserAppearance state &amp; 0x7F; bit 0 locks movement and actions, while wire bit 0x80 suppresses other self-field updates. |
 | `crc32_update` | `0x00604530` | high | Standard reflected IEEE CRC32 update with initial and final inversion. |
 | `crt_time` | `0x00622873` | high | Reads the current Windows FILETIME and converts it to Unix-epoch seconds; CLogin passes the result to crt_srand. |
 | `crt_srand` | `0x006275DE` | high | Stores the seed used by the client runtime random-number state. |
