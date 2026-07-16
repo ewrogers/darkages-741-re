@@ -25,6 +25,14 @@
 - [Walls and occlusion](rendering/walls-and-occlusion.md)
 - [Blending](rendering/blending.md)
 
+# Audio
+
+- [Audio system](audio/README.md)
+- [Audio lifecycle](audio/lifecycle.md)
+- [Music](audio/music.md)
+- [Sound effects](audio/sound-effects.md)
+- [MIDI support](audio/midi.md)
+
 # File formats
 
 - [File formats](file-formats/README.md)

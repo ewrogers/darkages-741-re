@@ -18,6 +18,8 @@ import_manifest(bv, "analysis/exports/packets.yaml", "client/Darkages.exe")
 export_manifest(bv, "analysis/exports/packets.yaml", "client/Darkages.exe")
 import_manifest(bv, "analysis/exports/rendering.yaml", "client/Darkages.exe")
 export_manifest(bv, "analysis/exports/rendering.yaml", "client/Darkages.exe")
+import_manifest(bv, "analysis/exports/audio.yaml", "client/Darkages.exe")
+export_manifest(bv, "analysis/exports/audio.yaml", "client/Darkages.exe")
 
 import_manifest(bv, "analysis/exports/file-formats.yaml", "client/Darkages.exe")
 export_manifest(bv, "analysis/exports/file-formats.yaml", "client/Darkages.exe")

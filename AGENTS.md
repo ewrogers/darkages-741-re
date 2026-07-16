@@ -141,6 +141,7 @@ Do not encode machine-specific plugin paths or credentials in committed files.
 - `docs/application/`: startup, configuration, lifecycle, and game loop
 - `docs/systems/`: event, input, UI, and other game systems
 - `docs/rendering/`: renderer lifecycle, pane drawing, world layers, sprites, effects, and blending
+- `docs/audio/`: audio lifecycle, music, sound effects, volume, fades, and MIDI status
 - `docs/file-formats/`: one developer-facing page per confirmed asset or data format
 - `docs/network/`: connection, transport, transform, and packet documentation
 - `docs/appendix/`: function addresses, runtime patches, runtime structures, inheritance, and large lookup tables
@@ -232,6 +233,17 @@ For injected event or network proxies:
 - Preserve unknown fields from a compatible source when showing a generated writer. Do not silently fill them with guessed constants.
 - Keep pseudocode short. Show the smallest read or write loop that makes the layout usable.
 - Put large mode tables, address lists, and deeper structure layouts in appendices or deterministic YAML exports.
+
+## Audio documentation
+
+- Separate the game-owned playback rules from the codec and mixer supplied by middleware.
+- Record the requested output format, source codec, sample rate, channel count, bitrate range, storage path, and naming convention when local assets confirm them.
+- Check file headers instead of treating an extension as proof of a codec.
+- Keep music streams, sound-effect samples, video sound, and dormant MIDI code as separate paths.
+- For volume, record the user-facing range, internal conversion, default, clamp behavior, and where the value is applied.
+- For fades, record the timer interval, step rule, stream lifetime, and whether two tracks overlap.
+- Distinguish compiled codec or MIDI support from a path reached by the matching game flow and assets.
+- Link packet-driven audio behavior from both the packet page and the audio system page.
 
 ## Text encoding and localization
 

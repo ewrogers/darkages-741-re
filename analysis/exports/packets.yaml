@@ -856,7 +856,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059BF00 passes opcode 0x19 to the server packet base and installs the SSoundEffect vtable."
+        evidence: "Constructor 0x0059BF00 passes opcode 0x19 to the server packet base and installs the SSoundEffect vtable. Deserializer 0x0059BF30 reads a sound ID or the 0xFF music form; handler 0x005F6B20 plays the effect or selects music."
         page: "docs/network/server/025-0x19-sound-effect.md"
       - opcode: "0x1A"
         friendly_name: "Motion"

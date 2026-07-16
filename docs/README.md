@@ -15,6 +15,7 @@ Game systems
   +-- events and input
   +-- UI panes and dialogs
   +-- rendering and world drawing
+  +-- music and sound effects
 
 File formats
   +-- maps and raw ground tile banks
@@ -40,8 +41,9 @@ Lookup material
 3. [Event system](systems/events.md)
 4. [UI and panes](systems/ui.md)
 5. [Rendering system](rendering/README.md)
-6. [File formats](file-formats/README.md)
-7. [Network system](network/README.md)
+6. [Audio system](audio/README.md)
+7. [File formats](file-formats/README.md)
+8. [Network system](network/README.md)
 
 The [function reference](appendix/functions.md) is an address book, not required reading. Packet programmers can jump straight to the [client](network/client/README.md) and [server](network/server/README.md) command indexes.
 

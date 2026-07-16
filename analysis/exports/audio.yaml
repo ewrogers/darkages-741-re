@@ -1,0 +1,266 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x004056C0"
+    name: audio_bgm_player_ctor
+    confidence: high
+    evidence: Constructs the RTTI-backed BGMPlayer, installs Miles file callbacks, and keeps one stream handle.
+  - address: "0x004057A0"
+    name: audio_bgm_player_dtor
+    confidence: high
+    evidence: Stops the active music path and unregisters the BGMPlayer singleton.
+  - address: "0x00405830"
+    name: audio_bgm_shutdown
+    confidence: high
+    evidence: Cancels fade timers, pauses and closes the stream, and clears its handle.
+  - address: "0x00405880"
+    name: audio_bgm_play_path
+    confidence: high
+    evidence: Queues one path for the BGM transition state machine.
+  - address: "0x004058B0"
+    name: audio_bgm_queue_track
+    confidence: high
+    evidence: Saves a pending music path and starts the fade timer.
+  - address: "0x004058F0"
+    name: audio_bgm_queue_stop
+    confidence: high
+    evidence: Queues an empty path so the current music fades out and closes.
+  - address: "0x00405920"
+    name: audio_bgm_get_target_volume
+    confidence: high
+    evidence: Returns the one-byte BGM target volume.
+  - address: "0x00405940"
+    name: audio_bgm_set_target_volume
+    confidence: high
+    evidence: Changes the one-byte BGM target and schedules a fade tick when needed.
+  - address: "0x004059A0"
+    name: audio_bgm_mute
+    confidence: high
+    evidence: Mutes the Miles stream output without replacing the stored target volume.
+  - address: "0x004059D0"
+    name: audio_bgm_unmute
+    confidence: high
+    evidence: Restores stream output from the current fade volume.
+  - address: "0x00405A00"
+    name: audio_bgm_file_open
+    confidence: high
+    evidence: Rewrites the logical .mp3 extension to .mus and opens the loose music file.
+  - address: "0x00405AB0"
+    name: audio_bgm_file_close
+    confidence: high
+    evidence: Closes a BGM file handle for the Miles callback set.
+  - address: "0x00405AD0"
+    name: audio_bgm_file_seek
+    confidence: high
+    evidence: Implements seek and position queries for the Miles BGM file callbacks.
+  - address: "0x00405B40"
+    name: audio_bgm_file_read
+    confidence: high
+    evidence: Reads bytes for the Miles BGM file callbacks.
+  - address: "0x00405B80"
+    name: audio_bgm_timer_callback
+    confidence: high
+    evidence: Advances timer ID 0 and schedules another BGM fade tick after 200 ms while needed.
+  - address: "0x00405BC0"
+    name: audio_bgm_transition_tick
+    confidence: high
+    evidence: Fades the old stream to zero, replaces it, and fades the new stream toward the target.
+  - address: "0x00405E20"
+    name: audio_bgm_schedule_tick
+    confidence: high
+    evidence: Schedules a 200 ms BGM transition timer through the shared event system.
+  - address: "0x004316E0"
+    name: audio_get_sound_manager
+    confidence: high
+    evidence: Returns the SoundManager singleton pointer.
+  - address: "0x00508D80"
+    name: audio_midi_play_file
+    confidence: high
+    evidence: Dormant standard MIDI play entry point with no static caller in the matching client.
+  - address: "0x00508ED0"
+    name: audio_midi_stop_or_restart
+    confidence: high
+    evidence: Pauses, resets, or restarts the Windows MIDI stream according to its flags.
+  - address: "0x00509010"
+    name: audio_midi_start_stream
+    confidence: high
+    evidence: Opens a Windows MIDI stream, prepares two buffers, and begins queued playback.
+  - address: "0x005092E0"
+    name: audio_midi_free_buffers
+    confidence: high
+    evidence: Unprepares and frees the two MIDI stream buffers.
+  - address: "0x005093B0"
+    name: audio_midi_stream_callback
+    confidence: high
+    evidence: Refills completed MIDI buffers and handles end or conversion failure.
+  - address: "0x00509690"
+    name: audio_midi_set_channel_volume
+    confidence: high
+    evidence: Sends MIDI controller 7 volume for one channel after master scaling.
+  - address: "0x005096F0"
+    name: audio_midi_set_master_volume
+    confidence: high
+    evidence: Rescales stored channel volumes; this entry point has no static caller.
+  - address: "0x00509950"
+    name: audio_midi_parse_smf
+    confidence: high
+    evidence: Parses standard MThd and MTrk chunks from an archive-backed MIDI file.
+  - address: "0x00568A00"
+    name: audio_sfx_player_ctor
+    confidence: high
+    evidence: Constructs SndEffectPlayer with the shared Miles driver and an empty sample cache.
+  - address: "0x00568AA0"
+    name: audio_sfx_player_dtor
+    confidence: high
+    evidence: Stops and releases every cached Miles sample handle.
+  - address: "0x00568B60"
+    name: audio_sfx_get_or_load
+    confidence: high
+    evidence: Loads numeric MP3 bytes from Legend.dat, with an active WAV fallback, or returns the cached handle.
+  - address: "0x00568DB0"
+    name: audio_sfx_play
+    confidence: high
+    evidence: Applies the shared sound-effect volume and starts one cached Miles sample.
+  - address: "0x00568E10"
+    name: audio_sfx_stop
+    confidence: high
+    evidence: Ends the cached Miles sample for one numeric sound ID.
+  - address: "0x00568E50"
+    name: audio_sfx_stop_all
+    confidence: high
+    evidence: Ends every cached Miles sample handle.
+  - address: "0x00568EA0"
+    name: audio_sfx_set_volume
+    confidence: high
+    evidence: Stores one sound-effect volume and applies it to every cached sample.
+  - address: "0x00568F00"
+    name: audio_sfx_get_volume
+    confidence: high
+    evidence: Returns the one-byte sound-effect volume.
+  - address: "0x00568F20"
+    name: audio_sound_manager_ctor
+    confidence: high
+    evidence: Constructs the RTTI-backed SoundManager and creates the Miles driver wrapper.
+  - address: "0x00568FC0"
+    name: audio_sound_manager_initialize
+    confidence: high
+    evidence: Creates SndEffectPlayer and BGMPlayer after core SoundManager construction.
+  - address: "0x005690A0"
+    name: audio_destroy_players
+    confidence: high
+    evidence: Stops and deletes both active audio players before Miles shutdown.
+  - address: "0x005690E0"
+    name: audio_sound_manager_dtor
+    confidence: high
+    evidence: Destroys the players and Miles wrapper, then unregisters the SoundManager singleton.
+  - address: "0x00569170"
+    name: audio_get_sound_volume_level
+    confidence: high
+    evidence: Converts the internal sound-effect volume back to a saved and UI level by dividing by 20.
+  - address: "0x005691A0"
+    name: audio_set_sound_volume_level
+    confidence: high
+    evidence: Converts the saved and UI sound level to Miles units by multiplying by 20.
+  - address: "0x005691D0"
+    name: audio_play_sound_effect
+    confidence: high
+    evidence: Public SoundManager entry point for a numeric sound-effect ID.
+  - address: "0x00569200"
+    name: audio_stop_sound_effect
+    confidence: high
+    evidence: Public SoundManager entry point to stop one numeric sound-effect ID.
+  - address: "0x00569290"
+    name: audio_is_sound_enabled
+    confidence: high
+    evidence: Returns the SoundManager sound-setting flag.
+  - address: "0x005692B0"
+    name: audio_enable_sound
+    confidence: high
+    evidence: Sets the SoundManager sound-setting flag.
+  - address: "0x005692D0"
+    name: audio_disable_sound
+    confidence: high
+    evidence: Stops every sound effect and clears the SoundManager sound-setting flag.
+  - address: "0x00569300"
+    name: audio_get_music_volume_level
+    confidence: high
+    evidence: Converts the internal music target back to a saved and UI level by dividing by 20.
+  - address: "0x00569340"
+    name: audio_set_music_volume_level
+    confidence: high
+    evidence: Multiplies the saved and UI music level by 20 and updates the fade target.
+  - address: "0x00569370"
+    name: audio_play_music_path
+    confidence: high
+    evidence: Public SoundManager entry point that saves and queues one logical music path.
+  - address: "0x005693C0"
+    name: audio_stop_music
+    confidence: high
+    evidence: Queues a music fade-out and clears the saved current path.
+  - address: "0x005693F0"
+    name: audio_miles_driver_ctor
+    confidence: high
+    evidence: Starts Miles and requests a 22050 Hz, 16-bit, stereo digital driver with one retry.
+  - address: "0x00569470"
+    name: audio_miles_driver_dtor
+    confidence: high
+    evidence: Closes the digital driver and shuts Miles down.
+  - address: "0x0059BF30"
+    name: net_server_sound_effect_deserialize
+    confidence: high
+    evidence: Reads one SSoundEffect command byte and a second music byte only for command 0xFF.
+  - address: "0x005F6B20"
+    name: audio_handle_sound_effect_packet
+    confidence: high
+    evidence: Plays a numeric effect or changes music according to the decoded SSoundEffect form.
+data_symbols:
+  - address: "0x006D8FCC"
+    name: audio_bgm_player_ptr
+    confidence: high
+    evidence: Singleton pointer returned by the BGMPlayer getter.
+  - address: "0x006D8FD0"
+    name: audio_miles_driver_ptr
+    confidence: high
+    evidence: Singleton pointer for the Miles digital-driver wrapper.
+  - address: "0x006EAFEC"
+    name: audio_sound_manager_ptr
+    confidence: high
+    evidence: Singleton pointer returned by audio_get_sound_manager.
+  - address: "0x00755F04"
+    name: audio_midi_stream_handle
+    confidence: high
+    evidence: Global Windows MIDI stream handle used by the dormant MIDI path.
+  - address: "0x007AA8C4"
+    name: audio_sfx_player_ptr
+    confidence: high
+    evidence: Singleton pointer returned by the SndEffectPlayer getter.
+comments:
+  - address: "0x00405A39"
+    text: The game names music files .mus on disk, but the bytes remain MP3 and Miles receives a logical .mp3 name.
+  - address: "0x00405C0C"
+    text: Pending track changes fade the old stream to zero. This is a fade-out and fade-in sequence, not a simultaneous crossfade.
+  - address: "0x00405E35"
+    text: BGM fade ticks run every 200 ms through the shared timer event system.
+  - address: "0x0042E33A"
+    text: Route Bink video sound through the same Miles digital driver used by BGM and sound effects.
+  - address: "0x005099B0"
+    text: Standard MIDI parsing checks MThd and MTrk chunks. No matching local asset or live play caller was found.
+  - address: "0x00540F15"
+    text: The options pane exposes levels 0 through 10. SoundManager converts them to Miles volume units in steps of 20.
+  - address: "0x00568B9E"
+    text: Sound effects are numeric Legend.dat entries. Try <id>.mp3 first and <id>.wav only when the MP3 entry is absent.
+  - address: "0x00569422"
+    text: Open one Miles digital driver at 22050 Hz, 16-bit, stereo. Retry the same format with default driver flags if the first open fails.
+  - address: "0x0059BF30"
+    text: Deserialize SSoundEffect. Read one command byte. Only 0xFF adds a second music-selection byte.
+  - address: "0x005F6B4E"
+    text: SSoundEffect values below 0xFF are numeric sound-effect IDs.
+  - address: "0x005F6B62"
+    text: For the 0xFF packet form, music value 100 is a no-op sentinel. Other values select music/<id>.mus through the logical .mp3 path.
+runtime_patches: []

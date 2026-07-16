@@ -70,3 +70,9 @@ On success, `net_connect_and_initialize_transport` stores the connected socket, 
 On failure, the socket is closed and reset to `INVALID_SOCKET`. Name lookup failure, connection failure, and socket setup failure take different branches, but none silently changes to an arbitrary endpoint.
 
 See [Initial connection](../network/connection.md) for the network side of this flow.
+
+## Saved audio levels
+
+`Darkages.cfg` stores `Sound Volume` and `Music Volume` as user levels. A new configuration starts both at `3`. The options pane limits them to `0` through `10`, while the audio manager multiplies each value by `20` before passing it to Miles.
+
+See [Audio system](../audio/README.md) for playback and fade behavior.

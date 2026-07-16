@@ -23,7 +23,7 @@ The names below can be searched in Binary Ninja. Addresses and confidence notes 
 2. `app_parse_command_line` handles the active command-line options.
 3. `app_config_ctor` builds the client configuration, including the first server endpoint.
 4. A named Windows mutex checks whether another client is already running.
-5. The window, renderer, input system, panes, and network objects are prepared.
+5. The window, renderer, audio, input, pane, and network objects are prepared.
 6. `event_handle_intro_state` starts the opening sequence.
 
 The mutex is named `Nexon.SingleInstance`. If Windows reports that it already exists, the original client exits. This is only a local guard. It does not change any account or server rules.
@@ -44,13 +44,15 @@ This is useful because a launcher can skip the video cleanly by starting at stat
 
 ## Shutdown
 
-When the game loop returns, the client tears down panes and event objects first. It then releases the main image and map-tile libraries, shuts down the video system, deletes it, and releases DirectDraw. The single-instance mutex is closed before the process exits.
+When the game loop returns, the client tears down panes and event objects first. Audio stops its samples, cancels its music timer, closes its stream, and shuts down Miles. The client also releases the main image and map-tile libraries, shuts down the video system, deletes it, and releases DirectDraw. The single-instance mutex is closed before the process exits.
 
 The renderer-specific order is covered in [Renderer lifecycle](../rendering/lifecycle.md).
+The audio-specific order is covered in [Audio lifecycle](../audio/lifecycle.md).
 
 ## Related pages
 
 - [Configuration](configuration.md)
 - [Game loop](game-loop.md)
 - [Event system](../systems/events.md)
+- [Audio system](../audio/README.md)
 - [Runtime patches](../appendix/runtime-patches.md)
