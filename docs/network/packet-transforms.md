@@ -66,6 +66,16 @@ The built-in 9-byte key is:
 
 The constructor briefly builds this from the readable text `UrkcnItnI`. It replaces bytes 3 and 7 before expanding the key for the XOR loop. Later inspection of the source text can therefore be misleading.
 
+The difference between the readable and working keys is itself a useful diagnostic:
+
+```text
+readable: 55 72 6B 63 6E 49 74 6E 49    "UrkcnItnI"
+working:  55 72 6B E5 6E 49 74 A3 49
+XOR:      00 00 00 86 00 00 00 CD 00
+```
+
+A supplied pre-login timeout capture had readable ASCII except for bytes altered by the repeating `0x86` and `0xCD` difference. Decoding it with the working key recovers `You have been idle for too long. Your connection has been closed.` exactly. This is a wrong-startup-key artifact, not a regional text encoding.
+
 The server can replace both the startup key and seed-table selector in an `SVersionCheck` subtype 0 message:
 
 ```text

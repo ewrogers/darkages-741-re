@@ -59,6 +59,34 @@ functions:
     name: net_send_alive
     confidence: high
     evidence: "MainMenuPane timer paths send opcode 0x71 and schedule another callback after 30 seconds."
+  - address: "0x004BB2A0"
+    name: ui_change_password_dialog_ctor
+    confidence: high
+    evidence: "Constructs RTTI class ChangePasswordDialogPane from _npw.txt and attaches OK, Cancel, Name, existing-password, new-password, and confirmation controls."
+  - address: "0x004BB840"
+    name: ui_change_password_handle_action
+    confidence: high
+    evidence: "Handles ChangePasswordDialogPane action 0 as submit and action 1 as cancel."
+  - address: "0x004BB8A0"
+    name: net_dispatch_change_password_events
+    confidence: high
+    evidence: "Routes raw lobby opcode 0x02 to the password-change result handler while ChangePasswordDialogPane is active."
+  - address: "0x004BBA50"
+    name: ui_change_password_submit
+    confidence: high
+    evidence: "Checks new-password confirmation locally, then sends directly in distribution modes 1 and 15 or opens the regional birthdate step."
+  - address: "0x004BBCB0"
+    name: net_handle_change_password_result
+    confidence: high
+    evidence: "Handles state-dependent lobby opcode 0x02; status 0 closes successfully, 0x0F resets the existing password, and other failures reset the new-password controls."
+  - address: "0x004BC050"
+    name: net_send_change_password
+    confidence: high
+    evidence: "Builds CChangePassword opcode 0x26 with u8-length name, existing password, and new password."
+  - address: "0x004BC220"
+    name: ui_input_birthdate_dialog_ctor
+    confidence: high
+    evidence: "Constructs RTTI class InputBirthdateDialogPane from _npw2.txt for the regional password-change verification branch."
   - address: "0x004C26D0"
     name: net_send_manual_action
     confidence: high
@@ -147,6 +175,32 @@ comments:
     text: "Write CreateUserDialogPane +0x678 as the hair-color palette index 0 through 13."
   - address: "0x0043ECB9"
     text: "The active USA distribution stores literal none as the third CNewUser string. Japan mode 13 can read the Email control instead."
+  - address: "0x004BB765"
+    text: "Initial focus is control 2 (Name). Attachment order is OK=0, Cancel=1, Name=2, Password=3, NewPassword=4, Confirm=5."
+  - address: "0x004BB8DB"
+    text: "ChangePasswordDialogPane consumes raw lobby opcode 0x02 as the password-change result."
+  - address: "0x004BBAED"
+    text: "Compare NewPassword and Confirm locally. Confirmation is never included in CChangePassword."
+  - address: "0x004BBAF6"
+    text: "Local mismatch clears NewPassword and Confirm, focuses NewPassword, and displays localized client text without sending."
+  - address: "0x004BBC11"
+    text: "Distribution modes 1 and 15 send CChangePassword directly. Other modes open InputBirthdateDialogPane for an extra regional verification step."
+  - address: "0x004BBD59"
+    text: "Read the state-dependent lobby result status from body byte 1."
+  - address: "0x004BBD69"
+    text: "Status 0 displays localized client success text and closes ChangePasswordDialogPane; the supplied server message is ignored."
+  - address: "0x004BBD72"
+    text: "Status 0x0F is the observed incorrect-existing-password result."
+  - address: "0x004BBE41"
+    text: "Status 0x0F clears and refocuses control 3 (existing Password), then displays the declared server message."
+  - address: "0x004BBF2E"
+    text: "All other nonzero statuses clear NewPassword and Confirm, display the declared server message, and focus control 4."
+  - address: "0x004BC02E"
+    text: "Focus control 4 (NewPassword) after a nonzero result other than 0x0F."
+  - address: "0x004BC079"
+    text: "CChangePassword body begins with opcode 0x26 followed by u8-length name, existing password, and new password."
+  - address: "0x004BC1EA"
+    text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
   - address: "0x005962D3"
     text: "The factory installs no constructor for server opcode 0x58 or 0x67. Both remain raw decoded bodies with a null packet-object slot."
   - address: "0x005EE185"
@@ -376,7 +430,7 @@ packet_indexes:
         builder: "0x004BC050"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x004BC050 writes opcode 0x26 and submits the body."
+        evidence: "Builder 0x004BC050 writes opcode 0x26 followed by u8-length name, existing password, and new password. ChangePasswordDialogPane checks confirmation locally and does not send it."
         page: "docs/network/client/038-0x26-change-password.md"
       - opcode: "0x29"
         friendly_name: "Give"
@@ -735,14 +789,14 @@ packet_indexes:
         evidence: "CreateUserDialogPane accepts opcode 0x01 as an alias and routes it through the same state-specific creation handlers as live opcode 0x02."
         page: "docs/network/server/001-0x01-new-user-check.md"
       - opcode: "0x02"
-        friendly_name: "Login or New User Check"
+        friendly_name: "Lobby Account Result"
         class_name: "SLoginCheck / SNewUserCheck"
         transform: static
         constructor: null
         evidence_source: handler
         opcode_confidence: high
         name_confidence: medium
-        evidence: "MainMenuPane handles opcode 0x02 as SLoginCheck, while CreateUserDialogPane handles the same opcode as the two-stage SNewUserCheck. Supplied live captures confirm the creation use."
+        evidence: "MainMenuPane handles opcode 0x02 as SLoginCheck, CreateUserDialogPane handles the two-stage SNewUserCheck, and ChangePasswordDialogPane handles password-change results. Supplied live captures confirm creation and password-change uses, plus pre-login status 0x1E when the server closes a connection that does not answer SHello within about five seconds."
         page: "docs/network/server/002-0x02-login-check.md"
       - opcode: "0x03"
         friendly_name: "Transfer Server"

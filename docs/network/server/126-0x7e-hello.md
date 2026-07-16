@@ -39,6 +39,16 @@ For the observed text, the `C` in `CONNECTED` doubles as the framing command and
 
 After the next byte completes the transition, the client clears raw-stream mode. Later receives use normal frame parsing, transforms, and packet dispatch. The same transition queues [Hello (`CHello`)](../client/098-0x62-hello.md), resets the outgoing encrypted-packet sequence, and queues [Version (`CVersion`)](../client/000-0x00-version.md).
 
+## Timeout when the client does not reply
+
+The live server has been observed to wait about five seconds for the client's reply to this greeting. If no reply arrives, it sends a startup-key [`0x02` lobby result](002-0x02-login-check.md) with status `0x1E`, then closes the connection. Its declared 65-byte message is:
+
+```text
+You have been idle for too long. Your connection has been closed.
+```
+
+This is server behavior from a supplied capture. The 7.41 executable proves how a received `SHello` starts the reply, but it does not contain the server's five-second timer.
+
 ## Terminal compatibility
 
 This handler contains direct terminal-protocol behavior. It recognizes Telnet `IAC DO TERMINAL-TYPE` (`FF FD 18`) and answers with terminal type `dumb`. It also parses several ANSI-style escape forms.

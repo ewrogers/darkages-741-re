@@ -8,7 +8,7 @@ Most concrete names come directly from RTTI and the server packet factory. A few
 | --- | --- |
 | [0x00 - Version Check (`SVersionCheck`)](000-0x00-version-check.md) | none |
 | [0x01 - New User Check Alias (`SNewUserCheck`)](001-0x01-new-user-check.md) | startup key |
-| [0x02 - Login or New User Check (`SLoginCheck` / `SNewUserCheck`)](002-0x02-login-check.md) | startup key |
+| [0x02 - Lobby Account Result (`SLoginCheck` / `SNewUserCheck`)](002-0x02-login-check.md) | startup key |
 | [0x03 - Transfer Server (`STransferServer`)](003-0x03-transfer-server.md) | none |
 | [0x04 - User Position (`SUserPosition`)](004-0x04-user-position.md) | session key |
 | [0x05 - User Appearance (`SUserAppearance`)](005-0x05-user-appearance.md) | session key |
