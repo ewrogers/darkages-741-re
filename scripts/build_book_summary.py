@@ -57,6 +57,14 @@ def main() -> None:
         "# File formats",
         "",
         "- [File formats](file-formats/README.md)",
+        "- [DAT archives](file-formats/dat-archives.md)",
+        "- [HPF static images](file-formats/hpf.md)",
+        "- [HEA light masks](file-formats/hea.md)",
+        "- [PAL color palettes](file-formats/pal.md)",
+        "- [TBL lookup files](file-formats/table-files.md)",
+        "- [Compression and checks](file-formats/compression.md)",
+        "- [Metadata files](file-formats/metadata.md)",
+        "- [Exporting images](file-formats/image-export.md)",
         "- [MAP files](file-formats/map.md)",
         "- [Raw map tile banks](file-formats/map-tile-banks.md)",
         "- [Tile animation tables](file-formats/tile-animation-tables.md)",
@@ -72,6 +80,8 @@ def main() -> None:
         "- [Initial connection](network/connection.md)",
         "- [Network transport](network/transport.md)",
         "- [Packet transforms](network/packet-transforms.md)",
+        "- [Checksums](network/checksums.md)",
+        "- [Server list and greeting](network/server-tables.md)",
         "- [Client packets](network/client/README.md)",
     ]
     lines.extend(packet_lines("client", "  "))

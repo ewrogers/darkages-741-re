@@ -37,6 +37,8 @@ packet SMetaData {
 }
 ```
 
-Operation `0` validates and applies one named metadata blob. Operation `1` rebuilds the manager's table of metadata names and CRC values. The payload's internal encoding remains to be documented.
+Operation `0` inflates the zlib payload, checks CRC32 over the decoded bytes, saves the original compressed stream, and applies one named metadata table. Operation `1` rebuilds the manager's table of metadata names and CRC values, then requests files that are missing or stale.
+
+The decoded payload is a big-endian group container with length-prefixed names and values. See [Metadata files](../../file-formats/metadata.md).
 
 The paired request is [Meta Data (`CMetaData`)](../client/123-0x7b-meta-data.md).

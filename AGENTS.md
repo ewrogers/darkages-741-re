@@ -352,7 +352,23 @@ Do not treat absence from the server packet factory as proof that an opcode is u
 
 Record the common transform as `raw`, `static`, or `derived` on each packet page. Do not infer one direction's opcode policy from the other direction.
 
-When documenting common packet encryption, distinguish the static key, the per-packet 9-byte derived key, the 1024-byte MD5 salt source, the 256-entry seed XOR table, the rolling selector, and direction-specific trailers. Do not collapse these into a single generic salt or key.
+When documenting common packet encryption, distinguish the static key, the per-packet 9-byte derived key, the 1024-byte MD5 salt source, the 256-entry seed XOR table, the sequence, and direction-specific trailers. Do not collapse these into a single generic salt or key.
+
+Use `sequence` for the byte that advances on every encrypted packet. Keep client-to-server and server-to-client sequence streams separate, and do not confuse either sequence with the negotiated seed-table selector. Raw packets do not advance an encrypted-packet sequence.
+
+Treat the sender and receiver as separate owners of local sequence state. For client-to-server traffic, the client's send counter and the server's receive counter advance in step but are not one shared counter. The reverse direction has its own pair.
+
+## File format documentation
+
+- Treat an extension as a naming convention, not proof of one shared layout. Document the reader that selects the format.
+- Keep the container, compression, byte encoding, pixel encoding, palette choice, and render blend as separate layers.
+- Use a compact C-like structure for fixed layouts and short pseudocode for variable records or codecs.
+- State byte order, offset base, count units, terminators, size limits, and alignment when each is known.
+- Distinguish compression from obfuscation and checksums. Name the exact algorithm when confirmed.
+- Preserve unknown fields and opaque byte strings. Do not assign text or alpha meaning from appearance alone.
+- For generated writers, say whether the client contains a writer, the inverse is only derived, or a decode, encode, decode round trip passed.
+- Validate a format across several local samples when possible. Record useful sample counts without committing private asset content.
+- Treat palette index transparency and destination-dependent blending as render behavior unless the file itself carries verified alpha.
 
 ## Source-of-truth rules
 

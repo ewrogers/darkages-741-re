@@ -8,7 +8,7 @@ Packets use one of three modes. The command code selects the mode, and the clien
 | Startup key | Static | Uses the current shared key |
 | Session key | Derived | Builds a 9-byte key for this packet |
 
-The startup key, session key, MD5 source, seed table, and rolling selector are separate pieces. They should not be treated as one generic encryption key.
+The startup key, session key, MD5 source, seed table, and sequence are separate pieces. They should not be treated as one generic encryption key.
 
 ## Mode by direction
 
@@ -89,23 +89,33 @@ In the formulas below, `u8` wraps to 0 through 255. Signed division truncates to
 
 Selector 0 is the built-in default. The live server may negotiate another selector. Values outside 0 through 9 are invalid for the locally mapped code.
 
+## Sequence counters
+
+Every encrypted packet carries a one-byte sequence. The sender uses its current value for the packet, then increments its counter for the next encrypted packet. The byte naturally wraps from 255 to 0.
+
+Client-to-server and server-to-client traffic use separate sequence streams. `net_client_packet_sequence` owns the client's outgoing stream. `net_decrypt_server_packet` reads the incoming server sequence from the packet and does not change the client counter.
+
+Each endpoint still owns its own local state for a stream. For client-to-server traffic, the client's send counter and the server's receive counter are separate values that should advance in step. Server-to-client traffic has another send and receive pair. An implementation should not use one counter for both directions or share one variable between send and receive handling.
+
+Raw packets do not pass through the encryption function, so they do not advance this sequence. The sequence is also separate from the seed-table selector described above.
+
 ## Outgoing transformed body
 
 ```text
 struct ClientTransformedBody {
     u8 opcode
-    u8 rolling_selector
+    u8 sequence
     u8 encrypted_payload[...]
     u8 md5_bytes[4]             // digest bytes 13, 3, 11, 7
     u8 encoded_seed[3]
 }
 ```
 
-The MD5 covers the opcode, rolling selector, and transformed payload. A transformed client body is eight bytes longer than its plaintext body.
+The MD5 covers the opcode, sequence, and transformed payload. A transformed client body is eight bytes longer than its plaintext body. The client increments its outgoing sequence for every body handled by `net_encrypt_client_packet`, including an encrypted opcode-only body.
 
 ## Incoming transformed body
 
-`net_decrypt_server_packet` keeps the opcode, reads the rolling selector, recovers two seed values from the final three bytes, and reverses the seed-table and key XOR passes.
+`net_decrypt_server_packet` keeps the opcode, reads the independent server sequence, recovers two seed values from the final three bytes, and reverses the seed-table and key XOR passes.
 
 The decoded server body is four bytes shorter than the transformed body. The server direction does not append the same four selected MD5 bytes used by the client direction.
 

@@ -1,20 +1,28 @@
 # File formats
 
-Rendering code consumes several small game-specific formats. This section keeps container layout separate from drawing behavior so a developer can build readers and, where the evidence is complete, writers.
+The client mixes simple archives, text lookup tables, indexed images, and a few custom codecs. Each page separates the container from the way the renderer or network system uses it.
 
 | Format | Purpose | Read status | Write status |
 | --- | --- | --- | --- |
+| [DAT](dat-archives.md) | Asset archives | Legacy format confirmed | Rebuild process confirmed |
+| [HPF](hpf.md) | Static indexed images | Codec confirmed | Exact sample round trips pass |
+| [HEA](hea.md) | Lighting and occlusion rows | Main layout confirmed | Generated inverse described |
+| [PAL](pal.md) | 256 RGB colors | Confirmed | Direct output confirmed |
+| [TBL](table-files.md) | Text lookup tables | Major families mapped | Depends on each table grammar |
+| [Metadata](metadata.md) | Server-managed data cache | Container and update flow confirmed | Generated server payload described |
 | [MAP](map.md) | Map tile IDs | Confirmed | Confirmed in client |
 | [Raw map tile banks](map-tile-banks.md) | Isometric ground pixels | Confirmed | Fixed-record output described |
 | [Tile animation tables](tile-animation-tables.md) | Ground and static animation cycles | Confirmed | Plain decimal text |
 | [SOTP.DAT](sotp.md) | Static collision and render flags | Confirmed | Raw byte output described |
-| [EPF](epf.md) | Indexed image frames | Container mapped | Payload encoding incomplete |
+| [EPF](epf.md) | Indexed image frames | Container mapped | Pixel encoder incomplete |
 | [SPF](spf.md) | Indexed image frames | Container mapped | Generated inverse not yet tested |
 | [EFA](efa.md) | Compressed effect frames | Main decode path mapped | Generated inverse incomplete |
 | [Effect.tbl](effect-table.md) | Effect frame sequences | Confirmed | Straightforward text output |
 
-`Confirmed in client` means the executable contains both reader and writer behavior. `Generated inverse` means a writer can be designed from the reader, but the client does not prove that writer and no round-trip test has been recorded yet.
+See [compression and checks](compression.md) for the algorithm used by each family and [exporting images](image-export.md) for PNG conversion.
 
-All multi-byte fields on these pages are little-endian unless a page says otherwise.
+`Confirmed in client` means the executable contains direct reader or writer behavior. `Generated inverse` means a writer follows naturally from the reader, but the client does not prove it and a full round trip has not been recorded.
 
-File names and extensions do not prove that two formats share a layout. In particular, `tilea.bmp` and `tileas.bmp` are raw fixed-record banks rather than BMP images. CTF and DTF appear as internal tile-storage class names, but no matching extension or active constructor was confirmed.
+All multi-byte fields on these pages are little-endian unless a page says otherwise. Metadata and packet fields are notable big-endian exceptions.
+
+File names do not prove that two formats share a layout. For example, `tilea.bmp` and `tileas.bmp` are raw fixed-record banks, not BMP images.

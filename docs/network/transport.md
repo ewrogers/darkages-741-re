@@ -29,6 +29,8 @@ Most builders create an opcode-first plaintext body and pass it to `net_submit_c
 
 `net_send_client_packet` chooses no transform, the startup key, or the session key. The final TCP frame is added after that choice.
 
+Encrypted client packets use a one-byte outgoing sequence. The client writes the current value and increments it for the next encrypted packet. The server tracks those packets with its own receive counter, which advances in step but is separate state. Incoming encrypted server packets use the other direction's sequence, so receive traffic does not advance the client send counter. Raw packets advance neither encrypted sequence.
+
 ## Server to client
 
 ```text

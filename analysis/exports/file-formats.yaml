@@ -1,0 +1,228 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x004319B0"
+    name: file_hpf_decode
+    confidence: high
+    evidence: Checks magic 0xFF02AA55, decodes symbols through an adaptive tree, and accepts raw input when magic is absent.
+  - address: "0x00431B80"
+    name: file_hpf_tree_initialize
+    confidence: high
+    evidence: Builds the complete initial tree for byte symbols and the 256 terminator.
+  - address: "0x00431C40"
+    name: file_hpf_decode_symbol
+    confidence: high
+    evidence: Reads bits least-significant bit first and walks the active HPF tree to a symbol leaf.
+  - address: "0x00431D20"
+    name: file_hpf_rotate_tree
+    confidence: high
+    evidence: Applies the parent and sibling rotations used after every decoded HPF symbol.
+  - address: "0x0044CD50"
+    name: file_load_color_table
+    confidence: medium
+    evidence: Loads color.tbl records and packs six RGB triples per record for the renderer.
+  - address: "0x00471DC0"
+    name: file_archive_xor_words
+    confidence: high
+    evidence: XORs a buffer in 32-bit words for the extended DAT header and index path.
+  - address: "0x00471E00"
+    name: file_archive_open
+    confidence: high
+    evidence: Opens resource or loose DAT input and maps either the legacy index or the extended chunked index.
+  - address: "0x00472470"
+    name: file_archive_find_entry
+    confidence: high
+    evidence: Looks up a named entry in an opened archive.
+  - address: "0x00472900"
+    name: file_archive_get_entry_data
+    confidence: high
+    evidence: Returns the mapped data pointer for an archive entry.
+  - address: "0x0047DEB0"
+    name: file_load_variant_color_table
+    confidence: medium
+    evidence: Loads one numbered color table family used by renderable assets.
+  - address: "0x00487380"
+    name: file_hea_build_row_views
+    confidence: high
+    evidence: Builds row pointers from HEA band thresholds and lookup offsets for a clipped region.
+  - address: "0x004875B0"
+    name: file_hea_open
+    confidence: high
+    evidence: Maps the HEA header, band array, row offsets, and packed run stream.
+  - address: "0x004A4AA0"
+    name: file_load_message_table
+    confidence: high
+    evidence: Loads the line-oriented msg.tbl data from an archive or loose file.
+  - address: "0x004B8570"
+    name: net_handle_stipulation_raw
+    confidence: high
+    evidence: Parses raw SStipulation modes, compares greeting CRC32, requests replacement, and inflates updated text.
+  - address: "0x004B8890"
+    name: net_handle_stipulation
+    confidence: high
+    evidence: Handles the RTTI-backed SStipulation object with the same greeting update behavior.
+  - address: "0x004E53F0"
+    name: net_request_metadata
+    confidence: high
+    evidence: Builds CMetaData operation 0 with a one-byte name length and the requested table name.
+  - address: "0x004E54F0"
+    name: net_metadata_uncompress
+    confidence: high
+    evidence: Inflates metadata zlib data into a buffer capped at 0x20000 bytes.
+  - address: "0x004E5570"
+    name: file_load_metadata_compressed
+    confidence: high
+    evidence: Loads a cached compressed metadata file and inflates it for parsing.
+  - address: "0x004E56E0"
+    name: file_save_metadata_compressed
+    confidence: high
+    evidence: Writes the original compressed metadata payload under the metafile directory.
+  - address: "0x004E5790"
+    name: net_metadata_crc32
+    confidence: high
+    evidence: Calculates standard CRC32 over inflated metadata bytes.
+  - address: "0x004E57C0"
+    name: net_parse_metadata_table
+    confidence: high
+    evidence: Parses big-endian group counts and length-prefixed metadata names and values.
+  - address: "0x0050E840"
+    name: file_load_motion_effect_table
+    confidence: medium
+    evidence: Loads structured motion effect definitions from meffect.tbl.
+  - address: "0x005322A0"
+    name: file_load_npc_info_table
+    confidence: medium
+    evidence: Loads the hierarchical npci.tbl text resource.
+  - address: "0x00546440"
+    name: file_load_field_palette_table
+    confidence: high
+    evidence: Loads the pal*.tbl field palette range family.
+  - address: "0x00546980"
+    name: file_load_item_palette_table
+    confidence: high
+    evidence: Loads itempal.tbl range mappings.
+  - address: "0x00546C30"
+    name: file_load_effect_palette_table
+    confidence: high
+    evidence: Loads effpal.tbl range mappings and their palette family values.
+  - address: "0x00546EE0"
+    name: file_load_static_palette_table
+    confidence: high
+    evidence: Loads stcpal.tbl mappings used by HPF static images.
+  - address: "0x00547210"
+    name: file_load_map_tile_palette_table
+    confidence: high
+    evidence: Loads mptpal.tbl map tile palette mappings.
+  - address: "0x00547810"
+    name: file_palette_table_parse_ranges
+    confidence: high
+    evidence: Parses two-token single IDs and three-token inclusive ID ranges from palette TBL files.
+  - address: "0x00548650"
+    name: file_palette_load_rgb
+    confidence: high
+    evidence: Copies exactly 0x300 bytes of RGB triples and passes them to the 16-bit palette packer.
+  - address: "0x0055A240"
+    name: net_load_server_table
+    confidence: high
+    evidence: Loads mServer.tbl numeric lines plus transformed name and greeting text into fixed-size records.
+  - address: "0x0055A490"
+    name: net_save_server_table
+    confidence: high
+    evidence: Saves server records and transforms the name and greeting text for file storage.
+  - address: "0x0055A650"
+    name: net_transform_server_table_text
+    confidence: high
+    evidence: Leaves byte zero in place and swaps later byte pairs in a self-inverse text transform.
+  - address: "0x00561490"
+    name: file_initialize_skill_tables
+    confidence: medium
+    evidence: Initializes the Skill_e.tbl and Skill_i.tbl table families.
+  - address: "0x00561840"
+    name: file_parse_skill_table
+    confidence: medium
+    evidence: Parses numeric skill table rows while accepting semicolon comments.
+  - address: "0x00568870"
+    name: crc16_buffer
+    confidence: high
+    evidence: Applies the custom CRC16 update to a byte buffer starting from zero.
+  - address: "0x0058B8C0"
+    name: file_load_ground_attribute_table
+    confidence: high
+    evidence: Loads structured ground attributes from gndattr.tbl.
+  - address: "0x00593B00"
+    name: render_palette_pack_16bit
+    confidence: high
+    evidence: Packs 256 RGB colors for the active display mode while reserving packed zero for palette index zero.
+  - address: "0x005B8F30"
+    name: crc16_update
+    confidence: high
+    evidence: Updates the custom CRC16 with table[crc high byte] XOR crc shifted left XOR input byte.
+  - address: "0x005B9180"
+    name: map_update_crc16
+    confidence: high
+    evidence: Calculates and caches the custom CRC16 across six bytes for each map cell.
+  - address: "0x005C8540"
+    name: render_hea_decode_mask
+    confidence: high
+    evidence: Expands HEA run words into an 8-bit light or occlusion mask.
+  - address: "0x006043B0"
+    name: file_zlib_uncompress
+    confidence: high
+    evidence: Bundled zlib 1.1.3 uncompress entry shared by assets and network-managed data.
+  - address: "0x00604530"
+    name: crc32_update
+    confidence: high
+    evidence: Standard reflected IEEE CRC32 update with initial and final inversion.
+data_symbols:
+  - address: "0x0068C884"
+    name: crc32_table
+    confidence: high
+    evidence: Standard reflected IEEE CRC32 table using polynomial 0xEDB88320.
+  - address: "0x006D15E8"
+    name: crc16_table_dialog
+    confidence: high
+    evidence: CRC16 table used by the direct dialog-buffer checksum path.
+  - address: "0x006D2D98"
+    name: crc16_table_shared
+    confidence: high
+    evidence: CRC16 table used by crc16_update and the map and request checksum paths.
+comments:
+  - address: "0x004319B0"
+    text: Magic 0xFF02AA55 selects the adaptive HPF tree codec. Input without the magic is copied unchanged.
+  - address: "0x00431C40"
+    text: HPF bits are read least-significant bit first. Symbol 256 terminates the stream.
+  - address: "0x00431D20"
+    text: Rotate the tree after every byte and after the 256 terminator. An encoder must apply the same update.
+  - address: "0x00471E00"
+    text: Legacy DAT uses fixed 17-byte index rows and a final blank sentinel. The extended 0xFFFFFFFF path uses XOR and zlib index chunks.
+  - address: "0x004875B0"
+    text: HEA maps a 0x28-byte header, band thresholds, band by row offsets, then 16-bit run words.
+  - address: "0x004B8570"
+    text: SStipulation mode 0 checks greeting CRC32. Mode 1 inflates and saves replacement greeting text.
+  - address: "0x004E4EA0"
+    text: Metadata payloads are zlib-compressed, checked with CRC32 after inflate, cached compressed, and parsed into named groups.
+  - address: "0x004E53F0"
+    text: CMetaData operation zero requests one named metadata table.
+  - address: "0x004E57C0"
+    text: Inflated metadata is a big-endian group container with length-prefixed byte strings.
+  - address: "0x00547810"
+    text: Palette tables accept one asset and palette or an inclusive first, last, and palette range. File IDs are one-based.
+  - address: "0x00548650"
+    text: A PAL file is exactly 256 RGB triples, or 0x300 bytes, with no header.
+  - address: "0x0055A650"
+    text: Server table text keeps byte zero and swaps pairs starting at byte one. Applying it twice restores the original.
+  - address: "0x00593B00"
+    text: Palette index zero stays packed zero for color-key transparency. Black at another index is changed to packed value one.
+  - address: "0x005B8F30"
+    text: This is not CRC-16/XMODEM. The input byte is XORed after the table lookup rather than into the lookup index.
+  - address: "0x005C8540"
+    text: HEA run high byte is output length. The low six bits are light or occlusion intensity.
+  - address: "0x00604530"
+    text: Standard IEEE CRC32 used for inflated metadata and decoded server greeting text.
+runtime_patches: []

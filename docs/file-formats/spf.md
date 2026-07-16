@@ -50,3 +50,5 @@ write_spf(source):
 ```
 
 This is a generated inverse of the reader. Unknown prefix and record fields must be preserved from a compatible template. It has not yet passed a decode, encode, decode round trip, so it is not a confirmed production writer.
+
+PNG conversion depends on the two mode bytes. The all-zero mode carries a 0x400-byte embedded palette area; other modes must follow their confirmed pixel path. See [Exporting images](image-export.md).

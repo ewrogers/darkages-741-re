@@ -18,6 +18,9 @@ import_manifest(bv, "analysis/exports/packets.yaml", "client/Darkages.exe")
 export_manifest(bv, "analysis/exports/packets.yaml", "client/Darkages.exe")
 import_manifest(bv, "analysis/exports/rendering.yaml", "client/Darkages.exe")
 export_manifest(bv, "analysis/exports/rendering.yaml", "client/Darkages.exe")
+
+import_manifest(bv, "analysis/exports/file-formats.yaml", "client/Darkages.exe")
+export_manifest(bv, "analysis/exports/file-formats.yaml", "client/Darkages.exe")
 ```
 
 The script updates only addresses already listed in the manifest. Packet records are normalized but do not change the Binary Ninja database. Runtime patch records are documentation for a launcher and are never applied by this script.

@@ -66,7 +66,7 @@ functions:
   - address: "0x00563DE0"
     name: net_reset_client_packet_sequence
     confidence: high
-    evidence: "Resets the rolling outbound transformed-packet selector to zero."
+    evidence: "Resets the client-to-server encrypted-packet sequence to zero."
   - address: "0x00563E00"
     name: net_submit_client_packet
     confidence: high
@@ -122,11 +122,11 @@ functions:
   - address: "0x00567DE0"
     name: net_decrypt_server_packet
     confidence: high
-    evidence: "Reverses server seed-table and static or derived key XOR passes."
+    evidence: "Reads the independent server-to-client sequence and reverses the seed-table and static or derived key XOR passes."
   - address: "0x00567FB0"
     name: net_encrypt_client_packet
     confidence: high
-    evidence: "Adds the rolling selector, applies XOR passes, and appends MD5 and seed trailer bytes."
+    evidence: "Writes and increments the client-to-server sequence for every encrypted packet, applies XOR passes, and appends MD5 and seed trailer bytes."
   - address: "0x00568230"
     name: net_xor_packet_bytes
     confidence: high
@@ -219,7 +219,7 @@ data_symbols:
   - address: "0x007AA860"
     name: net_client_packet_sequence
     confidence: high
-    evidence: "Rolling outbound selector byte incremented for each transformed client packet."
+    evidence: "Client-to-server sequence byte incremented for each encrypted client packet. It is separate from the incoming server sequence."
   - address: "0x007AA864"
     name: net_static_key_expanded
     confidence: high
@@ -291,12 +291,14 @@ comments:
     text: "Queue the decoded opcode-first server body as event type 0x13 for the main event path."
   - address: "0x00567918"
     text: "Refill the 0x18000-byte TCP receive buffer with recv when no buffered bytes remain."
+  - address: "0x00567DF6"
+    text: "Read the server-to-client sequence from the encrypted body. It does not update the client outbound sequence counter."
   - address: "0x00567FC1"
-    text: "Preserve the client opcode, append the rolling selector byte, transform the payload, and add the outbound authentication and seed trailer."
+    text: "Write the current client-to-server sequence, increment the byte for the next encrypted packet, transform the payload, and add the outbound authentication and seed trailer."
   - address: "0x005680B8"
     text: "Mode 0 XORs with the static key; mode 1 XORs with the per-packet derived 9-byte key."
   - address: "0x005681A1"
-    text: "MD5 the outbound opcode, selector, and transformed payload; append digest bytes 13, 3, 11, and 7 before the three encoded seed bytes."
+    text: "MD5 the outbound opcode, sequence, and transformed payload; append digest bytes 13, 3, 11, and 7 before the three encoded seed bytes."
   - address: "0x005684CE"
     text: "Build a 1024-byte salt source by repeated lowercase MD5-hex expansion of the runtime seed string."
   - address: "0x00568572"

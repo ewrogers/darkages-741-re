@@ -56,3 +56,5 @@ write_epf(source):
 ```
 
 This generated inverse is useful for rebuilding a container around known payloads. It is not yet an encoder from raw pixels.
+
+For a basic primary-plane PNG exporter, use the frame bounds as width and height, read palette indexes from `data_offset_a`, and apply the selected external palette. The second offset is not enough to prove alpha or blending by itself. See [Exporting images](image-export.md).

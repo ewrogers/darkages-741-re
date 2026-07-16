@@ -64,6 +64,8 @@ for each tile:
 
 An alternate bank may be shorter than the base bank. Missing alternate records use base art at runtime.
 
+For PNG output, place the 784 visible palette indexes in a 56 by 27 RGBA image and set padding outside the diamond to alpha 0. The ground pixels inside the diamond are opaque. See [Exporting images](image-export.md).
+
 ## Static art uses the same map mode
 
 The same `SMapSize` bit also changes fixed map objects:

@@ -65,3 +65,5 @@ write_efa(source):
         write compressed at the next payload offset
         fill record offset, compressed size, and decoded size
 ```
+
+For PNG output, inflate the frame first and decode the main 16-bit plane as RGB555 or RGB565 according to the active pixel mode. Use an auxiliary plane as alpha only after its plane kind is verified. See [Exporting images](image-export.md).
