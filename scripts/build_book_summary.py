@@ -21,7 +21,9 @@ def packet_lines(directory: str, indent: str) -> list[str]:
         if path.name == "README.md":
             continue
         relative = path.relative_to(DOCS).as_posix()
-        lines.append(f"{indent}- [{title(path)}]({relative})")
+        opcode = path.stem.split("-", 2)[1]
+        opcode = "0x" + opcode.removeprefix("0x").upper()
+        lines.append(f"{indent}- [{opcode} - {title(path)}]({relative})")
     return lines
 
 

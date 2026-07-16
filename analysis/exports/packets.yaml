@@ -44,13 +44,13 @@ functions:
     confidence: high
     evidence: "Merchant menu paths call this opcode 0x43 object information request."
   - address: "0x004CFE60"
-    name: net_send_merchant_menu_code
+    name: net_send_merchant_selection
     confidence: high
-    evidence: "MerchantDialogPane::TextMenuDialogEx virtual method for client opcode 0x39."
+    evidence: "MerchantDialogPane::TextMenuDialogEx virtual method that builds and sends CMerchant opcode 0x39."
   - address: "0x004DBC90"
-    name: net_send_message_selection
+    name: net_send_pursuit_selection
     confidence: high
-    evidence: "MessageDialog and SimpleMessageDialog share this client opcode 0x3A virtual method."
+    evidence: "MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method."
   - address: "0x00542E60"
     name: net_send_user_setting
     confidence: high
@@ -376,21 +376,21 @@ packet_indexes:
         page: "docs/network/client/056-0x38-refresh-user.md"
       - opcode: "0x39"
         friendly_name: "Merchant"
-        class_name: "CMenuCode"
+        class_name: "CMerchant"
         transform: derived
         builder: "0x004CFE60"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Builder 0x004CFE60 is a MerchantDialogPane::TextMenuDialogEx virtual method; CMerchant is retained as a behavioral alias."
+        name_confidence: high
+        evidence: "CMerchant is project-owner protocol vocabulary. Builder 0x004CFE60 is a MerchantDialogPane::TextMenuDialogEx virtual method, which confirms the merchant behavior."
         page: "docs/network/client/057-0x39-merchant.md"
       - opcode: "0x3A"
         friendly_name: "Pursuit"
-        class_name: "CMessage"
+        class_name: "CPursuit"
         transform: static
         builder: "0x004DBC90"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Builder 0x004DBC90 is shared by MessageDialog and SimpleMessageDialog; CPursuit is retained as a behavioral alias."
+        name_confidence: high
+        evidence: "CPursuit is project-owner protocol vocabulary. Builder 0x004DBC90 is shared by MessageDialog and SimpleMessageDialog selection paths."
         page: "docs/network/client/058-0x3a-pursuit.md"
       - opcode: "0x3B"
         friendly_name: "Bulletin"

@@ -1,31 +1,31 @@
-# Pursuit (`CMessage`)
+# Pursuit (`CPursuit`)
 
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x3A` (58) |
 | Encoding | startup key |
-| Behavioral alias | `CPursuit` |
-| Name provenance | Project-owner protocol name; message behavior confirmed by local RTTI |
+| Name provenance | Project-owner protocol name; pursuit flow supported by local dialog RTTI |
 
 ## Purpose
 
 The client sends this message for **pursuit**.
 
-The exact client protocol name is `CMessage`. The descriptive `CPursuit` alias came from related behavior, while the strongest local owner evidence is the `MessageDialogBase::MessageDialog` and `MessageDialog::SimpleMessageDialog` RTTI.
+The client protocol name is `CPursuit`, supplied by the project owner. Local behavior supports it through the `MessageDialogBase::MessageDialog` and `MessageDialog::SimpleMessageDialog` selection paths.
 
-The client has no derived packet RTTI for `CMessage` itself.
+The client has no derived packet RTTI for `CPursuit` itself.
 
 ## Sent by
 
 Known static callers lead to:
 
-- UI or subsystem owner not known yet
+- `MessageDialogBase::MessageDialog`
+- `MessageDialog::SimpleMessageDialog`
 
 ## Body
 
 ```text
-packet CMessage {
+packet CPursuit {
     u8 opcode                 // 0x3A
     u8 message_type
     u32be object_id
@@ -34,4 +34,4 @@ packet CMessage {
 }
 ```
 
-The relationship between the generic message fields and pursuit behavior remains to be traced.
+The exact meaning of each pursuit selection value remains to be traced.

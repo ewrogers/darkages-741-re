@@ -358,6 +358,8 @@ Each packet page should include as much of the following as is known:
 
 Keep master indexes synchronized with packet pages.
 
+Client and server packet indexes and sidebar entries use a zero-padded uppercase hexadecimal label followed by the friendly and concrete names, such as `0x0E - Say (CSay)`.
+
 Keep client and server opcode evidence separate. The server direction may have RTTI-backed concrete class names. The client direction has no recovered derived packet RTTI classes, so each friendly client name must cite builder behavior or related-name provenance.
 
 Do not treat absence from the server packet factory as proof that an opcode is unused. Search decoded-body event consumers in UI panes, session state, and manager classes. An RTTI-backed owner may handle a raw decoded buffer without constructing a concrete RTTI packet object. Record the packet name provenance separately from the owner class RTTI.
