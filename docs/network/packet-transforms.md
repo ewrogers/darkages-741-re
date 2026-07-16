@@ -10,6 +10,31 @@ Packets use one of three modes. The command code selects the mode, and the clien
 
 The startup key, session key, MD5 source, seed table, and sequence are separate pieces. They should not be treated as one generic encryption key.
 
+## Client submission terminator
+
+Most client packet builders pass only their meaningful opcode-first fields to `net_submit_client_packet`. For an ordinary body, this function copies those bytes, appends `0x00`, and increases the queued length by one. The zero is not merely spare C-string storage. It reaches `net_send_client_packet`, appears in raw frames, and is encrypted as the final payload byte for static or derived packets.
+
+For example, the `CHello` builder supplies five bytes, but the transform receives six:
+
+```text
+builder body:    62 61 72 61 6D
+queued plaintext: 62 61 72 61 6D 00
+```
+
+The special CRC wrappers for opcodes `0x39` and `0x3A` follow their own construction path.
+
+The client does not explain why this byte was included in the protocol. It is compatible with code that treats the end of a packet as a C string, and it may be a historical convenience, but the 7.41 receive code does not use it as a successful-decryption marker.
+
+## Receive-side zero bytes
+
+The server direction is not symmetric. Server bodies do not consistently carry a transmitted trailing zero. Captured packets such as `STransferServer`, `SStipulation`, and `SBrowser` end on meaningful nonzero field data.
+
+`net_decrypt_server_packet` decrypts the complete transformed payload and returns the logical opcode-first body length. It then writes `0x00` immediately after that length in its local output buffer. `net_post_decoded_server_packet_event` does the same after copying the body into the queued event. These bytes make the in-memory buffers safe to inspect as terminated byte strings, but they are outside the packet length and are not protocol fields.
+
+There is no check that the final decrypted payload byte equals zero. If the server does include a trailing zero inside its encrypted payload, that byte remains part of the returned body. `net_deserialize_server_packet` lets the concrete packet parser read its known fields and does not reject unread bytes at the end, so such a byte can simply remain unused.
+
+Length-prefixed strings do not depend on either kind of trailing byte. The packet reader copies the declared string length and adds a zero to the destination buffer itself.
+
 ## Mode by direction
 
 ### Client to server
@@ -111,7 +136,9 @@ struct ClientTransformedBody {
 }
 ```
 
-The MD5 covers the opcode, sequence, and transformed payload. A transformed client body is eight bytes longer than its plaintext body. The client increments its outgoing sequence for every body handled by `net_encrypt_client_packet`, including an encrypted opcode-only body.
+The MD5 covers the opcode, sequence, and transformed payload. `net_encrypt_client_packet` produces a body eight bytes longer than the queued plaintext it receives. For an ordinary builder body, the earlier submission terminator makes the complete transformed body nine bytes longer than the builder's declared length.
+
+`CHello` demonstrates both rules: five builder bytes become six queued plaintext bytes, then fourteen transformed bytes. The client increments its outgoing sequence for every body handled by `net_encrypt_client_packet`, including a body whose builder supplied only an opcode.
 
 ## Incoming transformed body
 

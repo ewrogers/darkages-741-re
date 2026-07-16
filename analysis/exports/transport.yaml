@@ -70,7 +70,7 @@ functions:
   - address: "0x00563E00"
     name: net_submit_client_packet
     confidence: high
-    evidence: "Copies opcode-first client bodies into socket event command 6; adds special CRC wrappers for 0x39 and 0x3A."
+    evidence: "Ordinary bodies are copied with an appended transmitted zero and a one-byte length increase before socket event command 6; opcodes 0x39 and 0x3A use a separate CRC wrapper."
   - address: "0x00564140"
     name: net_write_u8
     confidence: high
@@ -138,7 +138,7 @@ functions:
   - address: "0x00567DE0"
     name: net_decrypt_server_packet
     confidence: high
-    evidence: "Reads the independent server-to-client sequence and reverses the seed-table and static or derived key XOR passes."
+    evidence: "Reads the independent server-to-client sequence, reverses the seed-table and static or derived key XOR passes, and writes a local zero after the returned decoded length without validating the final payload byte."
   - address: "0x00567FB0"
     name: net_encrypt_client_packet
     confidence: high
@@ -194,7 +194,7 @@ functions:
   - address: "0x005963F0"
     name: net_deserialize_server_packet
     confidence: high
-    evidence: "Creates the registered server packet class and invokes its deserializer."
+    evidence: "Creates the registered server packet class and invokes its deserializer; it does not require the reader to consume the complete supplied body."
   - address: "0x00596780"
     name: net_create_server_packet
     confidence: high
@@ -280,7 +280,11 @@ comments:
   - address: "0x00563A88"
     text: "Restore the readable source buffer only after the working key has been copied; the expanded key retains bytes E5 and A3."
   - address: "0x00563E00"
-    text: "Submit an opcode-first client packet to the socket event queue. Builders throughout the client converge here before framing and transformation."
+    text: "Submit an opcode-first client packet to socket event command 6. Ordinary bodies gain an appended zero that is included in the queued length before framing and transformation."
+  - address: "0x00564039"
+    text: "Append a zero byte after the builder-provided body."
+  - address: "0x00564045"
+    text: "Increase the queued body length so the appended zero is transmitted and, for transformed opcodes, encrypted with the payload."
   - address: "0x00564638"
     text: "Transport selector 5 enters Winsock TCP. Selectors 1 through 4 enter the compiled serial/modem COM-port opener."
   - address: "0x00564884"

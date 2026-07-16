@@ -210,7 +210,7 @@ packet_indexes:
         builder: "0x004B9510"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Handler 0x004B9510 reconnects to the endpoint in STransferServer, then submits raw opcode 0x10 followed by its opaque handoff token unchanged."
+        evidence: "Handler 0x004B9510 reconnects to the endpoint in STransferServer, then submits raw opcode 0x10 and its opaque token unchanged; the common submission layer appends a transmitted zero."
         page: "docs/network/client/016-0x10-transfer-server.md"
       - opcode: "0x11"
         friendly_name: "Change Direction"
@@ -543,7 +543,7 @@ packet_indexes:
         builder: "0x0055A090"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "ServerSelectDialogPane and the single-record SVersionCheck path reach builder 0x0055A090, which sends the selected server record ID; CMultiServer is retained as a behavioral alias."
+        evidence: "ServerSelectDialogPane and the single-record SVersionCheck path reach builder 0x0055A090, which supplies 57 00 <record ID> 00; the submission layer appends a fifth zero before transformation."
         page: "docs/network/client/087-0x57-multi-server.md"
       - opcode: "0x62"
         friendly_name: "Hello"
@@ -552,7 +552,7 @@ packet_indexes:
         builder: "0x00579090"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "CHello is project-owner protocol vocabulary for the reply to SHello. Function 0x00579090 submits the literal five-byte body baram at 0x00579849, then resets the client sequence at 0x0057993A."
+        evidence: "CHello is project-owner protocol vocabulary for the reply to SHello. Function 0x00579090 supplies the five ASCII bytes baram; net_submit_client_packet appends a transmitted zero before static-key transformation."
         page: "docs/network/client/098-0x62-hello.md"
       - opcode: "0x68"
         friendly_name: "Request Homepage"
@@ -561,7 +561,7 @@ packet_indexes:
         builder: "0x004BA0C0"
         opcode_confidence: high
         name_confidence: high
-        evidence: "Builder 0x004BA0C0 submits 68 01. Both SStipulation handlers call it when the cached homepage URL is absent, and SBrowser subtype 3 supplies that URL."
+        evidence: "Builder 0x004BA0C0 supplies 68 01 and the common submission layer appends a transmitted zero. Both SStipulation handlers call it when the cached homepage URL is absent."
         page: "docs/network/client/104-0x68-request-homepage.md"
       - opcode: "0x6A"
         friendly_name: "Mini Game"

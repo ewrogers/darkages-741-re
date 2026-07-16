@@ -71,7 +71,9 @@ game packet builder
   -> TCP send
 ```
 
-Most builders create an opcode-first plaintext body and pass it to `net_submit_client_packet`. Opcodes `0x39` and `0x3A` receive an extra randomized CRC wrapper there. This wrapper is separate from the common packet transform.
+Most builders create an opcode-first plaintext body and pass it to `net_submit_client_packet`. The ordinary path appends one transmitted zero byte and includes it in the queued body length before choosing a transform. Opcodes `0x39` and `0x3A` receive a separate randomized CRC wrapper instead.
+
+This outgoing convention should not be applied to server packets. The receive path adds its own zero after the decoded body in memory, outside the reported packet length. It does not verify a decrypted packet by checking for a trailing zero. See [Packet transforms](packet-transforms.md#receive-side-zero-bytes) for the distinction.
 
 `net_send_client_packet` chooses no transform, the startup key, or the session key. The final TCP frame is added after that choice.
 

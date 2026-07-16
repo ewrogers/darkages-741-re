@@ -21,9 +21,10 @@ The client sends this message after reconnecting to the endpoint in [`STransferS
 packet CTransferServer {
     u8 opcode;                 // 0x10
     u8 token[];                // exact STransferServer token bytes
+    u8 terminator;             // 0x00, appended by net_submit_client_packet
 }
 ```
 
-The body length is `1 + token_length`. The builder writes a local zero byte after the token so its temporary buffer can also be treated as a C string, but that terminator is outside the submitted packet length. In the supplied capture, the final displayed `00` is therefore not part of the body sent by this client.
+The builder passes `1 + token_length` bytes to `net_submit_client_packet`. The submission layer appends `0x00`, increases the queued length, and sends `2 + token_length` bytes. The final `00` in the supplied capture is therefore part of the raw body sent by this client.
 
 This packet is raw. It does not carry an encrypted-packet sequence or transform trailer.

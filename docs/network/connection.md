@@ -23,17 +23,17 @@ The live 7.41 exchange reaches the main create-or-login screen in two stages. Th
 | Order | Direction | Plain body | Result |
 | --- | --- | --- | --- |
 | 1 | Server | [`SHello`](server/126-0x7e-hello.md) `7E 1B "CONNECTED SERVER\n"` | `ESC C` enables binary framing |
-| 2 | Client | [`CHello`](client/098-0x62-hello.md) `"baram"` | Replies to the terminal-style welcome |
-| 3 | Client | [`CVersion`](client/000-0x00-version.md) `00 02 E5 4C 4B` | Reports version 741 and fixed `L`, `K` bytes |
+| 2 | Client | [`CHello`](client/098-0x62-hello.md) `62 61 72 61 6D 00` | Replies to the terminal-style welcome using the static transform |
+| 3 | Client | [`CVersion`](client/000-0x00-version.md) `00 02 E5 4C 4B 00` | Reports version 741 and fixed `L`, `K` bytes |
 | 4 | Server | [`SVersionCheck`](server/000-0x00-version-check.md) subtype `0` | Supplies configuration CRC, seed-table selector `2`, and a nine-byte static key |
-| 5 | Client | [`CMulti`](client/087-0x57-multi-server.md) `57 00 00 00` | Selects the only local server record, ID `0` |
+| 5 | Client | [`CMulti`](client/087-0x57-multi-server.md) `57 00 00 00 00` | Selects the only local server record, ID `0` |
 | 6 | Server | [`STransferServer`](server/003-0x03-transfer-server.md) | Supplies `127.0.0.1:2610` and a 27-byte handoff token |
-| 7 | Client | [`CTransferServer`](client/016-0x10-transfer-server.md) | Reconnects and echoes the token to the new server |
+| 7 | Client | [`CTransferServer`](client/016-0x10-transfer-server.md) | Reconnects, echoes the token, and appends `00` |
 | 8 | Server | [`SStipulation`](server/096-0x60-stipulation.md) mode `0` | Checks the local greeting with CRC32 `0xE5DC1439` |
-| 9 | Client | [`CRequestHomepage`](client/104-0x68-request-homepage.md) `68 01` | Requests the homepage because it is not cached yet |
+| 9 | Client | [`CRequestHomepage`](client/104-0x68-request-homepage.md) `68 01 00` | Requests the homepage because it is not cached yet |
 | 10 | Server | [`SBrowser`](server/102-0x66-browser.md) subtype `3` | Caches `http://www.darkages.com` as the homepage URL |
 
-This table shows decoded opcode-first bodies. It omits the `AA + u16be size` frame and transform sequence or trailer bytes. The supplied capture has a few final-byte differences from the 7.41 builders; the individual packet pages record where the submitted length or literal bytes settle those differences.
+This table shows the complete plaintext bodies queued by the 7.41 client. It omits the `AA + u16be size` frame and transform sequence or trailer bytes. Most builders do not count the final zero themselves; `net_submit_client_packet` appends it and includes it in the sent length. The supplied decoded trace strips this common terminator from some transformed packets, while the raw `CHello` frame preserves enough length information to prove it is present.
 
 ## Retry path
 

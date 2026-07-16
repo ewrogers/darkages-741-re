@@ -21,7 +21,8 @@ Both `SStipulation` handlers check the cached-homepage flag before processing th
 packet CRequestHomepage {
     u8 opcode;                 // 0x68
     u8 request_type;           // 1
+    u8 terminator;             // 0, appended by net_submit_client_packet
 }
 ```
 
-The confirmed plaintext body is `68 01`.
+The builder supplies `68 01`. The common submission layer appends the transmitted zero, so the plaintext entering the static transform is `68 01 00`. The supplied decoded trace omits this common terminator.

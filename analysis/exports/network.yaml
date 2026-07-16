@@ -146,7 +146,7 @@ functions:
     end_address: "0x004B9670"
     name: net_handle_transfer_server
     confidence: high
-    evidence: Reconnects to the endpoint in STransferServer, then sends raw opcode 0x10 followed by the packet's opaque handoff token unchanged.
+    evidence: Reconnects to the endpoint in STransferServer, then sends raw opcode 0x10, the opaque handoff token unchanged, and the common submission terminator.
   - address: "0x004B9B00"
     end_address: "0x004B9CD1"
     name: net_handle_browser
@@ -156,12 +156,12 @@ functions:
     end_address: "0x004BA14C"
     name: net_send_request_homepage
     confidence: high
-    evidence: Builds and submits the two-byte CRequestHomepage body 68 01.
+    evidence: Builds CRequestHomepage fields 68 01; the common submission layer appends the transmitted zero byte.
   - address: "0x0055A090"
     end_address: "0x0055A147"
     name: net_send_multi_server_selection
     confidence: high
-    evidence: Sends CMulti as 57 00 <server-record ID> 00 after a manual or automatic server-table selection.
+    evidence: Builds CMulti as 57 00 <server-record ID> 00 after a manual or automatic selection; the common submission layer appends a fifth zero before transformation.
   - address: "0x00564070"
     end_address: "0x0056408E"
     name: net_queue_raw_stream_mode
@@ -246,7 +246,7 @@ data_symbols:
   - address: "0x00685B00"
     name: client_hello_baram_text
     confidence: high
-    evidence: Five-byte ASCII CHello body queued immediately before CVersion; its leading byte is opcode 0x62. A codename interpretation remains behavioral context, not a compiler-recovered name.
+    evidence: Five ASCII CHello builder bytes queued immediately before CVersion; net_submit_client_packet appends the transmitted zero. A codename interpretation remains behavioral context, not a compiler-recovered name.
   - address: "0x00685B08"
     name: client_version_decorated_text
     confidence: high
@@ -325,7 +325,7 @@ comments:
   - address: "0x004B961E"
     text: Copy the opaque STransferServer token unchanged after opcode 0x10; the client does not parse its internal bytes.
   - address: "0x004B965B"
-    text: Submit exactly one plus token_length bytes. The following local NUL terminator is outside the packet length.
+    text: Submit opcode 0x10 plus token_length bytes. net_submit_client_packet appends a transmitted zero, so raw CTransferServer ends with 00.
   - address: "0x004B9C8F"
     text: SBrowser subtype 3 supplies the cached homepage URL.
   - address: "0x004B9C98"
@@ -333,9 +333,11 @@ comments:
   - address: "0x004BA0ED"
     text: Begin CRequestHomepage with opcode 0x68.
   - address: "0x004BA10B"
-    text: Write request subtype 1; the submitted plaintext body is 68 01.
+    text: Write request subtype 1. The builder supplies 68 01; net_submit_client_packet appends a transmitted zero.
   - address: "0x0055A0EC"
     text: Write the selected server record ID, not the dialog row number.
+  - address: "0x0055A122"
+    text: "Submit builder bytes 57 00 <server-record ID> 00; net_submit_client_packet appends one more transmitted zero before transformation."
   - address: "0x00563BDB"
     text: A new socket starts in raw-stream mode. The active TCP receiver copies the first received bytes into an event without parsing the frame.
   - address: "0x00563BE5"
@@ -409,7 +411,9 @@ comments:
   - address: "0x00579555"
     text: "Telnet TERMINAL-TYPE option 0x18: answer WILL TERMINAL-TYPE, begin subnegotiation, and identify as terminal type dumb."
   - address: "0x00579832"
-    text: "Build and queue the five-byte CHello control body: ASCII baram, whose leading b is opcode 0x62."
+    text: "Format the five ASCII CHello builder bytes baram; the common submission layer later appends the transmitted zero byte."
+  - address: "0x00579849"
+    text: "The builder supplies ASCII baram. net_submit_client_packet appends a transmitted zero, so CHello plaintext is 62 61 72 61 6D 00 before static-key transformation."
   - address: "0x0057993A"
     text: Reset the client-to-server encrypted-packet sequence immediately before building CVersion. CVersion itself is raw and does not consume a sequence value.
   - address: "0x0057993F"
@@ -421,7 +425,7 @@ comments:
   - address: "0x005799B8"
     text: Append literal byte 0x4B, ASCII K. Its protocol meaning is not established.
   - address: "0x005799E7"
-    text: "Queue the complete CVersion body: 00 02 E5 4C 4B. Opcode 0x00 follows the raw outbound path."
+    text: "Queue CVersion builder bytes 00 02 E5 4C 4B. net_submit_client_packet appends a transmitted zero, producing raw body 00 02 E5 4C 4B 00."
   - address: "0x0057A5D4"
     text: Copy one dash-prefixed token, delimited only by ASCII space. Only an uppercase D token is recognized.
   - address: "0x0057A60D"

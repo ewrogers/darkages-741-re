@@ -1,6 +1,6 @@
 # Version (`CVersion`)
 
-The client sends its numeric version immediately after the server welcome finishes the connection handshake. For this build, the complete plaintext body is `00 02 E5 4C 4B`.
+The client sends its numeric version immediately after the server welcome finishes the connection handshake. For this build, the complete plaintext body is `00 02 E5 4C 4B 00`.
 
 | Item | Value |
 | --- | --- |
@@ -35,18 +35,19 @@ packet CVersion {
     u16be version_code        // 741, encoded as 0x02E5
     u8 marker_l               // 0x4C, ASCII "L"
     u8 marker_k               // 0x4B, ASCII "K"
+    u8 terminator             // 0x00, appended by net_submit_client_packet
 }
 ```
 
-The 7.41 builder submits exactly `00 02 E5 4C 4B`. It writes a zero byte after this body in its temporary buffer, but that terminator is outside the submitted length. The final `00` shown by the supplied decoded capture is therefore not part of the client-confirmed plaintext body.
+The 7.41 builder supplies `00 02 E5 4C 4B`. `net_submit_client_packet` appends `00` and includes it in the queued length, so the supplied decoded capture shows the complete six-byte body.
 
 With binary framing selected, the complete wire bytes are:
 
 ```text
-AA 00 05 00 02 E5 4C 4B
+AA 00 06 00 02 E5 4C 4B 00
 ```
 
-The body size is five bytes. No transform trailer or encrypted sequence is added.
+The body size is six bytes. No transform trailer or encrypted sequence is added because opcode `0x00` is raw.
 
 ## Where 741 comes from
 
