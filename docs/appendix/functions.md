@@ -13,7 +13,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_get_distribution_mode` | `0x00434EB0` | high | Caches and returns the distribution mode selected by app_select_distribution_mode. |
 | `app_select_distribution_mode` | `0x00434EF0` | high | Returns the constant distribution mode 1 in this target. |
 | `app_detect_distribution_mode_from_markers` | `0x00434F00` | high | Dormant unreferenced scanner that maps country and Korean ISP .nfo markers to distribution modes 1 through 15. |
+| `app_is_japan_distribution_mode` | `0x004ACEE0` | high | Returns true when app_get_distribution_mode reports mode 13, selecting the create-user email and ISP-selector variant. |
 | `app_set_working_directory_from_executable` | `0x004AD3A0` | high | Derives the executable directory from GetCommandLineA and makes it the process working directory. |
+| `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client. |
+| `app_quit_after_patcher_launch` | `0x005287B0` | high | Destroys NewPatchPane, posts WM_QUIT, and terminates after the patcher launch attempt. |
 | `app_handle_d_option_stub` | `0x0057A460` | high | Empty function called for the suffix of an uppercase -D command-line token. |
 | `app_parse_command_line` | `0x0057A550` | high | Scans the WinMain command tail for space-delimited dash tokens and recognizes only uppercase D. |
 | `app_winmain` | `0x0057A710` | high | Called by the CRT startup wrapper with the WinMain argument set. |
@@ -114,6 +117,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_intro_video_pane_ctor` | `0x0042DFF0` | high | Initializes the CIPane vtable and Bink-backed video state. |
 | `ui_intro_video_begin_sequence` | `0x0042E1F0` | high | Stores two clip resources and starts the first clip. |
 | `ui_get_intro_video_pane` | `0x0042E7D0` | high | Returns the global CIPane instance at 0x006DA3A0. |
+| `ui_create_user_dialog_ctor` | `0x0043C370` | high | Constructs RTTI class CreateUserDialogPane from _ncreate.txt, attaches appearance controls and account fields, and registers the pane for events and timers. |
+| `ui_create_user_draw` | `0x0043D190` | high | Draws the creation preview using gender at +0x674, hair style at +0x676, and hair-color palette index at +0x678. |
+| `ui_create_user_handle_pointer_event` | `0x0043DC80` | high | Handles CreateUserDialogPane appearance clicks, including gender selection and conversion of the 2-by-7 hair-color swatch grid into palette indexes. |
+| `ui_create_user_handle_action` | `0x0043EAD0` | high | Collects name, password, confirmation, and distribution-dependent account text; checks matching passwords and schedules the create-user send timer. |
+| `ui_create_user_timer` | `0x0043F410` | high | CreateUserDialogPane TimerHandler callback; timer 3 sends CNewUser after the form action schedules a 200 ms delay. |
 | `ui_dialog_pane_ctor` | `0x00445260` | high | Constructs DialogPane over Pane and initializes its control collection and interaction fields. |
 | `ui_dialog_add_control` | `0x00445670` | high | Creates DialogPane +0x594 on first use and inserts the supplied control pointer. |
 | `ui_dialog_handle_pointer_event` | `0x00445A20` | high | DialogPane primary-vtable +0x48 implementation for hit testing, child dispatch, hover, pressed state, and actions. |
@@ -141,6 +149,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_image_pane_draw_content` | `0x0048DD30` | high | Draws an ImagePane image into the pane's own canvas. |
 | `ui_layout_parse_control` | `0x004A81F0` | high | Parses CONTROL, NAME, TYPE, RECT, IMAGE, VALUE, COLOR, and ENDCONTROL tokens. |
 | `ui_layout_serialize_control` | `0x004A8820` | high | Writes one parsed control back to the same line-oriented layout grammar. |
+| `ui_new_patch_pane_ctor` | `0x005283E0` | high | Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff. |
 | `ui_pane_ctor` | `0x00549490` | high | Constructs Pane over Canvas and a secondary TimerHandler at +0x11C; initializes visible true at +0x130. |
 | `ui_pane_accepts_input` | `0x00549BC0` | high | Returns true when Pane +0x130 is visible and its active region is non-empty. |
 | `ui_pane_show` | `0x00549C00` | high | Sets Pane +0x130 visible and invalidates its region when required. |
@@ -170,9 +179,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_user_info_timer` | `0x005AD600` | high | Timer 0x1241 calls the local portrait refresh after the profile editor saves. |
 | `ui_portrait_text_dialog_ctor` | `0x005B11A0` | high | Constructs RTTI-backed PortraitTextInputDialogPane from _nui_pi.txt and loads profile.txt. |
 | `ui_portrait_text_dialog_action` | `0x005B1510` | high | Action 1 saves profile.txt and queues timer 0x1241; action 2 closes without saving. |
+| `ui_map_loading_pane_ctor` | `0x005BA040` | high | Constructs RTTI class MapLoadingPane from _nloadm.txt and registers it as a visible screen pane. |
+| `ui_map_loading_set_progress` | `0x005BA330` | high | Stores the SMapPart transfer percentage in MapLoadingPane and invalidates the pane for redraw. |
 | `ui_snow_particle_pane_ctor` | `0x005BD710` | high | Constructs one ImagePane-backed snow particle from a snowaNN.epf resource. |
 | `ui_world_pane_draw_to_target` | `0x005CE350` | high | Copies WorldPane output to its target and applies an optional post-copy pixel effect. |
 | `ui_world_pane_draw_content` | `0x005F27A0` | high | WorldPane content hook that draws the world when ready or clears the pane. |
+| `ui_has_map_loading_pane` | `0x005F6470` | high | Reports whether the global MapLoadingPane pointer is non-null. |
+| `ui_get_map_loading_pane` | `0x005F6490` | high | Returns the current global MapLoadingPane pointer used by SMapPart progress handling. |
+| `ui_close_map_loading_pane` | `0x005F64A0` | high | Destroys the current MapLoadingPane when a map transfer finishes. |
 
 ## Network
 
@@ -191,9 +205,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_configure_excitegame_endpoint` | `0x00435A20` | high | Dormant mode 10 Excitegame integration that obtains endpoint data from an external launcher or COM-style provider. |
 | `net_configure_kornetworld_endpoint` | `0x00436210` | high | Dormant mode 11 integration that expects /KWG, resolves game.kornetworld.com, and selects port 9000. |
 | `net_configure_mihosoft_endpoint` | `0x00436620` | high | Dormant mode 9 integration that loads cjconnector.dll and parses a mihosoft launcher record. |
-| `net_send_new_user_appearance` | `0x0043E8F0` | high | Accepted SNewUserCheck flow sends opcode 0x04 with three appearance bytes to finalize character creation. |
-| `net_dispatch_create_user_events` | `0x0043F780` | high | CreateUserDialogPane routes decoded early-session byte buffers, including SNewUserCheck opcode 0x01, outside the packet factory. |
-| `net_handle_new_user_check` | `0x0043F820` | high | Routes SNewUserCheck to a state-specific account-creation result parser. |
+| `net_send_new_user_request` | `0x0043D820` | high | Builds CNewUser opcode 0x02 with length-prefixed name, password, and distribution-dependent account text; Japan mode 13 appends a u16be ISP selector. |
+| `net_handle_new_user_validation_result` | `0x0043E360` | high | Parses the first creation result: status 0 sends appearance, 3 and 4 reset name, 5 through 10 reset both password controls, and 11 displays only the message. |
+| `net_handle_new_user_completion_result` | `0x0043E7B0` | high | Parses the second creation result; status 0 displays localized success text, closes CreateUserDialogPane, and ignores body bytes after status. |
+| `net_send_new_user_appearance` | `0x0043E8F0` | high | Accepted SNewUserCheck flow sends opcode 0x04 with hair style, one-based gender, and hair-color palette index. |
+| `net_dispatch_create_user_events` | `0x0043F780` | high | CreateUserDialogPane routes decoded opcode 0x02 and alias 0x01 through the same state-specific creation-result handlers outside the packet factory. |
+| `net_handle_new_user_check_opcode_1` | `0x0043F820` | high | Routes compiled SNewUserCheck alias opcode 0x01 according to CreateUserDialogPane creation stage. |
+| `net_handle_new_user_check_opcode_2` | `0x0043F870` | high | Routes live SNewUserCheck opcode 0x02 according to CreateUserDialogPane creation stage. |
 | `net_send_mercenary_action` | `0x0045C500` | high | EmployeeDialogPane calls this opcode 0x54 builder. |
 | `net_init_mercenary_packet` | `0x0045D550` | high | Initializes the opcode 0x54 body prefix used by net_send_mercenary_action. |
 | `net_send_group` | `0x00462DC0` | high | UserLookPane calls this opcode 0x2E builder with a length-prefixed user name. |
@@ -203,7 +221,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_queue_server_packet_event` | `0x00468220` | high | Builds and enqueues the event object used for a decoded server packet body. |
 | `net_request_family_name` | `0x004719B0` | high | EquipPane reaches this opcode-only 0x7A request paired with SFamilyName. |
 | `net_request_cash_shop` | `0x004A03B0` | high | ItemShop::ShoppingBagDialogPane sends the opcode 0x6C body during construction. |
-| `net_handle_version_check` | `0x004B7F80` | high | Handles SVersionCheck opcode 0x00 outside the RTTI packet factory; subtype 0 queues a seed-table selector and replacement static key. |
+| `net_handle_version_check` | `0x004B7F80` | high | Handles SVersionCheck opcode 0x00 outside the RTTI packet factory; subtype 0 installs transport state and subtype 2 constructs NewPatchPane for the Patcher2.exe handoff. |
 | `net_handle_login_check` | `0x004B8420` | high | Handles SLoginCheck opcode 0x02; status zero enters session setup and failures carry a display message. |
 | `net_handle_stipulation_raw` | `0x004B8570` | high | Handles the decoded-buffer form of SStipulation and requests the homepage first when its cached URL is absent. |
 | `net_handle_stipulation` | `0x004B8890` | high | Handles an RTTI-backed SStipulation object and requests the homepage first when its cached URL is absent. |
@@ -287,6 +305,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_portrait_profile` | `0x005B1160` | high | Calls net_build_send_portrait and submits the result through net_submit_client_packet. |
 | `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode. |
 | `net_handle_s_map_size` | `0x005F1BF0` | high | Applies map dimensions, seasonal art, weather mode, local map cache, and map setup state. |
+| `net_handle_map_part` | `0x005F2A60` | high | Consumes the raw decoded SMapPart body, creates MapLoadingPane, applies repeated map records, updates percentage progress, and finalizes the last part. |
 | `net_send_put_ground` | `0x005F4430` | high | Builds opcode 0x0C with one u32be value. |
 | `net_send_change_direction` | `0x005F4510` | high | WorldPane paths call this opcode 0x11 direction builder. |
 | `net_send_refresh_user` | `0x005F4640` | high | WorldPane paths call this opcode-only 0x38 builder. |
@@ -494,6 +513,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_get_tile_pixels` | `0x005D7610` | high | Gets one decoded ground-tile diamond from MapTileImageLib. |
 | `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds, dynamic occupants, and direction-specific SOTP masks for a proposed move. |
 | `map_apply_weather_mode` | `0x005F26C0` | high | Creates snow for mode 1, performs no local setup for mode 2, and changes lighting state for mode 3. |
+| `map_finish_transfer` | `0x005F2DE0` | high | Closes MapLoadingPane and either applies the completed map or schedules the alternate completion path. |
 | `file_load_static_tile_pixmap` | `0x005FD500` | high | Opens and decodes one base or alternate static HPF resource into a pixmap view. |
 | `file_open_static_tile` | `0x005FD700` | high | Opens stsNNNNN.hpf in alternate mode and falls back to stcNNNNN.hpf when missing. |
 | `file_format_static_tile_path` | `0x005FD850` | high | Formats stcNNNNN.hpf for base art or stsNNNNN.hpf for alternate art. |
@@ -518,5 +538,6 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
 | `crc16_buffer` | `0x00568870` | high | Applies the custom CRC16 update to a byte buffer starting from zero. |
+| `startup_run_pending_patcher` | `0x0057A330` | high | Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe; otherwise deletes both markers and continues. |
 | `crc16_update` | `0x005B8F30` | high | Updates the custom CRC16 with table[crc high byte] XOR crc shifted left XOR input byte. |
 | `crc32_update` | `0x00604530` | high | Standard reflected IEEE CRC32 update with initial and final inversion. |

@@ -117,6 +117,11 @@ functions:
     name: net_queue_raw_server_bytes_event
     confidence: high
     evidence: Builds event type 0x13 around an owned raw receive buffer for TerminalPane2.
+  - address: "0x004ACEE0"
+    end_address: "0x004ACEFE"
+    name: app_is_japan_distribution_mode
+    confidence: high
+    evidence: "Returns true when app_get_distribution_mode reports mode 13, selecting the create-user email and ISP-selector variant."
   - address: "0x004AD3A0"
     end_address: "0x004AD4D4"
     name: app_set_working_directory_from_executable
@@ -126,7 +131,7 @@ functions:
     end_address: "0x004B8412"
     name: net_handle_version_check
     confidence: high
-    evidence: Handles raw server opcode 0x00, installs the negotiated seed selector and static key, validates the local server table CRC, and auto-selects its only entry when applicable.
+    evidence: Handles raw server opcode 0x00; subtype 0 installs transport state and validates the local server table, while subtype 2 starts the Patcher2.exe handoff.
   - address: "0x004B8570"
     end_address: "0x004B888B"
     name: net_handle_stipulation_raw
@@ -393,7 +398,7 @@ comments:
   - address: "0x0056755F"
     text: Select the normal server raw, static-key, or derived-key policy from the recovered opcode before posting the decoded packet event.
   - address: "0x00567621"
-    text: Default derived-key transform for normally parsed server opcodes. The initial 0x7E welcome bypasses this switch because raw-stream mode is still enabled.
+    text: Default derived-key transform for normal server traffic, including 0x58 and 0x67. The initial 0x7E welcome bypasses this switch while raw-stream mode is active.
   - address: "0x00567C3A"
     text: Validate the decimal printable-record sequence against the receiver's expected value.
   - address: "0x00567CA2"

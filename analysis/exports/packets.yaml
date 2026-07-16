@@ -7,10 +7,34 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x0043C370"
+    name: ui_create_user_dialog_ctor
+    confidence: high
+    evidence: "Constructs RTTI class CreateUserDialogPane from _ncreate.txt, attaches appearance controls and account fields, and registers the pane for events and timers."
+  - address: "0x0043D190"
+    name: ui_create_user_draw
+    confidence: high
+    evidence: "Draws the creation preview using gender at +0x674, hair style at +0x676, and hair-color palette index at +0x678."
+  - address: "0x0043D820"
+    name: net_send_new_user_request
+    confidence: high
+    evidence: "Builds CNewUser opcode 0x02 with length-prefixed name, password, and distribution-dependent account text; Japan mode 13 appends a u16be ISP selector."
+  - address: "0x0043DC80"
+    name: ui_create_user_handle_pointer_event
+    confidence: high
+    evidence: "Handles CreateUserDialogPane appearance clicks, including gender selection and conversion of the 2-by-7 hair-color swatch grid into palette indexes."
   - address: "0x0043E8F0"
     name: net_send_new_user_appearance
     confidence: high
-    evidence: "Accepted SNewUserCheck flow sends opcode 0x04 with three appearance bytes to finalize character creation."
+    evidence: "Accepted SNewUserCheck flow sends opcode 0x04 with hair style, one-based gender, and hair-color palette index."
+  - address: "0x0043EAD0"
+    name: ui_create_user_handle_action
+    confidence: high
+    evidence: "Collects name, password, confirmation, and distribution-dependent account text; checks matching passwords and schedules the create-user send timer."
+  - address: "0x0043F410"
+    name: ui_create_user_timer
+    confidence: high
+    evidence: "CreateUserDialogPane TimerHandler callback; timer 3 sends CNewUser after the form action schedules a 200 ms delay."
   - address: "0x0045C500"
     name: net_send_mercenary_action
     confidence: high
@@ -63,6 +87,22 @@ functions:
     name: net_send_confirm
     confidence: high
     evidence: "UserConfirmPane calls this opcode 0x31 confirmation builder."
+  - address: "0x005BA040"
+    name: ui_map_loading_pane_ctor
+    confidence: high
+    evidence: "Constructs RTTI class MapLoadingPane from _nloadm.txt and registers it as a visible screen pane."
+  - address: "0x005BA330"
+    name: ui_map_loading_set_progress
+    confidence: high
+    evidence: "Stores the SMapPart transfer percentage in MapLoadingPane and invalidates the pane for redraw."
+  - address: "0x005F2A60"
+    name: net_handle_map_part
+    confidence: high
+    evidence: "Consumes the raw decoded SMapPart body, creates MapLoadingPane, applies repeated map records, updates percentage progress, and finalizes the last part."
+  - address: "0x005F2DE0"
+    name: map_finish_transfer
+    confidence: high
+    evidence: "Closes MapLoadingPane and either applies the completed map or schedules the alternate completion path."
   - address: "0x005F4430"
     name: net_send_put_ground
     confidence: high
@@ -75,12 +115,48 @@ functions:
     name: net_send_refresh_user
     confidence: high
     evidence: "WorldPane paths call this opcode-only 0x38 builder."
+  - address: "0x005F6470"
+    name: ui_has_map_loading_pane
+    confidence: high
+    evidence: "Reports whether the global MapLoadingPane pointer is non-null."
+  - address: "0x005F6490"
+    name: ui_get_map_loading_pane
+    confidence: high
+    evidence: "Returns the current global MapLoadingPane pointer used by SMapPart progress handling."
+  - address: "0x005F64A0"
+    name: ui_close_map_loading_pane
+    confidence: high
+    evidence: "Destroys the current MapLoadingPane when a map transfer finishes."
   - address: "0x005F7830"
     name: net_send_check_time
     confidence: high
     evidence: "Direct response to SCheckTime opcode 0x68; echoes a server value and appends timeGetTime()."
 data_symbols: []
-comments: []
+comments:
+  - address: "0x0043D8AF"
+    text: "Japan mode 13 CNewUser variant begins with opcode 0x02 and appends app_japan_distribution_isp_selector as u16be after the three length-prefixed strings."
+  - address: "0x0043DAE6"
+    text: "Active CNewUser body: opcode 0x02, u8-length name, u8-length password, and u8-length account text. The USA create-user pane supplies literal none for account text."
+  - address: "0x0043E912"
+    text: "CNewUserAppearance body is opcode 0x04, hair style, gender encoded as internal 0/1 plus one, and hair-color palette index."
+  - address: "0x0043E938"
+    text: "Write CreateUserDialogPane +0x676 as the hair-style ID. Male supports 1 through 18 and female 1 through 17."
+  - address: "0x0043E956"
+    text: "Encode CreateUserDialogPane +0x674 gender index as 1 for male or 2 for female."
+  - address: "0x0043E98D"
+    text: "Write CreateUserDialogPane +0x678 as the hair-color palette index 0 through 13."
+  - address: "0x0043ECB9"
+    text: "The active USA distribution stores literal none as the third CNewUser string. Japan mode 13 can read the Email control instead."
+  - address: "0x005962D3"
+    text: "The factory installs no constructor for server opcode 0x58 or 0x67. Both remain raw decoded bodies with a null packet-object slot."
+  - address: "0x005EE185"
+    text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x58 or 0x67."
+  - address: "0x005F2AEB"
+    text: "Create MapLoadingPane on the first SMapPart body when a map transfer is active."
+  - address: "0x005F2C31"
+    text: "Set map-transfer progress to (part_index + 1) * 100 / total_parts."
+  - address: "0x005F2C87"
+    text: "The final map part closes the loading pane, updates and writes the map cache, then applies the completed map."
 runtime_patches: []
 packet_indexes:
   client_to_server:
@@ -102,7 +178,7 @@ packet_indexes:
         builder: "0x0043D820"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x0043D820 writes opcode 0x02 and submits the body."
+        evidence: "Builder 0x0043D820 writes opcode 0x02 followed by u8-length name, password, and account text fields; Japan mode 13 appends a u16be ISP selector."
         page: "docs/network/client/002-0x02-new-user.md"
       - opcode: "0x03"
         friendly_name: "Login"
@@ -120,7 +196,7 @@ packet_indexes:
         builder: "0x0043E8F0"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "The accepted SNewUserCheck path calls builder 0x0043E8F0 to finalize character creation with three appearance values."
+        evidence: "The accepted SNewUserCheck path calls builder 0x0043E8F0 with hair style, gender 1 or 2, and hair-color palette index."
         page: "docs/network/client/004-0x04-new-user-appearance.md"
       - opcode: "0x05"
         friendly_name: "Map Request"
@@ -646,27 +722,27 @@ packet_indexes:
         evidence_source: handler
         opcode_confidence: high
         name_confidence: medium
-        evidence: "MainMenuPane routes opcode 0x00 to handler 0x004B7F80. Subtype 0 installs the seed selector and static key, validates the local server-table CRC, and auto-selects its only record."
+        evidence: "MainMenuPane routes opcode 0x00 to handler 0x004B7F80. Subtype 0 installs transport state and validates the server table; subtype 2 writes Patch/Info, launches Patcher2.exe, and exits."
         page: "docs/network/server/000-0x00-version-check.md"
       - opcode: "0x01"
-        friendly_name: "New User Check"
+        friendly_name: "New User Check Alias"
         class_name: "SNewUserCheck"
         transform: static
         constructor: null
         evidence_source: handler
         opcode_confidence: high
         name_confidence: medium
-        evidence: "CreateUserDialogPane routes opcode 0x01 through handler 0x0043F820. The SNewUserCheck name is project-owner protocol knowledge supported by the creation-result behavior."
+        evidence: "CreateUserDialogPane accepts opcode 0x01 as an alias and routes it through the same state-specific creation handlers as live opcode 0x02."
         page: "docs/network/server/001-0x01-new-user-check.md"
       - opcode: "0x02"
-        friendly_name: "Login Check"
-        class_name: "SLoginCheck"
+        friendly_name: "Login or New User Check"
+        class_name: "SLoginCheck / SNewUserCheck"
         transform: static
         constructor: null
         evidence_source: handler
         opcode_confidence: high
         name_confidence: medium
-        evidence: "MainMenuPane routes opcode 0x02 to handler 0x004B8420. The SLoginCheck name is project-owner protocol knowledge confirmed by success entering the game session."
+        evidence: "MainMenuPane handles opcode 0x02 as SLoginCheck, while CreateUserDialogPane handles the same opcode as the two-stage SNewUserCheck. Supplied live captures confirm the creation use."
         page: "docs/network/server/002-0x02-login-check.md"
       - opcode: "0x03"
         friendly_name: "Transfer Server"
@@ -1036,7 +1112,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00599E40 passes opcode 0x3C to the server packet base and installs the SMapPart vtable."
+        evidence: "Constructor 0x00599E40 installs SMapPart. Handler 0x005F2A60 reads a u16be part index and repeated three-u16be records from the raw decoded body, creates MapLoadingPane, updates transfer progress, and finalizes the last part."
         page: "docs/network/server/060-0x3c-map-part.md"
       - opcode: "0x3D"
         friendly_name: "Level Point"
@@ -1198,6 +1274,16 @@ packet_indexes:
         name_confidence: high
         evidence: "Constructor 0x0059A7C0 passes opcode 0x56 to the server packet base and installs the SMulti vtable."
         page: "docs/network/server/086-0x56-multi.md"
+      - opcode: "0x58"
+        friendly_name: "Unhandled Control"
+        class_name: null
+        transform: derived
+        constructor: null
+        evidence_source: handler
+        opcode_confidence: high
+        name_confidence: low
+        evidence: "Supplied live traffic places decoded body 58 00 after the initial SStatus on every login. The factory has no 0x58 entry, and no RTTI-backed pane event handler checks the raw opcode, so the body is unconsumed."
+        page: "docs/network/server/088-0x58-unhandled-control.md"
       - opcode: "0x5B"
         friendly_name: "Advertisement"
         class_name: "SAdvertisement"
@@ -1258,6 +1344,16 @@ packet_indexes:
         name_confidence: high
         evidence: "RTTI constructor 0x00597E20 installs opcode 0x66. Deserializer 0x00597E50 parses subtype 3 as a u8-length string, and handler 0x004B9B00 caches it as the homepage URL."
         page: "docs/network/server/102-0x66-browser.md"
+      - opcode: "0x67"
+        friendly_name: "Unhandled Map-Transfer Control"
+        class_name: null
+        transform: derived
+        constructor: null
+        evidence_source: handler
+        opcode_confidence: high
+        name_confidence: low
+        evidence: "Supplied runtime behavior associates decoded body 67 00 with map transfer. The factory has no 0x67 entry, and no RTTI-backed pane event handler checks the raw opcode, so the body is unconsumed; SMapPart 0x3C drives MapLoadingPane instead."
+        page: "docs/network/server/103-0x67-unhandled-map-transfer-control.md"
       - opcode: "0x68"
         friendly_name: "Check Time"
         class_name: "SCheckTime"

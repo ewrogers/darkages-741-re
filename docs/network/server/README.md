@@ -7,8 +7,8 @@ Most concrete names come directly from RTTI and the server packet factory. A few
 | Packet | Encoding |
 | --- | --- |
 | [0x00 - Version Check (`SVersionCheck`)](000-0x00-version-check.md) | none |
-| [0x01 - New User Check (`SNewUserCheck`)](001-0x01-new-user-check.md) | startup key |
-| [0x02 - Login Check (`SLoginCheck`)](002-0x02-login-check.md) | startup key |
+| [0x01 - New User Check Alias (`SNewUserCheck`)](001-0x01-new-user-check.md) | startup key |
+| [0x02 - Login or New User Check (`SLoginCheck` / `SNewUserCheck`)](002-0x02-login-check.md) | startup key |
 | [0x03 - Transfer Server (`STransferServer`)](003-0x03-transfer-server.md) | none |
 | [0x04 - User Position (`SUserPosition`)](004-0x04-user-position.md) | session key |
 | [0x05 - User Appearance (`SUserAppearance`)](005-0x05-user-appearance.md) | session key |
@@ -62,12 +62,14 @@ Most concrete names come directly from RTTI and the server packet factory. A few
 | [0x50 - Manual (`SManual`)](080-0x50-manual.md) | session key |
 | [0x51 - Block Input (`SBlockInput`)](081-0x51-block-input.md) | session key |
 | [0x56 - Multi Server (`SMulti`)](086-0x56-multi.md) | startup key |
+| [0x58 - Unhandled Control](088-0x58-unhandled-control.md) | session key |
 | [0x5B - Advertisement (`SAdvertisement`)](091-0x5b-advertisement.md) | session key |
 | [0x60 - Stipulation (`SStipulation`)](096-0x60-stipulation.md) | startup key |
 | [0x62 - Web Board (`SWebBoard`)](098-0x62-web-board.md) | startup key |
 | [0x63 - Group (`SGroup`)](099-0x63-group.md) | session key |
 | [0x64 - Mini Game (`SMiniGame`)](100-0x64-mini-game.md) | session key |
 | [0x66 - Browser (`SBrowser`)](102-0x66-browser.md) | startup key |
+| [0x67 - Unhandled Map-Transfer Control](103-0x67-unhandled-map-transfer-control.md) | session key |
 | [0x68 - Check Time (`SCheckTime`)](104-0x68-check-time.md) | session key |
 | [0x6B - Screen Shot (`SScreenShot`)](107-0x6b-screen-shot.md) | session key |
 | [0x6D - Family Name (`SFamilyName`)](109-0x6d-family-name.md) | session key |

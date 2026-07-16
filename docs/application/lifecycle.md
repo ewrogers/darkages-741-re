@@ -22,11 +22,18 @@ The names below can be searched in Binary Ninja. Addresses and confidence notes 
 1. `app_set_working_directory_from_executable` makes relative file paths start beside the executable.
 2. `app_parse_command_line` handles the active command-line options.
 3. `app_config_ctor` builds the client configuration, including the first server endpoint.
-4. A named Windows mutex checks whether another client is already running.
-5. The window, renderer, audio, input, pane, and network objects are prepared.
-6. `event_handle_intro_state` starts the opening sequence.
+4. `startup_run_pending_patcher` checks for a completed patch handoff.
+5. A named Windows mutex checks whether another client is already running.
+6. The window, renderer, audio, input, pane, and network objects are prepared.
+7. `event_handle_intro_state` starts the opening sequence.
 
 The mutex is named `Nexon.SingleInstance`. If Windows reports that it already exists, the original client exits. This is only a local guard. It does not change any account or server rules.
+
+## Patch handoff
+
+The lobby can notify this client about an update through [`SVersionCheck`](../network/server/000-0x00-version-check.md) subtype `2`. The client writes the supplied version and file-list data to `Patch/Info`, launches `Patcher2.exe`, and exits. This happens directly from the version response and does not require the separate `CRequestPatch` and `SSendPatch` opcodes.
+
+Startup provides a recovery path for a handoff that has progressed far enough to contain both `Patch/Info` and `Patch/Script`. When both files exist, `startup_run_pending_patcher` launches `Patcher2.exe` and exits before the normal client starts. If only one marker exists, the client deletes both and continues. The patcher's own download and update behavior is outside this analysis.
 
 ## Intro sequence
 

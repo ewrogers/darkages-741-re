@@ -47,6 +47,7 @@ def main() -> None:
         "- [Event system](systems/events.md)",
         "- [UI and panes](systems/ui.md)",
         "- [UI layout files](systems/ui-layouts.md)",
+        "- [Character creation](systems/character-creation.md)",
         "- [Portraits and profiles](systems/portraits-and-profiles.md)",
         "- [Text color markup](systems/text-color-markup.md)",
         "- [Event proxy design](systems/event-proxy.md)",

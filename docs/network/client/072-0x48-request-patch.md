@@ -13,6 +13,8 @@ The client sends this message for **request patch**.
 
 `net_send_client_packet` includes opcode `0x48` in its raw-policy branch. A fixed local builder and its send sites have not yet been isolated. Server opcode `0x40`, [`SSendPatch`](../server/064-0x40-send-patch.md), is the expected counterpart, but the request/response flow still needs a local control-flow trace.
 
+This opcode is not required for the verified client-update launch path. The lobby notifies the client through [`SVersionCheck`](../server/000-0x00-version-check.md) subtype `2`, which writes `Patch/Info`, launches `Patcher2.exe`, and exits.
+
 The client has no derived packet RTTI for this name.
 
 ## Body

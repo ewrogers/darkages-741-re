@@ -16,9 +16,9 @@ Endpoint selection begins in [Configuration](../application/configuration.md). T
 
 The connection function does not send a distribution-specific handshake in the active mode. Login and version messages are handled later by the packet system.
 
-## Bootstrap exchange
+## Bootstrap and lobby connections
 
-The live 7.41 exchange reaches the main create-or-login screen in two stages. The first server confirms the client and selects a server record. It then transfers the client to a new TCP connection, where the main-menu data is prepared.
+The live 7.41 exchange reaches the main create-or-login screen in two connections. The bootstrap endpoint confirms the client and selects a server record. It then transfers the client to the lobby connection, where the main-menu data is prepared.
 
 | Order | Direction | Plain body | Result |
 | --- | --- | --- | --- |
@@ -34,6 +34,12 @@ The live 7.41 exchange reaches the main create-or-login screen in two stages. Th
 | 10 | Server | [`SBrowser`](server/102-0x66-browser.md) subtype `3` | Caches `http://www.darkages.com` as the homepage URL |
 
 This table shows the complete plaintext bodies queued by the 7.41 client. It omits the `AA + u16be size` frame and transform sequence or trailer bytes. Most builders do not count the final zero themselves; `net_submit_client_packet` appends it and includes it in the sent length. The supplied decoded trace strips this common terminator from some transformed packets, while the raw `CHello` frame preserves enough length information to prove it is present.
+
+## Lobby role
+
+The destination of the bootstrap transfer is the lobby or login server. It owns the main menu and account work rather than the live game world. Confirmed client paths on this connection include character creation, login, password changes, the stipulation check, and homepage discovery. A successful login can use another `STransferServer` and `CTransferServer` exchange to move the authenticated character to a game server.
+
+Character creation is a two-request exchange on this connection. See [Character creation](../systems/character-creation.md) for the `CNewUser`, `SNewUserCheck`, and `CNewUserAppearance` flow.
 
 ## Retry path
 

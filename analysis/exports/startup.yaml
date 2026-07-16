@@ -42,6 +42,26 @@ functions:
     name: event_handle_intro_state
     confidence: high
     evidence: Dispatches intro states 0, 1, and 2 around Bink playback.
+  - address: "0x005283E0"
+    end_address: "0x005285DE"
+    name: ui_new_patch_pane_ctor
+    confidence: high
+    evidence: "Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff."
+  - address: "0x00528610"
+    end_address: "0x005287A8"
+    name: app_write_patch_info_and_launch_patcher
+    confidence: high
+    evidence: "Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client."
+  - address: "0x005287B0"
+    end_address: "0x005287E5"
+    name: app_quit_after_patcher_launch
+    confidence: high
+    evidence: "Destroys NewPatchPane, posts WM_QUIT, and terminates after the patcher launch attempt."
+  - address: "0x0057A330"
+    end_address: "0x0057A453"
+    name: startup_run_pending_patcher
+    confidence: high
+    evidence: "Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe; otherwise deletes both markers and continues."
   - address: "0x0057A710"
     end_address: "0x0057AAA5"
     name: app_winmain
@@ -69,6 +89,16 @@ comments:
     text: Fetch the global intro video pane; the following call starts CIf.bik and CIb.bik.
   - address: "0x004ACAF8"
     text: Begin the two-clip intro sequence using CIf.bik followed by CIb.bik.
+  - address: "0x0052845A"
+    text: "SVersionCheck subtype 2 patch notice: u16be required version, followed by u8 file count and repeated u8-length file names."
+  - address: "0x005284B3"
+    text: "Copy each u8-length patch file name into its own 256-byte slot in the Patch/Info handoff."
+  - address: "0x005286C4"
+    text: "Write the 0x10606-byte Patch/Info handoff containing local and required versions, file slots, command line, executable name, and data filename."
+  - address: "0x00528740"
+    text: "Launch Patcher2.exe without a command line; the patcher consumes Patch/Info. The client exits immediately afterward."
+  - address: "0x0057A385"
+    text: "Startup patch recovery requires both Patch/Info and Patch/Script. An incomplete pair is deleted instead of launching Patcher2.exe."
   - address: "0x0057A7C3"
     text: Create the named Nexon.SingleInstance mutex and preserve its handle for normal shutdown cleanup.
   - address: "0x0057A7D4"

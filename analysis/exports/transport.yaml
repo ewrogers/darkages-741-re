@@ -7,14 +7,26 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x0043E360"
+    name: net_handle_new_user_validation_result
+    confidence: high
+    evidence: "Parses the first creation result: status 0 sends appearance, 3 and 4 reset name, 5 through 10 reset both password controls, and 11 displays only the message."
+  - address: "0x0043E7B0"
+    name: net_handle_new_user_completion_result
+    confidence: high
+    evidence: "Parses the second creation result; status 0 displays localized success text, closes CreateUserDialogPane, and ignores body bytes after status."
   - address: "0x0043F780"
     name: net_dispatch_create_user_events
     confidence: high
-    evidence: "CreateUserDialogPane routes decoded early-session byte buffers, including SNewUserCheck opcode 0x01, outside the packet factory."
+    evidence: "CreateUserDialogPane routes decoded opcode 0x02 and alias 0x01 through the same state-specific creation-result handlers outside the packet factory."
   - address: "0x0043F820"
-    name: net_handle_new_user_check
+    name: net_handle_new_user_check_opcode_1
     confidence: high
-    evidence: "Routes SNewUserCheck to a state-specific account-creation result parser."
+    evidence: "Routes compiled SNewUserCheck alias opcode 0x01 according to CreateUserDialogPane creation stage."
+  - address: "0x0043F870"
+    name: net_handle_new_user_check_opcode_2
+    confidence: high
+    evidence: "Routes live SNewUserCheck opcode 0x02 according to CreateUserDialogPane creation stage."
   - address: "0x004647C0"
     name: event_dispatch
     confidence: high
@@ -30,7 +42,7 @@ functions:
   - address: "0x004B7F80"
     name: net_handle_version_check
     confidence: high
-    evidence: "Handles SVersionCheck opcode 0x00 outside the RTTI packet factory; subtype 0 queues a seed-table selector and replacement static key."
+    evidence: "Handles SVersionCheck opcode 0x00 outside the RTTI packet factory; subtype 0 installs transport state and subtype 2 constructs NewPatchPane for the Patcher2.exe handoff."
   - address: "0x004B8420"
     name: net_handle_login_check
     confidence: high
@@ -246,9 +258,17 @@ data_symbols:
     evidence: "Derived nine-byte key copied four times for the 32-bit XOR engine."
 comments:
   - address: "0x0043E3C9"
-    text: "SNewUserCheck status byte. Status 0 advances creation; statuses 3 through 11 carry a one-byte message length followed by message bytes."
+    text: "First-stage SNewUserCheck status. Status 0 sends CNewUserAppearance; 3 and 4 reset name, 5 through 10 reset both password controls, and 11 only displays the length-prefixed message."
+  - address: "0x0043E410"
+    text: "Statuses 3 and 4 clear and refocus create-user control 9, the name field, before displaying the u8-length server message."
+  - address: "0x0043E53C"
+    text: "Statuses 5 through 10 clear password controls 10 and 11, focus control 10, and display the u8-length server message."
+  - address: "0x0043E7FF"
+    text: "Second-stage creation status. Status 0 uses localized client success text and closes the pane; body bytes after status are ignored."
+  - address: "0x0043F7BB"
+    text: "Live lobby opcode 0x02 is SNewUserCheck while CreateUserDialogPane owns the event. The same opcode is SLoginCheck while MainMenuPane owns it."
   - address: "0x0043F7DC"
-    text: "Decoded server opcode 0x01 is SNewUserCheck. CreateUserDialogPane handles it directly as a byte buffer instead of constructing an RTTI packet class."
+    text: "Opcode 0x01 is a compiled SNewUserCheck alias. It reaches the same state-specific handlers as live opcode 0x02."
   - address: "0x00464982"
     text: "Use decoded body byte 0 as the server opcode, create the registered server packet class, and deserialize through its vtable."
   - address: "0x004B77A8"
@@ -259,6 +279,8 @@ comments:
     text: "For raw server opcode 0x00 subtype 0, body byte 7 is the replacement static-key length."
   - address: "0x004B806A"
     text: "For raw server opcode 0x00 subtype 0, the replacement static key begins at body byte 8."
+  - address: "0x004B83A2"
+    text: "SVersionCheck subtype 2 passes body+2 to NewPatchPane: u16be required version, u8 file count, then repeated u8-length file names."
   - address: "0x004B847C"
     text: "SLoginCheck status byte. Zero enters the game session; nonzero responses carry a one-byte message length and message."
   - address: "0x004B8BD9"
@@ -320,7 +342,7 @@ comments:
   - address: "0x00567334"
     text: "Inbound static-key set: 0x01, 0x02, 0x0A, 0x56, 0x60, 0x62, 0x66, and 0x6F."
   - address: "0x00567382"
-    text: "All other inbound opcodes use the derived 9-byte key mode."
+    text: "All other inbound opcodes, including 0x58 and 0x67, use the derived 9-byte key mode."
   - address: "0x005673D5"
     text: "Queue the decoded opcode-first server body as event type 0x13 for the main event path."
   - address: "0x00567918"

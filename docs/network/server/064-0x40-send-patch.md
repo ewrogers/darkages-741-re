@@ -17,6 +17,8 @@ The opcode has an explicit raw policy in `net_receive_frames`, but `net_server_p
 
 `SSendPatch` is therefore preserved as protocol vocabulary, not claimed as a compiler-recovered class name.
 
+This opcode is not on the verified `Patcher2.exe` launch path. The 7.41 client receives that notification through [`SVersionCheck`](000-0x00-version-check.md) subtype `2`. The purpose of this separate raw opcode remains unresolved.
+
 ## Body
 
 ```text
