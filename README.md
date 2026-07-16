@@ -38,7 +38,7 @@ Do not commit the executable, original game assets, `.bndb` files, credentials, 
 
 ## Current coverage
 
-The book currently covers application startup and configuration, the game loop, events, UI panes, initial connection, TCP transport, packet transforms, runtime launcher patches, pane inheritance, and direction-specific packet indexes.
+The book currently covers application startup and configuration, the game loop, events, UI panes, software rendering, map and image formats, initial connection, TCP transport, packet transforms, runtime launcher patches, pane inheritance, and direction-specific packet indexes.
 
 ## License
 

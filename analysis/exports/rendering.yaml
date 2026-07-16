@@ -1,0 +1,561 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x004021D0"
+    name: file_spf_view_initialize
+    confidence: high
+    evidence: Maps the SPF prefix, optional palette, frame table, and pixel blob.
+  - address: "0x004022A0"
+    name: file_spf_get_frame
+    confidence: high
+    evidence: Returns one SPF frame view from its 0x20-byte record.
+  - address: "0x00404A00"
+    name: render_get_image_library
+    confidence: high
+    evidence: Returns the ImageLib singleton used for sprite and UI frames.
+  - address: "0x0040CD00"
+    name: render_blit_screen_rgb565
+    confidence: high
+    evidence: Applies blend mode 0x6D to an RGB565 destination.
+  - address: "0x0040D0D0"
+    name: render_blit_screen_rgb555
+    confidence: high
+    evidence: Applies blend mode 0x6D to an RGB555 destination.
+  - address: "0x0040D4A0"
+    name: render_blit_screen_mode
+    confidence: high
+    evidence: Selects the RGB565 or RGB555 screen-style blend used by static render flag 0x80.
+  - address: "0x0040EAE0"
+    name: render_screen_pixel_rgb555
+    confidence: high
+    evidence: Combines one RGB555 source and destination pixel with the screen-style component formula.
+  - address: "0x0040EC20"
+    name: render_screen_pixel_rgb565
+    confidence: high
+    evidence: Combines one RGB565 source and destination pixel with the screen-style component formula.
+  - address: "0x0042E7E0"
+    name: render_get_video_system
+    confidence: high
+    evidence: Returns the VideoSystem singleton.
+  - address: "0x004494B0"
+    name: render_direct_draw_ctor
+    confidence: high
+    evidence: Constructs the RTTI-backed DirectDraw wrapper.
+  - address: "0x00449550"
+    name: render_direct_draw_dtor
+    confidence: high
+    evidence: Runs DirectDraw wrapper cleanup during deletion.
+  - address: "0x004495D0"
+    name: render_direct_draw_initialize
+    confidence: high
+    evidence: Creates DirectDraw, selects cooperative and display modes, and creates presentation surfaces.
+  - address: "0x00449CB0"
+    name: render_direct_draw_shutdown
+    confidence: high
+    evidence: Releases the clipper and surfaces, restores display mode, and releases DirectDraw.
+  - address: "0x00449FA0"
+    name: render_direct_draw_flip
+    confidence: high
+    evidence: Flips the attached DirectDraw backbuffer.
+  - address: "0x00449FD0"
+    name: render_direct_draw_present_canvas
+    confidence: high
+    evidence: Copies a Canvas to the DirectDraw presentation surface and recovers a lost surface.
+  - address: "0x0044A490"
+    name: render_canvas_ctor
+    confidence: high
+    evidence: Constructs the RTTI-backed Canvas object.
+  - address: "0x0044AA30"
+    name: render_canvas_attach_surface
+    confidence: high
+    evidence: Attaches a Canvas to a DirectDraw surface.
+  - address: "0x0044AB80"
+    name: render_canvas_create_memory
+    confidence: high
+    evidence: Allocates a 16-bit memory canvas with width aligned to four pixels.
+  - address: "0x0044B0D0"
+    name: render_canvas_release
+    confidence: high
+    evidence: Releases the current Canvas storage.
+  - address: "0x0044B160"
+    name: render_canvas_begin
+    confidence: high
+    evidence: Begins pixel access and locks a wrapped surface when needed.
+  - address: "0x0044B1B0"
+    name: render_canvas_end
+    confidence: high
+    evidence: Ends pixel access and unlocks a wrapped surface when needed.
+  - address: "0x0044D820"
+    name: render_get_direct_draw
+    confidence: high
+    evidence: Returns the DirectDraw wrapper singleton.
+  - address: "0x0044DE30"
+    name: render_blit_image
+    confidence: high
+    evidence: Draws a decoded Image with copy, blend, alpha, and special plane modes.
+  - address: "0x0044FB80"
+    name: render_blit_pixmap
+    confidence: high
+    evidence: Draws an indexed PixMap with transparent zero pixels and several software blend modes.
+  - address: "0x00451E40"
+    name: render_blit_canvas
+    confidence: high
+    evidence: Copies or blends one Canvas into another.
+  - address: "0x004548B0"
+    name: render_average_pixels
+    confidence: high
+    evidence: Combines two 16-bit pixels with the fixed component-average lookup path.
+  - address: "0x00456F30"
+    name: file_open_efa
+    confidence: high
+    evidence: Opens an EFA resource and returns its frame count and table view.
+  - address: "0x00457030"
+    name: file_decode_efa_frame
+    confidence: high
+    evidence: Inflates one zlib payload from a 0x40-byte EFA frame record and builds an Image view.
+  - address: "0x004575B0"
+    name: render_effect_image_session_ctor
+    confidence: high
+    evidence: Opens the available EFA or EPF variant for one effect image session.
+  - address: "0x00457FD0"
+    name: render_get_effect_frame_image
+    confidence: high
+    evidence: Lazily decodes and caches one requested effect frame image.
+  - address: "0x00458ED0"
+    name: file_load_effect_frame_table
+    confidence: high
+    evidence: Parses Effect.tbl decimal frame sequences into per-effect tables.
+  - address: "0x00459460"
+    name: render_get_effect_image_pool
+    confidence: high
+    evidence: Returns the EffectImagePool singleton.
+  - address: "0x0048B390"
+    name: file_read_image_metadata
+    confidence: high
+    evidence: Reads shared EPF metadata or dispatches SPF metadata parsing.
+  - address: "0x0048B530"
+    name: file_load_image_frame
+    confidence: high
+    evidence: Loads one EPF or SPF frame for the shared image library.
+  - address: "0x0048DD30"
+    name: ui_image_pane_draw_content
+    confidence: high
+    evidence: Draws an ImagePane image into the pane's own canvas.
+  - address: "0x004AE4E0"
+    name: render_get_map_tile_library
+    confidence: high
+    evidence: Returns the MapTileImageLib singleton.
+  - address: "0x004C5270"
+    name: render_map_background_images
+    confidence: high
+    evidence: Draws configured map background or bottom-layer images before world objects.
+  - address: "0x004C7000"
+    name: file_decode_ctf_map_tile
+    confidence: high
+    evidence: Palette-converts one alternate 784-byte indexed tile source to 16-bit pixels.
+  - address: "0x004C7180"
+    name: file_decode_dtf_map_tile
+    confidence: high
+    evidence: Reads one alternate 1568-byte 16-bit tile source and converts color format when needed.
+  - address: "0x004C7280"
+    name: file_tile_bank_storage_ctor
+    confidence: high
+    evidence: Opens one fixed-record raw tile bank and selects its palette path.
+  - address: "0x004C7390"
+    name: file_decode_raw_map_tile
+    confidence: high
+    evidence: Extracts and palette-converts one 784-pixel diamond from a raw 56 by 27 indexed record.
+  - address: "0x004C7560"
+    name: map_tile_library_ctor
+    confidence: high
+    evidence: Opens tilea.bmp as the base ground bank and tileas.bmp as the alternate bank.
+  - address: "0x004C78C0"
+    name: map_load_tile_pixels
+    confidence: high
+    evidence: Applies ground animation, then loads the alternate bank with base-bank fallback when selected.
+  - address: "0x00549F60"
+    name: ui_pane_invalidate
+    confidence: high
+    evidence: Marks a pane or supplied rectangle dirty so the pane tree redraws it.
+  - address: "0x0054A3F0"
+    name: ui_pane_draw_to_target
+    confidence: high
+    evidence: Copies a pane canvas into its target canvas with the pane's selected blend mode.
+  - address: "0x00554040"
+    name: render_screen_tree_frame
+    confidence: high
+    evidence: Redraws the dirty root screen tree and presents the completed frame.
+  - address: "0x00555560"
+    name: render_screen_subtree
+    confidence: high
+    evidence: Clips and draws one pane subtree through the vtable draw-to-target slot.
+  - address: "0x0057A640"
+    name: render_probe_display_capabilities
+    confidence: high
+    evidence: Probes the current DirectDraw display mode before normal application initialization.
+  - address: "0x00586900"
+    name: map_rotate_static_tile_mapping
+    confidence: high
+    evidence: Rotates every static tile ID in an animation group to the next mapped ID.
+  - address: "0x005869F0"
+    name: map_rotate_ground_tile_mapping
+    confidence: high
+    evidence: Rotates every ground tile ID in an animation group to the next mapped ID.
+  - address: "0x005872C0"
+    name: map_advance_tile_animations
+    confidence: high
+    evidence: Advances animation counters and rotates a group when its delay expires.
+  - address: "0x005873A0"
+    name: map_tile_animation_manager_ctor
+    confidence: high
+    evidence: Loads gndani.tbl and stcani.tbl and builds their animation groups.
+  - address: "0x00587750"
+    name: map_add_tile_animation_group
+    confidence: high
+    evidence: Registers one tile-ID cycle and its delay from an animation-table line.
+  - address: "0x00587C90"
+    name: map_apply_tile_animation_step
+    confidence: high
+    evidence: Rotates the ground or static mapping and invalidates the affected cached images.
+  - address: "0x00587D10"
+    name: map_tile_animation_timer
+    confidence: high
+    evidence: Advances tile animation groups on a shared 100 ms timer.
+  - address: "0x005933C0"
+    name: render_free_blend_tables
+    confidence: high
+    evidence: Frees both software component-blend lookup tables.
+  - address: "0x00593490"
+    name: render_build_blend_tables
+    confidence: high
+    evidence: Builds the 256 by 256 lookup tables for five-bit and six-bit color components.
+  - address: "0x005936E0"
+    name: render_blend_pixel
+    confidence: high
+    evidence: Blends two 16-bit RGB pixels using a selector and the component lookup tables.
+  - address: "0x00593E20"
+    name: render_video_system_ctor
+    confidence: high
+    evidence: Constructs the RTTI-backed VideoSystem singleton.
+  - address: "0x00593EA0"
+    name: render_video_system_dtor
+    confidence: high
+    evidence: Shuts down an active VideoSystem and deletes its DirectDraw wrapper.
+  - address: "0x00593F30"
+    name: render_video_system_initialize
+    confidence: high
+    evidence: Creates presentation state, canvases, conversion helpers, and software blend tables.
+  - address: "0x00594250"
+    name: render_video_system_shutdown
+    confidence: high
+    evidence: Releases the main canvas and renderer lookup helpers before VideoSystem deletion.
+  - address: "0x005942D0"
+    name: render_present_frame
+    confidence: high
+    evidence: Presents the completed canvas through the DirectDraw or window DC path.
+  - address: "0x005949A0"
+    name: render_convert_rgb565_to_xrgb8888
+    confidence: high
+    evidence: Converts RGB565 pixels to 32-bit output with optional 2x nearest-neighbor scaling.
+  - address: "0x005950F0"
+    name: render_scale_2x_u16
+    confidence: high
+    evidence: Doubles a 16-bit image in both axes with nearest-neighbor copies.
+  - address: "0x005953A0"
+    name: render_scale_2x_u32
+    confidence: high
+    evidence: Doubles a 32-bit image in both axes with nearest-neighbor copies.
+  - address: "0x00598210"
+    name: net_decode_s_change_weather
+    confidence: high
+    evidence: Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer.
+  - address: "0x00599F90"
+    name: net_decode_s_map_size
+    confidence: high
+    evidence: Reads map ID, dimensions, flags, secondary mode, checksum, and map name from SMapSize.
+  - address: "0x005A0CF0"
+    name: ui_gui_back_handle_pointer
+    confidence: high
+    evidence: Handles GUIBackPane pointer input; BTN_HELP is present in the hover path but has no click action.
+  - address: "0x005B9450"
+    name: file_read_map_cells
+    confidence: high
+    evidence: Reads a row-major width times height array of six-byte map cells.
+  - address: "0x005B9660"
+    name: file_format_map_path
+    confidence: high
+    evidence: Formats the path maps backslash lod map-id dot map.
+  - address: "0x005B9680"
+    name: file_write_map_cells
+    confidence: high
+    evidence: Writes the same six-byte map-cell array consumed by the map reader.
+  - address: "0x005BA660"
+    name: render_static_tile_cache_ctor
+    confidence: high
+    evidence: Constructs the static HPF image cache and stores the base or alternate art mode.
+  - address: "0x005BA8D0"
+    name: render_get_static_tile_image
+    confidence: high
+    evidence: Resolves one animated static tile through the selected stc or sts resource path.
+  - address: "0x005BAB10"
+    name: render_set_static_tile_bank
+    confidence: high
+    evidence: Selects base stc or alternate sts static art and clears the static image cache on change.
+  - address: "0x005BD710"
+    name: ui_snow_particle_pane_ctor
+    confidence: high
+    evidence: Constructs one ImagePane-backed snow particle from a snowaNN.epf resource.
+  - address: "0x005BD950"
+    name: render_snow_weather_session_ctor
+    confidence: high
+    evidence: Creates the snow weather session, selects pane blend mode 7, and starts its 100 ms timer.
+  - address: "0x005BDB70"
+    name: render_spawn_snow_particles
+    confidence: high
+    evidence: Places snow particle panes across and above the world view.
+  - address: "0x005BDDA0"
+    name: render_update_snow_particles
+    confidence: high
+    evidence: Moves snow particles down, removes those below the view, and spawns replacements.
+  - address: "0x005C7660"
+    name: map_apply_seasonal_tile_mode
+    confidence: high
+    evidence: Applies the SMapSize 0x80 flag to both ground and static tile storage.
+  - address: "0x005C82C0"
+    name: render_create_snow_overlay
+    confidence: high
+    evidence: Replaces the current weather session with WeatherSession_SnowParticle.
+  - address: "0x005CD730"
+    name: render_build_static_objects
+    confidence: high
+    evidence: Builds WorldObject_Static instances from the two static tile IDs in visible map cells.
+  - address: "0x005CE280"
+    name: render_world_pane_content
+    confidence: high
+    evidence: Advances the visual frame and draws the world into the WorldPane canvas.
+  - address: "0x005CE350"
+    name: ui_world_pane_draw_to_target
+    confidence: high
+    evidence: Copies WorldPane output to its target and applies an optional post-copy pixel effect.
+  - address: "0x005CF360"
+    name: map_get_sotp_render_flags
+    confidence: high
+    evidence: Returns the high-nibble SOTP render flags for one static tile ID.
+  - address: "0x005CF3B0"
+    name: map_load_sotp_render_flags
+    confidence: high
+    evidence: Loads SOTP.DAT into a one-based high-nibble render-flag table.
+  - address: "0x005CF4A0"
+    name: map_get_sotp_collision_flags
+    confidence: high
+    evidence: Returns the low-nibble SOTP direction mask for one static tile ID.
+  - address: "0x005CF4F0"
+    name: map_load_sotp_collision_flags
+    confidence: high
+    evidence: Loads SOTP.DAT into a one-based low-nibble collision table.
+  - address: "0x005CF5E0"
+    name: map_get_collision_level
+    confidence: high
+    evidence: Combines dynamic occupants and the two static SOTP masks at one map cell.
+  - address: "0x005D2B70"
+    name: render_use_base_ground_bank
+    confidence: high
+    evidence: Selects tilea.bmp for the ground cache.
+  - address: "0x005D2B90"
+    name: render_use_alternate_ground_bank
+    confidence: high
+    evidence: Selects tileas.bmp with tilea.bmp fallback for the ground cache.
+  - address: "0x005D3190"
+    name: render_world_object
+    confidence: high
+    evidence: Calls the WorldObject virtual draw method at primary vtable slot 0x18.
+  - address: "0x005D31D0"
+    name: render_world_layer_queue
+    confidence: high
+    evidence: Walks one sorted queue of visible world objects.
+  - address: "0x005D3740"
+    name: render_collect_world_objects
+    confidence: high
+    evidence: Clips visible objects and assigns them to one of 32 draw-layer queues.
+  - address: "0x005D3F70"
+    name: render_world_frame
+    confidence: high
+    evidence: Draws ground, map backgrounds, and sorted world objects for one world frame.
+  - address: "0x005D6A50"
+    name: render_ground_layer
+    confidence: high
+    evidence: Updates and draws the cached visible ground-tile layer.
+  - address: "0x005D7410"
+    name: render_set_ground_bank
+    confidence: high
+    evidence: Stores the active ground-bank selector and clears the cached ground layer.
+  - address: "0x005D7610"
+    name: map_get_tile_pixels
+    confidence: high
+    evidence: Gets one decoded ground-tile diamond from MapTileImageLib.
+  - address: "0x005D7690"
+    name: render_ground_tile
+    confidence: high
+    evidence: Copies one decoded isometric tile diamond into the ground cache canvas.
+  - address: "0x005DD380"
+    name: render_effect_object
+    confidence: high
+    evidence: Draws a world effect frame with its selected software blend mode.
+  - address: "0x005DD470"
+    name: render_update_effect_frame
+    confidence: high
+    evidence: Advances a world effect through its Effect.tbl frame sequence.
+  - address: "0x005DE620"
+    name: render_item_object
+    confidence: high
+    evidence: Draws a ground item with its normal or faded blend state.
+  - address: "0x005DF950"
+    name: render_living_object
+    confidence: high
+    evidence: Draws a living sprite with normal, highlighted, or transparent state.
+  - address: "0x005E42F0"
+    name: render_static_object_ctor
+    confidence: high
+    evidence: Stores the static tile ID, side, image cache, SOTP render flags, and draw state.
+  - address: "0x005E47E0"
+    name: render_static_object
+    confidence: high
+    evidence: Draws a fixed world object with its SOTP-selected software blend mode.
+  - address: "0x005EFFE0"
+    name: map_can_move_direction
+    confidence: high
+    evidence: Checks bounds, dynamic occupants, and direction-specific SOTP masks for a proposed move.
+  - address: "0x005F1BF0"
+    name: net_handle_s_map_size
+    confidence: high
+    evidence: Applies map dimensions, seasonal art, weather mode, local map cache, and map setup state.
+  - address: "0x005F26C0"
+    name: map_apply_weather_mode
+    confidence: high
+    evidence: Creates snow for mode 1, performs no local setup for mode 2, and changes lighting state for mode 3.
+  - address: "0x005F27A0"
+    name: ui_world_pane_draw_content
+    confidence: high
+    evidence: WorldPane content hook that draws the world when ready or clears the pane.
+  - address: "0x005FD500"
+    name: file_load_static_tile_pixmap
+    confidence: high
+    evidence: Opens and decodes one base or alternate static HPF resource into a pixmap view.
+  - address: "0x005FD700"
+    name: file_open_static_tile
+    confidence: high
+    evidence: Opens stsNNNNN.hpf in alternate mode and falls back to stcNNNNN.hpf when missing.
+  - address: "0x005FD850"
+    name: file_format_static_tile_path
+    confidence: high
+    evidence: Formats stcNNNNN.hpf for base art or stsNNNNN.hpf for alternate art.
+data_symbols:
+  - address: "0x006D395C"
+    name: map_move_direction_masks
+    confidence: high
+    evidence: Four collision bits for left, down, right, and up movement, followed by combined corner masks.
+  - address: "0x006D8FC8"
+    name: render_image_library_ptr
+    confidence: high
+    evidence: ImageLib singleton pointer returned by render_get_image_library.
+  - address: "0x006DA3A4"
+    name: render_video_system_ptr
+    confidence: high
+    evidence: VideoSystem singleton pointer returned by render_get_video_system.
+  - address: "0x006FB2A0"
+    name: render_direct_draw_ptr
+    confidence: high
+    evidence: DirectDraw wrapper singleton pointer returned by render_get_direct_draw.
+  - address: "0x006FC2E0"
+    name: render_effect_image_pool_ptr
+    confidence: high
+    evidence: EffectImagePool singleton pointer returned by render_get_effect_image_pool.
+  - address: "0x00750588"
+    name: render_map_tile_library_ptr
+    confidence: high
+    evidence: MapTileImageLib singleton pointer returned by render_get_map_tile_library.
+  - address: "0x0082B160"
+    name: render_blend_5bit_table
+    confidence: high
+    evidence: Pointer to the 256 by 256 five-bit component blend table.
+  - address: "0x0082B164"
+    name: render_blend_6bit_table
+    confidence: high
+    evidence: Pointer to the 256 by 256 six-bit component blend table.
+comments:
+  - address: "0x0040D4A0"
+    text: Blend mode 0x6D uses a screen-style per-component software blend in RGB565 or RGB555.
+  - address: "0x0044DE30"
+    text: Software Image blitter. Numeric mode selects normal copy, blend-table paths, per-pixel alpha, color effects, or a second image plane.
+  - address: "0x0044FB80"
+    text: Software PixMap blitter. The common sprite paths treat source pixel zero as transparent.
+  - address: "0x004C7280"
+    text: Open one raw ground-tile bank. Records are fixed 0x5E8-byte blocks, not Windows BMP files; the bank kind selects the palette path.
+  - address: "0x004C7390"
+    text: Decode one fixed 0x5E8-byte raw tile record as a 56 by 27 indexed slot and pack its 784 diamond pixels into 16-bit color.
+  - address: "0x004C78C0"
+    text: Apply ground animation first. In alternate mode, try tileas.bmp and fall back to tilea.bmp when the requested alternate record is unavailable.
+  - address: "0x00555560"
+    text: Recursive pane draw. Clip the pane, invoke primary vtable slot 0x5C, then walk its child subtree.
+  - address: "0x0058747B"
+    text: Load gndani.tbl. Each text line is a tile-ID cycle followed by a delay measured in 100 ms ticks.
+  - address: "0x005875D2"
+    text: Load stcani.tbl. It uses the same line format as gndani.tbl but remaps static tile IDs.
+  - address: "0x00587DD9"
+    text: Start the shared tile-animation timer at 100 ms. Table delays count these ticks.
+  - address: "0x00593490"
+    text: Build the two software component tables used by the 16-bit pixel blend helper.
+  - address: "0x00593F30"
+    text: Initialize DirectDraw presentation, the main and output canvases, color conversion helpers, and blend tables.
+  - address: "0x00594250"
+    text: Release canvas and software renderer helpers. DirectDraw is released later by the VideoSystem destructor.
+  - address: "0x005942D0"
+    text: Present the finished software canvas through DirectDraw or the window DC path.
+  - address: "0x00598210"
+    text: Deserialize the one-byte SChangeWeather payload. No 0x1F consumer exists in the main gameplay dispatcher.
+  - address: "0x005A0FA2"
+    text: BTN_HELP is tested only by the pointer-move tooltip path. The left-button path has no help action in this build.
+  - address: "0x005B9450"
+    text: Read exactly width times height times six bytes. A map file has no header and each cell contains three little-endian u16 values.
+  - address: "0x005B9680"
+    text: Client-confirmed MAP writer for the same six-byte row-major cell buffer used by the reader.
+  - address: "0x005CF3B0"
+    text: Build a one-based static-tile render table from the high nibble of each SOTP.DAT byte.
+  - address: "0x005CF4F0"
+    text: Build a one-based static-tile collision table from the low nibble of each SOTP.DAT byte.
+  - address: "0x005D3190"
+    text: Dispatch the WorldObject draw method through primary vtable slot 0x18.
+  - address: "0x005D3740"
+    text: Collect clipped visible objects and sort them into 32 world draw-layer queues.
+  - address: "0x005D3F70"
+    text: World frame order is ground cache, map background images, then sorted world objects.
+  - address: "0x005DD380"
+    text: Effect drawing uses the common software Image blitter with a blend mode stored on the effect object.
+  - address: "0x005DD470"
+    text: Advance the effect frame through the sequence loaded from Effect.tbl and request the matching cached image.
+  - address: "0x005E47FF"
+    text: Original JE enters the static draw body when the hidden flag is zero. EB 00 falls into the existing jump to the normal epilogue and hides every static map object.
+  - address: "0x005E4880"
+    text: SOTP render flag 0x80 selects blend mode 0x6D. Flag 0x40 selects mode 3.
+  - address: "0x005F0676"
+    text: Direction values 0 through 3 select collision masks 0x01, 0x02, 0x04, and 0x08 for left, down, right, and up.
+  - address: "0x005F1D3E"
+    text: SMapSize flags use the low nibble for weather mode and bit 0x80 for alternate ground and static art.
+  - address: "0x005F1D51"
+    text: SMapSize flag 0x80 selects alternate ground and static art, with base-art fallback for missing records or resources.
+  - address: "0x005F26C0"
+    text: Apply the weather mode saved from SMapSize. Mode 1 creates snow particles, mode 2 has no local setup, and mode 3 changes lighting state.
+runtime_patches:
+  - id: hide-static-map-art
+    rva: "0x001E47FF"
+    static_address: "0x005E47FF"
+    file_offset_for_reference_only: "0x001E3BFF"
+    original_bytes: 74 05
+    replacement_bytes: EB 00
+    effect: Skip every WorldObject_Static draw through the function's existing normal epilogue; collision remains active.

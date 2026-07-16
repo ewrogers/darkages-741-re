@@ -44,7 +44,9 @@ This is useful because a launcher can skip the video cleanly by starting at stat
 
 ## Shutdown
 
-When the game loop returns, the startup code closes the single-instance mutex and exits. More detailed subsystem teardown is not mapped yet, so the book does not assume an order that has not been confirmed.
+When the game loop returns, the client tears down panes and event objects first. It then releases the main image and map-tile libraries, shuts down the video system, deletes it, and releases DirectDraw. The single-instance mutex is closed before the process exits.
+
+The renderer-specific order is covered in [Renderer lifecycle](../rendering/lifecycle.md).
 
 ## Related pages
 

@@ -51,21 +51,99 @@ For a simulated server message, the controller supplies a decoded opcode-first b
 
 Simulated server messages do not advance the real receive cipher or network session. They are best used for UI experiments and controlled tests, not as a replacement transport.
 
-## Local rules
+## Default and live rules
 
-Blocking must be decided inside the injected process. Waiting for the controller would stall the game loop.
+The proxy loads its default rules from YAML when the DLL starts. Every rule needs a stable ID so a controller can refer to it later.
 
 ```yaml
 rules:
-  - channel: client_packet
+  - id: observe_alive
+    enabled: true
+    priority: 100
+    channel: client_packet
     opcode: 0x71
     action: observe
-  - channel: keyboard
+
+  - id: block_f12
+    enabled: false
+    priority: 200
+    channel: keyboard
     key: F12
     action: block
 ```
 
-If rule loading fails, the proxy should fail open and keep the client working. Command and telemetry queues need fixed limits. When telemetry is full, drop observations instead of blocking the game.
+The loaded rules become the first live rule set. Runtime changes affect memory only. They do not rewrite the YAML file. If a user wants to keep a change, the controller should save a new YAML file outside the injected DLL.
+
+Resetting the rules discards runtime changes and reloads the defaults.
+
+## Rule control over IPC
+
+The controller can manage the live rule set with these commands:
+
+| Command | Result |
+| --- | --- |
+| `rule.list` | Return the active rules and current revision. |
+| `rule.add` | Add a rule with a new ID. |
+| `rule.edit` | Replace one rule while keeping its ID. |
+| `rule.remove` | Remove a rule from the live set. |
+| `rule.enable` | Enable a rule. |
+| `rule.disable` | Disable a rule. |
+| `rule.reset_defaults` | Reload the default YAML rules. |
+
+An edit should send the complete replacement rule. This is easier to validate than a list of small field changes.
+
+```yaml
+command: rule.edit
+request_id: 42
+expected_revision: 7
+rule:
+  id: block_f12
+  enabled: true
+  priority: 200
+  channel: keyboard
+  key: F12
+  action: block
+```
+
+The controller includes the revision it last read. The proxy rejects a stale edit instead of overwriting a newer change.
+
+```yaml
+request_id: 42
+ok: true
+revision: 8
+```
+
+The wire format may be a small fixed binary message even though the saved rules use YAML. The command names and behavior should stay the same.
+
+## Publishing rule changes
+
+IPC parsing still happens outside the hooks. A control command follows this path:
+
+```text
+controller
+   |
+   v
+IPC thread: parse and check message shape
+   |
+   v
+bounded control queue
+   |
+   v
+main-thread tick: clone, validate, and apply
+   |
+   v
+publish new rule snapshot and send reply
+```
+
+Hooks read one immutable snapshot. They never edit the rule table, take an IPC lock, or wait for the controller. After a change, the proxy publishes the new snapshot in one swap and keeps the old snapshot alive until existing readers are finished.
+
+Each accepted change increments the revision. A rejected change leaves both the active rules and revision untouched. Validation should check the rule ID, channel, action, match fields, opcode range, and total rule limit.
+
+## Rule order and failure behavior
+
+Only enabled rules run. Higher priority rules run first. `observe` records the event and continues. `allow` and `block` stop evaluation, so the first matching terminal action wins. If no terminal rule matches, the event is allowed.
+
+If default loading, IPC parsing, or a runtime edit fails, the proxy keeps the last valid snapshot and fails open. Command and telemetry queues need fixed limits. When telemetry is full, drop observations instead of blocking the game.
 
 ## Safe first scope
 

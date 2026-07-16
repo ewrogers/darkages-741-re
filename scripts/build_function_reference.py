@@ -31,6 +31,7 @@ GROUPS = [
     "UI",
     "Network",
     "Rendering",
+    "Maps and files",
     "Crypto",
     "Uncertain",
     "Other",
@@ -89,6 +90,8 @@ def group_for(name: str) -> str:
         return "Network"
     if name.startswith("render_"):
         return "Rendering"
+    if name.startswith(("map_", "file_")):
+        return "Maps and files"
     if name.startswith("crypto_"):
         return "Crypto"
     if name.startswith("maybe_"):

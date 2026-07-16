@@ -140,6 +140,8 @@ Do not encode machine-specific plugin paths or credentials in committed files.
 - `docs/methodology.md`: evidence and client-study method
 - `docs/application/`: startup, configuration, lifecycle, and game loop
 - `docs/systems/`: event, input, UI, and other game systems
+- `docs/rendering/`: renderer lifecycle, pane drawing, world layers, sprites, effects, and blending
+- `docs/file-formats/`: one developer-facing page per confirmed asset or data format
 - `docs/network/`: connection, transport, transform, and packet documentation
 - `docs/appendix/`: function addresses, runtime patches, runtime structures, inheritance, and large lookup tables
 - `analysis/`: policy and version-controlled analysis exports
@@ -212,6 +214,24 @@ For injected event or network proxies:
 - Treat pointer-bearing event variants as unsafe for generic IPC until construction and cleanup are fully verified.
 - Make rule failure fail-open, bound command and telemetry queues, and drop telemetry rather than blocking the client.
 - Keep persistent proxy rules in YAML. A compact fixed binary IPC format is acceptable when the controller owns YAML parsing.
+- Give every proxy rule a stable ID, explicit enabled state, and deterministic priority.
+- Queue rule add, edit, remove, enable, disable, list, and reset commands from IPC. Apply mutations from the main-thread dispatcher tick.
+- Publish runtime rule changes as immutable versioned snapshots. Hooks read the last valid snapshot without waiting or modifying it.
+- Require an expected revision for rule mutations so stale controller edits are rejected without changing the active rules.
+- Keep runtime edits in memory. Persistence is an explicit controller action that writes YAML outside the injected DLL.
+
+## Rendering and file-format documentation
+
+- Separate renderer behavior from the file format that supplies its data.
+- Explain the live frame path from pane or world draw through canvas composition and presentation.
+- Distinguish software drawing and blending from the final DirectDraw or GDI presentation step.
+- For each format, record byte order, header size, record size, offsets, counts, alignment, compression, palettes, and unknown fields when known.
+- Use one main page per confirmed format. Keep internal storage class names separate from unproven file extensions.
+- State whether writing is client-confirmed, a generated inverse of the reader, or still incomplete.
+- Do not call an encoder compatible until a decode, encode, decode round trip preserves the meaningful fields and pixels.
+- Preserve unknown fields from a compatible source when showing a generated writer. Do not silently fill them with guessed constants.
+- Keep pseudocode short. Show the smallest read or write loop that makes the layout usable.
+- Put large mode tables, address lists, and deeper structure layouts in appendices or deterministic YAML exports.
 
 ## Text encoding and localization
 
@@ -226,6 +246,14 @@ The client originated in the Korean market and may contain untranslated or incor
 - If the executable contains literal replacement question marks, state that the original text is not recoverable from that string alone.
 
 Do not patch executable bytes unless the user explicitly asks to apply a patch. A request to find, explain, or document a patch authorizes analysis and documentation only. It does not authorize Binary Ninja byte patching, saving a modified executable, or creating a patched copy. Renaming, typing, and commenting the local analysis database are normal project work.
+
+## Map and rendering documentation
+
+- Treat `tilea.bmp` and `tileas.bmp` as raw fixed-record tile banks, not Windows BMP files.
+- Keep alternate map art separate from weather particles. `SMapSize` bit `0x80` selects alternate ground and static art, while its low nibble selects local weather behavior.
+- Describe `SOTP.DAT` as two independent flag groups: collision in the low nibble and static render behavior in the high nibble.
+- State whether a wall-visibility change hides all `WorldObject_Static` art, only render-flagged occluders, or collision-bearing statics. These choices are not equivalent.
+- Keep table-driven ground and static animation separate from server-driven map state. The client advances `gndani.tbl` and `stcani.tbl` locally on a timer.
 
 ## Runtime patch documentation
 

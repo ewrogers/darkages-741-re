@@ -20,4 +20,4 @@ Committed exports belong in `analysis/exports/` and should:
 - Omit absolute local paths and volatile timestamps
 - Round-trip through checked-in scripts under `binaryninja/scripts/`
 
-[`exports/startup.yaml`](exports/startup.yaml) establishes schema version `1`. Additional focused manifests, such as [`exports/network.yaml`](exports/network.yaml), use the same deterministic format. No symbol or conclusion is inherited from archived material without revalidation.
+[`exports/startup.yaml`](exports/startup.yaml) establishes schema version `1`. Additional focused manifests, such as [`exports/network.yaml`](exports/network.yaml) and [`exports/rendering.yaml`](exports/rendering.yaml), use the same deterministic format. No symbol or conclusion is inherited from archived material without revalidation.

@@ -57,6 +57,14 @@ When a screen behaves strangely, check each state instead of treating "shown" as
 
 Hidden panes are skipped for pointer and keyboard input. If they remain registered, application and network events can still reach them. Hiding a pane also releases mouse capture when that pane owns it.
 
+## Drawing hooks
+
+The pane tree also controls drawing. `render_screen_subtree` clips a visible pane, calls its draw-to-target virtual method, and then walks its children.
+
+Each pane can override a content hook. `ImagePane` draws an image there, while `WorldPane` draws the map and world objects. The common `ui_pane_draw_to_target` hook then copies the pane's canvas into its parent.
+
+This makes a pane similar to a small game-engine node with its own surface. Layout decides where it goes, visibility decides whether it participates, and the render hook decides what pixels it contributes. See [Rendering system](../rendering/README.md) for the full frame path.
+
 ## Pane classes
 
 RTTI exposes a large family of pane classes, including dialogs, controls, lists, world panes, overlays, and tabs. The inheritance data proves class relationships, but it does not prove which panes are alive at a given moment.

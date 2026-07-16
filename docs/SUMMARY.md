@@ -16,6 +16,27 @@
 - [UI and panes](systems/ui.md)
 - [Event proxy design](systems/event-proxy.md)
 
+# Rendering
+
+- [Rendering system](rendering/README.md)
+- [Renderer lifecycle](rendering/lifecycle.md)
+- [World rendering](rendering/world.md)
+- [Snow and weather](rendering/weather.md)
+- [Walls and occlusion](rendering/walls-and-occlusion.md)
+- [Blending](rendering/blending.md)
+
+# File formats
+
+- [File formats](file-formats/README.md)
+- [MAP files](file-formats/map.md)
+- [Raw map tile banks](file-formats/map-tile-banks.md)
+- [Tile animation tables](file-formats/tile-animation-tables.md)
+- [SOTP static tile flags](file-formats/sotp.md)
+- [EPF images](file-formats/epf.md)
+- [SPF images](file-formats/spf.md)
+- [EFA effects](file-formats/efa.md)
+- [Effect.tbl](file-formats/effect-table.md)
+
 # Network
 
 - [Network system](network/README.md)

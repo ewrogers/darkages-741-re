@@ -9,7 +9,7 @@
 
 ## Purpose
 
-The server sends this message for **change weather**.
+The class name says change weather, but this client does not route the packet into its main gameplay handler.
 
 The constructor calls `net_server_packet_base_ctor` with opcode `0x1F` and installs the `SChangeWeather` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
 
@@ -17,9 +17,11 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x1F` and insta
 
 ```text
 packet SChangeWeather {
-    u8 opcode                 // 0x1F
-    ...                         // fields pending
+    u8 opcode                  // 0x1F
+    u8 value                   // exact meaning not confirmed
 }
 ```
 
-The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.
+`net_decode_s_change_weather` reads the one-byte payload. The packet factory registers opcode `0x1F`, but the main gameplay dispatcher has no `0x1F` branch. No local state change or UI effect is therefore confirmed for this packet.
+
+Active snowy art and falling snow are selected by `SMapSize` instead. See [Snow and weather](../../rendering/weather.md).

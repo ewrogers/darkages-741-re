@@ -826,7 +826,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00599F60 passes opcode 0x15 to the server packet base and installs the SMapSize vtable."
+        evidence: "Constructor 0x00599F60 installs SMapSize for opcode 0x15. Decoder 0x00599F90 reads map ID, dimensions, flags, secondary mode, u24be checksum, and a u8-length name. Handler 0x005F1BF0 uses flag 0x80 for alternate art and the low nibble for weather mode."
         page: "docs/network/server/021-0x15-map-size.md"
       - opcode: "0x17"
         friendly_name: "Add Spell"
@@ -876,7 +876,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x005981E0 passes opcode 0x1F to the server packet base and installs the SChangeWeather vtable."
+        evidence: "Constructor 0x005981E0 installs SChangeWeather for opcode 0x1F and decoder 0x00598210 reads one u8. The main gameplay dispatcher at 0x005ED990 has no opcode 0x1F consumer."
         page: "docs/network/server/031-0x1f-change-weather.md"
       - opcode: "0x20"
         friendly_name: "Change Hour"
