@@ -515,8 +515,8 @@ packet_indexes:
         transform: derived
         builder: "0x005B1160"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Builder 0x005B1160 submits a buffer initialized with opcode 0x4F at 0x0054CE10."
+        name_confidence: high
+        evidence: "CSendPortrait is project-owner protocol vocabulary. Builder 0x0054CE10 writes opcode 0x4F, nested portrait and profile lengths, and their byte strings; 0x005B1160 submits the result after SRequestPortrait."
         page: "docs/network/client/079-0x4f-send-portrait.md"
       - opcode: "0x54"
         friendly_name: "Mercenary"
@@ -1136,7 +1136,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059B490 passes opcode 0x49 to the server packet base and installs the SRequestPortrait vtable."
+        evidence: "Constructor 0x0059B490 passes opcode 0x49 to the server packet base and installs the SRequestPortrait vtable. Its 0x0059B4C0 deserializer reads no fields, and UserInfoPane answers with CSendPortrait."
         page: "docs/network/server/073-0x49-request-portrait.md"
       - opcode: "0x4A"
         friendly_name: "Bad Guy"

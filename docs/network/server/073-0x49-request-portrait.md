@@ -9,7 +9,7 @@
 
 ## Purpose
 
-The server sends this message for **request portrait**.
+The server asks the client to upload the current character's local portrait and profile text.
 
 The constructor calls `net_server_packet_base_ctor` with opcode `0x49` and installs the `SRequestPortrait` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
 
@@ -17,9 +17,10 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x49` and insta
 
 ```text
 packet SRequestPortrait {
-    u8 opcode                 // 0x49
-    ...                         // fields pending
+    u8 opcode                 // 0x49, no body fields
 }
 ```
 
-The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.
+`net_server_request_portrait_deserialize` is empty. `UserInfoPane` handles the decoded packet and immediately sends `CSendPortrait`.
+
+See [Portraits and profiles](../../systems/portraits-and-profiles.md) for the complete request and response flow.

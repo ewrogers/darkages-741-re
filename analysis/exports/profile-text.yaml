@@ -1,0 +1,189 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0042CA50"
+    name: ui_new_legend_dialog_action
+    confidence: high
+    evidence: "The RTTI-backed NewLegendDialogPane action normalizes line breaks, ends profile text at the fifth break, and saves profile.txt."
+  - address: "0x0047D670"
+    name: ui_text_truncate_dbcs_safe
+    confidence: high
+    evidence: "Stops at the byte limit without leaving a Windows DBCS lead byte at the end."
+  - address: "0x0054CD30"
+    name: file_save_character_profile
+    confidence: high
+    evidence: "Writes at most 0x172 bytes to profile.txt under the current character directory."
+  - address: "0x0054CE10"
+    name: net_build_send_portrait
+    confidence: high
+    evidence: "Builds opcode 0x4F with nested portrait and profile lengths after applying the local image checks."
+  - address: "0x0054D570"
+    name: net_decode_portrait_profile_body
+    confidence: high
+    evidence: "Reads the nested big-endian portrait and profile lengths used by the portrait body."
+  - address: "0x0054D680"
+    name: file_decode_portrait_image
+    confidence: high
+    evidence: "Decodes an in-memory portrait as a 56 by 48 JFIF JPEG or the legacy EPF form."
+  - address: "0x0057B300"
+    name: ui_text_insert_formatted
+    confidence: high
+    evidence: "Forwards a NUL-terminated string to the rich text insertion and markup path."
+  - address: "0x0057D310"
+    name: ui_text_insert_color_markup
+    confidence: high
+    evidence: "Recognizes lowercase three-byte {=a through {=x tokens and changes the following run's palette index."
+  - address: "0x00592DE0"
+    name: file_build_character_path
+    confidence: high
+    evidence: "Builds .\\<character>\\.\\<filename> from the active character name and supplied local filename."
+  - address: "0x0059B490"
+    name: net_server_request_portrait_ctor
+    confidence: high
+    evidence: "Constructs RTTI-backed SRequestPortrait and passes opcode 0x49 to the server packet base."
+  - address: "0x0059B4C0"
+    name: net_server_request_portrait_deserialize
+    confidence: high
+    evidence: "Returns without reading fields, which confirms that SRequestPortrait has no body after the opcode."
+  - address: "0x005ACD10"
+    name: ui_user_info_apply_portrait_body
+    confidence: high
+    evidence: "Decodes a portrait/profile body into UserInfoPane state and refreshes its portrait canvas and text."
+  - address: "0x005AD160"
+    name: ui_user_info_handle_server_packet
+    confidence: high
+    evidence: "The UserInfoPane vtable event handler sends the local portrait response when the decoded opcode is 0x49."
+  - address: "0x005AD5D0"
+    name: ui_user_info_refresh_local_portrait
+    confidence: high
+    evidence: "Builds the local portrait body and reapplies it to UserInfoPane without calling the network submitter."
+  - address: "0x005AD600"
+    name: ui_user_info_timer
+    confidence: high
+    evidence: "Timer 0x1241 calls the local portrait refresh after the profile editor saves."
+  - address: "0x005B1160"
+    name: net_send_portrait_profile
+    confidence: high
+    evidence: "Calls net_build_send_portrait and submits the result through net_submit_client_packet."
+  - address: "0x005B11A0"
+    name: ui_portrait_text_dialog_ctor
+    confidence: high
+    evidence: "Constructs RTTI-backed PortraitTextInputDialogPane from _nui_pi.txt and loads profile.txt."
+  - address: "0x005B13E0"
+    name: file_load_character_profile
+    confidence: high
+    evidence: "Reads at most 0x172 bytes from the current character's profile.txt into the editor buffer."
+  - address: "0x005B1510"
+    name: ui_portrait_text_dialog_action
+    confidence: high
+    evidence: "Action 1 saves profile.txt and queues timer 0x1241; action 2 closes without saving."
+  - address: "0x005B15C0"
+    name: file_save_portrait_dialog_profile
+    confidence: high
+    evidence: "Writes the dialog profile buffer to profile.txt after the 0x172-byte DBCS-safe cap."
+data_symbols:
+  - address: "0x006D1AD4"
+    name: ui_text_color_by_ascii
+    confidence: high
+    evidence: "Dword lookup base indexed by the ASCII color-code letter; entries a through x begin at 0x006D1C58."
+  - address: "0x0082B788"
+    name: character_profile_text
+    confidence: high
+    evidence: "Local 370-byte profile editor buffer loaded from and saved to the current character's profile.txt."
+comments:
+  - address: "0x0042CB20"
+    text: "Normalize CR to LF and terminate the saved NewLegendDialogPane profile when the fifth line break is reached."
+  - address: "0x0054CE75"
+    text: "Portrait lookup order is extensionless character name, character.jpg, character.epf, then the first wildcard *.epf."
+  - address: "0x0054D0DE"
+    text: "JPEG requires JFIF at file offset 6 and a file size smaller than 8000 bytes."
+  - address: "0x0054D178"
+    text: "Legacy portrait EPF requires size 0xB1C, table displacement 0xAF0, and first bounds of 56 by 48."
+  - address: "0x0054D3DC"
+    text: "Read profile.txt from the character directory and include at most 0x172 bytes."
+  - address: "0x0054D521"
+    text: "The outer length is 4 + portrait length + profile length and counts both nested u16 fields."
+  - address: "0x0057D430"
+    text: "Recognize only lowercase three-byte {=a through {=x color tokens."
+  - address: "0x0057D4D1"
+    text: "Map the color letter through the 24-entry palette-index table and skip the token bytes."
+  - address: "0x005AD228"
+    text: "SRequestPortrait 0x49 has no payload. UserInfoPane answers with CSendPortrait 0x4F."
+  - address: "0x005AD6BB"
+    text: "Timer 0x1241 refreshes the local portrait preview and does not submit a packet."
+runtime_patches: []
+portrait_upload:
+  character_path: ".\\<character>\\<file>"
+  profile_file: profile.txt
+  profile_max_bytes: 370
+  portrait_candidates:
+    - "<character>"
+    - "<character>.jpg"
+    - "<character>.epf"
+    - "first *.epf"
+  jpeg:
+    marker_offset: 6
+    marker: JFIF
+    maximum_exclusive_bytes: 8000
+    display_width: 56
+    display_height: 48
+  epf:
+    file_size: "0xB1C"
+    table_displacement: "0xAF0"
+    width: 56
+    height: 48
+text_color_codes:
+  - letter: a
+    palette_index: "0x14"
+  - letter: b
+    palette_index: "0x28"
+  - letter: c
+    palette_index: "0x45"
+  - letter: d
+    palette_index: "0x89"
+  - letter: e
+    palette_index: "0x58"
+  - letter: f
+    palette_index: "0x5C"
+  - letter: g
+    palette_index: "0x12"
+  - letter: h
+    palette_index: "0x14"
+  - letter: i
+    palette_index: "0x16"
+  - letter: j
+    palette_index: "0x18"
+  - letter: k
+    palette_index: "0x1A"
+  - letter: l
+    palette_index: "0x1C"
+  - letter: m
+    palette_index: "0x1E"
+  - letter: n
+    palette_index: "0x1F"
+  - letter: o
+    palette_index: "0x24"
+  - letter: p
+    palette_index: "0x6D"
+  - letter: q
+    palette_index: "0x80"
+  - letter: r
+    palette_index: "0x89"
+  - letter: s
+    palette_index: "0x97"
+  - letter: t
+    palette_index: "0xA7"
+  - letter: u
+    palette_index: "0xFF"
+  - letter: v
+    palette_index: "0x58"
+  - letter: w
+    palette_index: "0x24"
+  - letter: x
+    palette_index: "0x00"

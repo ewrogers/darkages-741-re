@@ -1,0 +1,89 @@
+# Portraits and profiles
+
+The game keeps each character's portrait and profile text in that character's local folder. The server asks for both with one empty packet. The client answers with one packet that contains the image bytes followed by the profile text.
+
+```text
+server                                  client
+  |                                       |
+  |  SRequestPortrait                     |
+  |  opcode 0x49, no body                  |
+  |-------------------------------------->|
+  |                                       | find local portrait
+  |                                       | read profile.txt
+  |  CSendPortrait                        |
+  |  opcode 0x4F, image + profile          |
+  |<--------------------------------------|
+```
+
+`ui_user_info_handle_server_packet` receives the request. It calls `net_send_portrait_profile`, which asks `net_build_send_portrait` to build the response and submits it through the normal packet path.
+
+## Local files
+
+`file_build_character_path` places files under the current character directory:
+
+```text
+.\<character>\<file>
+```
+
+The portrait builder tries these names in order:
+
+1. `<character>` with no extension
+2. `<character>.jpg`
+3. `<character>.epf`
+4. The first `*.epf` returned from the character directory
+
+There is no hardcoded `Face.epf` name. A file with that name works through the final wildcard step. Do not rely on that step when the folder contains several EPF files because directory enumeration order is not a useful file priority rule. Use `<character>.epf` for a predictable legacy portrait.
+
+The bundled portrait helper contains `face.jpg` as its default output name. The client does not have a general `*.jpg` fallback, so that file must be placed or renamed to one of the names the client checks.
+
+The profile is always named `profile.txt` in the same character folder.
+
+## Accepted portraits
+
+The response carries the complete source file without converting it.
+
+JPEG portraits must contain `JFIF` at file offset 6 and be smaller than 8,000 bytes. The local display decoder also expects a 56 by 48 image. A JFIF JPEG at 56 by 48 is therefore the safe form to create.
+
+The legacy EPF path is stricter:
+
+- Total file size is exactly `0xB1C` bytes.
+- The little-endian table displacement at file offset 8 is `0xAF0`.
+- The first frame bounds measure 56 by 48.
+
+These checks describe a portrait-sized EPF profile. See [EPF images](../file-formats/epf.md) for the general container.
+
+If no candidate passes its checks, the client still sends the packet with a zero portrait length. Profile text may still be present.
+
+## Profile text
+
+The client reads at most 370 bytes from `profile.txt`. `ui_text_truncate_dbcs_safe` makes sure the byte limit does not split a Windows double-byte character. There is no Unicode conversion in the packet builder. The stored local text bytes are copied to the packet.
+
+The profile editor is `PortraitTextInputDialogPane`. It loads `_nui_pi.txt`, reads `profile.txt`, and saves it when the user chooses OK. A separate `NewLegendDialogPane` save path normalizes carriage returns to line feeds and ends the text when it reaches a fifth line break.
+
+Saving changes the local file and refreshes the local `UserInfoPane` preview through timer `0x1241`. It does not immediately submit `CSendPortrait`. The next `SRequestPortrait` causes the network upload.
+
+Profile text may contain the client's inline color codes. The packet keeps those bytes unchanged. `UserInfoPane` later inserts the profile through the formatted text path, where the codes are interpreted. See [Text color markup](text-color-markup.md).
+
+## Response body
+
+```text
+packet CSendPortrait {
+    u8    opcode            // 0x4F
+    u16be content_length    // 4 + portrait_length + profile_length
+    u16be portrait_length
+    u8    portrait[portrait_length]
+    u16be profile_length
+    u8    profile[profile_length]
+}
+```
+
+`content_length` counts both nested `u16be` length fields and both byte strings. It does not count the opcode or its own two bytes. The full plaintext packet size is `7 + portrait_length + profile_length`.
+
+The image and profile fields are independent. Either length may be zero.
+
+## Known limits
+
+- The client-side checks do not prove which additional rules the server applies.
+- JPEG EXIF data without a JFIF marker does not enter the JPEG path.
+- The builder accepts a small JFIF file before checking its dimensions. The local decoder still requires 56 by 48.
+- The profile is a byte string. Its displayed language depends on the text's encoding and the Windows environment.

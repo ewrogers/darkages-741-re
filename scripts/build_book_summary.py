@@ -45,6 +45,9 @@ def main() -> None:
         "",
         "- [Event system](systems/events.md)",
         "- [UI and panes](systems/ui.md)",
+        "- [UI layout files](systems/ui-layouts.md)",
+        "- [Portraits and profiles](systems/portraits-and-profiles.md)",
+        "- [Text color markup](systems/text-color-markup.md)",
         "- [Event proxy design](systems/event-proxy.md)",
         "",
         "# Rendering",
@@ -105,6 +108,7 @@ def main() -> None:
         "- [Runtime patches](appendix/runtime-patches.md)",
         "- [Runtime structures](appendix/runtime-structures.md)",
         "- [Pane types and inheritance](appendix/pane-types.md)",
+        "- [UI layout registry](appendix/ui-layout-registry.md)",
     ])
 
     OUTPUT.write_text("\n".join(lines) + "\n", encoding="utf-8")

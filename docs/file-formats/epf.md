@@ -42,6 +42,21 @@ read_epf(file):
 
 The meaning of both payload offsets and the full pixel stream encoding are not yet proven. A container writer could reproduce an existing file while preserving those streams, but creating new image payloads is not documented as safe yet.
 
+## Portrait-sized EPF
+
+The portrait upload path accepts one narrow EPF profile:
+
+```text
+file_size == 0xB1C
+header.table_displacement == 0xAF0
+first_bounds.width == 56
+first_bounds.height == 48
+```
+
+The client uploads the complete EPF file without converting it. The portrait decoder copies the `0xAF0`-byte pixel stream and uses the first bounds to build a 56 by 48 pixmap. The remaining layout still follows the EPF container rules above.
+
+This does not make every 56 by 48 EPF a valid portrait. The exact size and displacement checks must also pass. See [Portraits and profiles](../systems/portraits-and-profiles.md) for filename priority and packet limits.
+
 ## Generated writer shape
 
 ```text

@@ -4,6 +4,8 @@ The matching client contains 332 distinct RTTI classes whose inheritance reaches
 
 Direct bases come from each MSVC Base Class Array. Pane lineage shows the shortest direct-base path back to `Pane`. `Pane` itself directly inherits `Canvas` and `TimerHandler`; both reach `LObject`.
 
+For the text layout file loaded by each known pane, see the [UI layout registry](ui-layout-registry.md).
+
 | Type | Direct base class(es) | Pane lineage |
 | --- | --- | --- |
 | `_EventListPane` | `nui_ElemListPane` | `_EventListPane` → `nui_ElemListPane` → `ListPane` → `ScrollablePane` → `Pane` |

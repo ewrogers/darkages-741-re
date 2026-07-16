@@ -27,7 +27,7 @@ The two trees often describe the same visible objects, but they serve different 
 
 ## Dialog controls
 
-A `DialogPane` owns a local collection of controls. Controls are added with `ui_dialog_add_control`, usually in the same order as the dialog layout is built.
+A `DialogPane` owns a local collection of controls. Controls are added with `ui_dialog_add_control` in the order chosen by the pane constructor. That order can differ from the order of definitions in the text layout file.
 
 ```text
 struct DialogPaneFields {
@@ -40,7 +40,9 @@ struct DialogPaneFields {
 }
 ```
 
-Many callbacks use the control's attachment-order index as its action ID. For example, a login dialog looks up named layout controls, adds them to its collection, and later handles them by index.
+Many callbacks use the control's attachment-order index as its action ID. For example, the login dialog's layout lists its edit areas before its buttons, but the constructor attaches `OK`, `Cancel`, `Name`, then `Password`. The action IDs follow the constructor order.
+
+The layout files supply names, rectangles, art, and palette values. They do not create control classes on their own. See [UI layout files](ui-layouts.md) and the [UI layout registry](../appendix/ui-layout-registry.md).
 
 ## Pane state
 

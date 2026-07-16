@@ -356,6 +356,11 @@ def make_markdown(manifest: dict) -> str:
             "directly inherits `Canvas` and `TimerHandler`; both reach `LObject`."
         ),
         "",
+        (
+            "For the text layout file loaded by each known pane, see the "
+            "[UI layout registry](ui-layout-registry.md)."
+        ),
+        "",
         "| Type | Direct base class(es) | Pane lineage |",
         "| --- | --- | --- |",
     ]

@@ -1,0 +1,228 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x00481CE0"
+    name: ui_layout_find_cached_file
+    confidence: high
+    evidence: "Finds a parsed GUI layout by archive entry name in the layout manager cache."
+  - address: "0x00481E30"
+    name: ui_layout_find_control
+    confidence: high
+    evidence: "Finds one named control definition in the selected parsed layout."
+  - address: "0x00482140"
+    name: ui_layout_select_control
+    confidence: high
+    evidence: "Selects a control by name and takes the fatal invalid-layout path when it is missing."
+  - address: "0x00482340"
+    name: ui_layout_load
+    confidence: high
+    evidence: "Loads a named text layout from the DAT archive, parses its CONTROL blocks, and caches the result."
+  - address: "0x00482630"
+    name: ui_layout_get_control_rect
+    confidence: high
+    evidence: "Returns the selected control's four pane-local rectangle coordinates."
+  - address: "0x004826B0"
+    name: ui_layout_get_control_type
+    confidence: high
+    evidence: "Returns the selected control's TYPE integer."
+  - address: "0x004826E0"
+    name: ui_layout_get_control_image
+    confidence: high
+    evidence: "Returns one ordered IMAGE filename and frame index from the selected control."
+  - address: "0x00482840"
+    name: ui_layout_get_control_color
+    confidence: high
+    evidence: "Returns one ordered COLOR palette index from the selected control."
+  - address: "0x00482870"
+    name: ui_layout_get_control_value
+    confidence: high
+    evidence: "Returns one ordered VALUE integer from the selected control."
+  - address: "0x004828A0"
+    name: ui_layout_create_image_button
+    confidence: high
+    evidence: "Creates an ImageButtonControlPane from a named layout definition."
+  - address: "0x004828E0"
+    name: ui_layout_build_image_button
+    confidence: high
+    evidence: "Reads a rectangle, optional skin value, and up to three image states before constructing the button."
+  - address: "0x004A81F0"
+    name: ui_layout_parse_control
+    confidence: high
+    evidence: "Parses CONTROL, NAME, TYPE, RECT, IMAGE, VALUE, COLOR, and ENDCONTROL tokens."
+  - address: "0x004A8820"
+    name: ui_layout_serialize_control
+    confidence: high
+    evidence: "Writes one parsed control back to the same line-oriented layout grammar."
+data_symbols:
+  - address: "0x006D8FC4"
+    name: ui_layout_manager
+    confidence: high
+    evidence: "Global layout manager used by pane constructors to load a layout and select named control definitions."
+comments:
+  - address: "0x00445B86"
+    text: "Pointer press callbacks use the attached control collection index, not the definition's order in the text layout."
+  - address: "0x00445EB1"
+    text: "Pointer release invokes the dialog action virtual with the attached control index and hit result."
+  - address: "0x004821BA"
+    text: "A missing named control is a fatal invalid-layout error."
+  - address: "0x004823B0"
+    text: "The matching client stores the underscore-prefixed GUI text layouts in setoa.dat."
+  - address: "0x004A8264"
+    text: "A layout record begins with CONTROL."
+  - address: "0x004A82E9"
+    text: "ENDCONTROL completes the current definition."
+runtime_patches: []
+layout_archive: setoa.dat
+layout_fields:
+  - NAME
+  - TYPE
+  - RECT
+  - IMAGE
+  - VALUE
+  - COLOR
+layout_files:
+  - file: _nagree.txt
+    controls: 5
+    class_names: [AgreementDialogPane]
+  - file: _narlist.txt
+    controls: 9
+    class_names: [ArticleListDialog]
+  - file: _narti.txt
+    controls: 11
+    class_names: [ArticleDialog]
+  - file: _nartin.txt
+    controls: 6
+    class_names: [NewArticleDialog]
+  - file: _nbdlist.txt
+    controls: 4
+    class_names: [BoardListDialog]
+  - file: _nbk_l.txt
+    controls: 47
+    class_names: [GUIBackPane]
+  - file: _nbk_s.txt
+    controls: 49
+    class_names: [GUIBackPane]
+  - file: _nbworld.txt
+    controls: 17
+    class_names: []
+    confidence: unresolved
+  - file: _ncreate.txt
+    controls: 19
+    class_names: [CreateUserDialogPane]
+  - file: _nexch.txt
+    controls: 10
+    class_names: [ExchangeDialog]
+  - file: _nfriend.txt
+    controls: 6
+    class_names: [FriendListDialog]
+  - file: _ngcdlg0.txt
+    controls: 5
+    class_names: [GroupListPane]
+  - file: _ngcdlg1.txt
+    controls: 15
+    class_names: [GroupAdDialogPane]
+  - file: _ngcmain.txt
+    controls: 6
+    class_names: [ExGroupViewPane]
+  - file: _nhotkem.txt
+    controls: 3
+    class_names: [HotKeyPane]
+  - file: _nhotkey.txt
+    controls: 16
+    class_names: [HotKeyPane]
+  - file: _nload.txt
+    controls: 4
+    class_names: [LoadUsersPane, TransferServerProgress]
+  - file: _nloadm.txt
+    controls: 4
+    class_names: [MapLoadingPane]
+  - file: _nlogin.txt
+    controls: 5
+    class_names: [LoginDialogPane]
+  - file: _nmacro.txt
+    controls: 5
+    class_names: [MacroDialog]
+  - file: _nmaill.txt
+    controls: 8
+    class_names: [MailListDialog]
+  - file: _nmailr.txt
+    controls: 12
+    class_names: [MailDialog]
+  - file: _nmails.txt
+    controls: 7
+    class_names: [NewMailDialog]
+  - file: _nmoney.txt
+    controls: 5
+    class_names: [DropGoldDialogPane, GiveGoldDialogPane]
+  - file: _noptdlg.txt
+    controls: 9
+    class_names: [OptionPane, GUIOptionPane]
+  - file: _npw.txt
+    controls: 7
+    class_names: [ChangePasswordDialogPane]
+  - file: _npw2.txt
+    controls: 4
+    class_names: [InputBirthdateDialogPane]
+  - file: _nsett.txt
+    controls: 7
+    class_names: [GameSettingDialog]
+  - file: _nstart.txt
+    controls: 10
+    class_names: [MainMenuPane]
+  - file: _nstatur.txt
+    controls: 17
+    class_names: [GUIBackPane]
+  - file: _nstatus.txt
+    controls: 28
+    class_names: [GUIBackPane]
+  - file: _nsvr.txt
+    controls: 8
+    class_names: [ServerSelectDialogPane]
+  - file: _nui.txt
+    controls: 10
+    class_names: [UserInfoPane]
+  - file: _nui_al.txt
+    controls: 8
+    class_names: [nui_AlbumPane]
+  - file: _nui_alb.txt
+    controls: 6
+    class_names: [AlbumPicDialogPane]
+  - file: _nui_dr.txt
+    controls: 3
+    class_names: [nui_LegendPane]
+  - file: _nui_eq.txt
+    controls: 39
+    class_names: [nui_IntroPane]
+  - file: _nui_eqa.txt
+    controls: 33
+    class_names: [nui_IntroPane]
+  - file: _nui_ev.txt
+    controls: 5
+    class_names: [nui_EventPaneImpl]
+  - file: _nui_eve.txt
+    controls: 7
+    class_names: [EventInfoDialogPane]
+  - file: _nui_fm.txt
+    controls: 13
+    class_names: [nui_FamilyPane]
+  - file: _nui_pi.txt
+    controls: 4
+    class_names: [PortraitTextInputDialogPane]
+  - file: _nui_sk.txt
+    controls: 3
+    class_names: [nui_SkillSpellPane]
+  - file: _nui_ske.txt
+    controls: 12
+    class_names: [SkillSpellInfoDialogPane]
+  - file: _nui_ski.txt
+    controls: 5
+    class_names: [nui_ElemListPane]
+  - file: _nusers.txt
+    controls: 9
+    class_names: [ShowUsersPane_A]

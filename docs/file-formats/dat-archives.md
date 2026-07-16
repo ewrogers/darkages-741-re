@@ -68,6 +68,12 @@ build_dat(entries):
 
 Replacing an entry uses the same process because later offsets may change. A round trip should compare every extracted payload, not necessarily the complete DAT byte for byte.
 
+## UI layouts in setoa.dat
+
+`setoa.dat` contains the underscore-prefixed text layouts used by many panes. A custom UI skin can replace one of those text entries and its referenced SPF or EPF art when the rebuilt archive keeps the normal name and offset rules.
+
+Adding a new layout entry does not make the client load it. A pane constructor must request that filename and must construct controls for its named definitions. See [UI layout files](../systems/ui-layouts.md) for the grammar and code-to-control mapping.
+
 ## Extended layout
 
 The reader also recognizes an extended format when the first word is `0xFFFFFFFF`. No matching local archive was found, so this path is useful evidence but not yet a safe writer target.

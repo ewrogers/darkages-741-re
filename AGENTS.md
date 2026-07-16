@@ -206,6 +206,26 @@ Treat the UI as several connected mechanisms instead of assuming one universal s
 - Do not infer the live pane tree from the static RTTI inventory. Use registration code or runtime observation to establish live parent, sibling, and visibility state.
 - Distinguish vtable name-search results from distinct complete-object RTTI classes. Derive inheritance from the MSVC Class Hierarchy Descriptor and Base Class Array, not from a qualified vtable display name alone.
 
+## UI layout documentation
+
+- Treat the underscore-prefixed text layouts in `setoa.dat` as named geometry and skin data, not as a complete scene tree.
+- Record the layout filename and the RTTI-backed pane class that loads it. Keep an asset with no proven filename reference marked unresolved.
+- Keep layout definition order separate from `DialogPane` attachment order. Numeric action IDs come from `ui_dialog_add_control` order in the constructor.
+- Treat `NAME` as the code-to-asset contract. A missing layout or named control takes a fatal invalid-layout path in this client.
+- Record `TYPE`, `RECT`, repeated `IMAGE`, `VALUE`, and `COLOR` fields independently. Do not infer a runtime control class from `TYPE` alone.
+- Preserve the order of repeated image, value, and color entries. Image-button construction can consume up to three ordered image states.
+- When describing custom UI work, separate reskinning or repositioning existing controls from adding new behavior. A new interactive control also needs code to construct, attach, handle, and clean it up.
+- Keep private extracted layout text and game art out of the repository. Commit only grammar notes, sanitized examples, and deterministic metadata.
+
+## Portrait, profile, and formatted text documentation
+
+- Keep the empty `SRequestPortrait` request separate from the `CSendPortrait` response body.
+- Record portrait filename lookup order, image validation, exact size limits, and the independent zero-length image and profile cases.
+- Describe `Face.epf` as a wildcard fallback, not a hardcoded client filename.
+- Treat profile limits as bytes. Preserve the DBCS-safe truncation behavior and do not call the packet text Unicode.
+- Separate saving `profile.txt`, refreshing the local preview, and uploading after a server request.
+- Record inline `{=<letter>` codes as palette indexes. Do not invent fixed RGB values when the renderer resolves the final color through a palette.
+
 For injected event or network proxies:
 
 - Verify the executable fingerprint and resolve static targets as module-base-relative RVAs.

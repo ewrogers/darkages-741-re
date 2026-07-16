@@ -14,6 +14,7 @@ Application
 Game systems
   +-- events and input
   +-- UI panes and dialogs
+  +-- UI layouts, portraits, and formatted text
   +-- rendering and world drawing
   +-- music and sound effects
 
@@ -31,6 +32,7 @@ Lookup material
   +-- runtime patches
   +-- runtime structures
   +-- pane inheritance
+  +-- UI layout registry
   +-- YAML analysis exports
 ```
 
@@ -40,10 +42,11 @@ Lookup material
 2. [Game loop](application/game-loop.md)
 3. [Event system](systems/events.md)
 4. [UI and panes](systems/ui.md)
-5. [Rendering system](rendering/README.md)
-6. [Audio system](audio/README.md)
-7. [File formats](file-formats/README.md)
-8. [Network system](network/README.md)
+5. [UI layout files](systems/ui-layouts.md)
+6. [Rendering system](rendering/README.md)
+7. [Audio system](audio/README.md)
+8. [File formats](file-formats/README.md)
+9. [Network system](network/README.md)
 
 The [function reference](appendix/functions.md) is an address book, not required reading. Packet programmers can jump straight to the [client](network/client/README.md) and [server](network/server/README.md) command indexes.
 
