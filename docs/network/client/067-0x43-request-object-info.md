@@ -1,27 +1,32 @@
 # Request Object Info (`CRequestObjectInfo`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x43` (67) |
-| Common transform | static |
-| Representative builder | `net_request_object_info` at `0x004CD350` |
+| Command | `0x43` (67) |
+| Encoding | startup key |
 | Name provenance | Project-owner protocol name, confirmed against merchant menu object-selection paths |
 
-## Current evidence
+## Purpose
+
+The client sends this message for **request object info**.
 
 The builder sends opcode `0x43`, literal subtype `1`, and a four-byte big-endian object identifier.
 
 The client has no derived packet RTTI for this name.
 
-## Known send sites
+## Sent by
 
-- `0x004CE246` in `sub_4CE220`. It is shared by RTTI-backed merchant task, text, item, spell, skill, face, and input menu dialogs.
+Known static callers lead to:
 
-## Plaintext body
+- UI or subsystem owner not known yet
+
+## Body
 
 ```text
-opcode:u8                 // 0x43
-subtype:u8                // 1 in this builder
-object_id:u32be
+packet CRequestObjectInfo {
+    u8 opcode                 // 0x43
+    u8 subtype                // 1 in this builder
+    u32be object_id
+}
 ```

@@ -1,29 +1,29 @@
-# Request Homepage (`CRequestHomepage?`)
+# Request Homepage (`CRequestHomepage`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x68` (104) |
-| Common transform | static |
-| Representative builder | `0x004BA0C0` |
-| Name provenance | The opcode and builder are locally confirmed. The class spelling is reconstructed from behavior and related terminology. |
+| Command | `0x68` (104) |
+| Encoding | startup key |
+| Name provenance | Verified project protocol name; the command and local builder are confirmed. |
 
-## Current evidence
+## Purpose
 
-The representative builder at `0x004BA0C0` writes opcode `0x68` as body byte 0 and reaches `net_submit_client_packet`.
+The client sends this message for **request homepage**.
 
-No concrete derived client packet RTTI class exists in this binary. The display name is therefore kept separate from the locally verified opcode evidence.
+## Sent by
 
-## Known send sites
+Known static callers lead to:
 
-- `0x4B88C9` in `sub_4b8890`; nearest RTTI owner not yet identified.
-- `0x4B85A9` in `sub_4b8570`; nearest RTTI owner not yet identified.
+- UI or subsystem owner not known yet
 
-## Plaintext body
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet CRequestHomepage {
+    u8 opcode                 // 0x68
+    ...                         // fields pending
+}
 ```
 
 Field order, variants, state effects, and paired packets remain to be traced.

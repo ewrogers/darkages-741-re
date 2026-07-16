@@ -1,28 +1,29 @@
-# User Change State (`CUserChangeState?`)
+# User Change State (`CUserChangeState`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x79` (121) |
-| Common transform | derived |
-| Representative builder | `0x005FC790` |
-| Name provenance | The opcode and builder are locally confirmed. The class spelling is reconstructed from behavior and related terminology. |
+| Command | `0x79` (121) |
+| Encoding | session key |
+| Name provenance | Verified project protocol name; the command and local builder are confirmed. |
 
-## Current evidence
+## Purpose
 
-The representative builder at `0x005FC790` writes opcode `0x79` as body byte 0 and reaches `net_submit_client_packet`.
+The client sends this message for **user change state**.
 
-No concrete derived client packet RTTI class exists in this binary. The display name is therefore kept separate from the locally verified opcode evidence.
+## Sent by
 
-## Known send sites
+Known static callers lead to:
 
-- `0x5F9E39` in `sub_5f9e20`, reachable from `MapUserInterface::WorldPane_Impl`.
+- `MapUserInterface::WorldPane_Impl`
 
-## Plaintext body
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet CUserChangeState {
+    u8 opcode                 // 0x79
+    ...                         // fields pending
+}
 ```
 
 Field order, variants, state effects, and paired packets remain to be traced.

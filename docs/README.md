@@ -1,17 +1,47 @@
-# Dark Ages 7.41 Reverse Engineering
+# Inside the Dark Ages client
 
-This book documents an evidence-based Binary Ninja analysis of the Dark Ages client that reports version `741`.
+This book explains how the game client starts, runs, draws its UI, handles events, and talks to the server. It is written for programmers who know common game and network ideas but may be new to older Windows clients.
 
-Each chapter begins with direct evidence from the matching executable, inspected through Binary Ninja and Binary Ninja MCP. Reference material under `legacy/` may suggest where to look, but every result must be independently confirmed.
+Start with behavior. Use the appendices when you need an address or proof detail.
 
-## Target
+## The client in layers
 
 ```text
-File: Darkages.exe
-Size: 3,112,960 bytes
-SHA-256: 054A5D6ADC56099C6BFD9D2A58675AFF62DC788B63209A3D906492F5B89E96C6
-Reported client version: 741
-Architecture: 32-bit x86 Windows PE
+Application
+  +-- startup and configuration
+  +-- game loop and shutdown
+
+Game systems
+  +-- events and input
+  +-- UI panes and dialogs
+
+Network
+  +-- connection and transport
+  +-- packet transforms
+  +-- client and server packets
+
+Lookup material
+  +-- function addresses
+  +-- runtime patches
+  +-- runtime structures
+  +-- pane inheritance
+  +-- YAML analysis exports
 ```
 
-Start with [Getting Started](getting-started.md), then read the [Analysis Method](methodology.md). Verified analysis currently covers [startup controls](client/startup.md), the [UI and event architecture](ui/event-and-pane-system.md), the [pane registry](ui/pane-registry.md), the complete [Pane inheritance appendix](appendix/pane-types.md), an [injected event proxy design](ui/event-proxy.md), [initial connection behavior](network/initial-connection.md), [network architecture](network/architecture.md), [packet transforms](network/packet-transforms.md), and direction-specific [client](network/client/README.md) and [server](network/server/README.md) packet indexes.
+## Suggested reading order
+
+1. [Application lifecycle](application/lifecycle.md)
+2. [Game loop](application/game-loop.md)
+3. [Event system](systems/events.md)
+4. [UI and panes](systems/ui.md)
+5. [Network system](network/README.md)
+
+The [function reference](appendix/functions.md) is an address book, not required reading. Packet programmers can jump straight to the [client](network/client/README.md) and [server](network/server/README.md) command indexes.
+
+## How facts are recorded
+
+The matching client is the source of truth. Binary Ninja names, comments, and types are exported as reviewable YAML under [`analysis/exports/`](../analysis/exports/README.md).
+
+The main pages explain what the game does. Appendices and exports keep the addresses, instruction bytes, confidence, and detailed provenance. Uncertain names end in `?` in the book or start with `maybe_` in Binary Ninja.
+
+See [How we study the client](methodology.md) for the full workflow.

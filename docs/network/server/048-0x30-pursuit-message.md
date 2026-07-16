@@ -1,22 +1,25 @@
 # Pursuit Message (`SPursuitMessage`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Server to client |
-| Opcode | `0x30` (48) |
-| Common transform | derived |
-| Constructor | `0x0059AA00` |
+| Command | `0x30` (48) |
+| Encoding | session key |
 | Name provenance | Microsoft C++ RTTI in the target |
 
-## Current evidence
+## Purpose
 
-The constructor at `0x0059AA00` calls `net_server_packet_base_ctor` with opcode `0x30` and installs the `SPursuitMessage` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+The server sends this message for **pursuit message**.
 
-## Plaintext body
+The constructor calls `net_server_packet_base_ctor` with opcode `0x30` and installs the `SPursuitMessage` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet SPursuitMessage {
+    u8 opcode                 // 0x30
+    ...                         // fields pending
+}
 ```
 
 The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.

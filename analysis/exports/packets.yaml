@@ -178,7 +178,7 @@ packet_indexes:
         page: "docs/network/client/012-0x0c-put-ground.md"
       - opcode: "0x0D"
         friendly_name: "Block Listen"
-        class_name: "CBlockListen?"
+        class_name: "CBlockListen"
         transform: derived
         builder: "0x00550AA0"
         opcode_confidence: high
@@ -277,7 +277,7 @@ packet_indexes:
         page: "docs/network/client/029-0x1d-emotion.md"
       - opcode: "0x23"
         friendly_name: "Exit Editing Mode"
-        class_name: "CExitEditingMode?"
+        class_name: "CExitEditingMode"
         transform: derived
         builder: "0x0054A7D0"
         opcode_confidence: high
@@ -286,7 +286,7 @@ packet_indexes:
         page: "docs/network/client/035-0x23-exit-editing-mode.md"
       - opcode: "0x24"
         friendly_name: "Drop Gold"
-        class_name: "CDropGold?"
+        class_name: "CDropGold"
         transform: derived
         builder: "0x004975C0"
         opcode_confidence: high
@@ -304,7 +304,7 @@ packet_indexes:
         page: "docs/network/client/038-0x26-change-password.md"
       - opcode: "0x29"
         friendly_name: "Give"
-        class_name: "CGive?"
+        class_name: "CGive"
         transform: derived
         builder: "0x00496D90"
         opcode_confidence: high
@@ -313,7 +313,7 @@ packet_indexes:
         page: "docs/network/client/041-0x29-give.md"
       - opcode: "0x2A"
         friendly_name: "Give Gold"
-        class_name: "CGiveGold?"
+        class_name: "CGiveGold"
         transform: derived
         builder: "0x00497B10"
         opcode_confidence: high
@@ -340,7 +340,7 @@ packet_indexes:
         page: "docs/network/client/046-0x2e-group.md"
       - opcode: "0x2F"
         friendly_name: "Group Toggle"
-        class_name: "CGroupToggle?"
+        class_name: "CGroupToggle"
         transform: derived
         builder: "0x0041B8E0"
         opcode_confidence: high
@@ -412,7 +412,7 @@ packet_indexes:
         page: "docs/network/client/062-0x3e-use-skill.md"
       - opcode: "0x3F"
         friendly_name: "Field Map"
-        class_name: "CFieldMap?"
+        class_name: "CFieldMap"
         transform: derived
         builder: "0x00430D30"
         opcode_confidence: high
@@ -457,7 +457,7 @@ packet_indexes:
         page: "docs/network/client/069-0x45-reply-crc.md"
       - opcode: "0x47"
         friendly_name: "Add Stat"
-        class_name: "CAddStat?"
+        class_name: "CAddStat"
         transform: derived
         builder: "0x005755C0"
         opcode_confidence: high
@@ -493,7 +493,7 @@ packet_indexes:
         page: "docs/network/client/075-0x4b-stipulation.md"
       - opcode: "0x4D"
         friendly_name: "Spell Delay Request"
-        class_name: "CSpellDelayRequest?"
+        class_name: "CSpellDelayRequest"
         transform: derived
         builder: "0x0049BAB0"
         opcode_confidence: high
@@ -502,7 +502,7 @@ packet_indexes:
         page: "docs/network/client/077-0x4d-spell-delay-request.md"
       - opcode: "0x4E"
         friendly_name: "Spell Delay Say"
-        class_name: "CSpellDelaySay?"
+        class_name: "CSpellDelaySay"
         transform: derived
         builder: "0x00499330"
         opcode_confidence: high
@@ -511,7 +511,7 @@ packet_indexes:
         page: "docs/network/client/078-0x4e-spell-delay-say.md"
       - opcode: "0x4F"
         friendly_name: "Send Portrait"
-        class_name: "CSendPortrait?"
+        class_name: "CSendPortrait"
         transform: derived
         builder: "0x005B1160"
         opcode_confidence: high
@@ -556,7 +556,7 @@ packet_indexes:
         page: "docs/network/client/098-0x62-baram.md"
       - opcode: "0x68"
         friendly_name: "Request Homepage"
-        class_name: "CRequestHomepage?"
+        class_name: "CRequestHomepage"
         transform: static
         builder: "0x004BA0C0"
         opcode_confidence: high
@@ -610,7 +610,7 @@ packet_indexes:
         page: "docs/network/client/117-0x75-check-time.md"
       - opcode: "0x79"
         friendly_name: "User Change State"
-        class_name: "CUserChangeState?"
+        class_name: "CUserChangeState"
         transform: derived
         builder: "0x005FC790"
         opcode_confidence: high

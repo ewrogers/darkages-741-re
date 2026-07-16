@@ -1,22 +1,25 @@
 # Exchange (`SExchange`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Server to client |
-| Opcode | `0x42` (66) |
-| Common transform | derived |
-| Constructor | `0x00598F50` |
+| Command | `0x42` (66) |
+| Encoding | session key |
 | Name provenance | Microsoft C++ RTTI in the target |
 
-## Current evidence
+## Purpose
 
-The constructor at `0x00598F50` calls `net_server_packet_base_ctor` with opcode `0x42` and installs the `SExchange` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+The server sends this message for **exchange**.
 
-## Plaintext body
+The constructor calls `net_server_packet_base_ctor` with opcode `0x42` and installs the `SExchange` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet SExchange {
+    u8 opcode                 // 0x42
+    ...                         // fields pending
+}
 ```
 
 The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.

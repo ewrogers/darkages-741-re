@@ -1,28 +1,30 @@
 # Login Check (`SLoginCheck`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Server to client |
-| Opcode | `0x02` (2) |
-| Common transform | static |
-| Registered server packet class | None found |
-| Dispatcher | `net_dispatch_main_menu_events` at `0x004B8B70` |
-| Handler | `net_handle_login_check` at `0x004B8420` |
+| Command | `0x02` (2) |
+| Encoding | startup key |
+| Packet class | None found |
 | Internal name provenance | Project-owner protocol knowledge, confirmed by the local login-result behavior |
 
-## Current evidence
+## Purpose
 
-The RTTI-backed `MainMenuPane` owns the dispatcher. At `0x004B8C00` it compares the decoded body opcode with `0x02` and routes the byte buffer directly. This authentication response is consumed before the gameplay packet factory is active.
+The server sends this message for **login check**.
 
-## Plaintext body
+`MainMenuPane` compares the decoded command with `0x02` and routes the body directly. This login response is handled before the gameplay packet factory is active.
+
+## Body
 
 ```text
-opcode:u8
-status:u8
+packet SLoginCheck {
+    u8 opcode                 // 0x02
+    u8 status
 
-if status != 0:
-    message_length:u8
-    message:bytes[message_length]
+    if status != 0:
+        u8 message_length
+        bytes message[message_length]
+}
 ```
 
 Status `0` enters the game-session setup path. A nonzero status displays the body-provided message. Individual failure-code meanings remain unknown.

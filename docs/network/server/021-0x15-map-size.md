@@ -1,22 +1,25 @@
 # Map Size (`SMapSize`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Server to client |
-| Opcode | `0x15` (21) |
-| Common transform | derived |
-| Constructor | `0x00599F60` |
+| Command | `0x15` (21) |
+| Encoding | session key |
 | Name provenance | Microsoft C++ RTTI in the target |
 
-## Current evidence
+## Purpose
 
-The constructor at `0x00599F60` calls `net_server_packet_base_ctor` with opcode `0x15` and installs the `SMapSize` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+The server sends this message for **map size**.
 
-## Plaintext body
+The constructor calls `net_server_packet_base_ctor` with opcode `0x15` and installs the `SMapSize` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet SMapSize {
+    u8 opcode                 // 0x15
+    ...                         // fields pending
+}
 ```
 
 The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.

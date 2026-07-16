@@ -1,28 +1,29 @@
-# Drop Gold (`CDropGold?`)
+# Drop Gold (`CDropGold`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x24` (36) |
-| Common transform | derived |
-| Representative builder | `0x004975C0` |
-| Name provenance | The opcode and builder are locally confirmed. The class spelling is reconstructed from behavior and related terminology. |
+| Command | `0x24` (36) |
+| Encoding | session key |
+| Name provenance | Verified project protocol name; the command and local builder are confirmed. |
 
-## Current evidence
+## Purpose
 
-The representative builder at `0x004975C0` writes opcode `0x24` as body byte 0 and reaches `net_submit_client_packet`.
+The client sends this message for **drop gold**.
 
-No concrete derived client packet RTTI class exists in this binary. The display name is therefore kept separate from the locally verified opcode evidence.
+## Sent by
 
-## Known send sites
+Known static callers lead to:
 
-- `0x497580` in `sub_497560`, reachable from `DialogPane::DropGoldDialogPane`.
+- `DialogPane::DropGoldDialogPane`
 
-## Plaintext body
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet CDropGold {
+    u8 opcode                 // 0x24
+    ...                         // fields pending
+}
 ```
 
 Field order, variants, state effects, and paired packets remain to be traced.

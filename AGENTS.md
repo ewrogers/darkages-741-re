@@ -30,24 +30,72 @@ Do not commit the executable, original game assets, `.bndb` files, or other clie
 - If new evidence contradicts legacy material, document the new result and leave the archive unchanged.
 - Keep new documentation outside `legacy/`.
 
-## Language and voice
+## Book audience and voice
 
-- Use natural, simple human language whenever possible.
-- Keep the work approachable without hiding important technical facts.
-- Write at a senior developer and reverse engineer level when the subject requires it.
+Write the book for beginner to moderate programmers who understand common programming, game-loop, UI, and network patterns. Do not assume the reader knows Binary Ninja, assembly, compiler internals, or reverse-engineering terminology.
+
+The reader should be able to understand how the client works before learning how the conclusion was recovered.
+
+- Use natural, simple, and terse language.
+- Keep the first paragraph inviting. Start with what the game does and why it matters.
+- Lead with the result, then explain the flow and important details.
+- Prefer game-development terms such as game loop, scene tree, pane, event, packet, state, and handler.
+- Prefer network-programming terms such as connection, frame, command, body, client, and server.
 - Explain uncommon low-level terms the first time they matter.
-- Lead with the result, then provide the evidence.
-- Keep responses and documentation concise. Less is more.
+- Do not open a page with addresses, pointer arithmetic, RTTI details, vtable slots, or tool steps.
+- Avoid debugger, offensive-security, defensive-security, and incident-response language when ordinary game or network language works.
+- Describe what the client does. Avoid a running diary of how the behavior was discovered.
+- Use short examples or analogies only when they make the idea easier to picture.
+- State uncertainty plainly. Do not make a guess sound confirmed.
 - Do not use em dashes.
 - Do not use emojis.
 - Avoid decorative formatting, filler, and unnecessary jargon.
-- State uncertainty plainly. Do not make a guess sound confirmed.
+
+## Book organization
+
+Organize the book as layers of the client:
+
+1. **Application:** startup, configuration, lifecycle, and shutdown.
+2. **Game loop:** the main loop as its own topic, including when queued work and timers run.
+3. **Game systems:** events, input, UI panes, dialogs, rendering, audio, maps, and other focused systems.
+4. **Network:** endpoint selection, connection, transport, transforms, and separate client and server packet references.
+5. **Appendices:** function addresses, runtime patches, object layouts, inheritance lists, and other lookup-heavy material.
+
+Use overview pages to explain how a layer fits together, then link to focused pages for individual systems or packets. Keep one source of truth for each topic. Extend or replace the existing page instead of creating a competing explanation.
+
+Main chapters should refer to functions by their project names. Put static addresses, RVAs, patch bytes, long call-site lists, and confidence notes in appendices or YAML exports. Object-relative offsets may remain beside a compact structure when they are necessary to understand that structure.
+
+Keep `docs/SUMMARY.md` synchronized with the book. Keep client-to-server and server-to-client packet indexes separate because the same command code can mean different things in each direction.
+
+## Book authoring style
+
+A focused page should normally follow this order:
+
+1. A short result or purpose statement.
+2. A simple mental model or flow.
+3. The named functions, states, or objects involved.
+4. A compact structure or pseudocode block when it improves understanding.
+5. Known limits, uncertainty, and links to deeper reference material.
+
+This is a guide, not a required template for tiny packet pages.
+
+- Keep paragraphs short and centered on one idea.
+- Use headings that help a reader scan for behavior, data, happy paths, unhappy paths, or known limits.
+- Use tables for exact mappings and comparisons.
+- Prefer C-style pseudostructs over offset tables when programmers can understand the layout faster that way.
+- Use small ASCII diagrams for real flows, trees, or inheritance when prose would be harder to follow. Do not add a diagram by habit.
+- Use brief pseudocode for decisions, loops, and construction. Do not replace an explanation with a wall of code.
+- Use analogies from game engines or network programming when they are accurate, such as a pane tree behaving like a scene tree or an event queue behaving like the game's inbox.
+- Preserve technical details that matter. Move lookup-heavy proof into an appendix or export instead of deleting it.
+- Keep packet pages useful as developer reference: purpose, direction, command, encoding, known trigger or owner, body layout, paired messages, and unknowns.
+- Link to the function, structure, pane, or patch appendix instead of repeating address lists in prose.
 
 ## Code and pseudocode style
 
-Use pseudocode or C/C++ for algorithm examples because they match the likely implementation language and are easy to translate elsewhere.
+Use short C-like pseudocode because it matches the client and is easy to translate elsewhere. Examples do not need to compile.
 
-- Prefer plain C-like pseudocode or minimal C99-style code.
+- Prefer a few clear lines that show the decision, loop, or data flow.
+- Use C-style pseudostructs for memory and packet layouts.
 - Era-appropriate C++ is acceptable when classes, vtables, constructors, or destructors are relevant.
 - Avoid templates, lambdas, ranges, heavy STL use, clever macros, and modern language features that obscure the algorithm.
 - Use straightforward loops, explicit branches, and small helper functions.
@@ -55,15 +103,7 @@ Use pseudocode or C/C++ for algorithm examples because they match the likely imp
 - State endianness explicitly, such as `u16be`.
 - Preserve bounds, loop counts, conditional fields, and nested structures.
 - Keep examples expressive rather than production-framework specific.
-
-Example:
-
-```c
-u16 read_u16_be(const u8 *p)
-{
-    return (u16)(((u16)p[0] << 8) | p[1]);
-}
-```
+- Do not include a full launcher, injected DLL, or other compile-ready program in the book when pseudocode explains the design.
 
 ## Binary Ninja and MCP setup
 
@@ -94,18 +134,20 @@ Do not encode machine-specific plugin paths or credentials in committed files.
 
 ## Repository map
 
-- `docs/README.md`: new documentation entry point
+- `docs/README.md`: book entry point
 - `docs/SUMMARY.md`: mdBook navigation
 - `docs/getting-started.md`: local client, Binary Ninja, and MCP setup
-- `docs/methodology.md`: evidence and reverse-engineering method
-- `docs/client/`: verified client behavior and runtime patch documentation
+- `docs/methodology.md`: evidence and client-study method
+- `docs/application/`: startup, configuration, lifecycle, and game loop
+- `docs/systems/`: event, input, UI, and other game systems
 - `docs/network/`: connection, transport, transform, and packet documentation
+- `docs/appendix/`: function addresses, runtime patches, runtime structures, inheritance, and large lookup tables
 - `analysis/`: policy and version-controlled analysis exports
 - `analysis/exports/`: deterministic symbols, functions, types, and comments exported from Binary Ninja
 - `binaryninja/README.md`: Binary Ninja workspace and database policy
 - `binaryninja/scripts/`: reusable import, export, and analysis scripts
 - `binaryninja/workspace/`: local ignored `.bndb` files
-- `examples/windows/`: small Windows C99 examples derived from verified analysis
+- `scripts/`: repository-level documentation and validation helpers
 - `client/`: complete local ignored client installation
 - `legacy/`: archived prior repository content
 
@@ -138,7 +180,8 @@ Ask the project owner for tribal knowledge when in-game behavior would resolve a
 - Use clear subsystem prefixes such as `ui_`, `input_`, `render_`, `audio_`, `file_`, or `map_` after the subsystem is established.
 - Reserve `app_` for application-wide lifecycle or configuration state. Use `session_`, `game_`, or `character_` for state owned by those narrower lifetimes or subsystems.
 - Use `maybe_` for useful but uncertain Binary Ninja names.
-- Documentation may use a trailing `?` for a reconstructed class or field name.
+- Documentation may use a trailing `?` for an uncertain non-packet class or field name.
+- Do not add `?` to a verified packet name. Record uncertainty about packet behavior, fields, or provenance in prose instead.
 - Preserve a useful existing name unless stronger evidence improves it.
 - Do not rename a function from a legacy or related-game name alone.
 - Add comments at important opcode checks, packet field reads, loop boundaries, mode branches, key derivation, and state writes.
@@ -217,7 +260,9 @@ Do not invent an export schema during an unrelated task. Establish the first sch
 
 ## Address and evidence requirements
 
-Preserve memory and code addresses in documentation whenever they are known and useful.
+Keep the main book focused on named functions and behavior. Put static addresses, RVAs, bytes, confidence, and long lookup tables in the matching appendix or YAML export.
+
+Object-relative field offsets may stay beside a compact structure when they are needed to explain the layout. Packet field positions may stay on packet pages when they define the wire format.
 
 For a function or global, record:
 
@@ -234,7 +279,7 @@ For runtime pointers, distinguish clearly between:
 - Object-relative offsets such as `this + 0x638`
 - Values that move because of ASLR or allocation
 
-Do not present a static Binary Ninja address as a stable runtime address without explaining the image base or relocation requirement.
+Do not present a static Binary Ninja address as a stable runtime address without explaining the image base or relocation requirement. Main prose should link the function reference once and use function names after that.
 
 ## Packet documentation
 
@@ -246,9 +291,11 @@ Use `SPacket` and `CPacket` only as generic direction terms. Concrete display na
 
 Preserve exact server class names recovered through RTTI even when a friendlier behavioral label is useful. Client packet names supplied by the project owner are protocol vocabulary, not compiler-recovered RTTI. Record that provenance and keep descriptive aliases separate when the names differ. Do not force paired client and server names to match.
 
+Verified concrete packet names do not use a trailing `?`. If part of a packet remains uncertain, keep the verified name and state the specific unknown in its page rather than making the whole packet name look tentative.
+
 Some control bodies may resemble an opcode-first packet without representing a normal packet class. Document their exact bytes, framing path, and sequence effects instead of forcing them into the ordinary packet model.
 
-Every client packet page should include a known send-site list. Record each direct static call address, its containing function, and an exact RTTI pane or subsystem owner when one can be reached reliably. Distinguish a direct virtual-method owner from an owner found through caller traversal. State when the owner is unresolved, and do not imply that static cross-references cover indirect or queued runtime calls.
+Every client packet page should include known UI pane or subsystem owners when they can be reached reliably. Keep exact call addresses and unnamed containing functions in YAML exports or an address appendix. State when the owner is unresolved, and do not imply that static cross-references cover indirect or queued runtime calls.
 
 Packet filenames use a zero-padded decimal prefix followed by lowercase hexadecimal:
 
@@ -264,7 +311,7 @@ Each packet page should include as much of the following as is known:
 - Framing and transform mode
 - Plaintext body layout beginning with the opcode
 - Field types, byte order, variants, counts, and nested loops
-- Parser, handler, builder, or sender addresses
+- Parser, handler, builder, or sender names, with addresses kept in the lookup material
 - State changes and UI effects
 - Paired request or response packets
 - Unknown fields and the reason they remain unknown

@@ -1,78 +1,60 @@
-# Getting Started
+# Getting started
 
-The repository keeps the private client, the local Binary Ninja database, and the reviewable project record separate. This protects original game data while allowing contributors to share evidence and repeat useful analysis.
+You need Binary Ninja, its MCP plugin, and your own copy of the matching game client. The client and Binary Ninja database stay private on your machine.
 
-## License requirement
+## Requirements
 
-Binary Ninja Free does not support plugins. Using `binary_ninja_mcp` requires a paid Binary Ninja edition with plugin support. A Non-Commercial/Personal license can run the plugin through the Binary Ninja GUI. Commercial and Ultimate licenses also support headless plugin execution.
+- Binary Ninja with plugin support
+- [`binary_ninja_mcp`](https://github.com/fosdickio/binary_ninja_mcp)
+- Python 3.12 or newer
+- An MCP-capable editor or agent
+- A legally obtained copy of the target client
 
-The MCP plugin also requires Python 3.12 or newer.
+Binary Ninja Free does not load plugins. A paid Non-Commercial/Personal, Commercial, or Ultimate license is required for this workflow. Non-Commercial/Personal works while the GUI is open. Headless plugin use requires Commercial or Ultimate.
 
-## Local files
+## Check the client
 
-Create this local layout:
-
-```text
-client/
-  Darkages.exe
-  ...complete private client installation...
-binaryninja/
-  workspace/
-    Darkages.exe.bndb
-```
-
-Both `client/` and `binaryninja/workspace/` are ignored as complete directories. Do not force-add their contents.
-
-On macOS or Linux, verify the executable with:
-
-```shell
-shasum -a 256 client/Darkages.exe
-```
-
-On Windows PowerShell, use:
-
-```powershell
-Get-FileHash .\client\Darkages.exe -Algorithm SHA256
-```
-
-The result must be:
+Place the full private client under `client/`, then confirm:
 
 ```text
-054A5D6ADC56099C6BFD9D2A58675AFF62DC788B63209A3D906492F5B89E96C6
+File: Darkages.exe
+Size: 3,112,960 bytes
+SHA-256: 054A5D6ADC56099C6BFD9D2A58675AFF62DC788B63209A3D906492F5B89E96C6
+Architecture: 32-bit x86 Windows PE
 ```
 
-The file size must be `3,112,960` bytes.
+Do not commit the executable, game assets, captures with private data, or saved Binary Ninja databases.
 
-## Binary Ninja workspace
+## Open the workspace
 
 1. Open `client/Darkages.exe` in Binary Ninja.
-2. Allow initial analysis to finish.
-3. Save the analysis database as `binaryninja/workspace/Darkages.exe.bndb`.
-4. Install `binary_ninja_mcp` through the Plugin Manager or its documented manual process.
-5. Click the MCP plugin button in the lower-left corner of the Binary Ninja GUI.
-6. Configure the local MCP client using the plugin's generated or manual configuration.
-7. Verify access with a read-only query for the entry point, imports, or one function.
+2. Let initial analysis finish.
+3. Save the database as `binaryninja/workspace/Darkages.exe.bndb`.
+4. Install `binary_ninja_mcp` from Binary Ninja's Plugin Manager or its repository instructions.
+5. Start the MCP plugin from the Binary Ninja window.
+6. Configure Codex or another MCP client with the connection details shown by the plugin.
 
-Keep the GUI open when using a Non-Commercial/Personal license. Do not commit absolute plugin paths or local MCP configuration.
+Machine-specific paths and credentials stay in local configuration, not the repository.
 
-## Codex configuration
+## First MCP check
 
-The Binary Ninja plugin listens on `localhost:9009`. Register its recommended stdio bridge in the user-level Codex configuration:
+Begin with a small read-only request:
 
-```shell
-codex mcp add binary-ninja-mcp -- npx -y binary-ninja-mcp --host localhost --port 9009
-```
+- show the executable entry point
+- list a few imports
+- display one known function by name
 
-Verify the stored entry with:
+If that works, ask for callers, callees, or pseudocode for one focused function. Save useful names and comments in Binary Ninja, then export them to YAML when they should be shared.
 
-```shell
-codex mcp get binary-ninja-mcp --json
-```
+## What gets committed
 
-Restart Codex after adding or changing the entry. Keep Binary Ninja open with the target loaded and the MCP plugin enabled before starting an analysis task.
+| Path | Purpose | Commit? |
+| --- | --- | --- |
+| `client/` | Complete local client | No |
+| `binaryninja/workspace/` | Local `.bndb` workspace | No |
+| `binaryninja/scripts/` | Reusable analysis scripts | Yes |
+| `scripts/` | Generated book and repository helpers | Yes |
+| `analysis/exports/` | Reviewable Binary Ninja findings | Yes |
+| `docs/` | The book | Yes |
 
-## What to commit
-
-Commit new findings to the book under `docs/`. Commit stable machine-readable names, types, comments, and function facts under `analysis/exports/`. Commit the scripts that produce and consume those exports under `binaryninja/scripts/`.
-
-Do not commit the `.bndb`. It is useful local state, but it is binary, contains analysis history, and is unsuitable as the shared source of truth.
+Continue with [How we study the client](methodology.md).

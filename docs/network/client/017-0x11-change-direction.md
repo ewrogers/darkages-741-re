@@ -1,26 +1,31 @@
 # Change Direction (`CChangeDirection`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x11` (17) |
-| Common transform | derived |
-| Representative builder | `net_send_change_direction` at `0x005F4510` |
+| Command | `0x11` (17) |
+| Encoding | session key |
 | Name provenance | Project-owner protocol name, confirmed against the world input path |
 
-## Current evidence
+## Purpose
+
+The client sends this message for **change direction**.
 
 The builder writes opcode `0x11` followed by one direction byte and submits a two-byte body.
 
 The client has no derived packet RTTI for this name.
 
-## Known send sites
+## Sent by
 
-- `0x005F093F` in `sub_5F0900`. Its nearest confirmed RTTI owners are `WorldControllerPane::WorldPane`, `WorldPane::WorldPane_Impl`, and their timer handlers.
+Known static callers lead to:
 
-## Plaintext body
+- UI or subsystem owner not known yet
+
+## Body
 
 ```text
-opcode:u8                 // 0x11
-direction:u8
+packet CChangeDirection {
+    u8 opcode                 // 0x11
+    u8 direction
+}
 ```

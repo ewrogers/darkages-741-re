@@ -1,28 +1,31 @@
-# Send Portrait (`CSendPortrait?`)
+# Send Portrait (`CSendPortrait`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x4F` (79) |
-| Common transform | derived |
-| Representative builder | `0x005B1160` |
-| Name provenance | The class spelling is reconstructed from the locally confirmed portrait builder and related terminology. |
+| Command | `0x4F` (79) |
+| Encoding | session key |
+| Name provenance | Verified project protocol name, matched to the local portrait builder. |
 
-## Current evidence
+## Purpose
 
-`net_send_c_portrait?` at `0x005B1160` submits a global packet buffer. `0x0054CE10` initializes that buffer with opcode `0x4F`.
+The client sends this message for **send portrait**.
 
-No concrete derived client packet RTTI class exists in this binary. The display name is therefore kept separate from the locally verified opcode evidence.
+`net_send_c_portrait?` submits a global packet buffer initialized with command `0x4F`.
 
-## Known send sites
+## Sent by
 
-- `0x5AD23E` in `sub_5ad160`, reachable from `UserInfoPane::UserInfoPane_ForUser`.
+Known static callers lead to:
 
-## Plaintext body
+- `UserInfoPane::UserInfoPane_ForUser`
+
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet CSendPortrait {
+    u8 opcode                 // 0x4F
+    ...                         // fields pending
+}
 ```
 
 Field order, variants, state effects, and paired packets remain to be traced.

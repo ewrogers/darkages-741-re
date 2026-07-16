@@ -1,28 +1,29 @@
 # Stipulation (`CStipulation`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x4B` (75) |
-| Common transform | static |
-| Representative builder | `0x004B8570` |
+| Command | `0x4B` (75) |
+| Encoding | startup key |
 | Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
 
-## Current evidence
+## Purpose
 
-The representative builder at `0x004B8570` writes opcode `0x4B` as body byte 0 and reaches `net_submit_client_packet`.
+The client sends this message for **stipulation**.
 
-No concrete derived client packet RTTI class exists in this binary. The display name is therefore kept separate from the locally verified opcode evidence.
+## Sent by
 
-## Known send sites
+Known static callers lead to:
 
-- `0x004B8570` has no direct code cross-reference. Its caller may be indirect; owner context is not yet identified.
+- UI or subsystem owner not known yet
 
-## Plaintext body
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet CStipulation {
+    u8 opcode                 // 0x4B
+    ...                         // fields pending
+}
 ```
 
 Field order, variants, state effects, and paired packets remain to be traced.

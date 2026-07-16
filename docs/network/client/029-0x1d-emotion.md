@@ -1,29 +1,30 @@
 # Emotion (`CEmotion`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x1D` (29) |
-| Common transform | derived |
-| Representative builder | `0x005F46C0` |
+| Command | `0x1D` (29) |
+| Encoding | session key |
 | Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
 
-## Current evidence
+## Purpose
 
-The representative builder at `0x005F46C0` writes opcode `0x1D` as body byte 0 and reaches `net_submit_client_packet`.
+The client sends this message for **emotion**.
 
-No concrete derived client packet RTTI class exists in this binary. The display name is therefore kept separate from the locally verified opcode evidence.
+## Sent by
 
-## Known send sites
+Known static callers lead to:
 
-- `0x5F1421` in `sub_5f0d20`, reachable from `WorldControllerPane::WorldPane`, `WorldPane::WorldPane_Impl`.
-- `0x5F9AD5` in `sub_5f9ac0`, reachable from `MapInterface::WorldPane_Impl`.
+- `WorldControllerPane::WorldPane, WorldPane::WorldPane_Impl`
+- `MapInterface::WorldPane_Impl`
 
-## Plaintext body
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet CEmotion {
+    u8 opcode                 // 0x1D
+    ...                         // fields pending
+}
 ```
 
 Field order, variants, state effects, and paired packets remain to be traced.

@@ -1,22 +1,25 @@
 # Draw Human Objects (`SDrawHumanObjects`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Server to client |
-| Opcode | `0x33` (51) |
-| Common transform | derived |
-| Constructor | `0x00598540` |
+| Command | `0x33` (51) |
+| Encoding | session key |
 | Name provenance | Microsoft C++ RTTI in the target |
 
-## Current evidence
+## Purpose
 
-The constructor at `0x00598540` calls `net_server_packet_base_ctor` with opcode `0x33` and installs the `SDrawHumanObjects` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+The server sends this message for **draw human objects**.
 
-## Plaintext body
+The constructor calls `net_server_packet_base_ctor` with opcode `0x33` and installs the `SDrawHumanObjects` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet SDrawHumanObjects {
+    u8 opcode                 // 0x33
+    ...                         // fields pending
+}
 ```
 
 The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.

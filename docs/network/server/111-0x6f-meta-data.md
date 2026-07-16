@@ -1,38 +1,40 @@
 # Meta Data (`SMetaData`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Server to client |
-| Opcode | `0x6F` (111) |
-| Common transform | static |
-| Registered server packet class | None found |
-| Dispatcher | `net_dispatch_metadata_events` at `0x004E4D80` |
-| Handler | `net_handle_metadata` at `0x004E4EA0` |
+| Command | `0x6F` (111) |
+| Encoding | startup key |
+| Packet class | None found |
 | Internal name provenance | Project-owner protocol knowledge, confirmed by `MetaTableManager` behavior |
 
-## Current evidence
+## Purpose
 
-The RTTI-backed `MetaTableManager` owns the dispatcher. At `0x004E4DB8` it compares the decoded body opcode with `0x6F` and routes the byte buffer directly. Metadata processing needs manager state and custom blob validation, so this opcode bypasses the general server packet factory.
+The server sends this message for **meta data**.
 
-## Plaintext body
+`MetaTableManager` compares the decoded command with `0x6F` and routes the body directly. Metadata processing needs manager state and custom blob validation, so this command bypasses the general server packet factory.
+
+## Body
 
 ```text
-opcode:u8
-operation:u8
+packet SMetaData {
+    u8 opcode                 // 0x6F
+    u8 operation
 
-if operation == 0:
-    name_length:u8
-    name:bytes[name_length]
-    crc:u32be
-    payload_length:u16be
-    payload:bytes[payload_length]
+    if operation == 0:
+        u8 name_length
+        bytes name[name_length]
+        u32be crc
+        u16be payload_length
+        bytes payload[payload_length]
 
-if operation == 1:
-    entry_count:u16be
-    repeat entry_count times:
-        name_length:u8
-        name:bytes[name_length]
-        crc:u32be
+    if operation == 1:
+        u16be entry_count
+        repeat entry_count times:
+            u8 name_length
+            bytes name[name_length]
+            u32be crc
+}
 ```
 
 Operation `0` validates and applies one named metadata blob. Operation `1` rebuilds the manager's table of metadata names and CRC values. The payload's internal encoding remains to be documented.

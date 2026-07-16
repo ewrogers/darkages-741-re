@@ -1,73 +1,73 @@
-# Client-to-server packet index
+# Client packets
 
-The client builds outbound packets inline and submits opcode-first bodies through `net_submit_client_packet` at `0x00563E00`. There are no derived client packet RTTI classes.
+These messages travel from the game client to the server.
 
-This initial index contains 61 locally evidenced opcodes: 60 with a concrete builder call site and `0x48` from the explicit raw send-policy branch. The executable does not expose client packet RTTI, so internal names record project-owner protocol knowledge or cautious reconstructions matched against local behavior. A trailing `?` means the spelling remains uncertain. Descriptive aliases are recorded on individual pages when they differ from the internal name.
+The binary exposes only the client packet base class through RTTI. Concrete names therefore come from local builder behavior and project-owner protocol knowledge. Each page states its name source and lists known UI or subsystem owners without mixing in address-level lookup data.
 
-Each packet page lists every direct static call to its representative builder. A listed RTTI owner is exact compiler evidence. “Reachable from” means the owner was found by following callers and may enqueue or route the action rather than call the builder directly. “Owner not yet identified” means the direct call address is known but no reliable pane or subsystem owner has been recovered yet. Indirect runtime calls can still exist beyond these static cross-references.
+Plain packet bodies begin with the command byte. `CBaram` is listed for sequence research, but its five-byte `baram` body is a special control message rather than an ordinary packet.
 
-Transform names link to [Packet transforms](../packet-transforms.md). Payload fields remain intentionally incomplete until they are recovered from the target.
+| Command | Packet | Encoding |
+| --- | --- | --- |
+| `0x00` (0) | [Version (`CVersion`)](000-0x00-version.md) | none |
+| `0x02` (2) | [New User (`CNewUser`)](002-0x02-new-user.md) | startup key |
+| `0x03` (3) | [Login (`CLogin`)](003-0x03-login.md) | startup key |
+| `0x04` (4) | [New User Appearance (`CNewUserAppearance`)](004-0x04-new-user-appearance.md) | startup key |
+| `0x05` (5) | [Map Request (`CMapRequest`)](005-0x05-map-request.md) | session key |
+| `0x06` (6) | [Move (`CMove`)](006-0x06-move.md) | session key |
+| `0x07` (7) | [Get (`CGet`)](007-0x07-get.md) | session key |
+| `0x08` (8) | [Drop (`CDrop`)](008-0x08-drop.md) | session key |
+| `0x0B` (11) | [Quit (`CQuit`)](011-0x0b-quit.md) | startup key |
+| `0x0C` (12) | [Put Ground (`CPutGround`)](012-0x0c-put-ground.md) | session key |
+| `0x0D` (13) | [Block Listen (`CBlockListen`)](013-0x0d-block-listen.md) | session key |
+| `0x0E` (14) | [Say (`CSay`)](014-0x0e-say.md) | session key |
+| `0x0F` (15) | [Use Spell (`CUseSpell`)](015-0x0f-use-spell.md) | session key |
+| `0x10` (16) | [Transfer Server (`CTransferServer`)](016-0x10-transfer-server.md) | none |
+| `0x11` (17) | [Change Direction (`CChangeDirection`)](017-0x11-change-direction.md) | session key |
+| `0x13` (19) | [Attack (`CAttack`)](019-0x13-attack.md) | session key |
+| `0x18` (24) | [Who (`CWho`)](024-0x18-who.md) | session key |
+| `0x19` (25) | [Tell (`CTell`)](025-0x19-tell.md) | session key |
+| `0x1B` (27) | [User Setting (`CUserSetting`)](027-0x1b-user-setting.md) | session key |
+| `0x1C` (28) | [Use (`CUse`)](028-0x1c-use.md) | session key |
+| `0x1D` (29) | [Emotion (`CEmotion`)](029-0x1d-emotion.md) | session key |
+| `0x23` (35) | [Exit Editing Mode (`CExitEditingMode`)](035-0x23-exit-editing-mode.md) | session key |
+| `0x24` (36) | [Drop Gold (`CDropGold`)](036-0x24-drop-gold.md) | session key |
+| `0x26` (38) | [Change Password (`CChangePassword`)](038-0x26-change-password.md) | startup key |
+| `0x29` (41) | [Give (`CGive`)](041-0x29-give.md) | session key |
+| `0x2A` (42) | [Give Gold (`CGiveGold`)](042-0x2a-give-gold.md) | session key |
+| `0x2D` (45) | [Self Look (`CSelfLook`)](045-0x2d-self-look.md) | startup key |
+| `0x2E` (46) | [Group (`CGroup`)](046-0x2e-group.md) | session key |
+| `0x2F` (47) | [Group Toggle (`CGroupToggle`)](047-0x2f-group-toggle.md) | session key |
+| `0x30` (48) | [Change Slot (`CChangeSlot`)](048-0x30-change-slot.md) | session key |
+| `0x31` (49) | [Confirm (`CConfirm`)](049-0x31-confirm.md) | session key |
+| `0x38` (56) | [Refresh User (`CRefreshUser`)](056-0x38-refresh-user.md) | session key |
+| `0x39` (57) | [Merchant (`CMenuCode`)](057-0x39-merchant.md) | session key |
+| `0x3A` (58) | [Pursuit (`CMessage`)](058-0x3a-pursuit.md) | startup key |
+| `0x3B` (59) | [Bulletin (`CBulletin`)](059-0x3b-bulletin.md) | session key |
+| `0x3E` (62) | [Use Skill (`CUseSkill`)](062-0x3e-use-skill.md) | session key |
+| `0x3F` (63) | [Field Map (`CFieldMap`)](063-0x3f-field-map.md) | session key |
+| `0x42` (66) | [Exception (`CException`)](066-0x42-exception.md) | startup key |
+| `0x43` (67) | [Request Object Info (`CRequestObjectInfo`)](067-0x43-request-object-info.md) | startup key |
+| `0x44` (68) | [Remove Equipment (`CRemoveEquipment`)](068-0x44-remove-equipment.md) | session key |
+| `0x45` (69) | [Reply CRC (`CReplyCRC`)](069-0x45-reply-crc.md) | session key |
+| `0x47` (71) | [Add Stat (`CAddStat`)](071-0x47-add-stat.md) | session key |
+| `0x48` (72) | [Request Patch (`CRequestPatch`)](072-0x48-request-patch.md) | none |
+| `0x4A` (74) | [Exchange (`CExchange`)](074-0x4a-exchange.md) | session key |
+| `0x4B` (75) | [Stipulation (`CStipulation`)](075-0x4b-stipulation.md) | startup key |
+| `0x4D` (77) | [Spell Delay Request (`CSpellDelayRequest`)](077-0x4d-spell-delay-request.md) | session key |
+| `0x4E` (78) | [Spell Delay Say (`CSpellDelaySay`)](078-0x4e-spell-delay-say.md) | session key |
+| `0x4F` (79) | [Send Portrait (`CSendPortrait`)](079-0x4f-send-portrait.md) | session key |
+| `0x54` (84) | [Mercenary (`CMercenary`)](084-0x54-mercenary.md) | session key |
+| `0x55` (85) | [Manual (`CManual`)](085-0x55-manual.md) | session key |
+| `0x57` (87) | [Multi Server (`CMulti`)](087-0x57-multi-server.md) | startup key |
+| `0x62` (ASCII `b`) | [Baram (`CBaram`)](098-0x62-baram.md) | startup key |
+| `0x68` (104) | [Request Homepage (`CRequestHomepage`)](104-0x68-request-homepage.md) | startup key |
+| `0x6A` (106) | [Mini Game (`CMiniGame`)](106-0x6a-mini-game.md) | session key |
+| `0x6C` (108) | [Cash Shop (`CCashShop`)](108-0x6c-cash-shop.md) | session key |
+| `0x71` (113) | [Send Alive (`CSendAlive`)](113-0x71-send-alive.md) | startup key |
+| `0x73` (115) | [Web Board (`CWebBoard`)](115-0x73-web-board.md) | startup key |
+| `0x75` (117) | [Check Time (`CCheckTime`)](117-0x75-check-time.md) | session key |
+| `0x79` (121) | [User Change State (`CUserChangeState`)](121-0x79-user-change-state.md) | session key |
+| `0x7A` (122) | [Request Family Name (`CRequestFamilyName`)](122-0x7a-request-family-name.md) | session key |
+| `0x7B` (123) | [Meta Data (`CMetaData`)](123-0x7b-meta-data.md) | startup key |
 
-| Opcode | Name | Transform | Representative local evidence |
-| ---: | --- | --- | --- |
-| [000 / 0x00](000-0x00-version.md) | Version (`CVersion`) | raw | `0x00579090` |
-| [002 / 0x02](002-0x02-new-user.md) | New User (`CNewUser`) | static | `0x0043D820` |
-| [003 / 0x03](003-0x03-login.md) | Login (`CLogin`) | static | `0x004BAA80` |
-| [004 / 0x04](004-0x04-new-user-appearance.md) | New User Appearance (`CNewUserAppearance`) | static | `0x0043E8F0` |
-| [005 / 0x05](005-0x05-map-request.md) | Map Request (`CMapRequest`) | derived | `0x005F1BF0` |
-| [006 / 0x06](006-0x06-move.md) | Move (`CMove`) | derived | `0x005F4580` |
-| [007 / 0x07](007-0x07-get.md) | Get (`CGet`) | derived | `0x00498550` |
-| [008 / 0x08](008-0x08-drop.md) | Drop (`CDrop`) | derived | `0x00496C90` |
-| [011 / 0x0b](011-0x0b-quit.md) | Quit (`CQuit`) | static | `0x004B79C0` |
-| [012 / 0x0c](012-0x0c-put-ground.md) | Put Ground (`CPutGround`) | derived | `0x005F4430` |
-| [013 / 0x0d](013-0x0d-block-listen.md) | Block Listen (`CBlockListen?`) | derived | `0x00550AA0` |
-| [014 / 0x0e](014-0x0e-say.md) | Say (`CSay`) | derived | `0x0054FD90` |
-| [015 / 0x0f](015-0x0f-use-spell.md) | Use Spell (`CUseSpell`) | derived | `0x00428690` |
-| [016 / 0x10](016-0x10-transfer-server.md) | Transfer Server (`CTransferServer`) | raw | `0x004B9510` |
-| [017 / 0x11](017-0x11-change-direction.md) | Change Direction (`CChangeDirection`) | derived | `0x005F4510` |
-| [019 / 0x13](019-0x13-attack.md) | Attack (`CAttack`) | derived | `0x005F44B0` |
-| [024 / 0x18](024-0x18-who.md) | Who (`CWho`) | derived | `0x0059D7D0` |
-| [025 / 0x19](025-0x19-tell.md) | Tell (`CTell`) | derived | `0x00550590` |
-| [027 / 0x1b](027-0x1b-user-setting.md) | User Setting (`CUserSetting`) | derived | `0x00542E60` |
-| [028 / 0x1c](028-0x1c-use.md) | Use (`CUse`) | derived | `0x00496E90` |
-| [029 / 0x1d](029-0x1d-emotion.md) | Emotion (`CEmotion`) | derived | `0x005F46C0` |
-| [035 / 0x23](035-0x23-exit-editing-mode.md) | Exit Editing Mode (`CExitEditingMode?`) | derived | `0x0054A7D0` |
-| [036 / 0x24](036-0x24-drop-gold.md) | Drop Gold (`CDropGold?`) | derived | `0x004975C0` |
-| [038 / 0x26](038-0x26-change-password.md) | Change Password (`CChangePassword`) | static | `0x004BC050` |
-| [041 / 0x29](041-0x29-give.md) | Give (`CGive?`) | derived | `0x00496D90` |
-| [042 / 0x2a](042-0x2a-give-gold.md) | Give Gold (`CGiveGold?`) | derived | `0x00497B10` |
-| [045 / 0x2d](045-0x2d-self-look.md) | Self Look (`CSelfLook`) | static | `0x0041B840` |
-| [046 / 0x2e](046-0x2e-group.md) | Group (`CGroup`) | derived | `0x00462DC0` |
-| [047 / 0x2f](047-0x2f-group-toggle.md) | Group Toggle (`CGroupToggle?`) | derived | `0x0041B8E0` |
-| [048 / 0x30](048-0x30-change-slot.md) | Change Slot (`CChangeSlot`) | derived | `0x00490F40` |
-| [049 / 0x31](049-0x31-confirm.md) | Confirm (`CConfirm`) | derived | `0x005922A0` |
-| [056 / 0x38](056-0x38-refresh-user.md) | Refresh User (`CRefreshUser`) | derived | `0x005F4640` |
-| [057 / 0x39](057-0x39-merchant.md) | Merchant (`CMenuCode`) | derived | `0x004CFE60` |
-| [058 / 0x3a](058-0x3a-pursuit.md) | Pursuit (`CMessage`) | static | `0x004DBC90` |
-| [059 / 0x3b](059-0x3b-bulletin.md) | Bulletin (`CBulletin`) | derived | `0x0041CBC0` |
-| [062 / 0x3e](062-0x3e-use-skill.md) | Use Skill (`CUseSkill`) | derived | `0x00499420` |
-| [063 / 0x3f](063-0x3f-field-map.md) | Field Map (`CFieldMap?`) | derived | `0x00430D30` |
-| [066 / 0x42](066-0x42-exception.md) | Exception (`CException`) | static | `0x00468B40` |
-| [067 / 0x43](067-0x43-request-object-info.md) | Request Object Info (`CRequestObjectInfo`) | static | `0x004CD350` |
-| [068 / 0x44](068-0x44-remove-equipment.md) | Remove Equipment (`CRemoveEquipment`) | derived | `0x00460330` |
-| [069 / 0x45](069-0x45-reply-crc.md) | Reply CRC (`CReplyCRC`) | derived | `0x005F2CF0` |
-| [071 / 0x47](071-0x47-add-stat.md) | Add Stat (`CAddStat?`) | derived | `0x005755C0` |
-| [072 / 0x48](072-0x48-request-patch.md) | Request Patch (`CRequestPatch`) | raw | send-policy branch at `0x0056492A` |
-| [074 / 0x4a](074-0x4a-exchange.md) | Exchange (`CExchange`) | derived | `0x0046A390` |
-| [075 / 0x4b](075-0x4b-stipulation.md) | Stipulation (`CStipulation`) | static | `0x004B8570` |
-| [077 / 0x4d](077-0x4d-spell-delay-request.md) | Spell Delay Request (`CSpellDelayRequest?`) | derived | `0x0049BAB0` |
-| [078 / 0x4e](078-0x4e-spell-delay-say.md) | Spell Delay Say (`CSpellDelaySay?`) | derived | `0x00499330` |
-| [079 / 0x4f](079-0x4f-send-portrait.md) | Send Portrait (`CSendPortrait?`) | derived | `0x005B1160` |
-| [084 / 0x54](084-0x54-mercenary.md) | Mercenary (`CMercenary`) | derived | `0x0045C500` |
-| [085 / 0x55](085-0x55-manual.md) | Manual (`CManual`) | derived | `0x004C26D0` |
-| [087 / 0x57](087-0x57-multi-server.md) | Multi Server (`CMulti`) | static | `0x0055A090` |
-| [098 / 0x62](098-0x62-baram.md) | Baram (`CBaram`) | static | literal body at `0x00579832` |
-| [104 / 0x68](104-0x68-request-homepage.md) | Request Homepage (`CRequestHomepage?`) | static | `0x004BA0C0` |
-| [106 / 0x6a](106-0x6a-mini-game.md) | Mini Game (`CMiniGame`) | derived | `0x0050C600` |
-| [108 / 0x6c](108-0x6c-cash-shop.md) | Cash Shop (`CCashShop`) | derived | `0x004A03B0` |
-| [113 / 0x71](113-0x71-send-alive.md) | Send Alive (`CSendAlive`) | static | `0x004BA010` |
-| [115 / 0x73](115-0x73-web-board.md) | Web Board (`CWebBoard`) | static | `0x004160A0` |
-| [117 / 0x75](117-0x75-check-time.md) | Check Time (`CCheckTime`) | derived | `0x005F7830` |
-| [121 / 0x79](121-0x79-user-change-state.md) | User Change State (`CUserChangeState?`) | derived | `0x005FC790` |
-| [122 / 0x7a](122-0x7a-request-family-name.md) | Request Family Name (`CRequestFamilyName`) | derived | `0x004719B0` |
-| [123 / 0x7b](123-0x7b-meta-data.md) | Meta Data (`CMetaData`) | static | `0x004E52F0` |
+Shared framing and encoding rules are in [Network transport](../transport.md) and [Packet transforms](../packet-transforms.md).

@@ -1,28 +1,29 @@
 # Use Skill (`CUseSkill`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x3E` (62) |
-| Common transform | derived |
-| Representative builder | `0x00499420` |
+| Command | `0x3E` (62) |
+| Encoding | session key |
 | Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
 
-## Current evidence
+## Purpose
 
-The representative builder at `0x00499420` writes opcode `0x3E` as body byte 0 and reaches `net_submit_client_packet`.
+The client sends this message for **use skill**.
 
-No concrete derived client packet RTTI class exists in this binary. The display name is therefore kept separate from the locally verified opcode evidence.
+## Sent by
 
-## Known send sites
+Known static callers lead to:
 
-- `0x499326` in `sub_4992f0`, reachable from `Pane::SkillInvItemPane`.
+- `Pane::SkillInvItemPane`
 
-## Plaintext body
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet CUseSkill {
+    u8 opcode                 // 0x3E
+    ...                         // fields pending
+}
 ```
 
 Field order, variants, state effects, and paired packets remain to be traced.

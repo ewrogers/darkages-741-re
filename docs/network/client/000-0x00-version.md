@@ -1,28 +1,29 @@
 # Version (`CVersion`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x00` (0) |
-| Common transform | raw |
-| Representative builder | `0x00579090` |
+| Command | `0x00` (0) |
+| Encoding | none |
 | Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
 
-## Current evidence
+## Purpose
 
-The representative builder at `0x00579090` writes opcode `0x00` as body byte 0 and reaches `net_submit_client_packet`.
+The client sends this message for **version**.
 
-No concrete derived client packet RTTI class exists in this binary. The display name is therefore kept separate from the locally verified opcode evidence.
+## Sent by
 
-## Known send sites
+Known static callers lead to:
 
-- `0x00579090` is an indirect virtual send method referenced by `Pane::TerminalPane2` at `0x685BB4`.
+- UI or subsystem owner not known yet
 
-## Plaintext body
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet CVersion {
+    u8 opcode                 // 0x00
+    ...                         // fields pending
+}
 ```
 
 Remaining fields, variants, and state effects remain to be traced.

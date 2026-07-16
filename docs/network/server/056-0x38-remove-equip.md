@@ -1,22 +1,25 @@
 # Remove Equip (`SRemoveEquip`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Server to client |
-| Opcode | `0x38` (56) |
-| Common transform | derived |
-| Constructor | `0x0059AE30` |
+| Command | `0x38` (56) |
+| Encoding | session key |
 | Name provenance | Microsoft C++ RTTI in the target |
 
-## Current evidence
+## Purpose
 
-The constructor at `0x0059AE30` calls `net_server_packet_base_ctor` with opcode `0x38` and installs the `SRemoveEquip` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+The server sends this message for **remove equip**.
 
-## Plaintext body
+The constructor calls `net_server_packet_base_ctor` with opcode `0x38` and installs the `SRemoveEquip` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet SRemoveEquip {
+    u8 opcode                 // 0x38
+    ...                         // fields pending
+}
 ```
 
 The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.

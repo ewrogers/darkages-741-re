@@ -1,29 +1,34 @@
 # Multi Server (`CMulti`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x57` (87) |
-| Common transform | static |
-| Representative builder | `net_send_multi_server_selection` at `0x0055A090` |
+| Command | `0x57` (87) |
+| Encoding | startup key |
 | Behavioral alias | `CMultiServer` |
 | Name provenance | Project-owner protocol name; server-selection behavior confirmed locally |
 
-## Current evidence
+## Purpose
+
+The client sends this message for **multi server**.
 
 The exact client protocol name is `CMulti`. The more descriptive `CMultiServer` alias is supported by the caller, which selects a server record from configuration, and by the `ServerSelectDialogPane` RTTI owner. Server opcode `0x56` has the exact RTTI name [`SMulti`](../server/086-0x56-multi.md).
 
 The client has no derived packet RTTI for `CMulti` itself. The paired names are preserved as recovered instead of being forced to match a constructed `SMultiServer` name.
 
-## Known send sites
+## Sent by
 
-- `0x00559F57` in `sub_559F30`, reachable from `TimerHandler::ServerSelectDialogPane`.
+Known static callers lead to:
 
-## Plaintext body
+- `TimerHandler::ServerSelectDialogPane`
+
+## Body
 
 ```text
-opcode:u8                 // 0x57
-reserved_0:u8             // 0
-server_index:u8
-reserved_1:u8             // 0
+packet CMulti {
+    u8 opcode                 // 0x57
+    u8 reserved_0             // 0
+    u8 server_index
+    u8 reserved_1             // 0
+}
 ```

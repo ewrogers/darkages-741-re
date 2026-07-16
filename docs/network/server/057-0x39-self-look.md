@@ -1,22 +1,25 @@
 # Self Look (`SSelfLook`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Server to client |
-| Opcode | `0x39` (57) |
-| Common transform | derived |
-| Constructor | `0x0059BA40` |
+| Command | `0x39` (57) |
+| Encoding | session key |
 | Name provenance | Microsoft C++ RTTI in the target |
 
-## Current evidence
+## Purpose
 
-The constructor at `0x0059BA40` calls `net_server_packet_base_ctor` with opcode `0x39` and installs the `SSelfLook` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+The server sends this message for **self look**.
 
-## Plaintext body
+The constructor calls `net_server_packet_base_ctor` with opcode `0x39` and installs the `SSelfLook` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+
+## Body
 
 ```text
-opcode:u8
-... fields pending
+packet SSelfLook {
+    u8 opcode                 // 0x39
+    ...                         // fields pending
+}
 ```
 
 The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.

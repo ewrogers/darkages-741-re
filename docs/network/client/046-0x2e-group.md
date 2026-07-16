@@ -1,28 +1,33 @@
 # Group (`CGroup`)
 
-| Field | Value |
+| Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Opcode | `0x2E` (46) |
-| Common transform | derived |
-| Representative builder | `net_send_group` at `0x00462DC0` |
+| Command | `0x2E` (46) |
+| Encoding | session key |
 | Name provenance | Project-owner protocol name, confirmed against the User Look dialog path |
 
-## Current evidence
+## Purpose
+
+The client sends this message for **group**.
 
 The builder writes opcode `0x2E`, action `2`, and a length-prefixed user name taken from the owning dialog. This protocol uses “group,” not “party.”
 
 The client has no derived packet RTTI for this name.
 
-## Known send sites
+## Sent by
 
-- `0x00461F91` in `sub_461F40`, a virtual method of `DialogPane::UserLookPane`.
+Known static callers lead to:
 
-## Plaintext body
+- UI or subsystem owner not known yet
+
+## Body
 
 ```text
-opcode:u8                 // 0x2E
-action:u8                 // 2 in this builder
-name_length:u8
-name:u8[name_length]
+packet CGroup {
+    u8 opcode                 // 0x2E
+    u8 action                 // 2 in this builder
+    u8 name_length
+    u8 name[name_length]
+}
 ```
