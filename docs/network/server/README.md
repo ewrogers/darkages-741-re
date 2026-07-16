@@ -72,5 +72,6 @@ Most concrete names come directly from RTTI and the server packet factory. A few
 | [0x6B - Screen Shot (`SScreenShot`)](107-0x6b-screen-shot.md) | session key |
 | [0x6D - Family Name (`SFamilyName`)](109-0x6d-family-name.md) | session key |
 | [0x6F - Meta Data (`SMetaData`)](111-0x6f-meta-data.md) | startup key |
+| [0x7E - Hello (`SHello`)](126-0x7e-hello.md) | raw startup control |
 
 Shared framing and encoding rules are in [Network transport](../transport.md) and [Packet transforms](../packet-transforms.md).

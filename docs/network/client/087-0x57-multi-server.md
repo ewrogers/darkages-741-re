@@ -4,7 +4,7 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x57` (87) |
-| Encoding | startup key |
+| Transform | `static` |
 | Behavioral alias | `CMultiServer` |
 | Name provenance | Project-owner protocol name; server-selection behavior confirmed locally |
 
@@ -18,9 +18,7 @@ The client has no derived packet RTTI for `CMulti` itself. The paired names are 
 
 ## Sent by
 
-Known static callers lead to:
-
-- `TimerHandler::ServerSelectDialogPane`
+The server-selection dialog sends this when the player chooses a row. `SVersionCheck` also reaches the same selection path automatically when the local server table has a matching CRC and contains exactly one entry. That automatic path produced the observed `57 00 00 00` body.
 
 ## Body
 
@@ -28,7 +26,9 @@ Known static callers lead to:
 packet CMulti {
     u8 opcode                 // 0x57
     u8 reserved_0             // 0
-    u8 server_index
+    u8 server_id                // first byte of the selected server record
     u8 reserved_1             // 0
 }
 ```
+
+The dialog row selects a local record, but the packet carries that record's stored ID. It is not necessarily the row number.

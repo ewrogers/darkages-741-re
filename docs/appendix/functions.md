@@ -9,8 +9,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
 | `app_config_ctor` | `0x00431FF0` | high | Constructs Config, loads Darkages.cfg, selects a distribution mode, and dispatches endpoint initialization. |
+| `app_configure_unitel_distribution` | `0x00433B40` | high | Empty dormant mode 2 initializer selected by Unitel.nfo in the unreferenced marker scanner. |
 | `app_get_distribution_mode` | `0x00434EB0` | high | Caches and returns the distribution mode selected by app_select_distribution_mode. |
 | `app_select_distribution_mode` | `0x00434EF0` | high | Returns the constant distribution mode 1 in this target. |
+| `app_detect_distribution_mode_from_markers` | `0x00434F00` | high | Dormant unreferenced scanner that maps country and Korean ISP .nfo markers to distribution modes 1 through 15. |
 | `app_set_working_directory_from_executable` | `0x004AD3A0` | high | Derives the executable directory from GetCommandLineA and makes it the process working directory. |
 | `app_handle_d_option_stub` | `0x0057A460` | high | Empty function called for the suffix of an uppercase -D command-line token. |
 | `app_parse_command_line` | `0x0057A550` | high | Scans the WinMain command tail for space-delimited dash tokens and recognizes only uppercase D. |
@@ -158,6 +160,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_screen_hierarchy_get_absolute_origin` | `0x005528C0` | high | Accumulates pane origins through spatial parents until ui_screen_root_pane_ptr. |
 | `ui_screen_hierarchy_find` | `0x00553260` | high | Recursively finds the HierList&lt;Screen&gt; node for a pane and optionally returns its owner list and index. |
 | `ui_screen_pane_ctor` | `0x00553350` | high | Constructs the startup RTTI ScreenPane root with primary Pane and secondary TimerHandler vtables. |
+| `ui_terminal_pane_handle_server_data` | `0x00579090` | high | TerminalPane2 primary-vtable slot +0x50 scans initial wire bytes, handles ESC C and ESC S plus Telnet terminal negotiation, and queues CHello and CVersion. |
 | `ui_text_insert_formatted` | `0x0057B300` | high | Forwards a NUL-terminated string to the rich text insertion and markup path. |
 | `ui_text_insert_color_markup` | `0x0057D310` | high | Recognizes lowercase three-byte {=a through {=x tokens and changes the following run's palette index. |
 | `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Handles GUIBackPane pointer input; BTN_HELP is present in the hover path but has no click action. |
@@ -177,22 +180,39 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | --- | --- | --- | --- |
 | `net_parse_endpoint_override` | `0x00433010` | high | Parses a positional IPv4 address or hostname and optional port, but no active mode-1 path calls it. |
 | `net_configure_default_endpoint` | `0x00433380` | high | Resolves da0.kru.com, applies the hardcoded IPv4 fallback, and selects port 2610 or 2601. |
+| `net_configure_singapore_endpoint` | `0x00433820` | high | Dormant mode 15 initializer selected by singapore.nfo; installs fixed address bytes and port 2610 unless the positional override succeeds. |
+| `net_configure_taiwan_endpoint` | `0x004338A0` | high | Dormant mode 14 initializer selected by an archived taiwan.nfo entry; reads iplookup.tbl or archive data and resolves the selected host. |
+| `net_configure_japan_endpoint` | `0x00433AD0` | high | Dormant mode 13 initializer selected by japan.nfo; installs fixed address bytes and port 3460 unless the positional override succeeds. |
+| `net_configure_lg_endpoint` | `0x00433F40` | high | Dormant mode 3 LG integration that loads chigamec.dll and calls WaitForSessionParameter for session and endpoint data. |
+| `net_configure_thrunet_endpoint` | `0x004340C0` | high | Dormant mode 6 Thrunet integration that parses launcher or file data and uses thrunet.clsURLCHK. |
+| `net_configure_sk_endpoint` | `0x004347E0` | high | Dormant mode 4 SK integration that parses launcher data and performs Netsgo-specific validation. |
+| `net_configure_gameok_endpoint` | `0x00435320` | high | Dormant mode 7 GameOK integration that expects a /GameOK launcher form and derives endpoint data from it. |
+| `net_configure_bixel_endpoint` | `0x00435670` | high | Dormant mode 8 Bixel integration that loads PrxyAuth.dll and expects Bixel launcher data. |
+| `net_configure_excitegame_endpoint` | `0x00435A20` | high | Dormant mode 10 Excitegame integration that obtains endpoint data from an external launcher or COM-style provider. |
+| `net_configure_kornetworld_endpoint` | `0x00436210` | high | Dormant mode 11 integration that expects /KWG, resolves game.kornetworld.com, and selects port 9000. |
+| `net_configure_mihosoft_endpoint` | `0x00436620` | high | Dormant mode 9 integration that loads cjconnector.dll and parses a mihosoft launcher record. |
 | `net_send_new_user_appearance` | `0x0043E8F0` | high | Accepted SNewUserCheck flow sends opcode 0x04 with three appearance bytes to finalize character creation. |
 | `net_dispatch_create_user_events` | `0x0043F780` | high | CreateUserDialogPane routes decoded early-session byte buffers, including SNewUserCheck opcode 0x01, outside the packet factory. |
 | `net_handle_new_user_check` | `0x0043F820` | high | Routes SNewUserCheck to a state-specific account-creation result parser. |
 | `net_send_mercenary_action` | `0x0045C500` | high | EmployeeDialogPane calls this opcode 0x54 builder. |
 | `net_init_mercenary_packet` | `0x0045D550` | high | Initializes the opcode 0x54 body prefix used by net_send_mercenary_action. |
 | `net_send_group` | `0x00462DC0` | high | UserLookPane calls this opcode 0x2E builder with a length-prefixed user name. |
+| `net_post_raw_server_bytes_event` | `0x00467000` | high | Copies a Winsock receive buffer without frame parsing and posts it through the network event family during initial raw-stream mode. |
 | `net_post_decoded_server_packet_event` | `0x00467060` | high | Copies a decoded opcode-first server body and queues it as network packet event type 0x13. |
+| `net_queue_raw_server_bytes_event` | `0x00468180` | high | Builds event type 0x13 around an owned raw receive buffer for TerminalPane2. |
 | `net_queue_server_packet_event` | `0x00468220` | high | Builds and enqueues the event object used for a decoded server packet body. |
 | `net_request_family_name` | `0x004719B0` | high | EquipPane reaches this opcode-only 0x7A request paired with SFamilyName. |
 | `net_request_cash_shop` | `0x004A03B0` | high | ItemShop::ShoppingBagDialogPane sends the opcode 0x6C body during construction. |
 | `net_handle_version_check` | `0x004B7F80` | high | Handles SVersionCheck opcode 0x00 outside the RTTI packet factory; subtype 0 queues a seed-table selector and replacement static key. |
 | `net_handle_login_check` | `0x004B8420` | high | Handles SLoginCheck opcode 0x02; status zero enters session setup and failures carry a display message. |
-| `net_handle_stipulation_raw` | `0x004B8570` | high | Parses raw SStipulation modes, compares greeting CRC32, requests replacement, and inflates updated text. |
-| `net_handle_stipulation` | `0x004B8890` | high | Handles the RTTI-backed SStipulation object with the same greeting update behavior. |
+| `net_handle_stipulation_raw` | `0x004B8570` | high | Handles the decoded-buffer form of SStipulation and requests the homepage first when its cached URL is absent. |
+| `net_handle_stipulation` | `0x004B8890` | high | Handles an RTTI-backed SStipulation object and requests the homepage first when its cached URL is absent. |
 | `net_dispatch_main_menu_events` | `0x004B8B70` | high | MainMenuPane routes decoded SVersionCheck and SLoginCheck byte buffers outside the packet factory. |
+| `net_dispatch_main_menu_events` | `0x004B8B80` | high | Routes startup decoded buffers and RTTI packet objects to version, stipulation, transfer, and browser handlers. |
+| `net_handle_transfer_server` | `0x004B9510` | high | Reconnects to the endpoint in STransferServer, then sends raw opcode 0x10 followed by the packet's opaque handoff token unchanged. |
+| `net_handle_browser` | `0x004B9B00` | high | Handles RTTI-backed SBrowser variants; subtype 3 caches the supplied homepage URL and marks it available. |
 | `net_send_alive` | `0x004BA010` | high | MainMenuPane timer paths send opcode 0x71 and schedule another callback after 30 seconds. |
+| `net_send_request_homepage` | `0x004BA0C0` | high | Builds and submits the two-byte CRequestHomepage body 68 01. |
 | `net_send_login_request` | `0x004BAA80` | high | Builds and submits client login opcode 0x03, then persists the submitted character name. |
 | `net_send_manual_action` | `0x004C26D0` | high | ManufactureDialogPane calls this opcode 0x55 crafting action builder. |
 | `net_request_object_info` | `0x004CD350` | high | Merchant menu paths call this opcode 0x43 object information request. |
@@ -214,6 +234,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_socket_ctor` | `0x00563910` | high | Constructs the Socket object and initializes packet-transform state. |
 | `net_reset_client_packet_sequence` | `0x00563DE0` | high | Resets the client-to-server encrypted-packet sequence to zero. |
 | `net_submit_client_packet` | `0x00563E00` | high | Copies opcode-first client bodies into socket event command 6; adds special CRC wrappers for 0x39 and 0x3A. |
+| `net_queue_raw_stream_mode` | `0x00564070` | high | Queues communications command 7, whose worker-side case writes the socket raw-stream-mode byte. |
+| `net_set_text_framing_enabled` | `0x00564120` | high | Writes the socket flag that selects printable text framing when true and binary 0xAA framing when false. |
 | `net_write_u8` | `0x00564140` | high | Writes one byte to a packet body. |
 | `net_write_u16be` | `0x00564160` | high | Writes a 16-bit value in network byte order. |
 | `net_write_u32be` | `0x005641F0` | high | Writes a 32-bit value in network byte order. |
@@ -223,14 +245,20 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_socket_dispatch` | `0x005643D0` | high | Thread::Socket vtable method that dispatches open, close, reconnect, send, and receive operations. |
 | `net_open_transport` | `0x005645C0` | high | Selects the TCP connection path when the configured transport selector is 5. |
 | `net_close_transport` | `0x005646A0` | high | Closes the active socket and auxiliary transport handle when present. |
-| `net_receive_pending_data` | `0x00564870` | high | Selects the binary or compatibility receive state machine. |
-| `net_send_client_packet` | `0x005648A0` | high | Selects the outbound opcode transform, adds the 0xAA and u16be frame header, and calls Winsock send. |
+| `net_receive_pending_data` | `0x00564870` | high | Selects the active TCP receiver for transport selector 5 and the serial/modem receiver for selectors 1 through 4. |
+| `net_send_client_packet` | `0x005648A0` | high | Selects the outbound opcode transform, then sends either an AA and u16be binary frame or printable records containing the same transformed body. |
 | `net_send_text` | `0x00565130` | high | Sends a NUL-terminated string through the active transport. |
 | `net_send_byte` | `0x005651B0` | high | Sends one byte through the active transport. |
 | `net_connect_and_initialize_transport` | `0x00565210` | high | Initializes Winsock, connects to the configured endpoint, performs the active retry, and registers asynchronous socket events. |
+| `net_open_serial_modem_transport` | `0x00566A40` | high | Opens COM1 through COM4 for transport selectors 1 through 4 and prepares Windows serial buffers and timeouts. |
+| `net_configure_serial_modem_transport` | `0x00566BF0` | high | Applies the requested baud rate, 8-N-1 defaults, and hardware or XON/XOFF flow-control fields through SetCommState. |
 | `net_close_socket` | `0x00566D90` | high | Calls closesocket and restores the socket field to INVALID_SOCKET. |
-| `net_receive_frames` | `0x00567070` | high | Reads server frames, selects inbound transform mode by opcode, and posts decoded bodies. |
+| `net_close_serial_modem_transport` | `0x00566DD0` | high | Closes the serial COM handle and restores INVALID_HANDLE_VALUE. |
+| `net_receive_serial_modem_data` | `0x00566E00` | high | Posts initial serial bytes in raw-stream mode, then collects printable records, applies the normal server transform, and posts decoded packet events. |
+| `net_receive_frames` | `0x00567070` | high | Posts raw startup receives, then reads binary or printable frames, selects inbound transform mode by opcode, and posts decoded bodies. |
 | `net_read_transport_byte` | `0x00567870` | high | Refills the TCP buffer with recv and returns one buffered transport byte. |
+| `net_is_printable_frame_byte` | `0x00567B70` | high | Accepts bytes 0x21 through 0x7A plus newline for the printable frame collector. |
+| `net_decode_printable_frames` | `0x00567BB0` | high | Validates decimal record sequence and group counts, then decodes four private-alphabet bytes to each three output bytes. |
 | `net_decrypt_server_packet` | `0x00567DE0` | high | Reads the independent server-to-client sequence and reverses the seed-table and static or derived key XOR passes. |
 | `net_encrypt_client_packet` | `0x00567FB0` | high | Writes and increments the client-to-server sequence for every encrypted packet, applies XOR passes, and appends MD5 and seed trailer bytes. |
 | `net_xor_packet_bytes` | `0x00568230` | high | Common 32-bit and remainder XOR engine for expanded byte keys and seed-table words. |
@@ -248,11 +276,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_server_packet_factory_ctor` | `0x00595F00` | high | Registers 61 opcode-specific server packet constructors in a 256-entry factory. |
 | `net_deserialize_server_packet` | `0x005963F0` | high | Creates the registered server packet class and invokes its deserializer. |
 | `net_create_server_packet` | `0x00596780` | high | Calls the registered constructor for a server opcode. |
+| `net_deserialize_browser_packet` | `0x00597E50` | high | Parses SBrowser subtypes 1 and 2 as two u16be-length byte strings and subtype 3 as one u8-length homepage URL. |
 | `net_decode_s_change_weather` | `0x00598210` | high | Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer. |
 | `net_decode_s_map_size` | `0x00599F90` | high | Reads map ID, dimensions, flags, secondary mode, checksum, and map name from SMapSize. |
 | `net_server_request_portrait_ctor` | `0x0059B490` | high | Constructs RTTI-backed SRequestPortrait and passes opcode 0x49 to the server packet base. |
 | `net_server_request_portrait_deserialize` | `0x0059B4C0` | high | Returns without reading fields, which confirms that SRequestPortrait has no body after the opcode. |
 | `net_server_sound_effect_deserialize` | `0x0059BF30` | high | Reads one SSoundEffect command byte and a second music byte only for command 0xFF. |
+| `net_deserialize_stipulation_packet` | `0x0059C8E0` | high | Parses SStipulation mode 0 as a u32be greeting CRC32 and mode 1 as u16be length plus compressed bytes. |
+| `net_deserialize_transfer_server_packet` | `0x0059CA40` | high | Parses STransferServer as a u32be IPv4 value, u16be port, and u8-length opaque handoff token. |
 | `net_send_portrait_profile` | `0x005B1160` | high | Calls net_build_send_portrait and submits the result through net_submit_client_packet. |
 | `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode. |
 | `net_handle_s_map_size` | `0x005F1BF0` | high | Applies map dimensions, seasonal art, weather mode, local map cache, and map setup state. |
@@ -480,6 +511,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
 | `maybe_security_check_mscfg_marker` | `0x00431ED0` | medium | Tests for Mscfg.dll under the system directory and sets config +0x668. |
+| `maybe_app_configure_distribution_mode_12` | `0x00436A10` | medium | Dormant mode 12 handler with no matching marker return; sets connection flags without installing an endpoint. |
 
 ## Other
 

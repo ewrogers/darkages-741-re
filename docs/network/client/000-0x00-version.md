@@ -1,31 +1,61 @@
 # Version (`CVersion`)
 
+The client sends its numeric version immediately after the server welcome finishes the connection handshake. For this build, the complete plaintext body is `00 02 E5 4C 4B`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x00` (0) |
-| Encoding | none |
-| Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
+| Framing | Binary `0xAA` frame after the observed `ESC C` welcome |
+| Transform | `raw` |
+| Name provenance | Project protocol name confirmed against the local builder |
 
-## Purpose
+## What triggers it
 
-The client sends this message for **version**.
+The first TCP receive is delivered to `TerminalPane2` as unparsed wire bytes. Its network handler scans for a terminal-style connection command:
 
-## Sent by
+```text
+server welcome
+  -> ESC C selects binary framing
+  -> next byte completes the connection transition
+  -> queue CHello
+  -> reset the client packet sequence
+  -> queue CVersion
+```
 
-Known static callers lead to:
+`ESC S` reaches the same transition but selects the alternate text framing mode. The full text `CONNECTED SERVER\n` is not required by the client. After `ESC C` or `ESC S`, any following byte is enough to continue.
 
-- UI or subsystem owner not known yet
+Both outgoing bodies are queued for the communications worker. The sequence reset occurs immediately before `CVersion` is built. Because `CVersion` is raw, it contains no sequence byte and does not advance the encrypted-packet sequence.
 
 ## Body
 
 ```text
 packet CVersion {
     u8 opcode                 // 0x00
-    ...                         // fields pending
+    u16be version_code        // 741, encoded as 0x02E5
+    u8 marker_l               // 0x4C, ASCII "L"
+    u8 marker_k               // 0x4B, ASCII "K"
 }
 ```
 
-Remaining fields, variants, and state effects remain to be traced.
+The 7.41 builder submits exactly `00 02 E5 4C 4B`. It writes a zero byte after this body in its temporary buffer, but that terminator is outside the submitted length. The final `00` shown by the supplied decoded capture is therefore not part of the client-confirmed plaintext body.
 
-The paired response is [Version Check (`SVersionCheck`)](../server/000-0x00-version-check.md).
+With binary framing selected, the complete wire bytes are:
+
+```text
+AA 00 05 00 02 E5 4C 4B
+```
+
+The body size is five bytes. No transform trailer or encrypted sequence is added.
+
+## Where 741 comes from
+
+The executable stores the decorated text `7D4E--1K`. The connection handler copies only its decimal digits, producing `741`, then converts that text to an integer and stores it in `client_version_code`.
+
+Other client code displays the same value as `Version 7.41` by dividing it into `7` and `41`. This confirms that the big-endian field is a decimal version code rather than three separate version bytes.
+
+## Known limits
+
+The meanings of the literal `L` and `K` bytes are not established. They are fixed in this client and are not derived from the welcome, configuration, or session state.
+
+The paired response is [Version Check (`SVersionCheck`)](../server/000-0x00-version-check.md). The connection trigger is documented under [Hello (`SHello`)](../server/126-0x7e-hello.md).

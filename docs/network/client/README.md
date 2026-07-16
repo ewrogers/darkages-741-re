@@ -4,11 +4,11 @@ These messages travel from the game client to the server.
 
 The binary exposes only the client packet base class through RTTI. Concrete names therefore come from local builder behavior and project-owner protocol knowledge. Each page states its name source and lists known UI or subsystem owners without mixing in address-level lookup data.
 
-Plain packet bodies begin with the command byte. `CBaram` is listed for sequence research, but its five-byte `baram` body is a special control message rather than an ordinary packet.
+Plain packet bodies begin with the command byte. `CHello` is listed for sequence research, but its five-byte `baram` body is a special control message rather than a compiler-recovered packet class.
 
 | Packet | Encoding |
 | --- | --- |
-| [0x00 - Version (`CVersion`)](000-0x00-version.md) | none |
+| [0x00 - Version (`CVersion`)](000-0x00-version.md) | raw |
 | [0x02 - New User (`CNewUser`)](002-0x02-new-user.md) | startup key |
 | [0x03 - Login (`CLogin`)](003-0x03-login.md) | startup key |
 | [0x04 - New User Appearance (`CNewUserAppearance`)](004-0x04-new-user-appearance.md) | startup key |
@@ -59,7 +59,7 @@ Plain packet bodies begin with the command byte. `CBaram` is listed for sequence
 | [0x54 - Mercenary (`CMercenary`)](084-0x54-mercenary.md) | session key |
 | [0x55 - Manual (`CManual`)](085-0x55-manual.md) | session key |
 | [0x57 - Multi Server (`CMulti`)](087-0x57-multi-server.md) | startup key |
-| [0x62 - Baram (`CBaram`)](098-0x62-baram.md) | startup key |
+| [0x62 - Hello (`CHello`)](098-0x62-hello.md) | static |
 | [0x68 - Request Homepage (`CRequestHomepage`)](104-0x68-request-homepage.md) | startup key |
 | [0x6A - Mini Game (`CMiniGame`)](106-0x6a-mini-game.md) | session key |
 | [0x6C - Cash Shop (`CCashShop`)](108-0x6c-cash-shop.md) | session key |

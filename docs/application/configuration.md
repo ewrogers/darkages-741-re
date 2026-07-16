@@ -16,6 +16,8 @@ Darkages.exe <host-or-ip> [port]
 
 Changing the whole distribution mode would affect more than networking. A launcher should instead redirect only the endpoint setup call. See [Runtime patches](../appendix/runtime-patches.md).
 
+The executable also contains an older `.nfo` marker scanner and country- and ISP-specific endpoint integrations. They are not reached by this build's hardcoded selector. See [Distribution markers](distribution-markers.md).
+
 The parser follows old, loose rules:
 
 - An argument beginning with a digit is read as dotted IPv4.
@@ -38,7 +40,7 @@ port:       2610
 
 If `%SystemRoot%\System32\Mscfg.dll` exists, the port becomes `2601`. This file is not a library used by the client. The server creates it after an `SBadGuy` client-ban response so later connections use the wrong port.
 
-The `Port: 5` setting in `Darkages.cfg` selects TCP. It does not mean TCP port 5. The final network port is the base port plus a normally zero signed offset from the configuration object.
+The `Port: 5` setting in `Darkages.cfg` selects the transport labeled `PPP or LAN`. It does not mean TCP port 5. Selectors 1 through 4 are the compiled `MODEM COM1` through `MODEM COM4` paths described in [Network transport](../network/transport.md). The final TCP port is the base port plus a normally zero signed offset from the configuration object.
 
 ## Choosing an endpoint
 

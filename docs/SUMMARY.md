@@ -8,6 +8,7 @@
 
 - [Application lifecycle](application/lifecycle.md)
 - [Configuration](application/configuration.md)
+- [Distribution markers](application/distribution-markers.md)
 - [Game loop](application/game-loop.md)
 
 # Game systems
@@ -116,7 +117,7 @@
   - [0x54 - Mercenary (`CMercenary`)](network/client/084-0x54-mercenary.md)
   - [0x55 - Manual (`CManual`)](network/client/085-0x55-manual.md)
   - [0x57 - Multi Server (`CMulti`)](network/client/087-0x57-multi-server.md)
-  - [0x62 - Baram (`CBaram`)](network/client/098-0x62-baram.md)
+  - [0x62 - Hello (`CHello`)](network/client/098-0x62-hello.md)
   - [0x68 - Request Homepage (`CRequestHomepage`)](network/client/104-0x68-request-homepage.md)
   - [0x6A - Mini Game (`CMiniGame`)](network/client/106-0x6a-mini-game.md)
   - [0x6C - Cash Shop (`CCashShop`)](network/client/108-0x6c-cash-shop.md)
@@ -193,6 +194,7 @@
   - [0x6B - Screen Shot (`SScreenShot`)](network/server/107-0x6b-screen-shot.md)
   - [0x6D - Family Name (`SFamilyName`)](network/server/109-0x6d-family-name.md)
   - [0x6F - Meta Data (`SMetaData`)](network/server/111-0x6f-meta-data.md)
+  - [0x7E - Hello (`SHello`)](network/server/126-0x7e-hello.md)
 
 # Appendices
 

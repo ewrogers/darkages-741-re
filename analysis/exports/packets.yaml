@@ -93,7 +93,7 @@ packet_indexes:
         builder: "0x00579090"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x00579090 writes opcode 0x00 and submits the body."
+        evidence: "ui_terminal_pane_handle_server_data builds 00 02 E5 4C 4B after the welcome transition. The project-owner CVersion name is confirmed by the locally derived version value 741 and paired version-check flow."
         page: "docs/network/client/000-0x00-version.md"
       - opcode: "0x02"
         friendly_name: "New User"
@@ -210,7 +210,7 @@ packet_indexes:
         builder: "0x004B9510"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x004B9510 writes opcode 0x10 and submits the body."
+        evidence: "Handler 0x004B9510 reconnects to the endpoint in STransferServer, then submits raw opcode 0x10 followed by its opaque handoff token unchanged."
         page: "docs/network/client/016-0x10-transfer-server.md"
       - opcode: "0x11"
         friendly_name: "Change Direction"
@@ -543,25 +543,25 @@ packet_indexes:
         builder: "0x0055A090"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "ServerSelectDialogPane reaches builder 0x0055A090 with a configured server index; CMultiServer is retained as a behavioral alias."
+        evidence: "ServerSelectDialogPane and the single-record SVersionCheck path reach builder 0x0055A090, which sends the selected server record ID; CMultiServer is retained as a behavioral alias."
         page: "docs/network/client/087-0x57-multi-server.md"
       - opcode: "0x62"
-        friendly_name: "Baram"
-        class_name: "CBaram"
+        friendly_name: "Hello"
+        class_name: "CHello"
         transform: static
         builder: "0x00579090"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Function 0x00579090 submits the literal five-byte control body baram at 0x00579849, then resets the client sequence at 0x0057993A."
-        page: "docs/network/client/098-0x62-baram.md"
+        name_confidence: medium
+        evidence: "CHello is project-owner protocol vocabulary for the reply to SHello. Function 0x00579090 submits the literal five-byte body baram at 0x00579849, then resets the client sequence at 0x0057993A."
+        page: "docs/network/client/098-0x62-hello.md"
       - opcode: "0x68"
         friendly_name: "Request Homepage"
         class_name: "CRequestHomepage"
         transform: static
         builder: "0x004BA0C0"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Representative builder 0x004BA0C0 writes opcode 0x68 and submits the body."
+        name_confidence: high
+        evidence: "Builder 0x004BA0C0 submits 68 01. Both SStipulation handlers call it when the cached homepage URL is absent, and SBrowser subtype 3 supplies that URL."
         page: "docs/network/client/104-0x68-request-homepage.md"
       - opcode: "0x6A"
         friendly_name: "Mini Game"
@@ -646,7 +646,7 @@ packet_indexes:
         evidence_source: handler
         opcode_confidence: high
         name_confidence: medium
-        evidence: "MainMenuPane routes opcode 0x00 to handler 0x004B7F80. The SVersionCheck name is project-owner protocol knowledge supported by the handler's version/bootstrap behavior."
+        evidence: "MainMenuPane routes opcode 0x00 to handler 0x004B7F80. Subtype 0 installs the seed selector and static key, validates the local server-table CRC, and auto-selects its only record."
         page: "docs/network/server/000-0x00-version-check.md"
       - opcode: "0x01"
         friendly_name: "New User Check"
@@ -676,7 +676,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059CA10 passes opcode 0x03 to the server packet base and installs the STransferServer vtable."
+        evidence: "RTTI constructor 0x0059CA10 installs opcode 0x03. Deserializer 0x0059CA40 reads an IPv4 value, port, and u8-length opaque handoff token; handler 0x004B9510 reconnects and echoes the token."
         page: "docs/network/server/003-0x03-transfer-server.md"
       - opcode: "0x04"
         friendly_name: "User Position"
@@ -1216,7 +1216,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059C8B0 passes opcode 0x60 to the server packet base and installs the SStipulation vtable."
+        evidence: "RTTI constructor 0x0059C8B0 installs opcode 0x60. Deserializer 0x0059C8E0 parses greeting CRC and compressed-update modes; both handlers request the homepage when uncached."
         page: "docs/network/server/096-0x60-stipulation.md"
       - opcode: "0x62"
         friendly_name: "Web Board"
@@ -1256,7 +1256,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597E20 passes opcode 0x66 to the server packet base and installs the SBrowser vtable."
+        evidence: "RTTI constructor 0x00597E20 installs opcode 0x66. Deserializer 0x00597E50 parses subtype 3 as a u8-length string, and handler 0x004B9B00 caches it as the homepage URL."
         page: "docs/network/server/102-0x66-browser.md"
       - opcode: "0x68"
         friendly_name: "Check Time"
@@ -1298,3 +1298,13 @@ packet_indexes:
         name_confidence: medium
         evidence: "MetaTableManager routes opcode 0x6F to handler 0x004E4EA0. The SMetaData name is project-owner protocol knowledge confirmed by local metadata table and blob processing."
         page: "docs/network/server/111-0x6f-meta-data.md"
+      - opcode: "0x7E"
+        friendly_name: "Hello"
+        class_name: "SHello"
+        transform: raw
+        constructor: null
+        evidence_source: handler
+        opcode_confidence: high
+        name_confidence: medium
+        evidence: "Observed startup traffic carries opcode 0x7E in a standard AA frame. TerminalPane2 handles the complete initial wire receive as raw bytes and reacts to its embedded ESC C or ESC S command without constructing an RTTI packet object. SHello is a behavioral alias."
+        page: "docs/network/server/126-0x7e-hello.md"

@@ -39,6 +39,7 @@ def main() -> None:
         "",
         "- [Application lifecycle](application/lifecycle.md)",
         "- [Configuration](application/configuration.md)",
+        "- [Distribution markers](application/distribution-markers.md)",
         "- [Game loop](application/game-loop.md)",
         "",
         "# Game systems",

@@ -16,6 +16,25 @@ Endpoint selection begins in [Configuration](../application/configuration.md). T
 
 The connection function does not send a distribution-specific handshake in the active mode. Login and version messages are handled later by the packet system.
 
+## Bootstrap exchange
+
+The live 7.41 exchange reaches the main create-or-login screen in two stages. The first server confirms the client and selects a server record. It then transfers the client to a new TCP connection, where the main-menu data is prepared.
+
+| Order | Direction | Plain body | Result |
+| --- | --- | --- | --- |
+| 1 | Server | [`SHello`](server/126-0x7e-hello.md) `7E 1B "CONNECTED SERVER\n"` | `ESC C` enables binary framing |
+| 2 | Client | [`CHello`](client/098-0x62-hello.md) `"baram"` | Replies to the terminal-style welcome |
+| 3 | Client | [`CVersion`](client/000-0x00-version.md) `00 02 E5 4C 4B` | Reports version 741 and fixed `L`, `K` bytes |
+| 4 | Server | [`SVersionCheck`](server/000-0x00-version-check.md) subtype `0` | Supplies configuration CRC, seed-table selector `2`, and a nine-byte static key |
+| 5 | Client | [`CMulti`](client/087-0x57-multi-server.md) `57 00 00 00` | Selects the only local server record, ID `0` |
+| 6 | Server | [`STransferServer`](server/003-0x03-transfer-server.md) | Supplies `127.0.0.1:2610` and a 27-byte handoff token |
+| 7 | Client | [`CTransferServer`](client/016-0x10-transfer-server.md) | Reconnects and echoes the token to the new server |
+| 8 | Server | [`SStipulation`](server/096-0x60-stipulation.md) mode `0` | Checks the local greeting with CRC32 `0xE5DC1439` |
+| 9 | Client | [`CRequestHomepage`](client/104-0x68-request-homepage.md) `68 01` | Requests the homepage because it is not cached yet |
+| 10 | Server | [`SBrowser`](server/102-0x66-browser.md) subtype `3` | Caches `http://www.darkages.com` as the homepage URL |
+
+This table shows decoded opcode-first bodies. It omits the `AA + u16be size` frame and transform sequence or trailer bytes. The supplied capture has a few final-byte differences from the 7.41 builders; the individual packet pages record where the submitted length or literal bytes settle those differences.
+
 ## Retry path
 
 If the first `connect` fails, the client resolves `da0.kru.com` again, creates a fresh socket, and tries once more. A new lookup can pick up a changed DNS address.

@@ -98,11 +98,11 @@ functions:
   - address: "0x00564870"
     name: net_receive_pending_data
     confidence: high
-    evidence: "Selects the binary or compatibility receive state machine."
+    evidence: "Selects the active TCP receiver for transport selector 5 and the serial/modem receiver for selectors 1 through 4."
   - address: "0x005648A0"
     name: net_send_client_packet
     confidence: high
-    evidence: "Selects the outbound opcode transform, adds the 0xAA and u16be frame header, and calls Winsock send."
+    evidence: "Selects the outbound opcode transform, then sends either an AA and u16be binary frame or printable records containing the same transformed body."
   - address: "0x00565130"
     name: net_send_text
     confidence: high
@@ -111,10 +111,26 @@ functions:
     name: net_send_byte
     confidence: high
     evidence: "Sends one byte through the active transport."
+  - address: "0x00566A40"
+    name: net_open_serial_modem_transport
+    confidence: high
+    evidence: "Opens COM1 through COM4 for transport selectors 1 through 4 and prepares Windows serial buffers and timeouts."
+  - address: "0x00566BF0"
+    name: net_configure_serial_modem_transport
+    confidence: high
+    evidence: "Applies the requested baud rate, 8-N-1 defaults, and hardware or XON/XOFF flow-control fields through SetCommState."
+  - address: "0x00566DD0"
+    name: net_close_serial_modem_transport
+    confidence: high
+    evidence: "Closes the serial COM handle and restores INVALID_HANDLE_VALUE."
+  - address: "0x00566E00"
+    name: net_receive_serial_modem_data
+    confidence: high
+    evidence: "Posts initial serial bytes in raw-stream mode, then collects printable records, applies the normal server transform, and posts decoded packet events."
   - address: "0x00567070"
     name: net_receive_frames
     confidence: high
-    evidence: "Reads server frames, selects inbound transform mode by opcode, and posts decoded bodies."
+    evidence: "Posts raw startup receives, then reads binary or printable frames, selects inbound transform mode by opcode, and posts decoded bodies."
   - address: "0x00567870"
     name: net_read_transport_byte
     confidence: high
@@ -265,6 +281,10 @@ comments:
     text: "Restore the readable source buffer only after the working key has been copied; the expanded key retains bytes E5 and A3."
   - address: "0x00563E00"
     text: "Submit an opcode-first client packet to the socket event queue. Builders throughout the client converge here before framing and transformation."
+  - address: "0x00564638"
+    text: "Transport selector 5 enters Winsock TCP. Selectors 1 through 4 enter the compiled serial/modem COM-port opener."
+  - address: "0x00564884"
+    text: "Route selector 5 to the TCP frame receiver and selectors 1 through 4 to the serial/modem receiver."
   - address: "0x005648FB"
     text: "Read the outbound opcode and select raw, static-key, or derived-key handling. This direction has its own opcode policy."
   - address: "0x0056492A"
@@ -277,6 +297,16 @@ comments:
     text: "Build the binary frame as 0xAA followed by u16be transformed-body length and the opcode-first body."
   - address: "0x00564A67"
     text: "Main Winsock send call for framed client packets."
+  - address: "0x00564BB8"
+    text: "Printable framing receives the same transformed opcode-first body that the binary path places after its AA and u16be header."
+  - address: "0x00566A94"
+    text: "Build COM1 through COM4 from the selected modem transport number before CreateFileA opens the serial device."
+  - address: "0x00566B16"
+    text: "Configure serial read and write timeouts after allocating 0x1000-byte input and output queues."
+  - address: "0x00566C27"
+    text: "Apply the caller-supplied baud rate; the opener has already selected 8 data bits, no parity, and one stop bit."
+  - address: "0x00566E15"
+    text: "Serial/modem receive split: initial raw-stream mode posts all available greeting bytes; after it is cleared, this function collects printable packet records."
   - address: "0x00567190"
     text: "Read the two-byte frame body length in big-endian order."
   - address: "0x005672BF"

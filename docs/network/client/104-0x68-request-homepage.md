@@ -4,26 +4,24 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x68` (104) |
-| Encoding | startup key |
+| Transform | `static` |
 | Name provenance | Verified project protocol name; the command and local builder are confirmed. |
 
 ## Purpose
 
-The client sends this message for **request homepage**.
+The client asks the server for the homepage URL used by the main menu.
 
 ## Sent by
 
-Known static callers lead to:
-
-- UI or subsystem owner not known yet
+Both `SStipulation` handlers check the cached-homepage flag before processing the server greeting. If no URL has arrived yet, they call `net_send_request_homepage`. The paired reply is [`SBrowser`](../server/102-0x66-browser.md) subtype `3`.
 
 ## Body
 
-```text
+```c
 packet CRequestHomepage {
-    u8 opcode                 // 0x68
-    ...                         // fields pending
+    u8 opcode;                 // 0x68
+    u8 request_type;           // 1
 }
 ```
 
-Field order, variants, state effects, and paired packets remain to be traced.
+The confirmed plaintext body is `68 01`.

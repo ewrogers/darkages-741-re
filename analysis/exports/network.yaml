@@ -27,6 +27,41 @@ functions:
     name: net_configure_default_endpoint
     confidence: high
     evidence: Resolves da0.kru.com, applies the hardcoded IPv4 fallback, and selects port 2610 or 2601.
+  - address: "0x00433820"
+    end_address: "0x00433894"
+    name: net_configure_singapore_endpoint
+    confidence: high
+    evidence: Dormant mode 15 initializer selected by singapore.nfo; installs fixed address bytes and port 2610 unless the positional override succeeds.
+  - address: "0x004338A0"
+    end_address: "0x00433AC5"
+    name: net_configure_taiwan_endpoint
+    confidence: high
+    evidence: Dormant mode 14 initializer selected by an archived taiwan.nfo entry; reads iplookup.tbl or archive data and resolves the selected host.
+  - address: "0x00433AD0"
+    end_address: "0x00433B3E"
+    name: net_configure_japan_endpoint
+    confidence: high
+    evidence: Dormant mode 13 initializer selected by japan.nfo; installs fixed address bytes and port 3460 unless the positional override succeeds.
+  - address: "0x00433B40"
+    end_address: "0x00433B4B"
+    name: app_configure_unitel_distribution
+    confidence: high
+    evidence: Empty dormant mode 2 initializer selected by Unitel.nfo in the unreferenced marker scanner.
+  - address: "0x00433F40"
+    end_address: "0x004340A1"
+    name: net_configure_lg_endpoint
+    confidence: high
+    evidence: Dormant mode 3 LG integration that loads chigamec.dll and calls WaitForSessionParameter for session and endpoint data.
+  - address: "0x004340C0"
+    end_address: "0x004347D8"
+    name: net_configure_thrunet_endpoint
+    confidence: high
+    evidence: Dormant mode 6 Thrunet integration that parses launcher or file data and uses thrunet.clsURLCHK.
+  - address: "0x004347E0"
+    end_address: "0x00434EA2"
+    name: net_configure_sk_endpoint
+    confidence: high
+    evidence: Dormant mode 4 SK integration that parses launcher data and performs Netsgo-specific validation.
   - address: "0x00434EB0"
     end_address: "0x00434EED"
     name: app_get_distribution_mode
@@ -37,11 +72,106 @@ functions:
     name: app_select_distribution_mode
     confidence: high
     evidence: Returns the constant distribution mode 1 in this target.
+  - address: "0x00434F00"
+    end_address: "0x00435319"
+    name: app_detect_distribution_mode_from_markers
+    confidence: high
+    evidence: Dormant unreferenced scanner that maps country and Korean ISP .nfo markers to distribution modes 1 through 15.
+  - address: "0x00435320"
+    end_address: "0x00435661"
+    name: net_configure_gameok_endpoint
+    confidence: high
+    evidence: Dormant mode 7 GameOK integration that expects a /GameOK launcher form and derives endpoint data from it.
+  - address: "0x00435670"
+    end_address: "0x00435A1D"
+    name: net_configure_bixel_endpoint
+    confidence: high
+    evidence: Dormant mode 8 Bixel integration that loads PrxyAuth.dll and expects Bixel launcher data.
+  - address: "0x00435A20"
+    end_address: "0x00436210"
+    name: net_configure_excitegame_endpoint
+    confidence: high
+    evidence: Dormant mode 10 Excitegame integration that obtains endpoint data from an external launcher or COM-style provider.
+  - address: "0x00436210"
+    end_address: "0x00436620"
+    name: net_configure_kornetworld_endpoint
+    confidence: high
+    evidence: Dormant mode 11 integration that expects /KWG, resolves game.kornetworld.com, and selects port 9000.
+  - address: "0x00436620"
+    end_address: "0x00436A09"
+    name: net_configure_mihosoft_endpoint
+    confidence: high
+    evidence: Dormant mode 9 integration that loads cjconnector.dll and parses a mihosoft launcher record.
+  - address: "0x00436A10"
+    end_address: "0x00436A47"
+    name: maybe_app_configure_distribution_mode_12
+    confidence: medium
+    evidence: Dormant mode 12 handler with no matching marker return; sets connection flags without installing an endpoint.
+  - address: "0x00467000"
+    end_address: "0x0046705C"
+    name: net_post_raw_server_bytes_event
+    confidence: high
+    evidence: Copies a Winsock receive buffer without frame parsing and posts it through the network event family during initial raw-stream mode.
+  - address: "0x00468180"
+    end_address: "0x0046821F"
+    name: net_queue_raw_server_bytes_event
+    confidence: high
+    evidence: Builds event type 0x13 around an owned raw receive buffer for TerminalPane2.
   - address: "0x004AD3A0"
     end_address: "0x004AD4D4"
     name: app_set_working_directory_from_executable
     confidence: high
     evidence: Derives the executable directory from GetCommandLineA and makes it the process working directory.
+  - address: "0x004B7F80"
+    end_address: "0x004B8412"
+    name: net_handle_version_check
+    confidence: high
+    evidence: Handles raw server opcode 0x00, installs the negotiated seed selector and static key, validates the local server table CRC, and auto-selects its only entry when applicable.
+  - address: "0x004B8570"
+    end_address: "0x004B888B"
+    name: net_handle_stipulation_raw
+    confidence: high
+    evidence: Handles the decoded-buffer form of SStipulation and requests the homepage first when its cached URL is absent.
+  - address: "0x004B8890"
+    end_address: "0x004B8B66"
+    name: net_handle_stipulation
+    confidence: high
+    evidence: Handles an RTTI-backed SStipulation object and requests the homepage first when its cached URL is absent.
+  - address: "0x004B8B80"
+    end_address: "0x004B8CAC"
+    name: net_dispatch_main_menu_events
+    confidence: high
+    evidence: Routes startup decoded buffers and RTTI packet objects to version, stipulation, transfer, and browser handlers.
+  - address: "0x004B9510"
+    end_address: "0x004B9670"
+    name: net_handle_transfer_server
+    confidence: high
+    evidence: Reconnects to the endpoint in STransferServer, then sends raw opcode 0x10 followed by the packet's opaque handoff token unchanged.
+  - address: "0x004B9B00"
+    end_address: "0x004B9CD1"
+    name: net_handle_browser
+    confidence: high
+    evidence: Handles RTTI-backed SBrowser variants; subtype 3 caches the supplied homepage URL and marks it available.
+  - address: "0x004BA0C0"
+    end_address: "0x004BA14C"
+    name: net_send_request_homepage
+    confidence: high
+    evidence: Builds and submits the two-byte CRequestHomepage body 68 01.
+  - address: "0x0055A090"
+    end_address: "0x0055A147"
+    name: net_send_multi_server_selection
+    confidence: high
+    evidence: Sends CMulti as 57 00 <server-record ID> 00 after a manual or automatic server-table selection.
+  - address: "0x00564070"
+    end_address: "0x0056408E"
+    name: net_queue_raw_stream_mode
+    confidence: high
+    evidence: Queues communications command 7, whose worker-side case writes the socket raw-stream-mode byte.
+  - address: "0x00564120"
+    end_address: "0x00564139"
+    name: net_set_text_framing_enabled
+    confidence: high
+    evidence: Writes the socket flag that selects printable text framing when true and binary 0xAA framing when false.
   - address: "0x005643D0"
     end_address: "0x00564524"
     name: net_socket_dispatch
@@ -67,6 +197,26 @@ functions:
     name: net_close_socket
     confidence: high
     evidence: Calls closesocket and restores the socket field to INVALID_SOCKET.
+  - address: "0x00567070"
+    end_address: "0x00567777"
+    name: net_receive_frames
+    confidence: high
+    evidence: Posts complete TCP receive buffers while raw-stream mode is set, then parses binary or printable frames and selects the server transform by opcode.
+  - address: "0x00567B70"
+    end_address: "0x00567BA7"
+    name: net_is_printable_frame_byte
+    confidence: high
+    evidence: Accepts bytes 0x21 through 0x7A plus newline for the printable frame collector.
+  - address: "0x00567BB0"
+    end_address: "0x00567DD2"
+    name: net_decode_printable_frames
+    confidence: high
+    evidence: Validates decimal record sequence and group counts, then decodes four private-alphabet bytes to each three output bytes.
+  - address: "0x00579090"
+    end_address: "0x00579AD2"
+    name: ui_terminal_pane_handle_server_data
+    confidence: high
+    evidence: TerminalPane2 primary-vtable slot +0x50 scans initial wire bytes, handles ESC C and ESC S plus Telnet terminal negotiation, and queues CHello and CVersion.
   - address: "0x0057A460"
     end_address: "0x0057A465"
     name: app_handle_d_option_stub
@@ -77,16 +227,59 @@ functions:
     name: app_parse_command_line
     confidence: high
     evidence: Scans the WinMain command tail for space-delimited dash tokens and recognizes only uppercase D.
+  - address: "0x00597E50"
+    end_address: "0x00597EE8"
+    name: net_deserialize_browser_packet
+    confidence: high
+    evidence: Parses SBrowser subtypes 1 and 2 as two u16be-length byte strings and subtype 3 as one u8-length homepage URL.
+  - address: "0x0059C8E0"
+    end_address: "0x0059C946"
+    name: net_deserialize_stipulation_packet
+    confidence: high
+    evidence: Parses SStipulation mode 0 as a u32be greeting CRC32 and mode 1 as u16be length plus compressed bytes.
+  - address: "0x0059CA40"
+    end_address: "0x0059CA7D"
+    name: net_deserialize_transfer_server_packet
+    confidence: high
+    evidence: Parses STransferServer as a u32be IPv4 value, u16be port, and u8-length opaque handoff token.
 data_symbols:
+  - address: "0x00685B00"
+    name: client_hello_baram_text
+    confidence: high
+    evidence: Five-byte ASCII CHello body queued immediately before CVersion; its leading byte is opcode 0x62. A codename interpretation remains behavioral context, not a compiler-recovered name.
+  - address: "0x00685B08"
+    name: client_version_decorated_text
+    confidence: high
+    evidence: Decorated ASCII text 7D4E--1K whose decimal digits are filtered to obtain version code 741.
+  - address: "0x006C5608"
+    name: app_distribution_marker_usa_filename_ptr
+    confidence: high
+    evidence: Pointer to the usa.nfo string used by the first check in the dormant distribution marker scanner.
+  - address: "0x006EAFF8"
+    name: app_japan_distribution_lookup_text
+    confidence: high
+    evidence: Receives the line following the selected ISP entry decoded from archived japan2.nfo data.
+  - address: "0x006EB0FC"
+    name: app_japan_distribution_isp_selector
+    confidence: high
+    evidence: "Integer read through the isp : %d format in loose japan.nfo and matched against archived japan2.nfo entries."
   - address: "0x0073D950"
     name: app_config
     confidence: high
     evidence: Global Config pointer used by endpoint setup and the socket connection routine.
+  - address: "0x007505B8"
+    name: client_version_code
+    confidence: high
+    evidence: Signed 16-bit value 741 sent as u16be in CVersion and displayed elsewhere as Version 7.41.
 comments:
   - address: "0x00431F65"
     text: Build %SystemRoot%\System32\Mscfg.dll and test whether it exists. The resulting flag later selects TCP port 2601 instead of 2610; the marker's wider purpose is not yet confirmed in the new analysis.
   - address: "0x00431F82"
     text: Mscfg.dll exists. Set config +0x668 so endpoint setup and retry use TCP port 2601.
+  - address: "0x004320BF"
+    text: This build caches distribution mode 1. The compiled marker scanner is not called by the active selector.
+  - address: "0x00432155"
+    text: Dispatch the cached distribution mode to country- or ISP-specific configuration code. Most alternate modes are dormant because the selector is hardcoded to 1.
   - address: "0x00432253"
     text: Original distribution-mode 1 endpoint initializer call. A verified runtime patch can retarget this five-byte CALL to net_parse_endpoint_override while preserving mode 1 for downstream behavior.
   - address: "0x00433029"
@@ -109,10 +302,62 @@ comments:
     text: "Mscfg.dll marker present: replace the normal port 2610 with 2601."
   - address: "0x00434EF7"
     text: Build selector is hardcoded to distribution mode 1. This makes alternate-mode command-line endpoint parsers unreachable in normal execution.
+  - address: "0x00434F28"
+    text: First dormant marker check. app_distribution_marker_usa_filename_ptr points to usa.nfo; success returns distribution mode 1.
+  - address: "0x00434F57"
+    text: If usa.nfo is absent, check loose singapore.nfo and return distribution mode 15 when present.
+  - address: "0x00434F84"
+    text: Check for taiwan.nfo inside the game archive and return distribution mode 14 when present.
+  - address: "0x00434FB7"
+    text: "Check loose japan.nfo, read its isp : %d selector, and optionally recover matching data from obfuscated archived japan2.nfo."
+  - address: "0x00435179"
+    text: Begin loose Korean ISP marker checks. The file names map directly to the returned distribution modes used by app_config_ctor.
   - address: "0x004AD3B3"
     text: Read the full command line only to derive the executable directory and make it the process working directory; this is not an option parser.
+  - address: "0x004B85A9"
+    text: If no homepage URL is cached, send CRequestHomepage before processing the decoded-buffer SStipulation.
+  - address: "0x004B88C9"
+    text: If no homepage URL is cached, send CRequestHomepage before processing the RTTI-backed SStipulation.
+  - address: "0x004B95A2"
+    text: Reconnect to the endpoint carried by STransferServer before sending the handoff token.
+  - address: "0x004B95EB"
+    text: Begin the raw CTransferServer body with opcode 0x10.
+  - address: "0x004B961E"
+    text: Copy the opaque STransferServer token unchanged after opcode 0x10; the client does not parse its internal bytes.
+  - address: "0x004B965B"
+    text: Submit exactly one plus token_length bytes. The following local NUL terminator is outside the packet length.
+  - address: "0x004B9C8F"
+    text: SBrowser subtype 3 supplies the cached homepage URL.
+  - address: "0x004B9C98"
+    text: Copy the subtype 3 URL into the global homepage buffer, then mark it available.
+  - address: "0x004BA0ED"
+    text: Begin CRequestHomepage with opcode 0x68.
+  - address: "0x004BA10B"
+    text: Write request subtype 1; the submitted plaintext body is 68 01.
+  - address: "0x0055A0EC"
+    text: Write the selected server record ID, not the dialog row number.
+  - address: "0x00563BDB"
+    text: A new socket starts in raw-stream mode. The active TCP receiver copies the first received bytes into an event without parsing the frame.
+  - address: "0x00563BE5"
+    text: A new socket also defaults to alternate text framing. The observed 7.41 hello selects binary framing through its embedded ESC C control.
+  - address: "0x0056449E"
+    text: Communications event 7 changes raw-stream mode. The hello handler queues zero so later TCP receives use the normal frame parser.
   - address: "0x0056463D"
     text: Transport selector 5 opens the TCP path and begins the initial endpoint connection.
+  - address: "0x00564BB8"
+    text: Printable mode encodes the same transformed opcode-first body used by binary framing. It replaces the AA and u16be envelope; it does not disable packet encryption or sequence trailers.
+  - address: "0x00564BE4"
+    text: Printable framing starts the first record with an asterisk and continuation records with a plus sign.
+  - address: "0x00564C04"
+    text: Write a decimal record sequence character and advance it modulo 10.
+  - address: "0x00564C41"
+    text: Each printable record carries at most ten groups of three transformed bytes, or 30 bytes total.
+  - address: "0x00564C7F"
+    text: Encode each six-bit value as a printable byte by adding 0x3B.
+  - address: "0x00564F7A"
+    text: A comma and newline end a non-final record; another plus record follows.
+  - address: "0x00564FCF"
+    text: A period and newline end the final record.
   - address: "0x0056537E"
     text: Initialize Winsock 1.1. Startup failure or a returned version other than 1.1 terminates the process.
   - address: "0x005653CD"
@@ -129,22 +374,72 @@ comments:
     text: Second and final active-mode TCP connect attempt using the freshly resolved da0.kru.com address.
   - address: "0x005657C1"
     text: Second connect failed. Close the socket and return with INVALID_SOCKET; this routine shows no error dialog and makes no third active-mode attempt.
-  - address: "0x005668FF"
-    text: "Shared connection-failure cleanup: close the current socket, store INVALID_SOCKET, call WSACleanup, and return. The connect-or-fail runtime patch targets this block."
   - address: "0x005657D0"
     text: Second connect succeeded. A one-time side path records the selected IPv4 and port in iplookup.tbl; failure to open that file shows a damaged-file message and exits.
   - address: "0x005658E1"
     text: Alternate distribution-mode mServer.tbl rotation begins here. Hardcoded mode 1 does not enter this fallback loop.
   - address: "0x005668ED"
     text: On a successful mode 1 connection, register WSAAsyncSelect message 0x401 for FD_READ | FD_CLOSE. Registration failure terminates the process.
+  - address: "0x005668FF"
+    text: "Shared connection-failure cleanup: close the current socket, store INVALID_SOCKET, call WSACleanup, and return. The connect-or-fail runtime patch targets this block."
   - address: "0x00566D93"
     text: Close the active Winsock socket and restore the socket field to INVALID_SOCKET.
+  - address: "0x00567413"
+    text: "Fresh TCP raw-stream mode: call recv and post the complete wire bytes without checking the 0xAA header, length, opcode, or transform."
+  - address: "0x00567546"
+    text: Remove printable record framing and rebuild the transformed opcode-first body. The AA and u16be binary header is not part of this representation.
+  - address: "0x0056755F"
+    text: Select the normal server raw, static-key, or derived-key policy from the recovered opcode before posting the decoded packet event.
+  - address: "0x00567621"
+    text: Default derived-key transform for normally parsed server opcodes. The initial 0x7E welcome bypasses this switch because raw-stream mode is still enabled.
+  - address: "0x00567C3A"
+    text: Validate the decimal printable-record sequence against the receiver's expected value.
+  - address: "0x00567CA2"
+    text: Decode four printable values back to three bytes after subtracting the 0x3B alphabet base.
+  - address: "0x00579090"
+    text: Initial welcome input can include the full wire frame. This handler scans byte by byte and does not require 0x7E or validate the outer header.
+  - address: "0x005791C7"
+    text: A received 0x1B byte enters the terminal control state. During startup this scan sees the complete raw wire bytes, including any AA frame header.
+  - address: "0x0057942C"
+    text: ESC S selects the alternate text framing mode, then waits for one more byte before completing the connection transition.
+  - address: "0x0057946C"
+    text: ESC C selects binary 0xAA plus u16be-length framing for later traffic, then waits for one more byte before completing the connection transition.
+  - address: "0x00579518"
+    text: Telnet IAC DO 0xFF 0xFD enters terminal-option handling.
+  - address: "0x00579555"
+    text: "Telnet TERMINAL-TYPE option 0x18: answer WILL TERMINAL-TYPE, begin subnegotiation, and identify as terminal type dumb."
+  - address: "0x00579832"
+    text: "Build and queue the five-byte CHello control body: ASCII baram, whose leading b is opcode 0x62."
+  - address: "0x0057993A"
+    text: Reset the client-to-server encrypted-packet sequence immediately before building CVersion. CVersion itself is raw and does not consume a sequence value.
+  - address: "0x0057993F"
+    text: Begin the five-byte CVersion plaintext body with raw opcode 0x00.
+  - address: "0x00579977"
+    text: Write client_version_code as u16be. The decorated compiled text 7D4E--1K is filtered to decimal digits, producing 741 or 0x02E5.
+  - address: "0x00579997"
+    text: Append literal byte 0x4C, ASCII L. Its protocol meaning is not established.
+  - address: "0x005799B8"
+    text: Append literal byte 0x4B, ASCII K. Its protocol meaning is not established.
+  - address: "0x005799E7"
+    text: "Queue the complete CVersion body: 00 02 E5 4C 4B. Opcode 0x00 follows the raw outbound path."
   - address: "0x0057A5D4"
     text: Copy one dash-prefixed token, delimited only by ASCII space. Only an uppercase D token is recognized.
   - address: "0x0057A60D"
     text: Recognized -D... token. The suffix is passed to app_handle_d_option_stub, which immediately returns and changes no state.
   - address: "0x0057A7A3"
     text: Parse the WinMain command tail. In this binary the only recognized dash token is -D..., and its handler is a no-op.
+  - address: "0x00597E62"
+    text: Read the SBrowser subtype.
+  - address: "0x00597EDF"
+    text: SBrowser subtype 3 reads a u8-length-prefixed homepage URL into the packet object.
+  - address: "0x0059C8F2"
+    text: "Read the SStipulation mode: 0 carries a greeting CRC32; 1 carries a compressed replacement."
+  - address: "0x0059CA52"
+    text: Read the transfer IPv4 value; observed bytes 01 00 00 7F become 127.0.0.1 when stored for Winsock.
+  - address: "0x0059CA60"
+    text: Read the transfer port as u16be; observed bytes 0A 32 mean port 2610.
+  - address: "0x0059CA6E"
+    text: Read a u8-length-prefixed opaque handoff token into STransferServer and NUL-terminate its local copy.
 runtime_patches:
   - id: enable-command-line-endpoint
     rva: "0x00032253"
