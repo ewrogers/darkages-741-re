@@ -43,6 +43,18 @@ functions:
     name: net_init_mercenary_packet
     confidence: high
     evidence: "Initializes the opcode 0x54 body prefix used by net_send_mercenary_action."
+  - address: "0x0045D970"
+    name: ui_equip_pane_handle_network_event
+    confidence: high
+    evidence: "Exact RTTI class EquipPane routes SAddEquip, SRemoveEquip, and SSelfLook from its primary-vtable network-event slot."
+  - address: "0x004601D0"
+    name: ui_equip_pane_add_equipment_from_packet
+    confidence: high
+    evidence: "Converts the SAddEquip slot to an index and stores sprite, dye, name, current durability, and maximum durability in EquipPane's 18-entry arrays."
+  - address: "0x004602B0"
+    name: ui_equip_pane_remove_equipment_from_packet
+    confidence: high
+    evidence: "Clears the selected EquipPane sprite, name, and durability fields without clearing the retained dye byte."
   - address: "0x00462DC0"
     name: net_send_group
     confidence: high
@@ -255,10 +267,30 @@ functions:
     name: net_packet_reader_read_u16be
     confidence: high
     evidence: "Reads a big-endian 16-bit value from a decoded server packet and advances the reader by two."
+  - address: "0x00595CE0"
+    name: net_packet_reader_read_u32be
+    confidence: high
+    evidence: "Reads a big-endian 32-bit value from a decoded server packet and advances the reader by four."
+  - address: "0x00595D60"
+    name: net_packet_reader_skip
+    confidence: high
+    evidence: "Advances the decoded server-packet reader by a caller-supplied byte count without validating the skipped values."
   - address: "0x00595DF0"
     name: net_packet_reader_read_string8
     confidence: high
     evidence: "Reads a one-byte-length-prefixed byte string and appends a local NUL to the destination."
+  - address: "0x00597210"
+    name: net_create_add_equip_server_packet
+    confidence: high
+    evidence: "Allocates a 0x124-byte RTTI SAddEquip object and calls its concrete constructor."
+  - address: "0x00597290"
+    name: net_add_equip_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x37 to the server packet base and installs the exact SAddEquip vtable."
+  - address: "0x005972C0"
+    name: net_deserialize_add_equip_server_packet
+    confidence: high
+    evidence: "Reads slot, u16be sprite, dye, string8 name, one skipped byte, and two u32be durability values into SAddEquip."
   - address: "0x00597510"
     name: net_create_add_skill_server_packet
     confidence: high
@@ -295,6 +327,18 @@ functions:
     name: net_deserialize_bad_guy_server_packet
     confidence: high
     evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32be guard."
+  - address: "0x0059ADB0"
+    name: net_create_remove_equip_server_packet
+    confidence: high
+    evidence: "Allocates a 0x14-byte RTTI SRemoveEquip object and calls its concrete constructor."
+  - address: "0x0059AE30"
+    name: net_remove_equip_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x38 to the server packet base and installs the exact SRemoveEquip vtable."
+  - address: "0x0059AE60"
+    name: net_deserialize_remove_equip_server_packet
+    confidence: high
+    evidence: "Reads the one-byte SRemoveEquip slot and widens it into the packet object's 16-bit field."
   - address: "0x0059B0E0"
     name: net_create_remove_skill_server_packet
     confidence: high
@@ -319,6 +363,14 @@ functions:
     name: net_deserialize_remove_spell_server_packet
     confidence: high
     evidence: "Reads the one-byte SRemoveSpell slot into object offset +0x10."
+  - address: "0x005B1070"
+    name: ui_user_info_add_equipment_from_packet
+    confidence: high
+    evidence: "Maps SAddEquip slots 1 through 18 to UserInfoPane child-view indices 0 through 17 and forwards the visible item fields."
+  - address: "0x005B1100"
+    name: ui_user_info_remove_equipment_from_packet
+    confidence: high
+    evidence: "Maps a checked SRemoveEquip slot and asks the UserInfoPane child equipment view to clear that entry."
   - address: "0x005BA040"
     name: ui_map_loading_pane_ctor
     confidence: high
@@ -423,7 +475,11 @@ functions:
     name: net_register_bad_guy_server_packet_factory
     confidence: high
     evidence: "Registers the RTTI-backed SBadGuy constructor with the server_packet_factory startup path."
-data_symbols: []
+data_symbols:
+  - address: "0x006D2A10"
+    name: equipment_slot_to_ui_index
+    confidence: high
+    evidence: "Nineteen signed entries map wire slot 0 to -1 and slots 1 through 18 to UI indices 0 through 17."
 comments:
   - address: "0x0043D8AF"
     text: "Japan mode 13 CNewUser variant begins with opcode 0x02 and appends app_japan_distribution_isp_selector as u16be after the three length-prefixed strings."
@@ -439,6 +495,16 @@ comments:
     text: "Write CreateUserDialogPane +0x678 as the hair-color palette index 0 through 13."
   - address: "0x0043ECB9"
     text: "The active USA distribution stores literal none as the third CNewUser string. Japan mode 13 can read the Email control instead."
+  - address: "0x0045D9CB"
+    text: "EquipPane dispatches opcode 0x37 (SAddEquip) to its local worn-equipment update."
+  - address: "0x0045D9EE"
+    text: "EquipPane dispatches opcode 0x38 (SRemoveEquip) to its local worn-equipment removal."
+  - address: "0x00460201"
+    text: "Convert wire slots 1..18 to array indices 0..17. This signed upper-bound check does not reject slot 0 after decrement."
+  - address: "0x00460215"
+    text: "EquipPane stores per-slot sprite, dye, name, current durability, and maximum durability in parallel 18-entry arrays."
+  - address: "0x004602BC"
+    text: "Removal converts slot to index without a bounds check, then clears sprite, name[0], and durability. The dye byte is retained."
   - address: "0x0049107D"
     text: "NewSkillInventoryPane uses a 90-entry UI inventory."
   - address: "0x004915DF"
@@ -561,6 +627,14 @@ comments:
     text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
   - address: "0x005962D3"
     text: "The factory installs no constructor for server opcode 0x58 or 0x67. Both remain raw decoded bodies with a null packet-object slot."
+  - address: "0x005972CA"
+    text: "SAddEquip body: u8 slot, u16be sprite, u8 dye, string8 name, one skipped byte, u32be current durability, u32be maximum durability."
+  - address: "0x00597311"
+    text: "Skip the byte immediately after the name. Login captures consistently show 0x00 here, but the parser does not validate its value."
+  - address: "0x00597319"
+    text: "Read current durability as u32be into packet object +0x11C."
+  - address: "0x0059732A"
+    text: "Read maximum durability as u32be into packet object +0x120."
   - address: "0x005975D2"
     text: "SAddSkill body begins with a one-byte skill slot."
   - address: "0x005975E0"
@@ -585,10 +659,16 @@ comments:
     text: "SBadGuy body bytes 1 and 2 are u8 mode and marker byte."
   - address: "0x00597AE6"
     text: "SBadGuy ends with a u32be guard value."
+  - address: "0x0059AE6A"
+    text: "SRemoveEquip body is one u8 slot, widened to u16 in the packet object."
   - address: "0x0059B19A"
     text: "SRemoveSkill contains one body field: the one-byte skill slot at object offset +0x10."
   - address: "0x0059B2AA"
     text: "SRemoveSpell contains one body field: the one-byte spell slot at object offset +0x10."
+  - address: "0x005B10D3"
+    text: "UserInfoPane maps wire slots through a 19-entry table: slot 0 -> -1; slots 1..18 -> view indices 0..17."
+  - address: "0x005B1138"
+    text: "Use the same slot mapping for removal before clearing the user-information equipment view."
   - address: "0x005EDC2D"
     text: "Dispatch RTTI packet SRemoveSpell opcode 0x18 to net_handle_remove_spell_server_packet."
   - address: "0x005EDC56"
@@ -1566,7 +1646,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597290 passes opcode 0x37 to the server packet base and installs the SAddEquip vtable."
+        evidence: "Constructor 0x00597290 installs the SAddEquip vtable for opcode 0x37. Its deserializer reads slot, sprite, dye, name, an ignored byte, and two durability values; EquipPane and UserInfoPane consume the result."
         page: "docs/network/server/055-0x37-add-equip.md"
       - opcode: "0x38"
         friendly_name: "Remove Equip"
@@ -1576,7 +1656,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059AE30 passes opcode 0x38 to the server packet base and installs the SRemoveEquip vtable."
+        evidence: "Constructor 0x0059AE30 installs the SRemoveEquip vtable for opcode 0x38. Its deserializer reads one slot byte, which EquipPane and UserInfoPane use to clear the corresponding equipment entry."
         page: "docs/network/server/056-0x38-remove-equip.md"
       - opcode: "0x39"
         friendly_name: "Self Look"

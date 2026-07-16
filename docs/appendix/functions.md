@@ -134,6 +134,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_dialog_focus_previous_control` | `0x00446CD0` | high | Searches backward with wrapping for an enabled, focusable control. |
 | `ui_dialog_focus_next_control` | `0x00446DD0` | high | Searches forward with wrapping for an enabled, focusable control. |
 | `ui_dialog_dispatch_pointer_to_control` | `0x00446FE0` | high | Converts pointer coordinates to control-local space, calls control virtual +0x48, and restores the event. |
+| `ui_equip_pane_handle_network_event` | `0x0045D970` | high | Exact RTTI class EquipPane routes SAddEquip, SRemoveEquip, and SSelfLook from its primary-vtable network-event slot. |
+| `ui_equip_pane_add_equipment_from_packet` | `0x004601D0` | high | Converts the SAddEquip slot to an index and stores sprite, dye, name, current durability, and maximum durability in EquipPane's 18-entry arrays. |
+| `ui_equip_pane_remove_equipment_from_packet` | `0x004602B0` | high | Clears the selected EquipPane sprite, name, and durability fields without clearing the retained dye byte. |
 | `ui_pane_schedule_timer` | `0x00464050` | high | Schedules a timer for a Pane by passing its TimerHandler subobject at +0x11C. |
 | `ui_pane_cancel_timers` | `0x00464740` | high | Converts a Pane pointer to TimerHandler +0x11C and cancels matching timers. |
 | `ui_text_truncate_dbcs_safe` | `0x0047D670` | high | Stops at the byte limit without leaving a Windows DBCS lead byte at the end. |
@@ -212,6 +215,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_user_info_handle_server_packet` | `0x005AD160` | high | The UserInfoPane vtable event handler sends the local portrait response when the decoded opcode is 0x49. |
 | `ui_user_info_refresh_local_portrait` | `0x005AD5D0` | high | Builds the local portrait body and reapplies it to UserInfoPane without calling the network submitter. |
 | `ui_user_info_timer` | `0x005AD600` | high | Timer 0x1241 calls the local portrait refresh after the profile editor saves. |
+| `ui_user_info_add_equipment_from_packet` | `0x005B1070` | high | Maps SAddEquip slots 1 through 18 to UserInfoPane child-view indices 0 through 17 and forwards the visible item fields. |
+| `ui_user_info_remove_equipment_from_packet` | `0x005B1100` | high | Maps a checked SRemoveEquip slot and asks the UserInfoPane child equipment view to clear that entry. |
 | `ui_portrait_text_dialog_ctor` | `0x005B11A0` | high | Constructs RTTI-backed PortraitTextInputDialogPane from _nui_pi.txt and loads profile.txt. |
 | `ui_portrait_text_dialog_action` | `0x005B1510` | high | Action 1 saves profile.txt and queues timer 0x1241; action 2 closes without saving. |
 | `ui_map_loading_pane_ctor` | `0x005BA040` | high | Constructs RTTI class MapLoadingPane from _nloadm.txt and registers it as a visible screen pane. |
@@ -335,10 +340,15 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_packet_reader_ctor` | `0x00595B10` | high | Constructs the bounded reader used by server packet deserializers. |
 | `net_packet_reader_read_u8` | `0x00595C20` | high | Reads one byte from a decoded server packet and advances the reader by one. |
 | `net_packet_reader_read_u16be` | `0x00595C60` | high | Reads a big-endian 16-bit value from a decoded server packet and advances the reader by two. |
+| `net_packet_reader_read_u32be` | `0x00595CE0` | high | Reads a big-endian 32-bit value from a decoded server packet and advances the reader by four. |
+| `net_packet_reader_skip` | `0x00595D60` | high | Advances the decoded server-packet reader by a caller-supplied byte count without validating the skipped values. |
 | `net_packet_reader_read_string8` | `0x00595DF0` | high | Reads a one-byte-length-prefixed byte string and appends a local NUL to the destination. |
 | `net_server_packet_factory_ctor` | `0x00595F00` | high | Registers 61 opcode-specific server packet constructors in a 256-entry factory. |
 | `net_deserialize_server_packet` | `0x005963F0` | high | Creates the registered server packet class and invokes its deserializer; it does not require the reader to consume the complete supplied body. |
 | `net_create_server_packet` | `0x00596780` | high | Calls the registered constructor for a server opcode. |
+| `net_create_add_equip_server_packet` | `0x00597210` | high | Allocates a 0x124-byte RTTI SAddEquip object and calls its concrete constructor. |
+| `net_add_equip_server_packet_ctor` | `0x00597290` | high | Passes opcode 0x37 to the server packet base and installs the exact SAddEquip vtable. |
+| `net_deserialize_add_equip_server_packet` | `0x005972C0` | high | Reads slot, u16be sprite, dye, string8 name, one skipped byte, and two u32be durability values into SAddEquip. |
 | `net_create_add_skill_server_packet` | `0x00597510` | high | Allocates a 0x118-byte RTTI SAddSkill object and calls its concrete constructor. |
 | `net_add_skill_server_packet_ctor` | `0x00597590` | high | Passes opcode 0x2C to the server packet base and installs the exact SAddSkill vtable. |
 | `net_deserialize_add_skill_server_packet` | `0x005975C0` | high | Reads u8 slot, u16be icon, and string8 name into SAddSkill. |
@@ -351,6 +361,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_deserialize_browser_packet` | `0x00597E50` | high | Parses SBrowser subtypes 1 and 2 as two u16be-length byte strings and subtype 3 as one u8-length homepage URL. |
 | `net_decode_s_change_weather` | `0x00598210` | high | Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer. |
 | `net_decode_s_map_size` | `0x00599F90` | high | Reads map ID, dimensions, flags, secondary mode, checksum, and map name from SMapSize. |
+| `net_create_remove_equip_server_packet` | `0x0059ADB0` | high | Allocates a 0x14-byte RTTI SRemoveEquip object and calls its concrete constructor. |
+| `net_remove_equip_server_packet_ctor` | `0x0059AE30` | high | Passes opcode 0x38 to the server packet base and installs the exact SRemoveEquip vtable. |
+| `net_deserialize_remove_equip_server_packet` | `0x0059AE60` | high | Reads the one-byte SRemoveEquip slot and widens it into the packet object's 16-bit field. |
 | `net_create_remove_skill_server_packet` | `0x0059B0E0` | high | Allocates a 0x14-byte RTTI SRemoveSkill object and calls its concrete constructor. |
 | `net_remove_skill_server_packet_ctor` | `0x0059B160` | high | Passes opcode 0x2D to the server packet base and installs the exact SRemoveSkill vtable. |
 | `net_deserialize_remove_skill_server_packet` | `0x0059B190` | high | Reads the one-byte SRemoveSkill slot into object offset +0x10. |

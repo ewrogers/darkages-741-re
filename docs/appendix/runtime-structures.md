@@ -244,6 +244,41 @@ struct NewSkillInventoryPaneFields {
 
 The UI replaces an existing item before insertion. Removal releases the live `SkillInvItemPane` and writes null to its pointer entry. As with spells, the UI accepts slot 90 while the session model stops at slot 89.
 
+## Character equipment state
+
+Worn equipment is represented in two UI-owned models. No third gameplay-session copy was found in the `SAddEquip` or `SRemoveEquip` receive paths.
+
+The RTTI class `EquipPane` keeps 18 parallel entries selected by `slot - 1`:
+
+```c
+struct EquipmentDurability {
+    u32 maximum;                    // +0x00
+    u32 current;                    // +0x04
+};                                  // size 0x08
+
+struct EquipPaneEquipmentFields {
+    u8 unknown_0000[0x111C];
+    u16 sprites[18];                // +0x111C
+    u8 dye_colors[18];              // +0x1140
+    char names[18][128];            // +0x1152
+    u8 unknown_1A52[2];
+    EquipmentDurability values[18]; // +0x1A54
+};
+```
+
+[`SAddEquip`](../network/server/055-0x37-add-equip.md) writes all five values and redraws the pane. [`SRemoveEquip`](../network/server/056-0x38-remove-equip.md) clears the sprite, first name byte, maximum durability, and current durability. It leaves the dye byte and remaining name-buffer bytes untouched.
+
+The RTTI class `UserInfoPane` owns a second view:
+
+```c
+struct UserInfoEquipmentFields {
+    u8 unknown_0000[0x588];
+    void *equipment_view;           // +0x588, exact derived class unresolved
+};
+```
+
+The static `equipment_slot_to_ui_index` table contains 19 signed entries. Slot `0` maps to `-1`; slots `1` through `18` map to indices `0` through `17`. The child view receives maximum durability before current durability, matching the order stored by `EquipPane` even though the wire packet sends current first.
+
 ## Event pane tree
 
 `EventHandlerList` stores a flattened preorder tree. The dispatcher owns it at offset `+0x60`.
