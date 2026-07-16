@@ -48,6 +48,7 @@ def main() -> None:
         "- [UI and panes](systems/ui.md)",
         "- [UI layout files](systems/ui-layouts.md)",
         "- [Movement and swimming](systems/movement-and-swimming.md)",
+        "- [Messages and history](systems/messages-and-history.md)",
         "- [Character creation](systems/character-creation.md)",
         "- [Changing a password](systems/change-password.md)",
         "- [Portraits and profiles](systems/portraits-and-profiles.md)",

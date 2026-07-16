@@ -39,6 +39,14 @@ functions:
     name: ui_text_insert_color_markup
     confidence: high
     evidence: "Recognizes lowercase three-byte {=a through {=x tokens and changes the following run's palette index."
+  - address: "0x0057F530"
+    name: ui_text_enforce_max_bytes
+    confidence: high
+    evidence: "Trims oldest TextEditPane bytes from the front when its configured byte limit is exceeded, preserving DBCS boundaries."
+  - address: "0x0057F680"
+    name: ui_text_enforce_max_lines
+    confidence: high
+    evidence: "Trims oldest TextEditPane lines when its configured line limit is exceeded."
   - address: "0x00592DE0"
     name: file_build_character_path
     confidence: high
@@ -109,10 +117,16 @@ comments:
     text: "Read profile.txt from the character directory and include at most 0x172 bytes."
   - address: "0x0054D521"
     text: "The outer length is 4 + portrait length + profile length and counts both nested u16 fields."
+  - address: "0x0057AF13"
+    text: "TextEditPane defaults to a 30,000-byte retention limit."
+  - address: "0x0057AF25"
+    text: "TextEditPane defaults to a 30,000-line retention limit. The byte limit normally dominates message history."
   - address: "0x0057D430"
     text: "Recognize only lowercase three-byte {=a through {=x color tokens."
   - address: "0x0057D4D1"
     text: "Map the color letter through the 24-entry palette-index table and skip the token bytes."
+  - address: "0x0057F53D"
+    text: "If the text exceeds max_bytes, delete the oldest bytes from the front without splitting a DBCS character."
   - address: "0x005AD228"
     text: "SRequestPortrait 0x49 has no payload. UserInfoPane answers with CSendPortrait 0x4F."
   - address: "0x005AD6BB"

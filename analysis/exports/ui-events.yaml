@@ -55,6 +55,10 @@ functions:
     name: ui_dialog_dispatch_pointer_to_control
     confidence: high
     evidence: "Converts pointer coordinates to control-local space, calls control virtual +0x48, and restores the event."
+  - address: "0x004488C0"
+    name: ui_window_message_dialog_pane_ctor
+    confidence: high
+    evidence: "Builds the standard scrollable or alternate woodbook-style SMessage popup from an explicit byte buffer."
   - address: "0x00463820"
     name: event_dispatcher_ctor
     confidence: high
@@ -327,6 +331,42 @@ functions:
     name: input_emit_ime_candidate_list_close
     confidence: high
     evidence: "Builds candidate-list-close event type 0x11."
+  - address: "0x0047C2A0"
+    name: ui_game_message_pane_ctor
+    confidence: high
+    evidence: "Constructs the RTTI-backed four-row floating GameMessagePane used for short colored notices."
+  - address: "0x0047C5C0"
+    name: ui_game_message_pane_append_formatted_rgb
+    confidence: high
+    evidence: "Parses inline color markup and appends colored byte cells to the fading GameMessagePane overlay."
+  - address: "0x0047C6F0"
+    name: ui_game_message_pane_append_bytes
+    confidence: high
+    evidence: "Writes colored byte cells into the current floating-message row, wrapping and rotating the four-row buffer."
+  - address: "0x0047C9C0"
+    name: ui_game_message_pane_update_bounds
+    confidence: high
+    evidence: "Recomputes the floating overlay bounds from the occupied rows and their widest line."
+  - address: "0x0047D120"
+    name: ui_game_message_pane_discard_oldest_line
+    confidence: high
+    evidence: "Rotates the four line records and clears the oldest row when the overlay fills."
+  - address: "0x004803A0"
+    name: ui_append_game_message_palette
+    confidence: high
+    evidence: "Resolves a palette entry to RGB and appends the text to GameMessagePane."
+  - address: "0x004803E0"
+    name: ui_append_game_message_rgb
+    confidence: high
+    evidence: "Appends text to the active GameMessagePane using explicit RGB bytes."
+  - address: "0x00480450"
+    name: ui_game_message_pane_exists
+    confidence: high
+    evidence: "Tests whether the GameMessagePane singleton currently exists."
+  - address: "0x00480470"
+    name: ui_get_game_message_pane
+    confidence: high
+    evidence: "Returns the active GameMessagePane singleton pointer."
   - address: "0x0048E980"
     name: input_translate_win32_message
     confidence: high
@@ -383,6 +423,14 @@ functions:
     name: ui_pane_unregister_event_handler
     confidence: high
     evidence: "Pane primary-vtable +0x44 wrapper for removal from EventHandlerList."
+  - address: "0x00552120"
+    name: ui_score_pane_append_server_message
+    confidence: high
+    evidence: "Prepends a newline and appends an SMessage body to ScorePane when its length is at most 70 bytes."
+  - address: "0x005521B0"
+    name: ui_score_pane_handle_message_packet
+    confidence: high
+    evidence: "Accepts SMessage type 0x12 and forwards its byte string to ScorePane."
   - address: "0x005522B0"
     name: ui_screen_hierarchy_ctor
     confidence: high
@@ -407,6 +455,38 @@ functions:
     name: ui_screen_pane_ctor
     confidence: high
     evidence: "Constructs the startup RTTI ScreenPane root with primary Pane and secondary TimerHandler vtables."
+  - address: "0x005A8FB0"
+    name: ui_new_system_message_text_pane_ctor
+    confidence: high
+    evidence: "Constructs the TextEditPane child that stores and renders persistent message history."
+  - address: "0x005A9000"
+    name: ui_new_system_message_pane_handle_packet_event
+    confidence: high
+    evidence: "Recognizes SMessage packet events and forwards them to the history type router."
+  - address: "0x005A9060"
+    name: ui_new_system_message_pane_ctor
+    confidence: high
+    evidence: "Constructs NewSystemMessagePane with one visible row, a TextEditPane child, and ten initial blank lines."
+  - address: "0x005A9310"
+    name: ui_new_system_message_pane_set_visible_lines
+    confidence: high
+    evidence: "Changes the visible history row count and recomputes the pane layout."
+  - address: "0x005A9420"
+    name: ui_new_system_message_pane_update_layout
+    confidence: high
+    evidence: "Repositions the history skin and TextEditPane child for the selected number of visible rows."
+  - address: "0x005A9890"
+    name: ui_new_system_message_pane_handle_mouse_event
+    confidence: high
+    evidence: "Handles the draggable history control and clamps the visible area to one through ten rows."
+  - address: "0x005A9A20"
+    name: ui_new_system_message_pane_append_history
+    confidence: high
+    evidence: "Accepts at most 70 bytes, prefixes a newline, normalizes carriage returns, and appends to persistent history."
+  - address: "0x005A9B40"
+    name: ui_new_system_message_pane_handle_message_packet
+    confidence: high
+    evidence: "Routes SMessage types 0x00 through 0x06, 0x0B, and 0x0C into persistent history."
 data_symbols:
   - address: "0x006D9220"
     name: event_dispatcher_singleton_ptr
@@ -449,6 +529,8 @@ comments:
     text: "DialogPane child-control collection pointer at object offset +0x594."
   - address: "0x00446CB8"
     text: "Focused control index is stored at DialogPane +0x5AC."
+  - address: "0x0044892C"
+    text: "WindowMessageDialogPane receives a signed 16-bit length and copies into a 32,768-byte local text buffer. Lengths through 32,767 leave room for the added terminator."
   - address: "0x004642B0"
     text: "Timer callback budget is 0x28 per main-thread tick."
   - address: "0x004643C2"
@@ -469,6 +551,24 @@ comments:
     text: "Pane virtual +0x54: application and IME event types 0x0D through 0x12."
   - address: "0x0046500D"
     text: "Pane virtual +0x50: network event type 0x13."
+  - address: "0x0047C306"
+    text: "GameMessagePane uses a 14-pixel row height."
+  - address: "0x0047C328"
+    text: "The live world layout produces four floating-message rows, each with 49 character cells."
+  - address: "0x0047C861"
+    text: "When the four-row floating overlay fills, rotate out the oldest line before continuing."
+  - address: "0x0047C975"
+    text: "Each floating-message append starts a 2,000 ms timer before the line begins its fade sequence."
+  - address: "0x005A9030"
+    text: "NewSystemMessagePane listens for SMessage packet events independently of the floating-message handler."
+  - address: "0x005A9985"
+    text: "Dragging the history handle can expand the visible message area up to ten rows."
+  - address: "0x005A99BE"
+    text: "Dragging the history handle can collapse the visible message area down to one row."
+  - address: "0x005A9A50"
+    text: "Reject persistent-history messages longer than 70 bytes. Accepted text is prefixed with a newline before insertion."
+  - address: "0x005A9B57"
+    text: "The persistent history accepts types 0x00 through 0x06, 0x0B, and 0x0C. Other SMessage types do not enter this buffer."
 runtime_patches: []
 event_types:
   - type: "0x00"
@@ -575,6 +675,21 @@ object_layouts:
   HierList_Screen:
     root_pane_global: "0x0073D94C"
     hierarchy_global: "0x0073D948"
+  GameMessagePane:
+    cells_per_row: "0x1A4"
+    row_height: "0x1A8"
+    row_capacity: "0x1AC"
+    row_records: "0x1B0"
+    write_column: "0x1B4"
+    write_row: "0x1C0"
+  NewSystemMessagePane:
+    skin: "0x190"
+    visible_lines: "0x194"
+    dragging_history_bar: "0x1F8"
+    text_pane: "0x1FC"
+  NewSystemMessageTextPane:
+    max_bytes: "0x1FC"
+    max_lines: "0x1FE"
 rtti_inventory:
   pane_vtable_types: 302
   singleton_specializations: 86

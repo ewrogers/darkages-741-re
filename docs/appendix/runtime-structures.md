@@ -125,6 +125,33 @@ struct SBrowserFields {
 
 The apparent overlap is variant storage. A subtype or mode determines which fields are valid. Packet wire layouts remain on the individual packet pages.
 
+## Message packet objects
+
+These packet objects keep short `string8` values inline, but `SMessage` retains its larger main body as a pointer into the decoded packet storage.
+
+```c
+struct SMessageFields {
+    u8 base[0x10];
+    u32 message_type;            // +0x10, decoded from u8
+    u32 message_length;          // +0x14, decoded from u16be
+    u8 *message;                 // +0x18
+    u8 extra_0;                  // +0x1C, type 0x11 only
+    u8 extra_1;                  // +0x1D, type 0x11 only
+    u8 padding_1e[2];
+    u32 extra_text_length;       // +0x20, type 0x11 string8
+    char extra_text[256];        // +0x24, type 0x11
+};                              // allocated size 0x124
+
+struct SSayFields {
+    u8 base[0x10];
+    u32 speech_mode;             // +0x10, decoded from u8
+    u32 object_id;               // +0x14, decoded from u32be
+    char text[256];              // +0x18, decoded from string8
+};                              // allocated size 0x118
+```
+
+The type-`0x11` `SMessage` prefix is parsed even though the recovered consumers do not display that type. `SSay` text is used directly by the world-balloon path.
+
 ## Character spell state
 
 The logged-in world keeps a gameplay copy of each spell and a separate UI copy. `WorldPane + 0x2CC` points to the RTTI class `WorldUserFunc`, which owns fixed arrays for inventory items, spells, and skills.
@@ -450,6 +477,43 @@ struct PaneFields {
 ```
 
 The dispatcher stores the captured pane at `+0x40` and the active minimum input priority at `+0x50`. The priority threshold provides modal-style input blocking without removing lower panes from the event tree.
+
+## Message pane fields
+
+`GameMessagePane` owns a fixed four-row display buffer. The matching world layout gives each row 49 colored byte cells.
+
+```text
+struct GameMessagePaneFields {
+    s32 cells_per_row           // +0x1A4, 49 in the live world layout
+    s32 row_height              // +0x1A8, 14 pixels
+    s32 row_capacity            // +0x1AC, 4 in the live world layout
+    MessageRow *rows            // +0x1B0
+    s32 write_column            // +0x1B4
+    s32 rotated_row_count       // +0x1B8, also used by the slide animation
+    s32 content_width_cells     // +0x1BC
+    s32 write_row               // +0x1C0
+    u32 timer_serial            // +0x1C4
+}
+```
+
+`NewSystemMessagePane` is the persistent-history frame. Its child is an RTTI-backed `NewSystemMessageTextPane` derived from `TextEditPane`.
+
+```text
+struct NewSystemMessagePaneFields {
+    PixMap *skin                // +0x190
+    s32 visible_lines           // +0x194, clamped from 1 through 10
+    bool dragging_history_bar   // +0x1F8
+    NewSystemMessageTextPane *text_pane // +0x1FC
+}
+
+struct NewSystemMessageTextPaneFields {
+    // TextEditPane base fields precede these values.
+    s16 max_bytes               // +0x1FC, initialized to 30000
+    s16 max_lines               // +0x1FE, initialized to 30000
+}
+```
+
+The text pane deletes the oldest bytes when `max_bytes` is exceeded. Its trimming loop preserves Windows DBCS character boundaries.
 
 ## Timer entry
 

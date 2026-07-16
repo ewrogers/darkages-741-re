@@ -391,6 +391,18 @@ functions:
     name: net_deserialize_draw_human_objects_server_packet
     confidence: high
     evidence: "Parses the human object prefix, disguise variant, packed normal-human appearance, strings, and remaining appearance fields."
+  - address: "0x0059A050"
+    name: net_create_message_server_packet
+    confidence: high
+    evidence: "Allocates the RTTI-backed SMessage object registered for server opcode 0x0A."
+  - address: "0x0059A0D0"
+    name: net_message_server_packet_ctor
+    confidence: high
+    evidence: "Constructs SMessage with opcode 0x0A and installs its concrete vtable."
+  - address: "0x0059A100"
+    name: net_deserialize_message_server_packet
+    confidence: high
+    evidence: "Reads the message type, the type-0x11-only prefix, a u16be message length, and the message bytes."
   - address: "0x0059ADB0"
     name: net_create_remove_equip_server_packet
     confidence: high
@@ -427,6 +439,18 @@ functions:
     name: net_deserialize_remove_spell_server_packet
     confidence: high
     evidence: "Reads the one-byte SRemoveSpell slot into object offset +0x10."
+  - address: "0x0059B510"
+    name: net_create_say_server_packet
+    confidence: high
+    evidence: "Allocates the RTTI-backed SSay object registered for server opcode 0x0D."
+  - address: "0x0059B590"
+    name: net_say_server_packet_ctor
+    confidence: high
+    evidence: "Constructs SSay with opcode 0x0D and installs its concrete vtable."
+  - address: "0x0059B5C0"
+    name: net_deserialize_say_server_packet
+    confidence: high
+    evidence: "Reads a speech mode, u32be world-object ID, and string8 speech text."
   - address: "0x0059C360"
     name: net_create_status_server_packet
     confidence: high
@@ -527,6 +551,10 @@ functions:
     name: net_handle_draw_human_objects_server_packet
     confidence: high
     evidence: "Creates or refreshes WorldObject_User for self and WorldObject_Human for other normal or disguised human records."
+  - address: "0x005F3E00"
+    name: net_handle_say_server_packet
+    confidence: high
+    evidence: "Shows SSay text as a three-second balloon on its world object without appending to persistent history."
   - address: "0x005F4430"
     name: net_send_put_ground
     confidence: high
@@ -551,6 +579,10 @@ functions:
     name: ui_close_map_loading_pane
     confidence: high
     evidence: "Destroys the current MapLoadingPane when a map transfer finishes."
+  - address: "0x005F6D80"
+    name: net_handle_message_server_packet
+    confidence: high
+    evidence: "Routes SMessage to the floating GameMessagePane, WindowMessageDialogPane, or ScorePane according to its type byte."
   - address: "0x005F7830"
     name: net_send_check_time
     confidence: high
@@ -809,12 +841,26 @@ comments:
     text: "Decode packed appearance high nibble. Values 8 and 9 select body resource 5 with male and female resource prefixes respectively."
   - address: "0x0059891A"
     text: "Appearance variant 8 selects male body resource 5. Variant 9 selects the female form; local MM005 and WM005 frames are head-sized swimming art."
+  - address: "0x0059A112"
+    text: "Read the SMessage type byte."
+  - address: "0x0059A11F"
+    text: "Type 0x11 alone carries two extra bytes followed by a string8 field. The recovered client handlers do not display this variant."
+  - address: "0x0059A160"
+    text: "Read the main message length as u16be. The parser itself does not impose a semantic text limit."
+  - address: "0x0059A16D"
+    text: "Retain a pointer to exactly message_length bytes from the decoded packet body; no wire terminator is required."
   - address: "0x0059AE6A"
     text: "SRemoveEquip body is one u8 slot, widened to u16 in the packet object."
   - address: "0x0059B19A"
     text: "SRemoveSkill contains one body field: the one-byte skill slot at object offset +0x10."
   - address: "0x0059B2AA"
     text: "SRemoveSpell contains one body field: the one-byte spell slot at object offset +0x10."
+  - address: "0x0059B5D2"
+    text: "Read the SSay speech mode byte."
+  - address: "0x0059B5E0"
+    text: "Read the speaking world object's u32be ID."
+  - address: "0x0059B5F5"
+    text: "Read the speech text as string8 into the packet object's inline buffer."
   - address: "0x0059C44D"
     text: "Read the SStatus field byte. Bits 0x20, 0x10, 0x08, and 0x04 gate variable blocks; 0x02 and 0x01 are standalone state flags; the high two bits encode privilege level."
   - address: "0x0059C45A"
@@ -891,6 +937,24 @@ comments:
     text: "When appearance_state bit 0x80 is clear, refresh the two self-object IDs. A state-only update leaves them unchanged."
   - address: "0x005F2EEA"
     text: "Always forward SUserAppearance to WorldUserFunc, including state-only updates."
+  - address: "0x005F3E77"
+    text: "Show the speech balloon on the selected world object for 3,000 ms. This path does not append to persistent message history."
+  - address: "0x005F6DD9"
+    text: "Route SMessage types 0x00 through 0x12. Colored overlay, popup, and score paths are separate; several types are intentionally ignored here."
+  - address: "0x005F6DF7"
+    text: "Type 0x12 forwards to ScorePane, whose append path accepts at most 70 message bytes."
+  - address: "0x005F6E20"
+    text: "Type 0x03 copies the message into the four-row GameMessagePane as white text and appends a newline. The login capture uses this type for equipment and load notices."
+  - address: "0x005F6E93"
+    text: "Type 0x00 appends to GameMessagePane with palette entry 0x58, then appends a newline."
+  - address: "0x005F6EE7"
+    text: "Type 0x0B appends to GameMessagePane with palette entry 0x77, then appends a newline."
+  - address: "0x005F6F3B"
+    text: "Type 0x0C appends to GameMessagePane with palette entry 0x54, then appends a newline."
+  - address: "0x005F6F79"
+    text: "Types 0x08 and 0x09 replace tab bytes with carriage returns and open the standard scrollable WindowMessageDialogPane."
+  - address: "0x005F7074"
+    text: "Type 0x0A replaces tab bytes with carriage returns and opens the alternate woodbk.epf WindowMessageDialogPane layout."
   - address: "0x005F793D"
     text: "Apply the client-installation soft ban only when mode is 0 and the u32be guard equals 0x7D3AFF99."
   - address: "0x005F79D9"
@@ -1604,7 +1668,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059A0D0 passes opcode 0x0A to the server packet base and installs the SMessage vtable."
+        evidence: "RTTI identifies SMessage. Its parser reads a type-dependent prefix followed by a u16be byte count, and its consumers route the text to floating, persistent-history, popup, or score UI."
         page: "docs/network/server/010-0x0a-message.md"
       - opcode: "0x0B"
         friendly_name: "Move"
@@ -1634,7 +1698,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059B590 passes opcode 0x0D to the server packet base and installs the SSay vtable."
+        evidence: "RTTI identifies SSay. Its parser reads a mode byte, u32be object ID, and string8 text; the handler creates a three-second world balloon without saving the text to message history."
         page: "docs/network/server/013-0x0d-say.md"
       - opcode: "0x0E"
         friendly_name: "Remove Objects"
