@@ -39,4 +39,4 @@ This is a logical clear rather than a full memory wipe. The old icon and remaini
 
 The pane converts the one-based protocol slot to a zero-based array index, releases the live item through the shared UI owner, and sets the pointer entry to null. Invalid and already-empty slots are ignored.
 
-See [Character skill state](../../appendix/runtime-structures.md#character-skill-state) for both layouts and [`SAddSkill`](044-0x2c-add-skill.md) for insertion behavior.
+See [Skill state](../../appendix/runtime/session.md#skill-state) and [Skill inventory panes](../../appendix/runtime/inventory-ui.md#skill-inventory-panes) for both layouts, and [`SAddSkill`](044-0x2c-add-skill.md) for insertion behavior.

@@ -44,6 +44,8 @@ The local weather setup behaves as follows:
 | 2 | No local setup |
 | 3 | Change lighting-related state, not particles |
 
+Mode 3 writes the [world lighting state](lighting.md) directly by enabling the mask flags and setting ambient intensity and color to zero. It does not create a weather particle class or perform the `SChangeHour` profile lookup.
+
 The server can also create normal world effects with `SEffectLayer`. That path could display rain-like art, but no direct link to rain is confirmed.
 
 `SChangeWeather` exists as an RTTI-backed packet and contains one byte. The main gameplay dispatcher has no handler for its opcode in this client, so it does not control the active map weather path described above.

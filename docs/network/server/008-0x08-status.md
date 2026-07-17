@@ -108,7 +108,7 @@ The combat-modifier block also sets the global blinded state. Only `blind_code =
 
 `unknown_modifier_4` is copied to an application field at `+0x444`, but no read of that destination has been confirmed. Its meaning remains unknown.
 
-The mapped fields are in [Character status state](../../appendix/runtime-structures.md#character-status-state).
+The mapped fields are in [Status state](../../appendix/runtime/session.md#status-state) and [Status and mail panes](../../appendix/runtime/inventory-ui.md#status-and-mail-panes).
 
 ## Mail and parcel state
 

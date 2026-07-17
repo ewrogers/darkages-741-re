@@ -163,7 +163,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_layout_create_image_button` | `0x004828A0` | high | Creates an ImageButtonControlPane from a named layout definition. |
 | `ui_layout_build_image_button` | `0x004828E0` | high | Reads a rectangle, optional skin value, and up to three image states before constructing the button. |
 | `ui_image_pane_draw_content` | `0x0048DD30` | high | Draws an ImagePane image into the pane's own canvas. |
-| `ui_inventory_pane_handle_network_event` | `0x004900C0` | high | InventoryPane_A and ItemInventoryPane route SStatus progression blocks to their local gold-display updater. |
+| `ui_inventory_pane_ctor` | `0x0048F7E0` | high | Constructs exact RTTI class InventoryPane_A, clears its 60 direct InvItemPane pointers, and initializes its selection state. |
+| `ui_inventory_pane_handle_network_event` | `0x004900C0` | high | InventoryPane_A and derived ItemInventoryPane route SAddInventory, SRemoveInventory, and SStatus to their local update paths. |
+| `ui_inventory_create_item` | `0x00490540` | high | Allocates a 0x248-byte RTTI InvItemPane, inserts it into one of 60 inventory slots, and passes all SAddInventory item fields to its constructor. |
+| `ui_inventory_remove_slot` | `0x004907A0` | high | Releases the live InvItemPane for a one-based inventory slot and clears its direct pointer entry. |
+| `ui_inventory_add_item_from_packet` | `0x004909E0` | high | Accepts SAddInventory slots 1 through 60, replaces an occupied UI slot, and creates a new InvItemPane from the decoded fields. |
+| `ui_inventory_remove_item_from_packet` | `0x00490D30` | high | Accepts SRemoveInventory slots 1 through 60 and removes the matching live InvItemPane when present. |
 | `ui_inventory_update_gold_from_status_packet` | `0x00490F10` | high | Copies SStatus gold into the inventory pane and redraws its currency display. |
 | `ui_new_skill_inventory_pane_ctor` | `0x00491050` | high | Constructs exact RTTI class NewSkillInventoryPane with a 90-entry NewInventoryPane&lt;SkillInvItemPane&gt; base. |
 | `ui_skill_inventory_create_skill_item` | `0x004915B0` | high | Allocates a 0x348-byte SkillInvItemPane from the SAddSkill slot, icon, and name, then inserts it at slot - 1. |
@@ -179,7 +184,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_spell_inventory_remove_spell_from_packet` | `0x004922B0` | high | Accepts SRemoveSpell slots 1 through 90 and removes the slot when its SpellInvItemPane pointer is non-null. |
 | `ui_skill_inventory_set_item_at` | `0x00492B30` | high | Replaces a checked zero-based skill inventory entry and attaches the new SkillInvItemPane to its visible slot. |
 | `ui_skill_inventory_remove_item_at` | `0x00492C00` | high | Checks a zero-based skill inventory index, releases its live UI item, and clears the pointer entry. |
-| `ui_inventory_remove_item_at` | `0x00493460` | high | Checks a zero-based inventory index, releases its live UI item through the shared UI owner, and clears the pointer entry. |
+| `ui_spell_inventory_remove_item_at` | `0x00493460` | high | Checks a zero-based spell inventory index, releases its live SpellInvItemPane through the shared UI owner, and clears the pointer entry. |
+| `ui_item_pane_ctor` | `0x00495C60` | high | Constructs exact RTTI class ItemPane and stores an item sprite, 128-byte display name, and dye color. |
+| `ui_inventory_item_set_display_name` | `0x00495DE0` | high | Replaces the InvItemPane display name through the same bounded 128-byte copy used by its ItemPane base. |
+| `ui_inventory_item_ctor` | `0x00495E10` | high | Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, maximum durability, and current durability. |
 | `ui_skill_inventory_item_ctor` | `0x00498940` | high | Constructs exact RTTI class SkillInvItemPane and retains the SAddSkill icon, name, and one-based slot. |
 | `ui_skill_inventory_activate` | `0x004992F0` | high | Checks SkillInvItemPane state, sends any configured skill text, and reaches the CUseSkill sender. |
 | `ui_spell_inventory_item_ctor` | `0x00499DE0` | high | Constructs exact RTTI class SpellInvItemPane and retains slot, icon, argument type, 128-byte name and prompt buffers, and cast_lines. |
@@ -388,6 +396,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_add_equip_server_packet` | `0x00597210` | high | Allocates a 0x124-byte RTTI SAddEquip object and calls its concrete constructor. |
 | `net_add_equip_server_packet_ctor` | `0x00597290` | high | Passes opcode 0x37 to the server packet base and installs the exact SAddEquip vtable. |
 | `net_deserialize_add_equip_server_packet` | `0x005972C0` | high | Reads slot, u16be sprite, dye, string8 name, one skipped byte, and two u32be durability values into SAddEquip. |
+| `net_create_add_inventory_server_packet` | `0x00597380` | high | Allocates a 0x12C-byte RTTI SAddInventory object and calls its concrete constructor. |
+| `net_add_inventory_server_packet_ctor` | `0x00597400` | high | Passes opcode 0x0F to the server packet base and installs the exact SAddInventory vtable. |
+| `net_deserialize_add_inventory_server_packet` | `0x00597430` | high | Reads slot, u16be sprite, dye color, string8 name, u32be quantity, stack flag, current durability, and maximum durability into SAddInventory. |
 | `net_create_add_skill_server_packet` | `0x00597510` | high | Allocates a 0x118-byte RTTI SAddSkill object and calls its concrete constructor. |
 | `net_add_skill_server_packet_ctor` | `0x00597590` | high | Passes opcode 0x2C to the server packet base and installs the exact SAddSkill vtable. |
 | `net_deserialize_add_skill_server_packet` | `0x005975C0` | high | Reads u8 slot, u16be icon, and string8 name into SAddSkill. |
@@ -398,6 +409,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_bad_guy_server_packet_ctor` | `0x00597A90` | high | Passes opcode 0x4A to the common server packet base and installs the exact SBadGuy vtable. |
 | `net_deserialize_bad_guy_server_packet` | `0x00597AC0` | high | Reads SBadGuy as u8 mode, u8 marker byte, and u32be guard. |
 | `net_deserialize_browser_packet` | `0x00597E50` | high | Parses SBrowser subtypes 1 and 2 as two u16be-length byte strings and subtype 3 as one u8-length homepage URL. |
+| `net_create_change_hour_server_packet` | `0x00598050` | high | Allocates a 0x14-byte RTTI SChangeHour object and calls its concrete constructor. |
+| `net_change_hour_server_packet_ctor` | `0x005980D0` | high | Passes opcode 0x20 to the server packet base and installs the exact SChangeHour vtable. |
+| `net_deserialize_change_hour_server_packet` | `0x00598100` | high | Reads exactly one u8 time step into SChangeHour object offset +0x10 and leaves any remaining body bytes unread. |
 | `net_decode_s_change_weather` | `0x00598210` | high | Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer. |
 | `net_create_draw_human_objects_server_packet` | `0x005984C0` | high | Allocates a 0x264-byte RTTI SDrawHumanObjects object and invokes its concrete constructor. |
 | `net_draw_human_objects_server_packet_ctor` | `0x00598540` | high | Passes opcode 0x33 to the server packet base and installs the exact SDrawHumanObjects vtable. |
@@ -409,6 +423,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_remove_equip_server_packet` | `0x0059ADB0` | high | Allocates a 0x14-byte RTTI SRemoveEquip object and calls its concrete constructor. |
 | `net_remove_equip_server_packet_ctor` | `0x0059AE30` | high | Passes opcode 0x38 to the server packet base and installs the exact SRemoveEquip vtable. |
 | `net_deserialize_remove_equip_server_packet` | `0x0059AE60` | high | Reads the one-byte SRemoveEquip slot and widens it into the packet object's 16-bit field. |
+| `net_create_remove_inventory_server_packet` | `0x0059AEC0` | high | Allocates a 0x14-byte RTTI SRemoveInventory object and calls its concrete constructor. |
+| `net_remove_inventory_server_packet_ctor` | `0x0059AF40` | high | Passes opcode 0x10 to the server packet base and installs the exact SRemoveInventory vtable. |
+| `net_deserialize_remove_inventory_server_packet` | `0x0059AF70` | high | Reads the one-byte inventory slot into SRemoveInventory object offset +0x10. |
 | `net_create_remove_skill_server_packet` | `0x0059B0E0` | high | Allocates a 0x14-byte RTTI SRemoveSkill object and calls its concrete constructor. |
 | `net_remove_skill_server_packet_ctor` | `0x0059B160` | high | Passes opcode 0x2D to the server packet base and installs the exact SRemoveSkill vtable. |
 | `net_deserialize_remove_skill_server_packet` | `0x0059B190` | high | Reads the one-byte SRemoveSkill slot into object offset +0x10. |
@@ -437,6 +454,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_add_skill_server_packet` | `0x005F1B70` | high | Forwards decoded SAddSkill to WorldUserFunc vtable slot +0x18. |
 | `net_handle_remove_skill_server_packet` | `0x005F1BB0` | high | Forwards decoded SRemoveSkill to WorldUserFunc vtable slot +0x1C. |
 | `net_handle_s_map_size` | `0x005F1BF0` | high | Applies map dimensions, seasonal art, weather mode, local map cache, and map setup state. |
+| `net_handle_change_hour_server_packet` | `0x005F2160` | high | Stores the SChangeHour time step at WorldPane +0x25C and immediately recomputes map lighting. |
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes the raw decoded SMapPart body, creates MapLoadingPane, applies repeated map records, updates percentage progress, and finalizes the last part. |
 | `net_handle_user_appearance_server_packet` | `0x005F2E90` | high | Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage. |
 | `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes WorldObject_User for self and WorldObject_Human for other normal or disguised human records. |
@@ -652,6 +670,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_format_map_path` | `0x005B9660` | high | Formats the path maps backslash lod map-id dot map. |
 | `file_write_map_cells` | `0x005B9680` | high | Writes the same six-byte map-cell array consumed by the map reader. |
 | `map_apply_seasonal_tile_mode` | `0x005C7660` | high | Applies the SMapSize 0x80 flag to both ground and static tile storage. |
+| `map_load_hea_resource` | `0x005C7870` | high | Opens the current map ID as a six-digit HEA resource and enables the WorldPane spatial light mask on success. |
 | `map_get_sotp_render_flags` | `0x005CF360` | high | Returns the high-nibble SOTP render flags for one static tile ID. |
 | `map_load_sotp_render_flags` | `0x005CF3B0` | high | Loads SOTP.DAT into a one-based high-nibble render-flag table. |
 | `map_get_sotp_collision_flags` | `0x005CF4A0` | high | Returns the low-nibble SOTP direction mask for one static tile ID. |
@@ -684,15 +703,23 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
+| `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
+| `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
+| `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |
 | `crc16_buffer` | `0x00568870` | high | Applies the custom CRC16 update to a byte buffer starting from zero. |
 | `startup_run_pending_patcher` | `0x0057A330` | high | Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe; otherwise deletes both markers and continues. |
 | `crc16_update` | `0x005B8F30` | high | Updates the custom CRC16 with table[crc high byte] XOR crc shifted left XOR input byte. |
+| `world_update_map_lighting` | `0x005EF360` | high | Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, and conditionally loads its HEA mask. |
 | `session_world_user_func_ctor` | `0x005FC5F0` | high | Constructs exact RTTI class WorldUserFunc and clears its fixed inventory, spell, and skill arrays. |
+| `session_store_inventory_entry` | `0x005FCBB0` | high | Stores one compact 0x106-byte inventory record at WorldUserFunc + 0x1092 + (slot - 1) * 0x106. |
+| `session_clear_inventory_entry` | `0x005FCC10` | high | Clears an inventory record's present flag, sprite, and name[0] without overwriting its dye byte or remaining name bytes. |
 | `session_store_spell_entry` | `0x005FCC50` | high | Stores one 0x206-byte spell record at WorldUserFunc + 0x4DFA + (slot - 1) * 0x206. |
 | `session_clear_spell_entry` | `0x005FCCD0` | high | Clears a spell record's present flag, argument type, name[0], and prompt[0] without overwriting the icon or remaining string bytes. |
 | `session_store_skill_entry` | `0x005FCD20` | high | Stores one 0x104-byte skill record at WorldUserFunc + 0x10210 + (slot - 1) * 0x104. |
 | `session_clear_skill_entry` | `0x005FCD80` | high | Clears a skill record's present flag and name[0] without overwriting its icon or remaining name bytes. |
 | `session_update_from_status_packet` | `0x005FCFD0` | high | Copies present SStatus privilege, core stats, vitals, total experience, gold, weight, and retained unknown bytes into WorldUserFunc. |
+| `session_add_inventory_from_packet` | `0x005FD1C0` | high | Accepts SAddInventory slots 1 through 60 and stores sprite, dye color, and name in the compact WorldUserFunc record. |
+| `session_remove_inventory_from_packet` | `0x005FD220` | high | Accepts SRemoveInventory slots 1 through 60 and logically clears the matching WorldUserFunc record. |
 | `session_add_spell_from_packet` | `0x005FD260` | high | Accepts SAddSpell slots 1 through 89 and argument types 1 through 8 before updating WorldUserFunc spell storage. |
 | `session_remove_spell_from_packet` | `0x005FD2E0` | high | Accepts SRemoveSpell slots 1 through 89 before clearing the matching WorldUserFunc spell record. |
 | `session_add_skill_from_packet` | `0x005FD320` | high | Accepts SAddSkill slots 1 through 89 before storing the icon and name in WorldUserFunc. |

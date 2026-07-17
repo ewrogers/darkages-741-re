@@ -151,6 +151,18 @@ functions:
     name: render_get_map_tile_library
     confidence: high
     evidence: Returns the MapTileImageLib singleton.
+  - address: "0x004AE8D0"
+    name: light_list_ctor
+    confidence: high
+    evidence: Constructs the RTTI LightList singleton and starts loading its cached Light metadata.
+  - address: "0x004AEA80"
+    name: light_list_load_metadata
+    confidence: high
+    evidence: Requests the Light metadata table when available or schedules a one-second retry.
+  - address: "0x004AEAD0"
+    name: light_list_find_map_time_entry
+    confidence: high
+    evidence: Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted.
   - address: "0x004C5270"
     name: render_map_background_images
     confidence: high
@@ -327,6 +339,10 @@ functions:
     name: map_apply_seasonal_tile_mode
     confidence: high
     evidence: Applies the SMapSize 0x80 flag to both ground and static tile storage.
+  - address: "0x005C7870"
+    name: map_load_hea_resource
+    confidence: high
+    evidence: Opens the current map ID as a six-digit HEA resource and enables the WorldPane spatial light mask on success.
   - address: "0x005C82C0"
     name: render_create_snow_overlay
     confidence: high
@@ -439,6 +455,10 @@ functions:
     name: render_static_object
     confidence: high
     evidence: Draws a fixed world object with its SOTP-selected software blend mode.
+  - address: "0x005EF360"
+    name: world_update_map_lighting
+    confidence: high
+    evidence: Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, and conditionally loads its HEA mask.
   - address: "0x005EFFE0"
     name: map_can_move_direction
     confidence: high
@@ -557,6 +577,8 @@ comments:
     text: Read exactly width times height times six bytes. A map file has no header and each cell contains three little-endian u16 values.
   - address: "0x005B9680"
     text: Client-confirmed MAP writer for the same six-byte row-major cell buffer used by the reader.
+  - address: "0x005C789E"
+    text: Build the current map's six-digit HEA resource name as %06d.hea.
   - address: "0x005CF3B0"
     text: Build a one-based static-tile render table from the high nibble of each SOTP.DAT byte.
   - address: "0x005CF4F0"
@@ -577,12 +599,20 @@ comments:
     text: Original JE enters the static draw body when the hidden flag is zero. EB 00 falls into the existing jump to the normal epilogue and hides every static map object.
   - address: "0x005E4880"
     text: SOTP render flag 0x80 selects blend mode 0x6D. Flag 0x40 selects mode 3.
+  - address: "0x005EF398"
+    text: Scale the SChangeHour time step by two and clamp the Light metadata profile coordinate to 24.
+  - address: "0x005EF3F6"
+    text: Resolve the current map and scaled time against cached Light metadata, producing ambient RGB, intensity, and an HEA-enable flag.
+  - address: "0x005EF444"
+    text: Load the current map's HEA spatial mask only when the Light profile permits it and ambient intensity is below 0x20.
   - address: "0x005F0676"
     text: Direction values 0 through 3 select collision masks 0x01, 0x02, 0x04, and 0x08 for left, down, right, and up.
   - address: "0x005F1D3E"
     text: SMapSize flags use the low nibble for weather mode and bit 0x80 for alternate ground and static art.
   - address: "0x005F1D51"
     text: SMapSize flag 0x80 selects alternate ground and static art, with base-art fallback for missing records or resources.
+  - address: "0x005F213B"
+    text: Apply the current stored SChangeHour time step after SMapSize installs or refreshes a map.
   - address: "0x005F26C0"
     text: Apply the weather mode saved from SMapSize. Mode 1 creates snow particles, mode 2 has no local setup, and mode 3 changes lighting state.
   - address: "0x005FDB6E"

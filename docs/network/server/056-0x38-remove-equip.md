@@ -31,4 +31,4 @@ Unlike the add path, this handler performs no bounds check before indexing the 1
 
 `UserInfoPane` independently checks its 19-entry mapping table. It ignores slot `0` and values above `18`, then asks its child equipment view to remove the mapped entry.
 
-See [Character equipment state](../../appendix/runtime-structures.md#character-equipment-state) for the mapped arrays and [`SAddEquip`](055-0x37-add-equip.md) for insertion and login ordering.
+See [Equipment panes](../../appendix/runtime/inventory-ui.md#equipment-panes) for the mapped arrays and [`SAddEquip`](055-0x37-add-equip.md) for insertion and login ordering.

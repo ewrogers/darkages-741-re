@@ -55,7 +55,7 @@ The decoded packet reaches two consumers:
 
 The session model stores 89 records beginning at `WorldUserFunc + 0x4DFA`. Each record keeps the slot-present flag, icon, argument type, name, and prompt. It accepts slots 1 through 89 and argument types 1 through 8.
 
-The UI inventory allocates 90 pointers and accepts slots 1 through 90. Its item keeps the same visible fields plus `cast_lines`. The difference at slot 90 is real in the client, but the reason for it is not yet known. The mapped layouts are in [Runtime structures](../../appendix/runtime-structures.md#character-spell-state).
+The UI inventory allocates 90 pointers and accepts slots 1 through 90. Its item keeps the same visible fields plus `cast_lines`. The difference at slot 90 is real in the client, but the reason for it is not yet known. The mapped layouts are in [Spell state](../../appendix/runtime/session.md#spell-state) and [Spell inventory panes](../../appendix/runtime/inventory-ui.md#spell-inventory-panes).
 
 ## Cast lines
 

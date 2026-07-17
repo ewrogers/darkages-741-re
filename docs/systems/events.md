@@ -75,7 +75,7 @@ Timers use the same main-thread tick but are stored separately from normal event
 
 A `Pane` contains a secondary `TimerHandler` base at offset `0x11C`. Because of that inheritance layout, a timer callback may receive a pointer adjusted to that base. This detail matters when naming callbacks or building hooks.
 
-The complete event type table, pane handler slots, timer entry, and tree-entry layout are in [Runtime structures](../appendix/runtime-structures.md).
+The complete event type table, pane handler slots, timer entry, and tree-entry layout are in [Pane and event layouts](../appendix/runtime/panes.md).
 
 ## Known limits
 

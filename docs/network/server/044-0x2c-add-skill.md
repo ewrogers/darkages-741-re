@@ -37,7 +37,7 @@ entry->icon = icon;
 copy(entry->name, name, 256);
 ```
 
-The mapped record is in [Character skill state](../../appendix/runtime-structures.md#character-skill-state).
+The mapped record is in [Skill state](../../appendix/runtime/session.md#skill-state).
 
 ## Skill inventory UI
 

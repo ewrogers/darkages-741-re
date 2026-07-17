@@ -35,6 +35,7 @@ DirectDraw does not appear to be the sprite engine. Sprites, tiles, effects, tra
 
 - [Renderer lifecycle](lifecycle.md) covers setup, presentation, and cleanup.
 - [World rendering](world.md) covers tiles, sprites, layers, and effects.
+- [Map lighting](lighting.md) covers server time steps, ambient light profiles, and HEA masks.
 - [Snow and weather](weather.md) separates snowy map art from particle overlays.
 - [Walls and occlusion](walls-and-occlusion.md) covers SOTP blend flags and runtime visibility hooks.
 - [Blending](blending.md) covers transparent pixels and software alpha.

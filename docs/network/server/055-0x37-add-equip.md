@@ -56,7 +56,7 @@ The add path only checks that the decremented index is at most 17. It does not r
 
 `UserInfoPane` uses a safer 19-entry mapping table. Slot `0` maps to `-1` and is ignored. Slots `1` through `18` select view entries `0` through `17`. Its child equipment view receives the sprite, dye, name, maximum durability, and current durability. The child's exact RTTI class remains unresolved.
 
-The mapped fields are in [Character equipment state](../../appendix/runtime-structures.md#character-equipment-state).
+The mapped fields are in [Equipment panes](../../appendix/runtime/inventory-ui.md#equipment-panes).
 
 ## Supplied login trace
 

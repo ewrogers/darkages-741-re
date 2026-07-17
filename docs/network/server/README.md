@@ -29,6 +29,7 @@ Most concrete names come directly from RTTI and the server packet factory. A few
 | [0x18 - Remove Spell (`SRemoveSpell`)](024-0x18-remove-spell.md) | session key |
 | [0x19 - Sound Effect (`SSoundEffect`)](025-0x19-sound-effect.md) | session key |
 | [0x1A - Motion (`SMotion`)](026-0x1a-motion.md) | session key |
+| [0x1E - Change Day (`SChangeDay`)](030-0x1e-change-day.md) | session key |
 | [0x1F - Change Weather (`SChangeWeather`)](031-0x1f-change-weather.md) | session key |
 | [0x20 - Change Hour (`SChangeHour`)](032-0x20-change-hour.md) | session key |
 | [0x21 - Self Save OK (`SSelfSaveOK`)](033-0x21-self-save-ok.md) | session key |

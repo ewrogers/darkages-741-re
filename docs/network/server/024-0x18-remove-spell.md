@@ -39,7 +39,7 @@ entry->name[0] = 0;
 entry->prompt[0] = 0;
 ```
 
-This is a logical clear, not a complete memory wipe. The old icon and the remaining bytes in both string buffers stay in memory, but `present == 0` and the empty strings make the record inactive. The structure is mapped in [Character spell state](../../appendix/runtime-structures.md#character-spell-state).
+This is a logical clear, not a complete memory wipe. The old icon and the remaining bytes in both string buffers stay in memory, but `present == 0` and the empty strings make the record inactive. The structure is mapped in [Spell state](../../appendix/runtime/session.md#spell-state).
 
 ## Spell inventory UI
 

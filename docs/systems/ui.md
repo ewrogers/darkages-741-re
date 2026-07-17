@@ -82,4 +82,4 @@ LObject
         +-- also present inside Pane as a secondary base
 ```
 
-The complete alphabetical list is in the [Pane type appendix](../appendix/pane-types.md). Object fields and handler slots are in [Runtime structures](../appendix/runtime-structures.md). The [function reference](../appendix/functions.md) contains registry and dialog helper addresses.
+The complete alphabetical list is in the [Pane type appendix](../appendix/pane-types.md). Shared object fields and handler slots are in [Pane and event layouts](../appendix/runtime/panes.md). The [function reference](../appendix/functions.md) contains registry and dialog helper addresses.

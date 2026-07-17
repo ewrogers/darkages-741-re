@@ -67,10 +67,30 @@ functions:
     name: net_request_family_name
     confidence: high
     evidence: "EquipPane reaches this opcode-only 0x7A request paired with SFamilyName."
+  - address: "0x0048F7E0"
+    name: ui_inventory_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class InventoryPane_A, clears its 60 direct InvItemPane pointers, and initializes its selection state."
   - address: "0x004900C0"
     name: ui_inventory_pane_handle_network_event
     confidence: high
-    evidence: "InventoryPane_A and ItemInventoryPane route SStatus progression blocks to their local gold-display updater."
+    evidence: "InventoryPane_A and derived ItemInventoryPane route SAddInventory, SRemoveInventory, and SStatus to their local update paths."
+  - address: "0x00490540"
+    name: ui_inventory_create_item
+    confidence: high
+    evidence: "Allocates a 0x248-byte RTTI InvItemPane, inserts it into one of 60 inventory slots, and passes all SAddInventory item fields to its constructor."
+  - address: "0x004907A0"
+    name: ui_inventory_remove_slot
+    confidence: high
+    evidence: "Releases the live InvItemPane for a one-based inventory slot and clears its direct pointer entry."
+  - address: "0x004909E0"
+    name: ui_inventory_add_item_from_packet
+    confidence: high
+    evidence: "Accepts SAddInventory slots 1 through 60, replaces an occupied UI slot, and creates a new InvItemPane from the decoded fields."
+  - address: "0x00490D30"
+    name: ui_inventory_remove_item_from_packet
+    confidence: high
+    evidence: "Accepts SRemoveInventory slots 1 through 60 and removes the matching live InvItemPane when present."
   - address: "0x00490F10"
     name: ui_inventory_update_gold_from_status_packet
     confidence: high
@@ -132,9 +152,21 @@ functions:
     confidence: high
     evidence: "Checks a zero-based skill inventory index, releases its live UI item, and clears the pointer entry."
   - address: "0x00493460"
-    name: ui_inventory_remove_item_at
+    name: ui_spell_inventory_remove_item_at
     confidence: high
-    evidence: "Checks a zero-based inventory index, releases its live UI item through the shared UI owner, and clears the pointer entry."
+    evidence: "Checks a zero-based spell inventory index, releases its live SpellInvItemPane through the shared UI owner, and clears the pointer entry."
+  - address: "0x00495C60"
+    name: ui_item_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class ItemPane and stores an item sprite, 128-byte display name, and dye color."
+  - address: "0x00495DE0"
+    name: ui_inventory_item_set_display_name
+    confidence: high
+    evidence: "Replaces the InvItemPane display name through the same bounded 128-byte copy used by its ItemPane base."
+  - address: "0x00495E10"
+    name: ui_inventory_item_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, maximum durability, and current durability."
   - address: "0x00498940"
     name: ui_skill_inventory_item_ctor
     confidence: high
@@ -343,6 +375,18 @@ functions:
     name: net_deserialize_add_equip_server_packet
     confidence: high
     evidence: "Reads slot, u16be sprite, dye, string8 name, one skipped byte, and two u32be durability values into SAddEquip."
+  - address: "0x00597380"
+    name: net_create_add_inventory_server_packet
+    confidence: high
+    evidence: "Allocates a 0x12C-byte RTTI SAddInventory object and calls its concrete constructor."
+  - address: "0x00597400"
+    name: net_add_inventory_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x0F to the server packet base and installs the exact SAddInventory vtable."
+  - address: "0x00597430"
+    name: net_deserialize_add_inventory_server_packet
+    confidence: high
+    evidence: "Reads slot, u16be sprite, dye color, string8 name, u32be quantity, stack flag, current durability, and maximum durability into SAddInventory."
   - address: "0x00597510"
     name: net_create_add_skill_server_packet
     confidence: high
@@ -379,6 +423,18 @@ functions:
     name: net_deserialize_bad_guy_server_packet
     confidence: high
     evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32be guard."
+  - address: "0x00598050"
+    name: net_create_change_hour_server_packet
+    confidence: high
+    evidence: "Allocates a 0x14-byte RTTI SChangeHour object and calls its concrete constructor."
+  - address: "0x005980D0"
+    name: net_change_hour_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x20 to the server packet base and installs the exact SChangeHour vtable."
+  - address: "0x00598100"
+    name: net_deserialize_change_hour_server_packet
+    confidence: high
+    evidence: "Reads exactly one u8 time step into SChangeHour object offset +0x10 and leaves any remaining body bytes unread."
   - address: "0x005984C0"
     name: net_create_draw_human_objects_server_packet
     confidence: high
@@ -415,6 +471,18 @@ functions:
     name: net_deserialize_remove_equip_server_packet
     confidence: high
     evidence: "Reads the one-byte SRemoveEquip slot and widens it into the packet object's 16-bit field."
+  - address: "0x0059AEC0"
+    name: net_create_remove_inventory_server_packet
+    confidence: high
+    evidence: "Allocates a 0x14-byte RTTI SRemoveInventory object and calls its concrete constructor."
+  - address: "0x0059AF40"
+    name: net_remove_inventory_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x10 to the server packet base and installs the exact SRemoveInventory vtable."
+  - address: "0x0059AF70"
+    name: net_deserialize_remove_inventory_server_packet
+    confidence: high
+    evidence: "Reads the one-byte inventory slot into SRemoveInventory object offset +0x10."
   - address: "0x0059B0E0"
     name: net_create_remove_skill_server_packet
     confidence: high
@@ -535,6 +603,10 @@ functions:
     name: net_handle_remove_skill_server_packet
     confidence: high
     evidence: "Forwards decoded SRemoveSkill to WorldUserFunc vtable slot +0x1C."
+  - address: "0x005F2160"
+    name: net_handle_change_hour_server_packet
+    confidence: high
+    evidence: "Stores the SChangeHour time step at WorldPane +0x25C and immediately recomputes map lighting."
   - address: "0x005F2A60"
     name: net_handle_map_part
     confidence: high
@@ -595,6 +667,14 @@ functions:
     name: session_world_user_func_ctor
     confidence: high
     evidence: "Constructs exact RTTI class WorldUserFunc and clears its fixed inventory, spell, and skill arrays."
+  - address: "0x005FCBB0"
+    name: session_store_inventory_entry
+    confidence: high
+    evidence: "Stores one compact 0x106-byte inventory record at WorldUserFunc + 0x1092 + (slot - 1) * 0x106."
+  - address: "0x005FCC10"
+    name: session_clear_inventory_entry
+    confidence: high
+    evidence: "Clears an inventory record's present flag, sprite, and name[0] without overwriting its dye byte or remaining name bytes."
   - address: "0x005FCC50"
     name: session_store_spell_entry
     confidence: high
@@ -615,6 +695,14 @@ functions:
     name: session_update_from_status_packet
     confidence: high
     evidence: "Copies present SStatus privilege, core stats, vitals, total experience, gold, weight, and retained unknown bytes into WorldUserFunc."
+  - address: "0x005FD1C0"
+    name: session_add_inventory_from_packet
+    confidence: high
+    evidence: "Accepts SAddInventory slots 1 through 60 and stores sprite, dye color, and name in the compact WorldUserFunc record."
+  - address: "0x005FD220"
+    name: session_remove_inventory_from_packet
+    confidence: high
+    evidence: "Accepts SRemoveInventory slots 1 through 60 and logically clears the matching WorldUserFunc record."
   - address: "0x005FD260"
     name: session_add_spell_from_packet
     confidence: high
@@ -677,6 +765,24 @@ comments:
     text: "EquipPane stores per-slot sprite, dye, name, current durability, and maximum durability in parallel 18-entry arrays."
   - address: "0x004602BC"
     text: "Removal converts slot to index without a bounds check, then clears sprite, name[0], and durability. The dye byte is retained."
+  - address: "0x0048F82D"
+    text: "InventoryPane_A initializes 60 direct InvItemPane pointers at +0x1A0. Protocol slots 1 through 60 map to indices 0 through 59."
+  - address: "0x004900FD"
+    text: "InventoryPane_A routes RTTI SAddInventory opcode 0x0F to its UI insertion path. ItemInventoryPane inherits this handler."
+  - address: "0x00490120"
+    text: "InventoryPane_A routes RTTI SRemoveInventory opcode 0x10 to its UI removal path."
+  - address: "0x004905B0"
+    text: "Construct the 0x248-byte InvItemPane with slot, sprite, dye, name, quantity, stack flag, maximum durability, and current durability."
+  - address: "0x004907A9"
+    text: "Convert the one-based inventory slot to InventoryPane_A's direct pointer entry at +0x1A0."
+  - address: "0x00490813"
+    text: "Clear the inventory slot pointer after releasing and destroying its live InvItemPane."
+  - address: "0x004909EC"
+    text: "The inventory UI accepts SAddInventory slots 1 through 60 and ignores values outside that range."
+  - address: "0x00490A23"
+    text: "Replace an occupied inventory slot before constructing the new InvItemPane."
+  - address: "0x00490D3C"
+    text: "The inventory UI accepts SRemoveInventory slots 1 through 60 and ignores empty slots."
   - address: "0x0049107D"
     text: "NewSkillInventoryPane uses a 90-entry UI inventory."
   - address: "0x004915DF"
@@ -718,7 +824,17 @@ comments:
   - address: "0x0049351F"
     text: "Release the live spell item through the shared UI ownership manager."
   - address: "0x00493527"
-    text: "Clear the inventory entry pointer after releasing the SpellInvItemPane."
+    text: "Clear the spell inventory entry pointer after releasing the SpellInvItemPane."
+  - address: "0x00495C8C"
+    text: "Store the inventory item sprite at ItemPane +0x190."
+  - address: "0x00495C97"
+    text: "Copy the inventory item name into the bounded 128-byte ItemPane display buffer at +0x192."
+  - address: "0x00495CB5"
+    text: "Store the inventory item's dye color at ItemPane +0x212."
+  - address: "0x00495E6B"
+    text: "A nonzero can_stack flag replaces the visible name with the bounded format name[ quantity ]."
+  - address: "0x00495E9F"
+    text: "InvItemPane retains maximum durability at +0x238, current durability at +0x23C, quantity at +0x240, and can_stack at +0x244."
   - address: "0x004989AE"
     text: "Store the one-based skill slot at SkillInvItemPane +0x312."
   - address: "0x004989BB"
@@ -801,8 +917,10 @@ comments:
     text: "Attack and defense elements are unchecked indexes into a ten-string table. Valid wire values are 0 through 9."
   - address: "0x00575B47"
     text: "Display magic resistance as raw_value * 10 percent."
+  - address: "0x00596003"
+    text: "Register RTTI-backed SChangeHour for opcode 0x20. Opcode 0x1E has no server packet factory entry."
   - address: "0x005962D3"
-    text: "The factory installs no constructor for server opcode 0x58 or 0x67. Both remain raw decoded bodies with a null packet-object slot."
+    text: "The factory installs no constructor for server opcode 0x1E, 0x58, or 0x67. They remain raw decoded bodies with a null packet-object slot."
   - address: "0x005972CA"
     text: "SAddEquip body: u8 slot, u16be sprite, u8 dye, string8 name, one skipped byte, u32be current durability, u32be maximum durability."
   - address: "0x00597311"
@@ -811,6 +929,10 @@ comments:
     text: "Read current durability as u32be into packet object +0x11C."
   - address: "0x0059732A"
     text: "Read maximum durability as u32be into packet object +0x120."
+  - address: "0x00597442"
+    text: "SAddInventory begins with a one-byte slot followed by u16be sprite, dye color, and string8 name."
+  - address: "0x00597482"
+    text: "Read quantity as u32be, can_stack as u8, current durability as u32be, and maximum durability as u32be."
   - address: "0x005975D2"
     text: "SAddSkill body begins with a one-byte skill slot."
   - address: "0x005975E0"
@@ -835,6 +957,8 @@ comments:
     text: "SBadGuy body bytes 1 and 2 are u8 mode and marker byte."
   - address: "0x00597AE6"
     text: "SBadGuy ends with a u32be guard value."
+  - address: "0x0059810A"
+    text: "SChangeHour reads exactly one u8 time step into object +0x10. Any remaining decoded body bytes are left unread."
   - address: "0x00598612"
     text: "Read the packed human appearance variant. Its high nibble selects gender and a body-resource family; the low nibble is retained separately."
   - address: "0x00598843"
@@ -851,6 +975,8 @@ comments:
     text: "Retain a pointer to exactly message_length bytes from the decoded packet body; no wire terminator is required."
   - address: "0x0059AE6A"
     text: "SRemoveEquip body is one u8 slot, widened to u16 in the packet object."
+  - address: "0x0059AF7A"
+    text: "SRemoveInventory contains one body field: the one-byte inventory slot at object offset +0x10."
   - address: "0x0059B19A"
     text: "SRemoveSkill contains one body field: the one-byte skill slot at object offset +0x10."
   - address: "0x0059B2AA"
@@ -911,10 +1037,12 @@ comments:
     text: "Dispatch RTTI packet SAddSkill opcode 0x2C to net_handle_add_skill_server_packet."
   - address: "0x005EDC7F"
     text: "Dispatch RTTI packet SRemoveSkill opcode 0x2D to net_handle_remove_skill_server_packet."
+  - address: "0x005EDD6F"
+    text: "Route parsed SChangeHour opcode 0x20 to the world lighting handler. There is no opcode 0x1E branch in this dispatcher."
   - address: "0x005EDF3D"
     text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
   - address: "0x005EE185"
-    text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x58 or 0x67."
+    text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x1E, 0x58, or 0x67."
   - address: "0x005F00C2"
     text: "Reject movement immediately when WorldUserFunc appearance-state bit 0 is set, before dynamic-object and SOTP collision checks."
   - address: "0x005F0AF4"
@@ -927,6 +1055,8 @@ comments:
     text: "Forward SAddSkill to WorldUserFunc vtable slot +0x18."
   - address: "0x005F1BDA"
     text: "Forward SRemoveSkill to WorldUserFunc vtable slot +0x1C."
+  - address: "0x005F2170"
+    text: "Store the SChangeHour time step at WorldPane +0x25C, then immediately recompute map lighting."
   - address: "0x005F2AEB"
     text: "Create MapLoadingPane on the first SMapPart body when a map transfer is active."
   - address: "0x005F2C31"
@@ -969,6 +1099,12 @@ comments:
     text: "After successfully closing the marker, call the invalid-memory clearing path to terminate the client."
   - address: "0x005F7A80"
     text: "Marker creation failed, including when it already exists. Write through null to terminate the client."
+  - address: "0x005FCBB9"
+    text: "Inventory record address is WorldUserFunc + 0x1092 + (slot - 1) * 0x106."
+  - address: "0x005FCBD3"
+    text: "Mark the compact inventory record present, then store sprite, dye color, and a bounded 256-byte name."
+  - address: "0x005FCC33"
+    text: "Inventory removal clears present, sprite, and name[0] but leaves the dye byte and remaining name bytes untouched."
   - address: "0x005FCC59"
     text: "Spell record address is WorldUserFunc + 0x4DFA + (slot - 1) * 0x206."
   - address: "0x005FCCD9"
@@ -995,6 +1131,10 @@ comments:
     text: "Store the opaque stats u32 in WorldUserFunc. The value is write-only in the static client paths checked."
   - address: "0x005FD150"
     text: "Copy six retained modifier bytes, including blind code and raw mail state, into WorldUserFunc. The four reserved bytes are not consumed elsewhere."
+  - address: "0x005FD1E6"
+    text: "WorldUserFunc accepts SAddInventory slots 1 through 60 and retains only sprite, dye color, and name in its compact record."
+  - address: "0x005FD232"
+    text: "WorldUserFunc accepts SRemoveInventory slots 1 through 60 and ignores values outside that range."
   - address: "0x005FD27F"
     text: "Session spell storage accepts slots 1 through 89."
   - address: "0x005FD291"
@@ -1718,7 +1858,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597400 passes opcode 0x0F to the server packet base and installs the SAddInventory vtable."
+        evidence: "RTTI constructor 0x00597400 binds opcode 0x0F. Deserializer 0x00597430 reads slot, sprite, dye, string8 name, quantity, stack flag, and two durability values. WorldUserFunc and InventoryPane_A consume the decoded object."
         page: "docs/network/server/015-0x0f-add-inventory.md"
       - opcode: "0x10"
         friendly_name: "Remove Inventory"
@@ -1728,7 +1868,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059AF40 passes opcode 0x10 to the server packet base and installs the SRemoveInventory vtable."
+        evidence: "RTTI constructor 0x0059AF40 binds opcode 0x10. Deserializer 0x0059AF70 reads one u8 slot. WorldUserFunc logically clears its compact record while InventoryPane_A releases the visible InvItemPane."
         page: "docs/network/server/016-0x10-remove-inventory.md"
       - opcode: "0x11"
         friendly_name: "Change Direction"
@@ -1800,6 +1940,16 @@ packet_indexes:
         name_confidence: high
         evidence: "Constructor 0x0059A3F0 passes opcode 0x1A to the server packet base and installs the SMotion vtable."
         page: "docs/network/server/026-0x1a-motion.md"
+      - opcode: "0x1E"
+        friendly_name: "Change Day"
+        class_name: "SChangeDay"
+        transform: derived
+        constructor: null
+        evidence_source: owner_protocol_name
+        opcode_confidence: high
+        name_confidence: medium
+        evidence: "A supplied decoded body is 1E 06 00 00. Opcode 0x1E has no server packet factory registration, RTTI class, or branch in net_dispatch_server_packet, so the three payload bytes are unparsed and have no confirmed 7.41 effect. SChangeDay is project-owner protocol vocabulary supported by older-client sundial behavior."
+        page: "docs/network/server/030-0x1e-change-day.md"
       - opcode: "0x1F"
         friendly_name: "Change Weather"
         class_name: "SChangeWeather"
@@ -1818,7 +1968,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x005980D0 passes opcode 0x20 to the server packet base and installs the SChangeHour vtable."
+        evidence: "RTTI constructor 0x005980D0 installs opcode 0x20. Deserializer 0x00598100 reads one u8 time step; handler 0x005F2160 stores it at WorldPane +0x25C and recomputes Light metadata and HEA-based map lighting. Extra decoded body bytes remain unread."
         page: "docs/network/server/032-0x20-change-hour.md"
       - opcode: "0x21"
         friendly_name: "Self Save OK"
