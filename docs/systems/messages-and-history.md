@@ -54,3 +54,7 @@ SSay plus SMessage        -> balloon plus saved copy
 ```
 
 The client code supports this explanation for NPC text that is saved only sometimes. A paired runtime capture is still needed to prove whether the live server sends both packets for the logged case.
+
+## Private tells
+
+[`CTell`](../network/client/025-0x19-tell.md) does not echo the outgoing text into either local message pane. Any visible incoming whisper, sender confirmation, or failure therefore depends on a server packet. `SMessage` supplies the matching generic text and history routes, but a paired capture is still needed to assign whisper to one exact `SMessage` type.

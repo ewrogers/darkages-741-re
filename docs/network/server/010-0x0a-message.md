@@ -69,6 +69,12 @@ Types `0x08`, `0x09`, and `0x0A` change tab bytes to carriage returns before ope
 
 The exact channel names for `0x00`, `0x01`, `0x02`, `0x04` through `0x06`, `0x0B`, and `0x0C` are not present as client strings. Runtime captures are needed before calling any one of them whisper, guild, group, or world chat.
 
+## Tell or whisper responses
+
+[`CTell`](../client/025-0x19-tell.md) has no local echo or direct response handler. The sender only submits the packet. This supports `SMessage` as the matching generic route for an incoming whisper, sent-message confirmation, or delivery error, and no RTTI-backed `STell` class was recovered.
+
+Static client code cannot identify which `message_type` the server chooses or prove that success and failure use the same value. A paired capture is still required before assigning the Whisper channel name to one type.
+
 ## Game settings response
 
 Type `0x07` uses the normal counted `message` bytes as a small text protocol for `GameSettingDialog`:

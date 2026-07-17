@@ -272,8 +272,15 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_pane_unregister_event_handler` | `0x0054A360` | high | Pane primary-vtable +0x44 wrapper for removal from EventHandlerList. |
 | `ui_pane_draw_to_target` | `0x0054A3F0` | high | Copies a pane canvas into its target canvas with the pane's selected blend mode. |
 | `ui_open_say_input` | `0x0054F840` | high | Creates ChatInputPane in Say mode 0 or Shout mode 1 and formats the local name prefix as colon-space or exclamation-space. |
+| `ui_open_tell_receiver_input` | `0x0054F9D0` | high | Creates exact RTTI class TellReceiverInputPane when the world keyboard handler receives the double-quote key. |
+| `ui_open_tell_input` | `0x0054FAB0` | high | Formats the local arrow, target name, and colon prefix, then creates exact RTTI class TellInputPane. |
 | `ui_open_block_listen_input` | `0x0054FBE0` | high | Creates and registers the singleton RTTI BlockListenInputPane when it is not already open. |
 | `ui_chat_input_pane_ctor` | `0x0054FCA0` | high | Constructs ChatInputPane, retains the selected speech mode, and prepares its bounded editable text buffer. |
+| `ui_tell_receiver_input_pane_ctor` | `0x0054FFE0` | high | Constructs TellReceiverInputPane, configures a 13-byte input maximum, and retains its submission callback. |
+| `ui_tell_remember_target` | `0x005500B0` | high | Maintains ten recent tell recipients in 13-byte records. |
+| `ui_tell_receiver_set_submit_callback` | `0x00550230` | high | Retains the callback and context used to open the message-input stage after recipient submission. |
+| `ui_tell_receiver_input_submit` | `0x00550420` | high | Copies at most 12 recipient bytes, remembers the name, and invokes the retained callback. |
+| `ui_tell_input_pane_ctor` | `0x005504A0` | high | Constructs TellInputPane, retains the target, and limits message bytes to 70 minus the visible prefix length. |
 | `ui_block_listen_input_pane_ctor` | `0x00550720` | high | Constructs RTTI class BlockListenInputPane as a one-character command prompt. |
 | `ui_block_listen_input_pane_dtor` | `0x005507F0` | high | Destroys BlockListenInputPane and clears its singleton subobject. |
 | `ui_block_listen_input_handle_event` | `0x00550860` | high | Handles question mark in BlockListenInputPane by sending the list operation, then delegates other events to the base pane. |
@@ -306,9 +313,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_extra_status_info_handle_network_event` | `0x00576040` | high | ExtraStatusInfoPane routes SStatus to its combat-stat updater. |
 | `ui_terminal_pane_handle_server_data` | `0x00579090` | high | TerminalPane2 primary-vtable slot +0x50 scans initial wire bytes, handles ESC C and ESC S plus Telnet terminal negotiation, and queues CHello and CVersion. |
 | `ui_text_insert_formatted` | `0x0057B300` | high | Forwards a NUL-terminated string to the rich text insertion and markup path. |
+| `ui_text_copy_bytes` | `0x0057B420` | high | Copies the smaller of the requested byte count and current text length, appends a null terminator, and returns the copied length. |
 | `ui_text_insert_color_markup` | `0x0057D310` | high | Recognizes lowercase three-byte {=a through {=x tokens and changes the following run's palette index. |
 | `ui_text_enforce_max_bytes` | `0x0057F530` | high | Trims oldest TextEditPane bytes from the front when its configured byte limit is exceeded, preserving DBCS boundaries. |
 | `ui_text_enforce_max_lines` | `0x0057F680` | high | Trims oldest TextEditPane lines when its configured line limit is exceeded. |
+| `ui_line_input_copy_text` | `0x00584A00` | high | Calls the LineInputPane text control's bounded copy method and returns its copied byte length. |
 | `ui_gui_back_pane_handle_network_event` | `0x0059D1D0` | high | GUIBackPane routes SStatus packets containing vitals to its health and mana bar updater. |
 | `ui_gui_back_pane_update_vitals_from_status_packet` | `0x0059D6C0` | high | Copies current and maximum health and mana from SStatus into GUIBackPane bar targets. |
 | `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Handles GUIBackPane pointer input; BTN_HELP is present in the hover path but has no click action. |
@@ -442,6 +451,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_build_send_portrait` | `0x0054CE10` | high | Builds opcode 0x4F with nested portrait and profile lengths after applying the local image checks. |
 | `net_decode_portrait_profile_body` | `0x0054D570` | high | Reads the nested big-endian portrait and profile lengths used by the portrait body. |
 | `net_send_say` | `0x0054FD90` | high | Builds CSay opcode 0x0E with the retained Say or Shout mode and a string8 message of at most 72 bytes. |
+| `net_send_tell` | `0x00550590` | high | Builds CTell as opcode 0x19 followed by string8 target and string8 message; guild target ! and group target !! pass through unchanged. |
 | `net_send_block_listen_list` | `0x00550AA0` | high | Submits CBlockListen as opcode 0x0D followed by operation 1 and no further fields. |
 | `net_send_block_listen_add` | `0x00550C60` | high | Submits CBlockListen opcode 0x0D, operation 2, and a string8 character name. |
 | `net_send_block_listen_remove` | `0x00550EE0` | high | Submits CBlockListen opcode 0x0D, operation 3, and a string8 character name. |
