@@ -62,6 +62,23 @@ The executable contains a nearby constant for bit `0x20`, but no code references
 
 ## Cache validation and map request
 
-The client computes a CRC16 over the local six-byte map-cell records. It zero-extends that result before comparing it with the packet's parsed `u24 cache_value`.
+The client first checks whether the map already held in memory has the same map number, dimensions, and CRC16. If not, it prepares a grid for the incoming dimensions and synchronously tries `maps\lod<map_number>.map`. A disk cache is accepted only after the complete expected cell array was read and its CRC16 matches.
 
-If the map number, dimensions, or checksum do not match the local cache, the handler prepares the new grid and sends [`CMapRequest`](../client/005-0x05-map-request.md). That request carries the one-byte dimensions and serializes the zero-extended CRC16 as three big-endian bytes.
+The CRC16 is zero-extended before comparison with the packet's parsed `u24 cache_value`. If either cache source matches, the map is applied immediately without constructing `MapLoadingPane`.
+
+If neither source matches, the handler marks a transfer active, sets progress to zero, and sends [`CMapRequest`](../client/005-0x05-map-request.md). That request carries the one-byte dimensions and serializes the zero-extended CRC16 as three big-endian bytes. The loading pane is still not shown at this point.
+
+A cache-file sharing violation is also treated as a miss. The handler does not retry the local file before sending the request. This can occur when another client process is inside its short exclusive map-cache write; see [Map loading and cache](../../systems/map-loading.md#multiple-client-processes).
+
+## Transfer data after setup
+
+`SMapSize` does not carry map cells. It either accepts the local cache or marks a map transfer active and requests data from the server.
+
+The client has two handlers for incoming transfer data:
+
+- [`SMap`](006-0x06-map.md) applies an arbitrary `u8`-bounded rectangle of map cells. It does not finish the transfer by itself.
+- [`SMapPart`](060-0x3c-map-part.md) applies one complete row. It updates the loading percentage and completes the transfer when the final row arrives.
+
+This separation explains the similar names. `SMapSize` establishes the destination grid and transfer state; the other messages fill that grid.
+
+See [Map loading and cache](../../systems/map-loading.md) for the cache, pane, persistence, and world-activation lifecycle.

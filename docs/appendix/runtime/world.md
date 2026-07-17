@@ -56,12 +56,17 @@ struct WorldPaneMapFields {
     u8 unknown_265[3];
     u32 previous_map_number;         // +0x268
     u32 current_map_number;          // +0x26C
-    u8 unknown_270[0x0C];
+    u8 unknown_270[5];
+    bool map_transfer_active;        // +0x275
+    u8 map_transfer_progress;        // +0x276, SMapPart percentage
+    u8 unknown_277[5];
     void *map_cell_storage;          // +0x27C
 };
 ```
 
 `map_cell_storage` keeps `u16` width and height fields internally and owns `width * height` six-byte map-cell records. The only live-network resize path receives its dimensions from `SMapSize`, so the wider internal types do not restore the discarded high dimension bytes.
+
+`map_transfer_active` is set when `SMapSize` cannot accept the local cache. Both `SMap` and `SMapPart` ignore their cell data while it is clear. `SMapPart` updates `map_transfer_progress` and clears the active flag after the final row; `SMap` only writes its rectangle and leaves both completion duties untouched.
 
 The object at `tab_map_controller` serves the Tab-key map UI. Flag `0x40` prevents that path before the class check, while class value 2 enables Rogue zoom when the map is allowed. The packet's string8 map name is parsed but not copied into these `WorldPane` fields by the main handler.
 

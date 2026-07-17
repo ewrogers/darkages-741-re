@@ -19,6 +19,18 @@ The common coordinate helper defines only values `0` through `3`. Active keyboar
 
 Used by [`CMove`](client/006-0x06-move.md), [`SMove`](server/011-0x0b-move.md), [`CChangeDirection`](client/017-0x11-change-direction.md), [`SChangeDirection`](server/017-0x11-change-direction.md), [`SUserAppearance`](server/005-0x05-user-appearance.md), [`SDrawObjects`](server/007-0x07-draw-objects.md), and [`SDrawHumanObjects`](server/051-0x33-draw-human-objects.md).
 
+## SpeechMode
+
+`SpeechMode` selects the public-speech channel and its world display style. The names are project-owner protocol vocabulary. Client 7.41 confirms the interactive producers for values `0` and `1` and distinct receive-side rendering for all three values.
+
+| Value | Name | Client behavior |
+| ---: | --- | --- |
+| `0` | Say | Ordinary public-say input and framed white speech |
+| `1` | Shout | Shout input and framed yellow speech |
+| `2` | Chant | Text-only blue spell-casting speech above the sender |
+
+Used by [`CSay`](client/014-0x0e-say.md) and [`SSay`](server/013-0x0d-say.md). Spell-casting text reaches the server through the separate [`CSpellDelaySay`](client/078-0x4e-spell-delay-say.md) body, which does not carry this enum explicitly.
+
 ## CreatureType
 
 `CreatureType` describes the kind of `WorldObject_Monster` carried by `SDrawObjects`. The names are project-owner protocol vocabulary. The client confirms several value-specific behaviors, but it does not contain a friendly enum table.
@@ -64,6 +76,23 @@ Used by [`SDrawObjects`](server/007-0x07-draw-objects.md) and the monster-disgui
 The names are project-owner protocol vocabulary. The client independently confirms that `2` selects the Rogue-only Tab-map configuration, including its zoom controls. It does not contain a complete local table naming all six values.
 
 Used by [`SUserAppearance`](server/005-0x05-user-appearance.md) and [`SSelfLook`](server/057-0x39-self-look.md).
+
+## UserState
+
+| Value | Name |
+| ---: | --- |
+| `0` | Awake |
+| `1` | Do Not Disturb |
+| `2` | Daydreaming |
+| `3` | Need Group |
+| `4` | Grouped |
+| `5` | Lone Hunter |
+| `6` | Group Hunting |
+| `7` | Need Help |
+
+The names are project-owner protocol vocabulary matched to the state choices shown by the game. The client independently confirms the `0..7` range in both directions: `CChangeUserState` normalizes any other value to `0`, and the world-list renderer has exactly eight state visuals and also displays an out-of-range value as state `0`.
+
+Used by [`CChangeUserState`](client/121-0x79-change-user-state.md) and [`SShowUsers`](server/054-0x36-show-users.md).
 
 ## EquipmentSlot
 

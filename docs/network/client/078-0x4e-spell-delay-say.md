@@ -27,4 +27,6 @@ packet CSpellDelaySay {
 
 When the current line reaches the total from [Add Spell (`SAddSpell`)](../server/023-0x17-add-spell.md), the client sends the spell name in this packet and submits the queued [Use Spell (`CUseSpell`)](015-0x0f-use-spell.md).
 
+Project-owner runtime behavior confirms that the server presents these lines to nearby clients as [`SSay`](../server/013-0x0d-say.md) mode `2`, Chant. That receive path draws blue text over the caster without the ordinary speech-balloon frame.
+
 A zero-line spell reaches the sender helper, but its zero-total guard returns before constructing this packet. The client submits `CUseSpell` immediately instead.

@@ -68,7 +68,7 @@ Plain packet bodies begin with the command byte. For ordinary client packets, `n
 | [0x71 - Send Alive (`CSendAlive`)](113-0x71-send-alive.md) | startup key |
 | [0x73 - Web Board (`CWebBoard`)](115-0x73-web-board.md) | startup key |
 | [0x75 - Check Time (`CCheckTime`)](117-0x75-check-time.md) | session key |
-| [0x79 - User Change State (`CUserChangeState`)](121-0x79-user-change-state.md) | session key |
+| [0x79 - Change User State (`CChangeUserState`)](121-0x79-change-user-state.md) | session key |
 | [0x7A - Request Family Name (`CRequestFamilyName`)](122-0x7a-request-family-name.md) | session key |
 | [0x7B - Meta Data (`CMetaData`)](123-0x7b-meta-data.md) | startup key |
 

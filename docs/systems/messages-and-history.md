@@ -43,6 +43,8 @@ The embedded `NewSystemMessageTextPane` supplies the scrollable text behavior. E
 
 [`SSay`](../network/server/013-0x0d-say.md) contains a speech mode, a world-object ID, and a `string8`. Its handler creates a balloon for 3,000 milliseconds. It does not call the persistent-history append path.
 
+Say and Shout use the framed `World::BalloonPane` with palette indexes `0xFF` and `0x45`. Chant uses palette `0x58` and draws text directly over the speaker without the frame. These are temporary world displays; none of the three modes is retained here.
+
 `SMessage` has no independent history flag either. Its type byte is the selector. This gives the server a simple way to choose the result:
 
 ```text

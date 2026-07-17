@@ -403,6 +403,78 @@ functions:
     name: ui_option_pane_handle_keyboard_event
     confidence: high
     evidence: "OptionPane keyboard-event handler maps both X and x to construction of exact RTTI SafeQuitAlert."
+  - address: "0x0054F840"
+    name: ui_open_say_input
+    confidence: high
+    evidence: "Creates ChatInputPane in Say mode 0 or Shout mode 1 and formats the local name prefix as colon-space or exclamation-space."
+  - address: "0x0054FBE0"
+    name: ui_open_block_listen_input
+    confidence: high
+    evidence: "Creates and registers the singleton RTTI BlockListenInputPane when it is not already open."
+  - address: "0x0054FCA0"
+    name: ui_chat_input_pane_ctor
+    confidence: high
+    evidence: "Constructs ChatInputPane, retains the selected speech mode, and prepares its bounded editable text buffer."
+  - address: "0x0054FD90"
+    name: net_send_say
+    confidence: high
+    evidence: "Builds CSay opcode 0x0E with the retained Say or Shout mode and a string8 message of at most 72 bytes."
+  - address: "0x00550720"
+    name: ui_block_listen_input_pane_ctor
+    confidence: high
+    evidence: "Constructs RTTI class BlockListenInputPane as a one-character command prompt."
+  - address: "0x005507F0"
+    name: ui_block_listen_input_pane_dtor
+    confidence: high
+    evidence: "Destroys BlockListenInputPane and clears its singleton subobject."
+  - address: "0x00550860"
+    name: ui_block_listen_input_handle_event
+    confidence: high
+    evidence: "Handles question mark in BlockListenInputPane by sending the list operation, then delegates other events to the base pane."
+  - address: "0x005508C0"
+    name: ui_block_listen_select_operation
+    confidence: high
+    evidence: "Maps A or a to AddToBlockListenInputPane and D or d to DeleteFromBlockListenInputPane."
+  - address: "0x00550AA0"
+    name: net_send_block_listen_list
+    confidence: high
+    evidence: "Submits CBlockListen as opcode 0x0D followed by operation 1 and no further fields."
+  - address: "0x00550B20"
+    name: ui_add_to_block_listen_input_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class AddToBlockListenInputPane for an ignored-character name."
+  - address: "0x00550C00"
+    name: ui_add_to_block_listen_submit
+    confidence: high
+    evidence: "Copies up to 15 nonempty name bytes from AddToBlockListenInputPane and calls the add builder."
+  - address: "0x00550C60"
+    name: net_send_block_listen_add
+    confidence: high
+    evidence: "Submits CBlockListen opcode 0x0D, operation 2, and a string8 character name."
+  - address: "0x00550DA0"
+    name: ui_delete_from_block_listen_input_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class DeleteFromBlockListenInputPane for an ignored-character name."
+  - address: "0x00550E80"
+    name: ui_delete_from_block_listen_submit
+    confidence: high
+    evidence: "Copies up to 15 nonempty name bytes from DeleteFromBlockListenInputPane and calls the remove builder."
+  - address: "0x00550EE0"
+    name: net_send_block_listen_remove
+    confidence: high
+    evidence: "Submits CBlockListen opcode 0x0D, operation 3, and a string8 character name."
+  - address: "0x00551160"
+    name: ui_block_listen_register_singleton
+    confidence: high
+    evidence: "Publishes the enclosing BlockListenInputPane through its global singleton pointer."
+  - address: "0x005511A0"
+    name: ui_block_listen_unregister_singleton
+    confidence: high
+    evidence: "Clears the global BlockListenInputPane pointer during destruction."
+  - address: "0x005511E0"
+    name: ui_has_block_listen_input
+    confidence: high
+    evidence: "Reports whether the transient BlockListenInputPane singleton is open."
   - address: "0x0055A090"
     name: net_send_multi_server_selection
     confidence: high
@@ -575,6 +647,18 @@ functions:
     name: net_read_draw_object_record
     confidence: high
     evidence: "Reads one common X, Y, entity ID, and tagged sprite prefix followed by the creature or ground-item variant."
+  - address: "0x00599C60"
+    name: net_create_map_server_packet
+    confidence: high
+    evidence: "Allocates the 0x1C-byte exact RTTI SMap object and invokes its concrete constructor."
+  - address: "0x00599CE0"
+    name: net_map_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x06 to the server packet base and installs the exact RTTI SMap vtable."
+  - address: "0x00599D10"
+    name: net_deserialize_map_server_packet
+    confidence: high
+    evidence: "Reads u8 start X, start Y, rectangle width, and rectangle height, then retains a pointer to the remaining map-cell records."
   - address: "0x00599EE0"
     name: net_create_map_size_server_packet
     confidence: high
@@ -674,7 +758,7 @@ functions:
   - address: "0x0059B5C0"
     name: net_deserialize_say_server_packet
     confidence: high
-    evidence: "Reads a speech mode, u32 world-object ID, and string8 speech text."
+    evidence: "Reads speech mode 0, 1, or 2, a u32 sender world-object ID, and string8 speech text."
   - address: "0x0059B9C0"
     name: net_create_self_look_server_packet
     confidence: high
@@ -775,14 +859,38 @@ functions:
     name: ui_nui_legend_pane_apply_self_look
     confidence: high
     evidence: "Clears and rebuilds RTTI class nui_LegendPane from SSelfLook's legend records."
+  - address: "0x005B9030"
+    name: map_resize_cells
+    confidence: high
+    evidence: "Stores new u16 width and height, resizes the contiguous six-byte cell array, clears every cell, and marks the map dirty."
+  - address: "0x005B90D0"
+    name: map_set_id
+    confidence: high
+    evidence: "Stores the u16 map number used for cache naming and validation."
+  - address: "0x005B90F0"
+    name: map_set_cell
+    confidence: high
+    evidence: "Bounds-checks one X, Y coordinate, stores ground and two static u16 tile IDs in the six-byte row-major map cell, and marks map storage dirty."
   - address: "0x005BA040"
     name: ui_map_loading_pane_ctor
     confidence: high
-    evidence: "Constructs RTTI class MapLoadingPane from _nloadm.txt and registers it as a visible screen pane."
+    evidence: "Constructs RTTI class MapLoadingPane from _nloadm.txt, registers its singleton, and adds it as a visible screen pane at zero percent."
+  - address: "0x005BA2B0"
+    name: ui_map_loading_pane_dtor
+    confidence: high
+    evidence: "Unregisters MapLoadingPane from the screen and clears its global singleton during destruction."
   - address: "0x005BA330"
     name: ui_map_loading_set_progress
     confidence: high
     evidence: "Stores the SMapPart transfer percentage in MapLoadingPane and invalidates the pane for redraw."
+  - address: "0x005BA5D0"
+    name: ui_map_loading_register_singleton
+    confidence: high
+    evidence: "Publishes the enclosing MapLoadingPane through its global singleton pointer during construction."
+  - address: "0x005BA610"
+    name: ui_map_loading_unregister_singleton
+    confidence: high
+    evidence: "Clears the global MapLoadingPane pointer when it still refers to the pane being destroyed."
   - address: "0x005BE580"
     name: world_direction_to_delta
     confidence: high
@@ -791,6 +899,22 @@ functions:
     name: world_step_coordinates
     confidence: high
     evidence: "Applies the direction delta to a coordinate pair used by local movement and collision checks."
+  - address: "0x005C4F00"
+    name: ui_world_balloon_pane_ctor
+    confidence: high
+    evidence: "Constructs the timed world speech pane; modes 0 and 1 use a framed balloon, while mode 2 uses a text-only pane."
+  - address: "0x005C5390"
+    name: ui_world_balloon_layout
+    confidence: high
+    evidence: "Measures and positions wrapped speech text and the optional balloon frame relative to the speaking world object."
+  - address: "0x005C5490"
+    name: ui_world_balloon_wrap_text
+    confidence: high
+    evidence: "Wraps speech text into the compact line layout consumed by the world balloon renderer."
+  - address: "0x005C5730"
+    name: ui_world_balloon_draw
+    confidence: high
+    evidence: "Draws Say and Shout with a frame and draws Chant as centered text without a frame, using palette indexes 0xFF, 0x45, and 0x58."
   - address: "0x005C75A0"
     name: ui_world_pane_screen_to_tile
     confidence: high
@@ -799,6 +923,10 @@ functions:
     name: ui_world_pane_set_blinded
     confidence: high
     evidence: "Forwards the SStatus-derived blinded state from WorldPane to the world renderer."
+  - address: "0x005C7970"
+    name: world_apply_map_cells
+    confidence: high
+    evidence: "Installs prepared map-cell storage into WorldPane and dependent world views, rebuilds a ready view at its current position, and invalidates world and lighting output."
   - address: "0x005C7DF0"
     name: world_rebuild_view_at_position
     confidence: high
@@ -811,6 +939,10 @@ functions:
     name: world_find_object_at_tile_by_category
     confidence: high
     evidence: "Searches one world tile for the first object whose broad category at +0x2C matches the requested value; B-key pickup requests category 8 ground items."
+  - address: "0x005CBF90"
+    name: ui_world_show_speech
+    confidence: high
+    evidence: "Attaches a timed speech pane to a world object for the requested speech mode and duration."
   - address: "0x005D2DC0"
     name: render_world_set_blinded
     confidence: high
@@ -883,14 +1015,18 @@ functions:
     name: net_handle_change_hour_server_packet
     confidence: high
     evidence: "Stores the SChangeHour time step at WorldPane +0x25C and immediately recomputes map lighting."
+  - address: "0x005F2840"
+    name: net_handle_map_server_body
+    confidence: high
+    evidence: "Consumes raw SMap opcode 0x06 as a u8 rectangle header followed by row-major ground and static tile triples, applying cells only while a cache-miss transfer is active."
   - address: "0x005F2A60"
     name: net_handle_map_part
     confidence: high
-    evidence: "Consumes the raw decoded SMapPart body, creates MapLoadingPane, applies repeated map records, updates percentage progress, and finalizes the last part."
+    evidence: "Consumes one raw SMapPart row into memory, creates MapLoadingPane on the first accepted row, updates row-index progress, and treats height minus one as completion without tracking earlier rows."
   - address: "0x005F2DE0"
     name: map_finish_transfer
     confidence: high
-    evidence: "Closes MapLoadingPane and either applies the completed map or schedules the alternate completion path."
+    evidence: "Destroys MapLoadingPane, advances the WorldPane map generation, and either applies prepared map storage immediately or schedules the alternate completion path."
   - address: "0x005F2E90"
     name: net_handle_user_appearance_server_packet
     confidence: high
@@ -918,7 +1054,7 @@ functions:
   - address: "0x005F3E00"
     name: net_handle_say_server_packet
     confidence: high
-    evidence: "Shows SSay text as a three-second balloon on its world object without appending to persistent history."
+    evidence: "Finds the SSay sender, requests a missing object without replaying the speech, and otherwise shows the selected three-second speech style without appending to history."
   - address: "0x005F4200"
     name: net_send_get
     confidence: high
@@ -954,7 +1090,7 @@ functions:
   - address: "0x005F64A0"
     name: ui_close_map_loading_pane
     confidence: high
-    evidence: "Destroys the current MapLoadingPane when a map transfer finishes."
+    evidence: "Invokes the deleting destructor for the current MapLoadingPane when a map transfer finishes."
   - address: "0x005F6D80"
     name: net_handle_message_server_packet
     confidence: high
@@ -1242,7 +1378,7 @@ comments:
   - address: "0x0049BB68"
     text: "CSpellDelaySay is only constructed when total_lines is nonzero. Zero-line casts return without sending opcode 0x4E."
   - address: "0x0049BB79"
-    text: "Builds CSpellDelaySay (0x4E) from a configured cast line or the spell name."
+    text: "Spell chants use CSpellDelaySay opcode 0x4E, not interactive CSay opcode 0x0E. The server presents them through SSay mode 2."
   - address: "0x004B79FC"
     text: "The immediate CQuit builder writes opcode 0x0B and no phase byte."
   - address: "0x004B7A27"
@@ -1319,6 +1455,52 @@ comments:
     text: "Submit the two-byte CQuit acknowledgement 0B 00."
   - address: "0x005445EF"
     text: "OptionPane key codes X and x both route here to construct SafeQuitAlert."
+  - address: "0x0054F8AE"
+    text: "Say mode 0 prepares a local white prompt using palette index 0xFF and the character-name prefix ': '."
+  - address: "0x0054F8CA"
+    text: "Shout mode 1 prepares a local yellow prompt using palette index 0x45 and the character-name prefix '! '."
+  - address: "0x0054F8DC"
+    text: "The local name and punctuation prefix is separate from the editable text copied into CSay."
+  - address: "0x0054F926"
+    text: "Retain the selected CSay speech mode in ChatInputPane +0x19C. Interactive callers pass only 0 or 1."
+  - address: "0x0054FC0C"
+    text: "Open the BlockListenInputPane only when its singleton is absent."
+  - address: "0x0054FDB8"
+    text: "Copy at most 72 editable message bytes from ChatInputPane before building CSay."
+  - address: "0x0054FDCE"
+    text: "Submit CSay only when the copied editable-text length is greater than one byte."
+  - address: "0x0054FEF0"
+    text: "Begin the plaintext CSay body with opcode 0x0E."
+  - address: "0x0054FF16"
+    text: "Append the retained interactive speech mode: 0 for Say or 1 for Shout."
+  - address: "0x0054FF41"
+    text: "Append the message as string8: one-byte length followed by exactly that many text bytes."
+  - address: "0x00550761"
+    text: "Construct the RTTI-backed BlockListenInputPane with localized prompt string index 0x1C."
+  - address: "0x00550891"
+    text: "A question mark in the block-listen prompt sends operation 1 to request the server-owned ignore list."
+  - address: "0x00550926"
+    text: "The selection table accepts A or a for add and D or d for remove; other characters do not open a name pane."
+  - address: "0x00550AE2"
+    text: "CBlockListen operation 1 has no fields after the operation byte."
+  - address: "0x00550B61"
+    text: "Construct AddToBlockListenInputPane with localized prompt string index 0x1D."
+  - address: "0x00550C24"
+    text: "Do not send an add request for empty input."
+  - address: "0x00550C38"
+    text: "Copy at most 15 name bytes from AddToBlockListenInputPane before building the request."
+  - address: "0x00550CDA"
+    text: "CBlockListen operation 2 is followed by a one-byte name length and that many name bytes."
+  - address: "0x00550DE1"
+    text: "Construct DeleteFromBlockListenInputPane with localized prompt string index 0x1E."
+  - address: "0x00550EA4"
+    text: "Do not send a remove request for empty input."
+  - address: "0x00550EB8"
+    text: "Copy at most 15 name bytes from DeleteFromBlockListenInputPane before building the request."
+  - address: "0x00550F5A"
+    text: "CBlockListen operation 3 is followed by a one-byte name length and that many name bytes."
+  - address: "0x00551186"
+    text: "The client stores only the live BlockListenInputPane singleton pointer here, not an ignore-list database."
   - address: "0x00575AF2"
     text: "Attack and defense elements are unchecked indexes into a ten-string table. Valid wire values are 0 through 9."
   - address: "0x00575B47"
@@ -1399,6 +1581,18 @@ comments:
     text: "Read two bytes shared by the parser variants. For creatures the first is Direction and the second is discarded; both are discarded for items."
   - address: "0x00598C3A"
     text: "Creature variant: widen creature_type to u32. Value 2 is the Mundane, meaning NPC, form and is the only value followed by a string8 display name."
+  - address: "0x00599CEC"
+    text: "Construct exact RTTI SMap for server opcode 0x06."
+  - address: "0x00599D26"
+    text: "Read SMap start_x as u8 and widen it into the packet object."
+  - address: "0x00599D39"
+    text: "Read SMap start_y as u8 and widen it into the packet object."
+  - address: "0x00599D4C"
+    text: "Read SMap rectangle width as u8 and widen it into the packet object."
+  - address: "0x00599D5F"
+    text: "Read SMap rectangle height as u8 and widen it into the packet object."
+  - address: "0x00599D66"
+    text: "Retain a pointer to the remaining width * height map-cell records. The object does not copy or length-check them."
   - address: "0x00599FA2"
     text: "Read SMapSize map_number as u16."
   - address: "0x00599FB1"
@@ -1446,7 +1640,7 @@ comments:
   - address: "0x0059B2AA"
     text: "SRemoveSpell contains one body field: the one-byte spell slot at object offset +0x10."
   - address: "0x0059B5D2"
-    text: "Read the SSay speech mode byte."
+    text: "Read SSay speech mode: 0 is Say, 1 is Shout, and 2 is Chant."
   - address: "0x0059B5E0"
     text: "Read the speaking world object's u32 ID."
   - address: "0x0059B5F5"
@@ -1505,6 +1699,12 @@ comments:
     text: "Read SUserPosition y as u16 into packet object +0x12."
   - address: "0x0059CCF8"
     text: "Return after exactly two u16 reads. Any remaining decoded body bytes are left unread and have no SUserPosition object fields."
+  - address: "0x005A15CA"
+    text: "Enter opens ChatInputPane in CSay mode 0 for normal Say."
+  - address: "0x005A1614"
+    text: "The exclamation-mark key opens ChatInputPane in CSay mode 1 for Shout."
+  - address: "0x005A17F4"
+    text: "Translated key code 0x8D opens BlockListenInputPane; the physical key mapping remains unresolved."
   - address: "0x005A2547"
     text: "Choose one of four network indicator images from raw movement round-trip thresholds 250, 350, and 450 ms. No averaging is applied."
   - address: "0x005A2B8F"
@@ -1513,8 +1713,36 @@ comments:
     text: "UserInfoPane maps wire slots through a 19-entry table: slot 0 -> -1; slots 1..18 -> view indices 0..17."
   - address: "0x005B1138"
     text: "Use the same slot mapping for removal before clearing the user-information equipment view."
+  - address: "0x005B905D"
+    text: "Allocate width * height six-byte cells, then clear every cell through map_set_cell."
+  - address: "0x005B911B"
+    text: "Reject coordinates outside the allocated map grid before selecting the six-byte row-major cell."
+  - address: "0x005B914E"
+    text: "Store ground, left-static, and right-static tile IDs as the cell's three native u16 values, then mark map storage dirty."
+  - address: "0x005BA0F2"
+    text: "Load the MapLoadingPane skin from _nloadm.txt. The progress bar uses Noname, Head, Body, and Tail layout entries."
+  - address: "0x005BA275"
+    text: "Register MapLoadingPane as a visible screen pane. This occurs on the first SMapPart, not when CMapRequest is sent."
+  - address: "0x005BA2F6"
+    text: "Unregister MapLoadingPane from the screen during destruction so it stops drawing and receiving events."
+  - address: "0x005BA308"
+    text: "Clear the global MapLoadingPane singleton pointer during destruction."
   - address: "0x005BE58D"
     text: "Only directions 0 through 3 have defined coordinate deltas. Values above 3 do not take an explicit None path and leave the result undefined."
+  - address: "0x005C4F40"
+    text: "SSay mode 2 constructs a text-only speech pane; other modes construct the framed balloon style."
+  - address: "0x005C5017"
+    text: "Select speech palette index 0xFF for Say, 0x45 for Shout, or 0x58 for Chant."
+  - address: "0x005C57A0"
+    text: "Draw Chant mode 2 as centered text without the balloon frame."
+  - address: "0x005C57BB"
+    text: "Draw Say and Shout modes with the speech-balloon frame before rendering their colored text."
+  - address: "0x005C797F"
+    text: "Set the active map-cell storage used by WorldPane and its dependent world views."
+  - address: "0x005C7A6E"
+    text: "When the world view is ready, rebuild it at the current position for the newly active map."
+  - address: "0x005C7A9A"
+    text: "Invalidate the light mask and WorldPane after switching the active map storage."
   - address: "0x005C9953"
     text: "Match the requested broad-category value against WorldObject +0x2C. B-key pickup passes category 8 for ground items."
   - address: "0x005E08B3"
@@ -1529,6 +1757,8 @@ comments:
     text: "Dispatch RTTI packet SAddSkill opcode 0x2C to net_handle_add_skill_server_packet."
   - address: "0x005EDC7F"
     text: "Dispatch RTTI packet SRemoveSkill opcode 0x2D to net_handle_remove_skill_server_packet."
+  - address: "0x005EDD05"
+    text: "Opcode 0x06 deliberately dispatches the raw decoded SMap body instead of its parsed RTTI packet object."
   - address: "0x005EDD6F"
     text: "Route parsed SChangeHour opcode 0x20 to the world lighting handler. There is no opcode 0x1E branch in this dispatcher."
   - address: "0x005EDF3D"
@@ -1599,16 +1829,38 @@ comments:
     text: "NoMap flag 0x40 disables an existing map overlay; the Tab handler also refuses to open it."
   - address: "0x005F1E88"
     text: "Compare the locally computed CRC16, zero-extended to u32, with the packet's parsed three-byte cache value."
+  - address: "0x005F1F48"
+    text: "A failed cache open, including a sharing violation, is treated as a cache miss and leads to CMapRequest without a local retry."
+  - address: "0x005F1F7F"
+    text: "Only a failed cache validation starts a server transfer; progress remains zero until SMapPart arrives."
   - address: "0x005F206E"
     text: "Serialize the locally computed CRC16 as 00 followed by the CRC high and low bytes in CMapRequest."
   - address: "0x005F2170"
     text: "Store the SChangeHour time step at WorldPane +0x25C, then immediately recompute map lighting."
+  - address: "0x005F287D"
+    text: "Ignore SMap unless SMapSize previously marked a cache-miss map transfer active."
+  - address: "0x005F28B9"
+    text: "Read the raw SMap rectangle header as u8 start_x, start_y, width, and height."
+  - address: "0x005F29AB"
+    text: "Each row-major SMap cell carries big-endian u16 ground, left-static, and right-static tile IDs."
+  - address: "0x005F2A1A"
+    text: "Apply one decoded SMap cell at start_x + column and start_y + row. Out-of-grid coordinates are ignored by map_set_cell."
   - address: "0x005F2AEB"
-    text: "Create MapLoadingPane on the first SMapPart body when a map transfer is active."
+    text: "Create MapLoadingPane on the first SMapPart received while a map transfer is active."
   - address: "0x005F2C31"
-    text: "Set map-transfer progress to (part_index + 1) * 100 / total_parts."
+    text: "Set map-transfer progress to (row_index + 1) * 100 / map_height."
   - address: "0x005F2C87"
-    text: "The final map part closes the loading pane, updates and writes the map cache, then applies the completed map."
+    text: "Completion depends only on row_index == map_height - 1. No received-row count or bitmap is checked."
+  - address: "0x005F2C9C"
+    text: "Compute the CRC16 over the complete in-memory cell array after the final-index row arrives."
+  - address: "0x005F2CAA"
+    text: "Persist the whole map buffer once after the final-index row. Rows are not streamed to disk."
+  - address: "0x005F2CB4"
+    text: "Close MapLoadingPane, then install the completed cell storage into the active world."
+  - address: "0x005F2DE7"
+    text: "Destroy and unregister any MapLoadingPane before activating the map."
+  - address: "0x005F2E16"
+    text: "Immediately apply the prepared map storage to WorldPane on normal cache-hit and SMapPart completion paths."
   - address: "0x005F2EA2"
     text: "When appearance_state bit 0x80 is clear, refresh the two self-object IDs. A state-only update leaves them unchanged."
   - address: "0x005F2EEA"
@@ -1663,8 +1915,10 @@ comments:
     text: "When the target object is absent, send CRequestObject with the same ID to request its world data."
   - address: "0x005F3C2D"
     text: "Require RTTI WorldObject_Living before applying direction. Users, humans, and monsters pass; items do not."
+  - address: "0x005F3E52"
+    text: "If SSay's sender object is absent, request it with CRequestObject and return without queuing the current speech for replay."
   - address: "0x005F3E77"
-    text: "Show the speech balloon on the selected world object for 3,000 ms. This path does not append to persistent message history."
+    text: "Show SSay on the selected world object for 3,000 ms. This path does not append to persistent message history."
   - address: "0x005F424E"
     text: "Write CGet.destination_slot as u8."
   - address: "0x005F426D"
@@ -1872,8 +2126,8 @@ packet_indexes:
         transform: derived
         builder: "0x00550AA0"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Representative builder 0x00550AA0 writes opcode 0x0D and submits the body."
+        name_confidence: high
+        evidence: "Project-owner protocol vocabulary identifies CBlockListen. Three builders submit operation 1 for list, operation 2 plus string8 name for add, and operation 3 plus string8 name for remove; exact RTTI pane names independently support the BlockListen terminology."
         page: "docs/network/client/013-0x0d-block-listen.md"
       - opcode: "0x0E"
         friendly_name: "Say"
@@ -1881,8 +2135,8 @@ packet_indexes:
         transform: derived
         builder: "0x0054FD90"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Representative builder 0x0054FD90 writes opcode 0x0E and submits the body."
+        name_confidence: high
+        evidence: "Project-owner protocol vocabulary identifies CSay. Builder 0x0054FD90 writes mode 0 for Say or mode 1 for Shout followed by string8 text; spell chants instead use CSpellDelaySay opcode 0x4E."
         page: "docs/network/client/014-0x0e-say.md"
       - opcode: "0x0F"
         friendly_name: "Use Spell"
@@ -1917,8 +2171,8 @@ packet_indexes:
         transform: derived
         builder: "0x005F44B0"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Representative builder 0x005F44B0 writes opcode 0x13 and submits the body."
+        name_confidence: high
+        evidence: "Builder 0x005F44B0 submits opcode 0x13 as the complete one-byte body. The Space-key caller enforces elapsed time strictly greater than 100 ms; an adjacent-target path reaches the same builder without that throttle."
         page: "docs/network/client/019-0x13-attack.md"
       - opcode: "0x18"
         friendly_name: "Who"
@@ -1926,8 +2180,8 @@ packet_indexes:
         transform: derived
         builder: "0x0059D7D0"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Representative builder 0x0059D7D0 writes opcode 0x18 and submits the body."
+        name_confidence: high
+        evidence: "Builder 0x0059D7D0 submits opcode 0x18 as the complete one-byte body. A GUIBackPane user-list action reaches it, and server opcode 0x36 rebuilds and opens the RTTI-backed ShowUsersPane."
         page: "docs/network/client/024-0x18-who.md"
       - opcode: "0x19"
         friendly_name: "Tell"
@@ -2197,7 +2451,7 @@ packet_indexes:
         builder: "0x0049BB40"
         opcode_confidence: high
         name_confidence: low
-        evidence: "SpellDelayControlPane builder 0x0049BB40 writes opcode 0x4E and a string8 configured cast line or final spell name."
+        evidence: "SpellDelayControlPane builder 0x0049BB40 writes opcode 0x4E and a string8 configured cast line or final spell name. Project-owner runtime behavior identifies the server presentation as SSay mode 2 Chant."
         page: "docs/network/client/078-0x4e-spell-delay-say.md"
       - opcode: "0x4F"
         friendly_name: "Send Portrait"
@@ -2299,14 +2553,14 @@ packet_indexes:
         evidence: "Server opcode 0x68 SCheckTime dispatches directly to builder 0x005F7830, which echoes a server value with timeGetTime()."
         page: "docs/network/client/117-0x75-check-time.md"
       - opcode: "0x79"
-        friendly_name: "User Change State"
-        class_name: "CUserChangeState"
+        friendly_name: "Change User State"
+        class_name: "CChangeUserState"
         transform: derived
         builder: "0x005FC790"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Representative builder 0x005FC790 writes opcode 0x79 and submits the body."
-        page: "docs/network/client/121-0x79-user-change-state.md"
+        name_confidence: high
+        evidence: "Builder 0x005FC790 clamps the requested UserState to 0 through 7, writes opcode 0x79 and the normalized state byte, submits a two-byte body, and stores the same local state."
+        page: "docs/network/client/121-0x79-change-user-state.md"
       - opcode: "0x7A"
         friendly_name: "Request Family Name"
         class_name: "CRequestFamilyName"
@@ -2396,7 +2650,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00599CE0 passes opcode 0x06 to the server packet base and installs the SMap vtable."
+        evidence: "Exact RTTI SMap reads u8 start X, start Y, width, and height before retaining the cell data. The WorldPane dispatcher uses the raw body to apply width * height triples of big-endian ground, left-static, and right-static u16 tile IDs only during an active cache-miss transfer."
         page: "docs/network/server/006-0x06-map.md"
       - opcode: "0x07"
         friendly_name: "Draw Objects"
@@ -2456,7 +2710,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI identifies SSay. Its parser reads a mode byte, u32 object ID, and string8 text; the handler creates a three-second world balloon without saving the text to message history."
+        evidence: "RTTI identifies SSay. Its parser reads speech mode, u32 sender ID, and string8 text. The handler displays Say and Shout in framed balloons and Chant as text only for three seconds without saving the text to message history."
         page: "docs/network/server/013-0x0d-say.md"
       - opcode: "0x0E"
         friendly_name: "Remove Objects"
@@ -2678,6 +2932,16 @@ packet_indexes:
         name_confidence: high
         evidence: "RTTI constructor 0x00598540 installs opcode 0x33. Deserializer 0x00598570 decodes the complete normal and disguised forms; handler 0x005F3340 creates the local or remote human and applies appearance, names, group ads, and object lighting."
         page: "docs/network/server/051-0x33-draw-human-objects.md"
+      - opcode: "0x36"
+        friendly_name: "Show Users"
+        class_name: "SShowUsers"
+        transform: derived
+        constructor: null
+        evidence_source: owner_protocol_name
+        opcode_confidence: high
+        name_confidence: high
+        evidence: "Raw opcode handler 0x005F7B80 passes the complete decoded 0x36 body to parser 0x0055C7D0, which reads two big-endian counts and country_count variable rows before rebuilding and opening the RTTI-backed ShowUsersPane."
+        page: "docs/network/server/054-0x36-show-users.md"
       - opcode: "0x37"
         friendly_name: "Add Equip"
         class_name: "SAddEquip"
@@ -2736,7 +3000,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00599E40 installs SMapPart. Handler 0x005F2A60 reads a u16 part index and repeated three-u16 records from the raw decoded body, creates MapLoadingPane, updates transfer progress, and finalizes the last part."
+        evidence: "Constructor 0x00599E40 installs SMapPart. Handler 0x005F2A60 reads a u16 row index followed by exactly map-width triples of u16 ground and static IDs, updates in-memory cells and row-index progress, then saves the full grid when row index reaches height - 1 without tracking earlier-row receipt."
         page: "docs/network/server/060-0x3c-map-part.md"
       - opcode: "0x3D"
         friendly_name: "Level Point"

@@ -43,6 +43,7 @@ Body schemas use the shared [packet body notation](../packet-body-notation.md). 
 | [0x30 - Pursuit Message (`SPursuitMessage`)](048-0x30-pursuit-message.md) | session key |
 | [0x32 - Static Object State (`SStaticObjectState`)](050-0x32-static-object-state.md) | session key |
 | [0x33 - Draw Human Objects (`SDrawHumanObjects`)](051-0x33-draw-human-objects.md) | session key |
+| [0x36 - Show Users (`SShowUsers`)](054-0x36-show-users.md) | session key |
 | [0x37 - Add Equip (`SAddEquip`)](055-0x37-add-equip.md) | session key |
 | [0x38 - Remove Equip (`SRemoveEquip`)](056-0x38-remove-equip.md) | session key |
 | [0x39 - Self Look (`SSelfLook`)](057-0x39-self-look.md) | session key |

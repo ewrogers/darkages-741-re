@@ -386,7 +386,11 @@ functions:
   - address: "0x005B9450"
     name: file_read_map_cells
     confidence: high
-    evidence: Reads a row-major width times height array of six-byte map cells.
+    evidence: Opens the cache for shared reading, reads the complete expected row-major map body into temporary storage, copies it only after a full read, and closes the handle immediately.
+  - address: "0x005B9640"
+    name: file_ensure_maps_directory
+    confidence: high
+    evidence: Asks Windows to create the maps directory before a map cache read or write.
   - address: "0x005B9660"
     name: file_format_map_path
     confidence: high
@@ -394,7 +398,7 @@ functions:
   - address: "0x005B9680"
     name: file_write_map_cells
     confidence: high
-    evidence: Writes the same six-byte map-cell array consumed by the map reader.
+    evidence: Opens the cache with wb and no Windows sharing, writes the complete contiguous map array without checking the write count, then closes the exclusive handle.
   - address: "0x005BA660"
     name: render_static_tile_cache_ctor
     confidence: high
@@ -786,9 +790,23 @@ comments:
   - address: "0x005B8D14"
     text: Build the object-centered light image name mask1%02d.epf from the server-supplied selector.
   - address: "0x005B9450"
-    text: Read exactly width times height times six bytes. A map file has no header and each cell contains three little-endian u16 values.
+    text: Read width times height times six bytes into temporary storage. Copy to the live grid only after the full expected body was read.
+  - address: "0x005B94D1"
+    text: Open the cache through fopen_s in rb mode. Other readers are allowed, but a concurrent writer blocks this open.
+  - address: "0x005B94FA"
+    text: The meaningful cache body is exactly map_width times map_height times six bytes.
+  - address: "0x005B9573"
+    text: A short cache file leaves the prepared grid unchanged. Trailing bytes after the expected body are not checked.
+  - address: "0x005B961C"
+    text: Close the map reader immediately after the one-shot read; no map-cache handle is retained.
   - address: "0x005B9680"
-    text: Client-confirmed MAP writer for the same six-byte row-major cell buffer used by the reader.
+    text: Client-confirmed MAP writer for the complete six-byte row-major cell buffer used by the reader.
+  - address: "0x005B9704"
+    text: Open through fopen_s in wb mode. Its Windows handle denies both readers and writers until fclose.
+  - address: "0x005B974E"
+    text: Write the complete contiguous map buffer once. The write count is not checked, and the caller ignores this function's result.
+  - address: "0x005B9761"
+    text: fclose flushes any buffered map bytes and releases the exclusive handle before map activation continues.
   - address: "0x005C789E"
     text: Build the current map's six-digit HEA resource name as %06d.hea.
   - address: "0x005C8A4F"
@@ -895,6 +913,12 @@ comments:
     text: Copy one 16-byte resource palette mapping and replace its selector field at +0x08 with the corresponding packet byte.
   - address: "0x006022A9"
     text: Retain HumanAppearanceRecord741 at HumanObjectImageSession +0x0C for body, equipment, dye, face, and motion resource selection.
+  - address: "0x00622686"
+    text: fopen_s opens streams with share flag 0x80 (_SH_SECURE), which changes sharing according to read or write access.
+  - address: "0x006441D0"
+    text: For _SH_SECURE, read-only access uses FILE_SHARE_READ; write access uses share mode zero and is exclusive.
+  - address: "0x00644333"
+    text: CreateFileA receives the access and sharing modes selected above. A conflicting process open returns a sharing violation.
 runtime_patches:
   - id: hide-static-map-art
     rva: "0x001E47FF"

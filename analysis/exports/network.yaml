@@ -197,6 +197,36 @@ functions:
     name: net_send_multi_server_selection
     confidence: high
     evidence: Builds CMulti as 57 00 <server-record ID> 00 after a manual or automatic selection; the common submission layer appends a fifth zero before transformation.
+  - address: "0x0055AF60"
+    end_address: "0x0055B1B1"
+    name: ui_show_users_list_draw_row
+    confidence: high
+    evidence: Draws one ShowUsersListPane row, resolves its final color through palette slot 0, and clamps the eight-state selector before choosing its visual.
+  - address: "0x0055B2B0"
+    end_address: "0x0055BC06"
+    name: ui_show_users_pane_ctor
+    confidence: high
+    evidence: Constructs the RTTI-backed ShowUsers pane from _nusers.txt and attaches its controls.
+  - address: "0x0055BFA0"
+    end_address: "0x0055C061"
+    name: ui_show_users_pane_open
+    confidence: high
+    evidence: Opens or reveals ShowUsersPane after a response and schedules its 100 ms pane timer.
+  - address: "0x0055C3E0"
+    end_address: "0x0055C75E"
+    name: ui_show_users_rebuild_visible_list
+    confidence: high
+    evidence: Builds visible user-list rows and overrides the server palette index with 0x80 for Friendlist.cfg or 0x24 for Familylist.cfg matches.
+  - address: "0x0055C760"
+    end_address: "0x0055C7D0"
+    name: ui_show_users_clear_lists
+    confidence: high
+    evidence: Clears the master and filtered ShowUsers row collections before a replacement list is applied.
+  - address: "0x0055C7D0"
+    end_address: "0x0055CB21"
+    name: net_apply_show_users
+    confidence: high
+    evidence: Parses the complete opcode 0x36 body, splits class_and_flags into class, bit 3, and an unresolved upper nibble, and rebuilds all filtered row collections.
   - address: "0x00564070"
     end_address: "0x0056408E"
     name: net_queue_raw_stream_mode
@@ -287,6 +317,46 @@ functions:
     name: net_deserialize_transfer_server_packet
     confidence: high
     evidence: Parses STransferServer as a u32be IPv4 value, u16be port, and u8-length opaque handoff token.
+  - address: "0x0059D7D0"
+    end_address: "0x0059D829"
+    name: net_send_who
+    confidence: high
+    evidence: Builds CWho as opcode 0x18 with no payload and submits the complete one-byte plaintext body.
+  - address: "0x005A2C60"
+    end_address: "0x005A2C79"
+    name: ui_gui_back_pane_request_show_users
+    confidence: high
+    evidence: GUIBackPane interface method that requests the current world-user list through CWho.
+  - address: "0x005F0BF0"
+    end_address: "0x005F0C32"
+    name: ui_world_pane_attack_from_keyboard
+    confidence: high
+    evidence: Handles the Space-key attack path and submits only when the previous accepted Space attack was absent or more than 100 ms ago.
+  - address: "0x005F44B0"
+    end_address: "0x005F4509"
+    name: net_send_attack
+    confidence: high
+    evidence: Builds CAttack as opcode 0x13 with no payload and submits the complete one-byte plaintext body.
+  - address: "0x005F4A70"
+    end_address: "0x005F4DDA"
+    name: ui_world_pane_attack_target
+    confidence: high
+    evidence: Faces and attacks an adjacent selected target through CAttack without using the Space-key throttle.
+  - address: "0x005F7B80"
+    end_address: "0x005F7BAD"
+    name: net_handle_show_users
+    confidence: high
+    evidence: Handles raw decoded server opcode 0x36, applies the replacement list, and opens the RTTI-backed ShowUsersPane.
+  - address: "0x005F9E20"
+    end_address: "0x005F9E44"
+    name: ui_world_pane_change_user_state
+    confidence: high
+    evidence: WorldPane_Impl interface method that forwards a requested UserState to CChangeUserState.
+  - address: "0x005FC790"
+    end_address: "0x005FC820"
+    name: net_send_change_user_state
+    confidence: high
+    evidence: Normalizes UserState to 0 through 7, builds opcode 0x79 plus the state byte, and stores the same normalized local value.
 data_symbols:
   - address: "0x00685B00"
     name: client_hello_baram_text
@@ -403,6 +473,26 @@ comments:
     text: Write the selected server record ID, not the dialog row number.
   - address: "0x0055A122"
     text: "Submit builder bytes 57 00 <server-record ID> 00; net_submit_client_packet appends one more transmitted zero before transformation."
+  - address: "0x0055B067"
+    text: Resolve the final world-list row color through palette slot 0, loaded from legend.pal.
+  - address: "0x0055B0E1"
+    text: Clamp UserState values 8 and above to state 0 before selecting one of eight status visuals.
+  - address: "0x0055C80A"
+    text: Read big-endian world_count and retain it as the total population value.
+  - address: "0x0055C828"
+    text: Read big-endian country_count. This value is the exact user-row loop count.
+  - address: "0x0055C89D"
+    text: Split class_and_flags bits 0 through 2 as CharacterClass for class-filter routing.
+  - address: "0x0055C8A7"
+    text: Keep class_and_flags bit 3 separately for guild or family filtered-list routing.
+  - address: "0x0055C8B1"
+    text: Keep class_and_flags bits 4 through 7 as a separate nibble whose meaning remains unresolved.
+  - address: "0x0055C8C9"
+    text: Read the server-provided world-list palette index.
+  - address: "0x0055C8E4"
+    text: Read the shared UserState byte used by SShowUsers and CChangeUserState.
+  - address: "0x0055C9AC"
+    text: After consuming the row, keep it only when title is at most 48 bytes and name is at most 24 bytes.
   - address: "0x00563BDB"
     text: A new socket starts in raw-stream mode. The active TCP receiver copies the first received bytes into an event without parsing the frame.
   - address: "0x00563BE5"
@@ -513,6 +603,22 @@ comments:
     text: Read the transfer port as u16be; observed bytes 0A 32 mean port 2610.
   - address: "0x0059CA6E"
     text: Read a u8-length-prefixed opaque handoff token into STransferServer and NUL-terminate its local copy.
+  - address: "0x0059D7EB"
+    text: Write opcode 0x18. CWho has no plaintext payload.
+  - address: "0x005EE0CA"
+    text: Dispatch server opcode 0x36 to the raw SShowUsers body handler; this opcode has no server packet-factory class.
+  - address: "0x005F0C19"
+    text: The Space-key CAttack throttle requires elapsed time strictly greater than 100 ms.
+  - address: "0x005F44CB"
+    text: Write opcode 0x13. CAttack has no plaintext payload.
+  - address: "0x005FC7A7"
+    text: Normalize a negative requested UserState to 0.
+  - address: "0x005FC7B4"
+    text: Normalize requested UserState values 8 and above to 0.
+  - address: "0x005FC7C7"
+    text: Write CChangeUserState opcode 0x79.
+  - address: "0x005FC7DB"
+    text: Write the normalized UserState as the packet's only payload byte.
 runtime_patches:
   - id: good-guy-ignore-bad-guy-marker
     rva: "0x00031F85"
