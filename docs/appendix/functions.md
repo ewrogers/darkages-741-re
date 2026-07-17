@@ -269,11 +269,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_map_loading_set_progress` | `0x005BA330` | high | Stores the SMapPart transfer percentage in MapLoadingPane and invalidates the pane for redraw. |
 | `ui_snow_particle_pane_ctor` | `0x005BD710` | high | Constructs one ImagePane-backed snow particle from a snowaNN.epf resource. |
 | `ui_world_pane_set_blinded` | `0x005C7600` | high | Forwards the SStatus-derived blinded state from WorldPane to the world renderer. |
-| `ui_world_pane_draw_to_target` | `0x005CE350` | high | Copies WorldPane output to its target and applies an optional post-copy pixel effect. |
+| `ui_world_pane_draw_to_target` | `0x005CE350` | high | Copies WorldPane output to its target and applies the ambient-color and 8-bit light-mask blend when lighting is active below intensity 0x20. |
+| `ui_world_pane_handle_keyboard_event` | `0x005F0D20` | high | Handles WorldPane keyboard commands; the Tab map-overlay path gives character class 2 the zoom-enabled configuration observed for Rogues. |
 | `ui_world_pane_draw_content` | `0x005F27A0` | high | WorldPane content hook that draws the world when ready or clears the pane. |
 | `ui_has_map_loading_pane` | `0x005F6470` | high | Reports whether the global MapLoadingPane pointer is non-null. |
 | `ui_get_map_loading_pane` | `0x005F6490` | high | Returns the current global MapLoadingPane pointer used by SMapPart progress handling. |
 | `ui_close_map_loading_pane` | `0x005F64A0` | high | Destroys the current MapLoadingPane when a map transfer finishes. |
+| `ui_world_pane_get_local_action_state` | `0x005F9E50` | high | WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc. |
+| `ui_world_pane_get_self_object_id` | `0x005F9EC0` | high | WorldPane_Impl virtual getter returns the SUserAppearance user ID stored in WorldUserFunc. |
+| `ui_world_pane_get_appearance_unknown_final` | `0x005FA040` | high | WorldPane_Impl virtual getter returns the final parsed SUserAppearance byte; no client decision based on it is identified. |
+| `ui_world_pane_get_guild_value` | `0x005FA0B0` | medium | WorldPane_Impl virtual getter returns the second post-ID SUserAppearance byte unchanged; project behavioral evidence associates it with guild state. |
+| `ui_world_pane_get_character_class` | `0x005FA0E0` | high | WorldPane_Impl virtual getter returns the third post-ID SUserAppearance byte; the Tab map-overlay path gives value 2 the Rogue-only zoom-enabled configuration. |
 
 ## Network
 
@@ -350,6 +356,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_set_text_framing_enabled` | `0x00564120` | high | Writes the socket flag that selects printable text framing when true and binary 0xAA framing when false. |
 | `net_write_u8` | `0x00564140` | high | Writes one byte to a packet body. |
 | `net_write_u16be` | `0x00564160` | high | Writes a 16-bit value in network byte order. |
+| `net_write_u24be` | `0x005641A0` | high | Writes the low 24 bits in network byte order; CMapRequest uses it for a zero-extended CRC16. |
 | `net_write_u32be` | `0x005641F0` | high | Writes a 32-bit value in network byte order. |
 | `net_read_u8` | `0x00564260` | high | Reads one byte from an opcode-first packet body. |
 | `net_read_u16be` | `0x00564270` | high | Reads a 16-bit big-endian value from an opcode-first packet body. |
@@ -387,6 +394,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_packet_reader_ctor` | `0x00595B10` | high | Constructs the bounded reader used by server packet deserializers. |
 | `net_packet_reader_read_u8` | `0x00595C20` | high | Reads one byte from a decoded server packet and advances the reader by one. |
 | `net_packet_reader_read_u16be` | `0x00595C60` | high | Reads a big-endian 16-bit value from a decoded server packet and advances the reader by two. |
+| `net_packet_reader_read_u24be` | `0x00595CA0` | high | Reads a big-endian 24-bit value and advances the decoded server-packet reader by three bytes. |
 | `net_packet_reader_read_u32be` | `0x00595CE0` | high | Reads a big-endian 32-bit value from a decoded server packet and advances the reader by four. |
 | `net_packet_reader_skip` | `0x00595D60` | high | Advances the decoded server-packet reader by a caller-supplied byte count without validating the skipped values. |
 | `net_packet_reader_read_string8` | `0x00595DF0` | high | Reads a one-byte-length-prefixed byte string and appends a local NUL to the destination. |
@@ -415,8 +423,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_decode_s_change_weather` | `0x00598210` | high | Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer. |
 | `net_create_draw_human_objects_server_packet` | `0x005984C0` | high | Allocates a 0x264-byte RTTI SDrawHumanObjects object and invokes its concrete constructor. |
 | `net_draw_human_objects_server_packet_ctor` | `0x00598540` | high | Passes opcode 0x33 to the server packet base and installs the exact SDrawHumanObjects vtable. |
-| `net_deserialize_draw_human_objects_server_packet` | `0x00598570` | high | Parses the human object prefix, disguise variant, packed normal-human appearance, strings, and remaining appearance fields. |
-| `net_decode_s_map_size` | `0x00599F90` | high | Reads map ID, dimensions, flags, secondary mode, checksum, and map name from SMapSize. |
+| `net_deserialize_draw_human_objects_server_packet` | `0x00598570` | high | Parses the human object prefix, disguise variant, packed normal-human appearance, the normal variant's u8 light-mask selector, strings, and remaining appearance fields. |
+| `net_create_map_size_server_packet` | `0x00599EE0` | high | Allocates the fixed-size RTTI SMapSize object and invokes its concrete constructor. |
+| `net_map_size_server_packet_ctor` | `0x00599F60` | high | Passes opcode 0x15 to the server packet base and installs the exact SMapSize vtable. |
+| `net_deserialize_map_size_server_packet` | `0x00599F90` | high | Reads u16be map number, four bytes, u24be cache value, and string8 name; the handler uses u8 dimensions and ignores the fourth byte. |
 | `net_create_message_server_packet` | `0x0059A050` | high | Allocates the RTTI-backed SMessage object registered for server opcode 0x0A. |
 | `net_message_server_packet_ctor` | `0x0059A0D0` | high | Constructs SMessage with opcode 0x0A and installs its concrete vtable. |
 | `net_deserialize_message_server_packet` | `0x0059A100` | high | Reads the message type, the type-0x11-only prefix, a u16be message length, and the message bytes. |
@@ -445,7 +455,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_deserialize_transfer_server_packet` | `0x0059CA40` | high | Parses STransferServer as a u32be IPv4 value, u16be port, and u8-length opaque handoff token. |
 | `net_create_user_appearance_server_packet` | `0x0059CAC0` | high | Allocates the fixed-size RTTI SUserAppearance object and invokes its concrete constructor. |
 | `net_user_appearance_server_packet_ctor` | `0x0059CB40` | high | Passes opcode 0x05 to the server packet base and installs the exact SUserAppearance vtable. |
-| `net_deserialize_user_appearance_server_packet` | `0x0059CB70` | high | Reads u32be self object ID followed by four unknown full-update bytes and one appearance-state byte. |
+| `net_deserialize_user_appearance_server_packet` | `0x0059CB70` | high | Reads u32be user ID followed by facing, raw guild value, character class, action state, and one final unknown byte. |
+| `net_create_user_position_server_packet` | `0x0059CC20` | high | Allocates the 0x14-byte RTTI SUserPosition object and invokes its concrete constructor. |
+| `net_user_position_server_packet_ctor` | `0x0059CCA0` | high | Passes opcode 0x04 to the server packet base and installs the exact SUserPosition vtable. |
+| `net_deserialize_user_position_server_packet` | `0x0059CCD0` | high | Reads exactly u16be x and u16be y; the method returns without consuming four additional bytes observed in captures. |
 | `net_send_portrait_profile` | `0x005B1160` | high | Calls net_build_send_portrait and submits the result through net_submit_client_packet. |
 | `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode. |
 | `net_handle_status_server_packet` | `0x005F1A10` | high | Applies global SStatus effects by updating WorldUserFunc and setting blinded only when the raw blind code equals 0x08. |
@@ -453,11 +466,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_remove_spell_server_packet` | `0x005F1B30` | high | Forwards decoded SRemoveSpell to WorldUserFunc vtable slot +0x14. |
 | `net_handle_add_skill_server_packet` | `0x005F1B70` | high | Forwards decoded SAddSkill to WorldUserFunc vtable slot +0x18. |
 | `net_handle_remove_skill_server_packet` | `0x005F1BB0` | high | Forwards decoded SRemoveSkill to WorldUserFunc vtable slot +0x1C. |
-| `net_handle_s_map_size` | `0x005F1BF0` | high | Applies map dimensions, seasonal art, weather mode, local map cache, and map setup state. |
+| `net_handle_map_size_server_packet` | `0x005F1BF0` | high | Applies u8 map dimensions, NoMap, Winter art, weather mode, local CRC16 cache validation, transfer state, and map lighting. |
 | `net_handle_change_hour_server_packet` | `0x005F2160` | high | Stores the SChangeHour time step at WorldPane +0x25C and immediately recomputes map lighting. |
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes the raw decoded SMapPart body, creates MapLoadingPane, applies repeated map records, updates percentage progress, and finalizes the last part. |
 | `net_handle_user_appearance_server_packet` | `0x005F2E90` | high | Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage. |
-| `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes WorldObject_User for self and WorldObject_Human for other normal or disguised human records. |
+| `net_handle_user_position_server_packet` | `0x005F2F00` | high | Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view. |
+| `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes human world objects and, only in Darkness map mode 3, attaches or removes the server-selected mask1%02d.epf light image. |
 | `net_handle_say_server_packet` | `0x005F3E00` | high | Shows SSay text as a three-second balloon on its world object without appending to persistent history. |
 | `net_send_put_ground` | `0x005F4430` | high | Builds opcode 0x0C with one u32be value. |
 | `net_send_change_direction` | `0x005F4510` | high | WorldPane paths call this opcode 0x11 direction builder. |
@@ -517,6 +531,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_convert_rgb565_to_xrgb8888` | `0x005949A0` | high | Converts RGB565 pixels to 32-bit output with optional 2x nearest-neighbor scaling. |
 | `render_scale_2x_u16` | `0x005950F0` | high | Doubles a 16-bit image in both axes with nearest-neighbor copies. |
 | `render_scale_2x_u32` | `0x005953A0` | high | Doubles a 32-bit image in both axes with nearest-neighbor copies. |
+| `render_fill_light_mask_rect` | `0x005B8B50` | high | Fills a clipped rectangle in the 8-bit world light-mask surface with one intensity value. |
+| `render_light_bitmap_ctor` | `0x005B8C90` | high | Constructs the RTTI-backed LightBitmap and loads frame zero from mask1%02d.epf using the supplied selector. |
 | `render_static_tile_cache_ctor` | `0x005BA660` | high | Constructs the static HPF image cache and stores the base or alternate art mode. |
 | `render_get_static_tile_image` | `0x005BA8D0` | high | Resolves one animated static tile through the selected stc or sts resource path. |
 | `render_set_static_tile_bank` | `0x005BAB10` | high | Selects base stc or alternate sts static art and clears the static image cache on change. |
@@ -524,7 +540,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_spawn_snow_particles` | `0x005BDB70` | high | Places snow particle panes across and above the world view. |
 | `render_update_snow_particles` | `0x005BDDA0` | high | Moves snow particles down, removes those below the view, and spawns replacements. |
 | `render_create_snow_overlay` | `0x005C82C0` | high | Replaces the current weather session with WeatherSession_SnowParticle. |
+| `render_invalidate_light_mask_region` | `0x005C8450` | high | Accumulates a dirty light-mask rectangle and invalidates the matching WorldPane region. |
 | `render_hea_decode_mask` | `0x005C8540` | high | Expands HEA run words into an 8-bit light or occlusion mask. |
+| `render_build_world_light_mask` | `0x005C8760` | high | Builds the ambient or HEA base mask and, when enabled, merges light images attached to visible world objects. |
+| `render_set_object_light_mask` | `0x005CCA80` | high | Attaches or removes a mask1%02d.epf LightBitmap for a world object ID and invalidates its affected region. |
+| `render_invalidate_object_light_region` | `0x005CD000` | high | Resolves an object's attached LightBitmap bounds and invalidates that region while object-light merging is active. |
+| `render_invalidate_removed_object_light_region` | `0x005CD200` | high | Invalidates the last bounds of a removed object's light image while the world light mask is active. |
 | `render_build_static_objects` | `0x005CD730` | high | Builds WorldObject_Static instances from the two static tile IDs in visible map cells. |
 | `render_world_pane_content` | `0x005CE280` | high | Advances the visual frame and draws the world into the WorldPane canvas. |
 | `render_use_base_ground_bank` | `0x005D2B70` | high | Selects tilea.bmp for the ground cache. |
@@ -551,6 +572,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_human_stand_motion_data_ctor` | `0x006000D0` | high | Constructs standing-motion data and resolves up to 21 body and equipment sprite parts. |
 | `render_create_human_stand_motion_data` | `0x00600670` | high | Allocates the initial standing-motion data for a human image session. |
 | `render_human_image_session_ctor` | `0x00602240` | high | Constructs the RTTI-backed HumanObjectImageSession and retains its decoded 0x30-byte appearance record. |
+| `render_merge_light_mask_max` | `0x006036B0` | high | Merges a rectangular 8-bit light image into the viewport mask by retaining the greater value at each pixel. |
 
 ## Audio
 
@@ -679,7 +701,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_get_tile_pixels` | `0x005D7610` | high | Gets one decoded ground-tile diamond from MapTileImageLib. |
 | `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds, the saved appearance action lock, dynamic occupants, and direction-specific SOTP masks for a proposed move. |
 | `map_try_move_local_player` | `0x005F09E0` | high | Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before moving locally and sending CMove. |
-| `map_apply_weather_mode` | `0x005F26C0` | high | Creates snow for mode 1, performs no local setup for mode 2, and changes lighting state for mode 3. |
+| `map_apply_weather_mode` | `0x005F26C0` | high | Creates Snow for mode 1, performs no local setup for project-named Rain mode 2, and enables black ambient plus object light masks for Darkness mode 3. |
 | `map_finish_transfer` | `0x005F2DE0` | high | Closes MapLoadingPane and either applies the completed map or schedules the alternate completion path. |
 | `file_load_static_tile_pixmap` | `0x005FD500` | high | Opens and decodes one base or alternate static HPF resource into a pixmap view. |
 | `file_open_static_tile` | `0x005FD700` | high | Opens stsNNNNN.hpf in alternate mode and falls back to stcNNNNN.hpf when missing. |
@@ -709,6 +731,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `crc16_buffer` | `0x00568870` | high | Applies the custom CRC16 update to a byte buffer starting from zero. |
 | `startup_run_pending_patcher` | `0x0057A330` | high | Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe; otherwise deletes both markers and continues. |
 | `crc16_update` | `0x005B8F30` | high | Updates the custom CRC16 with table[crc high byte] XOR crc shifted left XOR input byte. |
+| `world_direction_to_delta` | `0x005BE580` | high | Maps directions 0 through 3 to up, right, down, and left coordinate deltas; values above 3 have no defined result. |
+| `world_step_coordinates` | `0x005BE600` | high | Applies the direction delta to a coordinate pair used by local movement and collision checks. |
+| `world_rebuild_view_at_position` | `0x005C7DF0` | high | Stores WorldPane view Y and X, updates the world renderer, rebuilds visible static objects and lighting, and invalidates the view. |
+| `world_reindex_object` | `0x005C92C0` | high | Updates a world object's spatial index entry after its tile coordinates change and refreshes dependent overlay state. |
+| `world_set_view_position` | `0x005EEC70` | high | Publishes a Y, X world-view position and optionally rebuilds the visible world and camera state around it. |
+| `world_get_self_user_object` | `0x005EEDB0` | high | Looks up the saved self object ID and RTTI-casts the result to WorldObject_User. |
 | `world_update_map_lighting` | `0x005EF360` | high | Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, and conditionally loads its HEA mask. |
 | `session_world_user_func_ctor` | `0x005FC5F0` | high | Constructs exact RTTI class WorldUserFunc and clears its fixed inventory, spell, and skill arrays. |
 | `session_store_inventory_entry` | `0x005FCBB0` | high | Stores one compact 0x106-byte inventory record at WorldUserFunc + 0x1092 + (slot - 1) * 0x106. |
@@ -724,7 +752,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `session_remove_spell_from_packet` | `0x005FD2E0` | high | Accepts SRemoveSpell slots 1 through 89 before clearing the matching WorldUserFunc spell record. |
 | `session_add_skill_from_packet` | `0x005FD320` | high | Accepts SAddSkill slots 1 through 89 before storing the icon and name in WorldUserFunc. |
 | `session_remove_skill_from_packet` | `0x005FD370` | high | Accepts SRemoveSkill slots 1 through 89 before clearing the matching WorldUserFunc skill record. |
-| `session_update_from_user_appearance_packet` | `0x005FD3B0` | high | Stores SUserAppearance state &amp; 0x7F; bit 0 locks movement and actions, while wire bit 0x80 suppresses other self-field updates. |
+| `session_update_from_user_appearance_packet` | `0x005FD3B0` | high | Stores user ID, cached facing, raw guild value, character class, final unknown byte, and action state &amp; 0x7F; bit 0 locks movement and actions, while wire bit 0x80 suppresses the other field updates. |
 | `crc32_update` | `0x00604530` | high | Standard reflected IEEE CRC32 update with initial and final inversion. |
 | `crt_time` | `0x00622873` | high | Reads the current Windows FILETIME and converts it to Unix-epoch seconds; CLogin passes the result to crt_srand. |
 | `crt_srand` | `0x006275DE` | high | Stores the seed used by the client runtime random-number state. |

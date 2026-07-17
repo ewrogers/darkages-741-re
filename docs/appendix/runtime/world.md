@@ -9,8 +9,9 @@ World objects keep the appearance and map-art state needed by the live scene. Th
 ```c
 struct WorldPaneLightingFields {
     u8 unknown_0000[0x1E8];
-    bool hea_mask_active;            // +0x1E8
-    u8 unknown_1E9[0x17];
+    bool light_mask_active;          // +0x1E8, HEA or forced Darkness base
+    bool object_light_masks_active;  // +0x1E9, Darkness mode 3
+    u8 unknown_1EA[0x16];
     u8 ambient_intensity;            // +0x200
     u8 unknown_201;
     u16 ambient_color;               // +0x202, packed 16-bit RGB
@@ -33,7 +34,50 @@ struct LightProfileEntry {
 };
 ```
 
-The update flow is explained in [Map lighting](../../rendering/lighting.md).
+The base light mask is active for either an HEA-backed profile or forced Darkness. The adjacent object-mask flag is more specific: map mode `3` enables it so `SDrawHumanObjects` light images can be merged around visible humans. The update flow is explained in [Map lighting](../../rendering/lighting.md).
+
+## World map state
+
+`SMapSize` installs the active map into `WorldPane`. The dimensions are widened in memory, but client 7.41 supplies them from the packet's two low bytes.
+
+```c
+struct WorldPaneMapFields {
+    u8 unknown_0000[0x1C4];
+    s32 map_width;                   // +0x1C4, zero-extended packet u8
+    s32 map_height;                  // +0x1C8, zero-extended packet u8
+    u8 unknown_1CC[0x14];
+    void *tab_map_controller;        // +0x1E0, NoMap and Rogue zoom paths
+    u8 unknown_1E4[0x54];
+    s32 view_y;                      // +0x238
+    s32 view_x;                      // +0x23C
+    u8 unknown_240[0x20];
+    u32 map_flags;                   // +0x260, full SMapSize flags byte
+    u8 weather_mode;                 // +0x264, map_flags & 0x0F
+    u8 unknown_265[3];
+    u32 previous_map_number;         // +0x268
+    u32 current_map_number;          // +0x26C
+    u8 unknown_270[0x0C];
+    void *map_cell_storage;          // +0x27C
+};
+```
+
+`map_cell_storage` keeps `u16` width and height fields internally and owns `width * height` six-byte map-cell records. The only live-network resize path receives its dimensions from `SMapSize`, so the wider internal types do not restore the discarded high dimension bytes.
+
+The object at `tab_map_controller` serves the Tab-key map UI. Flag `0x40` prevents that path before the class check, while class value 2 enables Rogue zoom when the map is allowed. The packet's string8 map name is parsed but not copied into these `WorldPane` fields by the main handler.
+
+## World position fields
+
+World objects keep tile coordinates as signed 32-bit integers in Y, X memory order:
+
+```c
+struct WorldObjectPositionFields {
+    u8 unknown_0000[0x40];
+    s32 tile_y;                      // +0x40
+    s32 tile_x;                      // +0x44
+};
+```
+
+[`SUserPosition`](../../network/server/004-0x04-user-position.md) carries X, Y on the wire, sign-extends both words, writes these fields, and reindexes the local `WorldObject_User`. It then copies Y, X to `WorldPane.view_y` and `WorldPane.view_x` before rebuilding the visible map state.
 
 ## Human appearance
 

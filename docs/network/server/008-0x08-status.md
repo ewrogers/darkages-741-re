@@ -27,6 +27,8 @@ The byte after the opcode selects the blocks that follow. The high two bits are 
 
 The privilege value is not reduced to a single administrator boolean. `WorldUserFunc` keeps all four possible values. Several helpers treat any nonzero value as privileged, while map movement has a special bypass for values `1` and `2`. The exact player-facing distinction among values `1`, `2`, and `3` remains unresolved.
 
+The standalone `0x02` status bit is separate from the action state carried by [`SUserAppearance`](005-0x05-user-appearance.md). No `SStatus` handler copies it to the saved movement/action lock. Runtime changes to that lock require another opcode `0x05`, normally using its state-only form.
+
 ## Body
 
 All multi-byte integers are big-endian.

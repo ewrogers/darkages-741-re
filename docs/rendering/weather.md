@@ -39,12 +39,14 @@ The local weather setup behaves as follows:
 
 | Mode | Local behavior |
 | ---: | --- |
-| 0 | No weather session |
-| 1 | Create falling snow |
-| 2 | No local setup |
-| 3 | Change lighting-related state, not particles |
+| 0, None | No weather session |
+| 1, Snow | Create falling snow |
+| 2, Rain | No local setup |
+| 3, Darkness | Force black ambient light and enable human-centered light masks |
 
-Mode 3 writes the [world lighting state](lighting.md) directly by enabling the mask flags and setting ambient intensity and color to zero. It does not create a weather particle class or perform the `SChangeHour` profile lookup.
+The Rain and Darkness names are project-owner protocol vocabulary. The client contains an explicit mode-2 branch but performs no work in it, so rain may be server-driven through another effect or simply unsupported here.
+
+Mode 3 writes the [world lighting state](lighting.md) directly by enabling the overall and object-light mask flags and setting ambient intensity and color to zero. `SDrawHumanObjects` can then attach a server-selected `mask1%02d.epf` light image to each human. Although the mode's numeric value is `Snow | Rain`, the client treats `3` as the exact Darkness mode. It does not combine the snow and rain behaviors or create a weather particle class.
 
 The server can also create normal world effects with `SEffectLayer`. That path could display rain-like art, but no direct link to rain is confirmed.
 

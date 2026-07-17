@@ -288,13 +288,21 @@ functions:
     confidence: high
     evidence: Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer.
   - address: "0x00599F90"
-    name: net_decode_s_map_size
+    name: net_deserialize_map_size_server_packet
     confidence: high
-    evidence: Reads map ID, dimensions, flags, secondary mode, checksum, and map name from SMapSize.
+    evidence: Reads u16be map number, four bytes, u24be cache value, and string8 name; the handler uses u8 dimensions and ignores the fourth byte.
   - address: "0x005A0CF0"
     name: ui_gui_back_handle_pointer
     confidence: high
     evidence: Handles GUIBackPane pointer input; BTN_HELP is present in the hover path but has no click action.
+  - address: "0x005B8B50"
+    name: render_fill_light_mask_rect
+    confidence: high
+    evidence: Fills a clipped rectangle in the 8-bit world light-mask surface with one intensity value.
+  - address: "0x005B8C90"
+    name: render_light_bitmap_ctor
+    confidence: high
+    evidence: Constructs the RTTI-backed LightBitmap and loads frame zero from mask1%02d.epf using the supplied selector.
   - address: "0x005B9450"
     name: file_read_map_cells
     confidence: high
@@ -347,6 +355,26 @@ functions:
     name: render_create_snow_overlay
     confidence: high
     evidence: Replaces the current weather session with WeatherSession_SnowParticle.
+  - address: "0x005C8450"
+    name: render_invalidate_light_mask_region
+    confidence: high
+    evidence: Accumulates a dirty light-mask rectangle and invalidates the matching WorldPane region.
+  - address: "0x005C8760"
+    name: render_build_world_light_mask
+    confidence: high
+    evidence: Builds the ambient or HEA base mask and, when enabled, merges light images attached to visible world objects.
+  - address: "0x005CCA80"
+    name: render_set_object_light_mask
+    confidence: high
+    evidence: Attaches or removes a mask1%02d.epf LightBitmap for a world object ID and invalidates its affected region.
+  - address: "0x005CD000"
+    name: render_invalidate_object_light_region
+    confidence: high
+    evidence: Resolves an object's attached LightBitmap bounds and invalidates that region while object-light merging is active.
+  - address: "0x005CD200"
+    name: render_invalidate_removed_object_light_region
+    confidence: high
+    evidence: Invalidates the last bounds of a removed object's light image while the world light mask is active.
   - address: "0x005CD730"
     name: render_build_static_objects
     confidence: high
@@ -358,7 +386,7 @@ functions:
   - address: "0x005CE350"
     name: ui_world_pane_draw_to_target
     confidence: high
-    evidence: Copies WorldPane output to its target and applies an optional post-copy pixel effect.
+    evidence: Copies WorldPane output to its target and applies the ambient-color and 8-bit light-mask blend when lighting is active below intensity 0x20.
   - address: "0x005CF360"
     name: map_get_sotp_render_flags
     confidence: high
@@ -464,13 +492,13 @@ functions:
     confidence: high
     evidence: Checks bounds, the saved appearance action lock, dynamic occupants, and direction-specific SOTP masks for a proposed move.
   - address: "0x005F1BF0"
-    name: net_handle_s_map_size
+    name: net_handle_map_size_server_packet
     confidence: high
-    evidence: Applies map dimensions, seasonal art, weather mode, local map cache, and map setup state.
+    evidence: Applies u8 map dimensions, NoMap, Winter art, weather mode, local CRC16 cache validation, transfer state, and map lighting.
   - address: "0x005F26C0"
     name: map_apply_weather_mode
     confidence: high
-    evidence: Creates snow for mode 1, performs no local setup for mode 2, and changes lighting state for mode 3.
+    evidence: Creates Snow for mode 1, performs no local setup for project-named Rain mode 2, and enables black ambient plus object light masks for Darkness mode 3.
   - address: "0x005F27A0"
     name: ui_world_pane_draw_content
     confidence: high
@@ -507,6 +535,10 @@ functions:
     name: render_human_image_session_ctor
     confidence: high
     evidence: Constructs the RTTI-backed HumanObjectImageSession and retains its decoded 0x30-byte appearance record.
+  - address: "0x006036B0"
+    name: render_merge_light_mask_max
+    confidence: high
+    evidence: Merges a rectangular 8-bit light image into the viewport mask by retaining the greater value at each pixel.
 data_symbols:
   - address: "0x006D395C"
     name: map_move_direction_masks
@@ -573,12 +605,18 @@ comments:
     text: Deserialize the one-byte SChangeWeather payload. No 0x1F consumer exists in the main gameplay dispatcher.
   - address: "0x005A0FA2"
     text: BTN_HELP is tested only by the pointer-move tooltip path. The left-button path has no help action in this build.
+  - address: "0x005B8D14"
+    text: Build the object-centered light image name mask1%02d.epf from the server-supplied selector.
   - address: "0x005B9450"
     text: Read exactly width times height times six bytes. A map file has no header and each cell contains three little-endian u16 values.
   - address: "0x005B9680"
     text: Client-confirmed MAP writer for the same six-byte row-major cell buffer used by the reader.
   - address: "0x005C789E"
     text: Build the current map's six-digit HEA resource name as %06d.hea.
+  - address: "0x005C8A4F"
+    text: When WorldPane +0x1E9 is set, merge light images attached to visible world objects into the current viewport mask.
+  - address: "0x005C8DCE"
+    text: Merge the object light image with per-pixel maximum so its brighter values open visibility through the dark base mask.
   - address: "0x005CF3B0"
     text: Build a one-based static-tile render table from the high nibble of each SOTP.DAT byte.
   - address: "0x005CF4F0"
@@ -605,6 +643,8 @@ comments:
     text: Resolve the current map and scaled time against cached Light metadata, producing ambient RGB, intensity, and an HEA-enable flag.
   - address: "0x005EF444"
     text: Load the current map's HEA spatial mask only when the Light profile permits it and ambient intensity is below 0x20.
+  - address: "0x005EF48F"
+    text: Darkness mode 3 bypasses the normal Light profile and forces the dark lighting state.
   - address: "0x005F0676"
     text: Direction values 0 through 3 select collision masks 0x01, 0x02, 0x04, and 0x08 for left, down, right, and up.
   - address: "0x005F1D3E"
@@ -614,7 +654,13 @@ comments:
   - address: "0x005F213B"
     text: Apply the current stored SChangeHour time step after SMapSize installs or refreshes a map.
   - address: "0x005F26C0"
-    text: Apply the weather mode saved from SMapSize. Mode 1 creates snow particles, mode 2 has no local setup, and mode 3 changes lighting state.
+    text: Apply the weather mode saved from SMapSize. Snow mode 1 creates particles, project-named Rain mode 2 has no local setup, and Darkness mode 3 forces dark lighting.
+  - address: "0x005F26F0"
+    text: Snow mode 1 creates the falling-snow overlay.
+  - address: "0x005F2715"
+    text: Project-named Rain mode 2 deliberately performs no local setup in this client.
+  - address: "0x005F2732"
+    text: Darkness mode 3 enables the overall light mask and object-light merge flags, then forces black ambient lighting at intensity zero.
   - address: "0x005FDB6E"
     text: Body resource IDs 1 and 5 use the M filename family. Swimming variants therefore resolve through MM005 or WM005 motion files.
   - address: "0x006022A9"

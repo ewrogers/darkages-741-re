@@ -27,6 +27,8 @@ Pixel data starts at file offset `0x0C`. The frame table starts at:
 
 `file_read_image_metadata` reads the header. `file_load_image_frame` uses the selected record to build the pixmap passed to `render_blit_pixmap`.
 
+The lighting compositor also uses the ordinary EPF reader. In Darkness map mode, a server-supplied human light selector `N` loads frame zero from `mask1%02d.epf`, then treats its indexed pixels as a light mask centered on that human. See [Map lighting](../rendering/lighting.md).
+
 ## Reader shape
 
 ```text

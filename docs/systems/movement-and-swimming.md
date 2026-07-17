@@ -20,6 +20,8 @@ The skill's name arrives through [`SAddSkill`](../network/server/044-0x2c-add-sk
 
 `map_try_move_local_player` obtains the local `WorldObject_User`, computes the destination tile, and calls `map_can_move_direction`. A successful check moves the local object and sends [`CMove`](../network/client/006-0x06-move.md).
 
+[`SUserPosition`](../network/server/004-0x04-user-position.md) is the authoritative reset path. It replaces the local object's tile coordinates, reindexes that object, and recenters the world view rather than applying one directional step.
+
 `map_can_move_direction` checks these states in order:
 
 1. Destination bounds.

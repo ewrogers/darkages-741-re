@@ -89,7 +89,7 @@ struct WorldUserStatusFields {
     u8 unrelated_0000[0x104C];
     s32 privilege_level;             // +0x104C
     u32 self_object_id;              // +0x1050, SUserAppearance-owned
-    u8 appearance_unknown_0;         // +0x1054, SUserAppearance-owned
+    u8 appearance_facing;            // +0x1054, stored but no reader found
     u8 retained_stats[3];            // +0x1055
     u8 level;                        // +0x1058
     u8 ability_level;                // +0x1059
@@ -109,9 +109,9 @@ struct WorldUserStatusFields {
     u32 max_health;                  // +0x107C
     u32 mana;                        // +0x1080
     u32 max_mana;                    // +0x1084
-    u8 appearance_unknown_1;         // +0x1088, SUserAppearance-owned
-    u8 appearance_unknown_2;         // +0x1089, SUserAppearance-owned
-    u8 appearance_unknown_3;         // +0x108A, SUserAppearance-owned
+    u8 appearance_guild_value;       // +0x1088, raw u8
+    u8 character_class;              // +0x1089, raw u8
+    u8 appearance_unknown_final;     // +0x108A, raw u8
     u8 unrelated_108B;
     u8 retained_modifier_0;          // +0x108C
     u8 blind_code;                   // +0x108D
@@ -130,6 +130,10 @@ The retained stats bytes, retained modifier bytes, and `opaque_status_word` have
 
 ## Local user action state
 
-[`SUserAppearance`](../../network/server/005-0x05-user-appearance.md) owns the self-object and action-state fields embedded in `WorldUserFunc`. A full update writes `self_object_id`, the four unknown appearance bytes, and `appearance_action_state`. A state-only update writes only the action state.
+[`SUserAppearance`](../../network/server/005-0x05-user-appearance.md) owns the self-object and action-state fields embedded in `WorldUserFunc`. A full update writes `self_object_id`, cached facing, the raw guild value, character class, the final unknown byte, and `appearance_action_state`. A state-only update writes only the action state.
 
 The stored action state is `wire_appearance_state & 0x7F`. Bit `0x01` rejects local movement and several other actions. The wire bit `0x80` is not retained; it tells the updater to leave the other self fields unchanged. The visible human appearance stored on world objects is mapped in [World objects](world.md#human-appearance).
+
+`WorldPane_Impl` exposes virtual getters for every field above except cached facing. The guild value is returned without boolean normalization, while the final byte has no identified gameplay consumer. The packet page records the limits on the supplied guild, class, and direction labels.
+
+The constructor clears `appearance_action_state`, and `session_update_from_user_appearance_packet` is its only runtime writer. `SStatus` does not update it. The server can change it during play by resending `SUserAppearance`; wire bit `0x80` lets that resend change only the action state.

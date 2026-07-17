@@ -91,6 +91,10 @@ functions:
     name: net_write_u16be
     confidence: high
     evidence: "Writes a 16-bit value in network byte order."
+  - address: "0x005641A0"
+    name: net_write_u24be
+    confidence: high
+    evidence: "Writes the low 24 bits in network byte order; CMapRequest uses it for a zero-extended CRC16."
   - address: "0x005641F0"
     name: net_write_u32be
     confidence: high

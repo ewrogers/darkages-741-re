@@ -24,7 +24,9 @@ struct SDrawHumanObjectsPrefix {
     u16be appearance_id;
 
     if (appearance_id != 0xFFFF) {
-        u8 packed_appearance;
+        u8 packed_appearance;          // body offset 0x0C
+        u8 appearance_fields[19];      // individually unresolved here
+        u8 light_mask_id;              // body offset 0x20
         // remaining normal-human appearance fields
     } else {
         // disguised or monster-form fields
@@ -65,10 +67,25 @@ The local matching assets support the in-game observation that this is swimming 
 
 The client does not derive variants `8` or `9` from a local skill check. The server supplies the packed variant. See [Movement and swimming](../../systems/movement-and-swimming.md).
 
+## Darkness light mask
+
+The normal-human record carries `light_mask_id` at decoded-body offset `0x20`, counting the opcode as offset zero. The client uses it only when the active [`SMapSize`](021-0x15-map-size.md) low-nibble mode is `3`, Darkness.
+
+| Value | Client behavior |
+| ---: | --- |
+| `0` | Remove any light image attached to the human |
+| `1` through `255` | Load frame zero from `mask1%02d.epf` and attach it to the human |
+
+The image is centered on the human and merged into the world light mask. This produces the limited visible area associated with lanterns on Andor. The client does not inspect worn equipment to choose the number, so the server must resolve the character's current lantern or other light source before sending this appearance record.
+
+The disguised `appearance_id == 0xFFFF` variant does not read this byte. Its packet object keeps the constructor's default selector of `1`.
+
+See [Map lighting](../../rendering/lighting.md) for mask composition and the distinction from `SStatus` blindness.
+
 ## Supplied login trace
 
-The supplied login trace contains one `SDrawHumanObjects` record for the local player. Its packed appearance byte is `0x10`, selecting the normal M-prefix body resource `1` form.
+The supplied login trace contains one `SDrawHumanObjects` record for the local player. Its packed appearance byte is `0x10`, selecting the normal M-prefix body resource `1` form. Its `light_mask_id` is `0`, so that appearance carries no object light image.
 
 ## Known limits
 
-Most equipment, dye, name, group, lighting, and disguise fields in the remainder of this packet still need their dedicated pass. This page names only the prefix and appearance-variant behavior required to explain self creation and swimming.
+Most equipment, dye, name, group, and disguise fields in the remainder of this packet still need their dedicated pass. This page currently names the prefix, appearance variant, and Darkness light selector.

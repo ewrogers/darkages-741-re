@@ -351,6 +351,10 @@ functions:
     name: net_packet_reader_read_u16be
     confidence: high
     evidence: "Reads a big-endian 16-bit value from a decoded server packet and advances the reader by two."
+  - address: "0x00595CA0"
+    name: net_packet_reader_read_u24be
+    confidence: high
+    evidence: "Reads a big-endian 24-bit value and advances the decoded server-packet reader by three bytes."
   - address: "0x00595CE0"
     name: net_packet_reader_read_u32be
     confidence: high
@@ -446,7 +450,15 @@ functions:
   - address: "0x00598570"
     name: net_deserialize_draw_human_objects_server_packet
     confidence: high
-    evidence: "Parses the human object prefix, disguise variant, packed normal-human appearance, strings, and remaining appearance fields."
+    evidence: "Parses the human object prefix, disguise variant, packed normal-human appearance, the normal variant's u8 light-mask selector, strings, and remaining appearance fields."
+  - address: "0x00599EE0"
+    name: net_create_map_size_server_packet
+    confidence: high
+    evidence: "Allocates the fixed-size RTTI SMapSize object and invokes its concrete constructor."
+  - address: "0x00599F60"
+    name: net_map_size_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x15 to the server packet base and installs the exact SMapSize vtable."
   - address: "0x0059A050"
     name: net_create_message_server_packet
     confidence: high
@@ -542,7 +554,19 @@ functions:
   - address: "0x0059CB70"
     name: net_deserialize_user_appearance_server_packet
     confidence: high
-    evidence: "Reads u32be self object ID followed by four unknown full-update bytes and one appearance-state byte."
+    evidence: "Reads u32be user ID followed by facing, raw guild value, character class, action state, and one final unknown byte."
+  - address: "0x0059CC20"
+    name: net_create_user_position_server_packet
+    confidence: high
+    evidence: "Allocates the 0x14-byte RTTI SUserPosition object and invokes its concrete constructor."
+  - address: "0x0059CCA0"
+    name: net_user_position_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x04 to the server packet base and installs the exact SUserPosition vtable."
+  - address: "0x0059CCD0"
+    name: net_deserialize_user_position_server_packet
+    confidence: high
+    evidence: "Reads exactly u16be x and u16be y; the method returns without consuming four additional bytes observed in captures."
   - address: "0x0059D1D0"
     name: ui_gui_back_pane_handle_network_event
     confidence: high
@@ -571,18 +595,46 @@ functions:
     name: ui_map_loading_set_progress
     confidence: high
     evidence: "Stores the SMapPart transfer percentage in MapLoadingPane and invalidates the pane for redraw."
+  - address: "0x005BE580"
+    name: world_direction_to_delta
+    confidence: high
+    evidence: "Maps directions 0 through 3 to up, right, down, and left coordinate deltas; values above 3 have no defined result."
+  - address: "0x005BE600"
+    name: world_step_coordinates
+    confidence: high
+    evidence: "Applies the direction delta to a coordinate pair used by local movement and collision checks."
   - address: "0x005C7600"
     name: ui_world_pane_set_blinded
     confidence: high
     evidence: "Forwards the SStatus-derived blinded state from WorldPane to the world renderer."
+  - address: "0x005C7DF0"
+    name: world_rebuild_view_at_position
+    confidence: high
+    evidence: "Stores WorldPane view Y and X, updates the world renderer, rebuilds visible static objects and lighting, and invalidates the view."
+  - address: "0x005C92C0"
+    name: world_reindex_object
+    confidence: high
+    evidence: "Updates a world object's spatial index entry after its tile coordinates change and refreshes dependent overlay state."
   - address: "0x005D2DC0"
     name: render_world_set_blinded
     confidence: high
     evidence: "Stores the world-renderer blinded boolean and schedules the affected view for redraw."
+  - address: "0x005EEC70"
+    name: world_set_view_position
+    confidence: high
+    evidence: "Publishes a Y, X world-view position and optionally rebuilds the visible world and camera state around it."
+  - address: "0x005EEDB0"
+    name: world_get_self_user_object
+    confidence: high
+    evidence: "Looks up the saved self object ID and RTTI-casts the result to WorldObject_User."
   - address: "0x005F09E0"
     name: map_try_move_local_player
     confidence: high
     evidence: "Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before moving locally and sending CMove."
+  - address: "0x005F0D20"
+    name: ui_world_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Handles WorldPane keyboard commands; the Tab map-overlay path gives character class 2 the zoom-enabled configuration observed for Rogues."
   - address: "0x005F1A10"
     name: net_handle_status_server_packet
     confidence: high
@@ -619,10 +671,14 @@ functions:
     name: net_handle_user_appearance_server_packet
     confidence: high
     evidence: "Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage."
+  - address: "0x005F2F00"
+    name: net_handle_user_position_server_packet
+    confidence: high
+    evidence: "Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view."
   - address: "0x005F3340"
     name: net_handle_draw_human_objects_server_packet
     confidence: high
-    evidence: "Creates or refreshes WorldObject_User for self and WorldObject_Human for other normal or disguised human records."
+    evidence: "Creates or refreshes human world objects and, only in Darkness map mode 3, attaches or removes the server-selected mask1%02d.epf light image."
   - address: "0x005F3E00"
     name: net_handle_say_server_packet
     confidence: high
@@ -663,6 +719,26 @@ functions:
     name: net_handle_bad_guy_server_packet
     confidence: high
     evidence: "Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths."
+  - address: "0x005F9E50"
+    name: ui_world_pane_get_local_action_state
+    confidence: high
+    evidence: "WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc."
+  - address: "0x005F9EC0"
+    name: ui_world_pane_get_self_object_id
+    confidence: high
+    evidence: "WorldPane_Impl virtual getter returns the SUserAppearance user ID stored in WorldUserFunc."
+  - address: "0x005FA040"
+    name: ui_world_pane_get_appearance_unknown_final
+    confidence: high
+    evidence: "WorldPane_Impl virtual getter returns the final parsed SUserAppearance byte; no client decision based on it is identified."
+  - address: "0x005FA0B0"
+    name: ui_world_pane_get_guild_value
+    confidence: medium
+    evidence: "WorldPane_Impl virtual getter returns the second post-ID SUserAppearance byte unchanged; project behavioral evidence associates it with guild state."
+  - address: "0x005FA0E0"
+    name: ui_world_pane_get_character_class
+    confidence: high
+    evidence: "WorldPane_Impl virtual getter returns the third post-ID SUserAppearance byte; the Tab map-overlay path gives value 2 the Rogue-only zoom-enabled configuration."
   - address: "0x005FC5F0"
     name: session_world_user_func_ctor
     confidence: high
@@ -722,7 +798,7 @@ functions:
   - address: "0x005FD3B0"
     name: session_update_from_user_appearance_packet
     confidence: high
-    evidence: "Stores SUserAppearance state & 0x7F; bit 0 locks movement and actions, while wire bit 0x80 suppresses other self-field updates."
+    evidence: "Stores user ID, cached facing, raw guild value, character class, final unknown byte, and action state & 0x7F; bit 0 locks movement and actions, while wire bit 0x80 suppresses the other field updates."
   - address: "0x00667B20"
     name: net_register_bad_guy_server_packet_factory
     confidence: high
@@ -959,12 +1035,30 @@ comments:
     text: "SBadGuy ends with a u32be guard value."
   - address: "0x0059810A"
     text: "SChangeHour reads exactly one u8 time step into object +0x10. Any remaining decoded body bytes are left unread."
+  - address: "0x0059857C"
+    text: "Initialize the object light-mask selector to 1. Disguised records retain this default because only normal-human records read the wire field."
   - address: "0x00598612"
     text: "Read the packed human appearance variant. Its high nibble selects gender and a body-resource family; the low nibble is retained separately."
+  - address: "0x005986F0"
+    text: "Read the normal-human light-mask selector as u8 at decoded-body offset 0x20. Darkness maps translate positive values to mask1%02d.epf; zero removes the light source."
   - address: "0x00598843"
     text: "Decode packed appearance high nibble. Values 8 and 9 select body resource 5 with male and female resource prefixes respectively."
   - address: "0x0059891A"
     text: "Appearance variant 8 selects male body resource 5. Variant 9 selects the female form; local MM005 and WM005 frames are head-sized swimming art."
+  - address: "0x00599FA2"
+    text: "Read SMapSize map_number as u16be."
+  - address: "0x00599FB1"
+    text: "Read the effective width as one byte; the 7.41 handler never reconstructs a u16 width."
+  - address: "0x00599FBF"
+    text: "Read the effective height as one byte; the 7.41 handler never reconstructs a u16 height."
+  - address: "0x00599FCD"
+    text: "Read SMapSize flags: low nibble is weather or lighting mode, 0x40 is NoMap, and 0x80 is Winter."
+  - address: "0x00599FDB"
+    text: "Read one unknown byte after flags. The active handler loads it into a local variable and never references the value again."
+  - address: "0x00599FE9"
+    text: "Read the three-byte cache slot as u24be. Observed values contain 00 followed by the CRC16, and the comparison requires that high byte to be zero."
+  - address: "0x00599FFE"
+    text: "Read the map name as string8."
   - address: "0x0059A112"
     text: "Read the SMessage type byte."
   - address: "0x0059A11F"
@@ -1020,17 +1114,35 @@ comments:
   - address: "0x0059C767"
     text: "Read armor class as a byte. UI consumers later sign-extend it as s8."
   - address: "0x0059C796"
-    text: "Fields bit 0x02 becomes packet-object state only. The game has a Swimming skill, but no SStatus consumer connects this bit to movement or swimming rendering."
+    text: "Fields bit 0x02 becomes packet-object state only. It does not update WorldUserFunc appearance_action_state or participate in movement or swimming rendering."
   - address: "0x0059C7A8"
     text: "Fields bit 0x01, together with a present modifiers block, enables the parcel/mail UI update and nibble-derived mail state."
   - address: "0x0059CB82"
-    text: "SUserAppearance begins with the local player's u32be object ID."
+    text: "Read SUserAppearance user_id as u32be."
+  - address: "0x0059CB90"
+    text: "Read cached facing. Project protocol vocabulary maps 0=up, 1=right, 2=down, and 3=left; this stored copy has no identified reader."
+  - address: "0x0059CB9E"
+    text: "Read and preserve the raw one-byte guild value without boolean normalization."
+  - address: "0x0059CBAC"
+    text: "Read the one-byte character class. Project protocol vocabulary supplies the labels; local code directly special-cases numeric value 2."
   - address: "0x0059CBBA"
-    text: "Read appearance_state. Bit 0x80 marks a state-only update; the session stores the remaining low seven bits."
+    text: "Read appearance_action_state. Bit 0 blocks movement and several actions; bit 0x80 marks a state-only update."
+  - address: "0x0059CBC0"
+    text: "Read the final parsed appearance byte. It is separate from appearance_action_state and has no identified gameplay consumer."
+  - address: "0x0059CCE2"
+    text: "Read SUserPosition x as u16be into packet object +0x10."
+  - address: "0x0059CCE9"
+    text: "Read SUserPosition y as u16be into packet object +0x12."
+  - address: "0x0059CCF8"
+    text: "Return after exactly two u16be reads. Any remaining decoded body bytes are left unread and have no SUserPosition object fields."
   - address: "0x005B10D3"
     text: "UserInfoPane maps wire slots through a 19-entry table: slot 0 -> -1; slots 1..18 -> view indices 0..17."
   - address: "0x005B1138"
     text: "Use the same slot mapping for removal before clearing the user-information equipment view."
+  - address: "0x005BE58D"
+    text: "Only directions 0 through 3 have defined coordinate deltas. Values above 3 do not take an explicit None path and leave the result undefined."
+  - address: "0x005ED9C6"
+    text: "Opcode 0x04 dispatch uses only the deserialized SUserPosition object. Its raw decoded body is not passed to the handler."
   - address: "0x005EDC2D"
     text: "Dispatch RTTI packet SRemoveSpell opcode 0x18 to net_handle_remove_spell_server_packet."
   - address: "0x005EDC56"
@@ -1043,10 +1155,18 @@ comments:
     text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
   - address: "0x005EE185"
     text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x1E, 0x58, or 0x67."
+  - address: "0x005F0086"
+    text: "Movement bounds compare signed 32-bit coordinates against the u8-derived SMapSize width and height."
   - address: "0x005F00C2"
     text: "Reject movement immediately when WorldUserFunc appearance-state bit 0 is set, before dynamic-object and SOTP collision checks."
   - address: "0x005F0AF4"
     text: "Normal local movement uses direction-specific dynamic-object and SOTP collision checks. It does not inspect ground tile IDs or search the skillbook for Swimming."
+  - address: "0x005F0DC8"
+    text: "Virtual-key 0x09 (Tab) enters the map-overlay path; the later character-class branch selects whether map zoom is enabled."
+  - address: "0x005F0DDD"
+    text: "NoMap flag 0x40 prevents the Tab-key map overlay path before Rogue zoom permissions are considered."
+  - address: "0x005F0EB9"
+    text: "Character class 2, Rogue in project protocol vocabulary, selects the Tab map overlay's zoom-enabled configuration. Other classes receive the non-zoomable configuration."
   - address: "0x005F1A27"
     text: "Only blindness code 08 enables the world blind-render state."
   - address: "0x005F1B5A"
@@ -1055,6 +1175,22 @@ comments:
     text: "Forward SAddSkill to WorldUserFunc vtable slot +0x18."
   - address: "0x005F1BDA"
     text: "Forward SRemoveSkill to WorldUserFunc vtable slot +0x1C."
+  - address: "0x005F1C5D"
+    text: "Zero-extend the packet's one-byte width into the 7.41 map dimensions."
+  - address: "0x005F1C69"
+    text: "Zero-extend the packet's one-byte height into the 7.41 map dimensions."
+  - address: "0x005F1C8E"
+    text: "Load the unknown byte after flags into a local variable; the active handler never references the value again."
+  - address: "0x005F1D1F"
+    text: "Store flags & 0x0F as the local weather or lighting mode."
+  - address: "0x005F1D48"
+    text: "Winter flag 0x80 selects alternate ground and static art banks."
+  - address: "0x005F1D73"
+    text: "NoMap flag 0x40 disables an existing map overlay; the Tab handler also refuses to open it."
+  - address: "0x005F1E88"
+    text: "Compare the locally computed CRC16, zero-extended to u32, with the packet's parsed three-byte cache value."
+  - address: "0x005F206E"
+    text: "Serialize the locally computed CRC16 as 00 followed by the CRC high and low bytes in CMapRequest."
   - address: "0x005F2170"
     text: "Store the SChangeHour time step at WorldPane +0x25C, then immediately recompute map lighting."
   - address: "0x005F2AEB"
@@ -1067,6 +1203,16 @@ comments:
     text: "When appearance_state bit 0x80 is clear, refresh the two self-object IDs. A state-only update leaves them unchanged."
   - address: "0x005F2EEA"
     text: "Always forward SUserAppearance to WorldUserFunc, including state-only updates."
+  - address: "0x005F2F20"
+    text: "Sign-extend parsed SUserPosition x and y words before storing them in 32-bit world position fields."
+  - address: "0x005F2F48"
+    text: "WorldObject stores tile_y at +0x40 and tile_x at +0x44; SUserPosition wire order remains x then y."
+  - address: "0x005F2F7D"
+    text: "Reindex WorldObject_User after replacing its authoritative tile coordinates."
+  - address: "0x005F2F8F"
+    text: "Recenter and rebuild the world view at the server-supplied Y, X position even if WorldObject_User was not found."
+  - address: "0x005F3826"
+    text: "Only Darkness map mode 3 applies the SDrawHumanObjects light-mask selector. Positive values attach mask1%02d.epf; zero clears it."
   - address: "0x005F3E77"
     text: "Show the speech balloon on the selected world object for 3,000 ms. This path does not append to persistent message history."
   - address: "0x005F6DD9"
@@ -1148,9 +1294,17 @@ comments:
   - address: "0x005FD392"
     text: "Session skill removal accepts slots 1 through 89; other values are ignored."
   - address: "0x005FD3CC"
-    text: "Store appearance_state & 0x7F at WorldUserFunc +0x15C88. Bit 0 of this stored state blocks local movement and several actions."
+    text: "Store appearance_state & 0x7F at WorldUserFunc +0x15C88. Bit 0 blocks local movement and several actions; this is the field's only runtime writer."
   - address: "0x005FD3DC"
     text: "Bit 0x80 means the packet only changes the stored low-seven-bit state. Other self appearance fields remain unchanged."
+  - address: "0x005FD3FA"
+    text: "Store cached facing at WorldUserFunc +0x1054. No later direct reader is present in this client."
+  - address: "0x005FD409"
+    text: "Store the raw guild value at WorldUserFunc +0x1088 without boolean normalization."
+  - address: "0x005FD418"
+    text: "Store the character-class byte at WorldUserFunc +0x1089."
+  - address: "0x005FD427"
+    text: "Store the final unknown appearance byte at WorldUserFunc +0x108A. WorldPane_Impl exposes it through a getter, but no direct behavior is identified."
   - address: "0x00667B38"
     text: "Register the SBadGuy constructor in the server_packet_factory initialization path."
 runtime_patches: []
@@ -1201,7 +1355,7 @@ packet_indexes:
         builder: "0x005F1BF0"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "The SMap handler at 0x005F1BF0 builds opcode 0x05 inline after map-state validation."
+        evidence: "The SMapSize handler at 0x005F1BF0 builds opcode 0x05 inline after cache validation. It writes two zero u16be fields, u8 width and height, and a zero-extended CRC16 as u24be."
         page: "docs/network/client/005-0x05-map-request.md"
       - opcode: "0x06"
         friendly_name: "Move"
@@ -1758,7 +1912,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059CCA0 passes opcode 0x04 to the server packet base and installs the SUserPosition vtable."
+        evidence: "RTTI constructor 0x0059CCA0 installs opcode 0x04. Deserializer 0x0059CCD0 consumes only u16be x and y; handler 0x005F2F00 applies them to WorldObject_User and the world view."
         page: "docs/network/server/004-0x04-user-position.md"
       - opcode: "0x05"
         friendly_name: "User Appearance"
@@ -1898,7 +2052,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00599F60 installs SMapSize for opcode 0x15. Decoder 0x00599F90 reads map ID, dimensions, flags, secondary mode, u24be checksum, and a u8-length name. Handler 0x005F1BF0 uses flag 0x80 for alternate art and the low nibble for weather mode."
+        evidence: "Constructor 0x00599F60 installs SMapSize for opcode 0x15. Decoder 0x00599F90 reads u16be map number, four bytes, u24be cache value, and string8 name. Handler 0x005F1BF0 uses u8 dimensions, ignores the fourth byte, treats 0x40 as NoMap, treats 0x80 as Winter, and applies the low-nibble weather mode."
         page: "docs/network/server/021-0x15-map-size.md"
       - opcode: "0x17"
         friendly_name: "Add Spell"
