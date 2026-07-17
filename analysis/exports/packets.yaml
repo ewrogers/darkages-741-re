@@ -467,6 +467,26 @@ functions:
     name: net_deserialize_draw_human_objects_server_packet
     confidence: high
     evidence: "Parses X, Y, direction, entity ID, the complete normal or monster-disguise appearance variant, name style, name, group-ad text, and the normal variant's u8 light-mask selector."
+  - address: "0x005989C0"
+    name: net_create_draw_objects_server_packet
+    confidence: high
+    evidence: "Allocates the 0x30-byte RTTI SDrawObjects object and invokes its concrete constructor."
+  - address: "0x00598A40"
+    name: net_draw_objects_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x07 to the server packet base, installs the exact SDrawObjects vtable, and constructs its retained body reader."
+  - address: "0x00598AB0"
+    name: net_deserialize_draw_objects_server_packet
+    confidence: high
+    evidence: "Reads the u16 entity count and retains a reader over all remaining variable-length records."
+  - address: "0x00598B10"
+    name: net_reset_draw_objects_record_reader
+    confidence: high
+    evidence: "Rewinds the retained SDrawObjects body reader and resets its consumed-record count."
+  - address: "0x00598B30"
+    name: net_read_draw_object_record
+    confidence: high
+    evidence: "Reads one common X, Y, entity ID, and tagged sprite prefix followed by the creature or ground-item variant."
   - address: "0x00599EE0"
     name: net_create_map_size_server_packet
     confidence: high
@@ -723,6 +743,10 @@ functions:
     name: net_handle_user_position_server_packet
     confidence: high
     evidence: "Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view."
+  - address: "0x005F3150"
+    name: net_handle_draw_objects_server_packet
+    confidence: high
+    evidence: "Walks every SDrawObjects record, replaces matching IDs, creates WorldObject_Monster or WorldObject_Item by tagged sprite range, applies creature palette selectors and names, and ignores unsupported ranges."
   - address: "0x005F3340"
     name: net_handle_draw_human_objects_server_packet
     confidence: high
@@ -1101,6 +1125,18 @@ comments:
     text: "Decode packed appearance high nibble. Variants 3 and 4 set nonblocking body sprite 2; variants 5 and 6 force translucency; variants 8 and 9 select swimming body sprite 5."
   - address: "0x0059891A"
     text: "Appearance variant 8 selects male body resource 5. Variant 9 selects the female form; local MM005 and WM005 frames are head-sized swimming art."
+  - address: "0x00598AC7"
+    text: "Read the SDrawObjects u16 entity count, then retain a reader over all remaining variable-length records."
+  - address: "0x00598B91"
+    text: "Read tagged_sprite. Range 0x4000..0x7FFF selects WorldObject_Monster and 0x8000..0xBFFF selects WorldObject_Item."
+  - address: "0x00598BB2"
+    text: "Creature variant: read four ordered palette-selector bytes. They later replace selectors in the monster sprite resource's color-range mappings."
+  - address: "0x00598BEC"
+    text: "Ground-item variant: read one dye_color byte. The following two common bytes are consumed but ignored by the item handler."
+  - address: "0x00598BFA"
+    text: "Read two bytes shared by the parser variants. For creatures the first is Direction and the second is discarded; both are discarded for items."
+  - address: "0x00598C3A"
+    text: "Creature variant: widen creature_type to u32. Value 2 is the Mundane, meaning NPC, form and is the only value followed by a string8 display name."
   - address: "0x00599FA2"
     text: "Read SMapSize map_number as u16."
   - address: "0x00599FB1"
@@ -1267,6 +1303,18 @@ comments:
     text: "Reindex WorldObject_User after replacing its authoritative tile coordinates."
   - address: "0x005F2F8F"
     text: "Recenter and rebuild the world view at the server-supplied Y, X position even if WorldObject_User was not found."
+  - address: "0x005F31A3"
+    text: "Tagged sprites 0x4000..0x7FFF create or replace RTTI WorldObject_Monster entries in the shared WorldObjectList."
+  - address: "0x005F3207"
+    text: "Apply the untagged monster sprite, Direction, and four packet palette selectors to MonsterObjectImageSession. The following packet byte is not forwarded."
+  - address: "0x005F323E"
+    text: "A nonempty Mundane NPC name creates WorldObject_Name_Pane for the entity. SDrawObjects supplies this string only when creature_type is 2."
+  - address: "0x005F327B"
+    text: "Tagged sprites 0x8000..0xBFFF create or replace RTTI WorldObject_Item entries; other tagged ranges are ignored."
+  - address: "0x005F329C"
+    text: "Create the ground item from entity ID, Y, X, untagged sprite, and dye_color. The record's two trailing bytes are not passed."
+  - address: "0x005F32F3"
+    text: "Invoke the new WorldObject_Item's class-specific image and ground-visual refresh after insertion."
   - address: "0x005F33A1"
     text: "Compare the packet entity ID with the saved self ID. Matching records use WorldObject_User; all others use WorldObject_Human."
   - address: "0x005F36C0"
@@ -2008,7 +2056,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00598A40 passes opcode 0x07 to the server packet base and installs the SDrawObjects vtable."
+        evidence: "Constructor 0x00598A40 installs opcode 0x07 and exact RTTI SDrawObjects. Reader 0x00598B30 decodes heterogeneous creature and item records; handler 0x005F3150 creates WorldObject_Monster for 0x4000-tagged sprites and WorldObject_Item for 0x8000-tagged sprites in the shared world index."
         page: "docs/network/server/007-0x07-draw-objects.md"
       - opcode: "0x08"
         friendly_name: "Status"

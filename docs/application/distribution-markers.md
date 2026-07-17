@@ -54,6 +54,12 @@ The configuration constructor still has a switch for every returned mode. These 
 
 The Japan and Singapore initializers store four compiled address bytes directly. They correspond to `4.216.215.61` and `130.228.172.202` respectively. These are historical values in dormant code, not claims about current services.
 
+## Language selected by the distribution
+
+The distribution choice also feeds a smaller four-value language selector. The default mode is Korean, modes 1 through 12 are English, mode 13 is Japanese, mode 14 is Taiwan, and mode 15 returns to English.
+
+That selector chooses the bitmap font entry and retained message label. Korean records code page 949, Japanese records 932, and the other modes use the system ANSI environment. The complete drawing and asset behavior is in [Text and fonts](../rendering/text.md).
+
 ## What the markers do not control
 
 The marker scanner does not select `ESC C` versus `ESC S` network framing. That choice comes from the server greeting after a connection is made. The printable frame is a transport encoding for normal opcode-first packet bodies, not a regional character encoding.

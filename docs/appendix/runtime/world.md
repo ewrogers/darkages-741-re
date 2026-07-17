@@ -79,6 +79,144 @@ struct WorldObjectPositionFields {
 
 [`SUserPosition`](../../network/server/004-0x04-user-position.md) carries X, Y on the wire, sign-extends both words, writes these fields, and reindexes the local `WorldObject_User`. It then copies Y, X to `WorldPane.view_y` and `WorldPane.view_x` before rebuilding the visible map state.
 
+## Dynamic object index
+
+`WorldPane` owns one shared collection for humans, creatures, and ground items. It is not a flat object array.
+
+```c
+struct WorldPaneDynamicObjectFields {
+    u8 unknown_000[0x194];
+    WorldObjectList *object_list;     // +0x194
+};
+
+struct WorldObjectListFields741 {
+    u8 unknown_00[0x20];
+    WorldObjectIdNode *id_tree_head;  // +0x20, sentinel and tree root links
+    u8 unknown_24[0x28];
+    WorldObjectCell *cells;           // +0x4C, width * height records
+    u8 unknown_50[0x0C];
+    s32 width;                        // +0x5C
+    s32 height;                       // +0x60
+};
+
+struct WorldObjectIdNode {
+    WorldObjectIdNode *left;          // +0x00
+    WorldObjectIdNode *parent;        // +0x04
+    WorldObjectIdNode *right;         // +0x08
+    u32 entity_id;                    // +0x0C
+    WorldObject *object;              // +0x10, reference-counted
+    u8 tree_state[4];                 // +0x14, color/sentinel state and padding
+};
+```
+
+The ID index is an MSVC ordered tree whose subobject begins at `WorldObjectList + 0x1C`; `+0x20` is its head or sentinel pointer. Lookup searches on the server's 32-bit `entity_id` and returns the reference-counted pointer at node `+0x10`.
+
+The spatial side is dense. `cells` contains `width * height` records of `0x60` bytes, selected as `cells + (y * width + x) * 0x60`. The object-list insertion path updates the matching cell and the ID tree, then sets the object's `inserted` byte. Movement and direct position correction reindex the same object instead of changing its ID.
+
+All dynamic classes begin with these useful common fields:
+
+```c
+struct WorldObjectCommonFields741 {
+    u8 unknown_000[0x24];
+    u32 entity_id;                    // +0x24
+    u8 render_subtype;                // +0x28, monster 0x0A, item 4
+    u8 unknown_029[3];
+    u32 broad_category;               // +0x2C, monster 2, item 8
+    u8 unknown_030;
+    u8 collision_level;               // +0x31
+    u8 unknown_032[0x0E];
+    s32 tile_y;                       // +0x40
+    s32 tile_x;                       // +0x44
+    bool inserted;                    // +0x48
+    u8 unknown_049[0x0F];
+    WorldObject_Name_Pane *name_pane; // +0x58
+};
+```
+
+The `SDrawObjects` creation helpers remove any existing entry with the same ID before inserting the replacement. Repeated descriptions are therefore replacements, not duplicate tree nodes.
+
+### Creature and NPC-style objects
+
+Both creatures and Mundanes, the game's NPCs, use exact RTTI class `WorldObject_Monster`.
+
+```c
+struct WorldObjectMonsterLayout741 {
+    WorldObjectCommonFields741 common; // through +0x5B
+    u8 unknown_05C[0x34];
+    MonsterObjectImageSession *image_session; // +0x90
+    u8 unknown_094[0x7C];
+    bool unknown_110;                 // +0x110, constructor writes 1
+    u8 unknown_111;
+    char living_name[0x80];           // +0x112, not filled by SDrawObjects
+    u8 direction;                     // +0x192
+    u8 unknown_193[0x59];
+    u8 creature_type;                 // +0x1EC
+    u8 unknown_1ED[3];
+};                                    // size 0x1F0
+
+struct MonsterPaletteMapping741 {
+    u32 source_first;                 // +0x00, first source palette index
+    u32 source_last;                  // +0x04, inclusive upper limit
+    u32 palette_selector;             // +0x08, replaced from SDrawObjects
+    u32 palette_family;               // +0x0C
+};                                    // size 0x10
+
+struct MonsterObjectImageSessionLayout741 {
+    u8 unknown_000[0x10];
+    void *monster_sprite_resource;    // +0x10
+    u8 unknown_014[0x89];
+    bool palette_overrides_active;    // +0x9D
+    u8 unknown_09E[2];
+    MonsterPaletteMapping741 palette_mappings[4]; // +0xA0
+    s32 palette_mapping_count;        // +0xE0, at most 4
+};                                    // size 0xE4
+```
+
+The four creature bytes in [`SDrawObjects`](../../network/server/007-0x07-draw-objects.md) become the `palette_selector` fields. The client first copies each range description from the selected monster resource, then replaces only the selector. `palette_mapping_count` is the smaller of four and the number of ranges declared by that resource.
+
+The packet's optional Mundane name does not populate `living_name`. It creates and attaches a separate name pane:
+
+```c
+struct WorldObjectNamePaneFields741 {
+    u8 pane_bases_and_state[0x198];
+    char text[0x40];                  // +0x198, at most 63 bytes plus NUL
+    u8 style;                         // +0x1D8
+    u8 option;                        // +0x1D9
+    bool unknown_1DA;                 // +0x1DA
+    u8 pad_1DB;
+};                                    // size 0x1DC
+```
+
+`WorldObject_Monster.common.name_pane` points to this object. Both style bytes are zero for the `SDrawObjects` Mundane-name path.
+
+Creature type is retained at `+0x1EC`. Construction maps types `1`, `2`, and `3` to `collision_level` values `0x96`, `0x8C`, and `0x82`; other values receive `0x78`. The map collision cache scans a tile's objects and keeps the highest value. Proposed movement also checks [`CreatureType`](../../network/protocol-types.md#creaturetype) directly: Passable value `1` never blocks, while normal instances of the other types do.
+
+The inherited living-object byte at `+0xD4` is a separate nonblocking state. The living constructor clears it, and normal monster creation does not set it. Type `3`, project-named Solid, has a special movement branch that permits it only if this state has already become true. The client path that would set the state on a monster remains unresolved.
+
+### Ground items
+
+Ground items use exact RTTI class `WorldObject_Item`.
+
+```c
+struct WorldObjectItemLayout741 {
+    WorldObjectCommonFields741 common; // through +0x5B
+    u8 unknown_05C[0x20];
+    u16 sprite;                       // +0x7C, 0x8000 tag removed
+    u8 unknown_07E[2];
+    void *item_resource_context;      // +0x80
+    void *image;                      // +0x84
+    s32 source_rect[4];               // +0x88
+    s32 draw_rect[4];                 // +0x98
+    s32 image_offset_x;               // +0xA8
+    s32 image_offset_y;               // +0xAC
+    s32 blend_mode;                   // +0xB0
+    u8 dye_color;                     // +0xB4
+    u8 unknown_0B5[3];
+};                                    // size 0xB8
+```
+
+The packet retains only the untagged `sprite` and `dye_color` in the item object. Its two trailing bytes are parsed but never copied into this layout or used by the item-image refresh path.
+
 ## Human appearance
 
 The normal form of `SDrawHumanObjects` is normalized into this 0x30-byte record before it reaches the renderer. The field order is not identical to the wire order.

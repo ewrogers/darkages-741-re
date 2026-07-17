@@ -19,6 +19,7 @@ runtime address = loaded module base + RVA
 | Disable official endpoint fallback | `0x005655F4` | `0x001655F4` | `C7 85 94 FB FF FF 00 00 00 00` | `E9 06 13 00 00 90 90 90 90 90` |
 | Suppress stipulation window after a matching greeting | `0x004B897C` | `0x000B897C` | `75 6C` | `EB 6C` |
 | Suppress stipulation window after a replacement greeting | `0x004B8ACF` | `0x000B8ACF` | `75 6D` | `EB 6D` |
+| Remove fixed server-transfer delay | `0x00564855` | `0x00164855` | `68 E8 03 00 00` | `68 00 00 00 00` |
 | Hide all static map art | `0x005E47FF` | `0x001E47FF` | `74 05` | `EB 00` |
 
 ## Allow multiple clients
@@ -77,6 +78,22 @@ Each original `JNE` skips `AgreementDialogPane` only in Japan distribution mode.
 That continuation clears `MainMenuPane +0x500`. The main-menu pointer and keyboard handlers reject input only while this value is nonzero, so Login remains enabled and clickable. The agreement pane's OK action sends no packet, which means there is no acknowledgement to emulate.
 
 Apply both changes. One covers a matching cached greeting and the other covers a newly received replacement. Homepage requesting, CRC mismatch recovery, zlib inflation, table saving, and the final menu-state update all run normally.
+
+## Remove the fixed server-transfer delay
+
+`net_reconnect_transfer_endpoint` closes the old connection, resets transport state, applies the endpoint from `STransferServer`, and performs the new blocking connection. It then calls `Sleep(1000)` before the communications queue can continue.
+
+`net_handle_transfer_server` waits for a later queue item on the game and UI thread. That makes the worker's fixed sleep a visible one-second animation freeze.
+
+The patch changes only the pushed sleep duration:
+
+| Static address | RVA | File offset, reference only |
+| --- | --- | --- |
+| `0x00564855` | `0x00164855` | `0x00163C55` |
+
+`PUSH 0; CALL Sleep` preserves the instruction size and the normal call boundary. It removes the guaranteed extra second while keeping socket shutdown, state resets, the blocking `connect`, seed-table ordering, command cleanup, and `CTransferServer` submission intact.
+
+The animation may still pause for however long the actual `connect` call takes. Removing that remaining stall requires an asynchronous main-thread state machine, not another safe one-instruction change. See [Initial connection](../network/connection.md#why-the-screen-pauses-during-a-transfer).
 
 ## Hide all static map art
 

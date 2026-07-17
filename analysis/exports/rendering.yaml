@@ -107,10 +107,30 @@ functions:
     name: render_blit_canvas
     confidence: high
     evidence: Copies or blends one Canvas into another.
+  - address: "0x004526C0"
+    name: render_canvas_blit_mask
+    confidence: high
+    evidence: Draws a one-bit bitmap mask into a 16-bit Canvas using the current foreground, background, and blend mode.
+  - address: "0x00453E60"
+    name: render_blit_pixmap_with_palette_mappings
+    confidence: high
+    evidence: Draws indexed monster pixels while replacing configured source-index ranges through ordered palette-family and palette-selector mappings.
   - address: "0x004548B0"
     name: render_average_pixels
     confidence: high
     evidence: Combines two 16-bit pixels with the fixed component-average lookup path.
+  - address: "0x00455910"
+    name: render_canvas_draw_glyph
+    confidence: high
+    evidence: Resolves one 16-bit byte-code key through FontImageLib, blits its one-bit mask, and advances the Canvas cursor.
+  - address: "0x00455A30"
+    name: render_canvas_draw_text
+    confidence: high
+    evidence: Splits an ANSI byte string with IsDBCSLeadByte, builds one LFT glyph mask per key, and draws it to the software Canvas.
+  - address: "0x004566B0"
+    name: render_get_font_image_library
+    confidence: high
+    evidence: Returns the RTTI-backed FontImageLib singleton used by the active text renderer.
   - address: "0x00456F30"
     name: file_open_efa
     confidence: high
@@ -135,6 +155,50 @@ functions:
     name: render_get_effect_image_pool
     confidence: high
     evidence: Returns the EffectImagePool singleton.
+  - address: "0x0047B7D0"
+    name: render_font_image_library_ctor
+    confidence: high
+    evidence: Constructs RTTI class FontImageLib, registers its singleton, and loads the language-selected LFT entry.
+  - address: "0x0047B860"
+    name: render_font_image_library_dtor
+    confidence: high
+    evidence: Destroys FontImageLib and unregisters its singleton.
+  - address: "0x0047B8C0"
+    name: render_font_load_lft
+    confidence: high
+    evidence: Selects lod.lft, da.lft, yami.lft, or taiwan.lft by language mode and maps its glyph table and bitmap region.
+  - address: "0x0047BAE0"
+    name: render_font_build_glyph_mask
+    confidence: high
+    evidence: Expands one LFT glyph's padded one-bit rows into the temporary mask and returns its bounds and advance.
+  - address: "0x0047BD60"
+    name: render_font_get_glyph_advance
+    confidence: high
+    evidence: Returns one LFT advance width, with zero for control bytes and a nominal-width fallback for an omitted space.
+  - address: "0x0047BDE0"
+    name: render_font_copy_legacy_hangul_glyph
+    confidence: high
+    evidence: Dormant fixed-font path that maps a CP949 Wansung or jamo code and copies its 24-byte glyph.
+  - address: "0x0047BE80"
+    name: render_font_copy_legacy_english_glyph
+    confidence: high
+    evidence: Dormant fixed-font path that copies one 12-byte English glyph by byte index.
+  - address: "0x0047BEB0"
+    name: render_font_copy_legacy_fallback_glyph
+    confidence: high
+    evidence: Copies the built-in 24-byte fallback used by an unsupported legacy Hangul code.
+  - address: "0x0047BED0"
+    name: render_font_load_legacy_english_fnt
+    confidence: high
+    evidence: Dormant loader that places engNN.fnt at printable-ASCII index 0x21 in a 256-record table.
+  - address: "0x0047BFB0"
+    name: render_font_load_legacy_hangul_fnt
+    confidence: high
+    evidence: Dormant loader that copies the selected 57,624-byte hanNN.fnt entry.
+  - address: "0x0047C150"
+    name: render_font_map_legacy_hangul_code
+    confidence: high
+    evidence: Maps CP949 B0A1-C8FE syllables and A4A1-A4D3 jamo to the 2,401 fixed Hangul records.
   - address: "0x0048B390"
     name: file_read_image_metadata
     confidence: high
@@ -147,6 +211,22 @@ functions:
     name: ui_image_pane_draw_content
     confidence: high
     evidence: Draws an ImagePane image into the pane's own canvas.
+  - address: "0x004A49B0"
+    name: app_language_mode_from_distribution
+    confidence: high
+    evidence: Maps distribution modes to Korean 0, English 1, Japanese 2, or Taiwan 3 language modes.
+  - address: "0x004A4A30"
+    name: app_get_text_code_page
+    confidence: high
+    evidence: Returns the code-page value selected with the current language mode.
+  - address: "0x004A4A60"
+    name: app_get_language_message_label
+    confidence: high
+    evidence: Maps language modes to msgkor.h, msgeng.h, msgjpn.h, or msgtai.h labels retained by the client.
+  - address: "0x004A4CE0"
+    name: app_set_language_mode
+    confidence: high
+    evidence: Stores the language mode, selects the retained message label, and records code page 949 or 932 for Korean or Japanese.
   - address: "0x004AE4E0"
     name: render_get_map_tile_library
     confidence: high
@@ -363,6 +443,30 @@ functions:
     name: render_build_world_light_mask
     confidence: high
     evidence: Builds the ambient or HEA base mask and, when enabled, merges light images attached to visible world objects.
+  - address: "0x005C8EA0"
+    name: world_insert_object
+    confidence: high
+    evidence: Inserts one reference-counted WorldObject into WorldObjectList, coordinate, render, and observer state.
+  - address: "0x005C9810"
+    name: world_find_object_by_id
+    confidence: high
+    evidence: Resolves a 32-bit server entity ID through the WorldPane-owned WorldObjectList at object offset +0x194.
+  - address: "0x005C9FA0"
+    name: world_remove_object_by_id
+    confidence: high
+    evidence: Finds an existing world object by ID, optionally creates its removal replacement, and detaches the original from shared indexes.
+  - address: "0x005CA4C0"
+    name: world_create_monster_object
+    confidence: high
+    evidence: Replaces a matching ID, allocates RTTI WorldObject_Monster, stores Y and X, inserts it, and retains the packet creature type.
+  - address: "0x005CAC60"
+    name: world_create_item_object
+    confidence: high
+    evidence: Replaces a matching ID, allocates RTTI WorldObject_Item from ID, Y, X, untagged sprite, and dye, then inserts it.
+  - address: "0x005CC670"
+    name: world_create_object_name_pane
+    confidence: high
+    evidence: Finds a world object by ID, constructs RTTI WorldObject_Name_Pane from bounded text and style bytes, and attaches it to the object.
   - address: "0x005CCA80"
     name: render_set_object_light_mask
     confidence: high
@@ -406,7 +510,7 @@ functions:
   - address: "0x005CF5E0"
     name: map_get_collision_level
     confidence: high
-    evidence: Combines dynamic occupants and the two static SOTP masks at one map cell.
+    evidence: Retains the highest WorldObject +0x31 collision level at one map cell, with fully blocked static SOTP supplying level 1 when no dynamic level does.
   - address: "0x005D2B70"
     name: render_use_base_ground_bank
     confidence: high
@@ -447,6 +551,14 @@ functions:
     name: render_ground_tile
     confidence: high
     evidence: Copies one decoded isometric tile diamond into the ground cache canvas.
+  - address: "0x005D8B90"
+    name: map_refresh_collision_cache
+    confidence: high
+    evidence: Refreshes dirty cells in the map's width-by-height byte collision cache with map_get_collision_level.
+  - address: "0x005DBA80"
+    name: world_object_set_name_pane
+    confidence: high
+    evidence: Replaces the reference-counted WorldObject_Name_Pane pointer at common WorldObject offset +0x58.
   - address: "0x005DD380"
     name: render_effect_object
     confidence: high
@@ -455,6 +567,10 @@ functions:
     name: render_update_effect_frame
     confidence: high
     evidence: Advances a world effect through its Effect.tbl frame sequence.
+  - address: "0x005DE280"
+    name: world_item_object_ctor
+    confidence: high
+    evidence: Constructs the 0xB8-byte RTTI WorldObject_Item and retains entity ID, Y, X, untagged sprite, resource context, and dye color.
   - address: "0x005DE620"
     name: render_item_object
     confidence: high
@@ -463,6 +579,10 @@ functions:
     name: render_copy_human_appearance_record
     confidence: high
     evidence: Rearranges the parser-friendly SDrawHumanObjects appearance fields into the stable 0x30-byte HumanAppearanceRecord741 used by world objects and image sessions.
+  - address: "0x005DF230"
+    name: world_living_object_ctor
+    confidence: high
+    evidence: Constructs the RTTI WorldObject_Living base, including clearing its +0xD4 nonblocking state.
   - address: "0x005DF950"
     name: render_living_object
     confidence: high
@@ -475,6 +595,18 @@ functions:
     name: render_human_apply_appearance_record
     confidence: high
     evidence: Copies HumanAppearanceRecord741 to WorldObject_Human +0xA4, derives nonblocking and translucent state, creates the 0x918-byte HumanObjectImageSession, and refreshes direction and motion.
+  - address: "0x005E0370"
+    name: render_monster_apply_appearance
+    confidence: high
+    evidence: Resolves the untagged monster sprite, creates MonsterObjectImageSession, applies Direction and up to four palette selectors, and refreshes motion.
+  - address: "0x005E2630"
+    name: world_monster_object_ctor
+    confidence: high
+    evidence: Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level.
+  - address: "0x005E3F00"
+    name: ui_world_object_name_pane_ctor
+    confidence: high
+    evidence: Constructs the 0x1DC-byte RTTI WorldObject_Name_Pane and retains at most 63 text bytes plus a NUL at +0x198.
   - address: "0x005E42F0"
     name: render_static_object_ctor
     confidence: high
@@ -483,6 +615,14 @@ functions:
     name: render_static_object
     confidence: high
     evidence: Draws a fixed world object with its SOTP-selected software blend mode.
+  - address: "0x005E5D40"
+    name: world_object_list_insert
+    confidence: high
+    evidence: Inserts an object into its 0x60-byte coordinate cell and the ordered entity-ID index, then marks WorldObject +0x48 inserted.
+  - address: "0x005E73B0"
+    name: world_object_list_find_by_id
+    confidence: high
+    evidence: Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10.
   - address: "0x005EF360"
     name: world_update_map_lighting
     confidence: high
@@ -490,7 +630,7 @@ functions:
   - address: "0x005EFFE0"
     name: map_can_move_direction
     confidence: high
-    evidence: Checks bounds, the saved appearance action lock, dynamic occupants, and direction-specific SOTP masks for a proposed move.
+    evidence: Checks bounds, the saved appearance action lock, dynamic occupants, CreatureType behavior, and direction-specific SOTP masks for a proposed move.
   - address: "0x005F1BF0"
     name: net_handle_map_size_server_packet
     confidence: high
@@ -531,6 +671,14 @@ functions:
     name: render_create_human_stand_motion_data
     confidence: high
     evidence: Allocates the initial standing-motion data for a human image session.
+  - address: "0x006017C0"
+    name: render_monster_image_session_ctor
+    confidence: high
+    evidence: Constructs the 0xE4-byte RTTI MonsterObjectImageSession and resolves standing, attack, and movement resources for the selected monster sprite.
+  - address: "0x00601A20"
+    name: render_monster_apply_palette_selectors
+    confidence: high
+    evidence: Copies at most four resource-defined 16-byte palette mappings, replaces their selector fields from packet bytes, and enables mapped monster rendering.
   - address: "0x00602240"
     name: render_human_image_session_ctor
     confidence: high
@@ -556,10 +704,22 @@ data_symbols:
     name: render_direct_draw_ptr
     confidence: high
     evidence: DirectDraw wrapper singleton pointer returned by render_get_direct_draw.
+  - address: "0x006FC2D8"
+    name: render_font_image_library_ptr
+    confidence: high
+    evidence: FontImageLib singleton pointer returned by render_get_font_image_library.
   - address: "0x006FC2E0"
     name: render_effect_image_pool_ptr
     confidence: high
     evidence: EffectImagePool singleton pointer returned by render_get_effect_image_pool.
+  - address: "0x0074026C"
+    name: app_text_language_mode
+    confidence: high
+    evidence: Current Korean, English, Japanese, or Taiwan language-mode selector used by font and UI paths.
+  - address: "0x00740270"
+    name: app_text_code_page
+    confidence: high
+    evidence: Explicitly set to 949 for Korean and 932 for Japanese; remains zero for system-default ANSI handling in other modes.
   - address: "0x00750588"
     name: render_map_tile_library_ptr
     confidence: high
@@ -579,6 +739,18 @@ comments:
     text: Software Image blitter. Numeric mode selects normal copy, blend-table paths, per-pixel alpha, color effects, or a second image plane.
   - address: "0x0044FB80"
     text: Software PixMap blitter. The common sprite paths treat source pixel zero as transparent.
+  - address: "0x004526C0"
+    text: Blit a one-bit glyph or mask into the 16-bit software Canvas. The selected mode controls foreground, background, transparency, and averaging.
+  - address: "0x00453EFC"
+    text: Apply ordered palette mappings during indexed PixMap drawing. Each mapping covers one source-index range and selects a replacement palette family and selector.
+  - address: "0x00455BBE"
+    text: Split the ANSI byte string with IsDBCSLeadByte. A DBCS pair becomes one 16-bit key with the lead byte in the high half.
+  - address: "0x0047B902"
+    text: Select lod.lft for mode 0, da.lft for mode 1, yami.lft for mode 2, or taiwan.lft for mode 3.
+  - address: "0x0047BC09"
+    text: Expand LFT rows from their four-byte-aligned source into a one-byte or two-byte-per-row temporary mask according to the glyph advance.
+  - address: "0x004A4D25"
+    text: Korean language mode records Windows code page 949; Japanese mode records 932. Other modes leave the code-page value at the system default.
   - address: "0x004C7280"
     text: Open one raw ground-tile bank. Records are fixed 0x5E8-byte blocks, not Windows BMP files; the bank kind selects the palette path.
   - address: "0x004C7390"
@@ -617,32 +789,62 @@ comments:
     text: When WorldPane +0x1E9 is set, merge light images attached to visible world objects into the current viewport mask.
   - address: "0x005C8DCE"
     text: Merge the object light image with per-pixel maximum so its brighter values open visibility through the dark base mask.
+  - address: "0x005CA4FB"
+    text: Remove any existing shared world object with the same entity ID before creating the replacement WorldObject_Monster.
+  - address: "0x005CAC94"
+    text: Remove any existing shared world object with the same entity ID before creating the replacement WorldObject_Item.
   - address: "0x005CF3B0"
     text: Build a one-based static-tile render table from the high nibble of each SOTP.DAT byte.
   - address: "0x005CF4F0"
     text: Build a one-based static-tile collision table from the low nibble of each SOTP.DAT byte.
+  - address: "0x005CF6D6"
+    text: For this map cell, retain the highest WorldObject +0x31 collision level; fully blocked static SOTP can supply level 1 when dynamic objects do not.
   - address: "0x005D3190"
     text: Dispatch the WorldObject draw method through primary vtable slot 0x18.
   - address: "0x005D3740"
     text: Collect clipped visible objects and sort them into 32 world draw-layer queues.
   - address: "0x005D3F70"
     text: World frame order is ground cache, map background images, then sorted world objects.
+  - address: "0x005D8C36"
+    text: Rebuild the cached byte for this map cell with map_get_collision_level after the cell or whole collision grid is marked dirty.
+  - address: "0x005DBAAF"
+    text: WorldObject +0x58 owns the reference-counted WorldObject_Name_Pane used for visible creature and human labels.
   - address: "0x005DD380"
     text: Effect drawing uses the common software Image blitter with a blend mode stored on the effect object.
   - address: "0x005DD470"
     text: Advance the effect frame through the sequence loaded from Effect.tbl and request the matching cached image.
+  - address: "0x005DE310"
+    text: Retain SDrawObjects ground-item dye_color at WorldObject_Item +0xB4.
+  - address: "0x005DE366"
+    text: Retain the untagged ground-item sprite at WorldObject_Item +0x7C.
   - address: "0x005DEF79"
     text: Rearrange packet-owned appearance fields into HumanAppearanceRecord741. Shield, overcoat, and later accessories move to renderer-specific offsets.
+  - address: "0x005DF414"
+    text: Initialize WorldObject_Living +0xD4 to false. Human appearance can later set this nonblocking state; normal monster construction leaves it false.
   - address: "0x005E00FB"
     text: Copy the complete 0x30-byte normalized appearance record to WorldObject_Human +0xA4.
   - address: "0x005E0119"
     text: Decoded body sprite 2 makes this human nonblocking in local dynamic-object collision. Other body sprites, including swimming sprite 5, remain blocking.
   - address: "0x005E013B"
     text: Treat appearance is_translucent as true only when its byte equals 1, and mirror it to WorldObject_Human +0xD5.
+  - address: "0x005E04A1"
+    text: Apply four SDrawObjects palette selector bytes to the new MonsterObjectImageSession; the resource may reduce the active count below four.
+  - address: "0x005E2665"
+    text: Retain creature_type at WorldObject_Monster +0x1EC; values 1, 2, and 3 also select distinct common-object collision levels.
+  - address: "0x005E3F73"
+    text: Copy at most 64 bytes including the NUL into WorldObject_Name_Pane +0x198. SDrawObjects attaches this pane instead of filling the living-name buffer.
   - address: "0x005E47FF"
     text: Original JE enters the static draw body when the hidden flag is zero. EB 00 falls into the existing jump to the normal epilogue and hides every static map object.
   - address: "0x005E4880"
     text: SOTP render flag 0x80 selects blend mode 0x6D. Flag 0x40 selects mode 3.
+  - address: "0x005E5B1C"
+    text: Insert entity_id and its reference-counted WorldObject pointer into the ordered ID tree at WorldObjectList +0x1C.
+  - address: "0x005E5E14"
+    text: Select the dense 0x60-byte WorldObjectCell as cells + (y * width + x) * 0x60 before inserting the object.
+  - address: "0x005E686A"
+    text: Read WorldObjectList width from +0x5C; height is the adjacent s32 at +0x60.
+  - address: "0x005E751B"
+    text: A successful ID-tree lookup returns the reference-counted WorldObject pointer stored at tree node +0x10.
   - address: "0x005EF398"
     text: Scale the SChangeHour time step by two and clamp the Light metadata profile coordinate to 24.
   - address: "0x005EF3F6"
@@ -651,6 +853,10 @@ comments:
     text: Load the current map's HEA spatial mask only when the Light profile permits it and ambient intensity is below 0x20.
   - address: "0x005EF48F"
     text: Darkness mode 3 bypasses the normal Light profile and forces the dark lighting state.
+  - address: "0x005F02AB"
+    text: Creature type 1, project-named Passable, never blocks the proposed destination tile.
+  - address: "0x005F0320"
+    text: For non-Passable creatures, movement normally blocks. Type 3, project-named Solid, is the sole exception if inherited WorldObject_Living +0xD4 is already nonblocking.
   - address: "0x005F0676"
     text: Direction values 0 through 3 select collision masks 0x01, 0x02, 0x04, and 0x08 for left, down, right, and up.
   - address: "0x005F1D3E"
@@ -677,6 +883,10 @@ comments:
     text: Body resource IDs 1 and 5 use the M filename family. Swimming variants therefore resolve through MM005 or WM005 motion files.
   - address: "0x00600315"
     text: Retain rest_position from HumanAppearanceRecord741 and choose between the two standing-motion setups. Friendly value names remain unresolved.
+  - address: "0x00601A2D"
+    text: Clamp packet palette selectors to four and then to the selected monster resource's available mapping count.
+  - address: "0x00601AC4"
+    text: Copy one 16-byte resource palette mapping and replace its selector field at +0x08 with the corresponding packet byte.
   - address: "0x006022A9"
     text: Retain HumanAppearanceRecord741 at HumanObjectImageSession +0x0C for body, equipment, dye, face, and motion resource selection.
 runtime_patches:

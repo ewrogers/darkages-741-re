@@ -41,6 +41,32 @@ The destination of the bootstrap transfer is the lobby or login server. It owns 
 
 Character creation is a two-request exchange on this connection. See [Character creation](../systems/character-creation.md) for the `CNewUser`, `SNewUserCheck`, and `CNewUserAppearance` flow.
 
+## Why the screen pauses during a transfer
+
+The visible animation can stop briefly while `STransferServer` is being handled. This is a main-thread wait, not a special pause state in the pane.
+
+`net_handle_transfer_server` queues the new endpoint as communications command 4. It then queues command 10 behind it and passes that command's completion handle to `net_wait_for_command_completion`. The wait helper calls `WaitForSingleObject` with an infinite timeout.
+
+Command 4 performs the reconnect on the communications worker. After the connection call returns, it deliberately sleeps for 1,000 ms. Command 10 follows it in the same queue, so waiting for command 10 also acts as a barrier for both the reconnect and that fixed delay. The server-transfer handler runs on the game and UI thread. While that thread is waiting, it cannot advance pane timers, draw the next frame, or present the animation.
+
+The stipulation dialog normally makes this less noticeable. A patch that suppresses the dialog leaves the automated main-menu art visible, which makes the frozen frames easier to see.
+
+### Patch direction
+
+The narrow patch changes the worker's `Sleep(1000)` argument to `Sleep(0)`. It preserves socket shutdown, state resets, the reconnect, queue ordering, completion cleanup, and the later `CTransferServer`. The main thread can still pause for the actual blocking `connect`, but the guaranteed extra second is removed. See [Runtime patches](../appendix/runtime-patches.md#remove-the-fixed-server-transfer-delay).
+
+Removing the main-thread wait call as well is not a clean byte patch. The queued completion object still needs to be reclaimed, and `CTransferServer` must remain ordered after the reconnect and protocol-state update.
+
+A safe runtime extension can keep the original queue order while moving completion out of the packet handler:
+
+1. Copy the handoff token into durable patch-owned state.
+2. Queue the endpoint and protocol-state commands, then return to the game loop.
+3. Poll the completion handle with a zero timeout from a main-thread tick.
+4. When it is signaled, run the normal completion cleanup and queue `CTransferServer`.
+5. Restore the original failure path if the reconnect did not succeed.
+
+This is practical as an injected state-machine hook, but it is not yet reduced to a verified same-size byte patch. Pumping Windows messages inside the infinite wait is also insufficient because the client's animation and pane timers advance in its own game-loop tick.
+
 ## Retry path
 
 If the first `connect` fails, the client resolves `da0.kru.com` again, creates a fresh socket, and tries once more. A new lookup can pick up a changed DNS address.

@@ -17,7 +17,38 @@ These are protocol values, not C++ memory layouts. Each value is stored as a `u8
 
 The common coordinate helper defines only values `0` through `3`. Value `4` is sometimes called None in related protocol vocabulary, but this client does not implement that case. It must remain unconfirmed for version 741.
 
-Used by [`CChangeDirection`](client/017-0x11-change-direction.md), [`SUserAppearance`](server/005-0x05-user-appearance.md), and [`SDrawHumanObjects`](server/051-0x33-draw-human-objects.md).
+Used by [`CChangeDirection`](client/017-0x11-change-direction.md), [`SUserAppearance`](server/005-0x05-user-appearance.md), [`SDrawObjects`](server/007-0x07-draw-objects.md), and [`SDrawHumanObjects`](server/051-0x33-draw-human-objects.md).
+
+## CreatureType
+
+`CreatureType` describes the kind of `WorldObject_Monster` carried by `SDrawObjects`. The names are project-owner protocol vocabulary. The client confirms several value-specific behaviors, but it does not contain a friendly enum table.
+
+| Value | Name | Client 7.41 evidence |
+| ---: | --- | --- |
+| `0` | Monster | Uses the default collision level and normally blocks movement |
+| `1` | Passable | The destination-object check explicitly skips blocking for this value |
+| `2` | Mundane | An NPC; the only value followed by a `string8` name, which becomes a visible name pane |
+| `3` | Solid | Uses a distinct collision level and normally blocks movement; the friendly name is not independently recovered |
+| `4` | Aisling | Uses the default client branches; the friendly name is not independently recovered |
+
+Construction stores the type on `WorldObject_Monster` and selects collision levels `0x96`, `0x8C`, and `0x82` for values `1`, `2`, and `3`. Other values use `0x78`. The map's collision cache retains the highest object level in each tile, but the proposed-movement check also tests `creature_type` directly.
+
+Living objects have a separate nonblocking state at `+0xD4`. Normal monster construction clears it. If another runtime path sets it, type `3` is the only non-Passable creature allowed through that special branch. No active packet path that sets this state on a monster has been confirmed.
+
+Used by [`SDrawObjects`](server/007-0x07-draw-objects.md).
+
+## Tagged world sprites
+
+Some world-object records use the high bits of a `u16` sprite value as a namespace tag.
+
+| Tagged range | Namespace | Untagged value |
+| --- | --- | --- |
+| `0x4000..0x7FFF` | Monster or creature | `tagged_sprite - 0x4000` |
+| `0x8000..0xBFFF` | Ground item | `tagged_sprite - 0x8000` |
+
+The target performs explicit range tests. Values outside these ranges are not valid creature or ground-item selectors for `SDrawObjects`, and `0xC000..0xFFFF` is not treated as a combination of both tags.
+
+Used by [`SDrawObjects`](server/007-0x07-draw-objects.md) and the monster-disguise form of [`SDrawHumanObjects`](server/051-0x33-draw-human-objects.md).
 
 ## CharacterClass
 

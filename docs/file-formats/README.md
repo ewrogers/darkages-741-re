@@ -5,6 +5,8 @@ The client mixes simple archives, text lookup tables, indexed images, and a few 
 | Format | Purpose | Read status | Write status |
 | --- | --- | --- | --- |
 | [DAT](dat-archives.md) | Asset archives | Legacy format confirmed | Rebuild process confirmed |
+| [LFT](lft.md) | Active bitmap fonts | Layout and glyph rows confirmed | Generated inverse not yet tested |
+| [FNT](fnt.md) | Dormant fixed bitmap fonts | Record sizes and code ranges confirmed | Not described |
 | [HPF](hpf.md) | Static indexed images | Codec confirmed | Exact sample round trips pass |
 | [HEA](hea.md) | Lighting and occlusion rows | Main layout confirmed | Generated inverse described |
 | [PAL](pal.md) | 256 RGB colors | Confirmed | Direct output confirmed |

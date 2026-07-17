@@ -75,6 +75,14 @@ functions:
     name: net_socket_ctor
     confidence: high
     evidence: "Constructs the Socket object and initializes packet-transform state."
+  - address: "0x00563D70"
+    name: net_queue_seed_table_barrier
+    confidence: high
+    evidence: "Queues communications command 10 with a one-byte seed selector and returns its waitable completion handle."
+  - address: "0x00563DA0"
+    name: net_queue_transfer_endpoint
+    confidence: high
+    evidence: "Queues communications command 4 with the IPv4 address and port supplied by STransferServer."
   - address: "0x00563DE0"
     name: net_reset_client_packet_sequence
     confidence: high
@@ -187,6 +195,10 @@ functions:
     name: net_build_seed_xor_table
     confidence: high
     evidence: "Builds one of ten deterministic 256-entry repeated-byte XOR tables for selectors 0 through 9; selector 0 is the compiled default."
+  - address: "0x00586100"
+    name: net_wait_for_command_completion
+    confidence: high
+    evidence: "Waits indefinitely for a queued communications command, then removes and destroys its completion record."
   - address: "0x005959D0"
     name: net_server_packet_base_ctor
     confidence: high
@@ -303,6 +315,12 @@ comments:
     text: "Decoded server opcode 0x00 is SVersionCheck. MainMenuPane routes it directly without an RTTI packet object."
   - address: "0x004B8C00"
     text: "Decoded server opcode 0x02 is SLoginCheck. MainMenuPane routes it directly without an RTTI packet object."
+  - address: "0x004B95A2"
+    text: "Queue the STransferServer endpoint as command 4. The communications worker processes this before the later seed-table barrier."
+  - address: "0x004B95B4"
+    text: "Queue command 10 behind the reconnect and retain its completion handle, making it a FIFO barrier before CTransferServer is submitted."
+  - address: "0x004B95CC"
+    text: "Wait for the queued transfer barrier on the game and UI thread. Frames and pane timers cannot advance until the worker signals completion."
   - address: "0x004BB024"
     text: "Persist the submitted login name as the session character name. This global later seeds the MD5 salt-source builder."
   - address: "0x004E4DB8"
@@ -317,6 +335,8 @@ comments:
     text: "Copy the actual nine-byte default key 55 72 6B E5 6E 49 74 A3 49 into the expanded static-key buffer."
   - address: "0x00563A88"
     text: "Restore the readable source buffer only after the working key has been copied; the expanded key retains bytes E5 and A3."
+  - address: "0x00563D70"
+    text: "Queue command 10 with one selector byte and request a waitable completion record. STransferServer uses its FIFO position as a reconnect barrier."
   - address: "0x00563E00"
     text: "Submit an opcode-first client packet to socket event command 6. Ordinary bodies gain an appended zero that is included in the queued length before framing and transformation."
   - address: "0x00564039"
@@ -397,6 +417,8 @@ comments:
     text: "Selector 8: b = i <= 0x7F ? 2*i : 0x1FF - 2*i."
   - address: "0x005687CD"
     text: "Selector 9: n = (i - 0x80) / 8 with signed truncation toward zero; b = 0xFF - (u8)(n*n)."
+  - address: "0x00586109"
+    text: "Call WaitForSingleObject with an infinite timeout, then reclaim the completed communications command record."
   - address: "0x00595F4F"
     text: "Register opcode-specific server packet constructors in the 256-entry factory. Derived server packet names are recoverable through RTTI."
   - address: "0x00596469"

@@ -15,6 +15,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_select_distribution_mode` | `0x00434EF0` | high | Returns the constant distribution mode 1 in this target. |
 | `app_detect_distribution_mode_from_markers` | `0x00434F00` | high | Dormant unreferenced scanner that maps country and Korean ISP .nfo markers to distribution modes 1 through 15. |
 | `app_derive_installation_id16` | `0x00436E10` | high | Applies the client's custom 0x1021-table recurrence to the four little-endian bytes of the persistent 32-bit installation ID. |
+| `app_language_mode_from_distribution` | `0x004A49B0` | high | Maps distribution modes to Korean 0, English 1, Japanese 2, or Taiwan 3 language modes. |
+| `app_get_text_code_page` | `0x004A4A30` | high | Returns the code-page value selected with the current language mode. |
+| `app_get_language_message_label` | `0x004A4A60` | high | Maps language modes to msgkor.h, msgeng.h, msgjpn.h, or msgtai.h labels retained by the client. |
+| `app_set_language_mode` | `0x004A4CE0` | high | Stores the language mode, selects the retained message label, and records code page 949 or 932 for Korean or Japanese. |
 | `app_is_japan_distribution_mode` | `0x004ACEE0` | high | Returns true when app_get_distribution_mode reports mode 13, selecting the create-user email and ISP-selector variant. |
 | `app_set_working_directory_from_executable` | `0x004AD3A0` | high | Derives the executable directory from GetCommandLineA and makes it the process working directory. |
 | `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client. |
@@ -281,6 +285,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_snow_particle_pane_ctor` | `0x005BD710` | high | Constructs one ImagePane-backed snow particle from a snowaNN.epf resource. |
 | `ui_world_pane_set_blinded` | `0x005C7600` | high | Forwards the SStatus-derived blinded state from WorldPane to the world renderer. |
 | `ui_world_pane_draw_to_target` | `0x005CE350` | high | Copies WorldPane output to its target and applies the ambient-color and 8-bit light-mask blend when lighting is active below intensity 0x20. |
+| `ui_world_object_name_pane_ctor` | `0x005E3F00` | high | Constructs the 0x1DC-byte RTTI WorldObject_Name_Pane and retains at most 63 text bytes plus a NUL at +0x198. |
 | `ui_world_pane_handle_keyboard_event` | `0x005F0D20` | high | Handles WorldPane keyboard commands; the Tab map-overlay path gives character class 2 the zoom-enabled configuration observed for Rogues. |
 | `ui_world_pane_draw_content` | `0x005F27A0` | high | WorldPane content hook that draws the world when ready or clears the pane. |
 | `ui_has_map_loading_pane` | `0x005F6470` | high | Reports whether the global MapLoadingPane pointer is non-null. |
@@ -361,6 +366,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_save_server_table` | `0x0055A490` | high | Saves server records and transforms the name and greeting text for file storage. |
 | `net_transform_server_table_text` | `0x0055A650` | high | Leaves byte zero in place and swaps later byte pairs in a self-inverse text transform. |
 | `net_socket_ctor` | `0x00563910` | high | Constructs the Socket object and initializes packet-transform state. |
+| `net_queue_seed_table_barrier` | `0x00563D70` | high | Queues communications command 10 with a one-byte seed selector and returns its waitable completion handle. |
+| `net_queue_transfer_endpoint` | `0x00563DA0` | high | Queues communications command 4 with the IPv4 address and port supplied by STransferServer. |
 | `net_reset_client_packet_sequence` | `0x00563DE0` | high | Resets the client-to-server encrypted-packet sequence to zero. |
 | `net_submit_client_packet` | `0x00563E00` | high | Ordinary bodies are copied with an appended transmitted zero and a one-byte length increase before socket event command 6; opcodes 0x39 and 0x3A use a separate CRC wrapper. |
 | `net_queue_raw_stream_mode` | `0x00564070` | high | Queues communications command 7, whose worker-side case writes the socket raw-stream-mode byte. |
@@ -375,11 +382,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_socket_dispatch` | `0x005643D0` | high | Thread::Socket vtable method that dispatches open, close, reconnect, send, and receive operations. |
 | `net_open_transport` | `0x005645C0` | high | Selects the TCP connection path when the configured transport selector is 5. |
 | `net_close_transport` | `0x005646A0` | high | Closes the active socket and auxiliary transport handle when present. |
+| `net_reconnect_transfer_endpoint` | `0x005647D0` | high | Disables old socket notifications, closes and resets transport state, connects to the supplied transfer endpoint, then sleeps for a fixed 1,000 ms. |
 | `net_receive_pending_data` | `0x00564870` | high | Selects the active TCP receiver for transport selector 5 and the serial/modem receiver for selectors 1 through 4. |
 | `net_send_client_packet` | `0x005648A0` | high | Selects the outbound opcode transform, then sends either an AA and u16be binary frame or printable records containing the same transformed body. |
 | `net_send_text` | `0x00565130` | high | Sends a NUL-terminated string through the active transport. |
 | `net_send_byte` | `0x005651B0` | high | Sends one byte through the active transport. |
 | `net_connect_and_initialize_transport` | `0x00565210` | high | Initializes Winsock, connects to the configured endpoint, performs the active retry, and registers asynchronous socket events. |
+| `net_apply_endpoint_and_connect` | `0x00566A00` | high | Stores a transfer IPv4 address and port in AppConfig, then runs the normal transport connection function. |
 | `net_open_serial_modem_transport` | `0x00566A40` | high | Opens COM1 through COM4 for transport selectors 1 through 4 and prepares Windows serial buffers and timeouts. |
 | `net_configure_serial_modem_transport` | `0x00566BF0` | high | Applies the requested baud rate, 8-N-1 defaults, and hardware or XON/XOFF flow-control fields through SetCommState. |
 | `net_close_socket` | `0x00566D90` | high | Calls closesocket and restores the socket field to INVALID_SOCKET. |
@@ -398,6 +407,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_build_md5_salt_source` | `0x005684B0` | high | Builds the 1024-byte salt source through repeated lowercase MD5-hex expansion of session_character_name. |
 | `net_derive_packet_key` | `0x00568540` | high | Derives nine per-packet key bytes from two seeds and the MD5 salt source. |
 | `net_build_seed_xor_table` | `0x00568650` | high | Builds one of ten deterministic 256-entry repeated-byte XOR tables for selectors 0 through 9; selector 0 is the compiled default. |
+| `net_wait_for_command_completion` | `0x00586100` | high | Waits indefinitely for a queued communications command, then removes and destroys its completion record. |
 | `net_send_confirm` | `0x005922A0` | high | UserConfirmPane calls this opcode 0x31 confirmation builder. |
 | `net_server_packet_base_ctor` | `0x005959D0` | high | Constructs the base server packet object and stores its opcode. |
 | `net_get_server_packet_opcode` | `0x00595A00` | high | Returns the opcode stored in a server packet base object. |
@@ -435,6 +445,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_draw_human_objects_server_packet` | `0x005984C0` | high | Allocates a 0x264-byte RTTI SDrawHumanObjects object and invokes its concrete constructor. |
 | `net_draw_human_objects_server_packet_ctor` | `0x00598540` | high | Passes opcode 0x33 to the server packet base and installs the exact SDrawHumanObjects vtable. |
 | `net_deserialize_draw_human_objects_server_packet` | `0x00598570` | high | Parses X, Y, direction, entity ID, the complete normal or monster-disguise appearance variant, name style, name, group-ad text, and the normal variant's u8 light-mask selector. |
+| `net_create_draw_objects_server_packet` | `0x005989C0` | high | Allocates the 0x30-byte RTTI SDrawObjects object and invokes its concrete constructor. |
+| `net_draw_objects_server_packet_ctor` | `0x00598A40` | high | Passes opcode 0x07 to the server packet base, installs the exact SDrawObjects vtable, and constructs its retained body reader. |
+| `net_deserialize_draw_objects_server_packet` | `0x00598AB0` | high | Reads the u16 entity count and retains a reader over all remaining variable-length records. |
+| `net_reset_draw_objects_record_reader` | `0x00598B10` | high | Rewinds the retained SDrawObjects body reader and resets its consumed-record count. |
+| `net_read_draw_object_record` | `0x00598B30` | high | Reads one common X, Y, entity ID, and tagged sprite prefix followed by the creature or ground-item variant. |
 | `net_create_map_size_server_packet` | `0x00599EE0` | high | Allocates the fixed-size RTTI SMapSize object and invokes its concrete constructor. |
 | `net_map_size_server_packet_ctor` | `0x00599F60` | high | Passes opcode 0x15 to the server packet base and installs the exact SMapSize vtable. |
 | `net_deserialize_map_size_server_packet` | `0x00599F90` | high | Reads u16be map number, four bytes, u24be cache value, and string8 name; the handler uses u8 dimensions and ignores the fourth byte. |
@@ -487,6 +502,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes the raw decoded SMapPart body, creates MapLoadingPane, applies repeated map records, updates percentage progress, and finalizes the last part. |
 | `net_handle_user_appearance_server_packet` | `0x005F2E90` | high | Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage. |
 | `net_handle_user_position_server_packet` | `0x005F2F00` | high | Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view. |
+| `net_handle_draw_objects_server_packet` | `0x005F3150` | high | Walks every SDrawObjects record, replaces matching IDs, creates WorldObject_Monster or WorldObject_Item by tagged sprite range, applies creature palette selectors and names, and ignores unsupported ranges. |
 | `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes WorldObject_User for the saved self ID and WorldObject_Human otherwise, applies normal or disguised appearance, updates names and optional group ads, and handles Darkness object lights. |
 | `net_handle_say_server_packet` | `0x005F3E00` | high | Shows SSay text as a three-second balloon on its world object without appending to persistent history. |
 | `net_send_put_ground` | `0x005F4430` | high | Builds opcode 0x0C with one u32 value. |
@@ -526,10 +542,26 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_blit_image` | `0x0044DE30` | high | Draws a decoded Image with copy, blend, alpha, and special plane modes. |
 | `render_blit_pixmap` | `0x0044FB80` | high | Draws an indexed PixMap with transparent zero pixels and several software blend modes. |
 | `render_blit_canvas` | `0x00451E40` | high | Copies or blends one Canvas into another. |
+| `render_canvas_blit_mask` | `0x004526C0` | high | Draws a one-bit bitmap mask into a 16-bit Canvas using the current foreground, background, and blend mode. |
+| `render_blit_pixmap_with_palette_mappings` | `0x00453E60` | high | Draws indexed monster pixels while replacing configured source-index ranges through ordered palette-family and palette-selector mappings. |
 | `render_average_pixels` | `0x004548B0` | high | Combines two 16-bit pixels with the fixed component-average lookup path. |
+| `render_canvas_draw_glyph` | `0x00455910` | high | Resolves one 16-bit byte-code key through FontImageLib, blits its one-bit mask, and advances the Canvas cursor. |
+| `render_canvas_draw_text` | `0x00455A30` | high | Splits an ANSI byte string with IsDBCSLeadByte, builds one LFT glyph mask per key, and draws it to the software Canvas. |
+| `render_get_font_image_library` | `0x004566B0` | high | Returns the RTTI-backed FontImageLib singleton used by the active text renderer. |
 | `render_effect_image_session_ctor` | `0x004575B0` | high | Opens the available EFA or EPF variant for one effect image session. |
 | `render_get_effect_frame_image` | `0x00457FD0` | high | Lazily decodes and caches one requested effect frame image. |
 | `render_get_effect_image_pool` | `0x00459460` | high | Returns the EffectImagePool singleton. |
+| `render_font_image_library_ctor` | `0x0047B7D0` | high | Constructs RTTI class FontImageLib, registers its singleton, and loads the language-selected LFT entry. |
+| `render_font_image_library_dtor` | `0x0047B860` | high | Destroys FontImageLib and unregisters its singleton. |
+| `render_font_load_lft` | `0x0047B8C0` | high | Selects lod.lft, da.lft, yami.lft, or taiwan.lft by language mode and maps its glyph table and bitmap region. |
+| `render_font_build_glyph_mask` | `0x0047BAE0` | high | Expands one LFT glyph's padded one-bit rows into the temporary mask and returns its bounds and advance. |
+| `render_font_get_glyph_advance` | `0x0047BD60` | high | Returns one LFT advance width, with zero for control bytes and a nominal-width fallback for an omitted space. |
+| `render_font_copy_legacy_hangul_glyph` | `0x0047BDE0` | high | Dormant fixed-font path that maps a CP949 Wansung or jamo code and copies its 24-byte glyph. |
+| `render_font_copy_legacy_english_glyph` | `0x0047BE80` | high | Dormant fixed-font path that copies one 12-byte English glyph by byte index. |
+| `render_font_copy_legacy_fallback_glyph` | `0x0047BEB0` | high | Copies the built-in 24-byte fallback used by an unsupported legacy Hangul code. |
+| `render_font_load_legacy_english_fnt` | `0x0047BED0` | high | Dormant loader that places engNN.fnt at printable-ASCII index 0x21 in a 256-record table. |
+| `render_font_load_legacy_hangul_fnt` | `0x0047BFB0` | high | Dormant loader that copies the selected 57,624-byte hanNN.fnt entry. |
+| `render_font_map_legacy_hangul_code` | `0x0047C150` | high | Maps CP949 B0A1-C8FE syllables and A4A1-A4D3 jamo to the 2,401 fixed Hangul records. |
 | `render_get_map_tile_library` | `0x004AE4E0` | high | Returns the MapTileImageLib singleton. |
 | `render_map_background_images` | `0x004C5270` | high | Draws configured map background or bottom-layer images before world objects. |
 | `render_screen_tree_frame` | `0x00554040` | high | Redraws the dirty root screen tree and presents the completed frame. |
@@ -582,12 +614,15 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_living_object` | `0x005DF950` | high | Draws a living sprite with normal, highlighted, or transparent state. |
 | `render_human_apply_appearance` | `0x005E0070` | high | Copies the packet-owned appearance record and forwards it to the live human object. |
 | `render_human_apply_appearance_record` | `0x005E00C0` | high | Copies HumanAppearanceRecord741 to WorldObject_Human +0xA4, derives nonblocking and translucent state, creates the 0x918-byte HumanObjectImageSession, and refreshes direction and motion. |
+| `render_monster_apply_appearance` | `0x005E0370` | high | Resolves the untagged monster sprite, creates MonsterObjectImageSession, applies Direction and up to four palette selectors, and refreshes motion. |
 | `render_static_object_ctor` | `0x005E42F0` | high | Stores the static tile ID, side, image cache, SOTP render flags, and draw state. |
 | `render_static_object` | `0x005E47E0` | high | Draws a fixed world object with its SOTP-selected software blend mode. |
 | `render_select_human_part_sprite` | `0x005FD8D0` | high | Selects the sprite ID for each of 21 human body and equipment categories; an overcoat suppresses ordinary pants, armor, and arms parts. |
 | `render_format_human_part_filename` | `0x005FDA90` | high | Builds gendered human-part EPF filenames; body resource 5 resolves through MM005 or WM005 motion files. |
 | `render_human_stand_motion_data_ctor` | `0x006000D0` | high | Constructs standing-motion data and resolves up to 21 body and equipment sprite parts from HumanAppearanceRecord741. |
 | `render_create_human_stand_motion_data` | `0x00600670` | high | Allocates the initial standing-motion data for a human image session. |
+| `render_monster_image_session_ctor` | `0x006017C0` | high | Constructs the 0xE4-byte RTTI MonsterObjectImageSession and resolves standing, attack, and movement resources for the selected monster sprite. |
+| `render_monster_apply_palette_selectors` | `0x00601A20` | high | Copies at most four resource-defined 16-byte palette mappings, replaces their selector fields from packet bytes, and enables mapped monster rendering. |
 | `render_human_image_session_ctor` | `0x00602240` | high | Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord741 at object offset +0x0C. |
 | `render_merge_light_mask_max` | `0x006036B0` | high | Merges a rectangular 8-bit light image into the viewport mask by retaining the greater value at each pixel. |
 
@@ -714,9 +749,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_load_sotp_render_flags` | `0x005CF3B0` | high | Loads SOTP.DAT into a one-based high-nibble render-flag table. |
 | `map_get_sotp_collision_flags` | `0x005CF4A0` | high | Returns the low-nibble SOTP direction mask for one static tile ID. |
 | `map_load_sotp_collision_flags` | `0x005CF4F0` | high | Loads SOTP.DAT into a one-based low-nibble collision table. |
-| `map_get_collision_level` | `0x005CF5E0` | high | Combines dynamic occupants and the two static SOTP masks at one map cell. |
+| `map_get_collision_level` | `0x005CF5E0` | high | Retains the highest WorldObject +0x31 collision level at one map cell, with fully blocked static SOTP supplying level 1 when no dynamic level does. |
 | `map_get_tile_pixels` | `0x005D7610` | high | Gets one decoded ground-tile diamond from MapTileImageLib. |
-| `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds, the saved appearance action lock, dynamic occupants, and direction-specific SOTP masks for a proposed move. |
+| `map_refresh_collision_cache` | `0x005D8B90` | high | Refreshes dirty cells in the map's width-by-height byte collision cache with map_get_collision_level. |
+| `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds, the saved appearance action lock, dynamic occupants, CreatureType behavior, and direction-specific SOTP masks for a proposed move. |
 | `map_try_move_local_player` | `0x005F09E0` | high | Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before moving locally and sending CMove. |
 | `map_apply_weather_mode` | `0x005F26C0` | high | Creates Snow for mode 1, performs no local setup for project-named Rain mode 2, and enables black ambient plus object light masks for Darkness mode 3. |
 | `map_finish_transfer` | `0x005F2DE0` | high | Closes MapLoadingPane and either applies the completed map or schedules the alternate completion path. |
@@ -751,7 +787,19 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_direction_to_delta` | `0x005BE580` | high | Maps directions 0 through 3 to up, right, down, and left coordinate deltas; values above 3 have no defined result. |
 | `world_step_coordinates` | `0x005BE600` | high | Applies the direction delta to a coordinate pair used by local movement and collision checks. |
 | `world_rebuild_view_at_position` | `0x005C7DF0` | high | Stores WorldPane view Y and X, updates the world renderer, rebuilds visible static objects and lighting, and invalidates the view. |
+| `world_insert_object` | `0x005C8EA0` | high | Inserts one reference-counted WorldObject into WorldObjectList, coordinate, render, and observer state. |
 | `world_reindex_object` | `0x005C92C0` | high | Updates a world object's spatial index entry after its tile coordinates change and refreshes dependent overlay state. |
+| `world_find_object_by_id` | `0x005C9810` | high | Resolves a 32-bit server entity ID through the WorldPane-owned WorldObjectList at object offset +0x194. |
+| `world_remove_object_by_id` | `0x005C9FA0` | high | Finds an existing world object by ID, optionally creates its removal replacement, and detaches the original from shared indexes. |
+| `world_create_monster_object` | `0x005CA4C0` | high | Replaces a matching ID, allocates RTTI WorldObject_Monster, stores Y and X, inserts it, and retains the packet creature type. |
+| `world_create_item_object` | `0x005CAC60` | high | Replaces a matching ID, allocates RTTI WorldObject_Item from ID, Y, X, untagged sprite, and dye, then inserts it. |
+| `world_create_object_name_pane` | `0x005CC670` | high | Finds a world object by ID, constructs RTTI WorldObject_Name_Pane from bounded text and style bytes, and attaches it to the object. |
+| `world_object_set_name_pane` | `0x005DBA80` | high | Replaces the reference-counted WorldObject_Name_Pane pointer at common WorldObject offset +0x58. |
+| `world_item_object_ctor` | `0x005DE280` | high | Constructs the 0xB8-byte RTTI WorldObject_Item and retains entity ID, Y, X, untagged sprite, resource context, and dye color. |
+| `world_living_object_ctor` | `0x005DF230` | high | Constructs the RTTI WorldObject_Living base, including clearing its +0xD4 nonblocking state. |
+| `world_monster_object_ctor` | `0x005E2630` | high | Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level. |
+| `world_object_list_insert` | `0x005E5D40` | high | Inserts an object into its 0x60-byte coordinate cell and the ordered entity-ID index, then marks WorldObject +0x48 inserted. |
+| `world_object_list_find_by_id` | `0x005E73B0` | high | Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10. |
 | `world_set_view_position` | `0x005EEC70` | high | Publishes a Y, X world-view position and optionally rebuilds the visible world and camera state around it. |
 | `world_get_self_user_object` | `0x005EEDB0` | high | Looks up the saved self object ID and RTTI-casts the result to WorldObject_User. |
 | `world_update_map_lighting` | `0x005EF360` | high | Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, and conditionally loads its HEA mask. |

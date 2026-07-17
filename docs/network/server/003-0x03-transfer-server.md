@@ -15,6 +15,8 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x03` and insta
 
 `net_deserialize_transfer_server_packet` fills an `STransferServer` object. The main-menu dispatcher passes that object to `net_handle_transfer_server`, which closes the current TCP connection, connects to the supplied endpoint, and sends [Transfer Server (`CTransferServer`)](../client/016-0x10-transfer-server.md) on the new connection.
 
+The handler waits on the game and UI thread while the communications worker reconnects and then sleeps for a fixed second. That is why visible main-menu animation can pause during this exchange. The cause and runtime patch are described in [Initial connection](../connection.md#why-the-screen-pauses-during-a-transfer).
+
 ## Body
 
 ```text

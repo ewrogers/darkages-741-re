@@ -28,6 +28,7 @@
 
 - [Rendering system](rendering/README.md)
 - [Renderer lifecycle](rendering/lifecycle.md)
+- [Text and fonts](rendering/text.md)
 - [World rendering](rendering/world.md)
 - [Map lighting](rendering/lighting.md)
 - [Snow and weather](rendering/weather.md)
@@ -46,6 +47,8 @@
 
 - [File formats](file-formats/README.md)
 - [DAT archives](file-formats/dat-archives.md)
+- [LFT bitmap fonts](file-formats/lft.md)
+- [FNT fixed fonts](file-formats/fnt.md)
 - [HPF static images](file-formats/hpf.md)
 - [HEA light masks](file-formats/hea.md)
 - [PAL color palettes](file-formats/pal.md)

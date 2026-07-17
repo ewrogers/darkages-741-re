@@ -222,11 +222,21 @@ functions:
     name: net_close_transport
     confidence: high
     evidence: Closes the active socket and auxiliary transport handle when present.
+  - address: "0x005647D0"
+    end_address: "0x00564866"
+    name: net_reconnect_transfer_endpoint
+    confidence: high
+    evidence: Disables old socket notifications, closes and resets transport state, connects to the supplied transfer endpoint, then sleeps for a fixed 1,000 ms.
   - address: "0x00565210"
     end_address: "0x0056693F"
     name: net_connect_and_initialize_transport
     confidence: high
     evidence: Initializes Winsock, connects to the configured endpoint, performs the active retry, and registers asynchronous socket events.
+  - address: "0x00566A00"
+    end_address: "0x00566A34"
+    name: net_apply_endpoint_and_connect
+    confidence: high
+    evidence: Stores a transfer IPv4 address and port in AppConfig, then runs the normal transport connection function.
   - address: "0x00566D90"
     end_address: "0x00566DC1"
     name: net_close_socket
@@ -401,6 +411,10 @@ comments:
     text: Communications event 7 changes raw-stream mode. The hello handler queues zero so later TCP receives use the normal frame parser.
   - address: "0x0056463D"
     text: Transport selector 5 opens the TCP path and begins the initial endpoint connection.
+  - address: "0x005647D0"
+    text: Transfer command 4 disables socket notifications, closes the old transport, resets packet state, reconnects, and then sleeps for a fixed 1,000 ms.
+  - address: "0x00564855"
+    text: Push the fixed post-connect Sleep duration. Runtime patch remove-fixed-server-transfer-delay changes 1,000 ms to a zero-duration yield.
   - address: "0x00564BB8"
     text: Printable mode encodes the same transformed opcode-first body used by binary framing. It replaces the AA and u16be envelope; it does not disable packet encryption or sequence trailers.
   - address: "0x00564BE4"
@@ -528,6 +542,13 @@ runtime_patches:
     original_bytes: 75 6D
     replacement_bytes: EB 6D
     effect: After inflating and saving a replacement greeting, skip AgreementDialogPane construction and still clear MainMenuPane +0x500.
+  - id: remove-fixed-server-transfer-delay
+    rva: "0x00164855"
+    static_address: "0x00564855"
+    file_offset_for_reference_only: "0x00163C55"
+    original_bytes: 68 E8 03 00 00
+    replacement_bytes: 68 00 00 00 00
+    effect: Preserve the transfer reconnect and completion barrier while changing its fixed post-connect Sleep from 1,000 ms to a zero-duration yield.
   - id: disable-official-endpoint-fallback
     rva: "0x001655F4"
     static_address: "0x005655F4"

@@ -130,14 +130,7 @@ The packet does not say why the transformation happened or how long it lasts. Th
 
 The first following color byte is forwarded to the monster image session. The second is parsed but not used by this handler. The next six bytes have no identified behavior: the parser retains the first in a reused packet-object field and skips the remaining five.
 
-The `0x4000` value is a sprite namespace tag, not a general flag cleared from every appearance field. The separate `SDrawObjects` handler confirms the broader namespaces:
-
-| Tagged range | Object kind | Conversion |
-| --- | --- | --- |
-| `0x4000..0x7FFF` | Monster or creature | subtract `0x4000` |
-| `0x8000..0xBFFF` | Ground item | subtract `0x8000` through 16-bit wrap |
-
-Only the `0x4000` monster namespace is used by the disguise branch of opcode `0x33`.
+The `0x4000` value is a sprite namespace tag, not a general flag cleared from every appearance field. The broader ranges are defined under [Tagged world sprites](../protocol-types.md#tagged-world-sprites). Only the `0x4000` monster namespace is used by the disguise branch of opcode `0x33`.
 
 ## Names and group advertisements
 
