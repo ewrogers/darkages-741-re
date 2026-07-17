@@ -1,91 +1,187 @@
 # Draw Human Objects (`SDrawHumanObjects`)
 
-`SDrawHumanObjects` creates or refreshes a human in the world. A record matching the saved self-object ID becomes `WorldObject_User`; other records become `WorldObject_Human`.
+`SDrawHumanObjects` creates or refreshes a player-shaped world object. It is also how the server draws the local player. A record whose entity ID matches the saved self ID becomes `WorldObject_User`; every other record becomes `WorldObject_Human`.
 
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x33` (51) |
 | Transform | derived |
-| Runtime classes | `WorldObject_User`, `WorldObject_Human`, and `HumanObjectImageSession` |
-| Name provenance | Microsoft C++ RTTI in the target |
+| Runtime classes | `WorldObject_User`, `WorldObject_Human`, `HumanObjectImageSession`, and `MonsterObjectImageSession` |
+| Name provenance | `SDrawHumanObjects` is exact Microsoft C++ RTTI from the target |
 
-## Confirmed prefix
+## Body layout
 
-The complete appearance record is large and will be documented with the wider login sequence. The prefix needed to identify the object and its body variant is confirmed:
+The packet has a normal human form and a monster-disguise form. Both end with the same name fields.
 
 ```c
-struct SDrawHumanObjectsPrefix {
-    u8 opcode;                         // 0x33
-    u16be coordinate_0;
-    u16be coordinate_1;
-    u8 orientation_or_motion;
-    u32be object_id;
-    u16be appearance_id;
+struct SDrawHumanObjects {
+    u8 opcode;                       // 0x33
+    u16be x;
+    u16be y;
+    u8 direction;                    // 0 up, 1 right, 2 down, 3 left
+    u32be entity_id;
+    u16be head_sprite;
 
-    if (appearance_id != 0xFFFF) {
-        u8 packed_appearance;          // body offset 0x0C
-        u8 appearance_fields[19];      // individually unresolved here
-        u8 light_mask_id;              // body offset 0x20
-        // remaining normal-human appearance fields
+    if (head_sprite != 0xFFFF) {
+        u8 packed_body;              // high nibble body, low nibble pants dye
+        u16be arms_sprite;
+        u8 boots_sprite;
+        u16be armor_sprite;
+        u8 shield_sprite;
+        u16be weapon_sprite;
+        u8 hair_color;
+        u8 boots_color;
+
+        u8 accessory1_color;
+        u16be accessory1_sprite;
+        u8 accessory2_color;
+        u16be accessory2_sprite;
+        u8 accessory3_color;
+        u16be accessory3_sprite;
+
+        u8 light_mask_id;
+        u8 rest_position;
+        u16be overcoat_sprite;
+        u8 overcoat_color;
+        u8 skin_color;
+        u8 is_translucent;
+        u8 face_shape;
     } else {
-        // disguised or monster-form fields
+        u16be tagged_monster_sprite;
+        u8 monster_color;
+        u8 ignored_color;
+        u8 unknown[6];
     }
+
+    u8 name_style;
+    string8 name;
+    string8 group_ad_text;
 };
 ```
 
-The two coordinate names and the one-byte orientation field remain deliberately generic here. The handler proves how they reach world-object construction, but this focused pass did not need to settle their public protocol names.
+`boots_sprite` and `shield_sprite` are one byte on the wire, then widened to 16 bits in the packet object. Fixed normal-form fields through `name_style` occupy 41 bytes, counting the opcode. Two `string8` values follow; with both empty, the complete body is 43 bytes. Each string can carry at most 255 bytes.
 
-`appearance_id == 0xFFFF` selects a disguised or monster-form path. Other values use the normal human appearance decoder and `HumanObjectImageSession`.
+## Coordinates, identity, and direction
 
-## Packed appearance variant
+The wire order is X, then Y. The packet object sign-extends both 16-bit coordinates to 32 bits. A live world object stores them in the opposite memory order:
 
-The high nibble of `packed_appearance` selects a gender prefix, a body-resource ID, and two related flags. The low nibble is retained separately and is not needed for the swimming selection.
+```c
+object->tile_y = packet->y;          // WorldObject +0x40
+object->tile_x = packet->x;          // WorldObject +0x44
+```
 
-| High nibble | Gender prefix | Body resource | Other confirmed effect |
+The handler compares `entity_id` with the self ID retained from [`SUserAppearance`](005-0x05-user-appearance.md). It allocates a 0x200-byte `WorldObject_User` for a matching ID and a 0x1F0-byte `WorldObject_Human` otherwise. Existing objects are refreshed instead of duplicated.
+
+The direction byte is passed to the living-object motion system and retained at human-object offset `+0x192`. Values `0` through `3` use the same up, right, down, and left vocabulary as movement. No additional direction value is handled here.
+
+## Packed body and pants color
+
+The high nibble selects a resource prefix and body sprite. The low nibble becomes `pants_color`. When the low nibble is nonzero, the client also creates pants part sprite `1`; a zero nibble removes that part.
+
+| High nibble | Gender and resource prefix | Body sprite | Additional effect |
 | ---: | --- | ---: | --- |
-| `0` | M | `0` | None identified |
-| `1` | M | `1` | Normal male form in the supplied login trace |
-| `2` | W | `1` | Normal female resource family |
-| `3` | M | `2` | Human does not block local dynamic-object collision |
-| `4` | W | `2` | Human does not block local dynamic-object collision |
-| `5` | M | `1` | Sets an additional unresolved appearance flag |
-| `6` | W | `1` | Sets an additional unresolved appearance flag |
-| `7` | M | `4` | Exact purpose unresolved |
-| `8` | M | `5` | Swimming body |
-| `9` | W | `5` | Swimming body |
+| `0` | Male, M | `0` | None identified |
+| `1` | Male, M | `1` | Normal male form in the supplied login trace |
+| `2` | Female, W | `1` | Normal female form |
+| `3` | Male, M | `2` | Sets the nonblocking-human state |
+| `4` | Female, W | `2` | Sets the nonblocking-human state |
+| `5` | Male, M | `1` | Forces translucency on |
+| `6` | Female, W | `1` | Forces translucency on |
+| `7` | Male, M | `4` | Exact purpose unresolved |
+| `8` | Male, M | `5` | Swimming body |
+| `9` | Female, W | `5` | Swimming body |
 
-The M and W prefixes are literal bytes in the client's resource-name table. They are used here as resource selectors rather than translated gender labels.
+The M and W bytes are literal resource-name prefixes used by the renderer and consistently select the male and female forms. They most likely abbreviate “men” and “women,” although those expanded words are not stored beside the table in the executable. Packed variants `5` and `6` overwrite the later `is_translucent` field with `1` after the whole record has been read.
 
-## Swimming body
+Body sprite `2` sets `WorldObject_Human + 0xD4`. Local dynamic-object collision checks treat that human as nonblocking. This is separate from translucency at `+0xD5`.
 
-Variants `8` and `9` select body resource `5`. `render_format_human_part_filename` resolves its first motion files through the `MM005` and `WM005` EPF families.
+`is_translucent` does not make the player invisible. It tells the living-object renderer to draw the supplied human sprite layers translucently. The server uses this viewer-facing form when the receiving player is allowed to see someone who would otherwise be invisible, commonly because the viewer has See Invisible. Packed variants `5` and `6` force the same translucent state even if the later wire byte was zero.
 
-The local matching assets support the in-game observation that this is swimming art. Their first-motion frames are roughly 15 to 17 pixels wide and 11 to 14 pixels high, while normal body resource `1` frames are roughly 48 to 54 pixels wide and 17 to 27 pixels high. Resource `5` is therefore a small head-level body layer rather than a standing character body.
+Variants `8` and `9` load the small `MM005` and `WM005` motion families used for swimming. The client does not choose this form from a local skill check. The server must send the packed variant. See [Movement and swimming](../../systems/movement-and-swimming.md).
 
-`render_human_apply_appearance_record` copies the decoded appearance into `HumanObjectImageSession`, which builds the body and equipment filenames used by the normal living-object renderer. No special water renderer is involved.
+## Equipment and appearance layers
 
-The client does not derive variants `8` or `9` from a local skill check. The server supplies the packed variant. See [Movement and swimming](../../systems/movement-and-swimming.md).
+The normal form is converted into a 0x30-byte `HumanAppearanceRecord741`. The renderer selects body, head, arms, boots, armor, shield, weapon, three accessories, overcoat, and face layers from that record.
+
+An overcoat suppresses the ordinary pants, armor, and arms layers while it is present. Sprite ID zero suppresses the corresponding part filename. The packet also initializes two internal appearance slots to zero because this wire format does not supply them.
+
+`rest_position` is retained at appearance offset `+0x2D` and changes the standing-motion setup. The exact value-to-pose enum is not yet established. `face_shape` is used as the sprite selector for human part `0x14`.
+
+The client does not create a separate `is_hidden` field from `body_sprite == 0 && !is_translucent`. Individual zero sprite IDs simply omit their own layers. The server uses that behavior for the invisible-player form described below.
+
+## Invisible player form
+
+Invisible players are still sent as normal human records so they remain part of local world state and collision. The server keeps the real entity ID, coordinates, and direction, but supplies zero for the human appearance fields and sends empty name and group-ad strings.
+
+The client still creates or refreshes the player's `WorldObject_User` or `WorldObject_Human`. Body sprite `0` does not set `nonblocking_human`, so another local player can still collide with the invisible object. Zero body, head, equipment, accessory, and face selectors produce no visible part resources, while the empty name produces no visible name text.
+
+Later movement updates can change the invisible object's coordinates and direction normally. There are no visible sprite layers to animate, so the movement is represented in world and collision state without a visible walking animation. A later nonzero `SDrawHumanObjects` record for the same entity restores its visible appearance.
+
+When the receiving player can see invisible entities, the server instead sends the real nonzero appearance with `is_translucent` enabled. The same entity is then visible with its normal sprite layers in the translucent render mode. Invisibility and See Invisible are therefore represented by different `SDrawHumanObjects` bodies chosen for each receiving client, not by a persistent local visibility flag.
+
+## Monster disguise form
+
+`head_sprite == 0xFFFF` makes the human use `MonsterObjectImageSession` instead of `HumanObjectImageSession`. The handler subtracts `0x4000` from `tagged_monster_sprite` and loads `mns%03d.mpf` for the result.
+
+This is the client mechanism used when an event transforms a player into a monster or creature sprite. The object does not become `WorldObject_Monster`: it keeps the same entity ID and remains `WorldObject_User` for the local player or `WorldObject_Human` for another player. Only its living-object image session changes to the monster form. Sending a later normal record for the same entity restores the layered human appearance.
+
+The packet does not say why the transformation happened or how long it lasts. Those rules belong to the server-side event or effect that chooses which `SDrawHumanObjects` form to send.
+
+The first following color byte is forwarded to the monster image session. The second is parsed but not used by this handler. The next six bytes have no identified behavior: the parser retains the first in a reused packet-object field and skips the remaining five.
+
+The `0x4000` value is a sprite namespace tag, not a general flag cleared from every appearance field. The separate `SDrawObjects` handler confirms the broader namespaces:
+
+| Tagged range | Object kind | Conversion |
+| --- | --- | --- |
+| `0x4000..0x7FFF` | Monster or creature | subtract `0x4000` |
+| `0x8000..0xBFFF` | Ground item | subtract `0x8000` through 16-bit wrap |
+
+Only the `0x4000` monster namespace is used by the disguise branch of opcode `0x33`.
+
+## Names and group advertisements
+
+The name is used to build a `WorldObject_Name_Pane`. For other players it is also copied into the human object at `+0x112`. The packet buffer accepts 255 bytes, the retained human name buffer is 128 bytes including its terminator, and the name pane keeps 64 bytes including its terminator. Normal character-name limits are much smaller than all three buffers.
+
+`name_style` selects a palette index for the visible name. The client does not store friendly labels for these styles.
+
+| `name_style` | Name palette index |
+| ---: | ---: |
+| `0` | `0x14` |
+| `1` | `0x28` |
+| `2` | `0x80` |
+| Other | Same default path as `0` |
+
+The second string is not a guild name. RTTI and nearby configuration name it as a group advertisement. A nonempty string creates `WorldObject_GroupAd` only when the local `GroupObjectOption` setting is enabled. An empty string, or a disabled option, removes the object's existing group advertisement.
 
 ## Darkness light mask
 
-The normal-human record carries `light_mask_id` at decoded-body offset `0x20`, counting the opcode as offset zero. The client uses it only when the active [`SMapSize`](021-0x15-map-size.md) low-nibble mode is `3`, Darkness.
+The normal form carries `light_mask_id` at body offset `0x20`, counting the opcode as offset zero. Other protocol implementations may call this field `Lantern`, but the client uses the value directly as a light-mask resource selector.
 
-| Value | Client behavior |
+| Value | Client behavior in Darkness mode `3` |
 | ---: | --- |
 | `0` | Remove any light image attached to the human |
 | `1` through `255` | Load frame zero from `mask1%02d.epf` and attach it to the human |
 
-The image is centered on the human and merged into the world light mask. This produces the limited visible area associated with lanterns on Andor. The client does not inspect worn equipment to choose the number, so the server must resolve the character's current lantern or other light source before sending this appearance record.
-
-The disguised `appearance_id == 0xFFFF` variant does not read this byte. Its packet object keeps the constructor's default selector of `1`.
+The server therefore resolves worn lanterns or other light sources before sending the appearance. The monster-disguise form has no wire field here. Its packet object retains the parser's default selector of `1`, which the common handler uses in Darkness mode.
 
 See [Map lighting](../../rendering/lighting.md) for mask composition and the distinction from `SStatus` blindness.
 
+## Runtime copies
+
+The transient RTTI packet object is 0x264 bytes. Normal appearance fields are rearranged into one stable 0x30-byte record, then copied to two live locations:
+
+| Owner | Offset | Purpose |
+| --- | ---: | --- |
+| `WorldObject_Human` or `WorldObject_User` | `+0xA4` | Current logical appearance |
+| `HumanObjectImageSession` | `+0x0C` | Rendering and motion resource selection |
+
+The object ID remains at world-object offset `+0x24`; Y and X remain at `+0x40` and `+0x44`. The full layouts are in [World objects](../../appendix/runtime/world.md#human-appearance).
+
 ## Supplied login trace
 
-The supplied login trace contains one `SDrawHumanObjects` record for the local player. Its packed appearance byte is `0x10`, selecting the normal M-prefix body resource `1` form. Its `light_mask_id` is `0`, so that appearance carries no object light image.
+The supplied login record decodes completely with this layout. It places the local player at `(43, 40)`, facing down, with packed body `0x10`. That selects the M-prefix body sprite `1`, pants color zero, no translucency, no group advertisement, and light-mask selector zero. The two strings consume the remainder exactly, with no unexplained bytes.
 
 ## Known limits
 
-Most equipment, dye, name, group, and disguise fields in the remainder of this packet still need their dedicated pass. This page currently names the prefix, appearance variant, and Darkness light selector.
+The six monster-form bytes remain unresolved. The client confirms that `rest_position` changes standing-motion setup, but the value names still need runtime examples. Palette indexes are recorded as indexes because their final colors depend on the active palette.

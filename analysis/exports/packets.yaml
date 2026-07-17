@@ -450,7 +450,7 @@ functions:
   - address: "0x00598570"
     name: net_deserialize_draw_human_objects_server_packet
     confidence: high
-    evidence: "Parses the human object prefix, disguise variant, packed normal-human appearance, the normal variant's u8 light-mask selector, strings, and remaining appearance fields."
+    evidence: "Parses X, Y, direction, entity ID, the complete normal or monster-disguise appearance variant, name style, name, group-ad text, and the normal variant's u8 light-mask selector."
   - address: "0x00599EE0"
     name: net_create_map_size_server_packet
     confidence: high
@@ -678,7 +678,7 @@ functions:
   - address: "0x005F3340"
     name: net_handle_draw_human_objects_server_packet
     confidence: high
-    evidence: "Creates or refreshes human world objects and, only in Darkness map mode 3, attaches or removes the server-selected mask1%02d.epf light image."
+    evidence: "Creates or refreshes WorldObject_User for the saved self ID and WorldObject_Human otherwise, applies normal or disguised appearance, updates names and optional group ads, and handles Darkness object lights."
   - address: "0x005F3E00"
     name: net_handle_say_server_packet
     confidence: high
@@ -1037,12 +1037,20 @@ comments:
     text: "SChangeHour reads exactly one u8 time step into object +0x10. Any remaining decoded body bytes are left unread."
   - address: "0x0059857C"
     text: "Initialize the object light-mask selector to 1. Disguised records retain this default because only normal-human records read the wire field."
+  - address: "0x00598598"
+    text: "Read wire u16be X followed by u16be Y and sign-extend both into the packet object's 32-bit tile fields."
+  - address: "0x005985E4"
+    text: "Read head_sprite. Value 0xFFFF selects the monster-disguise body; every other value selects the normal 0x33 human appearance body."
   - address: "0x00598612"
-    text: "Read the packed human appearance variant. Its high nibble selects gender and a body-resource family; the low nibble is retained separately."
+    text: "Read packed_body. Its high nibble selects the M or W resource prefix and body sprite; its low nibble is the pants dye and enables pants sprite 1 when nonzero."
   - address: "0x005986F0"
     text: "Read the normal-human light-mask selector as u8 at decoded-body offset 0x20. Darkness maps translate positive values to mask1%02d.epf; zero removes the light source."
+  - address: "0x0059875B"
+    text: "Monster-disguise body: read the tagged monster sprite, one forwarded color, one ignored color, retain the first of six unknown bytes, and skip the other five."
+  - address: "0x005987A9"
+    text: "Read the common name palette style after either appearance variant, then read name and group-ad text as string8 fields."
   - address: "0x00598843"
-    text: "Decode packed appearance high nibble. Values 8 and 9 select body resource 5 with male and female resource prefixes respectively."
+    text: "Decode packed appearance high nibble. Variants 3 and 4 set nonblocking body sprite 2; variants 5 and 6 force translucency; variants 8 and 9 select swimming body sprite 5."
   - address: "0x0059891A"
     text: "Appearance variant 8 selects male body resource 5. Variant 9 selects the female form; local MM005 and WM005 frames are head-sized swimming art."
   - address: "0x00599FA2"
@@ -1211,8 +1219,18 @@ comments:
     text: "Reindex WorldObject_User after replacing its authoritative tile coordinates."
   - address: "0x005F2F8F"
     text: "Recenter and rebuild the world view at the server-supplied Y, X position even if WorldObject_User was not found."
+  - address: "0x005F33A1"
+    text: "Compare the packet entity ID with the saved self ID. Matching records use WorldObject_User; all others use WorldObject_Human."
+  - address: "0x005F36C0"
+    text: "Normalize the parser-friendly appearance fields into a stable 0x30-byte record before comparing or applying live human appearance."
+  - address: "0x005F3754"
+    text: "Monster-disguise records subtract the 0x4000 creature namespace tag and create a MonsterObjectImageSession instead of a human image session."
+  - address: "0x005F37D9"
+    text: "Other-player names are copied into WorldObject_Human +0x112. The common name-pane path also receives the raw name_style byte."
   - address: "0x005F3826"
     text: "Only Darkness map mode 3 applies the SDrawHumanObjects light-mask selector. Positive values attach mask1%02d.epf; zero clears it."
+  - address: "0x005F3884"
+    text: "Create the packet's group advertisement only when group_ad_text is nonempty and the local GroupObjectOption setting is enabled; otherwise remove it."
   - address: "0x005F3E77"
     text: "Show the speech balloon on the selected world object for 3,000 ms. This path does not append to persistent message history."
   - address: "0x005F6DD9"
@@ -2212,7 +2230,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI constructor 0x00598540 installs opcode 0x33. Deserializer 0x00598570 decodes normal and disguised human records; packed variants 8 and 9 select the gendered body-resource 5 swimming form."
+        evidence: "RTTI constructor 0x00598540 installs opcode 0x33. Deserializer 0x00598570 decodes the complete normal and disguised forms; handler 0x005F3340 creates the local or remote human and applies appearance, names, group ads, and object lighting."
         page: "docs/network/server/051-0x33-draw-human-objects.md"
       - opcode: "0x37"
         friendly_name: "Add Equip"

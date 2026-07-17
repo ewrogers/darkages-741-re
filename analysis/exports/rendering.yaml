@@ -462,7 +462,7 @@ functions:
   - address: "0x005DEF70"
     name: render_copy_human_appearance_record
     confidence: high
-    evidence: Copies and normalizes the decoded 0x30-byte human appearance record before it becomes live world state.
+    evidence: Rearranges the parser-friendly SDrawHumanObjects appearance fields into the stable 0x30-byte HumanAppearanceRecord741 used by world objects and image sessions.
   - address: "0x005DF950"
     name: render_living_object
     confidence: high
@@ -474,7 +474,7 @@ functions:
   - address: "0x005E00C0"
     name: render_human_apply_appearance_record
     confidence: high
-    evidence: Stores the appearance record, applies collision state, creates the HumanObjectImageSession, and refreshes the object.
+    evidence: Copies HumanAppearanceRecord741 to WorldObject_Human +0xA4, derives nonblocking and translucent state, creates the 0x918-byte HumanObjectImageSession, and refreshes direction and motion.
   - address: "0x005E42F0"
     name: render_static_object_ctor
     confidence: high
@@ -518,7 +518,7 @@ functions:
   - address: "0x005FD8D0"
     name: render_select_human_part_sprite
     confidence: high
-    evidence: Selects the sprite ID for each of the 21 human body and equipment categories.
+    evidence: Selects the sprite ID for each of 21 human body and equipment categories; an overcoat suppresses ordinary pants, armor, and arms parts.
   - address: "0x005FDA90"
     name: render_format_human_part_filename
     confidence: high
@@ -526,7 +526,7 @@ functions:
   - address: "0x006000D0"
     name: render_human_stand_motion_data_ctor
     confidence: high
-    evidence: Constructs standing-motion data and resolves up to 21 body and equipment sprite parts.
+    evidence: Constructs standing-motion data and resolves up to 21 body and equipment sprite parts from HumanAppearanceRecord741.
   - address: "0x00600670"
     name: render_create_human_stand_motion_data
     confidence: high
@@ -534,7 +534,7 @@ functions:
   - address: "0x00602240"
     name: render_human_image_session_ctor
     confidence: high
-    evidence: Constructs the RTTI-backed HumanObjectImageSession and retains its decoded 0x30-byte appearance record.
+    evidence: Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord741 at object offset +0x0C.
   - address: "0x006036B0"
     name: render_merge_light_mask_max
     confidence: high
@@ -631,8 +631,14 @@ comments:
     text: Effect drawing uses the common software Image blitter with a blend mode stored on the effect object.
   - address: "0x005DD470"
     text: Advance the effect frame through the sequence loaded from Effect.tbl and request the matching cached image.
+  - address: "0x005DEF79"
+    text: Rearrange packet-owned appearance fields into HumanAppearanceRecord741. Shield, overcoat, and later accessories move to renderer-specific offsets.
+  - address: "0x005E00FB"
+    text: Copy the complete 0x30-byte normalized appearance record to WorldObject_Human +0xA4.
   - address: "0x005E0119"
-    text: Decoded body resource 2 makes this human nonblocking in local dynamic-object collision. Other body resources, including swimming resource 5, remain blocking.
+    text: Decoded body sprite 2 makes this human nonblocking in local dynamic-object collision. Other body sprites, including swimming sprite 5, remain blocking.
+  - address: "0x005E013B"
+    text: Treat appearance is_translucent as true only when its byte equals 1, and mirror it to WorldObject_Human +0xD5.
   - address: "0x005E47FF"
     text: Original JE enters the static draw body when the hidden flag is zero. EB 00 falls into the existing jump to the normal epilogue and hides every static map object.
   - address: "0x005E4880"
@@ -661,10 +667,18 @@ comments:
     text: Project-named Rain mode 2 deliberately performs no local setup in this client.
   - address: "0x005F2732"
     text: Darkness mode 3 enables the overall light mask and object-light merge flags, then forces black ambient lighting at intensity zero.
+  - address: "0x005FD910"
+    text: Suppress the pants part when an overcoat sprite is present; otherwise use the normalized pants sprite, which SDrawHumanObjects sets to 0 or 1.
+  - address: "0x005FD939"
+    text: Suppress ordinary armor when an overcoat sprite is present.
+  - address: "0x005FD9DD"
+    text: Suppress ordinary arms when an overcoat sprite is present.
   - address: "0x005FDB6E"
     text: Body resource IDs 1 and 5 use the M filename family. Swimming variants therefore resolve through MM005 or WM005 motion files.
+  - address: "0x00600315"
+    text: Retain rest_position from HumanAppearanceRecord741 and choose between the two standing-motion setups. Friendly value names remain unresolved.
   - address: "0x006022A9"
-    text: Retain the decoded 0x30-byte human appearance record used to select body, equipment, dye, and motion resources.
+    text: Retain HumanAppearanceRecord741 at HumanObjectImageSession +0x0C for body, equipment, dye, face, and motion resource selection.
 runtime_patches:
   - id: hide-static-map-art
     rva: "0x001E47FF"

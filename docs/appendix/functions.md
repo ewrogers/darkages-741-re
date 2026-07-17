@@ -423,7 +423,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_decode_s_change_weather` | `0x00598210` | high | Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer. |
 | `net_create_draw_human_objects_server_packet` | `0x005984C0` | high | Allocates a 0x264-byte RTTI SDrawHumanObjects object and invokes its concrete constructor. |
 | `net_draw_human_objects_server_packet_ctor` | `0x00598540` | high | Passes opcode 0x33 to the server packet base and installs the exact SDrawHumanObjects vtable. |
-| `net_deserialize_draw_human_objects_server_packet` | `0x00598570` | high | Parses the human object prefix, disguise variant, packed normal-human appearance, the normal variant's u8 light-mask selector, strings, and remaining appearance fields. |
+| `net_deserialize_draw_human_objects_server_packet` | `0x00598570` | high | Parses X, Y, direction, entity ID, the complete normal or monster-disguise appearance variant, name style, name, group-ad text, and the normal variant's u8 light-mask selector. |
 | `net_create_map_size_server_packet` | `0x00599EE0` | high | Allocates the fixed-size RTTI SMapSize object and invokes its concrete constructor. |
 | `net_map_size_server_packet_ctor` | `0x00599F60` | high | Passes opcode 0x15 to the server packet base and installs the exact SMapSize vtable. |
 | `net_deserialize_map_size_server_packet` | `0x00599F90` | high | Reads u16be map number, four bytes, u24be cache value, and string8 name; the handler uses u8 dimensions and ignores the fourth byte. |
@@ -471,7 +471,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes the raw decoded SMapPart body, creates MapLoadingPane, applies repeated map records, updates percentage progress, and finalizes the last part. |
 | `net_handle_user_appearance_server_packet` | `0x005F2E90` | high | Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage. |
 | `net_handle_user_position_server_packet` | `0x005F2F00` | high | Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view. |
-| `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes human world objects and, only in Darkness map mode 3, attaches or removes the server-selected mask1%02d.epf light image. |
+| `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes WorldObject_User for the saved self ID and WorldObject_Human otherwise, applies normal or disguised appearance, updates names and optional group ads, and handles Darkness object lights. |
 | `net_handle_say_server_packet` | `0x005F3E00` | high | Shows SSay text as a three-second balloon on its world object without appending to persistent history. |
 | `net_send_put_ground` | `0x005F4430` | high | Builds opcode 0x0C with one u32be value. |
 | `net_send_change_direction` | `0x005F4510` | high | WorldPane paths call this opcode 0x11 direction builder. |
@@ -561,17 +561,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_effect_object` | `0x005DD380` | high | Draws a world effect frame with its selected software blend mode. |
 | `render_update_effect_frame` | `0x005DD470` | high | Advances a world effect through its Effect.tbl frame sequence. |
 | `render_item_object` | `0x005DE620` | high | Draws a ground item with its normal or faded blend state. |
-| `render_copy_human_appearance_record` | `0x005DEF70` | high | Copies and normalizes the decoded 0x30-byte human appearance record before it becomes live world state. |
+| `render_copy_human_appearance_record` | `0x005DEF70` | high | Rearranges the parser-friendly SDrawHumanObjects appearance fields into the stable 0x30-byte HumanAppearanceRecord741 used by world objects and image sessions. |
 | `render_living_object` | `0x005DF950` | high | Draws a living sprite with normal, highlighted, or transparent state. |
 | `render_human_apply_appearance` | `0x005E0070` | high | Copies the packet-owned appearance record and forwards it to the live human object. |
-| `render_human_apply_appearance_record` | `0x005E00C0` | high | Stores the appearance record, applies collision state, creates the HumanObjectImageSession, and refreshes the object. |
+| `render_human_apply_appearance_record` | `0x005E00C0` | high | Copies HumanAppearanceRecord741 to WorldObject_Human +0xA4, derives nonblocking and translucent state, creates the 0x918-byte HumanObjectImageSession, and refreshes direction and motion. |
 | `render_static_object_ctor` | `0x005E42F0` | high | Stores the static tile ID, side, image cache, SOTP render flags, and draw state. |
 | `render_static_object` | `0x005E47E0` | high | Draws a fixed world object with its SOTP-selected software blend mode. |
-| `render_select_human_part_sprite` | `0x005FD8D0` | high | Selects the sprite ID for each of the 21 human body and equipment categories. |
+| `render_select_human_part_sprite` | `0x005FD8D0` | high | Selects the sprite ID for each of 21 human body and equipment categories; an overcoat suppresses ordinary pants, armor, and arms parts. |
 | `render_format_human_part_filename` | `0x005FDA90` | high | Builds gendered human-part EPF filenames; body resource 5 resolves through MM005 or WM005 motion files. |
-| `render_human_stand_motion_data_ctor` | `0x006000D0` | high | Constructs standing-motion data and resolves up to 21 body and equipment sprite parts. |
+| `render_human_stand_motion_data_ctor` | `0x006000D0` | high | Constructs standing-motion data and resolves up to 21 body and equipment sprite parts from HumanAppearanceRecord741. |
 | `render_create_human_stand_motion_data` | `0x00600670` | high | Allocates the initial standing-motion data for a human image session. |
-| `render_human_image_session_ctor` | `0x00602240` | high | Constructs the RTTI-backed HumanObjectImageSession and retains its decoded 0x30-byte appearance record. |
+| `render_human_image_session_ctor` | `0x00602240` | high | Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord741 at object offset +0x0C. |
 | `render_merge_light_mask_max` | `0x006036B0` | high | Merges a rectangular 8-bit light image into the viewport mask by retaining the greater value at each pixel. |
 
 ## Audio

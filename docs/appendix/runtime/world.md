@@ -81,28 +81,111 @@ struct WorldObjectPositionFields {
 
 ## Human appearance
 
-```c
-struct HumanAppearanceRecord {
-    u8 gender_resource_prefix;       // +0x00, 0 = M and 1 = W
-    u8 unknown_01[5];
-    u16 body_resource;               // +0x06
-    u8 unknown_08[0x27];
-    u8 additional_appearance_flag;   // +0x2F
-};                                  // size 0x30
+The normal form of `SDrawHumanObjects` is normalized into this 0x30-byte record before it reaches the renderer. The field order is not identical to the wire order.
 
-struct WorldObjectHumanAppearanceFields {
-    u8 world_object_base[0x90];
-    HumanObjectImageSession *image_session; // +0x90
+```c
+struct HumanAppearanceRecord741 {
+    u8 resource_prefix;              // +0x00, 0 = male/M and 1 = female/W
+    u8 pad_01;
+    u16 head_sprite;                 // +0x02
+    u8 hair_color;                   // +0x04
+    u8 pad_05;
+    u16 body_sprite;                 // +0x06
+    u8 skin_color;                   // +0x08
+    u8 pad_09;
+    u16 arms_sprite;                 // +0x0A
+    u16 boots_sprite;                // +0x0C, widened from wire u8
+    u8 boots_color;                  // +0x0E
+    u8 pad_0F;
+    u16 pants_sprite;                // +0x10, 0 or 1 from pants color
+    u8 pants_color;                  // +0x12
+    u8 pad_13;
+    u16 armor_sprite;                // +0x14
+    u8 unknown_16;                   // +0x16, SDrawHumanObjects writes 0
+    u8 pad_17;
+    u16 unknown_18;                  // +0x18, SDrawHumanObjects writes 0
+    u16 weapon_sprite;               // +0x1A
+    u16 accessory1_sprite;           // +0x1C
+    u8 accessory1_color;             // +0x1E
+    u8 pad_1F;
+    u16 shield_sprite;               // +0x20, widened from wire u8
+    u16 overcoat_sprite;             // +0x22
+    u8 overcoat_color;               // +0x24
+    u8 pad_25;
+    u16 accessory2_sprite;           // +0x26
+    u8 accessory2_color;             // +0x28
+    u8 pad_29;
+    u16 accessory3_sprite;           // +0x2A
+    u8 accessory3_color;             // +0x2C
+    u8 rest_position;                // +0x2D
+    u8 is_translucent;               // +0x2E
+    u8 face_shape;                   // +0x2F
+};                                   // size 0x30
+
+struct WorldObjectHumanLayout741 {
+    u8 unknown_000[0x24];
+    u32 entity_id;                   // +0x24
+    u8 unknown_028[0x18];
+    s32 tile_y;                      // +0x40
+    s32 tile_x;                      // +0x44
+    u8 unknown_048[0x48];
+    ObjectImageSession *image_session; // +0x90
     u8 unknown_094[0x10];
-    HumanAppearanceRecord appearance;       // +0xA4
-    bool nonblocking_human;                 // +0xD4
-    bool unknown_appearance_flag;           // +0xD5
-};
+    HumanAppearanceRecord741 appearance; // +0xA4
+    bool nonblocking_human;          // +0xD4, body sprite 2
+    bool is_translucent;             // +0xD5, true only when record value is 1
+    u8 unknown_0D6[0x2E];
+    bool uses_human_appearance;      // +0x104, false for monster disguise
+    u8 unknown_105[0x0D];
+    char name[0x80];                 // +0x112, other players
+    u8 direction;                    // +0x192
+    u8 unknown_193[0x5D];
+};                                   // WorldObject_Human size 0x1F0
+
+struct HumanObjectImageSessionLayout741 {
+    u8 image_session_base[0x0C];
+    HumanAppearanceRecord741 appearance; // +0x0C
+    u8 unknown_03C[0x8DC];
+};                                   // size 0x918
 ```
 
-`WorldObject_User` and `WorldObject_Human` both use this appearance record. Packed [`SDrawHumanObjects`](../../network/server/051-0x33-draw-human-objects.md) variants `8` and `9` decode to body resource `5` with M and W prefixes. `HumanObjectImageSession` then loads the small `MM005` or `WM005` motion family used for the swimming form.
+`WorldObject_User` derives from `WorldObject_Human` and adds 0x10 bytes, for a complete size of 0x200. Both classes therefore use the same offsets above. `image_session` points to `HumanObjectImageSession` for the normal form and `MonsterObjectImageSession` for the disguised form.
 
-Body resource `2` sets `nonblocking_human`; swimming body resource `5` does not. This dynamic-object collision flag is separate from the [local action lock](session.md#local-user-action-state) and from static `SOTP.DAT` collision.
+The normal handler keeps two copies of the record. The world-object copy is convenient for reading current logical appearance. The image-session copy owns resource and motion selection. Applying a new record replaces the image session, so callers should not retain the old session pointer.
+
+Overcoats suppress the ordinary pants, armor, and arms part selectors. `unknown_18` is a real internal part-sprite slot, but this packet always clears it. `rest_position` selects a standing-motion setup, although its value names remain unresolved.
+
+Packed [`SDrawHumanObjects`](../../network/server/051-0x33-draw-human-objects.md) variants `8` and `9` decode to body sprite `5` with M and W prefixes. `HumanObjectImageSession` then loads the small `MM005` or `WM005` motion family used for the swimming form.
+
+Body sprite `2` sets `nonblocking_human`; swimming body sprite `5` does not. Packed variants `5` and `6`, or an explicit wire value of `1`, set `is_translucent`. The renderer uses that field to draw otherwise normal human layers translucently, including the server-selected See Invisible representation. These fields are separate from the [local action lock](session.md#local-user-action-state) and from static `SOTP.DAT` collision.
+
+An invisible player still has a live object with `entity_id`, `tile_y`, and `tile_x`. For a viewer who cannot see that player, the server supplies an all-zero appearance record and empty display strings. Body sprite `0` remains blocking, but zero part selectors leave the image session with no visible human layers. For a viewer with See Invisible, the server supplies the real appearance with `is_translucent` enabled instead.
+
+### Transient packet object
+
+The RTTI `SDrawHumanObjects` object exists only while the decoded packet is being handled, but its layout is useful when pausing inside the handler:
+
+```c
+struct SDrawHumanObjectsPacketLayout741 {
+    u8 server_packet_base[0x10];
+    u8 decoded_appearance[0x32];    // +0x10, typed in BN as HumanAppearancePacketFields741
+    u8 name_style;                  // +0x42
+    u8 pad_43;
+    s32 name_length;                // +0x44
+    char name[0x100];               // +0x48
+    s32 group_ad_length;            // +0x148
+    char group_ad_text[0x100];      // +0x14C
+    u8 direction;                   // +0x24C
+    u8 pad_24D[3];
+    u32 entity_id;                  // +0x250
+    s32 tile_y;                     // +0x254, sign-extended wire u16
+    s32 tile_x;                     // +0x258, sign-extended wire u16
+    u8 unknown_25C[4];
+    s32 light_mask_id;              // +0x260
+};                                  // size 0x264
+```
+
+The packet-specific `decoded_appearance` area stores fields in a parser-friendly order. Binary Ninja has it typed as `HumanAppearancePacketFields741`. `render_copy_human_appearance_record` rearranges it into `HumanAppearanceRecord741`; the packet page gives the exact wire order.
 
 ## Static world object fields
 
