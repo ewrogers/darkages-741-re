@@ -17,8 +17,8 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x1F` and insta
 
 ```text
 packet SChangeWeather {
-    u8 opcode                  // 0x1F
-    u8 value                   // exact meaning not confirmed
+    u8      opcode                    // 0x1F
+    u8      value                     // exact meaning not confirmed
 }
 ```
 

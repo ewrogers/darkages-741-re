@@ -13,17 +13,17 @@
 
 ```text
 packet SMessage {
-    u8 opcode                    // 0x0A
-    u8 message_type
+    u8      opcode                    // 0x0A
+    u8      message_type
 
     if message_type == 0x11 {
-        u8 unknown_0
-        u8 unknown_1
+        u8      unknown_0
+        u8      unknown_1
         string8 unknown_text
     }
 
-    u16be message_length
-    u8 message[message_length]
+    u16     message_length
+    bytes   message[message_length]
 }
 ```
 

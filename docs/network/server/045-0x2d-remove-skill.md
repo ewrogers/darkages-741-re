@@ -13,11 +13,11 @@
 
 ## Body
 
-```c
-struct SRemoveSkillBody {
-    u8 opcode;                         // 0x2D
-    u8 slot;
-};
+```text
+packet SRemoveSkill {
+    u8      opcode                    // 0x2D
+    u8      slot
+}
 ```
 
 `net_deserialize_remove_skill_server_packet` reads the single body byte into the packet object's `slot` field. A receive-side trailing zero, when present, is not part of this class.

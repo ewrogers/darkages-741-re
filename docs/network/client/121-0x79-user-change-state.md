@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CUserChangeState {
-    u8 opcode                 // 0x79
+    u8      opcode                    // 0x79
     ...                         // fields pending
 }
 ```

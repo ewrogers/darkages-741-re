@@ -25,8 +25,8 @@ Known static callers lead to:
 
 ```text
 packet CRequestObjectInfo {
-    u8 opcode                 // 0x43
-    u8 subtype                // 1 in this builder
-    u32be object_id
+    u8      opcode                    // 0x43
+    u8      subtype                   // 1 in this builder
+    u32     object_id
 }
 ```

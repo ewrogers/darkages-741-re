@@ -21,12 +21,12 @@ The client has no derived packet RTTI for this name.
 
 ## Body
 
-```c
+```text
 packet CNewUserAppearance {
-    u8 opcode;                 // 0x04
-    u8 hair_style;             // male 1..18, female 1..17
-    u8 gender;                 // 1 male, 2 female
-    u8 hair_color;             // palette index 0..13
+    u8      opcode                    // 0x04
+    u8      hair_style                // male 1..18, female 1..17
+    u8      gender                    // 1 male, 2 female
+    u8      hair_color                // palette index 0..13
 }
 ```
 

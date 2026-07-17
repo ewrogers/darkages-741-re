@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x30` and insta
 
 ```text
 packet SPursuitMessage {
-    u8 opcode                 // 0x30
+    u8      opcode                    // 0x30
     ...                         // fields pending
 }
 ```

@@ -16,17 +16,17 @@ These panes route the decoded body directly, without constructing an RTTI packet
 
 ## Body
 
-```c
-struct LobbyResultBody {
-    u8 opcode;                 // 0x02
-    u8 status;
+```text
+packet LobbyResult {
+    u8      opcode                    // 0x02
+    u8      status
 
     // Present on login failures, first-stage creation errors,
     // and password-change responses.
     // A creation-completion response may also supply it, but the
     // client ignores that stage's bytes after status.
-    u8 message_length;
-    u8 message[message_length];
+    u8      message_length
+    bytes   message[message_length]
 }
 ```
 

@@ -54,6 +54,12 @@ These checks describe a portrait-sized EPF profile. See [EPF images](../file-for
 
 If no candidate passes its checks, the client still sends the packet with a zero portrait length. Profile text may still be present.
 
+## Display palette
+
+The legacy portrait EPF stores palette indexes. `file_decode_portrait_image` marks it with palette selector 0, and the drawing path resolves that selector through `legend.pal`. This is the `.pal` file to use when converting a portrait EPF outside the client.
+
+JPEG portraits do not use a `.pal` file. The JPEG decoder produces display pixels directly.
+
 ## Profile text
 
 The client reads at most 370 bytes from `profile.txt`. `ui_text_truncate_dbcs_safe` makes sure the byte limit does not split a Windows double-byte character. There is no Unicode conversion in the packet builder. The stored local text bytes are copied to the packet.

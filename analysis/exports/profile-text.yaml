@@ -51,6 +51,10 @@ functions:
     name: file_build_character_path
     confidence: high
     evidence: "Builds .\\<character>\\.\\<filename> from the active character name and supplied local filename."
+  - address: "0x00593D10"
+    name: render_resolve_palette_index
+    confidence: high
+    evidence: "Resolves an 8-bit UI color through palette slot 0, which startup loads from legend.pal."
   - address: "0x0059B490"
     name: net_server_request_portrait_ctor
     confidence: high
@@ -117,6 +121,8 @@ comments:
     text: "Read profile.txt from the character directory and include at most 0x172 bytes."
   - address: "0x0054D521"
     text: "The outer length is 4 + portrait length + profile length and counts both nested u16 fields."
+  - address: "0x0054D8EA"
+    text: "Decoded legacy portrait EPF pixels use palette selector 0; the palette manager loads that slot from legend.pal."
   - address: "0x0057AF13"
     text: "TextEditPane defaults to a 30,000-byte retention limit."
   - address: "0x0057AF25"
@@ -127,6 +133,8 @@ comments:
     text: "Map the color letter through the 24-entry palette-index table and skip the token bytes."
   - address: "0x0057F53D"
     text: "If the text exceeds max_bytes, delete the oldest bytes from the front without splitting a DBCS character."
+  - address: "0x00593D2E"
+    text: "Resolve UI and formatted-text color indexes through palette slot 0 from legend.pal."
   - address: "0x005AD228"
     text: "SRequestPortrait 0x49 has no payload. UserInfoPane answers with CSendPortrait 0x4F."
   - address: "0x005AD6BB"
@@ -152,6 +160,8 @@ portrait_upload:
     table_displacement: "0xAF0"
     width: 56
     height: 48
+    display_palette: legend.pal
+text_palette: legend.pal
 text_color_codes:
   - letter: a
     palette_index: "0x14"

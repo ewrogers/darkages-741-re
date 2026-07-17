@@ -25,7 +25,7 @@ Known static callers lead to:
 
 ```text
 packet CPutGround {
-    u8 opcode                 // 0x0C
-    u32be value
+    u8      opcode                    // 0x0C
+    u32     value
 }
 ```

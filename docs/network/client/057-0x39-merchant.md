@@ -25,10 +25,10 @@ Known static callers lead to:
 
 ```text
 packet CMerchant {
-    u8 opcode                 // 0x39
-    u8 menu_type
-    u32be object_id
-    u16be selection
+    u8      opcode                    // 0x39
+    u8      menu_type
+    u32     object_id
+    u16     selection
 }
 ```
 

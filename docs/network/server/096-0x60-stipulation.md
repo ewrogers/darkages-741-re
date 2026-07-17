@@ -15,18 +15,18 @@ Before either handler processes the greeting, it checks whether the homepage URL
 
 ## Body
 
-```c
+```text
 packet SStipulation {
-    u8 opcode;               // 0x60
-    u8 mode;
+    u8      opcode                    // 0x60
+    u8      mode
 
-    if (mode == 0) {
-        u32be greeting_crc32;
+    if mode == 0 {
+        u32     greeting_crc32
     }
 
-    if (mode == 1) {
-        u16be compressed_size;
-        u8 zlib_data[compressed_size];
+    if mode == 1 {
+        u16     compressed_size
+        bytes   zlib_data[compressed_size]
     }
 }
 ```
@@ -36,6 +36,14 @@ Mode 0 compares the received CRC32 with the decoded local greeting. A match disp
 The observed mode-0 body carries CRC32 `0xE5DC1439`.
 
 Mode 1 inflates the replacement into a buffer capped at 10,000 bytes, saves the updated server table, and displays the new greeting.
+
+## Agreement pane and main-menu input
+
+After a matching mode-0 check or a successful mode-1 replacement, the normal US path constructs `AgreementDialogPane` from `_nagree.txt`. The pane's OK action only closes and unregisters the pane. It sends no acknowledgement packet.
+
+`MainMenuPane +0x500` is the local input gate. Its pointer and keyboard handlers consume input immediately while this value is nonzero. Both successful stipulation paths clear it to zero after the agreement decision, which restores normal menu input and makes Login clickable.
+
+The Japan distribution path already skips constructing the agreement pane and still reaches that same gate-clearing code. The [suppress-stipulation runtime patch](../../appendix/runtime-patches.md#suppress-the-stipulation-window) makes the two successful paths follow this existing branch for every distribution. CRC comparison, table replacement, homepage requesting, and the main-menu state transition are left intact.
 
 ## Handlers
 

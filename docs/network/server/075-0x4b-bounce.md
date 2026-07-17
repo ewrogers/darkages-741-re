@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x4B` and insta
 
 ```text
 packet SBounce {
-    u8 opcode                 // 0x4B
+    u8      opcode                    // 0x4B
     ...                         // fields pending
 }
 ```

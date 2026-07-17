@@ -4,6 +4,8 @@ These messages travel from the game client to the server.
 
 The binary exposes only the client packet base class through RTTI. Concrete names therefore come from local builder behavior and project-owner protocol knowledge. Each page states its name source and lists known UI or subsystem owners without mixing in address-level lookup data.
 
+Body schemas use the shared [packet body notation](../packet-body-notation.md). All multibyte packet integers are big-endian. Reused enum and bit-flag values live in [Shared protocol types](../protocol-types.md).
+
 Plain packet bodies begin with the command byte. For ordinary client packets, `net_submit_client_packet` appends one transmitted zero byte after the builder-provided fields. `CHello` is listed for sequence research, but its `baram` text is a special control message rather than a compiler-recovered packet class.
 
 | Packet | Encoding |

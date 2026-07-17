@@ -18,22 +18,25 @@ The server sends this message for **meta data**.
 
 ```text
 packet SMetaData {
-    u8 opcode                 // 0x6F
-    u8 operation
+    u8      opcode                    // 0x6F
+    u8      operation
 
-    if operation == 0:
-        u8 name_length
-        bytes name[name_length]
-        u32be crc
-        u16be payload_length
-        bytes payload[payload_length]
+    if operation == 0 {
+        u8      name_length
+        bytes   name[name_length]
+        u32     crc
+        u16     payload_length
+        bytes   payload[payload_length]
+    }
 
-    if operation == 1:
-        u16be entry_count
-        repeat entry_count times:
-            u8 name_length
-            bytes name[name_length]
-            u32be crc
+    if operation == 1 {
+        u16     entry_count
+        repeat entry_count {
+            u8      name_length
+            bytes   name[name_length]
+            u32     crc
+        }
+    }
 }
 ```
 

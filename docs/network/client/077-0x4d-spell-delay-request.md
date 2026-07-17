@@ -12,11 +12,11 @@
 
 ## Body
 
-```c
-struct CSpellDelayRequestBody {
-    u8 opcode;                         // 0x4D
-    u8 cast_lines;
-};
+```text
+packet CSpellDelayRequest {
+    u8      opcode                    // 0x4D
+    u8      cast_lines
+}
 ```
 
 `net_send_spell_delay_request` writes the two meaningful bytes. The common submission helper supplies the encrypted client packet's trailing zero.

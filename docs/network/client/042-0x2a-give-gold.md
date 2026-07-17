@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CGiveGold {
-    u8 opcode                 // 0x2A
+    u8      opcode                    // 0x2A
     ...                         // fields pending
 }
 ```

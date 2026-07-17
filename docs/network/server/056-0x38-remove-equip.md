@@ -12,16 +12,16 @@
 
 ## Body
 
-```c
-struct SRemoveEquipBody {
-    u8 opcode;                         // 0x38
-    u8 slot;
-};
+```text
+packet SRemoveEquip {
+    u8      opcode                    // 0x38
+    u8      slot                      // EquipmentSlot
+}
 ```
 
 `net_deserialize_remove_equip_server_packet` reads the one-byte slot and widens it to a 16-bit packet-object field. A receive-side trailing zero, when present, is not part of this class.
 
-Slot values use the table on [`SAddEquip`](055-0x37-add-equip.md#equipment-slots).
+Slot values use the shared [`EquipmentSlot`](../protocol-types.md#equipmentslot) type.
 
 ## Client state
 

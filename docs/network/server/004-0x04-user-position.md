@@ -14,19 +14,19 @@
 
 The concrete RTTI packet object is only `0x14` bytes. Its deserializer reads exactly two words into the two fields following the `0x10`-byte packet base:
 
-```c
-struct SUserPositionBody {
-    u8 opcode;                 // 0x04
-    u16be x;                   // packet object +0x10
-    u16be y;                   // packet object +0x12
+```text
+packet SUserPosition {
+    u8      opcode                    // 0x04
+    u16     x                         // packet object +0x10
+    u16     y                         // packet object +0x12
 
     // Observed in captures, but not read by client 7.41:
-    u16be observed_trailing_0;
-    u16be observed_trailing_1;
-};
+    u16     observed_trailing_0
+    u16     observed_trailing_1
+}
 ```
 
-The two trailing `u16be` types describe their observed capture shape. The client does not read these bytes at all, so it supplies no evidence for their original names or even whether their producer regards them as two words rather than four opaque bytes.
+The two trailing `u16` types describe their observed capture shape. The client does not read these bytes at all, so it supplies no evidence for their original names or even whether their producer regards them as two words rather than four opaque bytes.
 
 The supplied login trace makes the boundary visible:
 
@@ -42,7 +42,7 @@ That places the player at `(43, 40)`. Both observed trailing words are `11`. The
 
 ## Applying the position
 
-Although the reader is named for unsigned `u16be`, the handler sign-extends both stored words before using them:
+Although the reader is named for unsigned `u16`, the handler sign-extends both stored words before using them:
 
 ```c
 x = (s16)packet.x;
@@ -73,6 +73,6 @@ This does not make the active map grid larger. Client 7.41 reads `SMapSize` widt
 
 One grid loaded through that path is therefore still limited to 255 cells on either axis. Values at or above `0x8000` also become negative when this handler sign-extends them.
 
-The wider wire fields appear to be a protocol-wide coordinate choice. `SDrawHumanObjects` also carries its object coordinates as `u16be`, while the client stores and calculates positions as 32-bit integers. That can explain how the format has more range than this map loader needs, but the binary does not reveal whether the original reason was engine reuse, older transports, or planned larger maps.
+The wider wire fields appear to be a protocol-wide coordinate choice. `SDrawHumanObjects` also carries its object coordinates as `u16`, while the client stores and calculates positions as 32-bit integers. That can explain how the format has more range than this map loader needs, but the binary does not reveal whether the original reason was engine reuse, older transports, or planned larger maps.
 
 [`SMove`](011-0x0b-move.md) handles subsequent server movement updates, while [`CMove`](../client/006-0x06-move.md) reports locally attempted steps.

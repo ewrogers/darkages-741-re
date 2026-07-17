@@ -22,7 +22,7 @@ Known static callers lead to:
 
 ```text
 packet CMiniGame {
-    u8 opcode                 // 0x6A
+    u8      opcode                    // 0x6A
     ...                         // fields pending
 }
 ```

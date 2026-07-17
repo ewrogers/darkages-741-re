@@ -11,15 +11,15 @@ The client sends `CMapRequest` when the map announced by `SMapSize` is missing o
 
 ## Body
 
-```c
-struct CMapRequestBody {
-    u8 opcode;                  // 0x05
-    u16be reserved_0;           // 0
-    u16be reserved_1;           // 0
-    u8 width;
-    u8 height;
-    u24be cache_value;          // normally 0x00 || crc16
-};
+```text
+packet CMapRequest {
+    u8      opcode                    // 0x05
+    u16     reserved_0                // 0
+    u16     reserved_1                // 0
+    u8      width
+    u8      height
+    u24     cache_value               // normally 0x00 || crc16
+}
 ```
 
 The body is ten bytes including the opcode. `net_handle_map_size_server_packet` builds it inline after cache validation fails.

@@ -23,7 +23,7 @@ Known static callers lead to:
 
 ```text
 packet CQuit {
-    u8 opcode                 // 0x0B
+    u8      opcode                    // 0x0B
     ...                         // fields pending
 }
 ```

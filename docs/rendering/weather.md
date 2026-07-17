@@ -35,14 +35,7 @@ The seasonal bit and weather mode are independent. A map may use snowy art witho
 
 No dedicated rain particle class, rain filename, or rain setup path was found.
 
-The local weather setup behaves as follows:
-
-| Mode | Local behavior |
-| ---: | --- |
-| 0, None | No weather session |
-| 1, Snow | Create falling snow |
-| 2, Rain | No local setup |
-| 3, Darkness | Force black ambient light and enable human-centered light masks |
+The low-nibble mode values are defined by the shared [`MapFlags`](../network/protocol-types.md#mapflags) type. Locally, None creates no weather session, Snow creates falling snow, Rain performs no setup, and Darkness forces black ambient light with human-centered light masks.
 
 The Rain and Darkness names are project-owner protocol vocabulary. The client contains an explicit mode-2 branch but performs no work in it, so rain may be server-driven through another effect or simply unsupported here.
 

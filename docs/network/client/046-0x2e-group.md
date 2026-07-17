@@ -25,9 +25,9 @@ Known static callers lead to:
 
 ```text
 packet CGroup {
-    u8 opcode                 // 0x2E
-    u8 action                 // 2 in this builder
-    u8 name_length
-    u8 name[name_length]
+    u8      opcode                    // 0x2E
+    u8      action                    // 2 in this builder
+    u8      name_length
+    bytes   name[name_length]
 }
 ```

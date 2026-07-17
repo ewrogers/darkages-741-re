@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CWebBoard {
-    u8 opcode                 // 0x73
+    u8      opcode                    // 0x73
     ...                         // fields pending
 }
 ```

@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CChangeSlot {
-    u8 opcode                 // 0x30
+    u8      opcode                    // 0x30
     ...                         // fields pending
 }
 ```

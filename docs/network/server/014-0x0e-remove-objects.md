@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x0E` and insta
 
 ```text
 packet SRemoveObjects {
-    u8 opcode                 // 0x0E
+    u8      opcode                    // 0x0E
     ...                         // fields pending
 }
 ```

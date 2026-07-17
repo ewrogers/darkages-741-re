@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x64` and insta
 
 ```text
 packet SMiniGame {
-    u8 opcode                 // 0x64
+    u8      opcode                    // 0x64
     ...                         // fields pending
 }
 ```

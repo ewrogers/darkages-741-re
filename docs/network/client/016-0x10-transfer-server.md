@@ -17,11 +17,11 @@ The client sends this message after reconnecting to the endpoint in [`STransferS
 
 ## Body
 
-```c
+```text
 packet CTransferServer {
-    u8 opcode;                 // 0x10
-    u8 token[];                // exact STransferServer token bytes
-    u8 terminator;             // 0x00, appended by net_submit_client_packet
+    u8      opcode                    // 0x10
+    bytes   token[remaining]                   // exact STransferServer token bytes
+    u8      terminator                // 0x00, appended by net_submit_client_packet
 }
 ```
 

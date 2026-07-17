@@ -6,19 +6,17 @@ The server welcome is the bridge between the initial connection and normal packe
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x7E` (126) |
-| Framing | Observed binary `0xAA` frame with a `u16be` body size |
+| Framing | Observed binary `0xAA` frame with a `u16` body size |
 | Transform | `raw` during the initial raw-stream receive mode |
 | Name provenance | Behavioral alias; there is no `SHello` RTTI class or server packet factory entry |
 
 ## Observed form
 
 ```text
-frame SHello {
-    u8 marker                  // 0xAA
-    u16be body_size
-    u8 opcode                  // 0x7E
-    u8 escape                  // 0x1B
-    bytes greeting             // observed as "CONNECTED SERVER\n"
+packet SHello {
+    u8      opcode                    // 0x7E
+    u8      escape                    // 0x1B
+    bytes   greeting[body_size - 2]   // observed as "CONNECTED SERVER\n"
 }
 ```
 

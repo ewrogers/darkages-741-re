@@ -24,6 +24,6 @@ Known static callers lead to:
 
 ```text
 packet CRequestFamilyName {
-    u8 opcode                 // 0x7A
+    u8      opcode                    // 0x7A
 }
 ```

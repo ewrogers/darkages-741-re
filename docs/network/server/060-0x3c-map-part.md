@@ -21,13 +21,13 @@ The world dispatcher still gives the raw decoded body to `net_handle_map_part`. 
 
 ```text
 packet SMapPart {
-    u8 opcode                  // 0x3C
-    u16be part_index
+    u8      opcode                    // 0x3C
+    u16     part_index
 
     repeat map_record_count {
-        u16be value_a
-        u16be value_b
-        u16be value_c
+        u16     value_a
+        u16     value_b
+        u16     value_c
     }
 }
 ```

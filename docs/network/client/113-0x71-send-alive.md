@@ -26,6 +26,6 @@ Known static callers lead to:
 
 ```text
 packet CSendAlive {
-    u8 opcode                 // 0x71
+    u8      opcode                    // 0x71
 }
 ```

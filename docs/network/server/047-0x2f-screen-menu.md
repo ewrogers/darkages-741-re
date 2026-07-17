@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x2F` and insta
 
 ```text
 packet SScreenMenu {
-    u8 opcode                 // 0x2F
+    u8      opcode                    // 0x2F
     ...                         // fields pending
 }
 ```

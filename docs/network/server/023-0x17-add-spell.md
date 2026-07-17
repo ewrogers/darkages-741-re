@@ -13,16 +13,16 @@
 
 ## Body
 
-```c
-struct SAddSpellBody {
-    u8 opcode;                         // 0x17
-    u8 slot;
-    u16be icon;
-    u8 spell_args_type;
-    string8 name;
-    string8 prompt;
-    u8 cast_lines;
-};
+```text
+packet SAddSpell {
+    u8      opcode                    // 0x17
+    u8      slot
+    u16     icon
+    u8      spell_args_type
+    string8 name
+    string8 prompt
+    u8      cast_lines
+}
 ```
 
 Both strings begin with a one-byte byte count. The class deserializer copies them into 256-byte local buffers and adds a local NUL after each value.

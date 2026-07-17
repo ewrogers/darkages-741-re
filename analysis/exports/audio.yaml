@@ -212,9 +212,9 @@ functions:
     confidence: high
     evidence: Closes the digital driver and shuts Miles down.
   - address: "0x0059BF30"
-    name: net_server_sound_effect_deserialize
+    name: net_deserialize_sound_effect_server_packet
     confidence: high
-    evidence: Reads one SSoundEffect command byte and a second music byte only for command 0xFF.
+    evidence: Reads one SSoundEffect byte and a second track byte only for mode 0xFF; no trailing u16 is consumed.
   - address: "0x005F6B20"
     name: audio_handle_sound_effect_packet
     confidence: high
@@ -258,7 +258,7 @@ comments:
   - address: "0x00569422"
     text: Open one Miles digital driver at 22050 Hz, 16-bit, stereo. Retry the same format with default driver flags if the first open fails.
   - address: "0x0059BF30"
-    text: Deserialize SSoundEffect. Read one command byte. Only 0xFF adds a second music-selection byte.
+    text: Deserialize SSoundEffect. Read one sound byte. Only 0xFF adds a second track byte; this client does not consume a trailing u16.
   - address: "0x005F6B4E"
     text: SSoundEffect values below 0xFF are numeric sound-effect IDs.
   - address: "0x005F6B62"

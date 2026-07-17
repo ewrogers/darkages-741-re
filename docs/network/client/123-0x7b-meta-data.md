@@ -18,12 +18,12 @@ The client requests one named metadata table after the server inventory shows th
 
 ## Body
 
-```c
+```text
 packet CMetaData {
-    u8 opcode;               // 0x7B
-    u8 operation;            // 0, request one table
-    u8 name_length;
-    u8 name[name_length];
+    u8      opcode                    // 0x7B
+    u8      operation                 // 0, request one table
+    u8      name_length
+    bytes   name[name_length]
 }
 ```
 

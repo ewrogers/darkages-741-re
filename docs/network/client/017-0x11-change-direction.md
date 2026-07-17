@@ -25,7 +25,9 @@ Known static callers lead to:
 
 ```text
 packet CChangeDirection {
-    u8 opcode                 // 0x11
-    u8 direction
+    u8      opcode                    // 0x11
+    u8      direction                 // Direction
 }
 ```
+
+`direction` uses the shared [`Direction`](../protocol-types.md#direction) type.

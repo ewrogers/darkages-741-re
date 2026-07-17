@@ -21,7 +21,7 @@ The client has no derived packet RTTI for this name.
 
 ```text
 packet CRequestPatch {
-    u8 opcode                 // 0x48
+    u8      opcode                    // 0x48
     ...                         // fields pending
 }
 ```

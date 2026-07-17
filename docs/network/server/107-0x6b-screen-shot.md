@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x6B` and insta
 
 ```text
 packet SScreenShot {
-    u8 opcode                 // 0x6B
+    u8      opcode                    // 0x6B
     ...                         // fields pending
 }
 ```

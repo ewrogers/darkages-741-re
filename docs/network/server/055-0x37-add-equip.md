@@ -12,17 +12,17 @@
 
 ## Body
 
-```c
-struct SAddEquipBody {
-    u8 opcode;                         // 0x37
-    u8 slot;
-    u16be sprite;
-    u8 dye_color;
-    string8 name;
-    u8 ignored_after_name;             // observed as 0x00
-    u32be durability;
-    u32be max_durability;
-};
+```text
+packet SAddEquip {
+    u8      opcode                    // 0x37
+    u8      slot                      // EquipmentSlot
+    u16     sprite
+    u8      dye_color
+    string8 name
+    u8      ignored_after_name        // observed as 0x00
+    u32     durability
+    u32     max_durability
+}
 ```
 
 `name` begins with a one-byte byte count. `net_deserialize_add_equip_server_packet` copies it into a 256-byte packet-object buffer and adds a local NUL.
@@ -33,20 +33,7 @@ Some captured bodies have another zero after `max_durability`. That final byte i
 
 ## Equipment slots
 
-The client confirms the numeric shape of the slot table: `0` is a sentinel, and slots `1` through `18` map directly to internal indices `0` through `17`. The semantic names below are project-owner protocol vocabulary supported by observed game behavior. They were not recovered as a C++ enum.
-
-| Value | Slot | Value | Slot |
-| ---: | --- | ---: | --- |
-| `0` | None | `10` | Right Gauntlet |
-| `1` | Weapon | `11` | Belt |
-| `2` | Armor | `12` | Greaves |
-| `3` | Shield | `13` | Boots |
-| `4` | Helmet | `14` | Accessory 1 |
-| `5` | Earrings | `15` | Overcoat |
-| `6` | Necklace | `16` | Over Helm |
-| `7` | Left Ring | `17` | Accessory 2 |
-| `8` | Right Ring | `18` | Accessory 3 |
-| `9` | Left Gauntlet |  |  |
+`slot` uses the shared [`EquipmentSlot`](../protocol-types.md#equipmentslot) type. This handler accepts only values `1` through `18`; `0` is the protocol sentinel rather than a removable worn entry.
 
 ## Client state
 

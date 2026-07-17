@@ -14,11 +14,11 @@
 
 The plaintext body has one field after the command:
 
-```c
-struct SRemoveInventoryBody {
-    u8 opcode;             // 0x10
-    u8 slot;               // 1 through 60
-};
+```text
+packet SRemoveInventory {
+    u8      opcode                    // 0x10
+    u8      slot                      // 1 through 60
+}
 ```
 
 ## Client state

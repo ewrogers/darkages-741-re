@@ -25,8 +25,8 @@ Known static callers lead to:
 
 ```text
 packet CCheckTime {
-    u8 opcode                 // 0x75
-    u32be server_value
-    u32be client_tick_count   // timeGetTime()
+    u8      opcode                    // 0x75
+    u32     server_value
+    u32     client_tick_count         // timeGetTime()
 }
 ```

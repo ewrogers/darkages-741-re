@@ -22,7 +22,7 @@ Known static callers lead to:
 
 ```text
 packet CAttack {
-    u8 opcode                 // 0x13
+    u8      opcode                    // 0x13
     ...                         // fields pending
 }
 ```

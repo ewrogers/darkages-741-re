@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x0C` and insta
 
 ```text
 packet SMoveObject {
-    u8 opcode                 // 0x0C
+    u8      opcode                    // 0x0C
     ...                         // fields pending
 }
 ```

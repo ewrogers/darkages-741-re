@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x49` and insta
 
 ```text
 packet SRequestPortrait {
-    u8 opcode                 // 0x49, no body fields
+    u8      opcode                    // 0x49, no body fields
 }
 ```
 

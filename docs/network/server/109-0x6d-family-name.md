@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x6D` and insta
 
 ```text
 packet SFamilyName {
-    u8 opcode                 // 0x6D
+    u8      opcode                    // 0x6D
     ...                         // fields pending
 }
 ```

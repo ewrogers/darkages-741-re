@@ -17,11 +17,11 @@ Both `SStipulation` handlers check the cached-homepage flag before processing th
 
 ## Body
 
-```c
+```text
 packet CRequestHomepage {
-    u8 opcode;                 // 0x68
-    u8 request_type;           // 1
-    u8 terminator;             // 0, appended by net_submit_client_packet
+    u8      opcode                    // 0x68
+    u8      request_type              // 1
+    u8      terminator                // 0, appended by net_submit_client_packet
 }
 ```
 

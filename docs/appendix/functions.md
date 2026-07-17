@@ -115,8 +115,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
+| `ui_agreement_dialog_pane_ctor` | `0x00402430` | high | Constructs RTTI-backed AgreementDialogPane from _nagree.txt, attaches OK and Cancel controls, inserts the current greeting, and registers the pane. |
+| `ui_agreement_dialog_handle_action` | `0x004028F0` | high | Action 0 closes and unregisters the agreement pane without sending a packet. |
 | `ui_bottom_buttons_handle_network_event` | `0x0041B690` | high | BtmButtonsPane_A network-event handler routes SStatus to the parcel and mail-indicator updater. |
+| `ui_legend_list_draw_item` | `0x0042BA20` | high | Draws one Self Look legend record by icon, resolves its color through palette slot 0, and renders its text. |
 | `ui_new_legend_dialog_action` | `0x0042CA50` | high | The RTTI-backed NewLegendDialogPane action normalizes line breaks, ends profile text at the fifth break, and saves profile.txt. |
+| `ui_legend_dialog_apply_self_look` | `0x0042CD80` | high | Clears and rebuilds the older LegendDialogPane list from SSelfLook's fixed-size legend records. |
 | `ui_intro_video_pane_ctor` | `0x0042DFF0` | high | Initializes the CIPane vtable and Bink-backed video state. |
 | `ui_intro_video_begin_sequence` | `0x0042E1F0` | high | Stores two clip resources and starts the first clip. |
 | `ui_get_intro_video_pane` | `0x0042E7D0` | high | Returns the global CIPane instance at 0x006DA3A0. |
@@ -137,6 +141,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_dialog_dispatch_pointer_to_control` | `0x00446FE0` | high | Converts pointer coordinates to control-local space, calls control virtual +0x48, and restores the event. |
 | `ui_window_message_dialog_pane_ctor` | `0x004488C0` | high | Builds the standard scrollable or alternate woodbook-style SMessage popup from an explicit byte buffer. |
 | `ui_equip_pane_handle_network_event` | `0x0045D970` | high | Exact RTTI class EquipPane routes SAddEquip, SRemoveEquip, and SSelfLook from its primary-vtable network-event slot. |
+| `ui_equip_pane_apply_self_look` | `0x0045FDC0` | high | Copies SSelfLook identity, nation, group, class, and legend state into EquipPane and its dependent panes. |
 | `ui_equip_pane_add_equipment_from_packet` | `0x004601D0` | high | Converts the SAddEquip slot to an index and stores sprite, dye, name, current durability, and maximum durability in EquipPane's 18-entry arrays. |
 | `ui_equip_pane_remove_equipment_from_packet` | `0x004602B0` | high | Clears the selected EquipPane sprite, name, and durability fields without clearing the retained dye byte. |
 | `ui_pane_schedule_timer` | `0x00464050` | high | Schedules a timer for a Pane by passing its TimerHandler subobject at +0x11C. |
@@ -201,6 +206,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_load_spell_cast_lines` | `0x0049BD80` | high | Loads up to ten 256-byte per-spell cast strings from the current character's SpellBook.cfg data. |
 | `ui_layout_parse_control` | `0x004A81F0` | high | Parses CONTROL, NAME, TYPE, RECT, IMAGE, VALUE, COLOR, and ENDCONTROL tokens. |
 | `ui_layout_serialize_control` | `0x004A8820` | high | Writes one parsed control back to the same line-oriented layout grammar. |
+| `ui_main_menu_activate_selected_action` | `0x004B7520` | high | Dispatches the selected MainMenuPane entry to login, character creation, password change, homepage, credits, or exit behavior. |
+| `ui_main_menu_handle_pointer_event` | `0x004B7BD0` | high | Rejects pointer input while MainMenuPane +0x500 is nonzero, then performs menu hit-testing and activation when the gate is clear. |
+| `ui_main_menu_handle_keyboard_event` | `0x004B7D00` | high | Rejects keyboard input while MainMenuPane +0x500 is nonzero, then handles menu selection and activation when the gate is clear. |
 | `ui_login_dialog_ctor` | `0x004BA180` | high | Constructs RTTI class LoginDialogPane from _nlogin.txt and attaches OK, Cancel, Name, and Password controls. |
 | `ui_login_dialog_handle_key_event` | `0x004BA810` | high | Moves focus from Name to Password when Enter is pressed and otherwise delegates supported keyboard events to DialogPane. |
 | `ui_login_dialog_handle_action` | `0x004BA8C0` | high | Action 0 reads LoginDialogPane controls 2 and 3 and sends CLogin; action 1 closes the dialog. |
@@ -210,6 +218,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_input_birthdate_dialog_ctor` | `0x004BC220` | high | Constructs RTTI class InputBirthdateDialogPane from _npw2.txt for the regional password-change verification branch. |
 | `ui_server_item_menu_dialog_handle_network_event` | `0x004CAC20` | high | TaskListDialog::ServerItemMenuDialog3 network-event handler accepts SStatus updates containing progression and currency. |
 | `ui_server_item_menu_update_gold_from_status_packet` | `0x004CAC90` | high | Copies SStatus gold into the server-item menu dialog and redraws its currency display. |
+| `ui_group_ad_pane_apply_self_look` | `0x00513E80` | high | Builds GroupAdPane's recruiting model from SSelfLook; it copies name and note but omits the already-parsed leader string. |
 | `ui_new_patch_pane_ctor` | `0x005283E0` | high | Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff. |
 | `ui_npc_server_item_menu_handle_network_event` | `0x0053A270` | high | NPCMenuDialog::NPCServerItemMenuDialog routes SStatus progression blocks to its gold-display updater. |
 | `ui_npc_server_item_menu_update_gold_from_status_packet` | `0x0053A2D0` | high | Copies SStatus gold into the NPC server-item menu and redraws the dialog. |
@@ -261,10 +270,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_user_info_refresh_local_portrait` | `0x005AD5D0` | high | Builds the local portrait body and reapplies it to UserInfoPane without calling the network submitter. |
 | `ui_user_info_timer` | `0x005AD600` | high | Timer 0x1241 calls the local portrait refresh after the profile editor saves. |
 | `ui_user_info_update_status_from_packet` | `0x005B0C40` | high | Updates UserInfoPane's five attributes and signed armor class from present SStatus blocks. |
+| `ui_user_info_apply_self_look` | `0x005B0D10` | high | Copies SSelfLook identity and nation fields into UserInfoPane, rebuilds its legend list, and reloads SClass metadata when the class changes. |
 | `ui_user_info_add_equipment_from_packet` | `0x005B1070` | high | Maps SAddEquip slots 1 through 18 to UserInfoPane child-view indices 0 through 17 and forwards the visible item fields. |
 | `ui_user_info_remove_equipment_from_packet` | `0x005B1100` | high | Maps a checked SRemoveEquip slot and asks the UserInfoPane child equipment view to clear that entry. |
 | `ui_portrait_text_dialog_ctor` | `0x005B11A0` | high | Constructs RTTI-backed PortraitTextInputDialogPane from _nui_pi.txt and loads profile.txt. |
 | `ui_portrait_text_dialog_action` | `0x005B1510` | high | Action 1 saves profile.txt and queues timer 0x1241; action 2 closes without saving. |
+| `ui_nui_legend_pane_apply_self_look` | `0x005B7ED0` | high | Clears and rebuilds RTTI class nui_LegendPane from SSelfLook's legend records. |
 | `ui_map_loading_pane_ctor` | `0x005BA040` | high | Constructs RTTI class MapLoadingPane from _nloadm.txt and registers it as a visible screen pane. |
 | `ui_map_loading_set_progress` | `0x005BA330` | high | Stores the SMapPart transfer percentage in MapLoadingPane and invalidates the pane for redraw. |
 | `ui_snow_particle_pane_ctor` | `0x005BD710` | high | Constructs one ImagePane-backed snow particle from a snowaNN.epf resource. |
@@ -298,7 +309,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_configure_excitegame_endpoint` | `0x00435A20` | high | Dormant mode 10 Excitegame integration that obtains endpoint data from an external launcher or COM-style provider. |
 | `net_configure_kornetworld_endpoint` | `0x00436210` | high | Dormant mode 11 integration that expects /KWG, resolves game.kornetworld.com, and selects port 9000. |
 | `net_configure_mihosoft_endpoint` | `0x00436620` | high | Dormant mode 9 integration that loads cjconnector.dll and parses a mihosoft launcher record. |
-| `net_send_new_user_request` | `0x0043D820` | high | Builds CNewUser opcode 0x02 with length-prefixed name, password, and distribution-dependent account text; Japan mode 13 appends a u16be ISP selector. |
+| `net_send_new_user_request` | `0x0043D820` | high | Builds CNewUser opcode 0x02 with length-prefixed name, password, and distribution-dependent account text; Japan mode 13 appends a u16 ISP selector. |
 | `net_handle_new_user_validation_result` | `0x0043E360` | high | Parses the first creation result: status 0 sends appearance, 3 and 4 reset name, 5 through 10 reset both password controls, and 11 displays only the message. |
 | `net_handle_new_user_completion_result` | `0x0043E7B0` | high | Parses the second creation result; status 0 displays localized success text, closes CreateUserDialogPane, and ignores body bytes after status. |
 | `net_send_new_user_appearance` | `0x0043E8F0` | high | Accepted SNewUserCheck flow sends opcode 0x04 with hair style, one-based gender, and hair-color palette index. |
@@ -403,19 +414,19 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_server_packet` | `0x00596780` | high | Calls the registered constructor for a server opcode. |
 | `net_create_add_equip_server_packet` | `0x00597210` | high | Allocates a 0x124-byte RTTI SAddEquip object and calls its concrete constructor. |
 | `net_add_equip_server_packet_ctor` | `0x00597290` | high | Passes opcode 0x37 to the server packet base and installs the exact SAddEquip vtable. |
-| `net_deserialize_add_equip_server_packet` | `0x005972C0` | high | Reads slot, u16be sprite, dye, string8 name, one skipped byte, and two u32be durability values into SAddEquip. |
+| `net_deserialize_add_equip_server_packet` | `0x005972C0` | high | Reads slot, u16 sprite, dye, string8 name, one skipped byte, and two u32 durability values into SAddEquip. |
 | `net_create_add_inventory_server_packet` | `0x00597380` | high | Allocates a 0x12C-byte RTTI SAddInventory object and calls its concrete constructor. |
 | `net_add_inventory_server_packet_ctor` | `0x00597400` | high | Passes opcode 0x0F to the server packet base and installs the exact SAddInventory vtable. |
-| `net_deserialize_add_inventory_server_packet` | `0x00597430` | high | Reads slot, u16be sprite, dye color, string8 name, u32be quantity, stack flag, current durability, and maximum durability into SAddInventory. |
+| `net_deserialize_add_inventory_server_packet` | `0x00597430` | high | Reads slot, u16 sprite, dye color, string8 name, u32 quantity, stack flag, current durability, and maximum durability into SAddInventory. |
 | `net_create_add_skill_server_packet` | `0x00597510` | high | Allocates a 0x118-byte RTTI SAddSkill object and calls its concrete constructor. |
 | `net_add_skill_server_packet_ctor` | `0x00597590` | high | Passes opcode 0x2C to the server packet base and installs the exact SAddSkill vtable. |
-| `net_deserialize_add_skill_server_packet` | `0x005975C0` | high | Reads u8 slot, u16be icon, and string8 name into SAddSkill. |
+| `net_deserialize_add_skill_server_packet` | `0x005975C0` | high | Reads u8 slot, u16 icon, and string8 name into SAddSkill. |
 | `net_create_add_spell_server_packet` | `0x00597640` | high | Allocates a 0x224-byte RTTI SAddSpell object and calls its concrete constructor. |
 | `net_add_spell_server_packet_ctor` | `0x005976C0` | high | Passes opcode 0x17 to the server packet base and installs the exact SAddSpell vtable. |
-| `net_deserialize_add_spell_server_packet` | `0x005976F0` | high | Reads slot, u16be icon, argument type, string8 name, string8 prompt, and cast_lines into SAddSpell. |
+| `net_deserialize_add_spell_server_packet` | `0x005976F0` | high | Reads slot, u16 icon, argument type, string8 name, string8 prompt, and cast_lines into SAddSpell. |
 | `net_create_bad_guy_server_packet` | `0x00597A10` | high | Allocates a 0x18-byte RTTI SBadGuy object and calls its concrete constructor. |
 | `net_bad_guy_server_packet_ctor` | `0x00597A90` | high | Passes opcode 0x4A to the common server packet base and installs the exact SBadGuy vtable. |
-| `net_deserialize_bad_guy_server_packet` | `0x00597AC0` | high | Reads SBadGuy as u8 mode, u8 marker byte, and u32be guard. |
+| `net_deserialize_bad_guy_server_packet` | `0x00597AC0` | high | Reads SBadGuy as u8 mode, u8 marker byte, and u32 guard. |
 | `net_deserialize_browser_packet` | `0x00597E50` | high | Parses SBrowser subtypes 1 and 2 as two u16be-length byte strings and subtype 3 as one u8-length homepage URL. |
 | `net_create_change_hour_server_packet` | `0x00598050` | high | Allocates a 0x14-byte RTTI SChangeHour object and calls its concrete constructor. |
 | `net_change_hour_server_packet_ctor` | `0x005980D0` | high | Passes opcode 0x20 to the server packet base and installs the exact SChangeHour vtable. |
@@ -429,7 +440,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_deserialize_map_size_server_packet` | `0x00599F90` | high | Reads u16be map number, four bytes, u24be cache value, and string8 name; the handler uses u8 dimensions and ignores the fourth byte. |
 | `net_create_message_server_packet` | `0x0059A050` | high | Allocates the RTTI-backed SMessage object registered for server opcode 0x0A. |
 | `net_message_server_packet_ctor` | `0x0059A0D0` | high | Constructs SMessage with opcode 0x0A and installs its concrete vtable. |
-| `net_deserialize_message_server_packet` | `0x0059A100` | high | Reads the message type, the type-0x11-only prefix, a u16be message length, and the message bytes. |
+| `net_deserialize_message_server_packet` | `0x0059A100` | high | Reads the message type, the type-0x11-only prefix, a u16 message length, and the message bytes. |
 | `net_create_remove_equip_server_packet` | `0x0059ADB0` | high | Allocates a 0x14-byte RTTI SRemoveEquip object and calls its concrete constructor. |
 | `net_remove_equip_server_packet_ctor` | `0x0059AE30` | high | Passes opcode 0x38 to the server packet base and installs the exact SRemoveEquip vtable. |
 | `net_deserialize_remove_equip_server_packet` | `0x0059AE60` | high | Reads the one-byte SRemoveEquip slot and widens it into the packet object's 16-bit field. |
@@ -446,8 +457,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_server_request_portrait_deserialize` | `0x0059B4C0` | high | Returns without reading fields, which confirms that SRequestPortrait has no body after the opcode. |
 | `net_create_say_server_packet` | `0x0059B510` | high | Allocates the RTTI-backed SSay object registered for server opcode 0x0D. |
 | `net_say_server_packet_ctor` | `0x0059B590` | high | Constructs SSay with opcode 0x0D and installs its concrete vtable. |
-| `net_deserialize_say_server_packet` | `0x0059B5C0` | high | Reads a speech mode, u32be world-object ID, and string8 speech text. |
-| `net_server_sound_effect_deserialize` | `0x0059BF30` | high | Reads one SSoundEffect command byte and a second music byte only for command 0xFF. |
+| `net_deserialize_say_server_packet` | `0x0059B5C0` | high | Reads a speech mode, u32 world-object ID, and string8 speech text. |
+| `net_create_self_look_server_packet` | `0x0059B9C0` | high | Allocates the 0x9C64-byte RTTI SSelfLook object and invokes its concrete constructor. |
+| `net_self_look_server_packet_ctor` | `0x0059BA40` | high | Passes opcode 0x39 to the server packet base and installs the exact SSelfLook vtable. |
+| `net_deserialize_self_look_server_packet` | `0x0059BA70` | high | Parses nation and profile text, the optional recruiting block, class metadata, and repeated legend marks. |
+| `net_create_sound_effect_server_packet` | `0x0059BE80` | high | Allocates the 0x14-byte RTTI SSoundEffect object and invokes its concrete constructor. |
+| `net_sound_effect_server_packet_ctor` | `0x0059BF00` | high | Passes opcode 0x19 to the server packet base and installs the exact SSoundEffect vtable. |
+| `net_deserialize_sound_effect_server_packet` | `0x0059BF30` | high | Reads one sound byte and only a second track byte for mode 0xFF; no trailing u16 is consumed. |
 | `net_create_status_server_packet` | `0x0059C360` | high | Allocates a 0x7C-byte RTTI SStatus object and invokes its concrete constructor. |
 | `net_status_server_packet_ctor` | `0x0059C3E0` | high | Passes opcode 0x08 to the server packet base and installs the exact SStatus vtable. |
 | `net_deserialize_status_server_packet` | `0x0059C410` | high | Parses SStatus privilege and conditional stats, vitals, progression, modifiers, standalone state, and mail-state fields. |
@@ -455,10 +471,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_deserialize_transfer_server_packet` | `0x0059CA40` | high | Parses STransferServer as a u32be IPv4 value, u16be port, and u8-length opaque handoff token. |
 | `net_create_user_appearance_server_packet` | `0x0059CAC0` | high | Allocates the fixed-size RTTI SUserAppearance object and invokes its concrete constructor. |
 | `net_user_appearance_server_packet_ctor` | `0x0059CB40` | high | Passes opcode 0x05 to the server packet base and installs the exact SUserAppearance vtable. |
-| `net_deserialize_user_appearance_server_packet` | `0x0059CB70` | high | Reads u32be user ID followed by facing, raw guild value, character class, action state, and one final unknown byte. |
+| `net_deserialize_user_appearance_server_packet` | `0x0059CB70` | high | Reads u32 user ID followed by facing, raw guild value, character class, action state, and one final unknown byte. |
 | `net_create_user_position_server_packet` | `0x0059CC20` | high | Allocates the 0x14-byte RTTI SUserPosition object and invokes its concrete constructor. |
 | `net_user_position_server_packet_ctor` | `0x0059CCA0` | high | Passes opcode 0x04 to the server packet base and installs the exact SUserPosition vtable. |
-| `net_deserialize_user_position_server_packet` | `0x0059CCD0` | high | Reads exactly u16be x and u16be y; the method returns without consuming four additional bytes observed in captures. |
+| `net_deserialize_user_position_server_packet` | `0x0059CCD0` | high | Reads exactly u16 x and u16 y; the method returns without consuming four additional bytes observed in captures. |
 | `net_send_portrait_profile` | `0x005B1160` | high | Calls net_build_send_portrait and submits the result through net_submit_client_packet. |
 | `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode. |
 | `net_handle_status_server_packet` | `0x005F1A10` | high | Applies global SStatus effects by updating WorldUserFunc and setting blinded only when the raw blind code equals 0x08. |
@@ -473,7 +489,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_user_position_server_packet` | `0x005F2F00` | high | Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view. |
 | `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes WorldObject_User for the saved self ID and WorldObject_Human otherwise, applies normal or disguised appearance, updates names and optional group ads, and handles Darkness object lights. |
 | `net_handle_say_server_packet` | `0x005F3E00` | high | Shows SSay text as a three-second balloon on its world object without appending to persistent history. |
-| `net_send_put_ground` | `0x005F4430` | high | Builds opcode 0x0C with one u32be value. |
+| `net_send_put_ground` | `0x005F4430` | high | Builds opcode 0x0C with one u32 value. |
 | `net_send_change_direction` | `0x005F4510` | high | WorldPane paths call this opcode 0x11 direction builder. |
 | `net_send_refresh_user` | `0x005F4640` | high | WorldPane paths call this opcode-only 0x38 builder. |
 | `net_handle_message_server_packet` | `0x005F6D80` | high | Routes SMessage to the floating GameMessagePane, WindowMessageDialogPane, or ScorePane according to its type byte. |
@@ -523,6 +539,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_build_blend_tables` | `0x00593490` | high | Builds the 256 by 256 lookup tables for five-bit and six-bit color components. |
 | `render_blend_pixel` | `0x005936E0` | high | Blends two 16-bit RGB pixels using a selector and the component lookup tables. |
 | `render_palette_pack_16bit` | `0x00593B00` | high | Packs 256 RGB colors for the active display mode while reserving packed zero for palette index zero. |
+| `render_resolve_palette_index` | `0x00593D10` | high | Resolves an 8-bit UI color through palette slot 0, which startup loads from legend.pal. |
 | `render_video_system_ctor` | `0x00593E20` | high | Constructs the RTTI-backed VideoSystem singleton. |
 | `render_video_system_dtor` | `0x00593EA0` | high | Shuts down an active VideoSystem and deletes its DirectDraw wrapper. |
 | `render_video_system_initialize` | `0x00593F30` | high | Creates presentation state, canvases, conversion helpers, and software blend tables. |

@@ -26,11 +26,11 @@ Known static callers lead to:
 
 ```text
 packet CPursuit {
-    u8 opcode                 // 0x3A
-    u8 message_type
-    u32be object_id
-    u16be menu_value
-    u16be selection
+    u8      opcode                    // 0x3A
+    u8      message_type
+    u32     object_id
+    u16     menu_value
+    u16     selection
 }
 ```
 

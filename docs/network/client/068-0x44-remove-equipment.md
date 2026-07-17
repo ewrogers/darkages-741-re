@@ -22,7 +22,7 @@ Known static callers lead to:
 
 ```text
 packet CRemoveEquipment {
-    u8 opcode                 // 0x44
+    u8      opcode                    // 0x44
     ...                         // fields pending
 }
 ```

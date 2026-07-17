@@ -25,12 +25,12 @@ Known static callers lead to:
 
 ```text
 packet CSendPortrait {
-    u8    opcode            // 0x4F
-    u16be content_length    // 4 + portrait_length + profile_length
-    u16be portrait_length
-    u8    portrait[portrait_length]
-    u16be profile_length
-    u8    profile[profile_length]
+    u8      opcode                    // 0x4F
+    u16     content_length            // 4 + portrait_length + profile_length
+    u16     portrait_length
+    bytes   portrait[portrait_length]
+    u16     profile_length
+    bytes   profile[profile_length]
 }
 ```
 

@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CBulletin {
-    u8 opcode                 // 0x3B
+    u8      opcode                    // 0x3B
     ...                         // fields pending
 }
 ```

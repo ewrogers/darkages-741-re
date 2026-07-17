@@ -25,12 +25,12 @@ Known static callers lead to:
 
 ```text
 packet CMercenary {
-    u8 opcode                 // 0x54
-    u8 subtype                // 1 in the initializer
-    u32be employee_id
-    u8 initializer_value
-    u8 action
-    u32be value
+    u8      opcode                    // 0x54
+    u8      subtype                   // 1 in the initializer
+    u32     employee_id
+    u8      initializer_value
+    u8      action
+    u32     value
 }
 ```
 

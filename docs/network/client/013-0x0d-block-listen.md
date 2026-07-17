@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CBlockListen {
-    u8 opcode                 // 0x0D
+    u8      opcode                    // 0x0D
     ...                         // fields pending
 }
 ```

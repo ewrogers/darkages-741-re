@@ -36,7 +36,7 @@ Only lowercase `a` through `x` are accepted. Uppercase letters and incomplete co
 
 Several letters are aliases. `a` and `h`, `d` and `r`, `e` and `v`, and `o` and `w` select the same index.
 
-These are palette indexes, not fixed RGB colors. The final color comes from the palette used by the text renderer. Keep the numeric index as the stable definition when building another renderer.
+These are palette indexes, not fixed RGB colors. The renderer resolves them through palette slot 0, loaded from `legend.pal`. `SSelfLook` legend-mark colors use this same palette path. Keep the numeric index as the stable definition when building another renderer.
 
 ## Plain and formatted controls
 

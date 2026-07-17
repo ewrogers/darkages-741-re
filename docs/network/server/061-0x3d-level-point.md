@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x3D` and insta
 
 ```text
 packet SLevelPoint {
-    u8 opcode                 // 0x3D
+    u8      opcode                    // 0x3D
     ...                         // fields pending
 }
 ```

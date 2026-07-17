@@ -17,21 +17,21 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x66` and insta
 
 ## Body
 
-```c
+```text
 packet SBrowser {
-    u8 opcode;                 // 0x66
-    u8 subtype;
+    u8      opcode                    // 0x66
+    u8      subtype
 
-    if (subtype == 1 || subtype == 2) {
-        u16be first_size;
-        u8 first_data[first_size];
-        u16be second_size;
-        u8 second_data[second_size];
+    if subtype == 1 || subtype == 2 {
+        u16     first_size
+        bytes   first_data[first_size]
+        u16     second_size
+        bytes   second_data[second_size]
     }
 
-    if (subtype == 3) {
-        u8 url_size;
-        u8 url[url_size];
+    if subtype == 3 {
+        u8      url_size
+        bytes   url[url_size]
     }
 }
 ```

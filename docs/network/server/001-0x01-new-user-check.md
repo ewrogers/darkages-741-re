@@ -18,12 +18,13 @@ The body is handled directly as a decoded byte buffer. There is no concrete RTTI
 
 ```text
 packet SNewUserCheck {
-    u8 opcode                 // 0x01
-    u8 status
+    u8      opcode                    // 0x01
+    u8      status
 
-    if status in 3..11:
-        u8 message_length
-        bytes message[message_length]
+    if status in 3..11 {
+        u8      message_length
+        bytes   message[message_length]
+    }
 }
 ```
 

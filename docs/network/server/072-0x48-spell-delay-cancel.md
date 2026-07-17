@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x48` and insta
 
 ```text
 packet SSpellDelayCancel {
-    u8 opcode                 // 0x48
+    u8      opcode                    // 0x48
     ...                         // fields pending
 }
 ```

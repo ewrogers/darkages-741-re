@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CReplyCRC {
-    u8 opcode                 // 0x45
+    u8      opcode                    // 0x45
     ...                         // fields pending
 }
 ```

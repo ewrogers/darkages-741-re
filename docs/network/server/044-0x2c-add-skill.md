@@ -13,13 +13,13 @@
 
 ## Body
 
-```c
-struct SAddSkillBody {
-    u8 opcode;                         // 0x2C
-    u8 slot;
-    u16be icon;
-    string8 name;
-};
+```text
+packet SAddSkill {
+    u8      opcode                    // 0x2C
+    u8      slot
+    u16     icon
+    string8 name
+}
 ```
 
 `name` begins with a one-byte byte count. `net_deserialize_add_skill_server_packet` copies it into a 256-byte packet-object buffer and adds a local NUL.

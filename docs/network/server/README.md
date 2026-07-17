@@ -4,6 +4,8 @@ These messages travel from the server to the game client.
 
 Most concrete names come directly from RTTI and the server packet factory. A few early or manager-owned messages are handled as decoded byte buffers instead. Their pages explain that difference.
 
+Body schemas use the shared [packet body notation](../packet-body-notation.md). All multibyte packet integers are big-endian. Reused enum and bit-flag values live in [Shared protocol types](../protocol-types.md).
+
 | Packet | Encoding |
 | --- | --- |
 | [0x00 - Version Check (`SVersionCheck`)](000-0x00-version-check.md) | none |

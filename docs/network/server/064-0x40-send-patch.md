@@ -23,7 +23,7 @@ This opcode is not on the verified `Patcher2.exe` launch path. The 7.41 client r
 
 ```text
 packet SSendPatch {
-    u8 opcode                 // 0x40
+    u8      opcode                    // 0x40
     ... fields unknown
 }
 ```

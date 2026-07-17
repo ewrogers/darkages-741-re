@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CAddStat {
-    u8 opcode                 // 0x47
+    u8      opcode                    // 0x47
     ...                         // fields pending
 }
 ```

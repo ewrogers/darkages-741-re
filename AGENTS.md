@@ -100,7 +100,7 @@ Use short C-like pseudocode because it matches the client and is easy to transla
 - Avoid templates, lambdas, ranges, heavy STL use, clever macros, and modern language features that obscure the algorithm.
 - Use straightforward loops, explicit branches, and small helper functions.
 - Use fixed-width protocol names such as `u8`, `u16`, and `u32` when documenting wire fields.
-- State endianness explicitly, such as `u16be`.
+- Packet body schemas use the book's global big-endian rule and write `u16`, `u24`, and `u32` without an endian suffix. State endianness explicitly for file formats and other data where it is not fixed by that packet rule.
 - Preserve bounds, loop counts, conditional fields, and nested structures.
 - Keep examples expressive rather than production-framework specific.
 - Do not include a full launcher, injected DLL, or other compile-ready program in the book when pseudocode explains the design.
@@ -356,6 +356,24 @@ Verified concrete packet names do not use a trailing `?`. If part of a packet re
 Some control bodies may resemble an opcode-first packet without representing a normal packet class. Document their exact bytes, framing path, and sequence effects instead of forcing them into the ordinary packet model.
 
 Every client packet page should include known UI pane or subsystem owners when they can be reached reliably. Keep exact call addresses and unnamed containing functions in YAML exports or an address appendix. State when the owner is unresolved, and do not imply that static cross-references cover indirect or queued runtime calls.
+
+Packet body definitions use the field-list notation documented in `docs/network/packet-body-notation.md`, not C structs.
+
+- Begin a complete plaintext body with `packet CName {` or `packet SName {`, and put the opcode first.
+- List fields in exact wire order without semicolons, C declarators, compiler padding, or runtime object offsets.
+- All multibyte packet integers are big-endian. Write `u16`, `u24`, and `u32` in packet schemas instead of repeating a `be` suffix.
+- Use `string8` for a one-byte length followed by text bytes and `bytes name[count]` for fixed or counted opaque bytes.
+- Write conditional fields as `if condition { ... }` and counted groups as `repeat count { ... }`, with indentation showing the exact scope.
+- Use `record name { ... }` only for a nested or separately explained wire group. Place an inline record at the exact point where its fields are consumed. A record does not describe runtime memory.
+- Keep consumed-but-unused fields and observed-but-unconsumed trailing bytes distinct in names and comments.
+
+Shared packet enums and bit flags use `docs/network/protocol-types.md` as their single value reference.
+
+- Move a type there when it is used by multiple packets or is shared with another documented system.
+- Link the packet field to the shared type instead of repeating its value table.
+- Keep packet-specific status, subtype, and operation values on their packet page.
+- Preserve name provenance, unknown values, sentinels, valid ranges, and client range-check behavior in the shared entry.
+- Do not promote a palette index, asset selector, or unresolved byte into a named enum without direct client evidence.
 
 Packet filenames use a zero-padded decimal prefix followed by lowercase hexadecimal:
 

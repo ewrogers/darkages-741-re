@@ -12,9 +12,9 @@ The live server sends this small control during login, but the 7.41 client does 
 ## Observed body
 
 ```text
-struct ServerControl58 {
-    u8 opcode                  // 0x58
-    u8 zero                    // observed 0x00; meaning unknown
+packet ServerControl58 {
+    u8      opcode                    // 0x58
+    u8      zero                      // observed 0x00; meaning unknown
 }
 ```
 

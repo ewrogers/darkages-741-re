@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x42` and insta
 
 ```text
 packet SExchange {
-    u8 opcode                 // 0x42
+    u8      opcode                    // 0x42
     ...                         // fields pending
 }
 ```

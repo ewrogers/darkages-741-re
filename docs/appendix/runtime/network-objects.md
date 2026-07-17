@@ -100,6 +100,65 @@ struct SSayFields {
 
 The type-`0x11` `SMessage` prefix is parsed even though the recovered consumers do not display that type. `SSay` text is used directly by the world-balloon path.
 
+## Self-look and sound packet objects
+
+`SSelfLook` reserves all 255 possible legend records inside the packet object. This accounts for most of its `0x9C64`-byte allocation. The wire response only carries the records selected by `legend_count`.
+
+```c
+struct SelfLookLegendMark {
+    u32 icon;                    // +0x00, decoded from u8
+    u32 palette_index;           // +0x04, decoded from u8
+    char key[0x46];              // +0x08
+    char text[0x46];             // +0x4E, parser adds CR + NUL
+};                               // size 0x94
+
+struct SSelfLookFields {
+    u8 base[0x10];
+    u8 internal_zeroes[3];       // +0x10
+    u8 nation;                   // +0x13
+
+    u32 guild_rank_length;       // +0x14
+    char guild_rank[0x104];      // +0x18
+    u32 title_length;            // +0x11C
+    char title[0x104];           // +0x120
+    u32 group_members_length;    // +0x224
+    char group_members[0x104];   // +0x228
+    u8 is_group_open;            // +0x32C
+    u8 padding_32d[3];
+    u32 internal_zero_330;
+
+    u32 display_class_length;    // +0x334
+    char display_class[0x104];   // +0x338
+    u32 guild_length;            // +0x43C
+    char guild[0x104];           // +0x440
+
+    u8 legend_count;             // +0x544
+    u8 padding_545[3];
+    u32 maybe_show_ability;      // +0x548, decoded from u8
+    u32 maybe_show_master;       // +0x54C, decoded from u8
+    u32 character_class;         // +0x550, decoded from u8
+    SelfLookLegendMark marks[255]; // +0x554
+
+    u8 reserved_98c0[0x94];
+    u8 is_recruiting;            // +0x9954
+    char recruiting_leader[0x100]; // +0x9955
+    char recruiting_name[0x100];   // +0x9A55
+    char recruiting_note[0x100];   // +0x9B55
+    u8 minimum_level;            // +0x9C55
+    u8 maximum_level;            // +0x9C56
+    u8 class_counts[5][2];       // +0x9C57: wanted, current
+    u8 tail_padding[3];
+};                               // allocated size 0x9C64
+
+struct SSoundEffectFields {
+    u8 base[0x10];
+    u16 sound;                   // +0x10, decoded from u8
+    u16 track;                   // +0x12, decoded from u8 for sound 0xFF
+};                               // allocated size 0x14
+```
+
+The leader bytes are present in `SSelfLookFields`, but the group-ad UI updater omits them when it builds its temporary display model. See [Self Look](../../network/server/057-0x39-self-look.md) for the wire order and the UI effects.
+
 ## World-state packet objects
 
 `SChangeHour` retains only the one byte read by its parser. Extra decoded body bytes are not copied into the object.

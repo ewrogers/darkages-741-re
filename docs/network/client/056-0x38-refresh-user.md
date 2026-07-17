@@ -25,6 +25,6 @@ Known static callers lead to:
 
 ```text
 packet CRefreshUser {
-    u8 opcode                 // 0x38
+    u8      opcode                    // 0x38
 }
 ```

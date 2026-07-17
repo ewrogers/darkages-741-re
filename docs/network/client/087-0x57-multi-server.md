@@ -24,11 +24,11 @@ The server-selection dialog sends this when the player chooses a row. `SVersionC
 
 ```text
 packet CMulti {
-    u8 opcode                 // 0x57
-    u8 reserved_0             // 0
-    u8 server_id              // first byte of the selected server record
-    u8 reserved_1             // 0
-    u8 terminator             // 0, appended by net_submit_client_packet
+    u8      opcode                    // 0x57
+    u8      reserved_0                // 0
+    u8      server_id                 // first byte of the selected server record
+    u8      reserved_1                // 0
+    u8      terminator                // 0, appended by net_submit_client_packet
 }
 ```
 

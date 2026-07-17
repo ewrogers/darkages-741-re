@@ -17,13 +17,13 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x03` and insta
 
 ## Body
 
-```c
+```text
 packet STransferServer {
-    u8 opcode;                 // 0x03
-    u32be ipv4_value;
-    u16be port;
-    u8 token_length;
-    u8 token[token_length];
+    u8      opcode                    // 0x03
+    u32     ipv4_value
+    u16     port
+    u8      token_length
+    bytes   token[token_length]
 }
 ```
 

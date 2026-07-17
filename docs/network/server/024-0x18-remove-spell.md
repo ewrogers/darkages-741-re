@@ -13,11 +13,11 @@
 
 ## Body
 
-```c
-struct SRemoveSpellBody {
-    u8 opcode;                         // 0x18
-    u8 slot;
-};
+```text
+packet SRemoveSpell {
+    u8      opcode                    // 0x18
+    u8      slot
+}
 ```
 
 `net_deserialize_remove_spell_server_packet` reads the single body byte into the packet object's `slot` field. A receive-side trailing zero, when present, is not part of this class. See [Receive-side zero bytes](../packet-transforms.md#receive-side-zero-bytes).

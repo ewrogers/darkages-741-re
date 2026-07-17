@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CGroupToggle {
-    u8 opcode                 // 0x2F
+    u8      opcode                    // 0x2F
     ...                         // fields pending
 }
 ```

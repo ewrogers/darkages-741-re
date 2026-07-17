@@ -159,3 +159,16 @@ struct DialogPaneFields {
 ```
 
 Control indexes follow attachment order. They are used for focus, hit testing, and the parent dialog action callback.
+
+## Main menu stipulation gate
+
+`MainMenuPane +0x500` is a 32-bit input gate. Both the pointer and keyboard handlers consume the event immediately when it is nonzero. The successful [`SStipulation`](../../network/server/096-0x60-stipulation.md) paths write zero after deciding whether to show `AgreementDialogPane`.
+
+```text
+partial struct MainMenuPaneFields {
+    u32 stipulation_input_gate  // +0x500, zero allows menu input
+    Pane *registered_screen     // +0x504
+}
+```
+
+The agreement pane's OK action only closes and unregisters that pane. It does not send a packet or perform the gate write. This is why the no-dialog runtime patch can use the existing stipulation continuation without simulating a button press.

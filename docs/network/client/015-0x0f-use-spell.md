@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CUseSpell {
-    u8 opcode                 // 0x0F
+    u8      opcode                    // 0x0F
     ...                         // fields pending
 }
 ```

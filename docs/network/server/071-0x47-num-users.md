@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x47` and insta
 
 ```text
 packet SNumUsers {
-    u8 opcode                 // 0x47
+    u8      opcode                    // 0x47
     ...                         // fields pending
 }
 ```

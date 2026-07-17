@@ -7,6 +7,16 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x00402430"
+    end_address: "0x00402855"
+    name: ui_agreement_dialog_pane_ctor
+    confidence: high
+    evidence: Constructs RTTI-backed AgreementDialogPane from _nagree.txt, attaches OK and Cancel controls, inserts the current greeting, and registers the pane.
+  - address: "0x004028F0"
+    end_address: "0x004029EC"
+    name: ui_agreement_dialog_handle_action
+    confidence: high
+    evidence: Action 0 closes and unregisters the agreement pane without sending a packet. Action 1 closes it and enters the separate cancel path.
   - address: "0x00431ED0"
     end_address: "0x00431FA6"
     name: app_detect_bad_guy_marker
@@ -132,6 +142,21 @@ functions:
     name: app_set_working_directory_from_executable
     confidence: high
     evidence: Derives the executable directory from GetCommandLineA and makes it the process working directory.
+  - address: "0x004B7520"
+    end_address: "0x004B7581"
+    name: ui_main_menu_activate_selected_action
+    confidence: high
+    evidence: Dispatches the selected MainMenuPane entry to login, character creation, password change, homepage, credits, or exit behavior.
+  - address: "0x004B7BD0"
+    end_address: "0x004B7CF6"
+    name: ui_main_menu_handle_pointer_event
+    confidence: high
+    evidence: Rejects pointer input while MainMenuPane +0x500 is nonzero, then performs menu hit-testing and activation when the gate is clear.
+  - address: "0x004B7D00"
+    end_address: "0x004B7EEA"
+    name: ui_main_menu_handle_keyboard_event
+    confidence: high
+    evidence: Rejects keyboard input while MainMenuPane +0x500 is nonzero, then handles menu selection and activation when the gate is clear.
   - address: "0x004B7F80"
     end_address: "0x004B8412"
     name: net_handle_version_check
@@ -282,6 +307,8 @@ data_symbols:
     confidence: high
     evidence: Signed 16-bit value 741 sent as u16be in CVersion and displayed elsewhere as Version 7.41.
 comments:
+  - address: "0x004028FA"
+    text: Agreement action 0 closes and unregisters the pane without sending an acknowledgement packet. Action 1 enters the separate cancel path.
   - address: "0x00431F65"
     text: Build the same %SystemRoot%\System32\Mscfg.dll path created by the SBadGuy handler.
   - address: "0x00431F76"
@@ -330,10 +357,22 @@ comments:
     text: Begin loose Korean ISP marker checks. The file names map directly to the returned distribution modes used by app_config_ctor.
   - address: "0x004AD3B3"
     text: Read the full command line only to derive the executable directory and make it the process working directory; this is not an option parser.
+  - address: "0x004B7BED"
+    text: MainMenuPane +0x500 gates pointer input. A nonzero value consumes the event before menu hit-testing.
+  - address: "0x004B7D21"
+    text: MainMenuPane +0x500 gates keyboard input. SStipulation handling clears it to zero after the stipulation decision.
   - address: "0x004B85A9"
     text: If no homepage URL is cached, send CRequestHomepage before processing the decoded-buffer SStipulation.
   - address: "0x004B88C9"
     text: If no homepage URL is cached, send CRequestHomepage before processing the RTTI-backed SStipulation.
+  - address: "0x004B897C"
+    text: "Matching cached greeting: change 75 6C to EB 6C to follow the existing no-dialog branch while preserving the MainMenuPane +0x500 clear."
+  - address: "0x004B89ED"
+    text: Clear MainMenuPane +0x500 after the cached-greeting path, restoring main-menu pointer and keyboard input.
+  - address: "0x004B8ACF"
+    text: "Replacement greeting saved: change 75 6D to EB 6D to follow the existing no-dialog branch while preserving the MainMenuPane +0x500 clear."
+  - address: "0x004B8B41"
+    text: Clear MainMenuPane +0x500 after the replacement-greeting path, restoring main-menu pointer and keyboard input.
   - address: "0x004B95A2"
     text: Reconnect to the endpoint carried by STransferServer before sending the handoff token.
   - address: "0x004B95EB"
@@ -475,6 +514,20 @@ runtime_patches:
     original_bytes: E8 28 11 00 00
     replacement_bytes: E8 B8 0D 00 00
     effect: Redirect mode 1 endpoint initialization to the existing positional IPv4-or-hostname and port parser while preserving mode 1 for downstream behavior.
+  - id: suppress-stipulation-cached-greeting
+    rva: "0x000B897C"
+    static_address: "0x004B897C"
+    file_offset_for_reference_only: "0x000B7D7C"
+    original_bytes: 75 6C
+    replacement_bytes: EB 6C
+    effect: After a matching greeting CRC, follow the existing Japan-mode branch that skips AgreementDialogPane construction and still clears MainMenuPane +0x500.
+  - id: suppress-stipulation-replacement-greeting
+    rva: "0x000B8ACF"
+    static_address: "0x004B8ACF"
+    file_offset_for_reference_only: "0x000B7ECF"
+    original_bytes: 75 6D
+    replacement_bytes: EB 6D
+    effect: After inflating and saving a replacement greeting, skip AgreementDialogPane construction and still clear MainMenuPane +0x500.
   - id: disable-official-endpoint-fallback
     rva: "0x001655F4"
     static_address: "0x005655F4"

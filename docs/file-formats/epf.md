@@ -57,6 +57,8 @@ first_bounds.height == 48
 
 The client uploads the complete EPF file without converting it. The portrait decoder copies the `0xAF0`-byte pixel stream and uses the first bounds to build a 56 by 48 pixmap. The remaining layout still follows the EPF container rules above.
 
+For local display, the portrait decoder assigns palette selector 0. The renderer resolves those indexed pixels through `legend.pal`. JPEG portraits take a separate direct-pixel path and do not use this palette.
+
 This does not make every 56 by 48 EPF a valid portrait. The exact size and displacement checks must also pass. See [Portraits and profiles](../systems/portraits-and-profiles.md) for filename priority and packet limits.
 
 ## Generated writer shape

@@ -12,11 +12,11 @@
 
 ## Body
 
-```c
-struct CUseSkillBody {
-    u8 opcode;                         // 0x3E
-    u8 slot;
-};
+```text
+packet CUseSkill {
+    u8      opcode                    // 0x3E
+    u8      slot
+}
 ```
 
 `net_send_use_skill` writes the two meaningful bytes. The common submission helper supplies the encrypted client packet's trailing zero.

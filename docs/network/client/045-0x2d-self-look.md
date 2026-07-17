@@ -23,7 +23,7 @@ Known static callers lead to:
 
 ```text
 packet CSelfLook {
-    u8 opcode                 // 0x2D
+    u8      opcode                    // 0x2D
     ...                         // fields pending
 }
 ```

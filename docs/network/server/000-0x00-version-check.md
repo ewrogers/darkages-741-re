@@ -18,14 +18,15 @@ The server sends this message for **version check**.
 
 ```text
 packet SVersionCheck {
-    u8 opcode                 // 0x00
-    u8 subtype
+    u8      opcode                    // 0x00
+    u8      subtype
 
-    if subtype == 0:
-        u32be configuration_crc
-        u8 seed_table_selector
-        u8 static_key_length
-        bytes static_key[static_key_length]
+    if subtype == 0 {
+        u32     configuration_crc
+        u8      seed_table_selector
+        u8      static_key_length
+        bytes   static_key[static_key_length]
+    }
 }
 ```
 
@@ -41,14 +42,15 @@ Subtype `1` displays a localized error.
 
 Subtype `2` starts the patch handoff. `net_handle_version_check` constructs the RTTI-backed `NewPatchPane`, which parses the remaining body as:
 
-```c
-struct VersionPatchNotice {
-    u16be required_version;
-    u8 file_count;
+```text
+record VersionPatchNotice {
+    u16     required_version
+    u8      file_count
 
-    repeat file_count times:
-        u8 name_length;
-        u8 name[name_length];
+    repeat file_count {
+        u8      name_length
+        bytes   name[name_length]
+    }
 }
 ```
 

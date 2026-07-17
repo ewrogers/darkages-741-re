@@ -98,6 +98,8 @@ def main() -> None:
         "- [Network system](network/README.md)",
         "- [Initial connection](network/connection.md)",
         "- [Network transport](network/transport.md)",
+        "- [Packet body notation](network/packet-body-notation.md)",
+        "- [Shared protocol types](network/protocol-types.md)",
         "- [Packet transforms](network/packet-transforms.md)",
         "- [Checksums](network/checksums.md)",
         "- [Server list and greeting](network/server-tables.md)",

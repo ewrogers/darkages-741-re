@@ -14,50 +14,50 @@
 
 The packet has a normal human form and a monster-disguise form. Both end with the same name fields.
 
-```c
-struct SDrawHumanObjects {
-    u8 opcode;                       // 0x33
-    u16be x;
-    u16be y;
-    u8 direction;                    // 0 up, 1 right, 2 down, 3 left
-    u32be entity_id;
-    u16be head_sprite;
+```text
+packet SDrawHumanObjects {
+    u8      opcode                    // 0x33
+    u16     x
+    u16     y
+    u8      direction                 // Direction
+    u32     entity_id
+    u16     head_sprite
 
-    if (head_sprite != 0xFFFF) {
-        u8 packed_body;              // high nibble body, low nibble pants dye
-        u16be arms_sprite;
-        u8 boots_sprite;
-        u16be armor_sprite;
-        u8 shield_sprite;
-        u16be weapon_sprite;
-        u8 hair_color;
-        u8 boots_color;
+    if head_sprite != 0xFFFF {
+        u8      packed_body           // high nibble body, low nibble pants dye
+        u16     arms_sprite
+        u8      boots_sprite
+        u16     armor_sprite
+        u8      shield_sprite
+        u16     weapon_sprite
+        u8      hair_color
+        u8      boots_color
 
-        u8 accessory1_color;
-        u16be accessory1_sprite;
-        u8 accessory2_color;
-        u16be accessory2_sprite;
-        u8 accessory3_color;
-        u16be accessory3_sprite;
+        u8      accessory1_color
+        u16     accessory1_sprite
+        u8      accessory2_color
+        u16     accessory2_sprite
+        u8      accessory3_color
+        u16     accessory3_sprite
 
-        u8 light_mask_id;
-        u8 rest_position;
-        u16be overcoat_sprite;
-        u8 overcoat_color;
-        u8 skin_color;
-        u8 is_translucent;
-        u8 face_shape;
+        u8      light_mask_id
+        u8      rest_position
+        u16     overcoat_sprite
+        u8      overcoat_color
+        u8      skin_color
+        u8      is_translucent
+        u8      face_shape
     } else {
-        u16be tagged_monster_sprite;
-        u8 monster_color;
-        u8 ignored_color;
-        u8 unknown[6];
+        u16     tagged_monster_sprite
+        u8      monster_color
+        u8      ignored_color
+        bytes   unknown[6]
     }
 
-    u8 name_style;
-    string8 name;
-    string8 group_ad_text;
-};
+    u8      name_style
+    string8 name
+    string8 group_ad_text
+}
 ```
 
 `boots_sprite` and `shield_sprite` are one byte on the wire, then widened to 16 bits in the packet object. Fixed normal-form fields through `name_style` occupy 41 bytes, counting the opcode. Two `string8` values follow; with both empty, the complete body is 43 bytes. Each string can carry at most 255 bytes.
@@ -73,7 +73,7 @@ object->tile_x = packet->x;          // WorldObject +0x44
 
 The handler compares `entity_id` with the self ID retained from [`SUserAppearance`](005-0x05-user-appearance.md). It allocates a 0x200-byte `WorldObject_User` for a matching ID and a 0x1F0-byte `WorldObject_Human` otherwise. Existing objects are refreshed instead of duplicated.
 
-The direction byte is passed to the living-object motion system and retained at human-object offset `+0x192`. Values `0` through `3` use the same up, right, down, and left vocabulary as movement. No additional direction value is handled here.
+The direction byte uses the shared [`Direction`](../protocol-types.md#direction) type. It is passed to the living-object motion system and retained at human-object offset `+0x192`. No additional direction value is handled here.
 
 ## Packed body and pants color
 

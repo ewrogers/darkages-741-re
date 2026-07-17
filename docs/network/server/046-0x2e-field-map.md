@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x2E` and insta
 
 ```text
 packet SFieldMap {
-    u8 opcode                 // 0x2E
+    u8      opcode                    // 0x2E
     ...                         // fields pending
 }
 ```

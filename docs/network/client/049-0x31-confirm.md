@@ -25,12 +25,12 @@ Known static callers lead to:
 
 ```text
 packet CConfirm {
-    u8 opcode                 // 0x31
-    u8 dialog_value_0
-    u8 choice
-    u8 dialog_value_1
-    u8 value_length
-    u8 value[value_length]
+    u8      opcode                    // 0x31
+    u8      dialog_value_0
+    u8      choice
+    u8      dialog_value_1
+    u8      value_length
+    bytes   value[value_length]
 }
 ```
 

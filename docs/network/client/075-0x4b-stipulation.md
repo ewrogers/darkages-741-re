@@ -13,9 +13,9 @@ The client sends this empty request when the CRC in [`SStipulation`](../server/0
 
 ## Body
 
-```c
+```text
 packet CStipulation {
-    u8 opcode;               // 0x4B
+    u8      opcode                    // 0x4B
 }
 ```
 

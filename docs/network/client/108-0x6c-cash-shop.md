@@ -25,7 +25,7 @@ Known static callers lead to:
 
 ```text
 packet CCashShop {
-    u8 opcode                 // 0x6C
-    u8 reserved               // 0
+    u8      opcode                    // 0x6C
+    u8      reserved                  // 0
 }
 ```

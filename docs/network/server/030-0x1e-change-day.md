@@ -23,8 +23,8 @@ The client provides no parser from which to recover field boundaries. The three 
 
 ```text
 packet SChangeDay {
-    u8 opcode                  // 0x1E
-    u8 data[3]                 // observed as 06 00 00; meaning unresolved
+    u8      opcode                    // 0x1E
+    bytes   data[3]                   // observed as 06 00 00; meaning unresolved
 }
 ```
 

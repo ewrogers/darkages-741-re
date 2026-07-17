@@ -22,7 +22,7 @@ Known static callers lead to:
 
 ```text
 packet CEmotion {
-    u8 opcode                 // 0x1D
+    u8      opcode                    // 0x1D
     ...                         // fields pending
 }
 ```

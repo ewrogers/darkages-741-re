@@ -12,9 +12,9 @@ The live server sends this small control when a map is transferred, but the 7.41
 ## Observed body
 
 ```text
-struct ServerControl67 {
-    u8 opcode                  // 0x67
-    u8 zero                    // observed 0x00; meaning unknown
+packet ServerControl67 {
+    u8      opcode                    // 0x67
+    u8      zero                      // observed 0x00; meaning unknown
 }
 ```
 

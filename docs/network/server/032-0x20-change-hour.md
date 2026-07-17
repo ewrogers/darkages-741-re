@@ -17,9 +17,9 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x20` and insta
 
 ```text
 packet SChangeHour {
-    u8 opcode                  // 0x20
-    u8 time_step               // scaled by two and clamped to 24
-    u8 unread_tail[]           // optional server bytes ignored by this client
+    u8      opcode                    // 0x20
+    u8      time_step                 // scaled by two and clamped to 24
+    bytes   unread_tail[remaining]             // optional server bytes ignored by this client
 }
 ```
 

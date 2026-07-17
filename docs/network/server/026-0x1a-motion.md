@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x1A` and insta
 
 ```text
 packet SMotion {
-    u8 opcode                 // 0x1A
+    u8      opcode                    // 0x1A
     ...                         // fields pending
 }
 ```

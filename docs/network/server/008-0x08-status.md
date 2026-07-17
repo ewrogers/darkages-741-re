@@ -33,61 +33,61 @@ The standalone `0x02` status bit is separate from the action state carried by [`
 
 All multi-byte integers are big-endian.
 
-```c
-struct SStatusBody {
-    u8 opcode;                         // 0x08
-    u8 fields;
+```text
+packet SStatus {
+    u8      opcode                    // 0x08
+    u8      fields
 
-    if (fields & 0x20) {
-        u8 retained_stats_0;
-        u8 retained_stats_1;
-        u8 retained_stats_2;
-        u8 level;
-        u8 ability_level;
-        u32be max_health;
-        u32be max_mana;
-        u8 strength;
-        u8 intelligence;
-        u8 wisdom;
-        u8 constitution;
-        u8 dexterity;
-        u8 has_stat_points;
-        u8 stat_points;
-        u16be max_weight;
-        u16be weight;
-        u32be opaque_status_word;
+    if fields & 0x20 {
+        u8      retained_stats_0
+        u8      retained_stats_1
+        u8      retained_stats_2
+        u8      level
+        u8      ability_level
+        u32     max_health
+        u32     max_mana
+        u8      strength
+        u8      intelligence
+        u8      wisdom
+        u8      constitution
+        u8      dexterity
+        u8      has_stat_points
+        u8      stat_points
+        u16     max_weight
+        u16     weight
+        u32     opaque_status_word
     }
 
-    if (fields & 0x10) {
-        u32be health;
-        u32be mana;
+    if fields & 0x10 {
+        u32     health
+        u32     mana
     }
 
-    if (fields & 0x08) {
-        u32be total_experience;
-        u32be to_next_level;
-        u32be total_ability;
-        u32be to_next_ability;
-        u32be game_points;
-        u32be gold;
+    if fields & 0x08 {
+        u32     total_experience
+        u32     to_next_level
+        u32     total_ability
+        u32     to_next_ability
+        u32     game_points
+        u32     gold
     }
 
-    if (fields & 0x04) {
-        u8 retained_modifier_0;
-        u8 blind_code;
-        u8 retained_modifier_1;
-        u8 retained_modifier_2;
-        u8 retained_modifier_3;
-        u8 mail_state;
-        u8 attack_element;
-        u8 defense_element;
-        u8 magic_resist_units;
-        u8 unknown_modifier_4;
-        s8 armor_class;
-        u8 damage_modifier;
-        u8 hit_modifier;
+    if fields & 0x04 {
+        u8      retained_modifier_0
+        u8      blind_code
+        u8      retained_modifier_1
+        u8      retained_modifier_2
+        u8      retained_modifier_3
+        u8      mail_state
+        u8      attack_element        // Element
+        u8      defense_element       // Element
+        u8      magic_resist_units
+        u8      unknown_modifier_4
+        s8      armor_class
+        u8      damage_modifier
+        u8      hit_modifier
     }
-};
+}
 ```
 
 The first three stats bytes are parsed and retained. They must not be skipped merely because the visible panes do not label them. Every stats block in the supplied login trace used `02 00 00`, not the `01 00 00` seen in some other implementations.
@@ -127,15 +127,7 @@ Dormant debug strings in the executable describe the same branches as â€œparcelâ
 
 ## Elements
 
-The extra-status pane indexes a ten-entry string table directly:
-
-| Value | Element | Value | Element |
-| ---: | --- | ---: | --- |
-| `0` | None | `5` | Light |
-| `1` | Fire | `6` | Dark |
-| `2` | Water | `7` | Wood |
-| `3` | Wind | `8` | Metal |
-| `4` | Earth | `9` | Undead |
+`attack_element` and `defense_element` use the shared [`Element`](../protocol-types.md#element) type.
 
 The attack and defense values are not range-checked before this lookup, so valid senders must keep them between `0` and `9`. Magic resistance is displayed as `magic_resist_units * 10` followed by a percent sign.
 

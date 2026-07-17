@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x21` and insta
 
 ```text
 packet SSelfSaveOK {
-    u8 opcode                 // 0x21
+    u8      opcode                    // 0x21
     ...                         // fields pending
 }
 ```

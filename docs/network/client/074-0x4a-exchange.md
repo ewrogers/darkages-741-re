@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CExchange {
-    u8 opcode                 // 0x4A
+    u8      opcode                    // 0x4A
     ...                         // fields pending
 }
 ```

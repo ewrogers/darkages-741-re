@@ -12,11 +12,11 @@
 
 ## Body
 
-```c
-struct CSpellDelaySayBody {
-    u8 opcode;                         // 0x4E
-    string8 text;
-};
+```text
+packet CSpellDelaySay {
+    u8      opcode                    // 0x4E
+    string8 text
+}
 ```
 
 `text` begins with a one-byte byte count. The common submission helper adds the encrypted client packet's trailing zero after the meaningful body.

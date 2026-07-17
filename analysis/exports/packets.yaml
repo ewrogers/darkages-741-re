@@ -11,6 +11,14 @@ functions:
     name: ui_bottom_buttons_handle_network_event
     confidence: high
     evidence: "BtmButtonsPane_A network-event handler routes SStatus to the parcel and mail-indicator updater."
+  - address: "0x0042BA20"
+    name: ui_legend_list_draw_item
+    confidence: high
+    evidence: "Draws one Self Look legend record by icon, resolves its color through palette slot 0, and renders its text."
+  - address: "0x0042CD80"
+    name: ui_legend_dialog_apply_self_look
+    confidence: high
+    evidence: "Clears and rebuilds the older LegendDialogPane list from SSelfLook's fixed-size legend records."
   - address: "0x0043C370"
     name: ui_create_user_dialog_ctor
     confidence: high
@@ -22,7 +30,7 @@ functions:
   - address: "0x0043D820"
     name: net_send_new_user_request
     confidence: high
-    evidence: "Builds CNewUser opcode 0x02 with length-prefixed name, password, and distribution-dependent account text; Japan mode 13 appends a u16be ISP selector."
+    evidence: "Builds CNewUser opcode 0x02 with length-prefixed name, password, and distribution-dependent account text; Japan mode 13 appends a u16 ISP selector."
   - address: "0x0043DC80"
     name: ui_create_user_handle_pointer_event
     confidence: high
@@ -51,6 +59,10 @@ functions:
     name: ui_equip_pane_handle_network_event
     confidence: high
     evidence: "Exact RTTI class EquipPane routes SAddEquip, SRemoveEquip, and SSelfLook from its primary-vtable network-event slot."
+  - address: "0x0045FDC0"
+    name: ui_equip_pane_apply_self_look
+    confidence: high
+    evidence: "Copies SSelfLook identity, nation, group, class, and legend state into EquipPane and its dependent panes."
   - address: "0x004601D0"
     name: ui_equip_pane_add_equipment_from_packet
     confidence: high
@@ -299,6 +311,10 @@ functions:
     name: net_send_pursuit_selection
     confidence: high
     evidence: "MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method."
+  - address: "0x00513E80"
+    name: ui_group_ad_pane_apply_self_look
+    confidence: high
+    evidence: "Builds GroupAdPane's recruiting model from SSelfLook; it copies name and note but omits the already-parsed leader string."
   - address: "0x0053A270"
     name: ui_npc_server_item_menu_handle_network_event
     confidence: high
@@ -378,7 +394,7 @@ functions:
   - address: "0x005972C0"
     name: net_deserialize_add_equip_server_packet
     confidence: high
-    evidence: "Reads slot, u16be sprite, dye, string8 name, one skipped byte, and two u32be durability values into SAddEquip."
+    evidence: "Reads slot, u16 sprite, dye, string8 name, one skipped byte, and two u32 durability values into SAddEquip."
   - address: "0x00597380"
     name: net_create_add_inventory_server_packet
     confidence: high
@@ -390,7 +406,7 @@ functions:
   - address: "0x00597430"
     name: net_deserialize_add_inventory_server_packet
     confidence: high
-    evidence: "Reads slot, u16be sprite, dye color, string8 name, u32be quantity, stack flag, current durability, and maximum durability into SAddInventory."
+    evidence: "Reads slot, u16 sprite, dye color, string8 name, u32 quantity, stack flag, current durability, and maximum durability into SAddInventory."
   - address: "0x00597510"
     name: net_create_add_skill_server_packet
     confidence: high
@@ -402,7 +418,7 @@ functions:
   - address: "0x005975C0"
     name: net_deserialize_add_skill_server_packet
     confidence: high
-    evidence: "Reads u8 slot, u16be icon, and string8 name into SAddSkill."
+    evidence: "Reads u8 slot, u16 icon, and string8 name into SAddSkill."
   - address: "0x00597640"
     name: net_create_add_spell_server_packet
     confidence: high
@@ -414,7 +430,7 @@ functions:
   - address: "0x005976F0"
     name: net_deserialize_add_spell_server_packet
     confidence: high
-    evidence: "Reads slot, u16be icon, argument type, string8 name, string8 prompt, and cast_lines into SAddSpell."
+    evidence: "Reads slot, u16 icon, argument type, string8 name, string8 prompt, and cast_lines into SAddSpell."
   - address: "0x00597A10"
     name: net_create_bad_guy_server_packet
     confidence: high
@@ -426,7 +442,7 @@ functions:
   - address: "0x00597AC0"
     name: net_deserialize_bad_guy_server_packet
     confidence: high
-    evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32be guard."
+    evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32 guard."
   - address: "0x00598050"
     name: net_create_change_hour_server_packet
     confidence: high
@@ -470,7 +486,7 @@ functions:
   - address: "0x0059A100"
     name: net_deserialize_message_server_packet
     confidence: high
-    evidence: "Reads the message type, the type-0x11-only prefix, a u16be message length, and the message bytes."
+    evidence: "Reads the message type, the type-0x11-only prefix, a u16 message length, and the message bytes."
   - address: "0x0059ADB0"
     name: net_create_remove_equip_server_packet
     confidence: high
@@ -530,7 +546,31 @@ functions:
   - address: "0x0059B5C0"
     name: net_deserialize_say_server_packet
     confidence: high
-    evidence: "Reads a speech mode, u32be world-object ID, and string8 speech text."
+    evidence: "Reads a speech mode, u32 world-object ID, and string8 speech text."
+  - address: "0x0059B9C0"
+    name: net_create_self_look_server_packet
+    confidence: high
+    evidence: "Allocates the 0x9C64-byte RTTI SSelfLook object and invokes its concrete constructor."
+  - address: "0x0059BA40"
+    name: net_self_look_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x39 to the server packet base and installs the exact SSelfLook vtable."
+  - address: "0x0059BA70"
+    name: net_deserialize_self_look_server_packet
+    confidence: high
+    evidence: "Parses nation and profile text, the optional recruiting block, class metadata, and repeated legend marks."
+  - address: "0x0059BE80"
+    name: net_create_sound_effect_server_packet
+    confidence: high
+    evidence: "Allocates the 0x14-byte RTTI SSoundEffect object and invokes its concrete constructor."
+  - address: "0x0059BF00"
+    name: net_sound_effect_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x19 to the server packet base and installs the exact SSoundEffect vtable."
+  - address: "0x0059BF30"
+    name: net_deserialize_sound_effect_server_packet
+    confidence: high
+    evidence: "Reads one sound byte and only a second track byte for mode 0xFF; no trailing u16 is consumed."
   - address: "0x0059C360"
     name: net_create_status_server_packet
     confidence: high
@@ -554,7 +594,7 @@ functions:
   - address: "0x0059CB70"
     name: net_deserialize_user_appearance_server_packet
     confidence: high
-    evidence: "Reads u32be user ID followed by facing, raw guild value, character class, action state, and one final unknown byte."
+    evidence: "Reads u32 user ID followed by facing, raw guild value, character class, action state, and one final unknown byte."
   - address: "0x0059CC20"
     name: net_create_user_position_server_packet
     confidence: high
@@ -566,7 +606,7 @@ functions:
   - address: "0x0059CCD0"
     name: net_deserialize_user_position_server_packet
     confidence: high
-    evidence: "Reads exactly u16be x and u16be y; the method returns without consuming four additional bytes observed in captures."
+    evidence: "Reads exactly u16 x and u16 y; the method returns without consuming four additional bytes observed in captures."
   - address: "0x0059D1D0"
     name: ui_gui_back_pane_handle_network_event
     confidence: high
@@ -579,6 +619,10 @@ functions:
     name: ui_user_info_update_status_from_packet
     confidence: high
     evidence: "Updates UserInfoPane's five attributes and signed armor class from present SStatus blocks."
+  - address: "0x005B0D10"
+    name: ui_user_info_apply_self_look
+    confidence: high
+    evidence: "Copies SSelfLook identity and nation fields into UserInfoPane, rebuilds its legend list, and reloads SClass metadata when the class changes."
   - address: "0x005B1070"
     name: ui_user_info_add_equipment_from_packet
     confidence: high
@@ -587,6 +631,10 @@ functions:
     name: ui_user_info_remove_equipment_from_packet
     confidence: high
     evidence: "Maps a checked SRemoveEquip slot and asks the UserInfoPane child equipment view to clear that entry."
+  - address: "0x005B7ED0"
+    name: ui_nui_legend_pane_apply_self_look
+    confidence: high
+    evidence: "Clears and rebuilds RTTI class nui_LegendPane from SSelfLook's legend records."
   - address: "0x005BA040"
     name: ui_map_loading_pane_ctor
     confidence: high
@@ -686,7 +734,7 @@ functions:
   - address: "0x005F4430"
     name: net_send_put_ground
     confidence: high
-    evidence: "Builds opcode 0x0C with one u32be value."
+    evidence: "Builds opcode 0x0C with one u32 value."
   - address: "0x005F4510"
     name: net_send_change_direction
     confidence: high
@@ -818,7 +866,7 @@ comments:
   - address: "0x0041BB95"
     text: "A nonzero high nibble of the mail-state byte starts the flashing new-mail indicator; zero stops it."
   - address: "0x0043D8AF"
-    text: "Japan mode 13 CNewUser variant begins with opcode 0x02 and appends app_japan_distribution_isp_selector as u16be after the three length-prefixed strings."
+    text: "Japan mode 13 CNewUser variant begins with opcode 0x02 and appends app_japan_distribution_isp_selector as u16 after the three length-prefixed strings."
   - address: "0x0043DAE6"
     text: "Active CNewUser body: opcode 0x02, u8-length name, u8-length password, and u8-length account text. The USA create-user pane supplies literal none for account text."
   - address: "0x0043E912"
@@ -998,17 +1046,17 @@ comments:
   - address: "0x005962D3"
     text: "The factory installs no constructor for server opcode 0x1E, 0x58, or 0x67. They remain raw decoded bodies with a null packet-object slot."
   - address: "0x005972CA"
-    text: "SAddEquip body: u8 slot, u16be sprite, u8 dye, string8 name, one skipped byte, u32be current durability, u32be maximum durability."
+    text: "SAddEquip body: u8 slot, u16 sprite, u8 dye, string8 name, one skipped byte, u32 current durability, u32 maximum durability."
   - address: "0x00597311"
     text: "Skip the byte immediately after the name. Login captures consistently show 0x00 here, but the parser does not validate its value."
   - address: "0x00597319"
-    text: "Read current durability as u32be into packet object +0x11C."
+    text: "Read current durability as u32 into packet object +0x11C."
   - address: "0x0059732A"
-    text: "Read maximum durability as u32be into packet object +0x120."
+    text: "Read maximum durability as u32 into packet object +0x120."
   - address: "0x00597442"
-    text: "SAddInventory begins with a one-byte slot followed by u16be sprite, dye color, and string8 name."
+    text: "SAddInventory begins with a one-byte slot followed by u16 sprite, dye color, and string8 name."
   - address: "0x00597482"
-    text: "Read quantity as u32be, can_stack as u8, current durability as u32be, and maximum durability as u32be."
+    text: "Read quantity as u32, can_stack as u8, current durability as u32, and maximum durability as u32."
   - address: "0x005975D2"
     text: "SAddSkill body begins with a one-byte skill slot."
   - address: "0x005975E0"
@@ -1032,13 +1080,13 @@ comments:
   - address: "0x00597AD2"
     text: "SBadGuy body bytes 1 and 2 are u8 mode and marker byte."
   - address: "0x00597AE6"
-    text: "SBadGuy ends with a u32be guard value."
+    text: "SBadGuy ends with a u32 guard value."
   - address: "0x0059810A"
     text: "SChangeHour reads exactly one u8 time step into object +0x10. Any remaining decoded body bytes are left unread."
   - address: "0x0059857C"
     text: "Initialize the object light-mask selector to 1. Disguised records retain this default because only normal-human records read the wire field."
   - address: "0x00598598"
-    text: "Read wire u16be X followed by u16be Y and sign-extend both into the packet object's 32-bit tile fields."
+    text: "Read wire u16 X followed by u16 Y and sign-extend both into the packet object's 32-bit tile fields."
   - address: "0x005985E4"
     text: "Read head_sprite. Value 0xFFFF selects the monster-disguise body; every other value selects the normal 0x33 human appearance body."
   - address: "0x00598612"
@@ -1054,7 +1102,7 @@ comments:
   - address: "0x0059891A"
     text: "Appearance variant 8 selects male body resource 5. Variant 9 selects the female form; local MM005 and WM005 frames are head-sized swimming art."
   - address: "0x00599FA2"
-    text: "Read SMapSize map_number as u16be."
+    text: "Read SMapSize map_number as u16."
   - address: "0x00599FB1"
     text: "Read the effective width as one byte; the 7.41 handler never reconstructs a u16 width."
   - address: "0x00599FBF"
@@ -1064,7 +1112,7 @@ comments:
   - address: "0x00599FDB"
     text: "Read one unknown byte after flags. The active handler loads it into a local variable and never references the value again."
   - address: "0x00599FE9"
-    text: "Read the three-byte cache slot as u24be. Observed values contain 00 followed by the CRC16, and the comparison requires that high byte to be zero."
+    text: "Read the three-byte cache slot as u24. Observed values contain 00 followed by the CRC16, and the comparison requires that high byte to be zero."
   - address: "0x00599FFE"
     text: "Read the map name as string8."
   - address: "0x0059A112"
@@ -1072,7 +1120,7 @@ comments:
   - address: "0x0059A11F"
     text: "Type 0x11 alone carries two extra bytes followed by a string8 field. The recovered client handlers do not display this variant."
   - address: "0x0059A160"
-    text: "Read the main message length as u16be. The parser itself does not impose a semantic text limit."
+    text: "Read the main message length as u16. The parser itself does not impose a semantic text limit."
   - address: "0x0059A16D"
     text: "Retain a pointer to exactly message_length bytes from the decoded packet body; no wire terminator is required."
   - address: "0x0059AE6A"
@@ -1086,7 +1134,7 @@ comments:
   - address: "0x0059B5D2"
     text: "Read the SSay speech mode byte."
   - address: "0x0059B5E0"
-    text: "Read the speaking world object's u32be ID."
+    text: "Read the speaking world object's u32 ID."
   - address: "0x0059B5F5"
     text: "Read the speech text as string8 into the packet object's inline buffer."
   - address: "0x0059C44D"
@@ -1098,11 +1146,11 @@ comments:
   - address: "0x0059C51E"
     text: "Read and retain three leading stats bytes. The supplied 7.41 trace consistently carries 02 00 00; the client does not validate them."
   - address: "0x0059C61D"
-    text: "Read the final stats value as an opaque u32be word. The client stores it but no static read was found."
+    text: "Read the final stats value as an opaque u32 word. The client stores it but no static read was found."
   - address: "0x0059C630"
-    text: "Fields bit 0x10 begins current health and current mana, both u32be."
+    text: "Fields bit 0x10 begins current health and current mana, both u32."
   - address: "0x0059C65B"
-    text: "Fields bit 0x08 begins six u32be progression and currency values: experience, next level, ability points, next ability, game points, and gold."
+    text: "Fields bit 0x08 begins six u32 progression and currency values: experience, next level, ability points, next ability, game points, and gold."
   - address: "0x0059C6C2"
     text: "Fields bit 0x04 begins the 13-byte modifiers block."
   - address: "0x0059C6CC"
@@ -1126,7 +1174,7 @@ comments:
   - address: "0x0059C7A8"
     text: "Fields bit 0x01, together with a present modifiers block, enables the parcel/mail UI update and nibble-derived mail state."
   - address: "0x0059CB82"
-    text: "Read SUserAppearance user_id as u32be."
+    text: "Read SUserAppearance user_id as u32."
   - address: "0x0059CB90"
     text: "Read cached facing. Project protocol vocabulary maps 0=up, 1=right, 2=down, and 3=left; this stored copy has no identified reader."
   - address: "0x0059CB9E"
@@ -1138,11 +1186,11 @@ comments:
   - address: "0x0059CBC0"
     text: "Read the final parsed appearance byte. It is separate from appearance_action_state and has no identified gameplay consumer."
   - address: "0x0059CCE2"
-    text: "Read SUserPosition x as u16be into packet object +0x10."
+    text: "Read SUserPosition x as u16 into packet object +0x10."
   - address: "0x0059CCE9"
-    text: "Read SUserPosition y as u16be into packet object +0x12."
+    text: "Read SUserPosition y as u16 into packet object +0x12."
   - address: "0x0059CCF8"
-    text: "Return after exactly two u16be reads. Any remaining decoded body bytes are left unread and have no SUserPosition object fields."
+    text: "Return after exactly two u16 reads. Any remaining decoded body bytes are left unread and have no SUserPosition object fields."
   - address: "0x005B10D3"
     text: "UserInfoPane maps wire slots through a 19-entry table: slot 0 -> -1; slots 1..18 -> view indices 0..17."
   - address: "0x005B1138"
@@ -1250,7 +1298,7 @@ comments:
   - address: "0x005F7074"
     text: "Type 0x0A replaces tab bytes with carriage returns and opens the alternate woodbk.epf WindowMessageDialogPane layout."
   - address: "0x005F793D"
-    text: "Apply the client-installation soft ban only when mode is 0 and the u32be guard equals 0x7D3AFF99."
+    text: "Apply the client-installation soft ban only when mode is 0 and the u32 guard equals 0x7D3AFF99."
   - address: "0x005F79D9"
     text: "Build %SystemRoot%\\System32\\Mscfg.dll from split Msc, fg, .d, and ll fragments. Nearby yummy and rocks strings are unused."
   - address: "0x005F79FA"
@@ -1346,7 +1394,7 @@ packet_indexes:
         builder: "0x0043D820"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Builder 0x0043D820 writes opcode 0x02 followed by u8-length name, password, and account text fields; Japan mode 13 appends a u16be ISP selector."
+        evidence: "Builder 0x0043D820 writes opcode 0x02 followed by u8-length name, password, and account text fields; Japan mode 13 appends a u16 ISP selector."
         page: "docs/network/client/002-0x02-new-user.md"
       - opcode: "0x03"
         friendly_name: "Login"
@@ -1373,7 +1421,7 @@ packet_indexes:
         builder: "0x005F1BF0"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "The SMapSize handler at 0x005F1BF0 builds opcode 0x05 inline after cache validation. It writes two zero u16be fields, u8 width and height, and a zero-extended CRC16 as u24be."
+        evidence: "The SMapSize handler at 0x005F1BF0 builds opcode 0x05 inline after cache validation. It writes two zero u16 fields, u8 width and height, and a zero-extended CRC16 as u24."
         page: "docs/network/client/005-0x05-map-request.md"
       - opcode: "0x06"
         friendly_name: "Move"
@@ -1930,7 +1978,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI constructor 0x0059CCA0 installs opcode 0x04. Deserializer 0x0059CCD0 consumes only u16be x and y; handler 0x005F2F00 applies them to WorldObject_User and the world view."
+        evidence: "RTTI constructor 0x0059CCA0 installs opcode 0x04. Deserializer 0x0059CCD0 consumes only u16 x and y; handler 0x005F2F00 applies them to WorldObject_User and the world view."
         page: "docs/network/server/004-0x04-user-position.md"
       - opcode: "0x05"
         friendly_name: "User Appearance"
@@ -1980,7 +2028,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI identifies SMessage. Its parser reads a type-dependent prefix followed by a u16be byte count, and its consumers route the text to floating, persistent-history, popup, or score UI."
+        evidence: "RTTI identifies SMessage. Its parser reads a type-dependent prefix followed by a u16 byte count, and its consumers route the text to floating, persistent-history, popup, or score UI."
         page: "docs/network/server/010-0x0a-message.md"
       - opcode: "0x0B"
         friendly_name: "Move"
@@ -2010,7 +2058,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI identifies SSay. Its parser reads a mode byte, u32be object ID, and string8 text; the handler creates a three-second world balloon without saving the text to message history."
+        evidence: "RTTI identifies SSay. Its parser reads a mode byte, u32 object ID, and string8 text; the handler creates a three-second world balloon without saving the text to message history."
         page: "docs/network/server/013-0x0d-say.md"
       - opcode: "0x0E"
         friendly_name: "Remove Objects"
@@ -2070,7 +2118,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00599F60 installs SMapSize for opcode 0x15. Decoder 0x00599F90 reads u16be map number, four bytes, u24be cache value, and string8 name. Handler 0x005F1BF0 uses u8 dimensions, ignores the fourth byte, treats 0x40 as NoMap, treats 0x80 as Winter, and applies the low-nibble weather mode."
+        evidence: "Constructor 0x00599F60 installs SMapSize for opcode 0x15. Decoder 0x00599F90 reads u16 map number, four bytes, u24 cache value, and string8 name. Handler 0x005F1BF0 uses u8 dimensions, ignores the fourth byte, treats 0x40 as NoMap, treats 0x80 as Winter, and applies the low-nibble weather mode."
         page: "docs/network/server/021-0x15-map-size.md"
       - opcode: "0x17"
         friendly_name: "Add Spell"
@@ -2080,7 +2128,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI constructor 0x005976C0 binds opcode 0x17. Deserializer 0x005976F0 reads u8 slot, u16be icon, u8 argument type, string8 name, string8 prompt, and u8 cast_lines. WorldUserFunc and NewSpellInventoryPane consume the decoded object."
+        evidence: "RTTI constructor 0x005976C0 binds opcode 0x17. Deserializer 0x005976F0 reads u8 slot, u16 icon, u8 argument type, string8 name, string8 prompt, and u8 cast_lines. WorldUserFunc and NewSpellInventoryPane consume the decoded object."
         page: "docs/network/server/023-0x17-add-spell.md"
       - opcode: "0x18"
         friendly_name: "Remove Spell"
@@ -2100,7 +2148,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059BF00 passes opcode 0x19 to the server packet base and installs the SSoundEffect vtable. Deserializer 0x0059BF30 reads a sound ID or the 0xFF music form; handler 0x005F6B20 plays the effect or selects music."
+        evidence: "Constructor 0x0059BF00 installs SSoundEffect for opcode 0x19. Deserializer 0x0059BF30 reads one sound byte and only a second track byte for mode 0xFF; it does not consume a trailing u16. Handler 0x005F6B20 plays the effect, selects music, or treats track 100 as no change."
         page: "docs/network/server/025-0x19-sound-effect.md"
       - opcode: "0x1A"
         friendly_name: "Motion"
@@ -2170,7 +2218,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI constructor 0x00597590 binds opcode 0x2C. Deserializer 0x005975C0 reads u8 slot, u16be icon, and string8 name. WorldUserFunc and NewSkillInventoryPane consume the decoded object."
+        evidence: "RTTI constructor 0x00597590 binds opcode 0x2C. Deserializer 0x005975C0 reads u8 slot, u16 icon, and string8 name. WorldUserFunc and NewSkillInventoryPane consume the decoded object."
         page: "docs/network/server/044-0x2c-add-skill.md"
       - opcode: "0x2D"
         friendly_name: "Remove Skill"
@@ -2260,7 +2308,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059BA40 passes opcode 0x39 to the server packet base and installs the SSelfLook vtable."
+        evidence: "Constructor 0x0059BA40 installs SSelfLook for opcode 0x39. Deserializer 0x0059BA70 reads nation and profile text, an optional recruiting block, class metadata, and repeated legend marks. EquipPane, UserInfoPane, GroupAdPane, and both legend UIs consume the result."
         page: "docs/network/server/057-0x39-self-look.md"
       - opcode: "0x3A"
         friendly_name: "Spelled"
@@ -2290,7 +2338,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00599E40 installs SMapPart. Handler 0x005F2A60 reads a u16be part index and repeated three-u16be records from the raw decoded body, creates MapLoadingPane, updates transfer progress, and finalizes the last part."
+        evidence: "Constructor 0x00599E40 installs SMapPart. Handler 0x005F2A60 reads a u16 part index and repeated three-u16 records from the raw decoded body, creates MapLoadingPane, updates transfer progress, and finalizes the last part."
         page: "docs/network/server/060-0x3c-map-part.md"
       - opcode: "0x3D"
         friendly_name: "Level Point"
@@ -2400,7 +2448,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI constructor 0x00597A90 installs SBadGuy for opcode 0x4A. Its deserializer reads u8 mode, u8 marker byte, and u32be guard. Mode 0 with guard 0x7D3AFF99 creates the persistent Mscfg.dll client-installation soft-ban marker and forces termination; later launches select port 2601 and stop CLogin before submission."
+        evidence: "RTTI constructor 0x00597A90 installs SBadGuy for opcode 0x4A. Its deserializer reads u8 mode, u8 marker byte, and u32 guard. Mode 0 with guard 0x7D3AFF99 creates the persistent Mscfg.dll client-installation soft-ban marker and forces termination; later launches select port 2601 and stop CLogin before submission."
         page: "docs/network/server/074-0x4a-bad-guy.md"
       - opcode: "0x4B"
         friendly_name: "Bounce"

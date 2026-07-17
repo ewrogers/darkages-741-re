@@ -26,10 +26,10 @@ Known static callers lead to:
 
 ```text
 packet CManual {
-    u8 opcode                 // 0x55
-    u8 dialog_value_0
-    u8 dialog_value_1
-    u8 reserved               // 0
-    u8 action
+    u8      opcode                    // 0x55
+    u8      dialog_value_0
+    u8      dialog_value_1
+    u8      reserved                  // 0
+    u8      action
 }
 ```

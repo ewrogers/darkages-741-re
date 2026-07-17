@@ -13,16 +13,16 @@
 
 ## Body
 
-```c
-struct SUserAppearanceBody {
-    u8 opcode;                  // 0x05
-    u32be user_id;
-    u8 facing;
-    u8 guild_value;
-    u8 character_class;
-    u8 action_state;
-    u8 unknown_final;
-};
+```text
+packet SUserAppearance {
+    u8      opcode                    // 0x05
+    u32     user_id
+    u8      facing                    // Direction
+    u8      guild_value
+    u8      character_class           // CharacterClass
+    u8      action_state
+    u8      unknown_final
+}
 ```
 
 The fixed body contains five bytes after `user_id`, not four. This matters because `action_state` and `unknown_final` are separate fields.
@@ -85,31 +85,11 @@ Only two direct writes to the saved action-state byte exist in this client:
 
 A server that changes the lock during play must therefore resend opcode `0x05`. The state-only form appears designed for exactly this case. With no other persistent bits set, `action_state = 0x81` would set the lock and `0x80` would clear it while leaving user ID, facing, guild value, class, and the final byte untouched. A runtime capture is still needed to confirm that the live server uses those exact values.
 
-## Direction values
+## Direction and class
 
-The common coordinate helper confirms the four normal direction values:
-
-| Value | Direction | Coordinate change |
-| ---: | --- | --- |
-| `0` | Up | `y - 1` |
-| `1` | Right | `x + 1` |
-| `2` | Down | `y + 1` |
-| `3` | Left | `x - 1` |
+`facing` uses the shared [`Direction`](../protocol-types.md#direction) type. `character_class` uses [`CharacterClass`](../protocol-types.md#characterclass).
 
 The helper only defines values `0` through `3`. A value of `4` does not enter an explicit `None` case and leaves its result undefined. Because the `SUserAppearance` facing copy is never read after storage, the local client does not confirm `4` as a bounce-back or no-direction value in this packet. A capture may still show the server using it as protocol vocabulary, but the 7.41 client does not interpret it that way here.
-
-## Character classes
-
-The project-owner protocol vocabulary maps the class byte as follows:
-
-| Value | Class |
-| ---: | --- |
-| `0` | Peasant |
-| `1` | Warrior |
-| `2` | Rogue |
-| `3` | Wizard |
-| `4` | Priest |
-| `5` | Monk |
 
 The client confirms that this is a raw one-byte discriminator. When virtual-key `0x09` (Tab) opens the map overlay, value `2` selects a different overlay configuration. Project-owner observation identifies this as the Rogue-only ability to zoom the map in and out; other classes receive the non-zoomable configuration. This directly supports `Rogue = 2`. The executable does not contain a complete local name table that independently proves all six labels.
 

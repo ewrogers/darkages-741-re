@@ -31,11 +31,11 @@ Both outgoing bodies are queued for the communications worker. The sequence rese
 
 ```text
 packet CVersion {
-    u8 opcode                 // 0x00
-    u16be version_code        // 741, encoded as 0x02E5
-    u8 marker_l               // 0x4C, ASCII "L"
-    u8 marker_k               // 0x4B, ASCII "K"
-    u8 terminator             // 0x00, appended by net_submit_client_packet
+    u8      opcode                    // 0x00
+    u16     version_code              // 741, encoded as 0x02E5
+    u8      marker_l                  // 0x4C, ASCII "L"
+    u8      marker_k                  // 0x4B, ASCII "K"
+    u8      terminator                // 0x00, appended by net_submit_client_packet
 }
 ```
 

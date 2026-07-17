@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x13` and insta
 
 ```text
 packet SDamageEffect {
-    u8 opcode                 // 0x13
+    u8      opcode                    // 0x13
     ...                         // fields pending
 }
 ```

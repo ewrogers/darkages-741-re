@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CDropGold {
-    u8 opcode                 // 0x24
+    u8      opcode                    // 0x24
     ...                         // fields pending
 }
 ```

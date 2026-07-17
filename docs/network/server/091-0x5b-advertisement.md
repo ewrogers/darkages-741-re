@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x5B` and insta
 
 ```text
 packet SAdvertisement {
-    u8 opcode                 // 0x5B
+    u8      opcode                    // 0x5B
     ...                         // fields pending
 }
 ```

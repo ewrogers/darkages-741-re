@@ -26,7 +26,7 @@ Known static callers lead to:
 
 ```text
 packet CUserSetting {
-    u8 opcode                 // 0x1B
-    u8 setting_id
+    u8      opcode                    // 0x1B
+    u8      setting_id
 }
 ```

@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CExitEditingMode {
-    u8 opcode                 // 0x23
+    u8      opcode                    // 0x23
     ...                         // fields pending
 }
 ```

@@ -21,7 +21,7 @@ Known static callers lead to:
 
 ```text
 packet CException {
-    u8 opcode                 // 0x42
+    u8      opcode                    // 0x42
     ...                         // fields pending
 }
 ```

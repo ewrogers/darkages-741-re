@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x4C` and insta
 
 ```text
 packet SQuit {
-    u8 opcode                 // 0x4C
+    u8      opcode                    // 0x4C
     ...                         // fields pending
 }
 ```

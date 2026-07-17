@@ -17,7 +17,7 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x29` and insta
 
 ```text
 packet SEffectLayer {
-    u8 opcode                 // 0x29
+    u8      opcode                    // 0x29
     ...                         // fields pending
 }
 ```

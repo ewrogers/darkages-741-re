@@ -12,13 +12,13 @@
 
 ## Body
 
-```c
-struct SBadGuyBody {
-    u8 opcode;             // 0x4A
-    u8 mode;
-    u8 marker_byte;
-    u32be guard;
-};
+```text
+packet SBadGuy {
+    u8      opcode                    // 0x4A
+    u8      mode
+    u8      marker_byte
+    u32     guard
+}
 ```
 
 `net_deserialize_bad_guy_server_packet` reads both byte fields and the big-endian guard. The soft-ban action runs only when:

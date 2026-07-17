@@ -17,6 +17,8 @@ runtime address = loaded module base + RVA
 | Ignore local Bad Guy marker (Good Guy) | `0x00431F85` | `0x00031F85` | `C6 82 68 06 00 00 01` | `C6 82 68 06 00 00 00` |
 | Enable positional endpoint parser | `0x00432253` | `0x00032253` | `E8 28 11 00 00` | `E8 B8 0D 00 00` |
 | Disable official endpoint fallback | `0x005655F4` | `0x001655F4` | `C7 85 94 FB FF FF 00 00 00 00` | `E9 06 13 00 00 90 90 90 90 90` |
+| Suppress stipulation window after a matching greeting | `0x004B897C` | `0x000B897C` | `75 6C` | `EB 6C` |
+| Suppress stipulation window after a replacement greeting | `0x004B8ACF` | `0x000B8ACF` | `75 6D` | `EB 6D` |
 | Hide all static map art | `0x005E47FF` | `0x001E47FF` | `74 05` | `EB 00` |
 
 ## Allow multiple clients
@@ -60,6 +62,21 @@ This patch changes only endpoint setup. It does not switch the whole distributio
 After a failed first connection, the original code resolves `da0.kru.com` and tries again. This patch jumps to the existing disconnected cleanup path at static address `0x005668FF` instead.
 
 Use it with the positional endpoint patch for a strict "connect to this endpoint or fail" policy. The normal socket close and `INVALID_SOCKET` state are preserved.
+
+## Suppress the stipulation window
+
+These two same-size jump changes hide the agreement window without skipping [`SStipulation`](../network/server/096-0x60-stipulation.md) processing:
+
+| Path | Static address | RVA | File offset, reference only |
+| --- | --- | --- | --- |
+| Cached greeting CRC matches | `0x004B897C` | `0x000B897C` | `0x000B7D7C` |
+| Replacement greeting was inflated and saved | `0x004B8ACF` | `0x000B8ACF` | `0x000B7ECF` |
+
+Each original `JNE` skips `AgreementDialogPane` only in Japan distribution mode. Replacing opcode byte `75` with `EB` turns it into an unconditional jump to the same existing continuation. The displacement byte is unchanged.
+
+That continuation clears `MainMenuPane +0x500`. The main-menu pointer and keyboard handlers reject input only while this value is nonzero, so Login remains enabled and clickable. The agreement pane's OK action sends no packet, which means there is no acknowledgement to emulate.
+
+Apply both changes. One covers a matching cached greeting and the other covers a newly received replacement. Homepage requesting, CRC mismatch recovery, zlib inflation, table saving, and the final menu-state update all run normally.
 
 ## Hide all static map art
 
