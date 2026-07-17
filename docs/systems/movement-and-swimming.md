@@ -16,6 +16,12 @@ local move input --> action lock --> occupants and SOTP collision --> CMove
 
 The skill's name arrives through [`SAddSkill`](../network/server/044-0x2c-add-skill.md) as display data. No client function compares that name, reserves a swimming slot, or asks the skillbook whether it is present.
 
+## Turn or move
+
+Directional input has a simple two-stage rule. If the requested direction differs from the local player's facing, the client turns immediately and sends [`CChangeDirection`](../network/client/017-0x11-change-direction.md). If it already matches, the client attempts one tile of movement instead.
+
+The server answers or overrides facing with [`SChangeDirection`](../network/server/017-0x11-change-direction.md). Its object ID can select any `WorldObject_Living`, including other players, creatures, and Mundanes. This is a general world update rather than a reply limited to the local player.
+
 ## Local movement checks
 
 `map_try_move_local_player` obtains the local `WorldObject_User`, computes the destination tile, and calls `map_can_move_direction`. A successful check moves the local object and sends [`CMove`](../network/client/006-0x06-move.md).

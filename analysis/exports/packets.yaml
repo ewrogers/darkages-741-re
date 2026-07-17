@@ -179,6 +179,58 @@ functions:
     name: ui_inventory_item_ctor
     confidence: high
     evidence: "Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, maximum durability, and current durability."
+  - address: "0x004963C0"
+    name: ui_inventory_item_handle_pointer_event
+    confidence: high
+    evidence: "InvItemPane pointer-event handler starts a DraggedInvItemPane from the selected inventory item and its one-based source slot."
+  - address: "0x00496820"
+    name: ui_inventory_item_submit_drop_quantity
+    confidence: high
+    evidence: "Numeric-input callback sends the saved CDrop target and source item only when the submitted u32 quantity is nonzero."
+  - address: "0x00496890"
+    name: ui_inventory_item_send_drop
+    confidence: high
+    evidence: "InvItemPane virtual sender forwards target Y, target X, and quantity to the concrete CDrop builder."
+  - address: "0x004968E0"
+    name: ui_inventory_item_handle_timer
+    confidence: high
+    evidence: "TimerHandler callback for InvItemPane opens quantity input for stacks above one or sends quantity one directly for a world drop."
+  - address: "0x00496C90"
+    name: net_send_drop
+    confidence: high
+    evidence: "Builds CDrop as opcode 0x08, source slot, target X, target Y, and u32 quantity."
+  - address: "0x004971B0"
+    name: ui_drop_gold_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class DropGoldDialogPane, retains the drag-selected Y and X, builds the _nmoney.txt controls, and focuses the amount input."
+  - address: "0x00497560"
+    name: ui_drop_gold_dialog_handle_action
+    confidence: high
+    evidence: "DropGoldDialogPane action 0 parses and submits CDropGold; action 1 closes the dialog without sending."
+  - address: "0x004975C0"
+    name: net_send_drop_gold
+    confidence: high
+    evidence: "Parses a nonzero amount and builds CDropGold as opcode 0x24, u32 amount, u16 X, and u16 Y."
+  - address: "0x00497C30"
+    name: ui_dragged_inventory_item_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class DraggedInvItemPane and retains the dragged item kind, inventory slot, and owner pane."
+  - address: "0x00497EC0"
+    name: ui_dragged_inventory_item_dispatch_drop
+    confidence: high
+    evidence: "Dispatches the dragged inventory-item record and pointer position through the pane tree to the selected drop target."
+  - address: "0x00498020"
+    name: ui_map_item_pane_handle_pointer_event
+    confidence: high
+    evidence: "Handles MapItem_Pane pointer events; a left double click inside the pane finds an empty inventory slot and sends CGet for the pane's world coordinates."
+  - address: "0x00498400"
+    name: ui_map_item_pane_handle_timer
+    confidence: high
+    evidence: "TimerHandler callback for MapItem_Pane; resolves an inventory slot when needed and sends CGet through the pane-owned builder."
+  - address: "0x00498550"
+    name: net_send_get_from_map_item_pane
+    confidence: high
+    evidence: "Builds CGet as opcode, destination slot, MapItem_Pane world X, and world Y."
   - address: "0x00498940"
     name: ui_skill_inventory_item_ctor
     confidence: high
@@ -239,6 +291,10 @@ functions:
     name: net_request_cash_shop
     confidence: high
     evidence: "ItemShop::ShoppingBagDialogPane sends the opcode 0x6C body during construction."
+  - address: "0x004B79C0"
+    name: net_send_quit
+    confidence: high
+    evidence: "Builds the opcode-only CQuit variant, submits one byte, tears down the current connection, then chooses a local TerminalPane2 restart or process-close path."
   - address: "0x004BA010"
     name: net_send_alive
     confidence: high
@@ -323,10 +379,30 @@ functions:
     name: ui_npc_server_item_menu_update_gold_from_status_packet
     confidence: high
     evidence: "Copies SStatus gold into the NPC server-item menu and redraws the dialog."
+  - address: "0x00540580"
+    name: ui_option_pane_create_alert
+    confidence: high
+    evidence: "OptionPane alert factory selects five alert classes; type 4 allocates and constructs exact RTTI SafeQuitAlert."
   - address: "0x00542E60"
     name: net_send_user_setting
     confidence: high
     evidence: "OptionPane and GameSettingDialog call this opcode 0x1B builder."
+  - address: "0x00544100"
+    name: ui_safe_quit_alert_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI SafeQuitAlert and immediately submits CQuit as bytes 0B 01."
+  - address: "0x00544220"
+    name: ui_safe_quit_alert_handle_network_event
+    confidence: high
+    evidence: "SafeQuitAlert primary-vtable network-event handler routes typed SQuit opcode 0x4C to its response helper."
+  - address: "0x00544280"
+    name: ui_safe_quit_alert_apply_quit_response
+    confidence: high
+    evidence: "When SQuit's consumed byte is 1, marks the alert approved, submits CQuit bytes 0B 00, replaces the alert text, and refreshes its control."
+  - address: "0x005444B0"
+    name: ui_option_pane_handle_keyboard_event
+    confidence: high
+    evidence: "OptionPane keyboard-event handler maps both X and x to construction of exact RTTI SafeQuitAlert."
   - address: "0x0055A090"
     name: net_send_multi_server_selection
     confidence: high
@@ -443,6 +519,18 @@ functions:
     name: net_deserialize_bad_guy_server_packet
     confidence: high
     evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32 guard."
+  - address: "0x00597F30"
+    name: net_create_change_direction_server_packet
+    confidence: high
+    evidence: "Allocates the 0x18-byte RTTI SChangeDirection object and invokes its concrete constructor."
+  - address: "0x00597FB0"
+    name: net_change_direction_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x11 to the server packet base and installs the exact SChangeDirection vtable."
+  - address: "0x00597FE0"
+    name: net_deserialize_change_direction_server_packet
+    confidence: high
+    evidence: "Reads SChangeDirection as u32 user_id followed by u8 direction."
   - address: "0x00598050"
     name: net_create_change_hour_server_packet
     confidence: high
@@ -515,6 +603,18 @@ functions:
     name: net_deserialize_move_server_packet
     confidence: high
     evidence: "Reads direction, four big-endian coordinate words, and the echoed movement step into the fixed SMove packet object."
+  - address: "0x0059ACA0"
+    name: net_create_quit_server_packet
+    confidence: high
+    evidence: "Allocates a 0x14-byte RTTI SQuit object and calls its concrete constructor."
+  - address: "0x0059AD20"
+    name: net_quit_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x4C to the server packet base and installs the exact RTTI SQuit vtable."
+  - address: "0x0059AD50"
+    name: net_deserialize_quit_server_packet
+    confidence: high
+    evidence: "Reads exactly one u8 after the opcode into SQuit offset +0x10; observed following zero bytes are not consumed."
   - address: "0x0059ADB0"
     name: net_create_remove_equip_server_packet
     confidence: high
@@ -691,6 +791,10 @@ functions:
     name: world_step_coordinates
     confidence: high
     evidence: "Applies the direction delta to a coordinate pair used by local movement and collision checks."
+  - address: "0x005C75A0"
+    name: ui_world_pane_screen_to_tile
+    confidence: high
+    evidence: "Converts a screen-space point through the active world controller to map tile coordinates, or returns negative coordinates when no controller is available."
   - address: "0x005C7600"
     name: ui_world_pane_set_blinded
     confidence: high
@@ -703,6 +807,10 @@ functions:
     name: world_reindex_object
     confidence: high
     evidence: "Updates a world object's spatial index entry after its tile coordinates change and refreshes dependent overlay state."
+  - address: "0x005C9880"
+    name: world_find_object_at_tile_by_category
+    confidence: high
+    evidence: "Searches one world tile for the first object whose broad category at +0x2C matches the requested value; B-key pickup requests category 8 ground items."
   - address: "0x005D2DC0"
     name: render_world_set_blinded
     confidence: high
@@ -711,6 +819,10 @@ functions:
     name: world_living_object_refresh_motion
     confidence: medium
     evidence: "Clears one live motion flag, invokes the object's motion refresh virtual, and reapplies its current facing; SMove direction 4 uses this when positions already agree."
+  - address: "0x005E0880"
+    name: world_living_object_set_direction
+    confidence: high
+    evidence: "When facing changes, invokes the living-object transition hook, stores direction at +0x192, and refreshes the directional motion or image state."
   - address: "0x005EEC70"
     name: world_set_view_position
     confidence: high
@@ -719,6 +831,18 @@ functions:
     name: world_get_self_user_object
     confidence: high
     evidence: "Looks up the saved self object ID and RTTI-casts the result to WorldObject_User."
+  - address: "0x005EF620"
+    name: ui_world_pane_handle_inventory_drop
+    confidence: high
+    evidence: "Converts a dragged inventory item's pointer position to a bounded map tile and dispatches it to InvItemPane; it does not compare the tile with the player's position."
+  - address: "0x005EF790"
+    name: ui_world_pane_handle_drop_event
+    confidence: high
+    evidence: "Routes a dragged-pane drop through eligible child panes, then handles an unconsumed inventory-item drop against the world map."
+  - address: "0x005F0900"
+    name: ui_world_pane_request_change_direction
+    confidence: high
+    evidence: "Applies the requested direction to the local WorldObject_User immediately, then sends CChangeDirection."
   - address: "0x005F09E0"
     name: map_try_move_local_player
     confidence: high
@@ -727,6 +851,10 @@ functions:
     name: input_map_key_to_world_direction
     confidence: high
     evidence: "Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3."
+  - address: "0x005F0C40"
+    name: ui_world_pane_handle_direction_input
+    confidence: high
+    evidence: "Turns with CChangeDirection when requested facing differs; otherwise attempts one tile of movement. Keyboard and pointer paths call this helper."
   - address: "0x005F0D20"
     name: ui_world_pane_handle_keyboard_event
     confidence: high
@@ -783,18 +911,26 @@ functions:
     name: net_handle_draw_human_objects_server_packet
     confidence: high
     evidence: "Creates or refreshes WorldObject_User for the saved self ID and WorldObject_Human otherwise, applies normal or disguised appearance, updates names and optional group ads, and handles Darkness object lights."
+  - address: "0x005F3BB0"
+    name: net_handle_change_direction_server_packet
+    confidence: high
+    evidence: "Finds SChangeDirection.user_id, requests CRequestObject when absent, and applies direction only after an RTTI cast to WorldObject_Living."
   - address: "0x005F3E00"
     name: net_handle_say_server_packet
     confidence: high
     evidence: "Shows SSay text as a three-second balloon on its world object without appending to persistent history."
-  - address: "0x005F4430"
-    name: net_send_put_ground
+  - address: "0x005F4200"
+    name: net_send_get
     confidence: high
-    evidence: "Builds opcode 0x0C with one u32 value."
+    evidence: "Builds CGet as opcode 0x07, u8 destination slot, u16 X, and u16 Y."
+  - address: "0x005F4430"
+    name: net_send_request_object
+    confidence: high
+    evidence: "Builds CRequestObject as opcode 0x0C plus one u32 object ID; confirmed callers use it after a lookup misses or an expected living-object cast fails."
   - address: "0x005F4510"
     name: net_send_change_direction
     confidence: high
-    evidence: "WorldPane paths call this opcode 0x11 direction builder."
+    evidence: "Builds CChangeDirection as opcode 0x11 plus one direction byte after WorldPane turns the local object optimistically."
   - address: "0x005F4580"
     name: net_send_move
     confidence: high
@@ -855,6 +991,10 @@ functions:
     name: session_world_user_func_ctor
     confidence: high
     evidence: "Constructs exact RTTI class WorldUserFunc and clears its fixed inventory, spell, and skill arrays."
+  - address: "0x005FC900"
+    name: session_find_first_empty_inventory_slot
+    confidence: high
+    evidence: "Returns the first absent inventory record in slots 1 through 60, or 0 when every slot is occupied."
   - address: "0x005FCBB0"
     name: session_store_inventory_entry
     confidence: high
@@ -1023,6 +1163,58 @@ comments:
     text: "A nonzero can_stack flag replaces the visible name with the bounded format name[ quantity ]."
   - address: "0x00495E9F"
     text: "InvItemPane retains maximum durability at +0x238, current durability at +0x23C, quantity at +0x240, and can_stack at +0x244."
+  - address: "0x0049667B"
+    text: "Construct DraggedInvItemPane with the selected inventory item kind and one-based source slot."
+  - address: "0x00496826"
+    text: "A zero quantity cancels the pending item drop without sending CDrop."
+  - address: "0x0049695A"
+    text: "Inventory slot 60 takes the separate DropGoldDialogPane path instead of CDrop."
+  - address: "0x004969E0"
+    text: "Open quantity input only when the source item's stored quantity is greater than one."
+  - address: "0x00496B90"
+    text: "A source quantity of zero or one takes the direct CDrop path with quantity one."
+  - address: "0x00496CC2"
+    text: "Begin the 10-byte CDrop plaintext body with opcode 0x08."
+  - address: "0x00496CE5"
+    text: "Write CDrop.source_slot as u8 from InvItemPane +0x214."
+  - address: "0x00496D04"
+    text: "Write CDrop.x as big-endian u16."
+  - address: "0x00496D23"
+    text: "Write CDrop.y as big-endian u16."
+  - address: "0x00496D42"
+    text: "Write CDrop.quantity as the final big-endian u32 field."
+  - address: "0x0049720F"
+    text: "Retain the drag-selected target Y at DropGoldDialogPane +0x630."
+  - address: "0x00497218"
+    text: "Retain the drag-selected target X at DropGoldDialogPane +0x634."
+  - address: "0x00497573"
+    text: "Action 0 submits the amount; action 1 closes the gold-drop dialog without sending."
+  - address: "0x0049762D"
+    text: "A parsed amount of zero skips CDropGold construction and closes the dialog."
+  - address: "0x00497637"
+    text: "Begin the 9-byte CDropGold plaintext body with opcode 0x24."
+  - address: "0x00497652"
+    text: "Write CDropGold.amount as big-endian u32."
+  - address: "0x00497677"
+    text: "Write the drag-selected CDropGold.x as big-endian u16."
+  - address: "0x0049769C"
+    text: "Write the drag-selected CDropGold.y as the final big-endian u16 field."
+  - address: "0x004976CA"
+    text: "Submit the complete 9-byte CDropGold plaintext body."
+  - address: "0x00497F19"
+    text: "Dispatch the dragged inventory-item record and pointer coordinates to the pane under the release point."
+  - address: "0x004981F4"
+    text: "MapItem_Pane event type 2 is the left-button double-click pickup branch."
+  - address: "0x00498225"
+    text: "Ask the inventory model for the first empty slot. Valid pickup destinations are 1 through 60."
+  - address: "0x00498242"
+    text: "Send CGet only when the double-click path found a destination slot in the range 1 through 60."
+  - address: "0x0049859F"
+    text: "Write CGet.destination_slot as u8."
+  - address: "0x004985C4"
+    text: "Write CGet.x as u16 from MapItem_Pane +0x1B4."
+  - address: "0x004985E9"
+    text: "Write CGet.y as u16 from MapItem_Pane +0x1B8. These are the final packet fields."
   - address: "0x004989AE"
     text: "Store the one-based skill slot at SkillInvItemPane +0x312."
   - address: "0x004989BB"
@@ -1051,6 +1243,12 @@ comments:
     text: "CSpellDelaySay is only constructed when total_lines is nonzero. Zero-line casts return without sending opcode 0x4E."
   - address: "0x0049BB79"
     text: "Builds CSpellDelaySay (0x4E) from a configured cast line or the spell name."
+  - address: "0x004B79FC"
+    text: "The immediate CQuit builder writes opcode 0x0B and no phase byte."
+  - address: "0x004B7A27"
+    text: "Submit exactly one CQuit byte. This builder has no state-dependent payload branch."
+  - address: "0x004B7A88"
+    text: "After sending and tearing down the connection, local configuration selects TerminalPane2 startup or WM_CLOSE. No server response field controls this branch."
   - address: "0x004BA957"
     text: "LoginDialogPane action 0 reads attached controls 2 (Name) and 3 (Password) and sends CLogin."
   - address: "0x004BAAB2"
@@ -1101,6 +1299,26 @@ comments:
     text: "CChangePassword body begins with opcode 0x26 followed by u8-length name, existing password, and new password."
   - address: "0x004BC1EA"
     text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
+  - address: "0x005405BB"
+    text: "OptionPane alert type 4 selects exact RTTI SafeQuitAlert."
+  - address: "0x00544174"
+    text: "Begin the SafeQuitAlert request with CQuit opcode 0x0B."
+  - address: "0x00544192"
+    text: "SafeQuitAlert construction appends phase 1 to request safe quit."
+  - address: "0x005441BF"
+    text: "Submit the two-byte CQuit request 0B 01."
+  - address: "0x0054425A"
+    text: "SafeQuitAlert accepts typed SQuit opcode 0x4C from its network-event slot."
+  - address: "0x00544296"
+    text: "Read SQuit's sole parsed field at object +0x10. Only value 1 advances the safe-quit alert."
+  - address: "0x005442BC"
+    text: "Begin the SafeQuitAlert acknowledgement with CQuit opcode 0x0B."
+  - address: "0x005442DA"
+    text: "Append safe-quit phase 0 after the server approves the phase-1 request."
+  - address: "0x00544307"
+    text: "Submit the two-byte CQuit acknowledgement 0B 00."
+  - address: "0x005445EF"
+    text: "OptionPane key codes X and x both route here to construct SafeQuitAlert."
   - address: "0x00575AF2"
     text: "Attack and defense elements are unchecked indexes into a ten-string table. Valid wire values are 0 through 9."
   - address: "0x00575B47"
@@ -1145,6 +1363,10 @@ comments:
     text: "SBadGuy body bytes 1 and 2 are u8 mode and marker byte."
   - address: "0x00597AE6"
     text: "SBadGuy ends with a u32 guard value."
+  - address: "0x00597FF2"
+    text: "Read SChangeDirection.user_id as one big-endian u32. The handler uses it as a general world object ID."
+  - address: "0x00597FF8"
+    text: "Read SChangeDirection.direction as one byte. These are the only fields after the opcode."
   - address: "0x0059810A"
     text: "SChangeHour reads exactly one u8 time step into object +0x10. Any remaining decoded body bytes are left unread."
   - address: "0x0059857C"
@@ -1211,6 +1433,10 @@ comments:
     text: "Read SMove unknown_y as big-endian u16. The only typed SMove handler never reads this field."
   - address: "0x0059A5A4"
     text: "Read the echoed CMove step byte. A match with WorldPane's current rolling step enables the latency sample."
+  - address: "0x0059AD27"
+    text: "Construct exact RTTI SQuit for server opcode 0x4C."
+  - address: "0x0059AD5A"
+    text: "SQuit consumes exactly one u8 after the opcode. The two following zero bytes in the supplied capture are left unread by this deserializer."
   - address: "0x0059AE6A"
     text: "SRemoveEquip body is one u8 slot, widened to u16 in the packet object."
   - address: "0x0059AF7A"
@@ -1289,8 +1515,14 @@ comments:
     text: "Use the same slot mapping for removal before clearing the user-information equipment view."
   - address: "0x005BE58D"
     text: "Only directions 0 through 3 have defined coordinate deltas. Values above 3 do not take an explicit None path and leave the result undefined."
+  - address: "0x005C9953"
+    text: "Match the requested broad-category value against WorldObject +0x2C. B-key pickup passes category 8 for ground items."
+  - address: "0x005E08B3"
+    text: "Store the living object's current facing byte at +0x192 after its old and new directions differ."
   - address: "0x005ED9C6"
     text: "Opcode 0x04 dispatch uses only the deserialized SUserPosition object. Its raw decoded body is not passed to the handler."
+  - address: "0x005EDABC"
+    text: "Dispatch RTTI SChangeDirection opcode 0x11 to net_handle_change_direction_server_packet."
   - address: "0x005EDC2D"
     text: "Dispatch RTTI packet SRemoveSpell opcode 0x18 to net_handle_remove_spell_server_packet."
   - address: "0x005EDC56"
@@ -1305,20 +1537,46 @@ comments:
     text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x1E, 0x58, or 0x67."
   - address: "0x005EE4C8"
     text: "Initialize the rolling CMove step counter to zero. The adjacent send time and last round-trip fields are also initialized to zero."
+  - address: "0x005EF6E0"
+    text: "Convert the world-pane pointer position to map tile coordinates."
+  - address: "0x005EF6E5"
+    text: "Validate only that the converted tile lies inside the current map; this path does not compare it with the player's tile."
+  - address: "0x005EF745"
+    text: "Pack target X in the high word and target Y in the low word for the InvItemPane TimerHandler callback."
+  - address: "0x005EF767"
+    text: "Dispatch the accepted target tile to the source InvItemPane, which handles quantity selection and sends CDrop."
   - address: "0x005F0086"
     text: "Movement bounds compare signed 32-bit coordinates against the u8-derived SMapSize width and height."
   - address: "0x005F00C2"
     text: "Reject movement immediately when WorldUserFunc appearance-state bit 0 is set, before dynamic-object and SOTP collision checks."
+  - address: "0x005F0932"
+    text: "Apply a requested turn to the local WorldObject_User before sending the request."
+  - address: "0x005F093F"
+    text: "Send CChangeDirection as opcode 0x11 followed by one direction byte."
   - address: "0x005F0AF4"
     text: "Normal local movement uses direction-specific dynamic-object and SOTP collision checks. It does not inspect ground tile IDs or search the skillbook for Swimming."
   - address: "0x005F0B74"
     text: "Accepted movement keys map only to Direction values 0 through 3; no diagonal output exists in this table."
+  - address: "0x005F0C81"
+    text: "Directional input turns when the requested direction differs from current facing; matching facing takes the movement path instead."
   - address: "0x005F0DC8"
     text: "Virtual-key 0x09 (Tab) enters the map-overlay path; the later character-class branch selects whether map zoom is enabled."
   - address: "0x005F0DDD"
     text: "NoMap flag 0x40 prevents the Tab-key map overlay path before Rogue zoom permissions are considered."
   - address: "0x005F0EB9"
     text: "Character class 2, Rogue in project protocol vocabulary, selects the Tab map overlay's zoom-enabled configuration. Other classes receive the non-zoomable configuration."
+  - address: "0x005F10B6"
+    text: "Internal key byte 0x62 with no modifiers enters the B-key ground-item pickup path."
+  - address: "0x005F10DA"
+    text: "Throttle B-key pickup attempts to one per 100 ms."
+  - address: "0x005F11E9"
+    text: "Search the player's current tile first for a category-8 ground item."
+  - address: "0x005F121F"
+    text: "If the current tile has no ground item, search one tile forward in the current facing direction."
+  - address: "0x005F12A3"
+    text: "Select the first empty inventory slot in 1 through 60, or 0 when the inventory is full."
+  - address: "0x005F12BE"
+    text: "Send CGet for the coordinates where an item was found. Unlike double-click pickup, this path does not reject destination slot 0."
   - address: "0x005F1A27"
     text: "Only blindness code 08 enables the world blind-render state."
   - address: "0x005F1B5A"
@@ -1399,8 +1657,20 @@ comments:
     text: "Only Darkness map mode 3 applies the SDrawHumanObjects light-mask selector. Positive values attach mask1%02d.epf; zero clears it."
   - address: "0x005F3884"
     text: "Create the packet's group advertisement only when group_ad_text is nonempty and the local GroupObjectOption setting is enabled; otherwise remove it."
+  - address: "0x005F3BF5"
+    text: "Resolve SChangeDirection.user_id through the general world object index."
+  - address: "0x005F3C0E"
+    text: "When the target object is absent, send CRequestObject with the same ID to request its world data."
+  - address: "0x005F3C2D"
+    text: "Require RTTI WorldObject_Living before applying direction. Users, humans, and monsters pass; items do not."
   - address: "0x005F3E77"
     text: "Show the speech balloon on the selected world object for 3,000 ms. This path does not append to persistent message history."
+  - address: "0x005F424E"
+    text: "Write CGet.destination_slot as u8."
+  - address: "0x005F426D"
+    text: "Write CGet.x as u16."
+  - address: "0x005F428C"
+    text: "Write CGet.y as u16. These are the final packet fields."
   - address: "0x005F45CD"
     text: "Increment the rolling u8 CMove step before serializing it. Natural byte overflow wraps 255 to 0."
   - address: "0x005F4602"
@@ -1435,6 +1705,10 @@ comments:
     text: "After successfully closing the marker, call the invalid-memory clearing path to terminate the client."
   - address: "0x005F7A80"
     text: "Marker creation failed, including when it already exists. Write through null to terminate the client."
+  - address: "0x005FC949"
+    text: "Return the first inventory slot from 1 through 60 whose compact session record is absent."
+  - address: "0x005FC952"
+    text: "Return slot 0 when all 60 inventory records are occupied."
   - address: "0x005FCBB9"
     text: "Inventory record address is WorldUserFunc + 0x1092 + (slot - 1) * 0x106."
   - address: "0x005FCBD3"
@@ -1563,7 +1837,7 @@ packet_indexes:
         builder: "0x00498550"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x00498550 writes opcode 0x07 and submits the body."
+        evidence: "Builders 0x00498550 and 0x005F4200 write opcode 0x07, u8 destination slot, u16 X, and u16 Y. MapItem_Pane double click and the unmodified B-key path reach these builders."
         page: "docs/network/client/007-0x07-get.md"
       - opcode: "0x08"
         friendly_name: "Drop"
@@ -1572,7 +1846,7 @@ packet_indexes:
         builder: "0x00496C90"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x00496C90 writes opcode 0x08 and submits the body."
+        evidence: "Builder 0x00496C90 writes opcode 0x08, u8 source slot, u16 X, u16 Y, and u32 quantity. DraggedInvItemPane and WorldPane select a bounded map tile, while InvItemPane prompts for quantities above one."
         page: "docs/network/client/008-0x08-drop.md"
       - opcode: "0x0B"
         friendly_name: "Quit"
@@ -1580,18 +1854,18 @@ packet_indexes:
         transform: static
         builder: "0x004B79C0"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Representative builder 0x004B79C0 writes opcode 0x0B and submits the body."
+        name_confidence: high
+        evidence: "The opcode-only builder sends 0B. Exact RTTI SafeQuitAlert sends 0B 01 on construction, accepts typed SQuit value 1, and acknowledges with 0B 00; a project-owner capture confirms the three-message exchange."
         page: "docs/network/client/011-0x0b-quit.md"
       - opcode: "0x0C"
-        friendly_name: "Put Ground"
-        class_name: "CPutGround"
+        friendly_name: "Request Object"
+        class_name: "CRequestObject"
         transform: derived
         builder: "0x005F4430"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x005F4430 writes opcode 0x0C and submits the body."
-        page: "docs/network/client/012-0x0c-put-ground.md"
+        evidence: "Builder 0x005F4430 writes opcode 0x0C and one u32 object ID. Confirmed callers send it after a lookup misses or an expected living-object cast fails. Project-owner protocol behavior identifies SDrawObjects and SDrawHumanObjects as the type-dependent replies."
+        page: "docs/network/client/012-0x0c-request-object.md"
       - opcode: "0x0D"
         friendly_name: "Block Listen"
         class_name: "CBlockListen"
@@ -1635,7 +1909,7 @@ packet_indexes:
         builder: "0x005F4510"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x005F4510 writes opcode 0x11 and submits the body."
+        evidence: "Builder 0x005F4510 writes opcode 0x11 and one direction byte after WorldPane updates the local WorldObject_User facing."
         page: "docs/network/client/017-0x11-change-direction.md"
       - opcode: "0x13"
         friendly_name: "Attack"
@@ -1706,8 +1980,8 @@ packet_indexes:
         transform: derived
         builder: "0x004975C0"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Representative builder 0x004975C0 writes opcode 0x24 and submits the body."
+        name_confidence: medium
+        evidence: "Builder 0x004975C0 writes opcode 0x24, u32 amount, u16 X, and u16 Y. Project-owner behavior confirms that success places an SDrawObjects item beneath the character with a server-selected gold sprite, while a distant target or insufficient gold produces SMessage."
         page: "docs/network/client/036-0x24-drop-gold.md"
       - opcode: "0x26"
         friendly_name: "Change Password"
@@ -2222,7 +2496,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597FB0 passes opcode 0x11 to the server packet base and installs the SChangeDirection vtable."
+        evidence: "RTTI constructor 0x00597FB0 binds opcode 0x11. Deserializer 0x00597FE0 reads u32 user_id and u8 direction; handler 0x005F3BB0 applies it to the targeted WorldObject_Living or requests missing object data."
         page: "docs/network/server/017-0x11-change-direction.md"
       - opcode: "0x13"
         friendly_name: "Damage Effect"
@@ -2592,7 +2866,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059AD20 passes opcode 0x4C to the server packet base and installs the SQuit vtable."
+        evidence: "Constructor 0x0059AD20 installs exact RTTI SQuit for opcode 0x4C. Its deserializer reads one u8, and SafeQuitAlert treats value 1 as approval before sending CQuit 00; two observed trailing zero bytes are left unread."
         page: "docs/network/server/076-0x4c-quit.md"
       - opcode: "0x50"
         friendly_name: "Manual"

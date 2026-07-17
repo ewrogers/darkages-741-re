@@ -174,6 +174,8 @@ struct MonsterObjectImageSessionLayout741 {
 
 The four creature bytes in [`SDrawObjects`](../../network/server/007-0x07-draw-objects.md) become the `palette_selector` fields. The client first copies each range description from the selected monster resource, then replaces only the selector. `palette_mapping_count` is the smaller of four and the number of ranges declared by that resource.
 
+The `direction` byte belongs to the shared `WorldObject_Living` base. [`SChangeDirection`](../../network/server/017-0x11-change-direction.md) can update it on users, humans, and monsters after an RTTI check. A changed value also refreshes the object's directional motion or image state.
+
 The packet's optional Mundane name does not populate `living_name`. It creates and attaches a separate name pane:
 
 ```c

@@ -19,7 +19,7 @@ Plain packet bodies begin with the command byte. For ordinary client packets, `n
 | [0x07 - Get (`CGet`)](007-0x07-get.md) | session key |
 | [0x08 - Drop (`CDrop`)](008-0x08-drop.md) | session key |
 | [0x0B - Quit (`CQuit`)](011-0x0b-quit.md) | startup key |
-| [0x0C - Put Ground (`CPutGround`)](012-0x0c-put-ground.md) | session key |
+| [0x0C - Request Object (`CRequestObject`)](012-0x0c-request-object.md) | session key |
 | [0x0D - Block Listen (`CBlockListen`)](013-0x0d-block-listen.md) | session key |
 | [0x0E - Say (`CSay`)](014-0x0e-say.md) | session key |
 | [0x0F - Use Spell (`CUseSpell`)](015-0x0f-use-spell.md) | session key |

@@ -85,7 +85,7 @@
   - [0x07 - Get (`CGet`)](network/client/007-0x07-get.md)
   - [0x08 - Drop (`CDrop`)](network/client/008-0x08-drop.md)
   - [0x0B - Quit (`CQuit`)](network/client/011-0x0b-quit.md)
-  - [0x0C - Put Ground (`CPutGround`)](network/client/012-0x0c-put-ground.md)
+  - [0x0C - Request Object (`CRequestObject`)](network/client/012-0x0c-request-object.md)
   - [0x0D - Block Listen (`CBlockListen`)](network/client/013-0x0d-block-listen.md)
   - [0x0E - Say (`CSay`)](network/client/014-0x0e-say.md)
   - [0x0F - Use Spell (`CUseSpell`)](network/client/015-0x0f-use-spell.md)

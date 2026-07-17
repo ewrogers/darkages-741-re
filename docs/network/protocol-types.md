@@ -17,7 +17,7 @@ These are protocol values, not C++ memory layouts. Each value is stored as a `u8
 
 The common coordinate helper defines only values `0` through `3`. Active keyboard and pointer movement also produce only those values. `SMove` handles value `4` separately as a no-step correction signal, so it is not a fifth coordinate direction. The client does not give that control value an enum name.
 
-Used by [`CMove`](client/006-0x06-move.md), [`SMove`](server/011-0x0b-move.md), [`CChangeDirection`](client/017-0x11-change-direction.md), [`SUserAppearance`](server/005-0x05-user-appearance.md), [`SDrawObjects`](server/007-0x07-draw-objects.md), and [`SDrawHumanObjects`](server/051-0x33-draw-human-objects.md).
+Used by [`CMove`](client/006-0x06-move.md), [`SMove`](server/011-0x0b-move.md), [`CChangeDirection`](client/017-0x11-change-direction.md), [`SChangeDirection`](server/017-0x11-change-direction.md), [`SUserAppearance`](server/005-0x05-user-appearance.md), [`SDrawObjects`](server/007-0x07-draw-objects.md), and [`SDrawHumanObjects`](server/051-0x33-draw-human-objects.md).
 
 ## CreatureType
 

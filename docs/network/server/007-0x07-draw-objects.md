@@ -81,6 +81,12 @@ The optional name is not copied into the living object's `+0x112` character buff
 
 After insertion, the handler calls the item's class-specific refresh method. That resolves its cached image and any local ground-item visual state from the sprite and dye. It does not use the discarded bytes.
 
+### Dropped gold
+
+A successful [`CDropGold`](../client/036-0x24-drop-gold.md) returns as an ordinary `WorldObject_Item` record beneath the character. The server chooses the sprite to communicate the relative size of the dropped amount, with observed representations such as a silver coin, gold coin, silver pile, and gold pile.
+
+There is no numeric gold amount in this item record. The client does not choose the visual tier from an amount. It removes the `0x8000` item tag and renders the sprite supplied by the server. The exact amount thresholds and sprite IDs for the observed representations remain unconfirmed.
+
 ## World state
 
 Creature and item creation follows the same identity rules as human objects:
