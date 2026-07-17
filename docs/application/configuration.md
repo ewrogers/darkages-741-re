@@ -86,3 +86,11 @@ See [Initial connection](../network/connection.md) for the network side of this 
 `Darkages.cfg` stores `Sound Volume` and `Music Volume` as user levels. A new configuration starts both at `3`. The options pane limits them to `0` through `10`, while the audio manager multiplies each value by `20` before passing it to Miles.
 
 See [Audio system](../audio/README.md) for playback and fade behavior.
+
+## Saved game settings
+
+Six rows in the Game Settings dialog belong to the client. They live in the global `AppConfig` object and are written to `Darkages.cfg` when the dialog closes normally. The current configuration format, version `0x2600`, saves all six keys.
+
+The other seven rows are server-managed. Their `ON` or `OFF` text is returned through `SMessage` and is not copied into `AppConfig` or written to the local file.
+
+See [Game settings](../systems/game-settings.md) for the memory fields, file keys, packet flow, and later consumers.

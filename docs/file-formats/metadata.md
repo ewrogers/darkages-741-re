@@ -60,6 +60,22 @@ build_metadata(groups):
 
 The cache filename and inventory name must agree. A server also needs to advertise the new CRC so the client knows whether to request the replacement.
 
+## Item, skill, and spell denial tables
+
+The RTTI-backed `DeniedItemList` is one consumer of this metadata system. It creates three empty runtime lookup containers and subscribes to these hardcoded table names:
+
+- `BItems`
+- `BSkills`
+- `BSpells`
+
+If `MetaTableManager` is not ready when the list is constructed, the client retries the subscriptions after one second. A valid cached table can be applied locally. A missing or stale table follows the normal `SMetaData` inventory, `CMetaData` request, and `SMetaData` payload flow described above.
+
+Applying a table replaces the current in-memory lists and routes rows tagged `Item`, `Skill`, or `Spell` into the matching lookup. Item activation, skill activation, and spell activation consult their respective list before sending the normal action packet.
+
+The executable hardcodes the three metadata names and the parser, but not the individual denial entries. The server can replace the entries by advertising a new CRC and supplying a new table payload.
+
+The inspected installation has 19 cached metadata files but no `BItems`, `BSkills`, or `BSpells` file. No supplied capture contains one of these table names. In that state the three runtime lists begin empty and do not block an action.
+
 ## Evidence
 
 - `net_handle_metadata` at `0x004E4EA0`

@@ -11,7 +11,9 @@
 
 The client sends this message for **group**.
 
-The builder writes opcode `0x2E`, action `2`, and a length-prefixed user name taken from the owning dialog. This protocol uses “group,” not “party.”
+The known builders write opcode `0x2E`, an action byte, and a length-prefixed user name. This protocol uses “group,” not “party.”
+
+Action `2` comes from the User Look dialog path. Action `3` is sent automatically after an incoming [`SGroup`](../server/099-0x63-group.md) request when the local `GroupAnswer` setting is enabled. The exact server meaning of action `3` still needs a paired capture.
 
 The client has no derived packet RTTI for this name.
 
@@ -19,14 +21,15 @@ The client has no derived packet RTTI for this name.
 
 Known static callers lead to:
 
-- UI or subsystem owner not known yet
+- the User Look dialog
+- the `SGroup` handler's automatic answer path
 
 ## Body
 
 ```text
 packet CGroup {
     u8      opcode                    // 0x2E
-    u8      action                    // 2 in this builder
+    u8      action                    // observed: 2 or 3
     u8      name_length
     bytes   name[name_length]
 }

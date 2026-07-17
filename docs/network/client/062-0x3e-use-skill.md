@@ -1,6 +1,6 @@
 # Use Skill (`CUseSkill`)
 
-`CUseSkill` activates the skill in one skillbook slot. `SkillInvItemPane` uses the one-based slot originally supplied by `SAddSkill`.
+`CUseSkill` activates the skill in one skillbook slot. `SkillInvItemPane` sends the one-based slot originally supplied by `SAddSkill`.
 
 | Item | Value |
 | --- | --- |
@@ -8,7 +8,7 @@
 | Command | `0x3E` (62) |
 | Transform | derived |
 | UI owner | RTTI class `SkillInvItemPane` |
-| Name provenance | Related class vocabulary matched to the locally confirmed builder |
+| Name provenance | Project-owner protocol vocabulary, confirmed by the local builder |
 
 ## Body
 
@@ -21,4 +21,12 @@ packet CUseSkill {
 
 `net_send_use_skill` writes the two meaningful bytes. The common submission helper supplies the encrypted client packet's trailing zero.
 
-The normal activation path checks two item-state flags before sending. Their exact game-facing meanings remain unresolved. The paired skill definition is [Add Skill (`SAddSkill`)](../server/044-0x2c-add-skill.md).
+## Local checks
+
+The normal activation path checks two skill-item state bytes before sending. Their exact game-facing meanings remain unresolved.
+
+It then looks up the skill name in `DeniedItemList` mode 1. This object subscribes to the server-managed `BItems`, `BSkills`, and `BSpells` metadata names, then routes rows tagged `Skill` into this lookup. The names of denied skills are not hardcoded. A match suppresses `CUseSkill` locally. The current 19-file metadata cache contains none of those three tables, so this check has no entries unless the server advertises and supplies one.
+
+This is only a client-side restriction. The server must still decide whether the skill can be used and apply its effect.
+
+The paired skill definition is [Add Skill (`SAddSkill`)](../server/044-0x2c-add-skill.md). Metadata delivery is described in [Metadata](../../file-formats/metadata.md).

@@ -19,6 +19,10 @@ functions:
     name: ui_legend_dialog_apply_self_look
     confidence: high
     evidence: "Clears and rebuilds the older LegendDialogPane list from SSelfLook's fixed-size legend records."
+  - address: "0x00432340"
+    name: app_save_config
+    confidence: high
+    evidence: "Writes Darkages.cfg in text mode. Version 0x2600 includes the six client-owned Game Settings keys."
   - address: "0x0043C370"
     name: ui_create_user_dialog_ctor
     confidence: high
@@ -95,6 +99,10 @@ functions:
     name: ui_inventory_remove_slot
     confidence: high
     evidence: "Releases the live InvItemPane for a one-based inventory slot and clears its direct pointer entry."
+  - address: "0x00490960"
+    name: ui_inventory_activate_slot
+    confidence: high
+    evidence: "Converts a one-based slot to InventoryPane_A's direct InvItemPane pointer entry and activates the item when that entry is live."
   - address: "0x004909E0"
     name: ui_inventory_add_item_from_packet
     confidence: high
@@ -199,6 +207,18 @@ functions:
     name: net_send_drop
     confidence: high
     evidence: "Builds CDrop as opcode 0x08, source slot, target X, target Y, and u32 quantity."
+  - address: "0x00496E70"
+    name: ui_inventory_item_activate
+    confidence: high
+    evidence: "InvItemPane activation wrapper reaches the shared CUse sender used by pointer and number-key activation."
+  - address: "0x00496E90"
+    name: net_send_use_inventory_item
+    confidence: high
+    evidence: "Checks the item denial list, then builds CUse as opcode 0x1C followed by the one-byte slot retained from SAddInventory."
+  - address: "0x00496F30"
+    name: ui_inventory_item_is_denied
+    confidence: high
+    evidence: "Copies the InvItemPane name and checks the RTTI-backed DeniedItemList item table; a match suppresses CUse locally."
   - address: "0x004971B0"
     name: ui_drop_gold_dialog_ctor
     confidence: high
@@ -243,6 +263,10 @@ functions:
     name: net_send_use_skill
     confidence: high
     evidence: "Builds CUseSkill as opcode 0x3E followed by the one-byte slot retained from SAddSkill."
+  - address: "0x004994C0"
+    name: ui_skill_is_denied
+    confidence: high
+    evidence: "Looks up the skill name in DeniedItemList mode 1 before CUseSkill construction; a match suppresses the packet."
   - address: "0x00499DE0"
     name: ui_spell_inventory_item_ctor
     confidence: high
@@ -263,6 +287,26 @@ functions:
     name: ui_spell_open_number_inputs
     confidence: high
     evidence: "Opens NumberArgsSpellInputPane for one through four numeric values selected by spell argument types 7, 6, 4, and 3."
+  - address: "0x0049AB60"
+    name: net_build_use_spell_target
+    confidence: high
+    evidence: "Builds CUseSpell as opcode, slot, u32 target ID, u16 X, and u16 Y, then queues the completed body for casting."
+  - address: "0x0049AC90"
+    name: ui_spell_is_denied
+    confidence: high
+    evidence: "Looks up the spell name in DeniedItemList mode 2 before any cast delay starts; a match suppresses the cast."
+  - address: "0x0049AD40"
+    name: net_build_use_spell_no_args
+    confidence: high
+    evidence: "Builds the slot-only CUseSpell form and queues the completed two-byte body for casting."
+  - address: "0x0049B190"
+    name: ui_spell_text_input_submit
+    confidence: high
+    evidence: "Builds the CUseSpell text form as opcode, slot, and unprefixed raw text bytes after a nonempty input is submitted."
+  - address: "0x0049B380"
+    name: ui_spell_numeric_input_submit
+    confidence: high
+    evidence: "Builds the numeric CUseSpell form as opcode, slot, and one through four big-endian u16 values selected by spell argument type."
   - address: "0x0049B6F0"
     name: ui_spell_delay_control_pane_ctor
     confidence: high
@@ -383,10 +427,42 @@ functions:
     name: ui_option_pane_create_alert
     confidence: high
     evidence: "OptionPane alert factory selects five alert classes; type 4 allocates and constructs exact RTTI SafeQuitAlert."
+  - address: "0x00541D20"
+    name: ui_game_setting_apply_local
+    confidence: high
+    evidence: "Builds or toggles client-owned setting IDs 7 and 9 through 13 using fields in the global AppConfig object."
+  - address: "0x00542370"
+    name: ui_game_setting_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI GameSettingDialog from _nsett.txt, attaches 13 setting controls, and requests server settings with CUserSetting ID 0."
+  - address: "0x00542BA0"
+    name: ui_game_setting_dialog_handle_network_event
+    confidence: high
+    evidence: "GameSettingDialog decoded-packet event handler routes SMessage opcode 0x0A to its dialog-specific handler."
+  - address: "0x00542C30"
+    name: ui_game_setting_dialog_handle_message
+    confidence: high
+    evidence: "Accepts SMessage type 0x07 and passes its counted text to the Game Settings response parser."
+  - address: "0x00542C60"
+    name: ui_game_setting_dialog_activate
+    confidence: high
+    evidence: "Sends CUserSetting for server-owned rows and changes AppConfig locally for client-owned rows."
+  - address: "0x00542D50"
+    name: ui_game_setting_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Maps number keys 1 through 9 and 0 to setting IDs 1 through 10."
+  - address: "0x00542DC0"
+    name: ui_game_setting_dialog_handle_action
+    confidence: high
+    evidence: "Dispatches the 13 row actions and calls app_save_config on normal dialog close."
   - address: "0x00542E60"
     name: net_send_user_setting
     confidence: high
-    evidence: "OptionPane and GameSettingDialog call this opcode 0x1B builder."
+    evidence: "Builds the fixed two-byte CUserSetting body from opcode 0x1B and one setting ID."
+  - address: "0x005430D0"
+    name: ui_game_setting_dialog_apply_message_text
+    confidence: high
+    evidence: "Parses SMessage type 0x07 text as an ASCII-discriminated full setting list or single-row replacement."
   - address: "0x00544100"
     name: ui_safe_quit_alert_ctor
     confidence: high
@@ -835,6 +911,10 @@ functions:
     name: ui_gui_back_pane_set_network_latency
     confidence: high
     evidence: "Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region."
+  - address: "0x005A2D90"
+    name: ui_game_interface_activate_number_key
+    confidence: high
+    evidence: "Routes number keys by the selected GUIBackPane mode; item mode maps keys 1 through 9 and 0 to inventory slots 1 through 10."
   - address: "0x005A9DA0"
     name: ui_report_movement_round_trip
     confidence: high
@@ -978,7 +1058,7 @@ functions:
   - address: "0x005F09E0"
     name: map_try_move_local_player
     confidence: high
-    evidence: "Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before moving locally and sending CMove."
+    evidence: "Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision, selects the ScrollLevel-controlled local walk sequence, and sends CMove."
   - address: "0x005F0B50"
     name: input_map_key_to_world_direction
     confidence: high
@@ -1103,6 +1183,14 @@ functions:
     name: net_handle_bad_guy_server_packet
     confidence: high
     evidence: "Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths."
+  - address: "0x005F8620"
+    name: net_send_group_automatic_response
+    confidence: high
+    evidence: "Builds CGroup opcode 0x2E, action 3, and a length-prefixed user string for the GroupAnswer automatic path."
+  - address: "0x005F8720"
+    name: net_handle_group_server_packet
+    confidence: high
+    evidence: "Handles SGroup by either opening the normal prompt or immediately sending CGroup action 3 according to AppConfig GroupAnswer."
   - address: "0x005F9E50"
     name: ui_world_pane_get_local_action_state
     confidence: high
@@ -1205,6 +1293,8 @@ comments:
     text: "Only process the parcel/mail indicator when the SStatus 0x01 state is valid for this modifiers update."
   - address: "0x0041BB95"
     text: "A nonzero high nibble of the mail-state byte starts the flashing new-mail indicator; zero stops it."
+  - address: "0x0042D862"
+    text: "Read AppConfig MonsterSayRecordMode before monster speech enters the message recording path."
   - address: "0x0043D8AF"
     text: "Japan mode 13 CNewUser variant begins with opcode 0x02 and appends app_japan_distribution_isp_selector as u16 after the three length-prefixed strings."
   - address: "0x0043DAE6"
@@ -1241,6 +1331,10 @@ comments:
     text: "Convert the one-based inventory slot to InventoryPane_A's direct pointer entry at +0x1A0."
   - address: "0x00490813"
     text: "Clear the inventory slot pointer after releasing and destroying its live InvItemPane."
+  - address: "0x00490969"
+    text: "Convert the one-based inventory slot to InventoryPane_A's direct InvItemPane pointer entry."
+  - address: "0x00490993"
+    text: "Activate the live InvItemPane for this numeric inventory slot."
   - address: "0x004909EC"
     text: "The inventory UI accepts SAddInventory slots 1 through 60 and ignores values outside that range."
   - address: "0x00490A23"
@@ -1299,6 +1393,8 @@ comments:
     text: "A nonzero can_stack flag replaces the visible name with the bounded format name[ quantity ]."
   - address: "0x00495E9F"
     text: "InvItemPane retains maximum durability at +0x238, current durability at +0x23C, quantity at +0x240, and can_stack at +0x244."
+  - address: "0x004965A1"
+    text: "InvItemPane pointer event type 2 is the left-button double-click activation path and reaches CUse."
   - address: "0x0049667B"
     text: "Construct DraggedInvItemPane with the selected inventory item kind and one-based source slot."
   - address: "0x00496826"
@@ -1319,6 +1415,16 @@ comments:
     text: "Write CDrop.y as big-endian u16."
   - address: "0x00496D42"
     text: "Write CDrop.quantity as the final big-endian u32 field."
+  - address: "0x00496EA7"
+    text: "Consult the RTTI DeniedItemList item table before sending; a match suppresses CUse."
+  - address: "0x00496EC0"
+    text: "Begin the exact two-byte CUse plaintext body with opcode 0x1C."
+  - address: "0x00496EDB"
+    text: "Read CUse.slot from the one-based inventory slot retained at InvItemPane +0x214."
+  - address: "0x00496F11"
+    text: "Submit the complete two-byte CUse plaintext body."
+  - address: "0x00496F96"
+    text: "Check the item-name denial list; a matching entry consumes activation locally."
   - address: "0x0049720F"
     text: "Retain the drag-selected target Y at DropGoldDialogPane +0x630."
   - address: "0x00497218"
@@ -1357,12 +1463,26 @@ comments:
     text: "Store the skill icon at SkillInvItemPane +0x190."
   - address: "0x004989D4"
     text: "Copy the skill name into the 128-byte UI buffer at SkillInvItemPane +0x192."
+  - address: "0x00499437"
+    text: "Check DeniedItemList mode 1 before constructing CUseSkill. A matching server-managed skill entry suppresses the packet."
   - address: "0x00499450"
     text: "Build CUseSkill opcode 0x3E."
   - address: "0x00499473"
     text: "CUseSkill carries the one-byte slot stored by SAddSkill."
   - address: "0x0049A6A9"
-    text: "Dispatches spell activation by spell_args_type: string, target, numeric fields, or no argument."
+    text: "Dispatch by the spell_args_type supplied by SAddSpell. This selector is not transmitted in CUseSpell."
+  - address: "0x0049AB9A"
+    text: "Begin the target form of CUseSpell with opcode 0x0F."
+  - address: "0x0049ABDF"
+    text: "Append target_id as u32, followed by target_x and target_y as u16 values."
+  - address: "0x0049AD7A"
+    text: "Build the no-argument CUseSpell form as opcode 0x0F followed only by its one-byte slot."
+  - address: "0x0049B20E"
+    text: "Build the text CUseSpell form as opcode and slot followed by raw text bytes without a length field."
+  - address: "0x0049B583"
+    text: "Build the numeric CUseSpell form as opcode and slot followed by the configured number of big-endian u16 values."
+  - address: "0x0049B62F"
+    text: "Append one numeric spell argument as a big-endian u16. The packet carries no argument count."
   - address: "0x0049B897"
     text: "Each timer tick advances one cast line; the final tick submits the queued CUseSpell."
   - address: "0x0049B94D"
@@ -1437,6 +1557,20 @@ comments:
     text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
   - address: "0x005405BB"
     text: "OptionPane alert type 4 selects exact RTTI SafeQuitAlert."
+  - address: "0x00542AD6"
+    text: "Request the complete server-managed settings list with CUserSetting setting_id 0."
+  - address: "0x00542C8A"
+    text: "Consult the 13-entry ownership table. Nonzero entries are server-managed; zero entries use local AppConfig fields."
+  - address: "0x00542CB7"
+    text: "Send the selected server-managed setting ID through CUserSetting."
+  - address: "0x005430F4"
+    text: "Treat the first SMessage type 0x07 text byte as an ASCII discriminator rather than visible row text."
+  - address: "0x00543113"
+    text: "ASCII 1 through 9 selects one row update. Other values enter full-list mode; supplied captures use ASCII 0."
+  - address: "0x00543223"
+    text: "Skip replacing a client-owned row while still consuming its tab-delimited token so later row IDs remain aligned."
+  - address: "0x00543264"
+    text: "Mark the server-managed row ready after applying its full-list token."
   - address: "0x00544174"
     text: "Begin the SafeQuitAlert request with CQuit opcode 0x0B."
   - address: "0x00544192"
@@ -1709,6 +1843,12 @@ comments:
     text: "Choose one of four network indicator images from raw movement round-trip thresholds 250, 350, and 450 ms. No averaging is applied."
   - address: "0x005A2B8F"
     text: "Store the latest matching movement round-trip value in GUIBackPane and invalidate the active network-indicator rectangle."
+  - address: "0x005A2D9D"
+    text: "Map the 0 number key to logical slot 10."
+  - address: "0x005A2DDB"
+    text: "When the item inventory mode is selected, number keys activate inventory slots 1 through 10."
+  - address: "0x005A534B"
+    text: "When SkillSpellSelectByToggle is enabled, repeated selection alternates paired skill and spell pane choices instead of selecting the fixed defaults."
   - address: "0x005B10D3"
     text: "UserInfoPane maps wire slots through a 19-entry table: slot 0 -> -1; slots 1..18 -> view indices 0..17."
   - address: "0x005B1138"
@@ -1767,6 +1907,8 @@ comments:
     text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x1E, 0x58, or 0x67."
   - address: "0x005EE4C8"
     text: "Initialize the rolling CMove step counter to zero. The adjacent send time and last round-trip fields are also initialized to zero."
+  - address: "0x005EF2CB"
+    text: "When UserClickMode is enabled for a clicked user object, skip the normal CRequestObjectInfo subtype 1 request."
   - address: "0x005EF6E0"
     text: "Convert the world-pane pointer position to map tile coordinates."
   - address: "0x005EF6E5"
@@ -1785,6 +1927,8 @@ comments:
     text: "Send CChangeDirection as opcode 0x11 followed by one direction byte."
   - address: "0x005F0AF4"
     text: "Normal local movement uses direction-specific dynamic-object and SOTP collision checks. It does not inspect ground tile IDs or search the skillbook for Swimming."
+  - address: "0x005F0B0B"
+    text: "ScrollLevel zero selects four 114 ms local walk ticks; nonzero selects eight 57 ms ticks. Both sequences total 456 ms, and CMove is sent afterward through the same path."
   - address: "0x005F0B74"
     text: "Accepted movement keys map only to Direction values 0 through 3; no diagonal output exists in this table."
   - address: "0x005F0C81"
@@ -1907,6 +2051,8 @@ comments:
     text: "Other-player names are copied into WorldObject_Human +0x112. The common name-pane path also receives the raw name_style byte."
   - address: "0x005F3826"
     text: "Only Darkness map mode 3 applies the SDrawHumanObjects light-mask selector. Positive values attach mask1%02d.epf; zero clears it."
+  - address: "0x005F387D"
+    text: "Require AppConfig GroupObjectOption before creating the optional group advertisement object from SDrawHumanObjects."
   - address: "0x005F3884"
     text: "Create the packet's group advertisement only when group_ad_text is nonempty and the local GroupObjectOption setting is enabled; otherwise remove it."
   - address: "0x005F3BF5"
@@ -1959,6 +2105,10 @@ comments:
     text: "After successfully closing the marker, call the invalid-memory clearing path to terminate the client."
   - address: "0x005F7A80"
     text: "Marker creation failed, including when it already exists. Write through null to terminate the client."
+  - address: "0x005F8620"
+    text: "Build CGroup as opcode 0x2E, action 3, and a length-prefixed user string for the automatic GroupAnswer path."
+  - address: "0x005F87C9"
+    text: "A nonzero AppConfig GroupAnswer skips the prompt dialog and immediately sends CGroup action 3."
   - address: "0x005FC949"
     text: "Return the first inventory slot from 1 through 60 whose compact session record is absent."
   - address: "0x005FC952"
@@ -2142,10 +2292,10 @@ packet_indexes:
         friendly_name: "Use Spell"
         class_name: "CUseSpell"
         transform: derived
-        builder: "0x00428690"
+        builder: "0x0049AD40"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Representative builder 0x00428690 writes opcode 0x0F and submits the body."
+        name_confidence: high
+        evidence: "Project-owner protocol vocabulary identifies CUseSpell. SpellInvItemPane builds slot-only, target, text, and one-to-four-u16 forms; the spell_args_type retained from SAddSpell selects the form but is not transmitted."
         page: "docs/network/client/015-0x0f-use-spell.md"
       - opcode: "0x10"
         friendly_name: "Transfer Server"
@@ -2198,8 +2348,8 @@ packet_indexes:
         transform: derived
         builder: "0x00542E60"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "OptionPane and GameSettingDialog call builder 0x00542E60 with request and setting identifiers."
+        name_confidence: high
+        evidence: "GameSettingDialog sends fixed two-byte bodies. ID 0 requests the list; server-owned IDs 1 through 6 and 8 request a toggle. Client-owned IDs 7 and 9 through 13 never use this packet."
         page: "docs/network/client/027-0x1b-user-setting.md"
       - opcode: "0x1C"
         friendly_name: "Use"
@@ -2207,8 +2357,8 @@ packet_indexes:
         transform: derived
         builder: "0x00496E90"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Representative builder 0x00496E90 writes opcode 0x1C and submits the body."
+        name_confidence: high
+        evidence: "InvItemPane activation checks DeniedItemList, then builder 0x00496E90 submits exactly opcode 0x1C and the one-based slot retained from SAddInventory."
         page: "docs/network/client/028-0x1c-use.md"
       - opcode: "0x1D"
         friendly_name: "Emotion"
@@ -2280,7 +2430,7 @@ packet_indexes:
         builder: "0x00462DC0"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x00462DC0 writes opcode 0x2E and submits the body."
+        evidence: "Builder 0x00462DC0 sends action 2 from UserLookPane. The SGroup handler uses builder 0x005F8620 to send action 3 automatically when local GroupAnswer is enabled. Both carry a length-prefixed user name."
         page: "docs/network/client/046-0x2e-group.md"
       - opcode: "0x2F"
         friendly_name: "Group Toggle"
@@ -2351,8 +2501,8 @@ packet_indexes:
         transform: derived
         builder: "0x00499420"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "SkillInvItemPane builder 0x00499420 writes opcode 0x3E followed by the one-byte slot originally supplied by SAddSkill."
+        name_confidence: high
+        evidence: "Project-owner protocol vocabulary identifies CUseSkill. SkillInvItemPane builder 0x00499420 writes opcode 0x3E followed by the one-byte slot originally supplied by SAddSkill; DeniedItemList mode 1 can suppress it."
         page: "docs/network/client/062-0x3e-use-skill.md"
       - opcode: "0x3F"
         friendly_name: "Field Map"
@@ -2379,7 +2529,7 @@ packet_indexes:
         builder: "0x004CD350"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x004CD350 writes opcode 0x43 and submits the body."
+        evidence: "Builders 0x004CD350 and 0x005F4730 write opcode 0x43, subtype 1, and a u32 object ID. UserClickMode can suppress the WorldPane user-click path."
         page: "docs/network/client/067-0x43-request-object-info.md"
       - opcode: "0x44"
         friendly_name: "Remove Equipment"
@@ -3210,7 +3360,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x005994C0 passes opcode 0x63 to the server packet base and installs the SGroup vtable."
+        evidence: "Constructor 0x005994C0 installs RTTI SGroup opcode 0x63. Handler 0x005F8720 opens a group prompt or sends CGroup action 3 immediately according to local GroupAnswer."
         page: "docs/network/server/099-0x63-group.md"
       - opcode: "0x64"
         friendly_name: "Mini Game"

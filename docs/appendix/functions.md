@@ -10,6 +10,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | --- | --- | --- | --- |
 | `app_detect_bad_guy_marker` | `0x00431ED0` | high | Reconstructs %SystemRoot%\System32\Mscfg.dll and sets config +0x668 from file existence alone. |
 | `app_config_ctor` | `0x00431FF0` | high | Constructs Config, loads Darkages.cfg, selects a distribution mode, and dispatches endpoint initialization. |
+| `app_save_config` | `0x00432340` | high | Writes Darkages.cfg in text mode. |
 | `app_configure_unitel_distribution` | `0x00433B40` | high | Empty dormant mode 2 initializer selected by Unitel.nfo in the unreferenced marker scanner. |
 | `app_get_distribution_mode` | `0x00434EB0` | high | Caches and returns the distribution mode selected by app_select_distribution_mode. |
 | `app_select_distribution_mode` | `0x00434EF0` | high | Returns the constant distribution mode 1 in this target. |
@@ -177,6 +178,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_inventory_pane_handle_network_event` | `0x004900C0` | high | InventoryPane_A and derived ItemInventoryPane route SAddInventory, SRemoveInventory, and SStatus to their local update paths. |
 | `ui_inventory_create_item` | `0x00490540` | high | Allocates a 0x248-byte RTTI InvItemPane, inserts it into one of 60 inventory slots, and passes all SAddInventory item fields to its constructor. |
 | `ui_inventory_remove_slot` | `0x004907A0` | high | Releases the live InvItemPane for a one-based inventory slot and clears its direct pointer entry. |
+| `ui_inventory_activate_slot` | `0x00490960` | high | Converts a one-based slot to InventoryPane_A's direct InvItemPane pointer entry and activates the item when that entry is live. |
 | `ui_inventory_add_item_from_packet` | `0x004909E0` | high | Accepts SAddInventory slots 1 through 60, replaces an occupied UI slot, and creates a new InvItemPane from the decoded fields. |
 | `ui_inventory_remove_item_from_packet` | `0x00490D30` | high | Accepts SRemoveInventory slots 1 through 60 and removes the matching live InvItemPane when present. |
 | `ui_inventory_update_gold_from_status_packet` | `0x00490F10` | high | Copies SStatus gold into the inventory pane and redraws its currency display. |
@@ -202,6 +204,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_inventory_item_submit_drop_quantity` | `0x00496820` | high | Numeric-input callback sends the saved CDrop target and source item only when the submitted u32 quantity is nonzero. |
 | `ui_inventory_item_send_drop` | `0x00496890` | high | InvItemPane virtual sender forwards target Y, target X, and quantity to the concrete CDrop builder. |
 | `ui_inventory_item_handle_timer` | `0x004968E0` | high | TimerHandler callback for InvItemPane opens quantity input for stacks above one or sends quantity one directly for a world drop. |
+| `ui_inventory_item_activate` | `0x00496E70` | high | InvItemPane activation wrapper reaches the shared CUse sender used by pointer and number-key activation. |
+| `ui_inventory_item_is_denied` | `0x00496F30` | high | Copies the InvItemPane name and checks the RTTI-backed DeniedItemList item table; a match suppresses CUse locally. |
 | `ui_drop_gold_dialog_ctor` | `0x004971B0` | high | Constructs exact RTTI class DropGoldDialogPane, retains the drag-selected Y and X, builds the _nmoney.txt controls, and focuses the amount input. |
 | `ui_drop_gold_dialog_handle_action` | `0x00497560` | high | DropGoldDialogPane action 0 parses and submits CDropGold; action 1 closes the dialog without sending. |
 | `ui_dragged_inventory_item_pane_ctor` | `0x00497C30` | high | Constructs exact RTTI class DraggedInvItemPane and retains the dragged item kind, inventory slot, and owner pane. |
@@ -210,11 +214,15 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_map_item_pane_handle_timer` | `0x00498400` | high | TimerHandler callback for MapItem_Pane; resolves an inventory slot when needed and sends CGet through the pane-owned builder. |
 | `ui_skill_inventory_item_ctor` | `0x00498940` | high | Constructs exact RTTI class SkillInvItemPane and retains the SAddSkill icon, name, and one-based slot. |
 | `ui_skill_inventory_activate` | `0x004992F0` | high | Checks SkillInvItemPane state, sends any configured skill text, and reaches the CUseSkill sender. |
+| `ui_skill_is_denied` | `0x004994C0` | high | Looks up the skill name in DeniedItemList mode 1 before CUseSkill construction; a match suppresses the packet. |
 | `ui_spell_inventory_item_ctor` | `0x00499DE0` | high | Constructs exact RTTI class SpellInvItemPane and retains slot, icon, argument type, 128-byte name and prompt buffers, and cast_lines. |
 | `ui_spell_begin_target_selection` | `0x0049A4E0` | high | Handles spell argument type 2 by creating a DraggedSpellInvItemPane for target selection. |
 | `ui_spell_inventory_activate` | `0x0049A670` | high | Dispatches SpellInvItemPane activation by argument types 1 through 7; type 8 is not handled in this switch. |
 | `ui_spell_open_string_input` | `0x0049A720` | high | Handles spell argument type 1 by opening RTTI class StringSpellInputPane with the SAddSpell prompt. |
 | `ui_spell_open_number_inputs` | `0x0049A950` | high | Opens NumberArgsSpellInputPane for one through four numeric values selected by spell argument types 7, 6, 4, and 3. |
+| `ui_spell_is_denied` | `0x0049AC90` | high | Looks up the spell name in DeniedItemList mode 2 before any cast delay starts; a match suppresses the cast. |
+| `ui_spell_text_input_submit` | `0x0049B190` | high | Builds the CUseSpell text form as opcode, slot, and unprefixed raw text bytes after a nonempty input is submitted. |
+| `ui_spell_numeric_input_submit` | `0x0049B380` | high | Builds the numeric CUseSpell form as opcode, slot, and one through four big-endian u16 values selected by spell argument type. |
 | `ui_spell_delay_control_pane_ctor` | `0x0049B6F0` | high | Constructs exact RTTI class SpellDelayControlPane and initializes the queued-cast state. |
 | `ui_spell_delay_timer_callback` | `0x0049B870` | high | Advances configured cast lines on one-second ticks, then sends the spell name and submits the queued CUseSpell on the final tick. |
 | `ui_start_spell_cast` | `0x0049B900` | high | Queues CUseSpell, loads SpellBook.cfg cast text, and either submits immediately or begins the CSpellDelayRequest and CSpellDelaySay sequence. |
@@ -238,6 +246,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_server_item_menu_handle_network_event` | `0x0053A270` | high | NPCMenuDialog::NPCServerItemMenuDialog routes SStatus progression blocks to its gold-display updater. |
 | `ui_npc_server_item_menu_update_gold_from_status_packet` | `0x0053A2D0` | high | Copies SStatus gold into the NPC server-item menu and redraws the dialog. |
 | `ui_option_pane_create_alert` | `0x00540580` | high | OptionPane alert factory selects five alert classes; type 4 allocates and constructs exact RTTI SafeQuitAlert. |
+| `ui_game_setting_apply_local` | `0x00541D20` | high | Builds or toggles client-owned setting IDs 7 and 9 through 13 using fields in the global AppConfig object. |
+| `ui_game_setting_dialog_ctor` | `0x00542370` | high | Constructs exact RTTI GameSettingDialog from _nsett.txt, attaches 13 setting controls, and requests server settings with CUserSetting ID 0. |
+| `ui_game_setting_dialog_handle_network_event` | `0x00542BA0` | high | GameSettingDialog decoded-packet event handler routes SMessage opcode 0x0A to its dialog-specific handler. |
+| `ui_game_setting_dialog_handle_message` | `0x00542C30` | high | Accepts SMessage type 0x07 and passes its counted text to the Game Settings response parser. |
+| `ui_game_setting_dialog_activate` | `0x00542C60` | high | Sends CUserSetting for server-owned rows and changes AppConfig locally for client-owned rows. |
+| `ui_game_setting_dialog_handle_keyboard_event` | `0x00542D50` | high | Maps number keys 1 through 9 and 0 to setting IDs 1 through 10. |
+| `ui_game_setting_dialog_handle_action` | `0x00542DC0` | high | Dispatches the 13 row actions and calls app_save_config on normal dialog close. |
+| `ui_game_setting_dialog_apply_message_text` | `0x005430D0` | high | Parses SMessage type 0x07 text as an ASCII-discriminated full setting list or single-row replacement. |
 | `ui_safe_quit_alert_ctor` | `0x00544100` | high | Constructs exact RTTI SafeQuitAlert and immediately submits CQuit as bytes 0B 01. |
 | `ui_safe_quit_alert_handle_network_event` | `0x00544220` | high | SafeQuitAlert primary-vtable network-event handler routes typed SQuit opcode 0x4C to its response helper. |
 | `ui_safe_quit_alert_apply_quit_response` | `0x00544280` | high | When SQuit's consumed byte is 1, marks the alert approved, submits CQuit bytes 0B 00, replaces the alert text, and refreshes its control. |
@@ -299,6 +315,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_gui_back_pane_draw` | `0x005A2050` | high | Draws GUIBackPane state, including selection of the network indicator image from the latest movement round-trip value. |
 | `ui_gui_back_pane_set_network_latency` | `0x005A2B80` | high | Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region. |
 | `ui_gui_back_pane_request_show_users` | `0x005A2C60` | high | GUIBackPane interface method that requests the current world-user list through CWho. |
+| `ui_game_interface_activate_number_key` | `0x005A2D90` | high | Routes number keys by the selected GUIBackPane mode; item mode maps keys 1 through 9 and 0 to inventory slots 1 through 10. |
 | `ui_new_system_message_text_pane_ctor` | `0x005A8FB0` | high | Constructs the TextEditPane child that stores and renders persistent message history. |
 | `ui_new_system_message_pane_handle_packet_event` | `0x005A9000` | high | Recognizes SMessage packet events and forwards them to the history type router. |
 | `ui_new_system_message_pane_ctor` | `0x005A9060` | high | Constructs NewSystemMessagePane with one visible row, a TextEditPane child, and ten initial blank lines. |
@@ -386,9 +403,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_queue_server_packet_event` | `0x00468220` | high | Builds and enqueues the event object used for a decoded server packet body. |
 | `net_request_family_name` | `0x004719B0` | high | EquipPane reaches this opcode-only 0x7A request paired with SFamilyName. |
 | `net_send_drop` | `0x00496C90` | high | Builds CDrop as opcode 0x08, source slot, target X, target Y, and u32 quantity. |
+| `net_send_use_inventory_item` | `0x00496E90` | high | Checks the item denial list, then builds CUse as opcode 0x1C followed by the one-byte slot retained from SAddInventory. |
 | `net_send_drop_gold` | `0x004975C0` | high | Parses a nonzero amount and builds CDropGold as opcode 0x24, u32 amount, u16 X, and u16 Y. |
 | `net_send_get_from_map_item_pane` | `0x00498550` | high | Builds CGet as opcode, destination slot, MapItem_Pane world X, and world Y. |
 | `net_send_use_skill` | `0x00499420` | high | Builds CUseSkill as opcode 0x3E followed by the one-byte slot retained from SAddSkill. |
+| `net_build_use_spell_target` | `0x0049AB60` | high | Builds CUseSpell as opcode, slot, u32 target ID, u16 X, and u16 Y, then queues the completed body for casting. |
+| `net_build_use_spell_no_args` | `0x0049AD40` | high | Builds the slot-only CUseSpell form and queues the completed two-byte body for casting. |
 | `net_send_spell_delay_request` | `0x0049BAB0` | high | Builds CSpellDelayRequest as opcode 0x4D followed by the one-byte cast-line count. |
 | `net_send_spell_delay_say` | `0x0049BB40` | high | Builds CSpellDelaySay as opcode 0x4E followed by a string8 configured cast line or the final spell name. |
 | `net_request_cash_shop` | `0x004A03B0` | high | ItemShop::ShoppingBagDialogPane sends the opcode 0x6C body during construction. |
@@ -418,7 +438,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_metadata_uncompress` | `0x004E54F0` | high | Inflates metadata zlib data into a buffer capped at 0x20000 bytes. |
 | `net_metadata_crc32` | `0x004E5790` | high | Calculates standard CRC32 over inflated metadata bytes. |
 | `net_parse_metadata_table` | `0x004E57C0` | high | Parses big-endian group counts and length-prefixed metadata names and values. |
-| `net_send_user_setting` | `0x00542E60` | high | OptionPane and GameSettingDialog call this opcode 0x1B builder. |
+| `net_send_user_setting` | `0x00542E60` | high | Builds the fixed two-byte CUserSetting body from opcode 0x1B and one setting ID. |
 | `net_build_send_portrait` | `0x0054CE10` | high | Builds opcode 0x4F with nested portrait and profile lengths after applying the local image checks. |
 | `net_decode_portrait_profile_body` | `0x0054D570` | high | Reads the nested big-endian portrait and profile lengths used by the portrait body. |
 | `net_send_say` | `0x0054FD90` | high | Builds CSay opcode 0x0E with the retained Say or Shout mode and a string8 message of at most 72 bytes. |
@@ -595,6 +615,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_check_time` | `0x005F7830` | high | Direct response to SCheckTime opcode 0x68; echoes a server value and appends timeGetTime(). |
 | `net_handle_bad_guy_server_packet` | `0x005F7900` | high | Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths. |
 | `net_handle_show_users` | `0x005F7B80` | high | Handles raw decoded server opcode 0x36, applies the replacement list, and opens the RTTI-backed ShowUsersPane. |
+| `net_send_group_automatic_response` | `0x005F8620` | high | Builds CGroup opcode 0x2E, action 3, and a length-prefixed user string for the GroupAnswer automatic path. |
+| `net_handle_group_server_packet` | `0x005F8720` | high | Handles SGroup by either opening the normal prompt or immediately sending CGroup action 3 according to AppConfig GroupAnswer. |
 | `net_send_change_user_state` | `0x005FC790` | high | Normalizes UserState to 0 through 7, builds opcode 0x79 plus the state byte, and stores the same normalized local value. |
 | `net_register_bad_guy_server_packet_factory` | `0x00667B20` | high | Registers the RTTI-backed SBadGuy constructor with the server_packet_factory startup path. |
 
@@ -704,11 +726,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_static_object` | `0x005E47E0` | high | Draws a fixed world object with its SOTP-selected software blend mode. |
 | `render_select_human_part_sprite` | `0x005FD8D0` | high | Selects the sprite ID for each of 21 human body and equipment categories; an overcoat suppresses ordinary pants, armor, and arms parts. |
 | `render_format_human_part_filename` | `0x005FDA90` | high | Builds gendered human-part EPF filenames; body resource 5 resolves through MM005 or WM005 motion files. |
+| `render_human_walk_sequence_ctor` | `0x005FFCD0` | high | Builds a four-step or eight-step human walk interpolation sequence from fixed pixel, frame, and per-step delay tables. |
 | `render_human_stand_motion_data_ctor` | `0x006000D0` | high | Constructs standing-motion data and resolves up to 21 body and equipment sprite parts from HumanAppearanceRecord741. |
 | `render_create_human_stand_motion_data` | `0x00600670` | high | Allocates the initial standing-motion data for a human image session. |
 | `render_monster_image_session_ctor` | `0x006017C0` | high | Constructs the 0xE4-byte RTTI MonsterObjectImageSession and resolves standing, attack, and movement resources for the selected monster sprite. |
 | `render_monster_apply_palette_selectors` | `0x00601A20` | high | Copies at most four resource-defined 16-byte palette mappings, replaces their selector fields from packet bytes, and enables mapped monster rendering. |
 | `render_human_image_session_ctor` | `0x00602240` | high | Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord741 at object offset +0x0C. |
+| `render_human_select_walk_sequence` | `0x00602CA0` | high | Selects the remote-human, local coarse, or local smooth walk sequence; ScrollLevel chooses four 114 ms steps or eight 57 ms steps for WorldObject_User. |
 | `render_merge_light_mask_max` | `0x006036B0` | high | Merges a rectangular 8-bit light image into the viewport mask by retaining the greater value at each pixel. |
 
 ## Audio
@@ -842,7 +866,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_get_tile_pixels` | `0x005D7610` | high | Gets one decoded ground-tile diamond from MapTileImageLib. |
 | `map_refresh_collision_cache` | `0x005D8B90` | high | Refreshes dirty cells in the map's width-by-height byte collision cache with map_get_collision_level. |
 | `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds, the saved appearance action lock, dynamic occupants, CreatureType behavior, and direction-specific SOTP masks for a proposed move. |
-| `map_try_move_local_player` | `0x005F09E0` | high | Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before moving locally and sending CMove. |
+| `map_try_move_local_player` | `0x005F09E0` | high | Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision, selects the ScrollLevel-controlled local walk sequence, and sends CMove. |
 | `map_apply_weather_mode` | `0x005F26C0` | high | Creates Snow for mode 1, performs no local setup for project-named Rain mode 2, and enables black ambient plus object light masks for Darkness mode 3. |
 | `map_finish_transfer` | `0x005F2DE0` | high | Destroys MapLoadingPane, advances the WorldPane map generation, and either applies prepared map storage immediately or schedules the alternate completion path. |
 | `file_load_static_tile_pixmap` | `0x005FD500` | high | Opens and decodes one base or alternate static HPF resource into a pixmap view. |
@@ -867,6 +891,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
+| `metadata_denied_item_list_ctor` | `0x004407C0` | high | Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription. |
+| `metadata_denied_item_list_subscribe` | `0x00440AA0` | high | Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable. |
+| `metadata_denied_item_list_apply_table` | `0x00440B20` | high | Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers. |
+| `metadata_denied_item_list_handle_event` | `0x00440E70` | high | Applies an available denial metadata table or retries the table subscriptions. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |
@@ -889,8 +917,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_item_object_ctor` | `0x005DE280` | high | Constructs the 0xB8-byte RTTI WorldObject_Item and retains entity ID, Y, X, untagged sprite, resource context, and dye color. |
 | `world_living_object_ctor` | `0x005DF230` | high | Constructs the RTTI WorldObject_Living base, including clearing its +0xD4 nonblocking state. |
 | `world_living_object_refresh_motion` | `0x005E0550` | medium | Clears one live motion flag, invokes the object's motion refresh virtual, and reapplies its current facing; SMove direction 4 uses this when positions already agree. |
+| `world_living_start_move` | `0x005E0590` | high | Updates a living object's direction and destination, starts its image-session movement sequence, and publishes the movement event. |
+| `world_living_start_move_animation` | `0x005E0610` | high | Starts the current image session's movement sequence and passes the local ScrollLevel boolean to its class-specific selector. |
 | `world_living_object_set_direction` | `0x005E0880` | high | When facing changes, invokes the living-object transition hook, stores direction at +0x192, and refreshes the directional motion or image state. |
 | `world_monster_object_ctor` | `0x005E2630` | high | Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level. |
+| `world_user_start_move` | `0x005E4FC0` | high | Refreshes WorldObject_User appearance state, then starts the common living-object move with the supplied ScrollLevel flag. |
 | `world_object_list_insert` | `0x005E5D40` | high | Inserts an object into its 0x60-byte coordinate cell and the ordered entity-ID index, then marks WorldObject +0x48 inserted. |
 | `world_object_list_find_by_id` | `0x005E73B0` | high | Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10. |
 | `world_set_view_position` | `0x005EEC70` | high | Publishes a Y, X world-view position and optionally rebuilds the visible world and camera state around it. |

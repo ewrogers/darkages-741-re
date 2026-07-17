@@ -33,7 +33,7 @@ Text remains an ANSI or DBCS byte string. It is not Unicode. The normal formatte
 
 ## Type routing
 
-Two client objects inspect this packet independently:
+The common message UI and the Game Settings dialog inspect this packet independently:
 
 ```text
 SMessage
@@ -43,7 +43,10 @@ SMessage
   |     `-- ScorePane
   |
   `-- NewSystemMessagePane
-        `-- persistent message history
+  |     `-- persistent message history
+  |
+  `-- GameSettingDialog
+        `-- type 0x07 setting-row updates
 ```
 
 | Type | Floating overlay | Persistent history | Other result |
@@ -52,7 +55,7 @@ SMessage
 | `0x01`, `0x02` | No | Yes | History only |
 | `0x03` | White | Yes | Used for equipment and load notices in the supplied login capture |
 | `0x04` through `0x06` | No | Yes | History only |
-| `0x07` | No | No | Ignored by the recovered consumers |
+| `0x07` | No | No | Update `GameSettingDialog` while it is open |
 | `0x08`, `0x09` | No | No | Open the same standard scrollable message popup |
 | `0x0A` | No | No | Open the alternate `woodbk.epf` popup layout |
 | `0x0B` | Palette `0x77` | Yes | Appends a newline to the overlay |
@@ -66,6 +69,21 @@ Types `0x08`, `0x09`, and `0x0A` change tab bytes to carriage returns before ope
 
 The exact channel names for `0x00`, `0x01`, `0x02`, `0x04` through `0x06`, `0x0B`, and `0x0C` are not present as client strings. Runtime captures are needed before calling any one of them whisper, guild, group, or world chat.
 
+## Game settings response
+
+Type `0x07` uses the normal counted `message` bytes as a small text protocol for `GameSettingDialog`:
+
+```text
+full list:    "0" + row_1 + TAB + row_2 + TAB + ...
+single row:   ASCII setting digit + replacement row text
+```
+
+The supplied full-list capture declares `message_length = 0x00B0` and begins with ASCII `0`. After removing that byte, the client splits eight row strings at tab bytes and assigns them to setting IDs 1 through 8. It consumes the row 7 token but deliberately leaves the client-managed row 7 text unchanged.
+
+The single-row captures declare `message_length = 0x0016`. ASCII `1` selects row 1, and the remaining 21 bytes are displayed as either `Listen to whisper:OFF` or `Listen to whisper:ON `.
+
+The parser treats ASCII `1` through `9` as single-row selectors. Any other first byte enters full-list mode; the observed list marker is ASCII `0`. The returned `ON` and `OFF` suffixes are not parsed as state. See [Game settings](../../systems/game-settings.md) for row ownership and persistence.
+
 ## Length limits
 
 The wire field can describe up to 65,535 bytes, but each display target imposes a smaller practical limit.
@@ -76,6 +94,7 @@ The wire field can describe up to 65,535 bytes, but each display target imposes 
 | `ScorePane` | 70 bytes | Entry is rejected |
 | Floating `GameMessagePane` | 130 bytes | No client clamp exists; a longer copy exceeds its local text buffer |
 | Standard or alternate popup | 32,767 bytes | Length is treated as signed; larger values are not safely handled |
+| Game Settings row | 63 bytes per copied row | The dialog uses a 64-byte temporary buffer without a local clamp |
 | Ignored types | No display limit | Message is parsed but not copied into these UI targets |
 
 For types `0x00`, `0x03`, `0x0B`, and `0x0C`, a message from 71 through 130 bytes can appear in the floating overlay but will not be saved in persistent history. A server that wants both results should keep these messages at 70 bytes or fewer.

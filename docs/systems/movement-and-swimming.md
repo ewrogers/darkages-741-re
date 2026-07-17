@@ -48,6 +48,12 @@ Directions `0` through `3` advance the world view from the server-supplied posit
 
 The matching step echo also updates the UI network indicator. It uses the latest raw movement round-trip time and four threshold bands, not a moving average.
 
+## Local walk interpolation
+
+The local `ScrollLevel` preference changes only how the accepted tile step is animated. Disabled movement uses four interpolation ticks at 114 ms each. Enabled movement uses eight ticks at 57 ms each. Both sequences last 456 ms and cover the same projected tile distance.
+
+`CMove` is sent immediately after the animation sequence is selected. The preference does not change its body, step counter, send path, or the server's movement validation. See [Game settings](game-settings.md#scroll-level-and-movement-timing) for the frame and pixel-step tables.
+
 ## Visible swimming form
 
 [`SDrawHumanObjects`](../network/server/051-0x33-draw-human-objects.md) carries a packed appearance byte. High-nibble variants `8` and `9` select body resource `5` with M and W resource prefixes.

@@ -19,7 +19,10 @@ The client has no derived packet RTTI for this name.
 
 Known static callers lead to:
 
-- UI or subsystem owner not known yet
+- merchant object-selection paths
+- the world-object click handler
+
+For clicked user objects, the local `UserClickMode` setting can suppress this request. Other object categories continue through their normal click paths.
 
 ## Body
 

@@ -23,6 +23,22 @@ functions:
     name: file_hpf_rotate_tree
     confidence: high
     evidence: Applies the parent and sibling rotations used after every decoded HPF symbol.
+  - address: "0x004407C0"
+    name: metadata_denied_item_list_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription."
+  - address: "0x00440AA0"
+    name: metadata_denied_item_list_subscribe
+    confidence: high
+    evidence: "Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable."
+  - address: "0x00440B20"
+    name: metadata_denied_item_list_apply_table
+    confidence: high
+    evidence: "Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers."
+  - address: "0x00440E70"
+    name: metadata_denied_item_list_handle_event
+    confidence: high
+    evidence: "Applies an available denial metadata table or retries the table subscriptions."
   - address: "0x0044CD50"
     name: file_load_color_table
     confidence: medium
@@ -199,6 +215,26 @@ comments:
     text: HPF bits are read least-significant bit first. Symbol 256 terminates the stream.
   - address: "0x00431D20"
     text: Rotate the tree after every byte and after the 256 terminator. An encoder must apply the same update.
+  - address: "0x00440AB6"
+    text: Subscribe to the server-managed BItems metadata table.
+  - address: "0x00440ACF"
+    text: Subscribe to the server-managed BSkills metadata table.
+  - address: "0x00440AE7"
+    text: Subscribe to the server-managed BSpells metadata table.
+  - address: "0x00440B0A"
+    text: Retry the subscriptions after 1000 ms if MetaTableManager is not ready.
+  - address: "0x00440D2B"
+    text: Applying a denial metadata table replaces the current in-memory lookup lists.
+  - address: "0x00440D99"
+    text: Rows tagged Item populate the item denial lookup used by CUse.
+  - address: "0x00440DC3"
+    text: Rows tagged Skill populate the skill denial lookup used by CUseSkill.
+  - address: "0x00440DED"
+    text: Rows tagged Spell populate the spell denial lookup used by CUseSpell.
+  - address: "0x00440E48"
+    text: Insert the parsed entry into the lookup selected by its Item, Skill, or Spell tag.
+  - address: "0x00440EAF"
+    text: A metadata event applies the available table and replaces the active denial lists.
   - address: "0x00471E00"
     text: Legacy DAT uses fixed 17-byte index rows and a final blank sentinel. The extended 0xFFFFFFFF path uses XOR and zlib index chunks.
   - address: "0x004875B0"

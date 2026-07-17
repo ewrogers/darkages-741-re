@@ -603,6 +603,14 @@ functions:
     name: render_monster_apply_appearance
     confidence: high
     evidence: Resolves the untagged monster sprite, creates MonsterObjectImageSession, applies Direction and up to four palette selectors, and refreshes motion.
+  - address: "0x005E0590"
+    name: world_living_start_move
+    confidence: high
+    evidence: Updates a living object's direction and destination, starts its image-session movement sequence, and publishes the movement event.
+  - address: "0x005E0610"
+    name: world_living_start_move_animation
+    confidence: high
+    evidence: Starts the current image session's movement sequence and passes the local ScrollLevel boolean to its class-specific selector.
   - address: "0x005E2630"
     name: world_monster_object_ctor
     confidence: high
@@ -619,6 +627,10 @@ functions:
     name: render_static_object
     confidence: high
     evidence: Draws a fixed world object with its SOTP-selected software blend mode.
+  - address: "0x005E4FC0"
+    name: world_user_start_move
+    confidence: high
+    evidence: Refreshes WorldObject_User appearance state, then starts the common living-object move with the supplied ScrollLevel flag.
   - address: "0x005E5D40"
     name: world_object_list_insert
     confidence: high
@@ -667,6 +679,10 @@ functions:
     name: render_format_human_part_filename
     confidence: high
     evidence: Builds gendered human-part EPF filenames; body resource 5 resolves through MM005 or WM005 motion files.
+  - address: "0x005FFCD0"
+    name: render_human_walk_sequence_ctor
+    confidence: high
+    evidence: Builds a four-step or eight-step human walk interpolation sequence from fixed pixel, frame, and per-step delay tables.
   - address: "0x006000D0"
     name: render_human_stand_motion_data_ctor
     confidence: high
@@ -687,6 +703,10 @@ functions:
     name: render_human_image_session_ctor
     confidence: high
     evidence: Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord741 at object offset +0x0C.
+  - address: "0x00602CA0"
+    name: render_human_select_walk_sequence
+    confidence: high
+    evidence: Selects the remote-human, local coarse, or local smooth walk sequence; ScrollLevel chooses four 114 ms steps or eight 57 ms steps for WorldObject_User.
   - address: "0x006036B0"
     name: render_merge_light_mask_max
     confidence: high
@@ -696,6 +716,18 @@ data_symbols:
     name: map_move_direction_masks
     confidence: high
     evidence: Four collision bits for left, down, right, and up movement, followed by combined corner masks.
+  - address: "0x006D3ABC"
+    name: render_human_walk_remote_ptr
+    confidence: high
+    evidence: Points to the four-step, 100 ms-per-step human walk sequence used when the world object's local-user marker is clear.
+  - address: "0x006D3AC0"
+    name: render_human_walk_local_coarse_ptr
+    confidence: high
+    evidence: Points to the four-step, 114 ms-per-step local-user walk sequence selected when ScrollLevel is disabled.
+  - address: "0x006D3AC4"
+    name: render_human_walk_local_smooth_ptr
+    confidence: high
+    evidence: Points to the eight-step, 57 ms-per-step local-user walk sequence selected when ScrollLevel is enabled.
   - address: "0x006D8FC8"
     name: render_image_library_ptr
     confidence: high
@@ -853,6 +885,8 @@ comments:
     text: Treat appearance is_translucent as true only when its byte equals 1, and mirror it to WorldObject_Human +0xD5.
   - address: "0x005E04A1"
     text: Apply four SDrawObjects palette selector bytes to the new MonsterObjectImageSession; the resource may reduce the active count below four.
+  - address: "0x005E06B3"
+    text: Pass WorldObject +0x98 and the ScrollLevel boolean into the class-specific movement animation selector.
   - address: "0x005E2665"
     text: Retain creature_type at WorldObject_Monster +0x1EC; values 1, 2, and 3 also select distinct common-object collision levels.
   - address: "0x005E3F73"
@@ -861,6 +895,8 @@ comments:
     text: Original JE enters the static draw body when the hidden flag is zero. EB 00 falls into the existing jump to the normal epilogue and hides every static map object.
   - address: "0x005E4880"
     text: SOTP render flag 0x80 selects blend mode 0x6D. Flag 0x40 selects mode 3.
+  - address: "0x005E4ED4"
+    text: Mark WorldObject_User at +0x98 so its HumanObjectImageSession can choose a local-player walk sequence. Ordinary WorldObject_Human construction leaves this byte clear.
   - address: "0x005E5B1C"
     text: Insert entity_id and its reference-counted WorldObject pointer into the ordered ID tree at WorldObjectList +0x1C.
   - address: "0x005E5E14"
@@ -905,6 +941,10 @@ comments:
     text: Suppress ordinary arms when an overcoat sprite is present.
   - address: "0x005FDB6E"
     text: Body resource IDs 1 and 5 use the M filename family. Swimming variants therefore resolve through MM005 or WM005 motion files.
+  - address: "0x005FFD45"
+    text: Store the human walk interpolation count. The compiled global sequences use four or eight ticks.
+  - address: "0x005FFDCD"
+    text: Select each tick delay from the fixed timing tables. Local coarse movement uses 114 ms; local smooth movement uses 57 ms.
   - address: "0x00600315"
     text: Retain rest_position from HumanAppearanceRecord741 and choose between the two standing-motion setups. Friendly value names remain unresolved.
   - address: "0x00601A2D"
@@ -913,6 +953,12 @@ comments:
     text: Copy one 16-byte resource palette mapping and replace its selector field at +0x08 with the corresponding packet byte.
   - address: "0x006022A9"
     text: Retain HumanAppearanceRecord741 at HumanObjectImageSession +0x0C for body, equipment, dye, face, and motion resource selection.
+  - address: "0x00602828"
+    text: Return the selected walk sequence's delay for the current interpolation tick to the animation scheduler.
+  - address: "0x00602CC3"
+    text: A clear WorldObject +0x98 marker selects the four-step, 100 ms remote-human sequence without consulting ScrollLevel.
+  - address: "0x00602CC7"
+    text: For WorldObject_User, ScrollLevel zero selects four 114 ms ticks; nonzero selects eight 57 ms ticks. Both total 456 ms.
   - address: "0x00622686"
     text: fopen_s opens streams with share flag 0x80 (_SH_SECURE), which changes sharing according to read or write access.
   - address: "0x006441D0"
