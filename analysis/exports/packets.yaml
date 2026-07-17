@@ -507,6 +507,14 @@ functions:
     name: net_deserialize_message_server_packet
     confidence: high
     evidence: "Reads the message type, the type-0x11-only prefix, a u16 message length, and the message bytes."
+  - address: "0x0059A520"
+    name: net_move_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x0B to the server packet base and installs the exact RTTI SMove vtable."
+  - address: "0x0059A550"
+    name: net_deserialize_move_server_packet
+    confidence: high
+    evidence: "Reads direction, four big-endian coordinate words, and the echoed movement step into the fixed SMove packet object."
   - address: "0x0059ADB0"
     name: net_create_remove_equip_server_packet
     confidence: high
@@ -635,6 +643,18 @@ functions:
     name: ui_gui_back_pane_update_vitals_from_status_packet
     confidence: high
     evidence: "Copies current and maximum health and mana from SStatus into GUIBackPane bar targets."
+  - address: "0x005A2050"
+    name: ui_gui_back_pane_draw
+    confidence: high
+    evidence: "Draws GUIBackPane state, including selection of the network indicator image from the latest movement round-trip value."
+  - address: "0x005A2B80"
+    name: ui_gui_back_pane_set_network_latency
+    confidence: high
+    evidence: "Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region."
+  - address: "0x005A9DA0"
+    name: ui_report_movement_round_trip
+    confidence: high
+    evidence: "Forwards one matching movement round-trip sample to the live GUIBackPane interface."
   - address: "0x005B0C40"
     name: ui_user_info_update_status_from_packet
     confidence: high
@@ -687,6 +707,10 @@ functions:
     name: render_world_set_blinded
     confidence: high
     evidence: "Stores the world-renderer blinded boolean and schedules the affected view for redraw."
+  - address: "0x005E0550"
+    name: world_living_object_refresh_motion
+    confidence: medium
+    evidence: "Clears one live motion flag, invokes the object's motion refresh virtual, and reapplies its current facing; SMove direction 4 uses this when positions already agree."
   - address: "0x005EEC70"
     name: world_set_view_position
     confidence: high
@@ -699,6 +723,10 @@ functions:
     name: map_try_move_local_player
     confidence: high
     evidence: "Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before moving locally and sending CMove."
+  - address: "0x005F0B50"
+    name: input_map_key_to_world_direction
+    confidence: high
+    evidence: "Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3."
   - address: "0x005F0D20"
     name: ui_world_pane_handle_keyboard_event
     confidence: high
@@ -743,6 +771,10 @@ functions:
     name: net_handle_user_position_server_packet
     confidence: high
     evidence: "Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view."
+  - address: "0x005F2FC0"
+    name: net_handle_move_server_packet
+    confidence: high
+    evidence: "Uses SMove direction and previous coordinates to advance or correct the view, requests CRefreshUser on a direction-4 coordinate mismatch, and reports latency only for the current step echo."
   - address: "0x005F3150"
     name: net_handle_draw_objects_server_packet
     confidence: high
@@ -763,10 +795,18 @@ functions:
     name: net_send_change_direction
     confidence: high
     evidence: "WorldPane paths call this opcode 0x11 direction builder."
+  - address: "0x005F4580"
+    name: net_send_move
+    confidence: high
+    evidence: "Builds CMove as opcode, direction, and an incremented rolling u8 step, then records the send time used by a matching SMove reply."
   - address: "0x005F4640"
     name: net_send_refresh_user
     confidence: high
     evidence: "WorldPane paths call this opcode-only 0x38 builder."
+  - address: "0x005F4900"
+    name: ui_world_pane_reset_movement_state
+    confidence: medium
+    evidence: "Resets WorldPane movement and queued-path state after authoritative position changes and the SMove direction-4 path."
   - address: "0x005F6470"
     name: ui_has_map_loading_pane
     confidence: high
@@ -1159,6 +1199,18 @@ comments:
     text: "Read the main message length as u16. The parser itself does not impose a semantic text limit."
   - address: "0x0059A16D"
     text: "Retain a pointer to exactly message_length bytes from the decoded packet body; no wire terminator is required."
+  - address: "0x0059A562"
+    text: "Read SMove direction. Values 0 through 3 advance a cardinal step; value 4 enters the no-step correction path."
+  - address: "0x0059A570"
+    text: "Read SMove previous_x as big-endian u16."
+  - address: "0x0059A57F"
+    text: "Read SMove previous_y as big-endian u16."
+  - address: "0x0059A58E"
+    text: "Read SMove unknown_x as big-endian u16. The only typed SMove handler never reads this field."
+  - address: "0x0059A59D"
+    text: "Read SMove unknown_y as big-endian u16. The only typed SMove handler never reads this field."
+  - address: "0x0059A5A4"
+    text: "Read the echoed CMove step byte. A match with WorldPane's current rolling step enables the latency sample."
   - address: "0x0059AE6A"
     text: "SRemoveEquip body is one u8 slot, widened to u16 in the packet object."
   - address: "0x0059AF7A"
@@ -1227,6 +1279,10 @@ comments:
     text: "Read SUserPosition y as u16 into packet object +0x12."
   - address: "0x0059CCF8"
     text: "Return after exactly two u16 reads. Any remaining decoded body bytes are left unread and have no SUserPosition object fields."
+  - address: "0x005A2547"
+    text: "Choose one of four network indicator images from raw movement round-trip thresholds 250, 350, and 450 ms. No averaging is applied."
+  - address: "0x005A2B8F"
+    text: "Store the latest matching movement round-trip value in GUIBackPane and invalidate the active network-indicator rectangle."
   - address: "0x005B10D3"
     text: "UserInfoPane maps wire slots through a 19-entry table: slot 0 -> -1; slots 1..18 -> view indices 0..17."
   - address: "0x005B1138"
@@ -1247,12 +1303,16 @@ comments:
     text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
   - address: "0x005EE185"
     text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x1E, 0x58, or 0x67."
+  - address: "0x005EE4C8"
+    text: "Initialize the rolling CMove step counter to zero. The adjacent send time and last round-trip fields are also initialized to zero."
   - address: "0x005F0086"
     text: "Movement bounds compare signed 32-bit coordinates against the u8-derived SMapSize width and height."
   - address: "0x005F00C2"
     text: "Reject movement immediately when WorldUserFunc appearance-state bit 0 is set, before dynamic-object and SOTP collision checks."
   - address: "0x005F0AF4"
     text: "Normal local movement uses direction-specific dynamic-object and SOTP collision checks. It does not inspect ground tile IDs or search the skillbook for Swimming."
+  - address: "0x005F0B74"
+    text: "Accepted movement keys map only to Direction values 0 through 3; no diagonal output exists in this table."
   - address: "0x005F0DC8"
     text: "Virtual-key 0x09 (Tab) enters the map-overlay path; the later character-class branch selects whether map zoom is enabled."
   - address: "0x005F0DDD"
@@ -1303,6 +1363,18 @@ comments:
     text: "Reindex WorldObject_User after replacing its authoritative tile coordinates."
   - address: "0x005F2F8F"
     text: "Recenter and rebuild the world view at the server-supplied Y, X position even if WorldObject_User was not found."
+  - address: "0x005F3001"
+    text: "Update movement latency only when SMove.step equals the latest rolling CMove step. Older echoes still process movement but do not change the indicator."
+  - address: "0x005F3015"
+    text: "Store timeGetTime() minus the latest CMove send time as the raw movement round-trip sample, then forward it to GUIBackPane."
+  - address: "0x005F303F"
+    text: "SMove direction 4 is the no-step correction branch. Values 0 through 3 take the normal cardinal-delta branch."
+  - address: "0x005F3056"
+    text: "On direction 4, compare the server's previous_x and previous_y with the local WorldObject_User tile coordinates."
+  - address: "0x005F306B"
+    text: "Request CRefreshUser when a direction-4 SMove reports coordinates that differ from the local object. The refresh builder does not reset the move step."
+  - address: "0x005F30B9"
+    text: "For directions 0 through 3, add the cardinal delta to SMove.previous_x and previous_y before publishing the view position."
   - address: "0x005F31A3"
     text: "Tagged sprites 0x4000..0x7FFF create or replace RTTI WorldObject_Monster entries in the shared WorldObjectList."
   - address: "0x005F3207"
@@ -1329,6 +1401,10 @@ comments:
     text: "Create the packet's group advertisement only when group_ad_text is nonempty and the local GroupObjectOption setting is enabled; otherwise remove it."
   - address: "0x005F3E77"
     text: "Show the speech balloon on the selected world object for 3,000 ms. This path does not append to persistent message history."
+  - address: "0x005F45CD"
+    text: "Increment the rolling u8 CMove step before serializing it. Natural byte overflow wraps 255 to 0."
+  - address: "0x005F4602"
+    text: "Record timeGetTime() after building CMove. A matching SMove step subtracts this value for the network indicator."
   - address: "0x005F6DD9"
     text: "Route SMessage types 0x00 through 0x12. Colored overlay, popup, and score paths are separate; several types are intentionally ignored here."
   - address: "0x005F6DF7"
@@ -1478,7 +1554,7 @@ packet_indexes:
         builder: "0x005F4580"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x005F4580 writes opcode 0x06 and submits the body."
+        evidence: "Builder 0x005F4580 writes opcode 0x06, a cardinal direction, and an incremented rolling u8 step, then saves the send time used by SMove."
         page: "docs/network/client/006-0x06-move.md"
       - opcode: "0x07"
         friendly_name: "Get"
@@ -2086,7 +2162,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059A520 passes opcode 0x0B to the server packet base and installs the SMove vtable."
+        evidence: "RTTI identifies SMove. Its deserializer reads direction, four u16 coordinate words, and the echoed CMove step; the handler ignores the final two coordinate words, handles direction 4 as correction, and reports matching-step latency."
         page: "docs/network/server/011-0x0b-move.md"
       - opcode: "0x0C"
         friendly_name: "Move Object"

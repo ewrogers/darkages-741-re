@@ -290,7 +290,7 @@ functions:
   - address: "0x0057A640"
     name: render_probe_display_capabilities
     confidence: high
-    evidence: Probes the current DirectDraw display mode before normal application initialization.
+    evidence: Accepts 16-bit or 32-bit desktop color and selects 2x presentation at 1280 by 960 or larger, otherwise 1x on a supported smaller desktop.
   - address: "0x00586900"
     name: map_rotate_static_tile_mapping
     confidence: high
@@ -759,6 +759,12 @@ comments:
     text: Apply ground animation first. In alternate mode, try tileas.bmp and fall back to tilea.bmp when the requested alternate record is unavailable.
   - address: "0x00555560"
     text: Recursive pane draw. Clip the pane, invoke primary vtable slot 0x5C, then walk its child subtree.
+  - address: "0x0057A6C0"
+    text: Select 2x presentation only when desktop color depth is 16 or 32 bits and the current display is at least 1280 by 960; otherwise select 1x for a supported smaller display.
+  - address: "0x0057A7E2"
+    text: Store the fixed logical width 640 and height 480 before choosing the presentation scale.
+  - address: "0x0057A916"
+    text: Display mode 2 enables the 2x scale flag while leaving the logical 640 by 480 dimensions unchanged.
   - address: "0x0058747B"
     text: Load gndani.tbl. Each text line is a tile-ID cycle followed by a delay measured in 100 ms ticks.
   - address: "0x005875D2"

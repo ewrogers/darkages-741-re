@@ -114,6 +114,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_emit_ime_candidate_list_data` | `0x004688A0` | high | Builds candidate-list event type 0x10 with pointer-bearing candidate data. |
 | `input_emit_ime_candidate_list_close` | `0x00468940` | high | Builds candidate-list-close event type 0x11. |
 | `input_translate_win32_message` | `0x0048E980` | high | Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events. |
+| `input_map_key_to_world_direction` | `0x005F0B50` | high | Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3. |
 
 ## UI
 
@@ -261,6 +262,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_gui_back_pane_handle_network_event` | `0x0059D1D0` | high | GUIBackPane routes SStatus packets containing vitals to its health and mana bar updater. |
 | `ui_gui_back_pane_update_vitals_from_status_packet` | `0x0059D6C0` | high | Copies current and maximum health and mana from SStatus into GUIBackPane bar targets. |
 | `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Handles GUIBackPane pointer input; BTN_HELP is present in the hover path but has no click action. |
+| `ui_gui_back_pane_draw` | `0x005A2050` | high | Draws GUIBackPane state, including selection of the network indicator image from the latest movement round-trip value. |
+| `ui_gui_back_pane_set_network_latency` | `0x005A2B80` | high | Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region. |
 | `ui_new_system_message_text_pane_ctor` | `0x005A8FB0` | high | Constructs the TextEditPane child that stores and renders persistent message history. |
 | `ui_new_system_message_pane_handle_packet_event` | `0x005A9000` | high | Recognizes SMessage packet events and forwards them to the history type router. |
 | `ui_new_system_message_pane_ctor` | `0x005A9060` | high | Constructs NewSystemMessagePane with one visible row, a TextEditPane child, and ten initial blank lines. |
@@ -269,6 +272,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_new_system_message_pane_handle_mouse_event` | `0x005A9890` | high | Handles the draggable history control and clamps the visible area to one through ten rows. |
 | `ui_new_system_message_pane_append_history` | `0x005A9A20` | high | Accepts at most 70 bytes, prefixes a newline, normalizes carriage returns, and appends to persistent history. |
 | `ui_new_system_message_pane_handle_message_packet` | `0x005A9B40` | high | Routes SMessage types 0x00 through 0x06, 0x0B, and 0x0C into persistent history. |
+| `ui_report_movement_round_trip` | `0x005A9DA0` | high | Forwards one matching movement round-trip sample to the live GUIBackPane interface. |
 | `ui_user_info_apply_portrait_body` | `0x005ACD10` | high | Decodes a portrait/profile body into UserInfoPane state and refreshes its portrait canvas and text. |
 | `ui_user_info_handle_server_packet` | `0x005AD160` | high | The UserInfoPane vtable event handler sends the local portrait response when the decoded opcode is 0x49. |
 | `ui_user_info_refresh_local_portrait` | `0x005AD5D0` | high | Builds the local portrait body and reapplies it to UserInfoPane without calling the network submitter. |
@@ -288,6 +292,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_world_object_name_pane_ctor` | `0x005E3F00` | high | Constructs the 0x1DC-byte RTTI WorldObject_Name_Pane and retains at most 63 text bytes plus a NUL at +0x198. |
 | `ui_world_pane_handle_keyboard_event` | `0x005F0D20` | high | Handles WorldPane keyboard commands; the Tab map-overlay path gives character class 2 the zoom-enabled configuration observed for Rogues. |
 | `ui_world_pane_draw_content` | `0x005F27A0` | high | WorldPane content hook that draws the world when ready or clears the pane. |
+| `ui_world_pane_reset_movement_state` | `0x005F4900` | medium | Resets WorldPane movement and queued-path state after authoritative position changes and the SMove direction-4 path. |
 | `ui_has_map_loading_pane` | `0x005F6470` | high | Reports whether the global MapLoadingPane pointer is non-null. |
 | `ui_get_map_loading_pane` | `0x005F6490` | high | Returns the current global MapLoadingPane pointer used by SMapPart progress handling. |
 | `ui_close_map_loading_pane` | `0x005F64A0` | high | Destroys the current MapLoadingPane when a map transfer finishes. |
@@ -456,6 +461,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_message_server_packet` | `0x0059A050` | high | Allocates the RTTI-backed SMessage object registered for server opcode 0x0A. |
 | `net_message_server_packet_ctor` | `0x0059A0D0` | high | Constructs SMessage with opcode 0x0A and installs its concrete vtable. |
 | `net_deserialize_message_server_packet` | `0x0059A100` | high | Reads the message type, the type-0x11-only prefix, a u16 message length, and the message bytes. |
+| `net_move_server_packet_ctor` | `0x0059A520` | high | Passes opcode 0x0B to the server packet base and installs the exact RTTI SMove vtable. |
+| `net_deserialize_move_server_packet` | `0x0059A550` | high | Reads direction, four big-endian coordinate words, and the echoed movement step into the fixed SMove packet object. |
 | `net_create_remove_equip_server_packet` | `0x0059ADB0` | high | Allocates a 0x14-byte RTTI SRemoveEquip object and calls its concrete constructor. |
 | `net_remove_equip_server_packet_ctor` | `0x0059AE30` | high | Passes opcode 0x38 to the server packet base and installs the exact SRemoveEquip vtable. |
 | `net_deserialize_remove_equip_server_packet` | `0x0059AE60` | high | Reads the one-byte SRemoveEquip slot and widens it into the packet object's 16-bit field. |
@@ -502,11 +509,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes the raw decoded SMapPart body, creates MapLoadingPane, applies repeated map records, updates percentage progress, and finalizes the last part. |
 | `net_handle_user_appearance_server_packet` | `0x005F2E90` | high | Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage. |
 | `net_handle_user_position_server_packet` | `0x005F2F00` | high | Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view. |
+| `net_handle_move_server_packet` | `0x005F2FC0` | high | Uses SMove direction and previous coordinates to advance or correct the view, requests CRefreshUser on a direction-4 coordinate mismatch, and reports latency only for the current step echo. |
 | `net_handle_draw_objects_server_packet` | `0x005F3150` | high | Walks every SDrawObjects record, replaces matching IDs, creates WorldObject_Monster or WorldObject_Item by tagged sprite range, applies creature palette selectors and names, and ignores unsupported ranges. |
 | `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes WorldObject_User for the saved self ID and WorldObject_Human otherwise, applies normal or disguised appearance, updates names and optional group ads, and handles Darkness object lights. |
 | `net_handle_say_server_packet` | `0x005F3E00` | high | Shows SSay text as a three-second balloon on its world object without appending to persistent history. |
 | `net_send_put_ground` | `0x005F4430` | high | Builds opcode 0x0C with one u32 value. |
 | `net_send_change_direction` | `0x005F4510` | high | WorldPane paths call this opcode 0x11 direction builder. |
+| `net_send_move` | `0x005F4580` | high | Builds CMove as opcode, direction, and an incremented rolling u8 step, then records the send time used by a matching SMove reply. |
 | `net_send_refresh_user` | `0x005F4640` | high | WorldPane paths call this opcode-only 0x38 builder. |
 | `net_handle_message_server_packet` | `0x005F6D80` | high | Routes SMessage to the floating GameMessagePane, WindowMessageDialogPane, or ScorePane according to its type byte. |
 | `net_send_check_time` | `0x005F7830` | high | Direct response to SCheckTime opcode 0x68; echoes a server value and appends timeGetTime(). |
@@ -566,7 +575,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_map_background_images` | `0x004C5270` | high | Draws configured map background or bottom-layer images before world objects. |
 | `render_screen_tree_frame` | `0x00554040` | high | Redraws the dirty root screen tree and presents the completed frame. |
 | `render_screen_subtree` | `0x00555560` | high | Clips and draws one pane subtree through the vtable draw-to-target slot. |
-| `render_probe_display_capabilities` | `0x0057A640` | high | Probes the current DirectDraw display mode before normal application initialization. |
+| `render_probe_display_capabilities` | `0x0057A640` | high | Accepts 16-bit or 32-bit desktop color and selects 2x presentation at 1280 by 960 or larger, otherwise 1x on a supported smaller desktop. |
 | `render_free_blend_tables` | `0x005933C0` | high | Frees both software component-blend lookup tables. |
 | `render_build_blend_tables` | `0x00593490` | high | Builds the 256 by 256 lookup tables for five-bit and six-bit color components. |
 | `render_blend_pixel` | `0x005936E0` | high | Blends two 16-bit RGB pixels using a selector and the component lookup tables. |
@@ -797,6 +806,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_object_set_name_pane` | `0x005DBA80` | high | Replaces the reference-counted WorldObject_Name_Pane pointer at common WorldObject offset +0x58. |
 | `world_item_object_ctor` | `0x005DE280` | high | Constructs the 0xB8-byte RTTI WorldObject_Item and retains entity ID, Y, X, untagged sprite, resource context, and dye color. |
 | `world_living_object_ctor` | `0x005DF230` | high | Constructs the RTTI WorldObject_Living base, including clearing its +0xD4 nonblocking state. |
+| `world_living_object_refresh_motion` | `0x005E0550` | medium | Clears one live motion flag, invokes the object's motion refresh virtual, and reapplies its current facing; SMove direction 4 uses this when positions already agree. |
 | `world_monster_object_ctor` | `0x005E2630` | high | Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level. |
 | `world_object_list_insert` | `0x005E5D40` | high | Inserts an object into its 0x60-byte coordinate cell and the ordered entity-ID index, then marks WorldObject +0x48 inserted. |
 | `world_object_list_find_by_id` | `0x005E73B0` | high | Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10. |

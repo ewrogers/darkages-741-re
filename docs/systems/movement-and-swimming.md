@@ -34,6 +34,14 @@ The action-state bit rejects the move before ordinary collision checks. It also 
 
 The static collision step examines the two static tile IDs on the source and destination edges. It does not inspect the ground tile ID. See [SOTP static tile flags](../file-formats/sotp.md).
 
+## Server acknowledgement and correction
+
+Each accepted local step sends [`CMove`](../network/client/006-0x06-move.md) with a rolling byte counter. [`SMove`](../network/server/011-0x0b-move.md) echoes that counter and the server's previous position.
+
+Directions `0` through `3` advance the world view from the server-supplied position. Direction `4` is a no-step correction path. It resets local movement state, returns the view to the supplied position, and sends [`CRefreshUser`](../network/client/056-0x38-refresh-user.md) when the local player's coordinates disagree. The later [`SUserPosition`](../network/server/004-0x04-user-position.md) path can replace the object's coordinates authoritatively.
+
+The matching step echo also updates the UI network indicator. It uses the latest raw movement round-trip time and four threshold bands, not a moving average.
+
 ## Visible swimming form
 
 [`SDrawHumanObjects`](../network/server/051-0x33-draw-human-objects.md) carries a packed appearance byte. High-nibble variants `8` and `9` select body resource `5` with M and W resource prefixes.

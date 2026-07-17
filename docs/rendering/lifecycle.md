@@ -16,6 +16,14 @@ Later, `render_video_system_initialize` builds the live renderer:
 
 The main canvas is where the game draws. The output canvas adapts that result to the selected display path. This keeps most game drawing independent of the final Windows surface format.
 
+## Logical resolution and 2x output
+
+The game's native logical resolution is 640 by 480. Startup keeps those logical dimensions in both display modes.
+
+`render_probe_display_capabilities` accepts 16-bit and 32-bit desktop color. A desktop at least 1280 by 960 selects the 2x mode; a smaller supported desktop selects 1x. The 2x path expands the completed 640 by 480 image to 1280 by 960 by copying each source pixel into a 2 by 2 block.
+
+This is presentation scaling, not a larger game view. Pane geometry, input coordinates, the main canvas, and world rendering remain in the 640 by 480 logical coordinate system. The scaler uses nearest-neighbor copies with no smoothing or filtering.
+
 ## Canvas access
 
 A canvas may own memory or wrap a DirectDraw surface. Drawing code calls `render_canvas_begin` before touching pixels and `render_canvas_end` afterward. These calls also lock or unlock a wrapped surface when needed.
@@ -29,7 +37,7 @@ Memory canvases use 16-bit pixels and an aligned row pitch. The logical width an
 - The DirectDraw path copies to the primary surface or flips an attached backbuffer.
 - The window DC path converts the canvas for GDI and uses `BitBlt`.
 
-The output path can also double pixels for a 2x nearest-neighbor scale. It does not smooth or filter the image.
+The output path applies the selected 1x or 2x presentation scale before the frame reaches the window or display surface.
 
 ## Cleanup
 
