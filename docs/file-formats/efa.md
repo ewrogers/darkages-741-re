@@ -6,7 +6,8 @@ EFA stores compressed effect frames. Each frame has a 64-byte descriptor and its
 struct EfaHeader {
     u32le unknown_00
     u32le frame_count   // +0x04
-    u8 unknown_08[0x38]
+    u32le frame_interval_ms // +0x08, zero allows a caller-supplied interval
+    u8 unknown_0c[0x34]
 }                       // size 0x40
 
 struct EfaFrameRecord {
@@ -35,6 +36,8 @@ payload_base = 0x40 + frame_count * 0x40
 ```
 
 `file_decode_efa_frame` finds the selected payload, inflates it with zlib, and creates an image over the described pixel planes.
+
+`file_open_efa` returns both `frame_count` and `frame_interval_ms` from the header. Ordinary world effects prefer a nonzero EFA interval over the fallback timer supplied by [`SEffectLayer`](../network/server/041-0x29-effect-layer.md). A zero interval leaves that packet value in use. The timer advances frames, so this is not the effect's total lifetime.
 
 ## Decode
 

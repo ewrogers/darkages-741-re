@@ -31,6 +31,7 @@ Body schemas use the shared [packet body notation](../packet-body-notation.md). 
 | [0x18 - Remove Spell (`SRemoveSpell`)](024-0x18-remove-spell.md) | session key |
 | [0x19 - Sound Effect (`SSoundEffect`)](025-0x19-sound-effect.md) | session key |
 | [0x1A - Motion (`SMotion`)](026-0x1a-motion.md) | session key |
+| [0x1B - Enter Editing Mode (`SEnterEditingMode`)](027-0x1b-enter-editing-mode.md) | session key |
 | [0x1E - Change Day (`SChangeDay`)](030-0x1e-change-day.md) | session key |
 | [0x1F - Change Weather (`SChangeWeather`)](031-0x1f-change-weather.md) | session key |
 | [0x20 - Change Hour (`SChangeHour`)](032-0x20-change-hour.md) | session key |
@@ -43,6 +44,7 @@ Body schemas use the shared [packet body notation](../packet-body-notation.md). 
 | [0x30 - Pursuit Message (`SPursuitMessage`)](048-0x30-pursuit-message.md) | session key |
 | [0x32 - Static Object State (`SStaticObjectState`)](050-0x32-static-object-state.md) | session key |
 | [0x33 - Draw Human Objects (`SDrawHumanObjects`)](051-0x33-draw-human-objects.md) | session key |
+| [0x35 - Show Paper (`SShowPaper`)](053-0x35-show-paper.md) | session key |
 | [0x36 - Show Users (`SShowUsers`)](054-0x36-show-users.md) | session key |
 | [0x37 - Add Equip (`SAddEquip`)](055-0x37-add-equip.md) | session key |
 | [0x38 - Remove Equip (`SRemoveEquip`)](056-0x38-remove-equip.md) | session key |
@@ -73,7 +75,7 @@ Body schemas use the shared [packet body notation](../packet-body-notation.md). 
 | [0x63 - Group (`SGroup`)](099-0x63-group.md) | session key |
 | [0x64 - Mini Game (`SMiniGame`)](100-0x64-mini-game.md) | session key |
 | [0x66 - Browser (`SBrowser`)](102-0x66-browser.md) | startup key |
-| [0x67 - Unhandled Map-Transfer Control](103-0x67-unhandled-map-transfer-control.md) | session key |
+| [0x67 - Unhandled Field/Map Control](103-0x67-unhandled-field-map-control.md) | session key |
 | [0x68 - Check Time (`SCheckTime`)](104-0x68-check-time.md) | session key |
 | [0x6B - Screen Shot (`SScreenShot`)](107-0x6b-screen-shot.md) | session key |
 | [0x6D - Family Name (`SFamilyName`)](109-0x6d-family-name.md) | session key |

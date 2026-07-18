@@ -174,6 +174,22 @@ The names are project-owner protocol vocabulary. `LegendListPane` loads exactly 
 
 Used by legend records in [`SSelfLook`](server/057-0x39-self-look.md).
 
+## PaperBackground
+
+`PaperBackground` selects the visual skin for paper and notepad panes. The names are project-owner protocol vocabulary based on the visible backgrounds; the client binary contains the numeric asset selection but not these labels.
+
+| Value | Name |
+| ---: | --- |
+| `0` | Brown |
+| `1` | Blue |
+| `2` | Blue2 |
+| `3` | Orange |
+| `4` | White |
+
+Client 7.41 selects a nine-frame group from `Line001.epf` using `(paper_background + 6) * 9` as the group base. It does not range-check the byte. Values outside the documented set may select missing or unintended frames and should not be treated as supported backgrounds.
+
+Used by [`SEnterEditingMode`](server/027-0x1b-enter-editing-mode.md) and [`SShowPaper`](server/053-0x35-show-paper.md).
+
 ## Byte domains that are not enums yet
 
 Some shared byte fields look enum-like but do not have a verified value table:

@@ -134,7 +134,7 @@ functions:
   - address: "0x00456F30"
     name: file_open_efa
     confidence: high
-    evidence: Opens an EFA resource and returns its frame count and table view.
+    evidence: Opens an EFA resource and returns its u32 frame count from header +0x04 and u32 frame interval from header +0x08.
   - address: "0x00457030"
     name: file_decode_efa_frame
     confidence: high
@@ -467,6 +467,18 @@ functions:
     name: world_create_item_object
     confidence: high
     evidence: Replaces a matching ID, allocates RTTI WorldObject_Item from ID, Y, X, untagged sprite, and dye, then inserts it.
+  - address: "0x005CB590"
+    name: world_create_object_attached_effect
+    confidence: high
+    evidence: Finds an existing world object, constructs an RTTI WorldObject_ObjectEffect with the requested Effect.tbl index and timer, attaches it to the object, and inserts it into the world.
+  - address: "0x005CB960"
+    name: world_create_static_effect
+    confidence: high
+    evidence: Bounds-checks tile Y and X, constructs an RTTI WorldObject_StaticEffect at that map cell, and inserts it into the world.
+  - address: "0x005CBBF0"
+    name: world_create_moving_effect_between_objects
+    confidence: high
+    evidence: Resolves source and target world objects, converts their positions, constructs an RTTI WorldObject_MovingEffect path between them, and inserts it into the world.
   - address: "0x005CC670"
     name: world_create_object_name_pane
     confidence: high
@@ -563,6 +575,10 @@ functions:
     name: world_object_set_name_pane
     confidence: high
     evidence: Replaces the reference-counted WorldObject_Name_Pane pointer at common WorldObject offset +0x58.
+  - address: "0x005DD1C0"
+    name: world_effect_start_animation
+    confidence: high
+    evidence: Registers an ordinary world effect with the image pool, prefers the resource's nonzero frame interval over the packet fallback, and schedules its frame timer.
   - address: "0x005DD380"
     name: render_effect_object
     confidence: high
@@ -571,6 +587,14 @@ functions:
     name: render_update_effect_frame
     confidence: high
     evidence: Advances a world effect through its Effect.tbl frame sequence.
+  - address: "0x005DD620"
+    name: world_object_effect_ctor
+    confidence: high
+    evidence: Constructs the exact RTTI WorldObject_ObjectEffect with an Effect.tbl resource index, fallback frame interval, and owning object's facing direction.
+  - address: "0x005DD6D0"
+    name: world_static_effect_ctor
+    confidence: high
+    evidence: Constructs the exact RTTI WorldObject_StaticEffect and retains its tile Y and X coordinates.
   - address: "0x005DE280"
     name: world_item_object_ctor
     confidence: high
@@ -611,10 +635,26 @@ functions:
     name: world_living_start_move_animation
     confidence: high
     evidence: Starts the current image session's movement sequence and passes the local ScrollLevel boolean to its class-specific selector.
+  - address: "0x005E0750"
+    name: world_living_start_motion
+    confidence: high
+    evidence: Stores the facing direction, asks the current image session to select a body motion, and schedules its timer using the selector's final duration in milliseconds.
+  - address: "0x005E1800"
+    name: world_living_handle_timer_event
+    confidence: high
+    evidence: For motion timer 0x02000001, advances the living animation only when the scheduled generation matches the current motion, so an older timer cannot interrupt a newer motion.
   - address: "0x005E2630"
     name: world_monster_object_ctor
     confidence: high
     evidence: Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level.
+  - address: "0x005E2770"
+    name: world_moving_effect_ctor
+    confidence: high
+    evidence: Constructs the exact RTTI WorldObject_MovingEffect and builds its client-timed path between source and target world positions.
+  - address: "0x005E3710"
+    name: world_moving_effect_start
+    confidence: high
+    evidence: Schedules a moving effect's path timer using the step interval computed from client effect data.
   - address: "0x005E3F00"
     name: ui_world_object_name_pane_ctor
     confidence: high
@@ -699,10 +739,18 @@ functions:
     name: render_monster_apply_palette_selectors
     confidence: high
     evidence: Copies at most four resource-defined 16-byte palette mappings, replaces their selector fields from packet bytes, and enables mapped monster rendering.
+  - address: "0x00601DD0"
+    name: render_monster_select_motion_sequence
+    confidence: high
+    evidence: Accepts motion IDs 0x01, 0x83, 0x84, and 0x85, selects one of three cached monster motion resources, and leaves the caller's duration unchanged.
   - address: "0x00602240"
     name: render_human_image_session_ctor
     confidence: high
     evidence: Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord741 at object offset +0x0C.
+  - address: "0x00602A40"
+    name: render_human_select_motion_sequence
+    confidence: high
+    evidence: Selects fixed, table-driven, or appearance-dependent human body motions; normal table motions replace the caller duration with 500, 1000, or 1500 ms.
   - address: "0x00602CA0"
     name: render_human_select_walk_sequence
     confidence: high
@@ -781,6 +829,8 @@ comments:
     text: Apply ordered palette mappings during indexed PixMap drawing. Each mapping covers one source-index range and selects a replacement palette family and selector.
   - address: "0x00455BBE"
     text: Split the ANSI byte string with IsDBCSLeadByte. A DBCS pair becomes one 16-bit key with the lead byte in the high half.
+  - address: "0x00456F87"
+    text: Read EFA header +0x04 as frame_count, then +0x08 as frame_interval_ms. Ordinary world effects prefer a nonzero EFA interval over SEffectLayer's fallback timer.
   - address: "0x0047B902"
     text: Select lod.lft for mode 0, da.lft for mode 1, yami.lft for mode 2, or taiwan.lft for mode 3.
   - address: "0x0047BC09"
@@ -865,6 +915,8 @@ comments:
     text: Rebuild the cached byte for this map cell with map_get_collision_level after the cell or whole collision grid is marked dirty.
   - address: "0x005DBAAF"
     text: WorldObject +0x58 owns the reference-counted WorldObject_Name_Pane used for visible creature and human labels.
+  - address: "0x005DD1C0"
+    text: Start an ordinary effect animation. A nonzero client Effect.tbl interval replaces the packet timer value; otherwise the packet value remains the frame interval.
   - address: "0x005DD380"
     text: Effect drawing uses the common software Image blitter with a blend mode stored on the effect object.
   - address: "0x005DD470"
@@ -889,6 +941,8 @@ comments:
     text: Pass WorldObject +0x98 and the ScrollLevel boolean into the class-specific movement animation selector.
   - address: "0x005E2665"
     text: Retain creature_type at WorldObject_Monster +0x1EC; values 1, 2, and 3 also select distinct common-object collision levels.
+  - address: "0x005E3710"
+    text: Start a moving effect using its client-computed path step interval; SEffectLayer's packet timer is not used on this path.
   - address: "0x005E3F73"
     text: Copy at most 64 bytes including the NUL into WorldObject_Name_Pane +0x198. SDrawObjects attaches this pane instead of filling the living-name buffer.
   - address: "0x005E47FF"

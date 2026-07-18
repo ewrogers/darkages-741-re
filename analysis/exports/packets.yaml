@@ -19,6 +19,10 @@ functions:
     name: ui_legend_dialog_apply_self_look
     confidence: high
     evidence: "Clears and rebuilds the older LegendDialogPane list from SSelfLook's fixed-size legend records."
+  - address: "0x00430D30"
+    name: net_send_field_map_command
+    confidence: high
+    evidence: "Command-line CFieldMap builder writes opcode 0x3F, a zero checksum, and caller-supplied map ID, X, and Y words."
   - address: "0x00432340"
     name: app_save_config
     confidence: high
@@ -83,6 +87,62 @@ functions:
     name: net_request_family_name
     confidence: high
     evidence: "EquipPane reaches this opcode-only 0x7A request paired with SFamilyName."
+  - address: "0x00474310"
+    name: ui_field_map_balloon_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI FieldMapBalloonPane, loads its EPF and optional palette, and retains its parent FieldMapPane for animation completion."
+  - address: "0x00474660"
+    name: ui_field_map_balloon_handle_timer
+    confidence: high
+    evidence: "FieldMapBalloonPane TimerHandler callback advances the marker every 50 ms and schedules FieldMapPane completion event 1 when movement ends."
+  - address: "0x00474A50"
+    name: ui_field_map_balloon_set_target
+    confidence: high
+    evidence: "Stores the marker target, movement-step count, correlation time, and parent completion-event selector; equal current and target coordinates collapse the step count to zero."
+  - address: "0x00474BC0"
+    name: ui_field_map_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI FieldMapPane over Pane and its TimerHandler secondary base before initializing the field assets and server nodes."
+  - address: "0x00474D40"
+    name: ui_field_map_pane_initialize
+    confidence: high
+    evidence: "Loads the selected field asset family, builds one image or text point pane per server node, and positions the initial marker from the zero-based current-node index."
+  - address: "0x00475370"
+    name: ui_field_map_pane_register_screen
+    confidence: high
+    evidence: "Registers FieldMapPane and its point children, attaches optional local point animations, and creates the animated FieldMapBalloonPane marker at the current node."
+  - address: "0x00475B40"
+    name: ui_field_map_pane_draw
+    confidence: high
+    evidence: "Draws the field-map background loaded from frame 0 of the field-name EPF."
+  - address: "0x00475BD0"
+    name: ui_field_map_pane_handle_timer
+    confidence: high
+    evidence: "FieldMapPane TimerHandler event 0 selects a server node and starts marker movement; correlated event 1 sends CFieldMap for the selected node and restores legend.pal."
+  - address: "0x00476050"
+    name: ui_field_map_point_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI FieldMapPointPane and retains node index, checksum, map ID, destination coordinates, screen coordinates, name, and parent pane."
+  - address: "0x00476120"
+    name: ui_field_map_point_handle_pointer
+    confidence: high
+    evidence: "FieldMapPointPane primary-vtable pointer handler updates hover state and sends a left-button release to the parent's timer path as the selected node index."
+  - address: "0x00476390"
+    name: net_send_field_map_selection
+    confidence: high
+    evidence: "Normal field-map UI builder writes opcode 0x3F followed by the selected node's checksum, map ID, X, and Y words."
+  - address: "0x00476490"
+    name: ui_text_field_map_point_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TextFieldMapPointPane for a server node that has no matching local presentation record."
+  - address: "0x00476740"
+    name: ui_image_field_map_point_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ImageFieldMapPointPane with icon and position metadata matched locally by the server node name."
+  - address: "0x00476EE0"
+    name: ui_load_field_map_assets
+    confidence: high
+    evidence: "Loads the field-name EPF background, optional PAL, required TXT metadata, palette list, and locally styled waypoint records."
   - address: "0x0048F7E0"
     name: ui_inventory_pane_ctor
     confidence: high
@@ -479,6 +539,34 @@ functions:
     name: ui_option_pane_handle_keyboard_event
     confidence: high
     evidence: "OptionPane keyboard-event handler maps both X and x to construction of exact RTTI SafeQuitAlert."
+  - address: "0x0054A470"
+    name: ui_editable_paper_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI EditablePaperPane and selects editable SEnterEditingMode parsing or read-only opcode 0x35 parsing from an explicit local mode."
+  - address: "0x0054A530"
+    name: ui_editable_paper_initialize_editable
+    confidence: high
+    evidence: "Parses raw SEnterEditingMode fields as slot, paper background, width blocks, height blocks, and string16 content before building the pane controls."
+  - address: "0x0054A680"
+    name: ui_editable_paper_initialize_read_only
+    confidence: high
+    evidence: "Parses raw server opcode 0x35 into the same EditablePaperPane with its local mode set read-only."
+  - address: "0x0054A7D0"
+    name: net_send_exit_editing_mode
+    confidence: high
+    evidence: "Copies up to 8000 edited bytes, converts carriage returns to wire tab bytes, and sends CExitEditingMode opcode 0x23 with retained slot and string16 content."
+  - address: "0x0054A9B0"
+    name: ui_editable_paper_handle_action
+    confidence: high
+    evidence: "EditablePaperPane dialog action 0 sends CExitEditingMode only in editable mode, then dismisses either editable or read-only panes."
+  - address: "0x0054A9F0"
+    name: ui_dismiss_editable_paper
+    confidence: high
+    evidence: "Unregisters EditablePaperPane from the screen and event systems and removes it from its owner without independently submitting text."
+  - address: "0x0054AA30"
+    name: ui_editable_paper_build_controls
+    confidence: high
+    evidence: "Converts wire tabs to editor carriage returns, computes 16-pixel block geometry, builds the editable or read-only text control, and centers the pane within the native 640 by 480 view."
   - address: "0x0054F840"
     name: ui_open_say_input
     confidence: high
@@ -763,6 +851,30 @@ functions:
     name: net_read_draw_object_record
     confidence: high
     evidence: "Reads one common X, Y, entity ID, and tagged sprite prefix followed by the creature or ground-item variant."
+  - address: "0x00598D30"
+    name: net_create_effect_layer_server_packet
+    confidence: high
+    evidence: "Allocates the 0x28-byte RTTI SEffectLayer object and invokes its concrete constructor."
+  - address: "0x00598DB0"
+    name: net_effect_layer_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x29 to the server packet base and installs the exact SEffectLayer vtable."
+  - address: "0x00598DE0"
+    name: net_deserialize_effect_layer_server_packet
+    confidence: high
+    evidence: "Reads the target ID and conditional object or tile form, including X-before-Y coordinates when target_id is zero."
+  - address: "0x00599210"
+    name: net_create_field_map_server_packet
+    confidence: high
+    evidence: "Allocates the exact RTTI SFieldMap object and invokes its concrete constructor."
+  - address: "0x00599290"
+    name: net_field_map_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x2E to the server packet base and installs the exact SFieldMap vtable."
+  - address: "0x005992C0"
+    name: net_deserialize_field_map_server_packet
+    confidence: high
+    evidence: "Reads field-name string8, node count, current-node index, and each node's screen position, name, checksum, map ID, X, and Y."
   - address: "0x00599C60"
     name: net_create_map_server_packet
     confidence: high
@@ -795,6 +907,14 @@ functions:
     name: net_deserialize_message_server_packet
     confidence: high
     evidence: "Reads the message type, the type-0x11-only prefix, a u16 message length, and the message bytes."
+  - address: "0x0059A3F0"
+    name: net_motion_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x1A to the server packet base and installs the exact RTTI SMotion vtable."
+  - address: "0x0059A420"
+    name: net_deserialize_motion_server_packet
+    confidence: high
+    evidence: "Reads u32 object_id, u8 animation, and u16 duration_10ms. It returns without consuming a sound byte."
   - address: "0x0059A520"
     name: net_move_server_packet_ctor
     confidence: high
@@ -887,6 +1007,14 @@ functions:
     name: net_deserialize_self_look_server_packet
     confidence: high
     evidence: "Parses nation and profile text, the optional recruiting block, class metadata, and repeated legend marks."
+  - address: "0x0059BD80"
+    name: net_create_self_save_ok_server_packet
+    confidence: high
+    evidence: "Allocates only the 0x10-byte common server-packet size for the RTTI SSelfSaveOK object."
+  - address: "0x0059BE00"
+    name: net_self_save_ok_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x21 to the server packet base and installs the exact SSelfSaveOK vtable; the class has no concrete payload deserializer."
   - address: "0x0059BE80"
     name: net_create_sound_effect_server_packet
     confidence: high
@@ -1171,10 +1299,18 @@ functions:
     name: net_handle_change_direction_server_packet
     confidence: high
     evidence: "Finds SChangeDirection.user_id, requests CRequestObject when absent, and applies direction only after an RTTI cast to WorldObject_Living."
+  - address: "0x005F3C80"
+    name: net_handle_motion_server_packet
+    confidence: high
+    evidence: "Finds SMotion.object_id, accepts living object kinds 1 and 2, converts the u16 timing from 10 ms units, and starts the requested class-specific body motion without a sound path."
   - address: "0x005F3E00"
     name: net_handle_say_server_packet
     confidence: high
     evidence: "Finds the SSay sender, requests a missing object without replaying the speech, and otherwise shows the selected three-second speech style without appending to history."
+  - address: "0x005F3EB0"
+    name: net_handle_effect_layer_server_packet
+    confidence: high
+    evidence: "Creates static, object-attached, or source-to-target moving world effects from SEffectLayer, including the 10000 through 11999 moving-effect selector range."
   - address: "0x005F4200"
     name: net_send_get
     confidence: high
@@ -1195,6 +1331,10 @@ functions:
     name: net_send_refresh_user
     confidence: high
     evidence: "WorldPane paths call this opcode-only 0x38 builder."
+  - address: "0x005F46C0"
+    name: net_send_emotion
+    confidence: high
+    evidence: "Builds CEmotion as opcode 0x1D followed by one caller-supplied u8 emotion request code."
   - address: "0x005F4900"
     name: ui_world_pane_reset_movement_state
     confidence: medium
@@ -1215,6 +1355,14 @@ functions:
     name: net_handle_message_server_packet
     confidence: high
     evidence: "Routes SMessage to the floating GameMessagePane, WindowMessageDialogPane, or ScorePane according to its type byte."
+  - address: "0x005F71C0"
+    name: net_handle_enter_editing_mode_server_data
+    confidence: high
+    evidence: "WorldPane's raw opcode 0x1B branch allocates exact RTTI EditablePaperPane and constructs it in editable mode directly from the decoded body."
+  - address: "0x005F7250"
+    name: net_handle_show_paper_server_data
+    confidence: high
+    evidence: "WorldPane's raw opcode 0x35 branch constructs the same EditablePaperPane in read-only mode."
   - address: "0x005F7830"
     name: net_send_check_time
     confidence: high
@@ -1231,6 +1379,14 @@ functions:
     name: net_handle_group_server_packet
     confidence: high
     evidence: "Handles SGroup by either opening the normal prompt or immediately sending CGroup action 3 according to AppConfig GroupAnswer."
+  - address: "0x005F88B0"
+    name: ui_create_field_map_pane
+    confidence: high
+    evidence: "Allocates a 640 by 480 FieldMapPane, initializes it from decoded SFieldMap values, registers it with the screen root, and retains it in WorldPane."
+  - address: "0x005F8A10"
+    name: net_handle_field_map_server_data
+    confidence: high
+    evidence: "WorldPane's raw opcode 0x2E branch reparses the decoded SFieldMap body and creates the field-map pane instead of consuming the factory-built packet object."
   - address: "0x005F9E50"
     name: ui_world_pane_get_local_action_state
     confidence: high
@@ -1629,6 +1785,40 @@ comments:
     text: "Submit the two-byte CQuit acknowledgement 0B 00."
   - address: "0x005445EF"
     text: "OptionPane key codes X and x both route here to construct SafeQuitAlert."
+  - address: "0x0054A569"
+    text: "Read the SEnterEditingMode inventory slot byte and retain it for CExitEditingMode."
+  - address: "0x0054A594"
+    text: "Read the paper-background byte; it selects a nine-frame Line001.epf skin group and does not control editability."
+  - address: "0x0054A5BC"
+    text: "Read width_blocks. Pane width is (value + 2) * 16 pixels."
+  - address: "0x0054A5E3"
+    text: "Read height_blocks. Pane height is (value + 3) * 16 pixels."
+  - address: "0x0054A5FC"
+    text: "Read the big-endian u16 content-byte count before copying the string bytes."
+  - address: "0x0054A6BD"
+    text: "SShowPaper: read paper_background for the same Line001.epf skin selection used by editable paper."
+  - address: "0x0054A6E5"
+    text: "SShowPaper: read width_blocks. Pane width is (value + 2) * 16 pixels."
+  - address: "0x0054A70C"
+    text: "SShowPaper: read height_blocks. Pane height is (value + 3) * 16 pixels."
+  - address: "0x0054A733"
+    text: "Read center_text. Zero uses the normal inset text area; nonzero centers a compact text rectangle."
+  - address: "0x0054A74C"
+    text: "Read the SShowPaper big-endian u16 content-byte count."
+  - address: "0x0054A87E"
+    text: "Convert each editor carriage return byte 0x0D to wire byte 0x09 before submission."
+  - address: "0x0054A8B4"
+    text: "Begin CExitEditingMode with opcode 0x23."
+  - address: "0x0054A8EA"
+    text: "Echo the slot byte retained from SEnterEditingMode."
+  - address: "0x0054A91A"
+    text: "Write edited content as a big-endian u16 byte count followed by exactly that many bytes."
+  - address: "0x0054AAB9"
+    text: "Compute paper width as (width_blocks + 2) * 16 pixels."
+  - address: "0x0054AACD"
+    text: "Compute paper height as (height_blocks + 3) * 16 pixels."
+  - address: "0x0054AC96"
+    text: "Create the text control; editable mode is supplied separately from the paper-background selector."
   - address: "0x0054F8AE"
     text: "Say mode 0 prepares a local white prompt using palette index 0xFF and the character-name prefix ': '."
   - address: "0x0054F8CA"
@@ -1706,7 +1896,7 @@ comments:
   - address: "0x00596003"
     text: "Register RTTI-backed SChangeHour for opcode 0x20. Opcode 0x1E has no server packet factory entry."
   - address: "0x005962D3"
-    text: "The factory installs no constructor for server opcode 0x1E, 0x58, or 0x67. They remain raw decoded bodies with a null packet-object slot."
+    text: "The factory installs no constructor for server opcode 0x1B, 0x1E, 0x58, or 0x67. They remain raw decoded bodies with a null packet-object slot."
   - address: "0x005972CA"
     text: "SAddEquip body: u8 slot, u16 sprite, u8 dye, string8 name, one skipped byte, u32 current durability, u32 maximum durability."
   - address: "0x00597311"
@@ -1779,6 +1969,10 @@ comments:
     text: "Read two bytes shared by the parser variants. For creatures the first is Direction and the second is discarded; both are discarded for items."
   - address: "0x00598C3A"
     text: "Creature variant: widen creature_type to u32. Value 2 is the Mundane, meaning NPC, form and is the only value followed by a string8 display name."
+  - address: "0x00598DE0"
+    text: "Read SEffectLayer's conditional body. A zero target ID selects static tile coordinates; a nonzero target ID selects target and optional source object attachments."
+  - address: "0x00598E4B"
+    text: "Coordinate mode reads tile_x first and tile_y second. The parser stores them at reversed internal offsets, then the handler restores X/Y when constructing WorldObject_StaticEffect."
   - address: "0x00599CEC"
     text: "Construct exact RTTI SMap for server opcode 0x06."
   - address: "0x00599D26"
@@ -1813,6 +2007,8 @@ comments:
     text: "Read the main message length as u16. The parser itself does not impose a semantic text limit."
   - address: "0x0059A16D"
     text: "Retain a pointer to exactly message_length bytes from the decoded packet body; no wire terminator is required."
+  - address: "0x0059A427"
+    text: "Deserialize SMotion as u32 object_id, u8 animation, and u16 duration_10ms. No sound byte is read."
   - address: "0x0059A562"
     text: "Read SMove direction. Values 0 through 3 advance a cardinal step; value 4 enters the no-step correction path."
   - address: "0x0059A570"
@@ -1843,6 +2039,8 @@ comments:
     text: "Read the speaking world object's u32 ID."
   - address: "0x0059B5F5"
     text: "Read the speech text as string8 into the packet object's inline buffer."
+  - address: "0x0059BE00"
+    text: "SSelfSaveOK is an opcode-only, base-size packet. It inherits the base deserializer and has no packet-specific WorldPane handler."
   - address: "0x0059C44D"
     text: "Read the SStatus field byte. Bits 0x20, 0x10, 0x08, and 0x04 gate variable blocks; 0x02 and 0x01 are standalone state flags; the high two bits encode privilege level."
   - address: "0x0059C45A"
@@ -1969,6 +2167,8 @@ comments:
     text: "Route parsed SChangeHour opcode 0x20 to the world lighting handler. There is no opcode 0x1E branch in this dispatcher."
   - address: "0x005EDF3D"
     text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
+  - address: "0x005EDFE6"
+    text: "Raw opcode 0x1B bypasses the packet factory and constructs EditablePaperPane through net_handle_enter_editing_mode_server_data."
   - address: "0x005EE185"
     text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x1E, 0x58, or 0x67."
   - address: "0x005EE4C8"
@@ -2017,6 +2217,8 @@ comments:
     text: "Select the first empty inventory slot in 1 through 60, or 0 when the inventory is full."
   - address: "0x005F12BE"
     text: "Send CGet for the coordinates where an item was found. Unlike double-click pickup, this path does not reject destination slot 0."
+  - address: "0x005F1421"
+    text: "Send the CEmotion request code from the matched 33-entry modified-number-key table. The table's outgoing code is separate from its local body-motion ID."
   - address: "0x005F1A27"
     text: "Only blindness code 08 enables the world blind-render state."
   - address: "0x005F1B5A"
@@ -2127,10 +2329,22 @@ comments:
     text: "When the target object is absent, send CRequestObject with the same ID to request its world data."
   - address: "0x005F3C2D"
     text: "Require RTTI WorldObject_Living before applying direction. Users, humans, and monsters pass; items do not."
+  - address: "0x005F3CBD"
+    text: "Convert SMotion.duration_10ms to a signed 16-bit millisecond value by multiplying by 10."
+  - address: "0x005F3DC9"
+    text: "Start the class-specific living-object motion with animation, current direction, and the converted duration."
   - address: "0x005F3E52"
     text: "If SSay's sender object is absent, request it with CRequestObject and return without queuing the current speech for replay."
   - address: "0x005F3E77"
     text: "Show SSay on the selected world object for 3,000 ms. This path does not append to persistent message history."
+  - address: "0x005F3F5A"
+    text: "Target animation 0x00FF is an explicit no-op sentinel."
+  - address: "0x005F3F6B"
+    text: "Target animations 10000 through 11999 select a moving effect between source and target objects. The resource index is animation minus 10000."
+  - address: "0x005F3FDC"
+    text: "Normal mode uses one-based target and source animation selectors and converts them to zero-based Effect.tbl resource indexes."
+  - address: "0x005F4090"
+    text: "A zero target ID creates a WorldObject_StaticEffect at the packet's tile_y, tile_x coordinates after map bounds checks."
   - address: "0x005F424E"
     text: "Write CGet.destination_slot as u8."
   - address: "0x005F426D"
@@ -2141,6 +2355,8 @@ comments:
     text: "Increment the rolling u8 CMove step before serializing it. Natural byte overflow wraps 255 to 0."
   - address: "0x005F4602"
     text: "Record timeGetTime() after building CMove. A matching SMove step subtracts this value for the network indicator."
+  - address: "0x005F46F1"
+    text: "Write the caller-supplied emotion request as the only CEmotion payload byte. The builder applies no range check."
   - address: "0x005F6DD9"
     text: "Route SMessage types 0x00 through 0x12. Colored overlay, popup, and score paths are separate; several types are intentionally ignored here."
   - address: "0x005F6DF7"
@@ -2433,7 +2649,7 @@ packet_indexes:
         builder: "0x005F46C0"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x005F46C0 writes opcode 0x1D and submits the body."
+        evidence: "Builder 0x005F46C0 writes opcode 0x1D and one caller-supplied u8. WorldPane's keyboard path maps 33 modified number-row entries to request values 0 through 8 and 12 through 35. The same table keeps outgoing emotion codes separate from expected local motion IDs."
         page: "docs/network/client/029-0x1d-emotion.md"
       - opcode: "0x23"
         friendly_name: "Exit Editing Mode"
@@ -2441,8 +2657,8 @@ packet_indexes:
         transform: derived
         builder: "0x0054A7D0"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Representative builder 0x0054A7D0 writes opcode 0x23 and submits the body."
+        name_confidence: high
+        evidence: "Project-owner protocol vocabulary identifies CExitEditingMode. EditablePaperPane builder 0x0054A7D0 writes opcode 0x23, the slot retained from SEnterEditingMode, and string16 content after converting editor carriage returns to wire tab bytes; action handler 0x0054A9B0 sends only for editable mode."
         page: "docs/network/client/035-0x23-exit-editing-mode.md"
       - opcode: "0x24"
         friendly_name: "Drop Gold"
@@ -2574,10 +2790,10 @@ packet_indexes:
         friendly_name: "Field Map"
         class_name: "CFieldMap"
         transform: derived
-        builder: "0x00430D30"
+        builder: "0x00476390"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Representative builder 0x00430D30 writes opcode 0x3F and submits the body."
+        name_confidence: high
+        evidence: "Project-owner protocol vocabulary identifies CFieldMap. Normal UI builder 0x00476390 writes opcode 0x3F and the selected SFieldMap node's checksum, map ID, X, and Y; command-line builder 0x00430D30 writes the same body with checksum zero."
         page: "docs/network/client/063-0x3f-field-map.md"
       - opcode: "0x42"
         friendly_name: "Exception"
@@ -3026,8 +3242,18 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059A3F0 passes opcode 0x1A to the server packet base and installs the SMotion vtable."
+        evidence: "RTTI constructor 0x0059A3F0 installs SMotion. Deserializer 0x0059A420 reads u32 object_id, u8 animation, and u16 duration_10ms only. Handler 0x005F3C80 scales timing by 10, requires a living object, and starts its class-specific motion without reading or playing a sound byte."
         page: "docs/network/server/026-0x1a-motion.md"
+      - opcode: "0x1B"
+        friendly_name: "Enter Editing Mode"
+        class_name: "SEnterEditingMode"
+        transform: derived
+        constructor: null
+        evidence_source: owner_protocol_name
+        opcode_confidence: high
+        name_confidence: high
+        evidence: "Project-owner protocol vocabulary identifies SEnterEditingMode. Raw WorldPane handler 0x005F71C0 constructs exact RTTI EditablePaperPane; initializer 0x0054A530 reads slot, paper background, width blocks, height blocks, and string16 content. The packet factory has no 0x1B constructor."
+        page: "docs/network/server/027-0x1b-enter-editing-mode.md"
       - opcode: "0x1E"
         friendly_name: "Change Day"
         class_name: "SChangeDay"
@@ -3066,7 +3292,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059BE00 passes opcode 0x21 to the server packet base and installs the SSelfSaveOK vtable."
+        evidence: "Constructor 0x0059BE00 installs the RTTI SSelfSaveOK class for opcode 0x21. The 0x10-byte object inherits the base deserializer and consumes no payload; net_dispatch_server_packet has no parsed or raw 0x21 handler."
         page: "docs/network/server/033-0x21-self-save-ok.md"
       - opcode: "0x29"
         friendly_name: "Effect Layer"
@@ -3076,7 +3302,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00598DB0 passes opcode 0x29 to the server packet base and installs the SEffectLayer vtable."
+        evidence: "Constructor 0x00598DB0 installs RTTI SEffectLayer for opcode 0x29. Deserializer 0x00598DE0 reads the conditional object or X/Y tile body, and handler 0x005F3EB0 creates static, attached, or moving world effects."
         page: "docs/network/server/041-0x29-effect-layer.md"
       - opcode: "0x2C"
         friendly_name: "Add Skill"
@@ -3106,7 +3332,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00599290 passes opcode 0x2E to the server packet base and installs the SFieldMap vtable."
+        evidence: "RTTI constructor 0x00599290 binds opcode 0x2E. Deserializer 0x005992C0 reads the field asset stem, node count, zero-based current-node index, and each node's screen position, name, checksum, map ID, X, and Y; WorldPane raw handler 0x005F8A10 reparses the same body to build FieldMapPane."
         page: "docs/network/server/046-0x2e-field-map.md"
       - opcode: "0x2F"
         friendly_name: "Screen Menu"
@@ -3148,6 +3374,16 @@ packet_indexes:
         name_confidence: high
         evidence: "RTTI constructor 0x00598540 installs opcode 0x33. Deserializer 0x00598570 decodes the complete normal and disguised forms; handler 0x005F3340 creates the local or remote human and applies appearance, names, group ads, and object lighting."
         page: "docs/network/server/051-0x33-draw-human-objects.md"
+      - opcode: "0x35"
+        friendly_name: "Show Paper"
+        class_name: "SShowPaper"
+        transform: derived
+        constructor: null
+        evidence_source: owner_protocol_name
+        opcode_confidence: high
+        name_confidence: high
+        evidence: "Project-owner protocol vocabulary identifies SShowPaper. Raw handler 0x005F7250 constructs exact RTTI EditablePaperPane in read-only mode; initializer 0x0054A680 reads paper background, width blocks, height blocks, center-text byte, and string16 content. Closing skips CExitEditingMode."
+        page: "docs/network/server/053-0x35-show-paper.md"
       - opcode: "0x36"
         friendly_name: "Show Users"
         class_name: "SShowUsers"
@@ -3449,15 +3685,15 @@ packet_indexes:
         evidence: "RTTI constructor 0x00597E20 installs opcode 0x66. Deserializer 0x00597E50 parses subtype 3 as a u8-length string, and handler 0x004B9B00 caches it as the homepage URL."
         page: "docs/network/server/102-0x66-browser.md"
       - opcode: "0x67"
-        friendly_name: "Unhandled Map-Transfer Control"
+        friendly_name: "Unhandled Field/Map Control"
         class_name: null
         transform: derived
         constructor: null
         evidence_source: handler
         opcode_confidence: high
         name_confidence: low
-        evidence: "Supplied runtime behavior associates decoded body 67 00 with map transfer. The factory has no 0x67 entry, and no RTTI-backed pane event handler checks the raw opcode, so the body is unconsumed; SMapPart 0x3C drives MapLoadingPane instead."
-        page: "docs/network/server/103-0x67-unhandled-map-transfer-control.md"
+        evidence: "Supplied captures show 0x67 after SFieldMap presentation and after CFieldMap before map entry, with bodies 67 00 and 67 03 00 00 00 00 00. The factory has no 0x67 entry and no RTTI-backed pane event handler checks it, so its variable payload is unconsumed; SFieldMap builds navigation and SMapPart drives MapLoadingPane."
+        page: "docs/network/server/103-0x67-unhandled-field-map-control.md"
       - opcode: "0x68"
         friendly_name: "Check Time"
         class_name: "SCheckTime"

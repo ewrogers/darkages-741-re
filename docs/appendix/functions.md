@@ -152,6 +152,19 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_equip_pane_remove_equipment_from_packet` | `0x004602B0` | high | Clears the selected EquipPane sprite, name, and durability fields without clearing the retained dye byte. |
 | `ui_pane_schedule_timer` | `0x00464050` | high | Schedules a timer for a Pane by passing its TimerHandler subobject at +0x11C. |
 | `ui_pane_cancel_timers` | `0x00464740` | high | Converts a Pane pointer to TimerHandler +0x11C and cancels matching timers. |
+| `ui_field_map_balloon_pane_ctor` | `0x00474310` | high | Constructs exact RTTI FieldMapBalloonPane, loads its EPF and optional palette, and retains its parent FieldMapPane for animation completion. |
+| `ui_field_map_balloon_handle_timer` | `0x00474660` | high | FieldMapBalloonPane TimerHandler callback advances the marker every 50 ms and schedules FieldMapPane completion event 1 when movement ends. |
+| `ui_field_map_balloon_set_target` | `0x00474A50` | high | Stores the marker target, movement-step count, correlation time, and parent completion-event selector; equal current and target coordinates collapse the step count to zero. |
+| `ui_field_map_pane_ctor` | `0x00474BC0` | high | Constructs exact RTTI FieldMapPane over Pane and its TimerHandler secondary base before initializing the field assets and server nodes. |
+| `ui_field_map_pane_initialize` | `0x00474D40` | high | Loads the selected field asset family, builds one image or text point pane per server node, and positions the initial marker from the zero-based current-node index. |
+| `ui_field_map_pane_register_screen` | `0x00475370` | high | Registers FieldMapPane and its point children, attaches optional local point animations, and creates the animated FieldMapBalloonPane marker at the current node. |
+| `ui_field_map_pane_draw` | `0x00475B40` | high | Draws the field-map background loaded from frame 0 of the field-name EPF. |
+| `ui_field_map_pane_handle_timer` | `0x00475BD0` | high | FieldMapPane TimerHandler event 0 selects a server node and starts marker movement; correlated event 1 sends CFieldMap for the selected node and restores legend.pal. |
+| `ui_field_map_point_pane_ctor` | `0x00476050` | high | Constructs exact RTTI FieldMapPointPane and retains node index, checksum, map ID, destination coordinates, screen coordinates, name, and parent pane. |
+| `ui_field_map_point_handle_pointer` | `0x00476120` | high | FieldMapPointPane primary-vtable pointer handler updates hover state and sends a left-button release to the parent's timer path as the selected node index. |
+| `ui_text_field_map_point_pane_ctor` | `0x00476490` | high | Constructs exact RTTI TextFieldMapPointPane for a server node that has no matching local presentation record. |
+| `ui_image_field_map_point_pane_ctor` | `0x00476740` | high | Constructs exact RTTI ImageFieldMapPointPane with icon and position metadata matched locally by the server node name. |
+| `ui_load_field_map_assets` | `0x00476EE0` | high | Loads the field-name EPF background, optional PAL, required TXT metadata, palette list, and locally styled waypoint records. |
 | `ui_game_message_pane_ctor` | `0x0047C2A0` | high | Constructs the RTTI-backed four-row floating GameMessagePane used for short colored notices. |
 | `ui_game_message_pane_append_formatted_rgb` | `0x0047C5C0` | high | Parses inline color markup and appends colored byte cells to the fading GameMessagePane overlay. |
 | `ui_game_message_pane_append_bytes` | `0x0047C6F0` | high | Writes colored byte cells into the current floating-message row, wrapping and rotating the four-row buffer. |
@@ -271,6 +284,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_pane_register_event_handler` | `0x0054A310` | high | Pane primary-vtable +0x40 wrapper for insertion into EventHandlerList. |
 | `ui_pane_unregister_event_handler` | `0x0054A360` | high | Pane primary-vtable +0x44 wrapper for removal from EventHandlerList. |
 | `ui_pane_draw_to_target` | `0x0054A3F0` | high | Copies a pane canvas into its target canvas with the pane's selected blend mode. |
+| `ui_editable_paper_pane_ctor` | `0x0054A470` | high | Constructs exact RTTI EditablePaperPane and selects editable SEnterEditingMode parsing or read-only opcode 0x35 parsing from an explicit local mode. |
+| `ui_editable_paper_initialize_editable` | `0x0054A530` | high | Parses raw SEnterEditingMode fields as slot, paper background, width blocks, height blocks, and string16 content before building the pane controls. |
+| `ui_editable_paper_initialize_read_only` | `0x0054A680` | high | Parses raw server opcode 0x35 into the same EditablePaperPane with its local mode set read-only. |
+| `ui_editable_paper_handle_action` | `0x0054A9B0` | high | EditablePaperPane dialog action 0 sends CExitEditingMode only in editable mode, then dismisses either editable or read-only panes. |
+| `ui_dismiss_editable_paper` | `0x0054A9F0` | high | Unregisters EditablePaperPane from the screen and event systems and removes it from its owner without independently submitting text. |
+| `ui_editable_paper_build_controls` | `0x0054AA30` | high | Converts wire tabs to editor carriage returns, computes 16-pixel block geometry, builds the editable or read-only text control, and centers the pane within the native 640 by 480 view. |
 | `ui_open_say_input` | `0x0054F840` | high | Creates ChatInputPane in Say mode 0 or Shout mode 1 and formats the local name prefix as colon-space or exclamation-space. |
 | `ui_open_tell_receiver_input` | `0x0054F9D0` | high | Creates exact RTTI class TellReceiverInputPane when the world keyboard handler receives the double-quote key. |
 | `ui_open_tell_input` | `0x0054FAB0` | high | Formats the local arrow, target name, and colon prefix, then creates exact RTTI class TellInputPane. |
@@ -372,6 +391,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_has_map_loading_pane` | `0x005F6470` | high | Reports whether the global MapLoadingPane pointer is non-null. |
 | `ui_get_map_loading_pane` | `0x005F6490` | high | Returns the current global MapLoadingPane pointer used by SMapPart progress handling. |
 | `ui_close_map_loading_pane` | `0x005F64A0` | high | Invokes the deleting destructor for the current MapLoadingPane when a map transfer finishes. |
+| `ui_create_field_map_pane` | `0x005F88B0` | high | Allocates a 640 by 480 FieldMapPane, initializes it from decoded SFieldMap values, registers it with the screen root, and retains it in WorldPane. |
 | `ui_world_pane_change_user_state` | `0x005F9E20` | high | WorldPane_Impl interface method that forwards a requested UserState to CChangeUserState. |
 | `ui_world_pane_get_local_action_state` | `0x005F9E50` | high | WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc. |
 | `ui_world_pane_get_self_object_id` | `0x005F9EC0` | high | WorldPane_Impl virtual getter returns the SUserAppearance user ID stored in WorldUserFunc. |
@@ -383,6 +403,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
+| `net_send_field_map_command` | `0x00430D30` | high | Command-line CFieldMap builder writes opcode 0x3F, a zero checksum, and caller-supplied map ID, X, and Y words. |
 | `net_parse_endpoint_override` | `0x00433010` | high | Parses a positional IPv4 address or hostname and optional port, but no active mode-1 path calls it. |
 | `net_configure_default_endpoint` | `0x00433380` | high | Resolves da0.kru.com, applies the hardcoded IPv4 fallback, selects port 2610 or 2601, and loads or creates the registry-backed installation identifiers later sent by CLogin. |
 | `net_configure_singapore_endpoint` | `0x00433820` | high | Dormant mode 15 initializer selected by singapore.nfo; installs fixed address bytes and port 2610 unless the positional override succeeds. |
@@ -411,6 +432,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_queue_raw_server_bytes_event` | `0x00468180` | high | Builds event type 0x13 around an owned raw receive buffer for TerminalPane2. |
 | `net_queue_server_packet_event` | `0x00468220` | high | Builds and enqueues the event object used for a decoded server packet body. |
 | `net_request_family_name` | `0x004719B0` | high | EquipPane reaches this opcode-only 0x7A request paired with SFamilyName. |
+| `net_send_field_map_selection` | `0x00476390` | high | Normal field-map UI builder writes opcode 0x3F followed by the selected node's checksum, map ID, X, and Y words. |
 | `net_send_drop` | `0x00496C90` | high | Builds CDrop as opcode 0x08, source slot, target X, target Y, and u32 quantity. |
 | `net_send_use_inventory_item` | `0x00496E90` | high | Checks the item denial list, then builds CUse as opcode 0x1C followed by the one-byte slot retained from SAddInventory. |
 | `net_send_drop_gold` | `0x004975C0` | high | Parses a nonzero amount and builds CDropGold as opcode 0x24, u32 amount, u16 X, and u16 Y. |
@@ -448,6 +470,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_metadata_crc32` | `0x004E5790` | high | Calculates standard CRC32 over inflated metadata bytes. |
 | `net_parse_metadata_table` | `0x004E57C0` | high | Parses big-endian group counts and length-prefixed metadata names and values. |
 | `net_send_user_setting` | `0x00542E60` | high | Builds the fixed two-byte CUserSetting body from opcode 0x1B and one setting ID. |
+| `net_send_exit_editing_mode` | `0x0054A7D0` | high | Copies up to 8000 edited bytes, converts carriage returns to wire tab bytes, and sends CExitEditingMode opcode 0x23 with retained slot and string16 content. |
 | `net_build_send_portrait` | `0x0054CE10` | high | Builds opcode 0x4F with nested portrait and profile lengths after applying the local image checks. |
 | `net_decode_portrait_profile_body` | `0x0054D570` | high | Reads the nested big-endian portrait and profile lengths used by the portrait body. |
 | `net_send_say` | `0x0054FD90` | high | Builds CSay opcode 0x0E with the retained Say or Shout mode and a string8 message of at most 72 bytes. |
@@ -548,6 +571,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_deserialize_draw_objects_server_packet` | `0x00598AB0` | high | Reads the u16 entity count and retains a reader over all remaining variable-length records. |
 | `net_reset_draw_objects_record_reader` | `0x00598B10` | high | Rewinds the retained SDrawObjects body reader and resets its consumed-record count. |
 | `net_read_draw_object_record` | `0x00598B30` | high | Reads one common X, Y, entity ID, and tagged sprite prefix followed by the creature or ground-item variant. |
+| `net_create_effect_layer_server_packet` | `0x00598D30` | high | Allocates the 0x28-byte RTTI SEffectLayer object and invokes its concrete constructor. |
+| `net_effect_layer_server_packet_ctor` | `0x00598DB0` | high | Passes opcode 0x29 to the server packet base and installs the exact SEffectLayer vtable. |
+| `net_deserialize_effect_layer_server_packet` | `0x00598DE0` | high | Reads the target ID and conditional object or tile form, including X-before-Y coordinates when target_id is zero. |
+| `net_create_field_map_server_packet` | `0x00599210` | high | Allocates the exact RTTI SFieldMap object and invokes its concrete constructor. |
+| `net_field_map_server_packet_ctor` | `0x00599290` | high | Passes opcode 0x2E to the server packet base and installs the exact SFieldMap vtable. |
+| `net_deserialize_field_map_server_packet` | `0x005992C0` | high | Reads field-name string8, node count, current-node index, and each node's screen position, name, checksum, map ID, X, and Y. |
 | `net_create_map_server_packet` | `0x00599C60` | high | Allocates the 0x1C-byte exact RTTI SMap object and invokes its concrete constructor. |
 | `net_map_server_packet_ctor` | `0x00599CE0` | high | Passes opcode 0x06 to the server packet base and installs the exact RTTI SMap vtable. |
 | `net_deserialize_map_server_packet` | `0x00599D10` | high | Reads u8 start X, start Y, rectangle width, and rectangle height, then retains a pointer to the remaining map-cell records. |
@@ -557,6 +586,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_message_server_packet` | `0x0059A050` | high | Allocates the RTTI-backed SMessage object registered for server opcode 0x0A. |
 | `net_message_server_packet_ctor` | `0x0059A0D0` | high | Constructs SMessage with opcode 0x0A and installs its concrete vtable. |
 | `net_deserialize_message_server_packet` | `0x0059A100` | high | Reads the message type, the type-0x11-only prefix, a u16 message length, and the message bytes. |
+| `net_motion_server_packet_ctor` | `0x0059A3F0` | high | Passes opcode 0x1A to the server packet base and installs the exact RTTI SMotion vtable. |
+| `net_deserialize_motion_server_packet` | `0x0059A420` | high | Reads u32 object_id, u8 animation, and u16 duration_10ms. |
 | `net_move_server_packet_ctor` | `0x0059A520` | high | Passes opcode 0x0B to the server packet base and installs the exact RTTI SMove vtable. |
 | `net_deserialize_move_server_packet` | `0x0059A550` | high | Reads direction, four big-endian coordinate words, and the echoed movement step into the fixed SMove packet object. |
 | `net_create_quit_server_packet` | `0x0059ACA0` | high | Allocates a 0x14-byte RTTI SQuit object and calls its concrete constructor. |
@@ -582,6 +613,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_self_look_server_packet` | `0x0059B9C0` | high | Allocates the 0x9C64-byte RTTI SSelfLook object and invokes its concrete constructor. |
 | `net_self_look_server_packet_ctor` | `0x0059BA40` | high | Passes opcode 0x39 to the server packet base and installs the exact SSelfLook vtable. |
 | `net_deserialize_self_look_server_packet` | `0x0059BA70` | high | Parses nation and profile text, the optional recruiting block, class metadata, and repeated legend marks. |
+| `net_create_self_save_ok_server_packet` | `0x0059BD80` | high | Allocates only the 0x10-byte common server-packet size for the RTTI SSelfSaveOK object. |
+| `net_self_save_ok_server_packet_ctor` | `0x0059BE00` | high | Passes opcode 0x21 to the server packet base and installs the exact SSelfSaveOK vtable; the class has no concrete payload deserializer. |
 | `net_create_sound_effect_server_packet` | `0x0059BE80` | high | Allocates the 0x14-byte RTTI SSoundEffect object and invokes its concrete constructor. |
 | `net_sound_effect_server_packet_ctor` | `0x0059BF00` | high | Passes opcode 0x19 to the server packet base and installs the exact SSoundEffect vtable. |
 | `net_deserialize_sound_effect_server_packet` | `0x0059BF30` | high | Reads one sound byte and only a second track byte for mode 0xFF; no trailing u16 is consumed. |
@@ -614,19 +647,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_draw_objects_server_packet` | `0x005F3150` | high | Walks every SDrawObjects record, replaces matching IDs, creates WorldObject_Monster or WorldObject_Item by tagged sprite range, applies creature palette selectors and names, and ignores unsupported ranges. |
 | `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes WorldObject_User for the saved self ID and WorldObject_Human otherwise, applies normal or disguised appearance, updates names and optional group ads, and handles Darkness object lights. |
 | `net_handle_change_direction_server_packet` | `0x005F3BB0` | high | Finds SChangeDirection.user_id, requests CRequestObject when absent, and applies direction only after an RTTI cast to WorldObject_Living. |
+| `net_handle_motion_server_packet` | `0x005F3C80` | high | Finds SMotion.object_id, accepts living object kinds 1 and 2, converts the u16 timing from 10 ms units, and starts the requested class-specific body motion without a sound path. |
 | `net_handle_say_server_packet` | `0x005F3E00` | high | Finds the SSay sender, requests a missing object without replaying the speech, and otherwise shows the selected three-second speech style without appending to history. |
+| `net_handle_effect_layer_server_packet` | `0x005F3EB0` | high | Creates static, object-attached, or source-to-target moving world effects from SEffectLayer, including the 10000 through 11999 moving-effect selector range. |
 | `net_send_get` | `0x005F4200` | high | Builds CGet as opcode 0x07, u8 destination slot, u16 X, and u16 Y. |
 | `net_send_request_object` | `0x005F4430` | high | Builds CRequestObject as opcode 0x0C plus one u32 object ID; confirmed callers use it after a lookup misses or an expected living-object cast fails. |
 | `net_send_attack` | `0x005F44B0` | high | Builds CAttack as opcode 0x13 with no payload and submits the complete one-byte plaintext body. |
 | `net_send_change_direction` | `0x005F4510` | high | Builds CChangeDirection as opcode 0x11 plus one direction byte after WorldPane turns the local object optimistically. |
 | `net_send_move` | `0x005F4580` | high | Builds CMove as opcode, direction, and an incremented rolling u8 step, then records the send time used by a matching SMove reply. |
 | `net_send_refresh_user` | `0x005F4640` | high | WorldPane paths call this opcode-only 0x38 builder. |
+| `net_send_emotion` | `0x005F46C0` | high | Builds CEmotion as opcode 0x1D followed by one caller-supplied u8 emotion request code. |
 | `net_handle_message_server_packet` | `0x005F6D80` | high | Routes SMessage to the floating GameMessagePane, WindowMessageDialogPane, or ScorePane according to its type byte. |
+| `net_handle_enter_editing_mode_server_data` | `0x005F71C0` | high | WorldPane's raw opcode 0x1B branch allocates exact RTTI EditablePaperPane and constructs it in editable mode directly from the decoded body. |
+| `net_handle_show_paper_server_data` | `0x005F7250` | high | WorldPane's raw opcode 0x35 branch constructs the same EditablePaperPane in read-only mode. |
 | `net_send_check_time` | `0x005F7830` | high | Direct response to SCheckTime opcode 0x68; echoes a server value and appends timeGetTime(). |
 | `net_handle_bad_guy_server_packet` | `0x005F7900` | high | Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths. |
 | `net_handle_show_users` | `0x005F7B80` | high | Handles raw decoded server opcode 0x36, applies the replacement list, and opens the RTTI-backed ShowUsersPane. |
 | `net_send_group_automatic_response` | `0x005F8620` | high | Builds CGroup opcode 0x2E, action 3, and a length-prefixed user string for the GroupAnswer automatic path. |
 | `net_handle_group_server_packet` | `0x005F8720` | high | Handles SGroup by either opening the normal prompt or immediately sending CGroup action 3 according to AppConfig GroupAnswer. |
+| `net_handle_field_map_server_data` | `0x005F8A10` | high | WorldPane's raw opcode 0x2E branch reparses the decoded SFieldMap body and creates the field-map pane instead of consuming the factory-built packet object. |
 | `net_send_change_user_state` | `0x005FC790` | high | Normalizes UserState to 0 through 7, builds opcode 0x79 plus the state byte, and stores the same normalized local value. |
 | `net_register_bad_guy_server_packet_factory` | `0x00667B20` | high | Registers the RTTI-backed SBadGuy constructor with the server_packet_factory startup path. |
 
@@ -741,7 +780,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_create_human_stand_motion_data` | `0x00600670` | high | Allocates the initial standing-motion data for a human image session. |
 | `render_monster_image_session_ctor` | `0x006017C0` | high | Constructs the 0xE4-byte RTTI MonsterObjectImageSession and resolves standing, attack, and movement resources for the selected monster sprite. |
 | `render_monster_apply_palette_selectors` | `0x00601A20` | high | Copies at most four resource-defined 16-byte palette mappings, replaces their selector fields from packet bytes, and enables mapped monster rendering. |
+| `render_monster_select_motion_sequence` | `0x00601DD0` | high | Accepts motion IDs 0x01, 0x83, 0x84, and 0x85, selects one of three cached monster motion resources, and leaves the caller's duration unchanged. |
 | `render_human_image_session_ctor` | `0x00602240` | high | Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord741 at object offset +0x0C. |
+| `render_human_select_motion_sequence` | `0x00602A40` | high | Selects fixed, table-driven, or appearance-dependent human body motions; normal table motions replace the caller duration with 500, 1000, or 1500 ms. |
 | `render_human_select_walk_sequence` | `0x00602CA0` | high | Selects the remote-human, local coarse, or local smooth walk sequence; ScrollLevel chooses four 114 ms steps or eight 57 ms steps for WorldObject_User. |
 | `render_merge_light_mask_max` | `0x006036B0` | high | Merges a rectangular 8-bit light image into the viewport mask by retaining the greater value at each pixel. |
 
@@ -813,7 +854,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_hpf_decode_symbol` | `0x00431C40` | high | Reads bits least-significant bit first and walks the active HPF tree to a symbol leaf. |
 | `file_hpf_rotate_tree` | `0x00431D20` | high | Applies the parent and sibling rotations used after every decoded HPF symbol. |
 | `file_load_color_table` | `0x0044CD50` | medium | Loads color.tbl records and packs six RGB triples per record for the renderer. |
-| `file_open_efa` | `0x00456F30` | high | Opens an EFA resource and returns its frame count and table view. |
+| `file_open_efa` | `0x00456F30` | high | Opens an EFA resource and returns its u32 frame count from header +0x04 and u32 frame interval from header +0x08. |
 | `file_decode_efa_frame` | `0x00457030` | high | Inflates one zlib payload from a 0x40-byte EFA frame record and builds an Image view. |
 | `file_load_effect_frame_table` | `0x00458ED0` | high | Parses Effect.tbl decimal frame sequences into per-effect tables. |
 | `file_archive_xor_words` | `0x00471DC0` | high | XORs a buffer in 32-bit words for the extended DAT header and index path. |
@@ -922,15 +963,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_remove_object_by_id` | `0x005C9FA0` | high | Finds an existing world object by ID, optionally creates its removal replacement, and detaches the original from shared indexes. |
 | `world_create_monster_object` | `0x005CA4C0` | high | Replaces a matching ID, allocates RTTI WorldObject_Monster, stores Y and X, inserts it, and retains the packet creature type. |
 | `world_create_item_object` | `0x005CAC60` | high | Replaces a matching ID, allocates RTTI WorldObject_Item from ID, Y, X, untagged sprite, and dye, then inserts it. |
+| `world_create_object_attached_effect` | `0x005CB590` | high | Finds an existing world object, constructs an RTTI WorldObject_ObjectEffect with the requested Effect.tbl index and timer, attaches it to the object, and inserts it into the world. |
+| `world_create_static_effect` | `0x005CB960` | high | Bounds-checks tile Y and X, constructs an RTTI WorldObject_StaticEffect at that map cell, and inserts it into the world. |
+| `world_create_moving_effect_between_objects` | `0x005CBBF0` | high | Resolves source and target world objects, converts their positions, constructs an RTTI WorldObject_MovingEffect path between them, and inserts it into the world. |
 | `world_create_object_name_pane` | `0x005CC670` | high | Finds a world object by ID, constructs RTTI WorldObject_Name_Pane from bounded text and style bytes, and attaches it to the object. |
 | `world_object_set_name_pane` | `0x005DBA80` | high | Replaces the reference-counted WorldObject_Name_Pane pointer at common WorldObject offset +0x58. |
+| `world_effect_start_animation` | `0x005DD1C0` | high | Registers an ordinary world effect with the image pool, prefers the resource's nonzero frame interval over the packet fallback, and schedules its frame timer. |
+| `world_object_effect_ctor` | `0x005DD620` | high | Constructs the exact RTTI WorldObject_ObjectEffect with an Effect.tbl resource index, fallback frame interval, and owning object's facing direction. |
+| `world_static_effect_ctor` | `0x005DD6D0` | high | Constructs the exact RTTI WorldObject_StaticEffect and retains its tile Y and X coordinates. |
 | `world_item_object_ctor` | `0x005DE280` | high | Constructs the 0xB8-byte RTTI WorldObject_Item and retains entity ID, Y, X, untagged sprite, resource context, and dye color. |
 | `world_living_object_ctor` | `0x005DF230` | high | Constructs the RTTI WorldObject_Living base, including clearing its +0xD4 nonblocking state. |
 | `world_living_object_refresh_motion` | `0x005E0550` | medium | Clears one live motion flag, invokes the object's motion refresh virtual, and reapplies its current facing; SMove direction 4 uses this when positions already agree. |
 | `world_living_start_move` | `0x005E0590` | high | Updates a living object's direction and destination, starts its image-session movement sequence, and publishes the movement event. |
 | `world_living_start_move_animation` | `0x005E0610` | high | Starts the current image session's movement sequence and passes the local ScrollLevel boolean to its class-specific selector. |
+| `world_living_start_motion` | `0x005E0750` | high | Stores the facing direction, asks the current image session to select a body motion, and schedules its timer using the selector's final duration in milliseconds. |
 | `world_living_object_set_direction` | `0x005E0880` | high | When facing changes, invokes the living-object transition hook, stores direction at +0x192, and refreshes the directional motion or image state. |
+| `world_living_handle_timer_event` | `0x005E1800` | high | For motion timer 0x02000001, advances the living animation only when the scheduled generation matches the current motion, so an older timer cannot interrupt a newer motion. |
 | `world_monster_object_ctor` | `0x005E2630` | high | Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level. |
+| `world_moving_effect_ctor` | `0x005E2770` | high | Constructs the exact RTTI WorldObject_MovingEffect and builds its client-timed path between source and target world positions. |
+| `world_moving_effect_start` | `0x005E3710` | high | Schedules a moving effect's path timer using the step interval computed from client effect data. |
 | `world_user_start_move` | `0x005E4FC0` | high | Refreshes WorldObject_User appearance state, then starts the common living-object move with the supplied ScrollLevel flag. |
 | `world_object_list_insert` | `0x005E5D40` | high | Inserts an object into its 0x60-byte coordinate cell and the ordered entity-ID index, then marks WorldObject +0x48 inserted. |
 | `world_object_list_find_by_id` | `0x005E73B0` | high | Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10. |
