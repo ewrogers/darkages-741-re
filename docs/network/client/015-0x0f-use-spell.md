@@ -75,6 +75,8 @@ Without that state, a diagnostic reader can only expose possible interpretations
 
 All four builders pass the completed body to `ui_start_spell_cast`. A zero cast-line count submits `CUseSpell` immediately. A positive count starts the one-second spell-delay sequence and holds the body until its final timer tick. See [Spell Delay Request (`CSpellDelayRequest`)](077-0x4d-spell-delay-request.md) and [Spell Delay Say (`CSpellDelaySay`)](078-0x4e-spell-delay-say.md).
 
+If the server sends [Spell Delay Cancel (`SSpellDelayCancel`)](../server/072-0x48-spell-delay-cancel.md), the client removes the pending timers. It leaves this queued body in memory but does not submit it.
+
 The text form is also built by a separate bulletin batch flow. It uses the same opcode, slot, and unprefixed trailing text layout rather than a distinct packet format.
 
 ## Local denial check

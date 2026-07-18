@@ -32,7 +32,9 @@ The dialog keeps one temporary ready byte for each row. Server rows start unavai
 | `1` through `6`, `8` | Server | Returned row text | Not saved by this client |
 | `7`, `9` through `13` | Client | `AppConfig` fields | `Darkages.cfg` |
 
-The server returns formatted strings such as `Listen to whisper:ON `. The client replaces the row text but does not parse the suffix into a boolean. For these seven rows, no longer-lived client setting field or later client-side enforcement was found. The server therefore owns their effective state. The client alone does not prove whether that state is stored per character or per account.
+The server returns formatted strings such as `Listen to whisper:ON `. The client replaces the row text but does not parse the suffix into a boolean. A supplied group-toggle trace confirms that setting 2 is the invitation row, formatted as `Join a group     :OFF` or `Join a group     :ON `.
+
+For these seven rows, no longer-lived client setting field or later client-side enforcement was found. The server therefore owns their effective state. The client alone does not prove whether that state is stored per character or per account. The separate bottom-button icon reads `SSelfLook.is_group_open`, not the formatted setting text.
 
 ## Hard-coded ownership switch
 
@@ -93,7 +95,7 @@ These choices belong to the client installation, not a character record. Another
 
 | ID | File key | Default | Confirmed effect |
 | ---: | --- | ---: | --- |
-| `7` | `GroupAnswer` | `0` | A nonzero value answers an incoming [`SGroup`](../network/server/099-0x63-group.md) request immediately with [`CGroup`](../network/client/046-0x2e-group.md) action `3`, instead of constructing the normal prompt dialog. The exact server meaning of action `3` still needs a paired capture. |
+| `7` | `GroupAnswer` | `0` | A nonzero value accepts an incoming [`SGroup`](../network/server/099-0x63-group.md) request immediately with [`CGroup`](../network/client/046-0x2e-group.md) action `3`, instead of constructing the normal prompt dialog. The prompt's manual accept action calls the same builder. |
 | `9` | `ScrollLevel` | `0` | Selects four-step or eight-step interpolation for the local player's walk animation. It does not change the `CMove` body or server movement rules. |
 | `10` | `SkillSpellSelectByToggle` | `0` | Changes repeated skill and spell selection commands from fixed pane choices to toggling between the paired choices. It does not alter casting delay or animation timing. |
 | `11` | `UserClickMode` | `0` | A nonzero value suppresses the normal [`CRequestObjectInfo`](../network/client/067-0x43-request-object-info.md) subtype `1` request when the clicked world object is another user. Monster and item click paths are unchanged. |

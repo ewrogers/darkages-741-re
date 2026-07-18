@@ -1,134 +1,14 @@
 # Runtime patches
 
-These changes are intended for a launcher that writes to the suspended process. They do not modify `Darkages.exe` on disk.
-
-The target uses preferred image base `0x00400000`, but Windows may relocate it. Always calculate a runtime address as:
-
-```text
-runtime address = loaded module base + RVA
-```
-
-## Patch list
-
-| Purpose | Static address | RVA | Verify | Write |
-| --- | --- | --- | --- | --- |
-| Skip intro videos | `0x004ACA85` | `0x000ACA85` | `6A 01` | `6A 02` |
-| Allow multiple clients | `0x0057A7D9` | `0x0017A7D9` | `75 07` | `EB 07` |
-| Ignore local Bad Guy marker (Good Guy) | `0x00431F85` | `0x00031F85` | `C6 82 68 06 00 00 01` | `C6 82 68 06 00 00 00` |
-| Enable positional endpoint parser | `0x00432253` | `0x00032253` | `E8 28 11 00 00` | `E8 B8 0D 00 00` |
-| Disable official endpoint fallback | `0x005655F4` | `0x001655F4` | `C7 85 94 FB FF FF 00 00 00 00` | `E9 06 13 00 00 90 90 90 90 90` |
-| Suppress stipulation window after a matching greeting | `0x004B897C` | `0x000B897C` | `75 6C` | `EB 6C` |
-| Suppress stipulation window after a replacement greeting | `0x004B8ACF` | `0x000B8ACF` | `75 6D` | `EB 6D` |
-| Remove fixed server-transfer delay | `0x00564855` | `0x00164855` | `68 E8 03 00 00` | `68 00 00 00 00` |
-| Hide all static map art | `0x005E47FF` | `0x001E47FF` | `74 05` | `EB 00` |
-
-## Allow multiple clients
-
-`app_winmain` creates the named mutex `Nexon.SingleInstance`, then checks for Windows error `ERROR_ALREADY_EXISTS`.
-
-The patch changes the existing conditional jump into an unconditional jump to normal startup. It keeps the instruction size, mutex creation, stack balance, and normal handle cleanup.
-
-This only bypasses the local process check. It does not bypass account, server, or shared-file restrictions.
-
-## Skip the intro
-
-`event_handle_intro_state` normally posts intro state 1. The patch posts state 2 instead.
-
-State 2 is the normal continuation after both video clips finish. This is narrower than changing Bink playback because it follows the client's own state machine and avoids creating the video pane.
-
-## Ignore the local Bad Guy marker (Good Guy)
-
-`app_detect_bad_guy_marker` normally writes `1` to `app_config + 0x668` when `%SystemRoot%\System32\Mscfg.dll` exists. That flag changes the default port from `2610` to `2601` and stops [`CLogin`](../network/client/003-0x03-login.md) before its packet is built.
-
-The Good Guy patch replaces that complete seven-byte `mov` instruction with the same write of `0`. The normal file check and field initialization still run, but the marker no longer changes the endpoint or blocks login. This is narrower than skipping the detector call, which could leave the field uninitialized.
-
-The marker file remains on disk. This patch does not change the registry-backed installation IDs, clear any server-side decision, or suppress the immediate termination caused by a newly received [`SBadGuy`](../network/server/074-0x4a-bad-guy.md). It only makes a later launch ignore the persistent local marker.
-
-## Enable the positional endpoint parser
-
-`app_config_ctor` normally calls `net_configure_default_endpoint`. The replacement `CALL` targets the existing `net_parse_endpoint_override` instead.
-
-The parser accepts:
-
-```text
-Darkages.exe <host-or-ip> [port]
-```
-
-For predictable behavior, the launcher should resolve a host to dotted IPv4 before launch and pass an explicit port.
-
-This patch changes only endpoint setup. It does not switch the whole distribution mode. Without the next patch, a failed connection can still retry `da0.kru.com`.
-
-## Disable the official fallback
-
-After a failed first connection, the original code resolves `da0.kru.com` and tries again. This patch jumps to the existing disconnected cleanup path at static address `0x005668FF` instead.
-
-Use it with the positional endpoint patch for a strict "connect to this endpoint or fail" policy. The normal socket close and `INVALID_SOCKET` state are preserved.
-
-## Suppress the stipulation window
-
-These two same-size jump changes hide the agreement window without skipping [`SStipulation`](../network/server/096-0x60-stipulation.md) processing:
-
-| Path | Static address | RVA | File offset, reference only |
-| --- | --- | --- | --- |
-| Cached greeting CRC matches | `0x004B897C` | `0x000B897C` | `0x000B7D7C` |
-| Replacement greeting was inflated and saved | `0x004B8ACF` | `0x000B8ACF` | `0x000B7ECF` |
-
-Each original `JNE` skips `AgreementDialogPane` only in Japan distribution mode. Replacing opcode byte `75` with `EB` turns it into an unconditional jump to the same existing continuation. The displacement byte is unchanged.
-
-That continuation clears `MainMenuPane +0x500`. The main-menu pointer and keyboard handlers reject input only while this value is nonzero, so Login remains enabled and clickable. The agreement pane's OK action sends no packet, which means there is no acknowledgement to emulate.
-
-Apply both changes. One covers a matching cached greeting and the other covers a newly received replacement. Homepage requesting, CRC mismatch recovery, zlib inflation, table saving, and the final menu-state update all run normally.
-
-## Remove the fixed server-transfer delay
-
-`net_reconnect_transfer_endpoint` closes the old connection, resets transport state, applies the endpoint from `STransferServer`, and performs the new blocking connection. It then calls `Sleep(1000)` before the communications queue can continue.
-
-`net_handle_transfer_server` waits for a later queue item on the game and UI thread. That makes the worker's fixed sleep a visible one-second animation freeze.
-
-The patch changes only the pushed sleep duration:
-
-| Static address | RVA | File offset, reference only |
-| --- | --- | --- |
-| `0x00564855` | `0x00164855` | `0x00163C55` |
-
-`PUSH 0; CALL Sleep` preserves the instruction size and the normal call boundary. It removes the guaranteed extra second while keeping socket shutdown, state resets, the blocking `connect`, seed-table ordering, command cleanup, and `CTransferServer` submission intact.
-
-The animation may still pause for however long the actual `connect` call takes. Removing that remaining stall requires an asynchronous main-thread state machine, not another safe one-instruction change. See [Initial connection](../network/connection.md#why-the-screen-pauses-during-a-transfer).
-
-## Hide all static map art
-
-`render_static_object` normally skips drawing only when the object's hidden byte is set. The patch forces the same existing jump to the normal function epilogue for every static object.
-
-This hides walls, trees, and fixed map decorations. It does not hide ground, characters, items, or effects, and it does not change collision.
-
-For a live `?` button toggle, use a DLL hook instead of rewriting these bytes while the process is running. The hook design is described in [Walls and occlusion](../rendering/walls-and-occlusion.md).
-
-## Launcher flow
-
-```text
-confirm the executable size and SHA-256
-launch the process suspended
-find the loaded main-module base
-
-for each selected patch
-    read and compare the original bytes
-    make the target page writable
-    write the complete replacement instructions
-    flush the instruction cache
-    restore the old page protection
-
-resume the main thread
-```
-
-If the fingerprint or any original byte differs, stop and terminate the suspended child. Never guess against a different executable.
-
-## Safety checklist
-
-- Patch only the matching target fingerprint.
-- Use the loaded module base, not the preferred image base.
-- Verify every original byte before writing.
-- Change complete x86 instructions.
-- Keep the process suspended until all patches succeed.
-- Flush the instruction cache after writes.
-- Restore memory protection before resuming.
-- Fail closed and leave the executable file untouched.
+- [Safe launcher workflow](runtime-patches/safe-launcher-workflow.md)
+- [Allow multiple clients](runtime-patches/allow-multiple-clients.md)
+- [Clear stuck modifier keys on focus loss](runtime-patches/clear-stuck-modifier-keys.md)
+- [Skip the intro](runtime-patches/skip-intro.md)
+- [Ignore the local Bad Guy marker (Good Guy)](runtime-patches/ignore-local-bad-guy-marker.md)
+- [Enable the positional endpoint parser](runtime-patches/enable-positional-endpoint-parser.md)
+- [Disable the official endpoint fallback](runtime-patches/disable-official-endpoint-fallback.md)
+- [Suppress the stipulation window](runtime-patches/suppress-stipulation-window.md)
+- [Remove the fixed server-transfer delay](runtime-patches/remove-fixed-server-transfer-delay.md)
+- [Hide all static map art](runtime-patches/hide-all-static-map-art.md)
+- [Skip the exchange count prompt for a one-item stack](runtime-patches/skip-single-item-exchange-count-prompt.md)
+- [Show inventory quantities in screen menus](runtime-patches/show-inventory-quantities-in-screen-menus.md)

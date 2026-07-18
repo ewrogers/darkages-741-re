@@ -1,0 +1,144 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0043FD60"
+    name: render_get_human_image_library
+    confidence: high
+    evidence: Returns the RTTI-backed HumanImageLib singleton.
+  - address: "0x0044D830"
+    name: render_get_palette_manager
+    confidence: high
+    evidence: Returns the RTTI-backed PaletteMan singleton.
+  - address: "0x00458900"
+    name: render_effect_image_pool_clear
+    confidence: high
+    evidence: Destroys every retained EffectImageSession and frees the effect-ID pointer array.
+  - address: "0x004589C0"
+    name: render_effect_image_pool_get_frame
+    confidence: high
+    evidence: Creates one EffectImageSession on the first request for an effect ID, retains it, and asks it for the selected frame.
+  - address: "0x0045D7E0"
+    name: render_get_icon_image_library
+    confidence: high
+    evidence: Returns the RTTI-backed IconImageLib singleton.
+  - address: "0x00472C70"
+    name: file_get_main_archive
+    confidence: high
+    evidence: Lazily constructs and returns the archive object opened as Legend.dat with DarkAges.dat fallback during startup.
+  - address: "0x0048B2C0"
+    name: render_image_library_ctor
+    confidence: high
+    evidence: Constructs RTTI class ImageLib and registers its singleton; the object has no filename or decoded-frame cache fields.
+  - address: "0x0048B330"
+    name: render_image_library_dtor
+    confidence: high
+    evidence: Unregisters and destroys the ImageLib singleton without releasing a shared image cache.
+  - address: "0x0048BB90"
+    name: render_load_main_archive_pixmap
+    confidence: high
+    evidence: Resolves one requested frame synchronously through file_load_image_frame using the main archive.
+  - address: "0x0048BD90"
+    name: render_human_image_library_ctor
+    confidence: high
+    evidence: Constructs RTTI class HumanImageLib and registers its singleton.
+  - address: "0x0048BE00"
+    name: render_human_image_library_dtor
+    confidence: high
+    evidence: Releases the human image library's retained supporting data and unregisters its singleton.
+  - address: "0x0048D010"
+    name: render_monster_image_library_ctor
+    confidence: high
+    evidence: Constructs RTTI class MonsterImageLib and registers its singleton.
+  - address: "0x0048D080"
+    name: render_monster_image_library_dtor
+    confidence: high
+    evidence: Unregisters and destroys the MonsterImageLib singleton.
+  - address: "0x0048D590"
+    name: render_icon_image_library_ctor
+    confidence: high
+    evidence: Constructs RTTI class IconImageLib and registers its singleton.
+  - address: "0x0048D610"
+    name: render_icon_image_library_dtor
+    confidence: high
+    evidence: Unregisters and destroys the IconImageLib singleton.
+  - address: "0x0048D670"
+    name: render_icon_load_pixmap
+    confidence: high
+    evidence: Derives an icon resource and frame from the icon kind and ID, builds a caller-owned pixmap view, and attaches the resolved palette selector.
+  - address: "0x004AC060"
+    name: app_shutdown
+    confidence: high
+    evidence: Tears down runtime managers and panes, then closes and destroys the DAT archive singletons before window cleanup.
+  - address: "0x004AE880"
+    name: render_get_monster_image_library
+    confidence: high
+    evidence: Returns the RTTI-backed MonsterImageLib singleton.
+  - address: "0x00544B70"
+    name: render_palette_manager_ctor
+    confidence: high
+    evidence: Constructs RTTI class PaletteMan, registers its palette families, loads the installed PAL series, and packs them for the active 16-bit display mode.
+  - address: "0x00548510"
+    name: render_palette_resolve_table
+    confidence: high
+    evidence: Decodes bits 24 through 30 as a family and the low 24 bits as a palette number, then returns its 256-entry packed-color table.
+  - address: "0x00548AB0"
+    name: render_palette_family_get_or_create
+    confidence: high
+    evidence: Grows one palette-family vector in blocks of 16 and allocates a 0x200-byte packed table for a missing palette number.
+data_symbols:
+  - address: "0x006EB288"
+    name: render_human_image_library_ptr
+    confidence: high
+    evidence: HumanImageLib singleton pointer returned by render_get_human_image_library.
+  - address: "0x006FC2C0"
+    name: render_palette_manager_ptr
+    confidence: high
+    evidence: PaletteMan singleton pointer returned by render_get_palette_manager.
+  - address: "0x006FC8F0"
+    name: render_icon_image_library_ptr
+    confidence: high
+    evidence: IconImageLib singleton pointer returned by render_get_icon_image_library.
+  - address: "0x006FD044"
+    name: file_main_archive_ptr
+    confidence: high
+    evidence: Main DAT archive singleton pointer returned by file_get_main_archive.
+  - address: "0x0073FD5C"
+    name: render_monster_image_library_ptr
+    confidence: high
+    evidence: MonsterImageLib singleton pointer returned by render_get_monster_image_library.
+comments:
+  - address: "0x0045802A"
+    text: Return the cached frame immediately when this effect session has already decoded it.
+  - address: "0x0045815A"
+    text: Allocate an owned 16-bit Image for an EPF effect frame, palette-convert the indexed pixels once, and retain it in the session frame cache.
+  - address: "0x00458939"
+    text: Destroy every retained EffectImageSession when the pool is explicitly cleared. The clear helper is reached by the pool destructor.
+  - address: "0x00458A16"
+    text: Create and retain one EffectImageSession the first time this effect ID is requested.
+  - address: "0x00471EDF"
+    text: Open a DAT read-only with shared-read access and random-access intent before creating its file mapping.
+  - address: "0x00471F78"
+    text: Map the complete DAT read-only. Legacy entry payloads remain views into this mapping until archive shutdown.
+  - address: "0x00472695"
+    text: Lease one fixed 0x14-byte entry handle from the archive's bounded handle pool. This is temporary lookup state, not a decoded-asset cache.
+  - address: "0x0048B98D"
+    text: Point the PixMap primary plane directly into the mapped EPF payload. Ordinary EPF loading does not prerender or copy these indexed pixels.
+  - address: "0x0048BBB2"
+    text: Resolve a main-archive image synchronously into the caller's PixMap. ImageLib itself does not cache filenames or decoded frames.
+  - address: "0x004AA2FB"
+    text: Construct the main archive singleton, then open Legend.dat with DarkAges.dat as the only fallback. This archive setup is synchronous startup work.
+  - address: "0x004AC6A2"
+    text: Close, unmap, and destroy the main archive during normal application shutdown after asset consumers have been released.
+  - address: "0x00544F0D"
+    text: Load and pack the installed palette families during PaletteMan construction. PAL colors become 256-entry 16-bit tables.
+  - address: "0x00548AFC"
+    text: Grow this palette family's slot vector in blocks of 16 when a selector exceeds the current capacity.
+  - address: "0x00548B2C"
+    text: Allocate one 0x200-byte packed palette table on first use of this family and palette index. No runtime eviction path was found.
+runtime_patches: []

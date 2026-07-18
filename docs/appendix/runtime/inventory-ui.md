@@ -76,17 +76,22 @@ Timed casting is owned by the RTTI class `SpellDelayControlPane`.
 ```c
 struct SpellDelayControlPaneFields {
     u8 pane_base[0x190];
-    u8 total_lines;                 // +0x190
-    u8 current_line;                // +0x191
-    char cast_text[10][256];        // +0x192, loaded from SpellBook.cfg
-    u8 queued_use_spell[0x8000];    // +0xB92
+    u8 total_cast_lines;            // +0x190
+    u8 current_cast_line;           // +0x191
+    char cast_lines[10][256];       // +0x192, loaded from SpellBook.cfg
+    u8 queued_use_spell_body[0x8000]; // +0xB92, includes opcode
     char spell_name[256];           // +0x8B92
-    u16 queued_body_length;         // +0x8C92
-    bool pending;                   // +0x8C94
-};
+    u16 queued_use_spell_length;    // +0x8C92
+    u8 cast_active;                 // +0x8C94
+    u8 trailing[3];                 // +0x8C95
+};                                  // size 0x8C98
 ```
 
 Its timer callback receives the usual adjusted `TimerHandler` pointer at `this + 0x11C`. It converts that pointer back to the complete pane before advancing the cast sequence.
+
+Starting a timed cast copies the completed opcode-first `CUseSpell` body into `queued_use_spell_body`, stores its length and spell name, resets `current_cast_line`, and sets `cast_active` to one. Each one-second timer advances the line index. The final timer sends the spell name, submits the queued body, and clears `cast_active`.
+
+[`SSpellDelayCancel`](../../network/server/072-0x48-spell-delay-cancel.md) clears only `cast_active` and cancels every timer owned by this pane. It does not erase or reset the line count, current index, text buffers, queued body, spell name, or queued length. Those retained values cannot advance without a timer and are overwritten by a later cast.
 
 ## Skill inventory panes
 

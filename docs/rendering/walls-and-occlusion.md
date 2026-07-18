@@ -31,7 +31,7 @@ The simplest runtime patch hides every `WorldObject_Static` draw:
 
 The replacement takes an existing jump to the function's normal epilogue. Stack cleanup and the security-cookie check still run.
 
-This hides walls, trees, and all other static map art. Characters, items, effects, ground tiles, and collision remain active. Use the normal suspended-launch patch workflow from the [runtime patch appendix](../appendix/runtime-patches.md).
+This hides walls, trees, and all other static map art. Characters, items, effects, ground tiles, and collision remain active. Use the normal [safe launcher workflow](../appendix/runtime-patches/safe-launcher-workflow.md).
 
 ## Toggle with the `?` control
 

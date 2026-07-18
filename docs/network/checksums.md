@@ -20,7 +20,15 @@ crc16(bytes):
 
 The check value for ASCII `123456789` is `0xBEEF`. This is a useful way to catch an accidental replacement with a standard library CRC16.
 
-Known uses include dialog data, six bytes per map cell, and the request challenge response. Multi-byte values in those call sites are fed low byte first, then high byte. The response packet writes the final result as `u16be`.
+Known uses include dialog data, six bytes per map cell, and the request challenge response. Multi-byte values in those call sites are fed low byte first, then high byte.
+
+### Request challenge
+
+[`SRequestCRC`](server/059-0x3b-request-crc.md) supplies one big-endian 16-bit challenge. The client starts at zero, feeds its low byte and then its high byte, and writes the result as big-endian [`CReplyCRC`](client/069-0x45-reply-crc.md).
+
+For challenge bytes `high, low`, the first update produces `low`. The running value is still below `0x100`, so the second table index is also zero. The second update therefore produces `(low << 8) | high`.
+
+The implementation calls the CRC helper, but this particular use is only a byte reversal. It incorporates no client file, memory, executable, map, or session data.
 
 ## IEEE CRC32
 

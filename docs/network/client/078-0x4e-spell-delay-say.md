@@ -30,3 +30,5 @@ When the current line reaches the total from [Add Spell (`SAddSpell`)](../server
 Project-owner runtime behavior confirms that the server presents these lines to nearby clients as [`SSay`](../server/013-0x0d-say.md) mode `2`, Chant. That receive path draws blue text over the caster without the ordinary speech-balloon frame.
 
 A zero-line spell reaches the sender helper, but its zero-total guard returns before constructing this packet. The client submits `CUseSpell` immediately instead.
+
+[Spell Delay Cancel (`SSpellDelayCancel`)](../server/072-0x48-spell-delay-cancel.md) removes the pending timers. No later cast line, final spell name, or queued `CUseSpell` is sent for that sequence.

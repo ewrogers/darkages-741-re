@@ -4,22 +4,30 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x3B` (59) |
-| Encoding | session key |
+| Encoding | derived |
 | Name provenance | Microsoft C++ RTTI in the target |
 
 ## Purpose
 
-The server sends this message for **request crc**.
+The server sends a two-byte challenge and expects an immediate [`CReplyCRC`](../client/069-0x45-reply-crc.md) response. Despite the packet names, this exchange does not make the client checksum its executable, files, memory, or session state.
 
-The constructor calls `net_server_packet_base_ctor` with opcode `0x3B` and installs the `SRequestCRC` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+The RTTI-backed class confirms the body layout. The active global handler independently reparses the same value from the decoded byte buffer before constructing the reply.
 
 ## Body
 
 ```text
 packet SRequestCRC {
     u8      opcode                    // 0x3B
-    ...                         // fields pending
+    u16     challenge
 }
 ```
 
-The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.
+`net_deserialize_request_crc_server_packet` reads the one big-endian value. The packet carries no algorithm selector, expected checksum, filename, range, or other input.
+
+## Client response
+
+`net_handle_request_crc_server_body` starts the custom CRC16 state at zero, feeds the challenge's low byte and then its high byte, and writes the result as a big-endian `CReplyCRC` value.
+
+For this exact two-byte input, that calculation is equivalent to reversing the challenge bytes. See [Checksums](../checksums.md#request-challenge) for why the table-based update collapses to a byte swap.
+
+The client saves no state from the request and performs no comparison. No failure or alternate response branch exists.

@@ -7,10 +7,38 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x0041B040"
+    name: ui_bottom_buttons_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class BtmButtonsPane_A, initializes its state, and immediately sends the empty CSelfLook request."
   - address: "0x0041B690"
     name: ui_bottom_buttons_handle_network_event
     confidence: high
-    evidence: "BtmButtonsPane_A network-event handler routes SStatus to the parcel and mail-indicator updater."
+    evidence: "BtmButtonsPane_A network-event handler routes SStatus to the parcel/mail updater and SSelfLook to the profile-response path."
+  - address: "0x0041B710"
+    name: ui_bottom_buttons_handle_timer
+    confidence: high
+    evidence: "BtmButtonsPane_A TimerHandler callback retries CSelfLook for timer 0x03000000 while the initial profile request is pending."
+  - address: "0x0041B810"
+    name: ui_bottom_buttons_set_group_invitation_state
+    confidence: high
+    evidence: "Applies the server-authoritative SSelfLook group-open value to the bottom-button state, clears the group-button pending action, and invalidates the pane."
+  - address: "0x0041B840"
+    name: net_send_self_look
+    confidence: high
+    evidence: "Builds the exact one-byte CSelfLook plaintext body as opcode 0x2D and submits length one."
+  - address: "0x0041B8E0"
+    name: net_send_group_toggle
+    confidence: high
+    evidence: "Builds and submits the exact one-byte CGroupToggle plaintext body containing only opcode 0x2F."
+  - address: "0x0041BC10"
+    name: ui_bottom_buttons_apply_self_look
+    confidence: high
+    evidence: "Consumes SSelfLook in BtmButtonsPane_A and applies is_group_open before redrawing; this is the only group-icon state update after CGroupToggle."
+  - address: "0x0041BE30"
+    name: ui_bottom_buttons_handle_action
+    confidence: high
+    evidence: "Handles the three bottom-button actions; the group action marks itself pending, sends CGroupToggle, and then requests SSelfLook without changing the icon optimistically."
   - address: "0x0042BA20"
     name: ui_legend_list_draw_item
     confidence: high
@@ -255,18 +283,30 @@ functions:
     name: ui_inventory_item_submit_drop_quantity
     confidence: high
     evidence: "Numeric-input callback sends the saved CDrop target and source item only when the submitted u32 quantity is nonzero."
+  - address: "0x00496860"
+    name: ui_inventory_item_submit_give_quantity
+    confidence: high
+    evidence: "Forwards a nonzero u32 quantity and saved living target object ID to CGive, but has no confirmed static reference in the live drag path."
   - address: "0x00496890"
     name: ui_inventory_item_send_drop
     confidence: high
     evidence: "InvItemPane virtual sender forwards target Y, target X, and quantity to the concrete CDrop builder."
+  - address: "0x004968C0"
+    name: ui_inventory_item_send_give
+    confidence: high
+    evidence: "InvItemPane virtual sender forwards a living target object ID and u32 quantity to the concrete CGive builder."
   - address: "0x004968E0"
     name: ui_inventory_item_handle_timer
     confidence: high
-    evidence: "TimerHandler callback for InvItemPane opens quantity input for stacks above one or sends quantity one directly for a world drop."
+    evidence: "TimerHandler event 0 handles a world-tile drop; event 1 gives to a living object, sending quantity one for normal items or opening GiveGoldDialogPane for slot 60."
   - address: "0x00496C90"
     name: net_send_drop
     confidence: high
     evidence: "Builds CDrop as opcode 0x08, source slot, target X, target Y, and u32 quantity."
+  - address: "0x00496D90"
+    name: net_send_give
+    confidence: high
+    evidence: "Builds the 10-byte CGive body as opcode 0x29, u8 source slot, u32 living target object ID, and u32 quantity."
   - address: "0x00496E70"
     name: ui_inventory_item_activate
     confidence: high
@@ -291,6 +331,18 @@ functions:
     name: net_send_drop_gold
     confidence: high
     evidence: "Parses a nonzero amount and builds CDropGold as opcode 0x24, u32 amount, u16 X, and u16 Y."
+  - address: "0x00497710"
+    name: ui_give_gold_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class GiveGoldDialogPane, retains the drag-selected living target object ID, builds the _nmoney.txt controls, and focuses the amount input."
+  - address: "0x00497AB0"
+    name: ui_give_gold_dialog_handle_action
+    confidence: high
+    evidence: "GiveGoldDialogPane action 0 parses and submits CGiveGold; action 1 closes the dialog without sending."
+  - address: "0x00497B10"
+    name: net_send_give_gold
+    confidence: high
+    evidence: "Parses a nonzero amount and builds the 9-byte CGiveGold body as opcode 0x2A, u32 amount, and u32 living target object ID."
   - address: "0x00497C30"
     name: ui_dragged_inventory_item_pane_ctor
     confidence: high
@@ -370,15 +422,23 @@ functions:
   - address: "0x0049B6F0"
     name: ui_spell_delay_control_pane_ctor
     confidence: high
-    evidence: "Constructs exact RTTI class SpellDelayControlPane and initializes the queued-cast state."
+    evidence: "Constructs the exact RTTI class SpellDelayControlPane, allocates its 0x8C98-byte object, and initializes cast_active at +0x8C94 to zero."
+  - address: "0x0049B810"
+    name: ui_spell_delay_control_pane_handle_network_event
+    confidence: high
+    evidence: "Handles typed server opcode 0x48 for SpellDelayControlPane and dispatches it to ui_cancel_spell_delay."
   - address: "0x0049B870"
     name: ui_spell_delay_timer_callback
     confidence: high
-    evidence: "Advances configured cast lines on one-second ticks, then sends the spell name and submits the queued CUseSpell on the final tick."
+    evidence: "Advances current_cast_line at complete-object offset +0x191 on one-second ticks, then sends the spell name, submits the queued CUseSpell, and clears cast_active on the final tick."
   - address: "0x0049B900"
     name: ui_start_spell_cast
     confidence: high
-    evidence: "Queues CUseSpell, loads SpellBook.cfg cast text, and either submits immediately or begins the CSpellDelayRequest and CSpellDelaySay sequence."
+    evidence: "Copies CUseSpell to +0xB92, its length to +0x8C92, the spell name to +0x8B92, and cast counters to +0x190/+0x191 before beginning the delay sequence."
+  - address: "0x0049BA50"
+    name: ui_cancel_spell_delay
+    confidence: high
+    evidence: "Clears SpellDelayControlPane::cast_active at +0x8C94 and cancels every timer owned by the pane with the 0x7FFFFFFF wildcard."
   - address: "0x0049BAB0"
     name: net_send_spell_delay_request
     confidence: high
@@ -471,10 +531,42 @@ functions:
     name: net_send_pursuit_selection
     confidence: high
     evidence: "MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method."
+  - address: "0x00511F90"
+    name: ui_group_ad_dialog_apply_model
+    confidence: high
+    evidence: "Applies leader, group name, note, level range, totals, and five ordered maximum/current class pairs to GroupAdDialogPane controls."
+  - address: "0x005120A0"
+    name: ui_group_ad_dialog_read_model
+    confidence: high
+    evidence: "Reads the editable recruiting form and five ordered class maximums into the model used by CGroup RecruitStart."
+  - address: "0x00513960"
+    name: net_send_group_request
+    confidence: high
+    evidence: "Builds CGroup action 2 with a string8 target name; SGroup action 5 and group UI paths call it."
+  - address: "0x00513A40"
+    name: net_send_group_recruit_stop
+    confidence: high
+    evidence: "Builds CGroup action 6 with the local character name to stop recruiting."
+  - address: "0x00513B30"
+    name: net_send_group_recruit_start
+    confidence: high
+    evidence: "Builds CGroup action 4 with local name, group name, note, level range, and five maximum class counts."
   - address: "0x00513E80"
     name: ui_group_ad_pane_apply_self_look
     confidence: high
     evidence: "Builds GroupAdPane's recruiting model from SSelfLook; it copies name and note but omits the already-parsed leader string."
+  - address: "0x005140C0"
+    name: ui_group_ad_info_dialog_handle_action
+    confidence: high
+    evidence: "Routes GroupAdInfoDialogPane's join control to CGroup action 7 and then closes the dialog."
+  - address: "0x00514140"
+    name: net_send_group_recruit_join
+    confidence: high
+    evidence: "Builds CGroup action 7 with the leader retained by GroupAdInfoDialogPane."
+  - address: "0x00514230"
+    name: ui_group_ad_show_recruit_info
+    confidence: high
+    evidence: "Converts SGroup action 4 into the recruiting UI model, preserving five maximum/current class pairs and summing both columns."
   - address: "0x0053A270"
     name: ui_npc_server_item_menu_handle_network_event
     confidence: high
@@ -675,6 +767,26 @@ functions:
     name: net_send_multi_server_selection
     confidence: high
     evidence: "ServerSelectDialogPane sends opcode 0x57 with the selected configured server index."
+  - address: "0x0056A740"
+    name: ui_spelled_view_pane_ctor
+    confidence: high
+    evidence: "Constructs SpelledViewPane_A with ten empty icon/stage slots and the frame-0 spelled.epf background."
+  - address: "0x0056A8B0"
+    name: ui_spelled_view_pane_handle_network_event
+    confidence: high
+    evidence: "Routes exact RTTI SSpelled opcode 0x3A to the indicator update path."
+  - address: "0x0056A910"
+    name: ui_spelled_view_pane_handle_timer
+    confidence: high
+    evidence: "Updates pane visibility state without changing any icon or duration stage."
+  - address: "0x0056A980"
+    name: ui_spelled_view_pane_draw
+    confidence: high
+    evidence: "Draws up to ten group-2 icons and maps stages 1 through 6 to progressively larger colored bars."
+  - address: "0x0056AC60"
+    name: ui_spelled_view_pane_apply_packet
+    confidence: high
+    evidence: "Updates a matching icon, removes it for stage zero, or inserts a new nonzero icon into the first of ten empty slots."
   - address: "0x00573F90"
     name: ui_status_info_handle_network_event
     confidence: high
@@ -795,6 +907,18 @@ functions:
     name: net_deserialize_bad_guy_server_packet
     confidence: high
     evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32 guard."
+  - address: "0x00597C70"
+    name: net_create_bounce_server_packet
+    confidence: high
+    evidence: "Allocates a 0x18-byte RTTI SBounce object and calls its concrete constructor."
+  - address: "0x00597CF0"
+    name: net_bounce_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x4B to the common server packet base and installs the exact SBounce vtable."
+  - address: "0x00597D20"
+    name: net_deserialize_bounce_server_packet
+    confidence: high
+    evidence: "Reads a big-endian u16 body length, retains a view of that many decoded bytes, and advances the packet reader."
   - address: "0x00597F30"
     name: net_create_change_direction_server_packet
     confidence: high
@@ -875,6 +999,18 @@ functions:
     name: net_deserialize_field_map_server_packet
     confidence: high
     evidence: "Reads field-name string8, node count, current-node index, and each node's screen position, name, checksum, map ID, X, and Y."
+  - address: "0x00599440"
+    name: net_create_group_server_packet
+    confidence: high
+    evidence: "Allocates the 0x420-byte exact RTTI SGroup object and invokes its concrete constructor."
+  - address: "0x005994C0"
+    name: net_group_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x63 to the server packet base and installs the exact SGroup vtable."
+  - address: "0x005994F0"
+    name: net_deserialize_group_server_packet
+    confidence: high
+    evidence: "Reads action 1 and 5 as string8 names, action 4 as recruiting details with five maximum/current pairs, and no body for every other action."
   - address: "0x00599C60"
     name: net_create_map_server_packet
     confidence: high
@@ -983,6 +1119,18 @@ functions:
     name: net_deserialize_remove_spell_server_packet
     confidence: high
     evidence: "Reads the one-byte SRemoveSpell slot into object offset +0x10."
+  - address: "0x0059B300"
+    name: net_create_request_crc_server_packet
+    confidence: high
+    evidence: "Allocates the 0x14-byte exact RTTI SRequestCRC object and invokes its concrete constructor."
+  - address: "0x0059B380"
+    name: net_request_crc_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x3B to the server packet base and installs the exact SRequestCRC vtable."
+  - address: "0x0059B3B0"
+    name: net_deserialize_request_crc_server_packet
+    confidence: high
+    evidence: "Reads the complete SRequestCRC body as one big-endian u16 challenge."
   - address: "0x0059B510"
     name: net_create_say_server_packet
     confidence: high
@@ -1027,6 +1175,30 @@ functions:
     name: net_deserialize_sound_effect_server_packet
     confidence: high
     evidence: "Reads one sound byte and only a second track byte for mode 0xFF; no trailing u16 is consumed."
+  - address: "0x0059BFC0"
+    name: net_create_spell_delay_cancel_server_packet
+    confidence: high
+    evidence: "Allocates the common 0x10-byte exact RTTI SSpellDelayCancel object and invokes its concrete constructor."
+  - address: "0x0059C040"
+    name: net_spell_delay_cancel_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x48 to the server packet base and installs the exact SSpellDelayCancel vtable."
+  - address: "0x0059C070"
+    name: net_deserialize_spell_delay_cancel_server_packet
+    confidence: high
+    evidence: "Returns without reading any payload fields, confirming that SSpellDelayCancel contains only its opcode."
+  - address: "0x0059C0C0"
+    name: net_create_spelled_server_packet
+    confidence: high
+    evidence: "Allocates the 0x14-byte exact RTTI SSpelled object and invokes its concrete constructor."
+  - address: "0x0059C140"
+    name: net_spelled_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x3A to the server packet base and installs the exact SSpelled vtable."
+  - address: "0x0059C170"
+    name: net_deserialize_spelled_server_packet
+    confidence: high
+    evidence: "Reads a big-endian u16 icon followed by one u8 discrete duration stage."
   - address: "0x0059C360"
     name: net_create_status_server_packet
     confidence: high
@@ -1211,6 +1383,10 @@ functions:
     name: world_get_self_user_object
     confidence: high
     evidence: "Looks up the saved self object ID and RTTI-casts the result to WorldObject_User."
+  - address: "0x005EF120"
+    name: ui_world_pane_handle_living_object_message
+    confidence: high
+    evidence: "Handles RTTI-backed WORLD_LIVING_OBJECT_MESSAGE traffic; give event 2 rejects the local character and dispatches TimerHandler event 1 with the target object ID to the source InvItemPane."
   - address: "0x005EF620"
     name: ui_world_pane_handle_inventory_drop
     confidence: high
@@ -1271,6 +1447,10 @@ functions:
     name: net_handle_map_part
     confidence: high
     evidence: "Consumes one raw SMapPart row into memory, creates MapLoadingPane on the first accepted row, updates row-index progress, and treats height minus one as completion without tracking earlier rows."
+  - address: "0x005F2CF0"
+    name: net_handle_request_crc_server_body
+    confidence: high
+    evidence: "Reads the raw u16 SRequestCRC challenge, feeds low then high byte through crc16_update from zero, and sends the resulting byte swap as CReplyCRC opcode 0x45."
   - address: "0x005F2DE0"
     name: map_finish_transfer
     confidence: high
@@ -1315,6 +1495,10 @@ functions:
     name: net_send_get
     confidence: high
     evidence: "Builds CGet as opcode 0x07, u8 destination slot, u16 X, and u16 Y."
+  - address: "0x005F4340"
+    name: net_send_group_recruit_view
+    confidence: high
+    evidence: "Builds CGroup action 5 with the selected recruitment name; the paired SGroup action 4 opens GroupAdInfoDialogPane."
   - address: "0x005F4430"
     name: net_send_request_object
     confidence: high
@@ -1351,6 +1535,10 @@ functions:
     name: ui_close_map_loading_pane
     confidence: high
     evidence: "Invokes the deleting destructor for the current MapLoadingPane when a map transfer finishes."
+  - address: "0x005F6A80"
+    name: net_handle_bounce_server_packet
+    confidence: high
+    evidence: "Submits SBounce's counted embedded bytes directly as an ordinary opcode-first client body and performs no other game or UI action."
   - address: "0x005F6D80"
     name: net_handle_message_server_packet
     confidence: high
@@ -1485,10 +1673,40 @@ data_symbols:
     confidence: high
     evidence: "Nineteen signed entries map wire slot 0 to -1 and slots 1 through 18 to UI indices 0 through 17."
 comments:
+  - address: "0x0041B1D1"
+    text: "Send CSelfLook immediately when BtmButtonsPane_A is constructed."
+  - address: "0x0041B6E3"
+    text: "Route server opcode 0x39 SSelfLook to the bottom-buttons response handler."
+  - address: "0x0041B7F5"
+    text: "Timer 0x03000000 retries the empty CSelfLook request."
+  - address: "0x0041B833"
+    text: "After applying SSelfLook.is_group_open, clear the group-button pending action and invalidate the pane."
+  - address: "0x0041B869"
+    text: "Begin the exact one-byte CSelfLook plaintext body with opcode 0x2D."
+  - address: "0x0041B87C"
+    text: "Write a local zero sentinel after the body; net_submit_client_packet receives length one."
+  - address: "0x0041B894"
+    text: "Submit only the one-byte CSelfLook plaintext body."
+  - address: "0x0041B8A6"
+    text: "While the initial profile request is pending, schedule a one-second CSelfLook retry."
+  - address: "0x0041B904"
+    text: "Build the complete one-byte CGroupToggle plaintext body: opcode 0x2F with no state field."
+  - address: "0x0041B92F"
+    text: "Submit exactly one plaintext byte for CGroupToggle."
   - address: "0x0041BB8A"
     text: "Only process the parcel/mail indicator when the SStatus 0x01 state is valid for this modifiers update."
   - address: "0x0041BB95"
     text: "A nonzero high nibble of the mail-state byte starts the flashing new-mail indicator; zero stops it."
+  - address: "0x0041BC1A"
+    text: "Read the authoritative is_group_open byte from SSelfLook; the click path does not update the icon state optimistically."
+  - address: "0x0041BC57"
+    text: "On SSelfLook, cancel the retry timer and clear the pending-profile flag."
+  - address: "0x0041BEE5"
+    text: "Mark the group-button action pending without changing its displayed open or closed state."
+  - address: "0x0041BEEF"
+    text: "Send CGroupToggle, then request SSelfLook to obtain the server-authoritative group state."
+  - address: "0x0041BEF7"
+    text: "After toggling group state, request a fresh SSelfLook profile."
   - address: "0x0042D862"
     text: "Read AppConfig MonsterSayRecordMode before monster speech enters the message recording path."
   - address: "0x0043D8AF"
@@ -1515,6 +1733,8 @@ comments:
     text: "EquipPane stores per-slot sprite, dye, name, current durability, and maximum durability in parallel 18-entry arrays."
   - address: "0x004602BC"
     text: "Removal converts slot to index without a bounds check, then clears sprite, name[0], and durability. The dye byte is retained."
+  - address: "0x00462E17"
+    text: "CGroup action 2 (Request): UserLookPane sends the viewed character name."
   - address: "0x0048F82D"
     text: "InventoryPane_A initializes 60 direct InvItemPane pointers at +0x1A0. Protocol slots 1 through 60 map to indices 0 through 59."
   - address: "0x004900FD"
@@ -1595,12 +1815,16 @@ comments:
     text: "Construct DraggedInvItemPane with the selected inventory item kind and one-based source slot."
   - address: "0x00496826"
     text: "A zero quantity cancels the pending item drop without sending CDrop."
+  - address: "0x00496866"
+    text: "A nonzero submitted value becomes CGive.quantity and is forwarded with the saved living target object ID."
   - address: "0x0049695A"
     text: "Inventory slot 60 takes the separate DropGoldDialogPane path instead of CDrop."
   - address: "0x004969E0"
     text: "Open quantity input only when the source item's stored quantity is greater than one."
   - address: "0x00496B90"
     text: "A source quantity of zero or one takes the direct CDrop path with quantity one."
+  - address: "0x00496C64"
+    text: "Living-target event 1 sends CGive for a normal inventory slot with quantity one. Slot 60 opens GiveGoldDialogPane instead."
   - address: "0x00496CC2"
     text: "Begin the 10-byte CDrop plaintext body with opcode 0x08."
   - address: "0x00496CE5"
@@ -1611,6 +1835,14 @@ comments:
     text: "Write CDrop.y as big-endian u16."
   - address: "0x00496D42"
     text: "Write CDrop.quantity as the final big-endian u32 field."
+  - address: "0x00496DC2"
+    text: "Begin the 10-byte CGive plaintext body with opcode 0x29."
+  - address: "0x00496DE5"
+    text: "Write CGive.slot as u8 from InvItemPane +0x214."
+  - address: "0x00496E04"
+    text: "Write CGive.object_id as big-endian u32."
+  - address: "0x00496E23"
+    text: "Write CGive.quantity as the final big-endian u32 field."
   - address: "0x00496EA7"
     text: "Consult the RTTI DeniedItemList item table before sending; a match suppresses CUse."
   - address: "0x00496EC0"
@@ -1639,6 +1871,20 @@ comments:
     text: "Write the drag-selected CDropGold.y as the final big-endian u16 field."
   - address: "0x004976CA"
     text: "Submit the complete 9-byte CDropGold plaintext body."
+  - address: "0x0049776F"
+    text: "Retain the drag-selected CGiveGold.object_id at GiveGoldDialogPane +0x630."
+  - address: "0x00497AC3"
+    text: "Action 0 parses and submits CGiveGold; action 1 closes the dialog without sending."
+  - address: "0x00497B7D"
+    text: "A parsed amount of zero skips CGiveGold construction and closes the dialog."
+  - address: "0x00497B83"
+    text: "Begin the 9-byte CGiveGold plaintext body with opcode 0x2A."
+  - address: "0x00497B9E"
+    text: "Write CGiveGold.amount as big-endian u32."
+  - address: "0x00497BC3"
+    text: "Write the retained CGiveGold.object_id as the final big-endian u32 field."
+  - address: "0x00497BF1"
+    text: "Submit the complete 9-byte CGiveGold plaintext body."
   - address: "0x00497F19"
     text: "Dispatch the dragged inventory-item record and pointer coordinates to the pane under the release point."
   - address: "0x004981F4"
@@ -1751,6 +1997,18 @@ comments:
     text: "CChangePassword body begins with opcode 0x26 followed by u8-length name, existing password, and new password."
   - address: "0x004BC1EA"
     text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
+  - address: "0x005139AE"
+    text: "CGroup action 2 (Request): send an ordinary group request for the supplied character name."
+  - address: "0x00513A92"
+    text: "CGroup action 6 (RecruitStop): stop the local character's recruitment listing."
+  - address: "0x00513BC5"
+    text: "CGroup action 4 (RecruitStart): write the local character name, group name, note, level range, then five maximum class counts."
+  - address: "0x00513E0E"
+    text: "Write five maximum counts in UI row order: Warrior, Wizard, Rogue, Priest, Monk."
+  - address: "0x00514197"
+    text: "CGroup action 7 (RecruitJoin): request to join the leader shown by GroupAdInfoDialogPane."
+  - address: "0x00514304"
+    text: "Copy five server maximum/current pairs without reordering and sum each column for the displayed totals."
   - address: "0x005405BB"
     text: "OptionPane alert type 4 selects exact RTTI SafeQuitAlert."
   - address: "0x00542AD6"
@@ -1887,6 +2145,24 @@ comments:
     text: "CBlockListen operation 3 is followed by a one-byte name length and that many name bytes."
   - address: "0x00551186"
     text: "The client stores only the live BlockListenInputPane singleton pointer here, not an ignore-list database."
+  - address: "0x0056A8E0"
+    text: "SpelledViewPane_A consumes exact RTTI SSpelled opcode 0x3A."
+  - address: "0x0056A91A"
+    text: "This timer updates pane visibility state only. It does not decrement or expire indicator stages."
+  - address: "0x0056AA32"
+    text: "Draw up to ten spell indicators from client-owned slots. The packet contains no slot number."
+  - address: "0x0056AA67"
+    text: "Stage controls both the narrow bar height and its palette selection."
+  - address: "0x0056AAB5"
+    text: "Map stages 1 through 6 to palette indexes 0x58, 0x89, 0x45, 0x97, 0x28, and 0xFF."
+  - address: "0x0056AC97"
+    text: "Search the ten local indicator slots for the packet's icon."
+  - address: "0x0056ACB6"
+    text: "A nonzero stage updates the matching icon in place. Stage zero clears its slot."
+  - address: "0x0056AD14"
+    text: "A new nonzero icon uses the first empty slot. If all ten are occupied, the update is ignored."
+  - address: "0x0056AD90"
+    text: "Unreferenced duplicate helper that parses raw opcode-0x3A body bytes and applies the same ten-slot rules."
   - address: "0x00575AF2"
     text: "Attack and defense elements are unchecked indexes into a ten-string table. Valid wire values are 0 through 9."
   - address: "0x00575B47"
@@ -1933,6 +2209,12 @@ comments:
     text: "SBadGuy body bytes 1 and 2 are u8 mode and marker byte."
   - address: "0x00597AE6"
     text: "SBadGuy ends with a u32 guard value."
+  - address: "0x00597CFC"
+    text: "Construct exact RTTI class SBounce with server opcode 0x4B."
+  - address: "0x00597D2A"
+    text: "Read the big-endian length of the embedded opcode-first client body."
+  - address: "0x00597D42"
+    text: "Retain a view of body_length decoded bytes and advance the reader; this path performs no SBounce-specific remaining-length check."
   - address: "0x00597FF2"
     text: "Read SChangeDirection.user_id as one big-endian u32. The handler uses it as a general world object ID."
   - address: "0x00597FF8"
@@ -1973,6 +2255,18 @@ comments:
     text: "Read SEffectLayer's conditional body. A zero target ID selects static tile coordinates; a nonzero target ID selects target and optional source object attachments."
   - address: "0x00598E4B"
     text: "Coordinate mode reads tile_x first and tile_y second. The parser stores them at reversed internal offsets, then the handler restores X/Y when constructing WorldObject_StaticEffect."
+  - address: "0x005994CC"
+    text: "Construct exact RTTI SGroup with server opcode 0x63."
+  - address: "0x00599504"
+    text: "Read the SGroup action. Only actions 1, 4, and 5 have bodies in this client."
+  - address: "0x00599511"
+    text: "Action 1 (Ask): read the requesting character name as string8."
+  - address: "0x00599531"
+    text: "Action 4 (RecruitInfo): read leader, group name, note, level range, then five ordered maximum/current class pairs."
+  - address: "0x00599594"
+    text: "Read five class rows in UI order. Each pair is maximum first and current second."
+  - address: "0x005995E4"
+    text: "Action 5 (RecruitJoin): read one character name. Other actions consume no body bytes."
   - address: "0x00599CEC"
     text: "Construct exact RTTI SMap for server opcode 0x06."
   - address: "0x00599D26"
@@ -2033,6 +2327,10 @@ comments:
     text: "SRemoveSkill contains one body field: the one-byte skill slot at object offset +0x10."
   - address: "0x0059B2AA"
     text: "SRemoveSpell contains one body field: the one-byte spell slot at object offset +0x10."
+  - address: "0x0059B38C"
+    text: "Construct exact RTTI SRequestCRC with server opcode 0x3B."
+  - address: "0x0059B3BA"
+    text: "Read the complete SRequestCRC body as one big-endian u16 challenge."
   - address: "0x0059B5D2"
     text: "Read SSay speech mode: 0 is Say, 1 is Shout, and 2 is Chant."
   - address: "0x0059B5E0"
@@ -2041,6 +2339,12 @@ comments:
     text: "Read the speech text as string8 into the packet object's inline buffer."
   - address: "0x0059BE00"
     text: "SSelfSaveOK is an opcode-only, base-size packet. It inherits the base deserializer and has no packet-specific WorldPane handler."
+  - address: "0x0059C14C"
+    text: "Construct exact RTTI SSpelled with server opcode 0x3A."
+  - address: "0x0059C182"
+    text: "Read the spell indicator icon as a big-endian u16."
+  - address: "0x0059C189"
+    text: "Read the discrete duration stage. Zero removes the matching icon; values 1 through 6 select Blue through White."
   - address: "0x0059C44D"
     text: "Read the SStatus field byte. Bits 0x20, 0x10, 0x08, and 0x04 gate variable blocks; 0x02 and 0x01 are standalone state flags; the high two bits encode privilege level."
   - address: "0x0059C45A"
@@ -2165,6 +2469,8 @@ comments:
     text: "Opcode 0x06 deliberately dispatches the raw decoded SMap body instead of its parsed RTTI packet object."
   - address: "0x005EDD6F"
     text: "Route parsed SChangeHour opcode 0x20 to the world lighting handler. There is no opcode 0x1E branch in this dispatcher."
+  - address: "0x005EDE38"
+    text: "Dispatch typed SBounce opcode 0x4B to the automatic client-body submission handler."
   - address: "0x005EDF3D"
     text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
   - address: "0x005EDFE6"
@@ -2173,6 +2479,10 @@ comments:
     text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x1E, 0x58, or 0x67."
   - address: "0x005EE4C8"
     text: "Initialize the rolling CMove step counter to zero. The adjacent send time and last round-trip fields are also initialized to zero."
+  - address: "0x005EF184"
+    text: "Reject a living-object target whose object ID matches the local character."
+  - address: "0x005EF1AE"
+    text: "Dispatch the living target's object ID as TimerHandler event 1 to the source InvItemPane."
   - address: "0x005EF2CB"
     text: "When UserClickMode is enabled for a clicked user object, skip the normal CRequestObjectInfo subtype 1 request."
   - address: "0x005EF6E0"
@@ -2269,6 +2579,16 @@ comments:
     text: "Persist the whole map buffer once after the final-index row. Rows are not streamed to disk."
   - address: "0x005F2CB4"
     text: "Close MapLoadingPane, then install the completed cell storage into the active world."
+  - address: "0x005F2D11"
+    text: "Reparse the SRequestCRC challenge directly from decoded body bytes 1 and 2."
+  - address: "0x005F2D28"
+    text: "Start the reply calculation from CRC state zero and feed the challenge's low byte first."
+  - address: "0x005F2D5A"
+    text: "Feed the challenge's high byte second. With both table indexes zero, the result is exactly the byte-swapped challenge."
+  - address: "0x005F2D77"
+    text: "Begin the three-byte CReplyCRC body with opcode 0x45."
+  - address: "0x005F2D95"
+    text: "Write the calculated response as u16, producing the incoming challenge bytes in reverse order."
   - address: "0x005F2DE7"
     text: "Destroy and unregister any MapLoadingPane before activating the map."
   - address: "0x005F2E16"
@@ -2351,12 +2671,20 @@ comments:
     text: "Write CGet.x as u16."
   - address: "0x005F428C"
     text: "Write CGet.y as u16. These are the final packet fields."
+  - address: "0x005F4391"
+    text: "CGroup action 5 (RecruitView): request recruitment details for the selected name."
   - address: "0x005F45CD"
     text: "Increment the rolling u8 CMove step before serializing it. Natural byte overflow wraps 255 to 0."
   - address: "0x005F4602"
     text: "Record timeGetTime() after building CMove. A matching SMove step subtracts this value for the network indicator."
   - address: "0x005F46F1"
     text: "Write the caller-supplied emotion request as the only CEmotion payload byte. The builder applies no range check."
+  - address: "0x005F6A8A"
+    text: "Load the server-supplied embedded client-body length."
+  - address: "0x005F6A92"
+    text: "Load the retained view of the embedded opcode-first client body."
+  - address: "0x005F6A9C"
+    text: "Submit the embedded bytes as an ordinary client body; the first embedded byte selects the outbound transform."
   - address: "0x005F6DD9"
     text: "Route SMessage types 0x00 through 0x12. Colored overlay, popup, and score paths are separate; several types are intentionally ignored here."
   - address: "0x005F6DF7"
@@ -2387,10 +2715,16 @@ comments:
     text: "After successfully closing the marker, call the invalid-memory clearing path to terminate the client."
   - address: "0x005F7A80"
     text: "Marker creation failed, including when it already exists. Write through null to terminate the client."
+  - address: "0x005F8616"
+    text: "The normal group prompt's accept action sends CGroup action 3 for the saved requester name."
   - address: "0x005F8620"
     text: "Build CGroup as opcode 0x2E, action 3, and a length-prefixed user string for the automatic GroupAnswer path."
   - address: "0x005F87C9"
     text: "A nonzero AppConfig GroupAnswer skips the prompt dialog and immediately sends CGroup action 3."
+  - address: "0x005F8862"
+    text: "SGroup action 4 opens GroupAdInfoDialogPane from the recruitment model."
+  - address: "0x005F887C"
+    text: "SGroup action 5 converts recruitment joining into an ordinary CGroup action 2 request for the supplied name."
   - address: "0x005FC949"
     text: "Return the first inventory slot from 1 through 60 whose compact session record is absent."
   - address: "0x005FC952"
@@ -2684,8 +3018,8 @@ packet_indexes:
         transform: derived
         builder: "0x00496D90"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Representative builder 0x00496D90 writes opcode 0x29 and submits the body."
+        name_confidence: medium
+        evidence: "Builder 0x00496D90 writes the 10-byte body as opcode 0x29, u8 source slot, u32 living target object ID, and u32 quantity. The confirmed UI path rejects self-targeting and sends quantity one for normal inventory items."
         page: "docs/network/client/041-0x29-give.md"
       - opcode: "0x2A"
         friendly_name: "Give Gold"
@@ -2693,8 +3027,8 @@ packet_indexes:
         transform: derived
         builder: "0x00497B10"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Representative builder 0x00497B10 writes opcode 0x2A and submits the body."
+        name_confidence: medium
+        evidence: "Builder 0x00497B10 writes the 9-byte body as opcode 0x2A, u32 amount, and u32 living target object ID. GiveGoldDialogPane retains the target, suppresses zero amounts, and owns submission."
         page: "docs/network/client/042-0x2a-give-gold.md"
       - opcode: "0x2D"
         friendly_name: "Self Look"
@@ -2703,7 +3037,7 @@ packet_indexes:
         builder: "0x0041B840"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x0041B840 writes opcode 0x2D and submits the body."
+        evidence: "Builder 0x0041B840 submits the exact one-byte body containing only opcode 0x2D. BtmButtonsPane_A sends it at construction, retries after one second while pending, and cancels that retry when paired SSelfLook opcode 0x39 arrives."
         page: "docs/network/client/045-0x2d-self-look.md"
       - opcode: "0x2E"
         friendly_name: "Group"
@@ -2712,7 +3046,7 @@ packet_indexes:
         builder: "0x00462DC0"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Builder 0x00462DC0 sends action 2 from UserLookPane. The SGroup handler uses builder 0x005F8620 to send action 3 automatically when local GroupAnswer is enabled. Both carry a length-prefixed user name."
+        evidence: "Matching builders construct actions 2 through 7. Every form carries a string8 character name; action 4 appends group name, note, level range, and maximum counts in Warrior, Wizard, Rogue, Priest, Monk order. No action-1 builder was found."
         page: "docs/network/client/046-0x2e-group.md"
       - opcode: "0x2F"
         friendly_name: "Group Toggle"
@@ -2720,8 +3054,8 @@ packet_indexes:
         transform: derived
         builder: "0x0041B8E0"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Representative builder 0x0041B8E0 writes opcode 0x2F and submits the body."
+        name_confidence: medium
+        evidence: "Builder net_send_group_toggle submits the exact one-byte body containing only opcode 0x2F. BtmButtonsPane_A sends it without a desired-state field, immediately requests SSelfLook, and changes the group icon only from the returned is_group_open value. A supplied runtime trace confirms OFF as 0 and ON as 1."
         page: "docs/network/client/047-0x2f-group-toggle.md"
       - opcode: "0x30"
         friendly_name: "Change Slot"
@@ -2829,7 +3163,7 @@ packet_indexes:
         builder: "0x005F2CF0"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x005F2CF0 writes opcode 0x45 and submits the body."
+        evidence: "Raw SRequestCRC handler 0x005F2CF0 starts the custom CRC16 state at zero, feeds the challenge low byte then high byte, and writes the result as a big-endian u16 after opcode 0x45. For this two-byte input the calculation reduces exactly to reversing the challenge bytes and incorporates no client-owned data."
         page: "docs/network/client/069-0x45-reply-crc.md"
       - opcode: "0x47"
         friendly_name: "Add Stat"
@@ -3112,7 +3446,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI identifies SMessage. Its parser reads a type-dependent prefix followed by a u16 byte count, and its consumers route the text to floating, persistent-history, popup, or score UI."
+        evidence: "RTTI identifies SMessage. Its parser reads a type-dependent prefix followed by a u16 byte count, and its consumers route the text to floating, persistent-history, popup, score, or game-settings UI. A supplied CGroupToggle trace confirms type 0x07 selector ASCII 2 updates the Join a group setting row."
         page: "docs/network/server/010-0x0a-message.md"
       - opcode: "0x0B"
         friendly_name: "Move"
@@ -3422,7 +3756,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059BA40 installs SSelfLook for opcode 0x39. Deserializer 0x0059BA70 reads nation and profile text, an optional recruiting block, class metadata, and repeated legend marks. EquipPane, UserInfoPane, GroupAdPane, and both legend UIs consume the result."
+        evidence: "Constructor 0x0059BA40 installs SSelfLook for opcode 0x39. Deserializer 0x0059BA70 reads nation and profile text, an optional recruiting block, class metadata, and repeated legend marks. BtmButtonsPane_A treats it as the response to empty CSelfLook and cancels the retry; EquipPane, UserInfoPane, GroupAdPane, and both legend UIs consume the profile."
         page: "docs/network/server/057-0x39-self-look.md"
       - opcode: "0x3A"
         friendly_name: "Spelled"
@@ -3432,7 +3766,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059C140 passes opcode 0x3A to the server packet base and installs the SSpelled vtable."
+        evidence: "RTTI constructor 0x0059C140 installs opcode 0x3A. Deserializer 0x0059C170 reads u16 icon and u8 duration stage; SpelledViewPane_A maintains ten local slots, maps stages 1 through 6 to Blue through White bars, and removes a matching icon for stage zero without any local duration countdown."
         page: "docs/network/server/058-0x3a-spelled.md"
       - opcode: "0x3B"
         friendly_name: "Request CRC"
@@ -3442,7 +3776,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059B380 passes opcode 0x3B to the server packet base and installs the SRequestCRC vtable."
+        evidence: "RTTI constructor 0x0059B380 installs opcode 0x3B. Deserializer 0x0059B3B0 reads one big-endian u16 challenge; raw global handler 0x005F2CF0 reparses that value and immediately sends CReplyCRC without reading or validating any other client state."
         page: "docs/network/server/059-0x3b-request-crc.md"
       - opcode: "0x3C"
         friendly_name: "Map Part"
@@ -3542,7 +3876,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059C040 passes opcode 0x48 to the server packet base and installs the SSpellDelayCancel vtable."
+        evidence: "Constructor 0x0059C040 passes opcode 0x48 to the server packet base and installs the SSpellDelayCancel vtable; deserializer 0x0059C070 reads no payload."
         page: "docs/network/server/072-0x48-spell-delay-cancel.md"
       - opcode: "0x49"
         friendly_name: "Request Portrait"
@@ -3572,7 +3906,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597CF0 passes opcode 0x4B to the server packet base and installs the SBounce vtable."
+        evidence: "RTTI identifies SBounce and constructor 0x00597CF0 installs opcode 0x4B. Its deserializer reads u16 body_length and a counted byte view. The active handler submits that view directly as an opcode-first client body; normal outbound terminator, wrapper, transform, sequence, and framing rules then apply."
         page: "docs/network/server/075-0x4b-bounce.md"
       - opcode: "0x4C"
         friendly_name: "Quit"
@@ -3662,7 +3996,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x005994C0 installs RTTI SGroup opcode 0x63. Handler 0x005F8720 opens a group prompt or sends CGroup action 3 immediately according to local GroupAnswer."
+        evidence: "RTTI constructor 0x005994C0 installs opcode 0x63. Deserializer 0x005994F0 reads names for actions 1 and 5, recruiting details with five ordered maximum/current pairs for action 4, and no payload for other actions; the handler applies those three parsed forms."
         page: "docs/network/server/099-0x63-group.md"
       - opcode: "0x64"
         friendly_name: "Mini Game"

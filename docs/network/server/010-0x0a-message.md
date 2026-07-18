@@ -88,6 +88,8 @@ The supplied full-list capture declares `message_length = 0x00B0` and begins wit
 
 The single-row captures declare `message_length = 0x0016`. ASCII `1` selects row 1, and the remaining 21 bytes are displayed as either `Listen to whisper:OFF` or `Listen to whisper:ON `.
 
+A supplied group-toggle capture confirms the same form for setting 2. The message begins with ASCII `2`, followed by either `Join a group     :OFF` or `Join a group     :ON `. This refreshes the row text when `GameSettingDialog` is open. The group button uses `SSelfLook.is_group_open` instead.
+
 The parser treats ASCII `1` through `9` as single-row selectors. Any other first byte enters full-list mode; the observed list marker is ASCII `0`. The returned `ON` and `OFF` suffixes are not parsed as state. See [Game settings](../../systems/game-settings.md) for row ownership and persistence.
 
 ## Length limits

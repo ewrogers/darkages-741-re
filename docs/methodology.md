@@ -61,4 +61,4 @@ The client may contain Korean text that renders as `????` on another Windows loc
 
 Patch research documents changes for a launcher that edits suspended process memory. It does not modify the executable on disk.
 
-A safe patch verifies the exact client fingerprint and original bytes, uses the loaded module base, writes complete instructions, flushes the instruction cache, and stops on any mismatch. See [Runtime patches](appendix/runtime-patches.md).
+A safe patch verifies the exact client fingerprint and original bytes, uses the loaded module base, writes complete instructions, flushes the instruction cache, and stops on any mismatch. See [Safe launcher workflow](appendix/runtime-patches/safe-launcher-workflow.md).
