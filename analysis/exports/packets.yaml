@@ -1211,6 +1211,18 @@ functions:
     name: net_deserialize_check_time_server_packet
     confidence: high
     evidence: "Reads one big-endian u32 server_value into SCheckTime object offset +0x10."
+  - address: "0x00598380"
+    name: net_create_damage_effect_server_packet
+    confidence: high
+    evidence: "Allocates the 0x18-byte exact RTTI SDamageEffect object and invokes its concrete constructor."
+  - address: "0x00598400"
+    name: net_damage_effect_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x13 to the server packet base and installs the exact SDamageEffect vtable."
+  - address: "0x00598430"
+    name: net_deserialize_damage_effect_server_packet
+    confidence: high
+    evidence: "Reads u32 object_id followed by the unknown, health_percent, and sound_id_or_ff bytes."
   - address: "0x005984C0"
     name: net_create_draw_human_objects_server_packet
     confidence: high
@@ -1683,6 +1695,18 @@ functions:
     name: world_step_coordinates
     confidence: high
     evidence: "Applies the direction delta to a coordinate pair used by local movement and collision checks."
+  - address: "0x005BE6A0"
+    name: render_damage_effect_image_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI World::DamageEffectImage and generates 26 five-by-27 meter stages in one 130-by-27 canvas using palette indexes 0x28, 0x97, and 0x89."
+  - address: "0x005BE8C0"
+    name: render_damage_effect_image_get_frame
+    confidence: high
+    evidence: "Clamps a requested stage to 0 through 25 and selects its five-by-27 slice from the generated damage-meter canvas."
+  - address: "0x005BE950"
+    name: render_create_damage_effect_image
+    confidence: high
+    evidence: "Allocates and constructs the 0x124-byte exact RTTI World::CDamageEffectImage object used by the damage-effect image cache."
   - address: "0x005C4F00"
     name: ui_world_balloon_pane_ctor
     confidence: high
@@ -1727,10 +1751,34 @@ functions:
     name: ui_world_show_speech
     confidence: high
     evidence: "Attaches a timed speech pane to a world object for the requested speech mode and duration."
+  - address: "0x005CCD40"
+    name: world_show_damage_effect
+    confidence: high
+    evidence: "Resolves the target object, removes its existing type-7 overlay, constructs exact RTTI WorldObject_Damage, and starts the replacement at the requested stage for 2000 ms."
   - address: "0x005D2DC0"
     name: render_world_set_blinded
     confidence: high
     evidence: "Stores the world-renderer blinded boolean and schedules the affected view for redraw."
+  - address: "0x005DC1A0"
+    name: world_damage_object_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI WorldObject_Damage and initializes its timer generation, stage, and image state."
+  - address: "0x005DC350"
+    name: world_damage_object_start
+    confidence: high
+    evidence: "Selects a meter stage, stores current time plus duration minus 100 ms, and schedules timer ID 1 for the full supplied duration."
+  - address: "0x005DC4B0"
+    name: world_damage_object_get_bounds
+    confidence: high
+    evidence: "Returns the target-relative bounds of the selected five-by-27 damage-meter frame."
+  - address: "0x005DC5A0"
+    name: render_world_damage_object
+    confidence: high
+    evidence: "Draws the selected generated damage-meter frame at its target-relative world position."
+  - address: "0x005DC6A0"
+    name: world_damage_object_handle_timer
+    confidence: high
+    evidence: "Handles timer ID 1 and removes the overlay through the normal world-object path only when the callback generation still matches."
   - address: "0x005E0550"
     name: world_living_object_refresh_motion
     confidence: medium
@@ -1859,6 +1907,10 @@ functions:
     name: net_handle_effect_layer_server_packet
     confidence: high
     evidence: "Creates static, object-attached, or source-to-target moving world effects from SEffectLayer, including the 10000 through 11999 moving-effect selector range."
+  - address: "0x005F40F0"
+    name: net_handle_damage_effect_server_packet
+    confidence: high
+    evidence: "Plays non-0xFF sound first, validates signed health_percent in 0 through 100, maps it to stage floor(percent / 4), and asks the world to replace the target's temporary meter."
   - address: "0x005F4200"
     name: net_send_get
     confidence: high
@@ -2749,6 +2801,14 @@ comments:
     text: "SCheckTime allocates 0x14 bytes: base packet plus one u32 server value."
   - address: "0x0059832A"
     text: "Read the big-endian u32 server value echoed by CCheckTime."
+  - address: "0x00598442"
+    text: "Read SDamageEffect object_id as a big-endian u32."
+  - address: "0x00598450"
+    text: "Read one u8 that the only handler copies but never uses."
+  - address: "0x0059845E"
+    text: "Read health_percent. The handler treats it as signed and accepts only 0 through 100."
+  - address: "0x00598464"
+    text: "Read sound_id_or_ff. Wire value 0xFF skips audio; other values are sign-extended before playback."
   - address: "0x0059857C"
     text: "Initialize the object light-mask selector to 1. Disguised records retain this default because only normal-human records read the wire field."
   - address: "0x00598598"
@@ -2999,6 +3059,16 @@ comments:
     text: "Clear the global MapLoadingPane singleton pointer during destruction."
   - address: "0x005BE58D"
     text: "Only directions 0 through 3 have defined coordinate deltas. Values above 3 do not take an explicit None path and leave the result undefined."
+  - address: "0x005BE729"
+    text: "Create the client-generated damage meter as a 130 by 27 canvas containing 26 horizontal five-by-27 slices."
+  - address: "0x005BE788"
+    text: "Generate exactly 26 meter stages, indexed 0 through 25."
+  - address: "0x005BE792"
+    text: "Stages 0 through 5 use palette index 0x28."
+  - address: "0x005BE7A7"
+    text: "Stages 6 through 12 use palette index 0x97; stages 13 through 25 use 0x89."
+  - address: "0x005BE8CB"
+    text: "Clamp the requested damage-meter stage to the inclusive range 0 through 25."
   - address: "0x005C4F40"
     text: "SSay mode 2 constructs a text-only speech pane; other modes construct the framed balloon style."
   - address: "0x005C5017"
@@ -3015,6 +3085,12 @@ comments:
     text: "Invalidate the light mask and WorldPane after switching the active map storage."
   - address: "0x005C9953"
     text: "Match the requested broad-category value against WorldObject +0x2C. B-key pickup passes category 8 for ground items."
+  - address: "0x005CCFAE"
+    text: "Give the replacement WorldObject_Damage overlay a 2000 ms lifetime."
+  - address: "0x005DC38D"
+    text: "Store current dispatcher time plus duration minus 100 ms. The purpose of this early threshold is unresolved."
+  - address: "0x005DC48B"
+    text: "Schedule timer ID 1 for the full duration and associate it with the current generation token."
   - address: "0x005E08B3"
     text: "Store the living object's current facing byte at +0x192 after its old and new directions differ."
   - address: "0x005ED9C6"
@@ -3235,6 +3311,12 @@ comments:
     text: "Normal mode uses one-based target and source animation selectors and converts them to zero-based Effect.tbl resource indexes."
   - address: "0x005F4090"
     text: "A zero target ID creates a WorldObject_StaticEffect at the packet's tile_y, tile_x coordinates after map bounds checks."
+  - address: "0x005F411D"
+    text: "Sound handling runs before health validation and target lookup, so audio can play when no meter appears."
+  - address: "0x005F413B"
+    text: "Accept health_percent only when its signed value is in the inclusive range 0 through 100."
+  - address: "0x005F4156"
+    text: "Map a valid percentage to one of 26 display stages with floor(health_percent / 4)."
   - address: "0x005F424E"
     text: "Write CGet.destination_slot as u8."
   - address: "0x005F426D"
@@ -4112,7 +4194,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00598400 passes opcode 0x13 to the server packet base and installs the SDamageEffect vtable."
+        evidence: "Exact RTTI constructor 0x00598400 binds opcode 0x13. Deserializer 0x00598430 reads u32 object_id and three u8 fields. Handler 0x005F40F0 optionally plays sound, maps valid health_percent to a 26-stage generated meter, and replaces a two-second WorldObject_Damage overlay on the target."
         page: "docs/network/server/019-0x13-damage-effect.md"
       - opcode: "0x15"
         friendly_name: "Map Size"

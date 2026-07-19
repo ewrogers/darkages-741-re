@@ -920,6 +920,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_check_time_server_packet` | `0x00598270` | high | Allocates a 0x14-byte SCheckTime object containing the packet base and one u32 server value. |
 | `net_check_time_server_packet_ctor` | `0x005982F0` | high | Passes opcode 0x68 to the server packet base and installs the exact SCheckTime vtable. |
 | `net_deserialize_check_time_server_packet` | `0x00598320` | high | Reads one big-endian u32 server_value into SCheckTime object offset +0x10. |
+| `net_create_damage_effect_server_packet` | `0x00598380` | high | Allocates the 0x18-byte exact RTTI SDamageEffect object and invokes its concrete constructor. |
+| `net_damage_effect_server_packet_ctor` | `0x00598400` | high | Passes opcode 0x13 to the server packet base and installs the exact SDamageEffect vtable. |
+| `net_deserialize_damage_effect_server_packet` | `0x00598430` | high | Reads u32 object_id followed by the unknown, health_percent, and sound_id_or_ff bytes. |
 | `net_create_draw_human_objects_server_packet` | `0x005984C0` | high | Allocates a 0x264-byte RTTI SDrawHumanObjects object and invokes its concrete constructor. |
 | `net_draw_human_objects_server_packet_ctor` | `0x00598540` | high | Passes opcode 0x33 to the server packet base and installs the exact SDrawHumanObjects vtable. |
 | `net_deserialize_draw_human_objects_server_packet` | `0x00598570` | high | Parses X, Y, direction, entity ID, the complete normal or monster-disguise appearance variant, name style, name, group-ad text, and the normal variant's u8 light-mask selector. |
@@ -1064,6 +1067,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_motion_server_packet` | `0x005F3C80` | high | Finds SMotion.object_id, accepts living object kinds 1 and 2, converts the u16 timing from 10 ms units, and starts the requested class-specific body motion without a sound path. |
 | `net_handle_say_server_packet` | `0x005F3E00` | high | Finds the SSay sender, requests a missing object without replaying the speech, and otherwise shows the selected three-second speech style without appending to history. |
 | `net_handle_effect_layer_server_packet` | `0x005F3EB0` | high | Creates static, object-attached, or source-to-target moving world effects from SEffectLayer, including the 10000 through 11999 moving-effect selector range. |
+| `net_handle_damage_effect_server_packet` | `0x005F40F0` | high | Plays non-0xFF sound first, validates signed health_percent in 0 through 100, maps it to stage floor(percent / 4), and asks the world to replace the target's temporary meter. |
 | `net_send_get` | `0x005F4200` | high | Builds CGet as opcode 0x07, u8 destination slot, u16 X, and u16 Y. |
 | `net_send_group_recruit_view` | `0x005F4340` | high | Builds CGroup action 5 with the selected recruitment name; the paired SGroup action 4 opens GroupAdInfoDialogPane. |
 | `net_send_request_object` | `0x005F4430` | high | Builds CRequestObject as opcode 0x0C plus one u32 object ID; confirmed callers use it after a lookup misses or an expected living-object cast fails. |
@@ -1183,6 +1187,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_snow_weather_session_ctor` | `0x005BD950` | high | Creates the snow weather session, selects pane blend mode 7, and starts its 100 ms timer. |
 | `render_spawn_snow_particles` | `0x005BDB70` | high | Places snow particle panes across and above the world view. |
 | `render_update_snow_particles` | `0x005BDDA0` | high | Moves snow particles down, removes those below the view, and spawns replacements. |
+| `render_damage_effect_image_ctor` | `0x005BE6A0` | high | Constructs exact RTTI World::DamageEffectImage and generates 26 five-by-27 meter stages in one 130-by-27 canvas using palette indexes 0x28, 0x97, and 0x89. |
+| `render_damage_effect_image_get_frame` | `0x005BE8C0` | high | Clamps a requested stage to 0 through 25 and selects its five-by-27 slice from the generated damage-meter canvas. |
+| `render_create_damage_effect_image` | `0x005BE950` | high | Allocates and constructs the 0x124-byte exact RTTI World::CDamageEffectImage object used by the damage-effect image cache. |
 | `render_create_snow_overlay` | `0x005C82C0` | high | Replaces the current weather session with WeatherSession_SnowParticle. |
 | `render_invalidate_light_mask_region` | `0x005C8450` | high | Accumulates a dirty light-mask rectangle and invalidates the matching WorldPane region. |
 | `render_hea_decode_mask` | `0x005C8540` | high | Expands HEA run words into an 8-bit light or occlusion mask. |
@@ -1203,6 +1210,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_ground_layer` | `0x005D6A50` | high | Updates and draws the cached visible ground-tile layer. |
 | `render_set_ground_bank` | `0x005D7410` | high | Stores the active ground-bank selector and clears the cached ground layer. |
 | `render_ground_tile` | `0x005D7690` | high | Copies one decoded isometric tile diamond into the ground cache canvas. |
+| `render_world_damage_object` | `0x005DC5A0` | high | Draws the selected generated damage-meter frame at its target-relative world position. |
 | `render_effect_object` | `0x005DD380` | high | Draws a world effect frame with its selected software blend mode. |
 | `render_update_effect_frame` | `0x005DD470` | high | Advances a world effect through its Effect.tbl frame sequence. |
 | `render_item_object_get_bounds` | `0x005DE5A0` | high | Returns the item's draw rectangle and its fixed -16 to +16 tile-relative bounds through WorldObject_Item primary-vtable slot 0x14. |
@@ -1435,7 +1443,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_create_static_effect` | `0x005CB960` | high | Bounds-checks tile Y and X, constructs an RTTI WorldObject_StaticEffect at that map cell, and inserts it into the world. |
 | `world_create_moving_effect_between_objects` | `0x005CBBF0` | high | Resolves source and target world objects, converts their positions, constructs an RTTI WorldObject_MovingEffect path between them, and inserts it into the world. |
 | `world_create_object_name_pane` | `0x005CC670` | high | Finds a world object by ID, constructs RTTI WorldObject_Name_Pane from bounded text and style bytes, and attaches it to the object. |
+| `world_show_damage_effect` | `0x005CCD40` | high | Resolves the target object, removes its existing type-7 overlay, constructs exact RTTI WorldObject_Damage, and starts the replacement at the requested stage for 2000 ms. |
 | `world_object_set_name_pane` | `0x005DBA80` | high | Replaces the reference-counted WorldObject_Name_Pane pointer at common WorldObject offset +0x58. |
+| `world_damage_object_ctor` | `0x005DC1A0` | high | Constructs exact RTTI WorldObject_Damage and initializes its timer generation, stage, and image state. |
+| `world_damage_object_start` | `0x005DC350` | high | Selects a meter stage, stores current time plus duration minus 100 ms, and schedules timer ID 1 for the full supplied duration. |
+| `world_damage_object_get_bounds` | `0x005DC4B0` | high | Returns the target-relative bounds of the selected five-by-27 damage-meter frame. |
+| `world_damage_object_handle_timer` | `0x005DC6A0` | high | Handles timer ID 1 and removes the overlay through the normal world-object path only when the callback generation still matches. |
 | `world_effect_start_animation` | `0x005DD1C0` | high | Registers an ordinary world effect with the image pool, prefers the resource's nonzero frame interval over the packet fallback, and schedules its frame timer. |
 | `world_object_effect_ctor` | `0x005DD620` | high | Constructs the exact RTTI WorldObject_ObjectEffect with an Effect.tbl resource index, fallback frame interval, and owning object's facing direction. |
 | `world_static_effect_ctor` | `0x005DD6D0` | high | Constructs the exact RTTI WorldObject_StaticEffect and retains its tile Y and X coordinates. |

@@ -51,4 +51,6 @@ Setting sound to zero also stops all current handles and clears a manager flag. 
 
 The server can play an effect with [`SSoundEffect`](../network/server/025-0x19-sound-effect.md). A command byte below `0xFF` is passed directly to `audio_play_sound_effect` as the numeric ID.
 
+[`SDamageEffect`](../network/server/019-0x13-damage-effect.md) also carries a sound byte. `0xFF` suppresses audio; every other value reaches the same sound manager before the client validates the packet's health percentage or world-object target. A sound can therefore play without a visible damage meter.
+
 Other local UI and gameplay paths also call the same manager function. This keeps packet-driven and local feedback sounds on the same cache and volume setting.
