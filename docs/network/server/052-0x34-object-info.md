@@ -23,7 +23,7 @@ packet SObjectInfo {
         u8 dye_color
     }
 
-    u8 social_status
+    u8 social_status              // UserState
     string8 name
     u8 nation                     // Nation
     string8 title
@@ -49,7 +49,9 @@ packet SObjectInfo {
 }
 ```
 
-The supplied field names match the client layout. The same `UserInfoPane` fields receive `nation`, `title`, `is_group_open`, `guild_rank`, `display_class`, and `guild` from [`SSelfLook`](057-0x39-self-look.md). `social_status` is project-owner protocol vocabulary. The client stores the byte, but no value table or later read of that stored field was found, so it remains a plain `u8` rather than a shared enum.
+The supplied field names match the client layout. The same `UserInfoPane` fields receive `nation`, `title`, `is_group_open`, `guild_rank`, `display_class`, and `guild` from [`SSelfLook`](057-0x39-self-look.md).
+
+`SocialStatus` in the supplied scheme is the same value domain the book calls [`UserState`](../protocol-types.md#userstate). It uses the eight states sent by [`CChangeUserState`](../client/121-0x79-change-user-state.md). The object-info pane retains the byte without another local lookup, while the change-state sender and user-list renderer independently confirm the `0..7` range.
 
 `nation` uses the shared [`Nation`](../protocol-types.md#nation) type. Legend `icon` uses [`LegendMarkIcon`](../protocol-types.md#legendmarkicon). `dye_color` and legend `color` are palette indexes; the client does not prove named `DyeColor` or `LegendMarkColor` enums.
 

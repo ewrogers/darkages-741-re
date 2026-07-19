@@ -92,7 +92,7 @@ Used by [`SUserAppearance`](server/005-0x05-user-appearance.md) and [`SSelfLook`
 
 The names are project-owner protocol vocabulary matched to the state choices shown by the game. The client independently confirms the `0..7` range in both directions: `CChangeUserState` normalizes any other value to `0`, and the world-list renderer has exactly eight state visuals and also displays an out-of-range value as state `0`.
 
-Used by [`CChangeUserState`](client/121-0x79-change-user-state.md) and [`SShowUsers`](server/054-0x36-show-users.md).
+Used by `social_status` in [`SObjectInfo`](server/052-0x34-object-info.md), [`CChangeUserState`](client/121-0x79-change-user-state.md), and [`SShowUsers`](server/054-0x36-show-users.md).
 
 ## EquipmentSlot
 
@@ -198,7 +198,6 @@ Some shared byte fields look enum-like but do not have a verified value table:
 
 - `dye_color` is a palette or dye index used by inventory and equipment.
 - Legend `color` and human `name_style` are palette indexes, not named enums.
-- `social_status` is retained from `SObjectInfo`, but no client value table or later read of the stored byte was found.
 - `rest_position` changes standing-motion setup, but its value-to-pose mapping is unresolved.
 - `light_mask_id` selects `mask1%02d.epf` while Darkness mode is active. It is an asset selector, not a recovered lantern enum.
 - `spell_args_type` selects spell targeting or prompt behavior, but the complete value mapping is not yet established.

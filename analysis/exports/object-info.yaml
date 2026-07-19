@@ -14,7 +14,7 @@ functions:
   - address: "0x005B1900"
     name: ui_other_user_info_apply_object_info_body
     confidence: high
-    evidence: "Reads entity ID, 18 implicitly ordered equipment records, social status, name, nation, title, group-open state, guild identity, legends, and the optional portrait/biography tail."
+    evidence: "Reads entity ID, 18 implicitly ordered equipment records, social status in the shared UserState domain, name, nation, title, group-open state, guild identity, legends, and the optional portrait/biography tail."
   - address: "0x005B1DF0"
     name: ui_open_other_user_info_from_server_body
     confidence: high
@@ -35,7 +35,7 @@ comments:
   - address: "0x005B19BF"
     text: "Store the wire sprite u16 unchanged after widening it to the runtime u32 field; this path does not clear sprite flag bits."
   - address: "0x005B1A37"
-    text: "Read the project-owner social_status byte. The client retains it, but no later read or value table was found."
+    text: "Read project-owner social_status in the shared UserState domain used by CChangeUserState. UserInfoPane retains the byte without another local lookup."
   - address: "0x005B1AD0"
     text: "Read Nation after string8 name, then continue with string8 title, u8 is_group_open, guild rank, display class, and guild."
   - address: "0x005B1C6A"
