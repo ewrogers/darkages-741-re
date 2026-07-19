@@ -172,7 +172,7 @@ on Escape while pending and no native close was queued:
     queue the cached ten-byte close body on the main-thread dispatcher
 ```
 
-The documented [Stale pursuit runtime patch](../appendix/runtime-patches/stale-pursuit.md) implements this boundary for version 741. It clears its pending marker on the native Close path or the next incoming pursuit message, keeps the full `u32 target_id`, and expires the patch-owned context after 30 seconds.
+The documented [Stale pursuit runtime patch](../appendix/runtime-patches/stale-pursuit.md) implements this boundary for version 741. It clears its pending marker on the native Close path or the next incoming pursuit message, keeps the full `u32 target_id`, and expires the patch-owned context after 30 seconds. After submitting the real Close, the fallback also passes decoded body `30 0A` to `net_post_decoded_server_packet_event` so the ordinary typed-packet and pane path clears client-side pursuit state.
 
 Do not send a close automatically after a fixed timeout alone. A valid script may answer slowly or finish through another server message. A captured `SMessage` carrying the exact stuck response could become a stronger optional trigger, but its type and text bytes must be confirmed first.
 

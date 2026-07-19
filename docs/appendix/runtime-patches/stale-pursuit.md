@@ -1,8 +1,8 @@
 # Stale pursuit
 
-This runtime patch gives an unanswered pursuit dialog one deliberate recovery path. It remembers the exact pursuit context when the client enters response-pending state. If Escape finishes normal event dispatch without sending the native Close, the patch submits the cached ten-byte `CPursuit` Close body through the client's normal packet producer.
+This runtime patch gives an unanswered pursuit dialog one deliberate recovery path. It remembers the exact pursuit context when the client enters response-pending state. If Escape finishes normal event dispatch without sending the native Close, the patch submits the cached ten-byte `CPursuit` Close body and then dispatches a synthetic `SPursuitMessage` Close acknowledgement through the client's normal event path.
 
-The patch does not close every dialog or send on a timer. The pursuit Close button keeps its native path. The server remains responsible for replying with `SPursuitMessage` type 10, whose plaintext body is `30 0A`.
+The patch does not close every dialog or send on a timer. The pursuit Close button keeps its native path. The fallback passes decoded body `30 0A` to `net_post_decoded_server_packet_event`, which constructs the typed packet and lets the ordinary pane handlers close client-side pursuit state. This local message does not advance the receive cipher.
 
 See [NPC dialogs](../../systems/npc-dialogs.md), [Pursuit (CPursuit)](../../network/client/058-0x3a-pursuit.md), and [Pursuit Message (SPursuitMessage)](../../network/server/048-0x30-pursuit-message.md).
 
@@ -26,7 +26,7 @@ The key hook records whether the event is Escape before passing the event to `ev
 
 Normal Close clears `pending` before tail-calling `net_send_pursuit_close_current`. Any new `SPursuitMessage` clears it before tail-calling `ui_npc_session_open_pursuit_message`. These two gates prevent the ordinary Close and the fallback from both sending.
 
-The 30,000 ms window is a patch constant measured from the player's answer. It is not the reactor lifetime. Expiry only discards the cached context and never sends automatically.
+The 30,000 ms window is a patch constant measured from the player's answer. It is not the reactor lifetime. Expiry only discards the cached context and never sends automatically. A successful fallback first queues the real client Close, then simulates the missing server acknowledgement locally.
 
 ## Hook sites
 
@@ -61,14 +61,17 @@ For each replacement, write `rel32 = stub_entry - (module_base + site_rva + 5)` 
 | `ui_npc_session_open_pursuit_message` | `0x0052C950` | `0x0012C950` | Preserve incoming `SPursuitMessage` handling |
 | `net_send_pursuit_close_current` | `0x0053DA90` | `0x0013DA90` | Preserve the native Close-button path |
 | `net_submit_client_packet` | `0x00563E00` | `0x00163E00` | Submit the fallback plaintext body |
+| `net_post_decoded_server_packet_event` | `0x00467060` | `0x00067060` | Dispatch decoded `30 0A` through the normal server-packet event path |
 | `GetTickCount` import thunk | `0x0061FEC4` | `0x0021FEC4` | Bound the cached context lifetime |
 | communications manager pointer | `0x0073D958` | `0x0033D958` | `this` for packet submission |
 
-`net_submit_client_packet` is the important boundary. For opcode `0x3A`, it applies the dialog wrapper, CRC, configured transform, client sequence, and asynchronous communications queue. The patch does not write to the socket or own sequence state.
+`net_submit_client_packet` is the outbound boundary. For opcode `0x3A`, it applies the dialog wrapper, CRC, configured transform, client sequence, and asynchronous communications queue. The patch does not write to the socket or own sequence state.
+
+`net_post_decoded_server_packet_event` is the inbound simulation boundary. Its `this` pointer is the event dispatcher stored at `communications_manager + 0x74`. It copies the two-byte body, creates event type `0x13`, constructs `SPursuitMessage` during dispatch, and reaches the same NPC-session Close handler as a real decoded packet.
 
 ## Injected stub template
 
-Allocate and zero at least `0x120` bytes in the target process. Bytes `0x000` through `0x10D` are code. Bytes `0x10E` and `0x10F` are padding. `StalePursuitState` begins at `stub + 0x110`.
+Allocate and zero at least `0x150` bytes in the target process. Bytes `0x000` through `0x131` are code. Bytes `0x132` through `0x13F` are padding. `StalePursuitState` begins at `stub + 0x140`.
 
 All zeroed `abs32` and `rel32` operands below are relocation placeholders.
 
@@ -111,45 +114,53 @@ All zeroed `abs32` and `rel32` operands below are relocation placeholders.
 081: E8 00 00 00 00       | call event_dispatch_or_queue
 086: 89 C6                | mov esi, eax
 088: 84 DB                | test bl, bl
-08A: 74 79                | je 0x105
-08C: 80 3D 00 00 00 00 01 | cmp byte [pending], 1
-093: 75 70                | jne 0x105
-095: E8 00 00 00 00       | call GetTickCount
-09A: 2B 05 00 00 00 00    | sub eax, [armed_at_ms]
-0A0: 3D 30 75 00 00       | cmp eax, 30000
-0A5: 77 57                | ja 0x0FE
-0A7: C6 05 00 00 00 00 00 | mov byte [pending], 0
-0AE: 83 EC 0C             | sub esp, 12
-0B1: C6 04 24 3A          | mov byte [esp], 0x3A
-0B5: A0 00 00 00 00       | mov al, [target_type]
-0BA: 88 44 24 01          | mov [esp+1], al
-0BE: A1 00 00 00 00       | mov eax, [target_id]
-0C3: 0F C8                | bswap eax
-0C5: 89 44 24 02          | mov [esp+2], eax
-0C9: 66 A1 00 00 00 00    | mov ax, [pursuit_id]
-0CF: 86 C4                | xchg al, ah
-0D1: 66 89 44 24 06       | mov [esp+6], ax
-0D6: 66 A1 00 00 00 00    | mov ax, [step_id]
-0DC: 86 C4                | xchg al, ah
-0DE: 66 89 44 24 08       | mov [esp+8], ax
-0E3: C6 44 24 0A 00       | mov byte [esp+10], 0
-0E8: 8D 1C 24             | lea ebx, [esp]
-0EB: 6A 0A                | push 10
-0ED: 53                   | push ebx
-0EE: 8B 0D 00 00 00 00    | mov ecx, [communications_manager]
-0F4: E8 00 00 00 00       | call net_submit_client_packet
-0F9: 83 C4 0C             | add esp, 12
-0FC: EB 07                | jmp 0x105
-0FE: C6 05 00 00 00 00 00 | mov byte [pending], 0
-105: 89 F0                | mov eax, esi
-107: 5F                   | pop edi
-108: 5E                   | pop esi
-109: 5B                   | pop ebx
-10A: 5D                   | pop ebp
-10B: C2 04 00             | ret 4
+08A: 0F 84 99 00 00 00    | je 0x129
+090: 80 3D 00 00 00 00 01 | cmp byte [pending], 1
+097: 0F 85 8C 00 00 00    | jne 0x129
+09D: E8 00 00 00 00       | call GetTickCount
+0A2: 2B 05 00 00 00 00    | sub eax, [armed_at_ms]
+0A8: 3D 30 75 00 00       | cmp eax, 30000
+0AD: 77 73                | ja 0x122
+0AF: C6 05 00 00 00 00 00 | mov byte [pending], 0
+0B6: 83 EC 0C             | sub esp, 12
+0B9: C6 04 24 3A          | mov byte [esp], 0x3A
+0BD: A0 00 00 00 00       | mov al, [target_type]
+0C2: 88 44 24 01          | mov [esp+1], al
+0C6: A1 00 00 00 00       | mov eax, [target_id]
+0CB: 0F C8                | bswap eax
+0CD: 89 44 24 02          | mov [esp+2], eax
+0D1: 66 A1 00 00 00 00    | mov ax, [pursuit_id]
+0D7: 86 C4                | xchg al, ah
+0D9: 66 89 44 24 06       | mov [esp+6], ax
+0DE: 66 A1 00 00 00 00    | mov ax, [step_id]
+0E4: 86 C4                | xchg al, ah
+0E6: 66 89 44 24 08       | mov [esp+8], ax
+0EB: C6 44 24 0A 00       | mov byte [esp+10], 0
+0F0: 8D 1C 24             | lea ebx, [esp]
+0F3: 6A 0A                | push 10
+0F5: 53                   | push ebx
+0F6: 8B 0D 00 00 00 00    | mov ecx, [communications_manager]
+0FC: E8 00 00 00 00       | call net_submit_client_packet
+101: 83 C4 0C             | add esp, 12
+104: 68 30 0A 00 00       | push 0x00000A30
+109: 8D 04 24             | lea eax, [esp]
+10C: 6A 02                | push 2
+10E: 50                   | push eax
+10F: 8B 0D 00 00 00 00    | mov ecx, [communications_manager]
+115: 8B 49 74             | mov ecx, [ecx+0x74]
+118: E8 00 00 00 00       | call net_post_decoded_server_packet_event
+11D: 83 C4 04             | add esp, 4
+120: EB 07                | jmp 0x129
+122: C6 05 00 00 00 00 00 | mov byte [pending], 0
+129: 89 F0                | mov eax, esi
+12B: 5F                   | pop edi
+12C: 5E                   | pop esi
+12D: 5B                   | pop ebx
+12E: 5D                   | pop ebp
+12F: C2 04 00             | ret 4
 ```
 
-The byte at `stub + 0x11A` is not a string terminator. The stub writes a separate zero byte at body offset 10 because the native submitter reads `body[length]` while constructing this packet class, but the submitted plaintext length remains exactly 10.
+The outbound builder reserves 12 stack bytes and writes a separate zero at body offset 10 because the native submitter reads `body[length]` while constructing this packet class. The submitted plaintext length remains exactly 10. The later `push 0x00000A30` provides decoded bytes `30 0A` plus safe padding for the simulated inbound copy.
 
 ## Stub relocations
 
@@ -157,19 +168,20 @@ For an `abs32` operand, write the target runtime address directly. For a `rel32`
 
 | Operand offsets | Kind | Target |
 |---|---|---|
-| `0x002`, `0x045`, `0x051`, `0x05D`, `0x08E`, `0x0A9`, `0x100` | `abs32` | `stub + 0x110` (`pending`) |
-| `0x00E`, `0x0B6` | `abs32` | `stub + 0x111` (`target_type`) |
-| `0x019`, `0x0BF` | `abs32` | `stub + 0x114` (`target_id`) |
-| `0x026`, `0x0CB` | `abs32` | `stub + 0x118` (`pursuit_id`) |
-| `0x033`, `0x0D8` | `abs32` | `stub + 0x11A` (`step_id`) |
-| `0x03F`, `0x09C` | `abs32` | `stub + 0x11C` (`armed_at_ms`) |
-| `0x039`, `0x096` | `rel32` | `module_base + 0x0021FEC4` |
+| `0x002`, `0x045`, `0x051`, `0x05D`, `0x092`, `0x0B1`, `0x124` | `abs32` | `stub + 0x140` (`pending`) |
+| `0x00E`, `0x0BE` | `abs32` | `stub + 0x141` (`target_type`) |
+| `0x019`, `0x0C7` | `abs32` | `stub + 0x144` (`target_id`) |
+| `0x026`, `0x0D3` | `abs32` | `stub + 0x148` (`pursuit_id`) |
+| `0x033`, `0x0E0` | `abs32` | `stub + 0x14A` (`step_id`) |
+| `0x03F`, `0x0A4` | `abs32` | `stub + 0x14C` (`armed_at_ms`) |
+| `0x039`, `0x09E` | `rel32` | `module_base + 0x0021FEC4` |
 | `0x04B` | `rel32` | `module_base + 0x0012C020` |
 | `0x057` | `rel32` | `module_base + 0x0013DA90` |
 | `0x063` | `rel32` | `module_base + 0x0012C950` |
 | `0x082` | `rel32` | `module_base + 0x000670F0` |
-| `0x0F0` | `abs32` | `module_base + 0x0033D958` |
-| `0x0F5` | `rel32` | `module_base + 0x00163E00` |
+| `0x0F8`, `0x111` | `abs32` | `module_base + 0x0033D958` |
+| `0x0FD` | `rel32` | `module_base + 0x00163E00` |
+| `0x119` | `rel32` | `module_base + 0x00067060` |
 
 ## Installation and removal
 
@@ -184,5 +196,5 @@ This is an in-memory patch. It must never rewrite `Darkages.exe`.
 - The fallback covers the version-741 `NPC_Pursuit_MessageDialog` response-pending path. It is not a generic dialog-close hook.
 - Escape is the fallback trigger. The pursuit Close button already reaches the patched native Close call and sends through the original sender.
 - A fallback can be attempted once per pending response and only during the 30-second window.
-- The client cannot create the server's `30 0A` acknowledgement. If the server also ignores a correct Close body, this patch cannot repair server session state.
+- The synthetic `30 0A` repairs the client-side NPC session through normal dispatch. It does not prove that the server accepted the preceding `CPursuit` Close or cleared its own pursuit state.
 - Runtime reproduction should confirm that an expired reactor accepts the cached Close and returns `30 0A` before this patch is enabled by default.
