@@ -505,6 +505,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_screen_hierarchy_find` | `0x00553260` | high | Recursively finds the HierList&lt;Screen&gt; node for a pane and optionally returns its owner list and index. |
 | `ui_screen_pane_ctor` | `0x00553350` | high | Constructs the startup RTTI ScreenPane root with primary Pane and secondary TimerHandler vtables. |
 | `ui_screen_pane_set_cursor_mode` | `0x00554330` | high | Stores the cursor image and hotspot table selector at root ScreenPane +0x27C and redraws the cursor state. |
+| `ui_server_select_dialog_handle_server_event` | `0x00559DC0` | high | ServerSelectDialogPane primary-vtable slot 0x50 accepts an event packet only when its opcode is 0x56, then forwards the exact SMulti object to the dedicated handler. |
+| `ui_server_select_dialog_handle_multi` | `0x00559E80` | high | Applies the SMulti replacement list, auto-selects row zero when exactly one record exists, and refreshes the ServerSelectDialogPane controls. |
 | `ui_show_users_list_draw_row` | `0x0055AF60` | high | Draws one ShowUsersListPane row, resolves its final color through palette slot 0, and clamps the eight-state selector before choosing its visual. |
 | `ui_show_users_pane_ctor` | `0x0055B2B0` | high | Constructs the RTTI-backed ShowUsers pane from _nusers.txt and attaches its controls. |
 | `ui_show_users_pane_open` | `0x0055BFA0` | high | Opens or reveals ShowUsersPane after a response and schedules its 100 ms pane timer. |
@@ -799,10 +801,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_block_listen_list` | `0x00550AA0` | high | Submits CBlockListen as opcode 0x0D followed by operation 1 and no further fields. |
 | `net_send_block_listen_add` | `0x00550C60` | high | Submits CBlockListen opcode 0x0D, operation 2, and a string8 character name. |
 | `net_send_block_listen_remove` | `0x00550EE0` | high | Submits CBlockListen opcode 0x0D, operation 3, and a string8 character name. |
-| `net_send_multi_server_selection` | `0x0055A090` | high | ServerSelectDialogPane sends opcode 0x57 with the selected configured server index. |
+| `net_send_multi_server_selection` | `0x0055A090` | high | Submits CMulti operation 0 with the selected server record's stored ID, not its row index. |
+| `net_request_multi_server_list` | `0x0055A150` | high | Submits CMulti operation 1 when ServerSelectDialogPane is constructed after a missing or mismatched local server-list CRC. |
 | `net_load_server_table` | `0x0055A240` | high | Loads mServer.tbl numeric lines plus transformed name and greeting text into fixed-size records. |
 | `net_save_server_table` | `0x0055A490` | high | Saves server records and transforms the name and greeting text for file storage. |
 | `net_transform_server_table_text` | `0x0055A650` | high | Leaves byte zero in place and swaps later byte pairs in a self-inverse text transform. |
+| `net_apply_multi_server_list` | `0x0055AAD0` | high | Inflates the SMulti slice into a 0x800-byte buffer, replaces the server table from its count and variable-length records, initializes greetings to one space, and saves mServer.tbl. |
 | `net_apply_show_users` | `0x0055C7D0` | high | Parses the complete opcode 0x36 body, splits class_and_flags into class, bit 3, and an unresolved upper nibble, and rebuilds all filtered row collections. |
 | `net_socket_ctor` | `0x00563910` | high | Constructs the Socket object and initializes packet-transform state. |
 | `net_queue_seed_table_barrier` | `0x00563D70` | high | Queues communications command 10 with a one-byte seed selector and returns its waitable completion handle. |
@@ -951,6 +955,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_deserialize_motion_server_packet` | `0x0059A420` | high | Reads u32 object_id, u8 animation, and u16 duration_10ms. |
 | `net_move_server_packet_ctor` | `0x0059A520` | high | Passes opcode 0x0B to the server packet base and installs the exact RTTI SMove vtable. |
 | `net_deserialize_move_server_packet` | `0x0059A550` | high | Reads direction, four big-endian coordinate words, and the echoed movement step into the fixed SMove packet object. |
+| `net_create_multi_server_packet` | `0x0059A740` | high | Allocates the 0x18-byte exact RTTI SMulti object registered for server opcode 0x56. |
+| `net_multi_server_packet_ctor` | `0x0059A7C0` | high | Passes opcode 0x56 to the server packet base and installs the exact SMulti vtable. |
+| `net_deserialize_multi_server_packet` | `0x0059A7F0` | high | Reads a big-endian u16 compressed length and retains a pointer to exactly that many bytes from the decoded packet buffer. |
 | `net_create_num_users_server_packet` | `0x0059A870` | high | Allocates the 0x14-byte exact RTTI SNumUsers object registered for server opcode 0x47. |
 | `net_num_users_server_packet_ctor` | `0x0059A8F0` | high | Passes opcode 0x47 to the common server packet base and installs the exact SNumUsers vtable. |
 | `net_deserialize_num_users_server_packet` | `0x0059A920` | high | Reads the complete SNumUsers payload as one big-endian u16 user_count; no opcode consumer was found in the target client. |
