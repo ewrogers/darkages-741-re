@@ -1,12 +1,12 @@
 # Message (`SMessage`)
 
-`SMessage` is the game's general text-delivery packet. Its type byte decides whether the same body becomes a short floating notice, a persistent history entry, a popup window, or score text.
+`SMessage` is the game's general text and prompt-delivery packet. Its type byte decides whether the same body becomes a short floating notice, a persistent history entry, a popup window, score text, or a two-button confirmation prompt.
 
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x0A` (10) |
-| Encoding | startup key |
+| Transform | static |
 | Name provenance | Microsoft C++ RTTI in the target |
 
 ## Body
@@ -17,9 +17,9 @@ packet SMessage {
     u8      message_type
 
     if message_type == 0x11 {
-        u8      unknown_0
-        u8      unknown_1
-        string8 unknown_text
+        u8      dialog_value_0
+        u8      dialog_value_1
+        string8 value
     }
 
     u16     message_length
@@ -33,10 +33,13 @@ Text remains an ANSI or DBCS byte string. It is not Unicode. The normal formatte
 
 ## Type routing
 
-The common message UI and the Game Settings dialog inspect this packet independently:
+`PacketPreprocessor` receives the first chance to consume this packet. Messages that remain continue to the ordinary pane-tree consumers:
 
 ```text
 SMessage
+  |-- PacketPreprocessor
+  |     `-- type 0x11: UserConfirmPane --> CConfirm
+  |
   |-- net_handle_message_server_packet
   |     |-- GameMessagePane floating overlay
   |     |-- WindowMessageDialogPane popup
@@ -61,13 +64,21 @@ SMessage
 | `0x0B` | Palette `0x77` | Yes | Appends a newline to the overlay |
 | `0x0C` | Palette `0x54` | Yes | Appends a newline to the overlay |
 | `0x0D` through `0x10` | No | No | Ignored by the recovered consumers |
-| `0x11` | No | No | Extra prefix is parsed, but no recovered consumer displays it |
+| `0x11` | No | No | Open `UserConfirmPane`; reply through `CConfirm` |
 | `0x12` | No | No | Append white text to `ScorePane` |
 | Above `0x12` | No | No | Ignored |
 
 Types `0x08`, `0x09`, and `0x0A` change tab bytes to carriage returns before opening the popup. Types `0x08` and `0x09` are behaviorally identical in this client. Their separate values may still matter to the server.
 
 The exact channel names for `0x00`, `0x01`, `0x02`, `0x04` through `0x06`, `0x0B`, and `0x0C` are not present as client strings. Runtime captures are needed before calling any one of them whisper, guild, group, or world chat.
+
+## User confirmation prompt
+
+Type `0x11` is intercepted by `PacketPreprocessor` before normal pane-tree delivery. It opens the exact RTTI class `UserConfirmPane`, an `AlertPane` with two buttons. The packet's main `message` becomes the visible prompt.
+
+The three prefix values are retained as opaque reply context. Project-owner runtime testing confirms that OK sends [`CConfirm`](../client/049-0x31-confirm.md) with choice `1`, while Cancel sends choice `0`. Both replies echo `dialog_value_0`, `dialog_value_1`, and `value`, but do not echo the visible prompt.
+
+This path has no client-side feature gate. Its absence from ordinary captures means the server did not send type `0x11` during those sessions, not that the client implementation is unreachable.
 
 ## Tell or whisper responses
 

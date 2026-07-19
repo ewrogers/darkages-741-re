@@ -21,6 +21,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_get_language_message_label` | `0x004A4A60` | high | Maps language modes to msgkor.h, msgeng.h, msgjpn.h, or msgtai.h labels retained by the client. |
 | `app_set_language_mode` | `0x004A4CE0` | high | Stores the language mode, selects the retained message label, and records code page 949 or 932 for Korean or Japanese. |
 | `app_shutdown` | `0x004AC060` | high | Tears down runtime managers and panes, then closes and destroys the DAT archive singletons before window cleanup. |
+| `app_set_post_exit_advertisement` | `0x004ACE00` | high | Copies the SAdvertisement string into a 65,536-byte application buffer, terminates it, and saves its length plus three numeric arguments for app_winmain. |
 | `app_is_japan_distribution_mode` | `0x004ACEE0` | high | Returns true when app_get_distribution_mode reports mode 13, selecting the create-user email and ISP-selector variant. |
 | `app_set_working_directory_from_executable` | `0x004AD3A0` | high | Derives the executable directory from GetCommandLineA and makes it the process working directory. |
 | `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client. |
@@ -82,7 +83,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_set_capture_pane` | `0x00464780` | high | Stores EventDispatcher +0x40 and calls SetCapture or ReleaseCapture on the main window. |
 | `input_event_manager_ctor` | `0x004667E0` | high | Constructs RTTI EventMan state, key tables, pointer state, and the socket object. |
 | `input_repeat_pointer_move_timer` | `0x00466B40` | high | EventMan TimerHandler callback that emits stored pointer coordinates and reschedules after 20 ms. |
+| `input_get_pointer_position` | `0x00466C40` | high | Copies EventMan's current pointer coordinates from +0x10 and +0x14 into the caller's two-word position. |
 | `input_post_pointer_move` | `0x00466C80` | high | Public EventMan entry that honors input blocking before updating coordinates and emitting pointer type 0x00. |
+| `input_begin_server_block` | `0x00466CC0` | high | Emits releases for held left and right mouse buttons, then opens the singleton ClockPane input blocker. |
+| `input_end_server_block` | `0x00466D00` | high | Closes the singleton ClockPane used by the server-controlled input block. |
 | `input_post_left_button_down` | `0x00466D10` | high | Public EventMan entry that honors input blocking before setting left-button state and emitting type 0x01 or 0x02. |
 | `input_post_left_button_up` | `0x00466D50` | high | Public EventMan entry that clears left-button state before emitting pointer type 0x03. |
 | `input_post_right_button_down` | `0x00466D80` | high | Public EventMan entry that honors input blocking before setting right-button state and emitting type 0x04 or 0x05. |
@@ -124,6 +128,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | --- | --- | --- | --- |
 | `ui_agreement_dialog_pane_ctor` | `0x00402430` | high | Constructs RTTI-backed AgreementDialogPane from _nagree.txt, attaches OK and Cancel controls, inserts the current greeting, and registers the pane. |
 | `ui_agreement_dialog_handle_action` | `0x004028F0` | high | Action 0 closes and unregisters the agreement pane without sending a packet. |
+| `ui_browser_dialog_ctor` | `0x00415CB0` | high | Constructs exact RTTI BrowserDialogPane with an embedded BrowserControlPane; when no response or initial URL is supplied, sends CWebBoard action 0. |
+| `ui_browser_dialog_apply_web_board` | `0x004165A0` | high | Accepts SWebBoard actions 0 and 1, installs domain and boardinfo WinINet cookies, sets the embedded browser base URL, and navigates to start_url. |
+| `ui_browser_dialog_handle_network_event` | `0x00416A50` | high | BrowserDialogPane's network-event handler dispatches exact RTTI SWebBoard opcode 0x62 to its cookie and navigation path. |
+| `ui_browser_dialog_handle_timer` | `0x00416AB0` | high | Timer 0x572 opens Web Board Request Timeout after 20 seconds and closes the waiting BrowserDialogPane. |
+| `ui_browser_control_set_base_url` | `0x00417910` | high | Copies a bounded base URL into BrowserControlPane's browser state. |
+| `ui_browser_control_navigate` | `0x00417A40` | high | Converts the URL and optional header to BSTR values and calls the embedded IWebBrowser navigation method. |
+| `ui_browser_window_set_base_url` | `0x00419650` | high | Copies a bounded base URL into BrowserWindow's browser state. |
+| `ui_browser_window_navigate` | `0x00419700` | high | Navigates BrowserWindow's embedded IWebBrowser to the supplied URL and optional header. |
 | `ui_bottom_buttons_pane_ctor` | `0x0041B040` | high | Constructs exact RTTI class BtmButtonsPane_A, initializes its state, and immediately sends the empty CSelfLook request. |
 | `ui_bottom_buttons_handle_network_event` | `0x0041B690` | high | BtmButtonsPane_A network-event handler routes SStatus to the parcel/mail updater and SSelfLook to the profile-response path. |
 | `ui_bottom_buttons_handle_timer` | `0x0041B710` | high | BtmButtonsPane_A TimerHandler callback retries CSelfLook for timer 0x03000000 while the initial profile request is pending. |
@@ -136,6 +148,18 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_intro_video_pane_ctor` | `0x0042DFF0` | high | Initializes the CIPane vtable and Bink-backed video state. |
 | `ui_intro_video_begin_sequence` | `0x0042E1F0` | high | Stores two clip resources and starts the first clip. |
 | `ui_get_intro_video_pane` | `0x0042E7D0` | high | Returns the global CIPane instance at 0x006DA3A0. |
+| `ui_show_input_block_clock` | `0x0042E800` | high | Creates the exact RTTI ClockPane singleton when absent and activates its 50 ms animated wait-cursor path. |
+| `ui_hide_input_block_clock` | `0x0042E890` | high | Closes and destroys the active ClockPane singleton when present. |
+| `ui_clock_pane_ctor` | `0x0042E8C0` | high | Constructs the 0x1A0-byte exact RTTI ClockPane, loads lodclk.epf metadata, centers it on the current pointer, and registers it in the screen and event trees. |
+| `ui_clock_pane_show` | `0x0042EB00` | high | Selects root cursor mode 3, shows ClockPane, draws its next frame, and schedules timer 0x1234 at 50 ms. |
+| `ui_clock_pane_close` | `0x0042EBA0` | high | Cancels timer 0x1234, hides ClockPane, restores cursor mode 0, and notifies the optional cursor observer. |
+| `ui_clock_pane_timer_callback` | `0x0042EC00` | high | Advances the lodclk.epf frame modulo the loaded frame count and requeues timer 0x1234 using the existing 50 ms interval. |
+| `ui_clock_pane_handle_keyboard_event` | `0x0042EC70` | high | Returns true for every keyboard or text event so lower panes do not receive it while ClockPane is active. |
+| `ui_clock_pane_handle_pointer_event` | `0x0042EC80` | high | Re-centers ClockPane on pointer-move events and returns true for every pointer event, consuming clicks and wheel input. |
+| `ui_clock_pane_set_frame` | `0x0042ED00` | high | Loads and draws one lodclk.epf frame when its signed 16-bit selector differs from ClockPane +0x198. |
+| `ui_clock_pane_dtor` | `0x0042EDC0` | high | Destroys ClockPane and clears its Singleton&lt;ClockPane&gt; registration before the optional object free. |
+| `ui_has_clock_pane` | `0x0042EE70` | high | Reports whether clock_pane_singleton_ptr is non-null. |
+| `ui_get_clock_pane` | `0x0042EE90` | high | Returns the active ClockPane singleton pointer. |
 | `ui_create_user_dialog_ctor` | `0x0043C370` | high | Constructs RTTI class CreateUserDialogPane from _ncreate.txt, attaches appearance controls and account fields, and registers the pane for events and timers. |
 | `ui_create_user_draw` | `0x0043D190` | high | Draws the creation preview using gender at +0x674, hair style at +0x676, and hair-color palette index at +0x678. |
 | `ui_create_user_handle_pointer_event` | `0x0043DC80` | high | Handles CreateUserDialogPane appearance clicks, including gender selection and conversion of the 2-by-7 hair-color swatch grid into palette indexes. |
@@ -151,6 +175,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_dialog_focus_previous_control` | `0x00446CD0` | high | Searches backward with wrapping for an enabled, focusable control. |
 | `ui_dialog_focus_next_control` | `0x00446DD0` | high | Searches forward with wrapping for an enabled, focusable control. |
 | `ui_dialog_dispatch_pointer_to_control` | `0x00446FE0` | high | Converts pointer coordinates to control-local space, calls control virtual +0x48, and restores the event. |
+| `ui_alert_pane_ctor` | `0x00448000` | high | Constructs exact RTTI class AlertPane from counted display text, a parent pane, and one or two button assets. |
 | `ui_window_message_dialog_pane_ctor` | `0x004488C0` | high | Builds the standard scrollable or alternate woodbook-style SMessage popup from an explicit byte buffer. |
 | `ui_equip_pane_handle_network_event` | `0x0045D970` | high | Exact RTTI class EquipPane routes SAddEquip, SRemoveEquip, and SSelfLook from its primary-vtable network-event slot. |
 | `ui_equip_pane_apply_self_look` | `0x0045FDC0` | high | Copies SSelfLook identity, nation, group, class, and legend state into EquipPane and its dependent panes. |
@@ -192,6 +217,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_layout_get_control_value` | `0x00482870` | high | Returns one ordered VALUE integer from the selected control. |
 | `ui_layout_create_image_button` | `0x004828A0` | high | Creates an ImageButtonControlPane from a named layout definition. |
 | `ui_layout_build_image_button` | `0x004828E0` | high | Reads a rectangle, optional skin value, and up to three image states before constructing the button. |
+| `ui_hot_key_pane_ctor` | `0x00488320` | high | Constructs the RTTI-backed HotKeyPane, loads _nhotkem.txt and _nhotkey.txt, and registers it with the screen and event trees. |
+| `ui_create_hot_key_pane` | `0x00488D00` | high | Allocates a 0x919C-byte HotKeyPane and calls ui_hot_key_pane_ctor; its only direct caller is GUIBackPane action 0. |
 | `ui_image_pane_draw_content` | `0x0048DD30` | high | Draws an ImagePane image into the pane's own canvas. |
 | `ui_inventory_pane_ctor` | `0x0048F7E0` | high | Constructs exact RTTI class InventoryPane_A, clears its 60 direct InvItemPane pointers, and initializes its selection state. |
 | `ui_inventory_pane_handle_network_event` | `0x004900C0` | high | InventoryPane_A and derived ItemInventoryPane route SAddInventory, SRemoveInventory, and SStatus to their local update paths. |
@@ -254,6 +281,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_load_spell_cast_lines` | `0x0049BD80` | high | Loads up to ten 256-byte per-spell cast strings from the current character's SpellBook.cfg data. |
 | `ui_layout_parse_control` | `0x004A81F0` | high | Parses CONTROL, NAME, TYPE, RECT, IMAGE, VALUE, COLOR, and ENDCONTROL tokens. |
 | `ui_layout_serialize_control` | `0x004A8820` | high | Writes one parsed control back to the same line-oriented layout grammar. |
+| `ui_open_town_map_for_current_map` | `0x004AD250` | high | Opens exact RTTI TownMapPane in the built-in button mode, which selects _tcoord.txt from the active client map number. |
+| `ui_open_town_map_for_key` | `0x004AD2E0` | high | Opens exact RTTI TownMapPane in server-keyed mode unless its singleton is already active. |
+| `ui_has_town_map_pane` | `0x004AE090` | high | Reports whether the exact RTTI TownMapPane singleton is active. |
+| `ui_get_town_map_pane` | `0x004AE0B0` | high | Returns the current exact RTTI TownMapPane singleton pointer. |
 | `ui_main_menu_activate_selected_action` | `0x004B7520` | high | Dispatches the selected MainMenuPane entry to login, character creation, password change, homepage, credits, or exit behavior. |
 | `ui_main_menu_handle_pointer_event` | `0x004B7BD0` | high | Rejects pointer input while MainMenuPane +0x500 is nonzero, then performs menu hit-testing and activation when the gate is clear. |
 | `ui_main_menu_handle_keyboard_event` | `0x004B7D00` | high | Rejects keyboard input while MainMenuPane +0x500 is nonzero, then handles menu selection and activation when the gate is clear. |
@@ -266,12 +297,26 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_input_birthdate_dialog_ctor` | `0x004BC220` | high | Constructs RTTI class InputBirthdateDialogPane from _npw2.txt for the regional password-change verification branch. |
 | `ui_server_item_menu_dialog_handle_network_event` | `0x004CAC20` | high | TaskListDialog::ServerItemMenuDialog3 network-event handler accepts SStatus updates containing progression and currency. |
 | `ui_server_item_menu_update_gold_from_status_packet` | `0x004CAC90` | high | Copies SStatus gold into the server-item menu dialog and redraws its currency display. |
+| `ui_browser_game_control_handle_network_event` | `0x0050DC50` | high | MiniGame::BrowserGameControlPane dispatches exact RTTI SWebBoard opcode 0x62 through its web-board virtual method. |
+| `ui_browser_game_control_apply_web_board` | `0x0050DCB0` | high | Accepts SWebBoard action 3, applies its derived base URL, and navigates to start_url plus a question mark and board_data. |
 | `ui_group_ad_dialog_apply_model` | `0x00511F90` | high | Applies leader, group name, note, level range, totals, and five ordered maximum/current class pairs to GroupAdDialogPane controls. |
 | `ui_group_ad_dialog_read_model` | `0x005120A0` | high | Reads the editable recruiting form and five ordered class maximums into the model used by CGroup RecruitStart. |
 | `ui_group_ad_pane_apply_self_look` | `0x00513E80` | high | Builds GroupAdPane's recruiting model from SSelfLook; it copies name and note but omits the already-parsed leader string. |
 | `ui_group_ad_info_dialog_handle_action` | `0x005140C0` | high | Routes GroupAdInfoDialogPane's join control to CGroup action 7 and then closes the dialog. |
 | `ui_group_ad_show_recruit_info` | `0x00514230` | high | Converts SGroup action 4 into the recruiting UI model, preserving five maximum/current class pairs and summing both columns. |
 | `ui_new_patch_pane_ctor` | `0x005283E0` | high | Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff. |
+| `ui_npc_session_update_speaker_art` | `0x0052C480` | high | Loads the NPC illustration for the active packet fields or switches to NPCTilePane when lookup or decoding fails. |
+| `ui_npc_session_handle_network_event` | `0x0052C730` | high | Routes SScreenMenu 0x2F and SPursuitMessage 0x30 packet objects into their NPCSession update paths. |
+| `ui_npc_illustration_pane_ctor` | `0x0052CB20` | high | Constructs the RTTI-backed NPCIllustPane and initializes its pixmap view. |
+| `ui_npc_illustration_pane_set_image` | `0x0052CBE0` | high | Resolves the NPC name and illustration index, sizes the pane to the loaded frame, and invalidates it for redraw. |
+| `ui_npc_illustration_pane_draw` | `0x0052CC90` | high | Draws the selected illustration pixmap through the transparent software blitter. |
+| `ui_npc_illustration_load_pixmap` | `0x00531B30` | high | Resolves an NPC name and illustration index, then loads frame zero of the mapped image from npcbase.dat. |
+| `ui_npc_illustration_asset_at` | `0x00531C40` | high | Returns one illustration filename from an NPC name record by zero-based index. |
+| `ui_npc_illustration_file_manager_ctor` | `0x00531E10` | high | Opens npc/npcbase.dat, initializes the name map, and loads its npci.tbl fallback mapping. |
+| `ui_npc_illustration_resolve_asset` | `0x00532120` | high | Looks up the exact NPC name, selects its indexed filename, and returns the npcbase.dat archive owner. |
+| `ui_npc_illustration_handle_event` | `0x00532560` | high | Handles initialization and NPCIllust metadata availability events for NPCIllustFileMan. |
+| `ui_npc_illustration_subscribe_metadata` | `0x005325D0` | high | Subscribes NPCIllustFileMan to the server-managed NPCIllust metadata table, retrying after one second when required. |
+| `ui_npc_illustration_apply_metadata` | `0x00532620` | high | Applies exact NPC-name keys; repeated clearing means the final filename replaces earlier values in a multi-value metadata group. |
 | `ui_npc_server_item_menu_handle_network_event` | `0x0053A270` | high | NPCMenuDialog::NPCServerItemMenuDialog routes SStatus progression blocks to its gold-display updater. |
 | `ui_npc_server_item_menu_update_gold_from_status_packet` | `0x0053A2D0` | high | Copies SStatus gold into the NPC server-item menu and redraws the dialog. |
 | `ui_option_pane_create_alert` | `0x00540580` | high | OptionPane alert factory selects five alert classes; type 4 allocates and constructs exact RTTI SafeQuitAlert. |
@@ -287,6 +332,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_safe_quit_alert_handle_network_event` | `0x00544220` | high | SafeQuitAlert primary-vtable network-event handler routes typed SQuit opcode 0x4C to its response helper. |
 | `ui_safe_quit_alert_apply_quit_response` | `0x00544280` | high | When SQuit's consumed byte is 1, marks the alert approved, submits CQuit bytes 0B 00, replaces the alert text, and refreshes its control. |
 | `ui_option_pane_handle_keyboard_event` | `0x005444B0` | high | OptionPane keyboard-event handler maps both X and x to construction of exact RTTI SafeQuitAlert. |
+| `ui_open_user_confirm_from_message` | `0x005449D0` | high | Opens exact RTTI UserConfirmPane for SMessage type 0x11 with its main prompt, two bytes, and string8 reply context. |
 | `ui_pane_ctor` | `0x00549490` | high | Constructs Pane over Canvas and a secondary TimerHandler at +0x11C; initializes visible true at +0x130. |
 | `ui_pane_accepts_input` | `0x00549BC0` | high | Returns true when Pane +0x130 is visible and its active region is non-empty. |
 | `ui_pane_show` | `0x00549C00` | high | Sets Pane +0x130 visible and invalidates its region when required. |
@@ -335,6 +381,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_screen_hierarchy_get_absolute_origin` | `0x005528C0` | high | Accumulates pane origins through spatial parents until ui_screen_root_pane_ptr. |
 | `ui_screen_hierarchy_find` | `0x00553260` | high | Recursively finds the HierList&lt;Screen&gt; node for a pane and optionally returns its owner list and index. |
 | `ui_screen_pane_ctor` | `0x00553350` | high | Constructs the startup RTTI ScreenPane root with primary Pane and secondary TimerHandler vtables. |
+| `ui_screen_pane_set_cursor_mode` | `0x00554330` | high | Stores the cursor image and hotspot table selector at root ScreenPane +0x27C and redraws the cursor state. |
 | `ui_show_users_list_draw_row` | `0x0055AF60` | high | Draws one ShowUsersListPane row, resolves its final color through palette slot 0, and clamps the eight-state selector before choosing its visual. |
 | `ui_show_users_pane_ctor` | `0x0055B2B0` | high | Constructs the RTTI-backed ShowUsers pane from _nusers.txt and attaches its controls. |
 | `ui_show_users_pane_open` | `0x0055BFA0` | high | Opens or reveals ShowUsersPane after a response and schedules its 100 ms pane timer. |
@@ -345,8 +392,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_spelled_view_pane_handle_timer` | `0x0056A910` | high | Updates pane visibility state without changing any icon or duration stage. |
 | `ui_spelled_view_pane_draw` | `0x0056A980` | high | Draws up to ten group-2 icons and maps stages 1 through 6 to progressively larger colored bars. |
 | `ui_spelled_view_pane_apply_packet` | `0x0056AC60` | high | Updates a matching icon, removes it for stage zero, or inserts a new nonzero icon into the first of ten empty slots. |
-| `ui_status_info_handle_network_event` | `0x00573F90` | high | StatusInfoPane routes SStatus to its partial character-sheet updater. |
-| `ui_status_info_update_from_status_packet` | `0x00574B30` | high | Copies each present SStatus block into StatusInfoPane, including stat-button state, weight, progression, elements, and one unknown post-resistance byte. |
+| `ui_status_info_pane_ctor` | `0x00573810` | high | Constructs exact RTTI StatusInfoPane, initializes the point count, control gate, selected index, selector table, and blink phase, and installs the TimerHandler secondary vtable. |
+| `ui_status_info_handle_network_event` | `0x00573F90` | high | StatusInfoPane routes exact SStatus, SLevelPoint, and SChangeHour objects to their dedicated update paths. |
+| `ui_status_info_timer_callback` | `0x00574440` | high | Receives the TimerHandler-adjusted StatusInfoPane pointer, toggles blink phase, redraws the pane, and schedules another 500 ms tick while stat_points is nonzero. |
+| `ui_status_info_update_from_status_packet` | `0x00574B30` | high | Copies each present SStatus block into StatusInfoPane, including the same stat-button gate and point count used by SLevelPoint, but does not manage the blink timer. |
+| `ui_status_info_apply_level_point_packet` | `0x00574D50` | high | Copies SLevelPoint's control gate and point count, clears pane timers, starts a 500 ms timer for a nonzero count, and invalidates the pane. |
+| `ui_status_info_draw` | `0x00574ED0` | high | Draws StatusInfoPane values and uses has_stat_points plus blink_phase to gate and alternate the five stat-increase controls and point count. |
 | `ui_status_info_format_values` | `0x005752D0` | high | Formats the main character-sheet values retained by StatusInfoPane after SStatus updates. |
 | `ui_extra_status_info_format_values` | `0x00575AA0` | high | Formats attack and defense element names, magic resistance in ten-percent units, signed armor class, damage, and hit. |
 | `ui_extra_status_info_update_from_status_packet` | `0x00575FB0` | high | Copies the SStatus modifiers block into ExtraStatusInfoPane's compact combat-stat fields. |
@@ -358,13 +409,33 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_text_enforce_max_bytes` | `0x0057F530` | high | Trims oldest TextEditPane bytes from the front when its configured byte limit is exceeded, preserving DBCS boundaries. |
 | `ui_text_enforce_max_lines` | `0x0057F680` | high | Trims oldest TextEditPane lines when its configured line limit is exceeded. |
 | `ui_line_input_copy_text` | `0x00584A00` | high | Calls the LineInputPane text control's bounded copy method and returns its copied byte length. |
+| `ui_town_map_lookup_current_map` | `0x0058F640` | high | Finds the active map number in the five-value _tcoord.txt records and returns four placement values. |
+| `ui_town_map_lookup_key` | `0x0058F6F0` | high | Finds a server-supplied key in the first field of a six-value _tncoord.txt record and returns its map asset number plus four placement values. |
+| `ui_town_map_parse_coordinate_table` | `0x0058F7C0` | high | Parses decimal lines into five-value current-map records or six-value server-keyed records. |
+| `ui_town_map_load_coordinate_tables` | `0x0058F9A0` | high | Loads and caches _tcoord.txt and _tncoord.txt for the two TownMapPane selection modes. |
+| `ui_town_map_pane_current_map_ctor` | `0x0058FB50` | high | Constructs exact RTTI TownMapPane with use_server_key zero for the built-in map-button path. |
+| `ui_town_map_pane_keyed_ctor` | `0x0058FBE0` | high | Constructs exact RTTI TownMapPane with use_server_key one and retains the SScreenShot payload key. |
+| `ui_town_map_draw` | `0x0058FD00` | high | Rebuilds the TownMapPane canvas from the selected table entry and current marker frame. |
+| `ui_town_map_draw_selected_entry` | `0x0058FD50` | high | Chooses _tcoord.txt or _tncoord.txt, resolves the town-map asset and placement values, and queues immediate close when no entry matches. |
+| `ui_town_map_compose_view` | `0x0058FFC0` | high | Composes _t_back.spf, the selected _tN.spf and _tNn.spf images, and the tmuser.epf marker when the map matches. |
+| `ui_town_map_close` | `0x00590940` | high | Cancels all TownMapPane timers, unregisters the pane, and removes it from the live UI. |
+| `ui_town_map_handle_pointer_event` | `0x00590990` | high | Arms on pointer press and closes TownMapPane on the matching release. |
+| `ui_town_map_handle_keyboard_event` | `0x005909E0` | high | Handles TownMapPane close commands and the ordinary local screenshot keyboard command; packet receipt does not invoke the screenshot branch. |
+| `ui_town_map_timer_callback` | `0x00590AD0` | high | Advances the marker frame modulo seven, requeues timer 0 every 50 ms after the initial 100 ms delay, and closes on timer ID 0x4D2. |
+| `ui_user_confirm_pane_ctor` | `0x005921C0` | high | Constructs the 0x73C-byte exact RTTI UserConfirmPane and stores the SMessage reply context at +0x634 through +0x738. |
+| `ui_user_confirm_pane_send_ok` | `0x00592260` | high | UserConfirmPane's OK callback calls net_send_confirm with choice 1; the button label and reply were confirmed by project-owner runtime testing. |
+| `ui_user_confirm_pane_send_cancel` | `0x00592280` | high | UserConfirmPane's Cancel callback calls net_send_confirm with choice 0; the button label and reply were confirmed by project-owner runtime testing. |
 | `ui_gui_back_pane_handle_network_event` | `0x0059D1D0` | high | GUIBackPane routes SStatus packets containing vitals to its health and mana bar updater. |
 | `ui_gui_back_pane_update_vitals_from_status_packet` | `0x0059D6C0` | high | Copies current and maximum health and mana from SStatus into GUIBackPane bar targets. |
-| `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Handles GUIBackPane pointer input; BTN_HELP is present in the hover path but has no click action. |
+| `ui_gui_back_layout_init_common` | `0x0059D830` | high | Reads common named controls from one loaded GUIBackPane layout, including BTN_HELP and the other bottom actions. |
+| `ui_gui_back_pane_ctor` | `0x0059FB60` | high | Constructs the RTTI-backed GUIBackPane and its two size-specific layout records and child panes. |
+| `ui_gui_back_activate_action` | `0x005A0B70` | high | Dispatches GUIBackPane bottom-action IDs; action 0 creates HotKeyPane, while the other IDs open their normal panes or local actions. |
+| `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Hit-tests six bottom-action rectangles on a left-button event; BTN_HELP is slot 0 and is passed to ui_gui_back_activate_action after click debounce. |
 | `ui_gui_back_pane_draw` | `0x005A2050` | high | Draws GUIBackPane state, including selection of the network indicator image from the latest movement round-trip value. |
 | `ui_gui_back_pane_set_network_latency` | `0x005A2B80` | high | Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region. |
 | `ui_gui_back_pane_request_show_users` | `0x005A2C60` | high | GUIBackPane interface method that requests the current world-user list through CWho. |
 | `ui_game_interface_activate_number_key` | `0x005A2D90` | high | Routes number keys by the selected GUIBackPane mode; item mode maps keys 1 through 9 and 0 to inventory slots 1 through 10. |
+| `ui_gui_back_apply_layout` | `0x005A3900` | high | Selects one GUIBackPane layout and copies its bottom control rectangles into the six live action slots; BTN_HELP becomes slot 0. |
 | `ui_new_system_message_text_pane_ctor` | `0x005A8FB0` | high | Constructs the TextEditPane child that stores and renders persistent message history. |
 | `ui_new_system_message_pane_handle_packet_event` | `0x005A9000` | high | Recognizes SMessage packet events and forwards them to the history type router. |
 | `ui_new_system_message_pane_ctor` | `0x005A9060` | high | Constructs NewSystemMessagePane with one visible row, a TextEditPane child, and ten initial blank lines. |
@@ -413,6 +484,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_has_map_loading_pane` | `0x005F6470` | high | Reports whether the global MapLoadingPane pointer is non-null. |
 | `ui_get_map_loading_pane` | `0x005F6490` | high | Returns the current global MapLoadingPane pointer used by SMapPart progress handling. |
 | `ui_close_map_loading_pane` | `0x005F64A0` | high | Invokes the deleting destructor for the current MapLoadingPane when a map transfer finishes. |
+| `ui_open_town_map_from_screen_shot_packet` | `0x005F6BC0` | high | Reads SScreenShot's retained u8 key and opens TownMapPane in the server-keyed _tncoord.txt mode. |
+| `ui_apply_block_input_server_packet` | `0x005F7AA0` | high | Maps SBlockInput state 0 to held-button release plus ClockPane creation and state 1 to ClockPane removal; other states are ignored. |
 | `ui_create_field_map_pane` | `0x005F88B0` | high | Allocates a 640 by 480 FieldMapPane, initializes it from decoded SFieldMap values, registers it with the screen root, and retains it in WorldPane. |
 | `ui_world_pane_change_user_state` | `0x005F9E20` | high | WorldPane_Impl interface method that forwards a requested UserState to CChangeUserState. |
 | `ui_world_pane_get_local_action_state` | `0x005F9E50` | high | WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc. |
@@ -425,6 +498,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
+| `net_send_web_board_dialog_request` | `0x004160A0` | high | Builds the exact two-byte CWebBoard action-0 body and starts BrowserDialogPane's 20-second response timer. |
+| `net_percent_encode_web_board_cookie_value` | `0x00416810` | high | Percent-encodes reserved, unsafe, control, and non-ASCII bytes before BrowserDialogPane stores the boardinfo cookie. |
 | `net_send_self_look` | `0x0041B840` | high | Builds the exact one-byte CSelfLook plaintext body as opcode 0x2D and submits length one. |
 | `net_send_group_toggle` | `0x0041B8E0` | high | Builds and submits the exact one-byte CGroupToggle plaintext body containing only opcode 0x2F. |
 | `net_send_field_map_command` | `0x00430D30` | high | Command-line CFieldMap builder writes opcode 0x3F, a zero checksum, and caller-supplied map ID, X, and Y words. |
@@ -478,6 +553,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_dispatch_main_menu_events` | `0x004B8B80` | high | Routes startup decoded buffers and RTTI packet objects to version, stipulation, transfer, and browser handlers. |
 | `net_handle_transfer_server` | `0x004B9510` | high | Reconnects to the endpoint in STransferServer, then sends raw opcode 0x10, the opaque handoff token unchanged, and the common submission terminator. |
 | `net_handle_browser` | `0x004B9B00` | high | Handles RTTI-backed SBrowser variants; subtype 3 caches the supplied homepage URL and marks it available. |
+| `net_handle_advertisement_server_packet` | `0x004B9DA0` | high | MainMenuPane forwards the parsed SAdvertisement string, length, and three numeric fields into the application-wide deferred post-exit advertisement state. |
 | `net_send_alive` | `0x004BA010` | high | MainMenuPane timer paths send opcode 0x71 and schedule another callback after 30 seconds. |
 | `net_send_request_homepage` | `0x004BA0C0` | high | Builds CRequestHomepage fields 68 01; the common submission layer appends the transmitted zero byte. |
 | `net_send_login_request` | `0x004BAA80` | high | Builds CLogin opcode 0x03 with two u8-length credential strings and a 16-byte masked installation block, submits it through the static-key path, then persists the submitted character name. |
@@ -495,11 +571,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_metadata_uncompress` | `0x004E54F0` | high | Inflates metadata zlib data into a buffer capped at 0x20000 bytes. |
 | `net_metadata_crc32` | `0x004E5790` | high | Calculates standard CRC32 over inflated metadata bytes. |
 | `net_parse_metadata_table` | `0x004E57C0` | high | Parses big-endian group counts and length-prefixed metadata names and values. |
+| `net_send_web_board_game_request` | `0x0050C7C0` | high | Builds CWebBoard as opcode 0x73, action 3, selector_1, and selector_2 for web-backed in-game views. |
 | `net_send_group_request` | `0x00513960` | high | Builds CGroup action 2 with a string8 target name; SGroup action 5 and group UI paths call it. |
 | `net_send_group_recruit_stop` | `0x00513A40` | high | Builds CGroup action 6 with the local character name to stop recruiting. |
 | `net_send_group_recruit_start` | `0x00513B30` | high | Builds CGroup action 4 with local name, group name, note, level range, and five maximum class counts. |
 | `net_send_group_recruit_join` | `0x00514140` | high | Builds CGroup action 7 with the leader retained by GroupAdInfoDialogPane. |
 | `net_send_user_setting` | `0x00542E60` | high | Builds the fixed two-byte CUserSetting body from opcode 0x1B and one setting ID. |
+| `net_packet_preprocessor_handle_server_packet` | `0x005449A0` | high | PacketPreprocessor intercepts typed SMessage opcode 0x0A before pane-tree delivery and consumes only message type 0x11. |
 | `net_send_exit_editing_mode` | `0x0054A7D0` | high | Copies up to 8000 edited bytes, converts carriage returns to wire tab bytes, and sends CExitEditingMode opcode 0x23 with retained slot and string16 content. |
 | `net_build_send_portrait` | `0x0054CE10` | high | Builds opcode 0x4F with nested portrait and profile lengths after applying the local image checks. |
 | `net_decode_portrait_profile_body` | `0x0054D570` | high | Reads the nested big-endian portrait and profile lengths used by the portrait body. |
@@ -555,8 +633,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_build_md5_salt_source` | `0x005684B0` | high | Builds the 1024-byte salt source through repeated lowercase MD5-hex expansion of session_character_name. |
 | `net_derive_packet_key` | `0x00568540` | high | Derives nine per-packet key bytes from two seeds and the MD5 salt source. |
 | `net_build_seed_xor_table` | `0x00568650` | high | Builds one of ten deterministic 256-entry repeated-byte XOR tables for selectors 0 through 9; selector 0 is the compiled default. |
+| `net_send_add_stat` | `0x005755C0` | high | Validates the selected StatusInfoPane control index, writes opcode 0x47 plus its constructor-defined selector, and submits the two-byte CAddStat body. |
 | `net_wait_for_command_completion` | `0x00586100` | high | Waits indefinitely for a queued communications command, then removes and destroys its completion record. |
-| `net_send_confirm` | `0x005922A0` | high | UserConfirmPane calls this opcode 0x31 confirmation builder. |
+| `net_send_confirm` | `0x005922A0` | high | Builds CConfirm as opcode 0x31, the first server byte, button choice, second server byte, and echoed string8 context. |
 | `net_server_packet_base_ctor` | `0x005959D0` | high | Constructs the base server packet object and stores its opcode. |
 | `net_get_server_packet_opcode` | `0x00595A00` | high | Returns the opcode stored in a server packet base object. |
 | `net_client_packet_base_ctor` | `0x00595A50` | high | Constructs the base client packet object and stores its opcode. |
@@ -582,9 +661,15 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_add_spell_server_packet` | `0x00597640` | high | Allocates a 0x224-byte RTTI SAddSpell object and calls its concrete constructor. |
 | `net_add_spell_server_packet_ctor` | `0x005976C0` | high | Passes opcode 0x17 to the server packet base and installs the exact SAddSpell vtable. |
 | `net_deserialize_add_spell_server_packet` | `0x005976F0` | high | Reads slot, u16 icon, argument type, string8 name, string8 prompt, and cast_lines into SAddSpell. |
+| `net_create_advertisement_server_packet` | `0x005978B0` | high | Allocates a zeroed 0x24-byte exact RTTI SAdvertisement object and calls its concrete constructor. |
+| `net_advertisement_server_packet_ctor` | `0x00597930` | high | Passes opcode 0x5B to the common server packet base and installs the exact SAdvertisement vtable. |
+| `net_deserialize_advertisement_server_packet` | `0x00597960` | high | Reads u16 argument_length, a counted byte view, u16 value_1, u16 value_2, and u8 value_3. |
 | `net_create_bad_guy_server_packet` | `0x00597A10` | high | Allocates a 0x18-byte RTTI SBadGuy object and calls its concrete constructor. |
 | `net_bad_guy_server_packet_ctor` | `0x00597A90` | high | Passes opcode 0x4A to the common server packet base and installs the exact SBadGuy vtable. |
 | `net_deserialize_bad_guy_server_packet` | `0x00597AC0` | high | Reads SBadGuy as u8 mode, u8 marker byte, and u32 guard. |
+| `net_create_block_input_server_packet` | `0x00597B40` | high | Allocates a zeroed 0x14-byte exact RTTI SBlockInput object and calls its concrete constructor. |
+| `net_block_input_server_packet_ctor` | `0x00597BC0` | high | Passes opcode 0x51 to the common server packet base and installs the exact SBlockInput vtable. |
+| `net_deserialize_block_input_server_packet` | `0x00597BF0` | high | Reads u8 state and, only when state is zero, one additional u8 that the active handler never uses. |
 | `net_create_bounce_server_packet` | `0x00597C70` | high | Allocates a 0x18-byte RTTI SBounce object and calls its concrete constructor. |
 | `net_bounce_server_packet_ctor` | `0x00597CF0` | high | Passes opcode 0x4B to the common server packet base and installs the exact SBounce vtable. |
 | `net_deserialize_bounce_server_packet` | `0x00597D20` | high | Reads a big-endian u16 body length, retains a view of that many decoded bytes, and advances the packet reader. |
@@ -613,6 +698,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_group_server_packet` | `0x00599440` | high | Allocates the 0x420-byte exact RTTI SGroup object and invokes its concrete constructor. |
 | `net_group_server_packet_ctor` | `0x005994C0` | high | Passes opcode 0x63 to the server packet base and installs the exact SGroup vtable. |
 | `net_deserialize_group_server_packet` | `0x005994F0` | high | Reads action 1 and 5 as string8 names, action 4 as recruiting details with five maximum/current pairs, and no body for every other action. |
+| `net_create_level_point_server_packet` | `0x00599940` | high | Allocates the 0x14-byte exact RTTI SLevelPoint object and invokes its concrete constructor. |
+| `net_level_point_server_packet_ctor` | `0x005999C0` | high | Passes opcode 0x3D to the server packet base and installs the exact SLevelPoint vtable. |
+| `net_deserialize_level_point_server_packet` | `0x005999F0` | high | Reads exactly two u8 payload fields: has_stat_points followed by stat_points. |
 | `net_create_map_server_packet` | `0x00599C60` | high | Allocates the 0x1C-byte exact RTTI SMap object and invokes its concrete constructor. |
 | `net_map_server_packet_ctor` | `0x00599CE0` | high | Passes opcode 0x06 to the server packet base and installs the exact RTTI SMap vtable. |
 | `net_deserialize_map_server_packet` | `0x00599D10` | high | Reads u8 start X, start Y, rectangle width, and rectangle height, then retains a pointer to the remaining map-cell records. |
@@ -649,6 +737,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_say_server_packet` | `0x0059B510` | high | Allocates the RTTI-backed SSay object registered for server opcode 0x0D. |
 | `net_say_server_packet_ctor` | `0x0059B590` | high | Constructs SSay with opcode 0x0D and installs its concrete vtable. |
 | `net_deserialize_say_server_packet` | `0x0059B5C0` | high | Reads speech mode 0, 1, or 2, a u32 sender world-object ID, and string8 speech text. |
+| `net_create_screen_shot_server_packet` | `0x0059B8B0` | high | Allocates the 0x14-byte exact RTTI SScreenShot object and invokes its concrete constructor. |
+| `net_screen_shot_server_packet_ctor` | `0x0059B930` | high | Passes opcode 0x6B to the server packet base and installs the exact SScreenShot vtable. |
+| `net_deserialize_screen_shot_server_packet` | `0x0059B960` | high | Reads exactly one u8 payload field, used by the consumer as a keyed town-map table selector. |
 | `net_create_self_look_server_packet` | `0x0059B9C0` | high | Allocates the 0x9C64-byte RTTI SSelfLook object and invokes its concrete constructor. |
 | `net_self_look_server_packet_ctor` | `0x0059BA40` | high | Passes opcode 0x39 to the server packet base and installs the exact SSelfLook vtable. |
 | `net_deserialize_self_look_server_packet` | `0x0059BA70` | high | Parses nation and profile text, the optional recruiting block, class metadata, and repeated legend marks. |
@@ -674,6 +765,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_user_position_server_packet` | `0x0059CC20` | high | Allocates the 0x14-byte RTTI SUserPosition object and invokes its concrete constructor. |
 | `net_user_position_server_packet_ctor` | `0x0059CCA0` | high | Passes opcode 0x04 to the server packet base and installs the exact SUserPosition vtable. |
 | `net_deserialize_user_position_server_packet` | `0x0059CCD0` | high | Reads exactly u16 x and u16 y; the method returns without consuming four additional bytes observed in captures. |
+| `net_create_web_board_server_packet` | `0x0059CD40` | high | Allocates a zeroed 0x314-byte exact RTTI SWebBoard object and calls its concrete constructor. |
+| `net_web_board_server_packet_ctor` | `0x0059CDC0` | high | Passes opcode 0x62 to the common server packet base and installs the exact SWebBoard vtable. |
+| `net_deserialize_web_board_server_packet` | `0x0059CDF0` | high | Reads action and three string8 buffers; action 3 omits base_url from the wire and derives it from start_url. |
 | `net_send_who` | `0x0059D7D0` | high | Builds CWho as opcode 0x18 with no payload and submits the complete one-byte plaintext body. |
 | `net_send_portrait_profile` | `0x005B1160` | high | Calls net_build_send_portrait and submits the result through net_submit_client_packet. |
 | `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode. |
@@ -787,6 +881,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_palette_manager_ctor` | `0x00544B70` | high | Constructs RTTI class PaletteMan, registers its palette families, loads the installed PAL series, and packs them for the active 16-bit display mode. |
 | `render_palette_resolve_table` | `0x00548510` | high | Decodes bits 24 through 30 as a family and the low 24 bits as a palette number, then returns its 256-entry packed-color table. |
 | `render_palette_family_get_or_create` | `0x00548AB0` | high | Grows one palette-family vector in blocks of 16 and allocates a 0x200-byte packed table for a missing palette number. |
+| `render_write_screenshot_bmp` | `0x005537F0` | high | Captures the current client canvas into numbered lodNNN.bmp files; no SScreenShot receive path calls it. |
 | `render_screen_tree_frame` | `0x00554040` | high | Redraws the dirty root screen tree and presents the completed frame. |
 | `render_screen_subtree` | `0x00555560` | high | Clips and draws one pane subtree through the vtable draw-to-target slot. |
 | `render_probe_display_capabilities` | `0x0057A640` | high | Accepts 16-bit or 32-bit desktop color and selects 2x presentation at 1280 by 960 or larger, otherwise 1x on a supported smaller desktop. |
@@ -825,14 +920,16 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_world_set_blinded` | `0x005D2DC0` | high | Stores the world-renderer blinded boolean and schedules the affected view for redraw. |
 | `render_world_object` | `0x005D3190` | high | Calls the WorldObject virtual draw method at primary vtable slot 0x18. |
 | `render_world_layer_queue` | `0x005D31D0` | high | Walks one sorted queue of visible world objects. |
-| `render_collect_world_objects` | `0x005D3740` | high | Clips visible objects and assigns them to one of 32 draw-layer queues. |
+| `render_collect_world_objects` | `0x005D3740` | high | Clips visible objects, assigns ordinary layers to 32 draw queues, retains layer-zero objects in a separate late queue, records the self entry, and draws the ordinary queues without clearing them afterward. |
 | `render_world_frame` | `0x005D3F70` | high | Draws ground, map backgrounds, and sorted world objects for one world frame. |
+| `render_replay_layer_zero_and_self` | `0x005D4360` | high | After the ordinary world frame, draws the separate layer-zero queue and replays the recorded self entry; the normal non-blinded state supplies the selector that makes living sprites use blend mode 3. |
 | `render_ground_layer` | `0x005D6A50` | high | Updates and draws the cached visible ground-tile layer. |
 | `render_set_ground_bank` | `0x005D7410` | high | Stores the active ground-bank selector and clears the cached ground layer. |
 | `render_ground_tile` | `0x005D7690` | high | Copies one decoded isometric tile diamond into the ground cache canvas. |
 | `render_effect_object` | `0x005DD380` | high | Draws a world effect frame with its selected software blend mode. |
 | `render_update_effect_frame` | `0x005DD470` | high | Advances a world effect through its Effect.tbl frame sequence. |
-| `render_item_object` | `0x005DE620` | high | Draws a ground item with its normal or faded blend state. |
+| `render_item_object_get_bounds` | `0x005DE5A0` | high | Returns the item's draw rectangle and its fixed -16 to +16 tile-relative bounds through WorldObject_Item primary-vtable slot 0x14. |
+| `render_item_object` | `0x005DE620` | high | Draws a ground item and computes mode 3 for a nonzero fade selector, although the original final body blit reloads the ordinary object mode instead of consuming that local result. |
 | `render_copy_human_appearance_record` | `0x005DEF70` | high | Rearranges the parser-friendly SDrawHumanObjects appearance fields into the stable 0x30-byte HumanAppearanceRecord741 used by world objects and image sessions. |
 | `render_living_object` | `0x005DF950` | high | Draws a living sprite with normal, highlighted, or transparent state. |
 | `render_human_apply_appearance` | `0x005E0070` | high | Copies the packet-owned appearance record and forwards it to the live human object. |
@@ -934,6 +1031,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_hea_open` | `0x004875B0` | high | Maps the HEA header, band array, row offsets, and packed run stream. |
 | `file_read_image_metadata` | `0x0048B390` | high | Reads shared EPF metadata or dispatches SPF metadata parsing. |
 | `file_load_image_frame` | `0x0048B530` | high | Loads one EPF or SPF frame for the shared image library. |
+| `file_load_image_pixmap` | `0x0048BBC0` | high | Loads one image frame into a pixmap view and applies the EPF palette selector when required. |
 | `file_load_message_table` | `0x004A4AA0` | high | Loads the line-oriented msg.tbl data from an archive or loose file. |
 | `file_decode_ctf_map_tile` | `0x004C7000` | high | Palette-converts one alternate 784-byte indexed tile source to 16-bit pixels. |
 | `file_decode_dtf_map_tile` | `0x004C7180` | high | Reads one alternate 1568-byte 16-bit tile source and converts color format when needed. |
@@ -944,7 +1042,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_load_metadata_compressed` | `0x004E5570` | high | Loads a cached compressed metadata file and inflates it for parsing. |
 | `file_save_metadata_compressed` | `0x004E56E0` | high | Writes the original compressed metadata payload under the metafile directory. |
 | `file_load_motion_effect_table` | `0x0050E840` | medium | Loads structured motion effect definitions from meffect.tbl. |
-| `file_load_npc_info_table` | `0x005322A0` | medium | Loads the hierarchical npci.tbl text resource. |
+| `file_load_npc_info_table` | `0x005322A0` | high | Loads the hierarchical npci.tbl name-to-illustration mapping from npcbase.dat. |
 | `file_load_field_palette_table` | `0x00546440` | high | Loads the pal*.tbl field palette range family. |
 | `file_load_item_palette_table` | `0x00546980` | high | Loads itempal.tbl range mappings. |
 | `file_load_effect_palette_table` | `0x00546C30` | high | Loads effpal.tbl range mappings and their palette family values. |
@@ -1039,6 +1137,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_effect_start_animation` | `0x005DD1C0` | high | Registers an ordinary world effect with the image pool, prefers the resource's nonzero frame interval over the packet fallback, and schedules its frame timer. |
 | `world_object_effect_ctor` | `0x005DD620` | high | Constructs the exact RTTI WorldObject_ObjectEffect with an Effect.tbl resource index, fallback frame interval, and owning object's facing direction. |
 | `world_static_effect_ctor` | `0x005DD6D0` | high | Constructs the exact RTTI WorldObject_StaticEffect and retains its tile Y and X coordinates. |
+| `world_human_object_ctor` | `0x005DDFC0` | high | Constructs exact RTTI WorldObject_Human by calling world_living_object_ctor, installing the Human vtables, and selecting draw layer 7. |
 | `world_item_object_ctor` | `0x005DE280` | high | Constructs the 0xB8-byte RTTI WorldObject_Item and retains entity ID, Y, X, untagged sprite, resource context, and dye color. |
 | `world_living_object_ctor` | `0x005DF230` | high | Constructs the RTTI WorldObject_Living base, including clearing its +0xD4 nonblocking state. |
 | `world_living_object_refresh_motion` | `0x005E0550` | medium | Clears one live motion flag, invokes the object's motion refresh virtual, and reapplies its current facing; SMove direction 4 uses this when positions already agree. |

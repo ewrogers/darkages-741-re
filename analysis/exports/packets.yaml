@@ -7,6 +7,46 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x00415CB0"
+    name: ui_browser_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI BrowserDialogPane with an embedded BrowserControlPane; when no response or initial URL is supplied, sends CWebBoard action 0."
+  - address: "0x004160A0"
+    name: net_send_web_board_dialog_request
+    confidence: high
+    evidence: "Builds the exact two-byte CWebBoard action-0 body and starts BrowserDialogPane's 20-second response timer."
+  - address: "0x004165A0"
+    name: ui_browser_dialog_apply_web_board
+    confidence: high
+    evidence: "Accepts SWebBoard actions 0 and 1, installs domain and boardinfo WinINet cookies, sets the embedded browser base URL, and navigates to start_url."
+  - address: "0x00416810"
+    name: net_percent_encode_web_board_cookie_value
+    confidence: high
+    evidence: "Percent-encodes reserved, unsafe, control, and non-ASCII bytes before BrowserDialogPane stores the boardinfo cookie."
+  - address: "0x00416A50"
+    name: ui_browser_dialog_handle_network_event
+    confidence: high
+    evidence: "BrowserDialogPane's network-event handler dispatches exact RTTI SWebBoard opcode 0x62 to its cookie and navigation path."
+  - address: "0x00416AB0"
+    name: ui_browser_dialog_handle_timer
+    confidence: high
+    evidence: "Timer 0x572 opens Web Board Request Timeout after 20 seconds and closes the waiting BrowserDialogPane."
+  - address: "0x00417910"
+    name: ui_browser_control_set_base_url
+    confidence: high
+    evidence: "Copies a bounded base URL into BrowserControlPane's browser state."
+  - address: "0x00417A40"
+    name: ui_browser_control_navigate
+    confidence: high
+    evidence: "Converts the URL and optional header to BSTR values and calls the embedded IWebBrowser navigation method."
+  - address: "0x00419650"
+    name: ui_browser_window_set_base_url
+    confidence: high
+    evidence: "Copies a bounded base URL into BrowserWindow's browser state."
+  - address: "0x00419700"
+    name: ui_browser_window_navigate
+    confidence: high
+    evidence: "Navigates BrowserWindow's embedded IWebBrowser to the supplied URL and optional header."
   - address: "0x0041B040"
     name: ui_bottom_buttons_pane_ctor
     confidence: high
@@ -83,6 +123,10 @@ functions:
     name: ui_create_user_timer
     confidence: high
     evidence: "CreateUserDialogPane TimerHandler callback; timer 3 sends CNewUser after the form action schedules a 200 ms delay."
+  - address: "0x00448000"
+    name: ui_alert_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class AlertPane from counted display text, a parent pane, and one or two button assets."
   - address: "0x0045C500"
     name: net_send_mercenary_action
     confidence: high
@@ -455,10 +499,30 @@ functions:
     name: net_request_cash_shop
     confidence: high
     evidence: "ItemShop::ShoppingBagDialogPane sends the opcode 0x6C body during construction."
+  - address: "0x004AD250"
+    name: ui_open_town_map_for_current_map
+    confidence: high
+    evidence: "Opens exact RTTI TownMapPane in the built-in button mode, which selects _tcoord.txt from the active client map number."
+  - address: "0x004AD2E0"
+    name: ui_open_town_map_for_key
+    confidence: high
+    evidence: "Opens exact RTTI TownMapPane in server-keyed mode unless its singleton is already active."
+  - address: "0x004AE090"
+    name: ui_has_town_map_pane
+    confidence: high
+    evidence: "Reports whether the exact RTTI TownMapPane singleton is active."
+  - address: "0x004AE0B0"
+    name: ui_get_town_map_pane
+    confidence: high
+    evidence: "Returns the current exact RTTI TownMapPane singleton pointer."
   - address: "0x004B79C0"
     name: net_send_quit
     confidence: high
     evidence: "Builds the opcode-only CQuit variant, submits one byte, tears down the current connection, then chooses a local TerminalPane2 restart or process-close path."
+  - address: "0x004B9DA0"
+    name: net_handle_advertisement_server_packet
+    confidence: high
+    evidence: "MainMenuPane forwards the parsed SAdvertisement string, length, and three numeric fields into the application-wide deferred post-exit advertisement state."
   - address: "0x004BA010"
     name: net_send_alive
     confidence: high
@@ -531,6 +595,18 @@ functions:
     name: net_send_pursuit_selection
     confidence: high
     evidence: "MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method."
+  - address: "0x0050C7C0"
+    name: net_send_web_board_game_request
+    confidence: high
+    evidence: "Builds CWebBoard as opcode 0x73, action 3, selector_1, and selector_2 for web-backed in-game views."
+  - address: "0x0050DC50"
+    name: ui_browser_game_control_handle_network_event
+    confidence: high
+    evidence: "MiniGame::BrowserGameControlPane dispatches exact RTTI SWebBoard opcode 0x62 through its web-board virtual method."
+  - address: "0x0050DCB0"
+    name: ui_browser_game_control_apply_web_board
+    confidence: high
+    evidence: "Accepts SWebBoard action 3, applies its derived base URL, and navigates to start_url plus a question mark and board_data."
   - address: "0x00511F90"
     name: ui_group_ad_dialog_apply_model
     confidence: high
@@ -631,6 +707,14 @@ functions:
     name: ui_option_pane_handle_keyboard_event
     confidence: high
     evidence: "OptionPane keyboard-event handler maps both X and x to construction of exact RTTI SafeQuitAlert."
+  - address: "0x005449A0"
+    name: net_packet_preprocessor_handle_server_packet
+    confidence: high
+    evidence: "PacketPreprocessor intercepts typed SMessage opcode 0x0A before pane-tree delivery and consumes only message type 0x11."
+  - address: "0x005449D0"
+    name: ui_open_user_confirm_from_message
+    confidence: high
+    evidence: "Opens exact RTTI UserConfirmPane for SMessage type 0x11 with its main prompt, two bytes, and string8 reply context."
   - address: "0x0054A470"
     name: ui_editable_paper_pane_ctor
     confidence: high
@@ -763,6 +847,10 @@ functions:
     name: ui_has_block_listen_input
     confidence: high
     evidence: "Reports whether the transient BlockListenInputPane singleton is open."
+  - address: "0x005537F0"
+    name: render_write_screenshot_bmp
+    confidence: high
+    evidence: "Captures the current client canvas into numbered lodNNN.bmp files; no SScreenShot receive path calls it."
   - address: "0x0055A090"
     name: net_send_multi_server_selection
     confidence: high
@@ -787,18 +875,38 @@ functions:
     name: ui_spelled_view_pane_apply_packet
     confidence: high
     evidence: "Updates a matching icon, removes it for stage zero, or inserts a new nonzero icon into the first of ten empty slots."
+  - address: "0x00573810"
+    name: ui_status_info_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI StatusInfoPane, initializes the point count, control gate, selected index, selector table, and blink phase, and installs the TimerHandler secondary vtable."
   - address: "0x00573F90"
     name: ui_status_info_handle_network_event
     confidence: high
-    evidence: "StatusInfoPane routes SStatus to its partial character-sheet updater."
+    evidence: "StatusInfoPane routes exact SStatus, SLevelPoint, and SChangeHour objects to their dedicated update paths."
+  - address: "0x00574440"
+    name: ui_status_info_timer_callback
+    confidence: high
+    evidence: "Receives the TimerHandler-adjusted StatusInfoPane pointer, toggles blink phase, redraws the pane, and schedules another 500 ms tick while stat_points is nonzero."
   - address: "0x00574B30"
     name: ui_status_info_update_from_status_packet
     confidence: high
-    evidence: "Copies each present SStatus block into StatusInfoPane, including stat-button state, weight, progression, elements, and one unknown post-resistance byte."
+    evidence: "Copies each present SStatus block into StatusInfoPane, including the same stat-button gate and point count used by SLevelPoint, but does not manage the blink timer."
+  - address: "0x00574D50"
+    name: ui_status_info_apply_level_point_packet
+    confidence: high
+    evidence: "Copies SLevelPoint's control gate and point count, clears pane timers, starts a 500 ms timer for a nonzero count, and invalidates the pane."
+  - address: "0x00574ED0"
+    name: ui_status_info_draw
+    confidence: high
+    evidence: "Draws StatusInfoPane values and uses has_stat_points plus blink_phase to gate and alternate the five stat-increase controls and point count."
   - address: "0x005752D0"
     name: ui_status_info_format_values
     confidence: high
     evidence: "Formats the main character-sheet values retained by StatusInfoPane after SStatus updates."
+  - address: "0x005755C0"
+    name: net_send_add_stat
+    confidence: high
+    evidence: "Validates the selected StatusInfoPane control index, writes opcode 0x47 plus its constructor-defined selector, and submits the two-byte CAddStat body."
   - address: "0x00575AA0"
     name: ui_extra_status_info_format_values
     confidence: high
@@ -819,10 +927,74 @@ functions:
     name: ui_line_input_copy_text
     confidence: high
     evidence: "Calls the LineInputPane text control's bounded copy method and returns its copied byte length."
+  - address: "0x0058F640"
+    name: ui_town_map_lookup_current_map
+    confidence: high
+    evidence: "Finds the active map number in the five-value _tcoord.txt records and returns four placement values."
+  - address: "0x0058F6F0"
+    name: ui_town_map_lookup_key
+    confidence: high
+    evidence: "Finds a server-supplied key in the first field of a six-value _tncoord.txt record and returns its map asset number plus four placement values."
+  - address: "0x0058F7C0"
+    name: ui_town_map_parse_coordinate_table
+    confidence: high
+    evidence: "Parses decimal lines into five-value current-map records or six-value server-keyed records."
+  - address: "0x0058F9A0"
+    name: ui_town_map_load_coordinate_tables
+    confidence: high
+    evidence: "Loads and caches _tcoord.txt and _tncoord.txt for the two TownMapPane selection modes."
+  - address: "0x0058FB50"
+    name: ui_town_map_pane_current_map_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TownMapPane with use_server_key zero for the built-in map-button path."
+  - address: "0x0058FBE0"
+    name: ui_town_map_pane_keyed_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TownMapPane with use_server_key one and retains the SScreenShot payload key."
+  - address: "0x0058FD00"
+    name: ui_town_map_draw
+    confidence: high
+    evidence: "Rebuilds the TownMapPane canvas from the selected table entry and current marker frame."
+  - address: "0x0058FD50"
+    name: ui_town_map_draw_selected_entry
+    confidence: high
+    evidence: "Chooses _tcoord.txt or _tncoord.txt, resolves the town-map asset and placement values, and queues immediate close when no entry matches."
+  - address: "0x0058FFC0"
+    name: ui_town_map_compose_view
+    confidence: high
+    evidence: "Composes _t_back.spf, the selected _tN.spf and _tNn.spf images, and the tmuser.epf marker when the map matches."
+  - address: "0x00590940"
+    name: ui_town_map_close
+    confidence: high
+    evidence: "Cancels all TownMapPane timers, unregisters the pane, and removes it from the live UI."
+  - address: "0x00590990"
+    name: ui_town_map_handle_pointer_event
+    confidence: high
+    evidence: "Arms on pointer press and closes TownMapPane on the matching release."
+  - address: "0x005909E0"
+    name: ui_town_map_handle_keyboard_event
+    confidence: high
+    evidence: "Handles TownMapPane close commands and the ordinary local screenshot keyboard command; packet receipt does not invoke the screenshot branch."
+  - address: "0x00590AD0"
+    name: ui_town_map_timer_callback
+    confidence: high
+    evidence: "Advances the marker frame modulo seven, requeues timer 0 every 50 ms after the initial 100 ms delay, and closes on timer ID 0x4D2."
+  - address: "0x005921C0"
+    name: ui_user_confirm_pane_ctor
+    confidence: high
+    evidence: "Constructs the 0x73C-byte exact RTTI UserConfirmPane and stores the SMessage reply context at +0x634 through +0x738."
+  - address: "0x00592260"
+    name: ui_user_confirm_pane_send_ok
+    confidence: high
+    evidence: "UserConfirmPane's OK callback calls net_send_confirm with choice 1; the button label and reply were confirmed by project-owner runtime testing."
+  - address: "0x00592280"
+    name: ui_user_confirm_pane_send_cancel
+    confidence: high
+    evidence: "UserConfirmPane's Cancel callback calls net_send_confirm with choice 0; the button label and reply were confirmed by project-owner runtime testing."
   - address: "0x005922A0"
     name: net_send_confirm
     confidence: high
-    evidence: "UserConfirmPane calls this opcode 0x31 confirmation builder."
+    evidence: "Builds CConfirm as opcode 0x31, the first server byte, button choice, second server byte, and echoed string8 context."
   - address: "0x00595C20"
     name: net_packet_reader_read_u8
     confidence: high
@@ -895,6 +1067,18 @@ functions:
     name: net_deserialize_add_spell_server_packet
     confidence: high
     evidence: "Reads slot, u16 icon, argument type, string8 name, string8 prompt, and cast_lines into SAddSpell."
+  - address: "0x005978B0"
+    name: net_create_advertisement_server_packet
+    confidence: high
+    evidence: "Allocates a zeroed 0x24-byte exact RTTI SAdvertisement object and calls its concrete constructor."
+  - address: "0x00597930"
+    name: net_advertisement_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x5B to the common server packet base and installs the exact SAdvertisement vtable."
+  - address: "0x00597960"
+    name: net_deserialize_advertisement_server_packet
+    confidence: high
+    evidence: "Reads u16 argument_length, a counted byte view, u16 value_1, u16 value_2, and u8 value_3."
   - address: "0x00597A10"
     name: net_create_bad_guy_server_packet
     confidence: high
@@ -907,6 +1091,18 @@ functions:
     name: net_deserialize_bad_guy_server_packet
     confidence: high
     evidence: "Reads SBadGuy as u8 mode, u8 marker byte, and u32 guard."
+  - address: "0x00597B40"
+    name: net_create_block_input_server_packet
+    confidence: high
+    evidence: "Allocates a zeroed 0x14-byte exact RTTI SBlockInput object and calls its concrete constructor."
+  - address: "0x00597BC0"
+    name: net_block_input_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x51 to the common server packet base and installs the exact SBlockInput vtable."
+  - address: "0x00597BF0"
+    name: net_deserialize_block_input_server_packet
+    confidence: high
+    evidence: "Reads u8 state and, only when state is zero, one additional u8 that the active handler never uses."
   - address: "0x00597C70"
     name: net_create_bounce_server_packet
     confidence: high
@@ -1011,6 +1207,18 @@ functions:
     name: net_deserialize_group_server_packet
     confidence: high
     evidence: "Reads action 1 and 5 as string8 names, action 4 as recruiting details with five maximum/current pairs, and no body for every other action."
+  - address: "0x00599940"
+    name: net_create_level_point_server_packet
+    confidence: high
+    evidence: "Allocates the 0x14-byte exact RTTI SLevelPoint object and invokes its concrete constructor."
+  - address: "0x005999C0"
+    name: net_level_point_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x3D to the server packet base and installs the exact SLevelPoint vtable."
+  - address: "0x005999F0"
+    name: net_deserialize_level_point_server_packet
+    confidence: high
+    evidence: "Reads exactly two u8 payload fields: has_stat_points followed by stat_points."
   - address: "0x00599C60"
     name: net_create_map_server_packet
     confidence: high
@@ -1143,6 +1351,18 @@ functions:
     name: net_deserialize_say_server_packet
     confidence: high
     evidence: "Reads speech mode 0, 1, or 2, a u32 sender world-object ID, and string8 speech text."
+  - address: "0x0059B8B0"
+    name: net_create_screen_shot_server_packet
+    confidence: high
+    evidence: "Allocates the 0x14-byte exact RTTI SScreenShot object and invokes its concrete constructor."
+  - address: "0x0059B930"
+    name: net_screen_shot_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x6B to the server packet base and installs the exact SScreenShot vtable."
+  - address: "0x0059B960"
+    name: net_deserialize_screen_shot_server_packet
+    confidence: high
+    evidence: "Reads exactly one u8 payload field, used by the consumer as a keyed town-map table selector."
   - address: "0x0059B9C0"
     name: net_create_self_look_server_packet
     confidence: high
@@ -1235,6 +1455,18 @@ functions:
     name: net_deserialize_user_position_server_packet
     confidence: high
     evidence: "Reads exactly u16 x and u16 y; the method returns without consuming four additional bytes observed in captures."
+  - address: "0x0059CD40"
+    name: net_create_web_board_server_packet
+    confidence: high
+    evidence: "Allocates a zeroed 0x314-byte exact RTTI SWebBoard object and calls its concrete constructor."
+  - address: "0x0059CDC0"
+    name: net_web_board_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x62 to the common server packet base and installs the exact SWebBoard vtable."
+  - address: "0x0059CDF0"
+    name: net_deserialize_web_board_server_packet
+    confidence: high
+    evidence: "Reads action and three string8 buffers; action 3 omits base_url from the wire and derives it from start_url."
   - address: "0x0059D1D0"
     name: ui_gui_back_pane_handle_network_event
     confidence: high
@@ -1539,6 +1771,10 @@ functions:
     name: net_handle_bounce_server_packet
     confidence: high
     evidence: "Submits SBounce's counted embedded bytes directly as an ordinary opcode-first client body and performs no other game or UI action."
+  - address: "0x005F6BC0"
+    name: ui_open_town_map_from_screen_shot_packet
+    confidence: high
+    evidence: "Reads SScreenShot's retained u8 key and opens TownMapPane in the server-keyed _tncoord.txt mode."
   - address: "0x005F6D80"
     name: net_handle_message_server_packet
     confidence: high
@@ -1559,6 +1795,10 @@ functions:
     name: net_handle_bad_guy_server_packet
     confidence: high
     evidence: "Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths."
+  - address: "0x005F7AA0"
+    name: ui_apply_block_input_server_packet
+    confidence: high
+    evidence: "Maps SBlockInput state 0 to held-button release plus ClockPane creation and state 1 to ClockPane removal; other states are ignored."
   - address: "0x005F8620"
     name: net_send_group_automatic_response
     confidence: high
@@ -1673,6 +1913,26 @@ data_symbols:
     confidence: high
     evidence: "Nineteen signed entries map wire slot 0 to -1 and slots 1 through 18 to UI indices 0 through 17."
 comments:
+  - address: "0x004160C0"
+    text: "Build the two-byte CWebBoard dialog request as opcode 0x73, action 0."
+  - address: "0x0041612A"
+    text: "After CWebBoard action 0, schedule BrowserDialogPane timer 0x572 for 20,000 ms."
+  - address: "0x004165F1"
+    text: "Cancel the 20-second web-board request timer as soon as BrowserDialogPane receives SWebBoard."
+  - address: "0x0041662F"
+    text: "BrowserDialogPane accepts SWebBoard actions 0 and 1; other actions return false after the timer cancellation."
+  - address: "0x0041664D"
+    text: "Search board_data for '=' using an 8-bit wrapping index. A missing delimiter loops indefinitely; action 0 or 1 test data must contain both '=' and '&'."
+  - address: "0x00416748"
+    text: "Set the WinINet cookie named domain on base_url from the bytes between the first '=' and following '&'."
+  - address: "0x004167B8"
+    text: "Percent-encode the board_data suffix after '&' and set it as the WinINet boardinfo cookie on base_url."
+  - address: "0x004167D1"
+    text: "Save base_url in BrowserControlPane, then navigate its embedded browser to start_url with no additional header."
+  - address: "0x00416A8A"
+    text: "BrowserDialogPane dispatches exact RTTI SWebBoard opcode 0x62 to its URL and cookie handler."
+  - address: "0x00416C38"
+    text: "Timer 0x572 opens a Web Board Request Timeout alert after 20 seconds and closes the waiting BrowserDialogPane."
   - address: "0x0041B1D1"
     text: "Send CSelfLook immediately when BtmButtonsPane_A is constructed."
   - address: "0x0041B6E3"
@@ -1735,6 +1995,8 @@ comments:
     text: "Removal converts slot to index without a bounds check, then clears sprite, name[0], and durability. The dye byte is retained."
   - address: "0x00462E17"
     text: "CGroup action 2 (Request): UserLookPane sends the viewed character name."
+  - address: "0x004649BB"
+    text: "Run PacketPreprocessor before the live pane tree. A handled SMessage type 0x11 opens UserConfirmPane and stops ordinary SMessage consumers from seeing it."
   - address: "0x0048F82D"
     text: "InventoryPane_A initializes 60 direct InvItemPane pointers at +0x1A0. Protocol slots 1 through 60 map to indices 0 through 59."
   - address: "0x004900FD"
@@ -1941,12 +2203,20 @@ comments:
     text: "CSpellDelaySay is only constructed when total_lines is nonzero. Zero-line casts return without sending opcode 0x4E."
   - address: "0x0049BB79"
     text: "Spell chants use CSpellDelaySay opcode 0x4E, not interactive CSay opcode 0x0E. The server presents them through SSay mode 2."
+  - address: "0x004AD2AC"
+    text: "The built-in town-map button constructs current-map mode, which selects _tcoord.txt using the client's active map number."
+  - address: "0x004AD340"
+    text: "The SScreenShot path constructs keyed mode and passes the server's one-byte town_map_key."
   - address: "0x004B79FC"
     text: "The immediate CQuit builder writes opcode 0x0B and no phase byte."
   - address: "0x004B7A27"
     text: "Submit exactly one CQuit byte. This builder has no state-dependent payload branch."
   - address: "0x004B7A88"
     text: "After sending and tearing down the connection, local configuration selects TerminalPane2 startup or WM_CLOSE. No server response field controls this branch."
+  - address: "0x004B8C6C"
+    text: "MainMenuPane dispatches exact RTTI SAdvertisement opcode 0x5B to the deferred post-exit advertisement handler. WorldPane has no matching branch."
+  - address: "0x004B9DCF"
+    text: "Forward the SAdvertisement byte view, length, two u16 values, and final u8 value into application-owned post-exit state; no UI or client packet is produced."
   - address: "0x004BA957"
     text: "LoginDialogPane action 0 reads attached controls 2 (Name) and 3 (Password) and sends CLogin."
   - address: "0x004BAAB2"
@@ -1997,6 +2267,18 @@ comments:
     text: "CChangePassword body begins with opcode 0x26 followed by u8-length name, existing password, and new password."
   - address: "0x004BC1EA"
     text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
+  - address: "0x0050C7E5"
+    text: "Build CWebBoard action 3 as opcode 0x73, action 3, selector_1, selector_2."
+  - address: "0x0050DC8A"
+    text: "BrowserGameControlPane dispatches exact RTTI SWebBoard opcode 0x62 through its web-board virtual method."
+  - address: "0x0050DCD3"
+    text: "BrowserGameControlPane accepts only SWebBoard action 3."
+  - address: "0x0050DD31"
+    text: "Apply the parser-derived base_url to the active embedded BrowserWindow."
+  - address: "0x0050DD65"
+    text: "Construct the navigation target as start_url + '?' + board_data without checking for an existing query marker."
+  - address: "0x0050DDA0"
+    text: "Navigate the embedded BrowserWindow to the constructed action-3 URL with no additional header."
   - address: "0x005139AE"
     text: "CGroup action 2 (Request): send an ordinary group request for the supplied character name."
   - address: "0x00513A92"
@@ -2043,6 +2325,12 @@ comments:
     text: "Submit the two-byte CQuit acknowledgement 0B 00."
   - address: "0x005445EF"
     text: "OptionPane key codes X and x both route here to construct SafeQuitAlert."
+  - address: "0x005449B2"
+    text: "Only SMessage opcode 0x0A can enter the UserConfirmPane preprocessor path."
+  - address: "0x00544A02"
+    text: "SMessage message_type 0x11 is the server-driven user-confirm prompt."
+  - address: "0x00544A89"
+    text: "Open UserConfirmPane with the SMessage prompt plus its two bytes and string8 context; button assets are 0x0F and 0x15."
   - address: "0x0054A569"
     text: "Read the SEnterEditingMode inventory slot byte and retain it for CExitEditingMode."
   - address: "0x0054A594"
@@ -2145,6 +2433,8 @@ comments:
     text: "CBlockListen operation 3 is followed by a one-byte name length and that many name bytes."
   - address: "0x00551186"
     text: "The client stores only the live BlockListenInputPane singleton pointer here, not an ignore-list database."
+  - address: "0x005538E3"
+    text: "The actual client screenshot writer creates local lodNNN.bmp files. SScreenShot does not call this function."
   - address: "0x0056A8E0"
     text: "SpelledViewPane_A consumes exact RTTI SSpelled opcode 0x3A."
   - address: "0x0056A91A"
@@ -2163,12 +2453,92 @@ comments:
     text: "A new nonzero icon uses the first empty slot. If all ten are occupied, the update is ignored."
   - address: "0x0056AD90"
     text: "Unreferenced duplicate helper that parses raw opcode-0x3A body bytes and applies the same ten-slot rules."
+  - address: "0x005738A0"
+    text: "Initialize CAddStat selectors in visible control order: Strength 1, Intelligence 4, Wisdom 8, Constitution 0x10, Dexterity 2."
+  - address: "0x00573FF3"
+    text: "Route exact server opcode 0x3D (SLevelPoint) to the StatusInfoPane update path."
+  - address: "0x0057444A"
+    text: "Toggle the StatusInfoPane blink phase between zero and one every timer tick."
+  - address: "0x0057448D"
+    text: "Continue the 500 ms blink timer only while the pane-owned stat point count is nonzero."
+  - address: "0x00574C17"
+    text: "SStatus copies has_stat_points into the same stat-button gate updated by SLevelPoint."
+  - address: "0x00574C26"
+    text: "SStatus copies stat_points into the same displayed count updated by SLevelPoint, but this path does not reset the blink timer."
+  - address: "0x00574D5D"
+    text: "Copy SLevelPoint byte 0 into the flag that gates drawing the five stat-increase controls."
+  - address: "0x00574D6C"
+    text: "Copy SLevelPoint byte 1 into the displayed stat point count."
+  - address: "0x00574D7E"
+    text: "Cancel this pane's existing timers before applying the new SLevelPoint blink state."
+  - address: "0x00574DAB"
+    text: "A nonzero stat point count starts timer 0 at a 500 ms interval."
+  - address: "0x0057508D"
+    text: "Use blink phase to alternate whether the nonzero Level Up Point count is drawn."
+  - address: "0x0057517D"
+    text: "The first SLevelPoint byte gates drawing all five stat-increase controls."
+  - address: "0x00575605"
+    text: "Begin the two-byte derived CAddStat body with opcode 0x47."
+  - address: "0x00575624"
+    text: "Append the selected control's constructor-defined stat selector."
   - address: "0x00575AF2"
     text: "Attack and defense elements are unchecked indexes into a ten-string table. Valid wire values are 0 through 9."
   - address: "0x00575B47"
     text: "Display magic resistance as raw_value * 10 percent."
   - address: "0x0057B439"
     text: "Copy the smaller of the requested byte limit and current text length, then append a terminator."
+  - address: "0x0058F689"
+    text: "Current-map mode matches the active map number against the _tcoord.txt table."
+  - address: "0x0058F73C"
+    text: "Keyed mode matches the SScreenShot payload against the first value of an _tncoord.txt record."
+  - address: "0x0058F9C6"
+    text: "Load _tcoord.txt as five-decimal-value records used by the built-in current-map button."
+  - address: "0x0058FA32"
+    text: "Load _tncoord.txt as six-decimal-value records: lookup key, town-map asset number, and four placement values."
+  - address: "0x0058FB12"
+    text: "Start TownMapPane timer 0 with an initial 100 ms delay."
+  - address: "0x0058FBBC"
+    text: "Current-map constructor selects the _tcoord.txt lookup path."
+  - address: "0x0058FC63"
+    text: "Widen and retain the SScreenShot town_map_key, then select the keyed _tncoord.txt lookup path."
+  - address: "0x0058FDB0"
+    text: "Keyed TownMapPane drawing resolves the server byte through _tncoord.txt instead of using the active map number."
+  - address: "0x0058FE92"
+    text: "Build _t%d.spf and _t%dn.spf from the resolved town-map asset number."
+  - address: "0x0058FF1D"
+    text: "A failed town-map table lookup queues immediate timer 0x4D2, whose callback closes the pane."
+  - address: "0x0059001A"
+    text: "Load the shared town-map background _t_back.spf."
+  - address: "0x005903D1"
+    text: "Load the current marker animation frame from tmuser.epf."
+  - address: "0x00590A29"
+    text: "TownMapPane's normal keyboard handler can invoke the local BMP screenshot writer; packet receipt does not take this branch."
+  - address: "0x00590B3F"
+    text: "After the initial tick, requeue TownMapPane timer 0 every 50 ms."
+  - address: "0x00590BE3"
+    text: "When the phase-zero marker counter exceeds 5, enter the second animation phase and restart the index at zero."
+  - address: "0x005921E0"
+    text: "Construct the AlertPane base with the server's main SMessage text and two buttons."
+  - address: "0x005921FE"
+    text: "Store the first server-supplied confirmation byte at UserConfirmPane +0x634."
+  - address: "0x0059220A"
+    text: "Store the second server-supplied confirmation byte at UserConfirmPane +0x635."
+  - address: "0x00592219"
+    text: "Store the server-supplied string8 context length as u32 at UserConfirmPane +0x738."
+  - address: "0x00592237"
+    text: "Copy the server-supplied string8 context into UserConfirmPane +0x636 and terminate it locally."
+  - address: "0x005922D3"
+    text: "Begin CConfirm with opcode 0x31."
+  - address: "0x00592306"
+    text: "Echo UserConfirmPane +0x634, the first byte supplied by SMessage type 0x11."
+  - address: "0x00592330"
+    text: "Write the clicked button's choice byte. Project-owner runtime capture confirms OK = 1 and Cancel = 0."
+  - address: "0x00592363"
+    text: "Echo UserConfirmPane +0x635, the second byte supplied by SMessage type 0x11."
+  - address: "0x00592395"
+    text: "Write the one-byte length of the server-supplied confirmation context."
+  - address: "0x005923D3"
+    text: "Copy the server-supplied context bytes. The displayed SMessage prompt is not echoed."
   - address: "0x00596003"
     text: "Register RTTI-backed SChangeHour for opcode 0x20. Opcode 0x1E has no server packet factory entry."
   - address: "0x005962D3"
@@ -2203,12 +2573,20 @@ comments:
     text: "Reads the prompt as a one-byte-length-prefixed string and appends a local NUL."
   - address: "0x00597755"
     text: "Reads cast_lines as one byte. The UI retains it for delayed casting."
+  - address: "0x00597975"
+    text: "Read SAdvertisement.argument_length as u16, then retain and advance over exactly that many decoded bytes."
+  - address: "0x0059799B"
+    text: "Read value_1 and value_2 as big-endian u16 values, followed by value_3 as u8. MainMenuPane later widens all three for decimal command-line formatting."
   - address: "0x00597A9C"
     text: "Construct RTTI class SBadGuy with server opcode 0x4A."
   - address: "0x00597AD2"
     text: "SBadGuy body bytes 1 and 2 are u8 mode and marker byte."
   - address: "0x00597AE6"
     text: "SBadGuy ends with a u32 guard value."
+  - address: "0x00597C02"
+    text: "Read SBlockInput state into packet object +0x10. State 0 means block and state 1 means unblock in the active handler."
+  - address: "0x00597C13"
+    text: "Only state 0 consumes the conditional byte stored at packet object +0x11. No active SBlockInput consumer reads it."
   - address: "0x00597CFC"
     text: "Construct exact RTTI class SBounce with server opcode 0x4B."
   - address: "0x00597D2A"
@@ -2267,6 +2645,10 @@ comments:
     text: "Read five class rows in UI order. Each pair is maximum first and current second."
   - address: "0x005995E4"
     text: "Action 5 (RecruitJoin): read one character name. Other actions consume no body bytes."
+  - address: "0x00599A02"
+    text: "Read SLevelPoint has_stat_points as the first payload byte."
+  - address: "0x00599A08"
+    text: "Read SLevelPoint stat_points as the second payload byte."
   - address: "0x00599CEC"
     text: "Construct exact RTTI SMap for server opcode 0x06."
   - address: "0x00599D26"
@@ -2296,7 +2678,7 @@ comments:
   - address: "0x0059A112"
     text: "Read the SMessage type byte."
   - address: "0x0059A11F"
-    text: "Type 0x11 alone carries two extra bytes followed by a string8 field. The recovered client handlers do not display this variant."
+    text: "SMessage type 0x11 carries two bytes and a string8 context before the main prompt. PacketPreprocessor consumes it to open UserConfirmPane."
   - address: "0x0059A160"
     text: "Read the main message length as u16. The parser itself does not impose a semantic text limit."
   - address: "0x0059A16D"
@@ -2337,6 +2719,8 @@ comments:
     text: "Read the speaking world object's u32 ID."
   - address: "0x0059B5F5"
     text: "Read the speech text as string8 into the packet object's inline buffer."
+  - address: "0x0059B96A"
+    text: "Read the sole SScreenShot payload byte. The consumer uses it as a keyed town-map table selector."
   - address: "0x0059BE00"
     text: "SSelfSaveOK is an opcode-only, base-size packet. It inherits the base deserializer and has no packet-specific WorldPane handler."
   - address: "0x0059C14C"
@@ -2399,6 +2783,20 @@ comments:
     text: "Read SUserPosition y as u16 into packet object +0x12."
   - address: "0x0059CCF8"
     text: "Return after exactly two u16 reads. Any remaining decoded body bytes are left unread and have no SUserPosition object fields."
+  - address: "0x0059CE04"
+    text: "Read SWebBoard action into packet object +0x10."
+  - address: "0x0059CE11"
+    text: "Action 3 reads only start_url and derives base_url locally; every other action reads explicit base_url and start_url."
+  - address: "0x0059CE24"
+    text: "Read action-3 start_url as string8 into the second 256-byte packet buffer."
+  - address: "0x0059CEB9"
+    text: "Derive action-3 base_url by copying start_url through its scheme and authority, stopping before the first path slash."
+  - address: "0x0059CED7"
+    text: "For actions other than 3, read explicit base_url followed by start_url as string8 fields."
+  - address: "0x0059CEFA"
+    text: "Read the common final string8 board_data field. Actions 0 and 1 parse it as cookie material; action 3 appends it as a URL query."
+  - address: "0x005A0BAE"
+    text: "GUI back-button action 1 opens TownMapPane from the current map without sending a packet."
   - address: "0x005A15CA"
     text: "Enter opens ChatInputPane in CSay mode 0 for normal Say."
   - address: "0x005A1614"
@@ -2471,8 +2869,12 @@ comments:
     text: "Route parsed SChangeHour opcode 0x20 to the world lighting handler. There is no opcode 0x1E branch in this dispatcher."
   - address: "0x005EDE38"
     text: "Dispatch typed SBounce opcode 0x4B to the automatic client-body submission handler."
+  - address: "0x005EDECD"
+    text: "Dispatch exact server opcode 0x6B to the keyed TownMapPane opener."
   - address: "0x005EDF3D"
     text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
+  - address: "0x005EDF89"
+    text: "Dispatch exact RTTI SBlockInput opcode 0x51 to the ClockPane-based input blocker."
   - address: "0x005EDFE6"
     text: "Raw opcode 0x1B bypasses the packet factory and constructs EditablePaperPane through net_handle_enter_editing_mode_server_data."
   - address: "0x005EE185"
@@ -2685,6 +3087,8 @@ comments:
     text: "Load the retained view of the embedded opcode-first client body."
   - address: "0x005F6A9C"
     text: "Submit the embedded bytes as an ordinary client body; the first embedded byte selects the outbound transform."
+  - address: "0x005F6BCC"
+    text: "Read SScreenShot town_map_key and open TownMapPane in server-keyed mode."
   - address: "0x005F6DD9"
     text: "Route SMessage types 0x00 through 0x12. Colored overlay, popup, and score paths are separate; several types are intentionally ignored here."
   - address: "0x005F6DF7"
@@ -2715,6 +3119,12 @@ comments:
     text: "After successfully closing the marker, call the invalid-memory clearing path to terminate the client."
   - address: "0x005F7A80"
     text: "Marker creation failed, including when it already exists. Write through null to terminate the client."
+  - address: "0x005F7AAA"
+    text: "SBlockInput state 0 begins the block. State 1 ends it; any other state is consumed without a UI change."
+  - address: "0x005F7AB9"
+    text: "Begin blocking through EventMan: release held mouse buttons, then open the singleton ClockPane wait cursor."
+  - address: "0x005F7AD3"
+    text: "End blocking by closing ClockPane. The handler sends no client packet and changes no character or world-model field."
   - address: "0x005F8616"
     text: "The normal group prompt's accept action sends CGroup action 3 for the saved requester name."
   - address: "0x005F8620"
@@ -3073,7 +3483,7 @@ packet_indexes:
         builder: "0x005922A0"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x005922A0 writes opcode 0x31 and submits the body."
+        evidence: "UserConfirmPane builder 0x005922A0 writes opcode 0x31 and echoes SMessage type 0x11 context. Project-owner runtime testing confirms OK choice 1 and Cancel choice 0."
         page: "docs/network/client/049-0x31-confirm.md"
       - opcode: "0x38"
         friendly_name: "Refresh User"
@@ -3171,8 +3581,8 @@ packet_indexes:
         transform: derived
         builder: "0x005755C0"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Representative builder 0x005755C0 writes opcode 0x47 and submits the body."
+        name_confidence: medium
+        evidence: "StatusInfoPane builder 0x005755C0 writes opcode 0x47 followed by Strength 0x01, Intelligence 0x04, Wisdom 0x08, Constitution 0x10, or Dexterity 0x02 in visible control order, then submits the two-byte body without changing local point state."
         page: "docs/network/client/071-0x47-add-stat.md"
       - opcode: "0x48"
         friendly_name: "Request Patch"
@@ -3307,7 +3717,7 @@ packet_indexes:
         builder: "0x004160A0"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x004160A0 writes opcode 0x73 and submits the body."
+        evidence: "Builder 0x004160A0 sends action 0 as 73 00 and starts a 20-second BrowserDialogPane timer. Builder 0x0050C7C0 sends action 3 with two selector bytes from web-backed Puzzle ranking, RopeSkipping ranking, and FindFarmpet views."
         page: "docs/network/client/115-0x73-web-board.md"
       - opcode: "0x75"
         friendly_name: "Check Time"
@@ -3446,7 +3856,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI identifies SMessage. Its parser reads a type-dependent prefix followed by a u16 byte count, and its consumers route the text to floating, persistent-history, popup, score, or game-settings UI. A supplied CGroupToggle trace confirms type 0x07 selector ASCII 2 updates the Join a group setting row."
+        evidence: "RTTI identifies SMessage. Its parser reads a type-dependent prefix followed by a u16 byte count; PacketPreprocessor consumes type 0x11 to open UserConfirmPane, while other consumers route text to floating, history, popup, score, or game-settings UI."
         page: "docs/network/server/010-0x0a-message.md"
       - opcode: "0x0B"
         friendly_name: "Move"
@@ -3796,7 +4206,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x005999C0 passes opcode 0x3D to the server packet base and installs the SLevelPoint vtable."
+        evidence: "Exact RTTI SLevelPoint deserializer 0x005999F0 reads has_stat_points then stat_points as two u8 values. StatusInfoPane handler 0x00574D50 writes the same fields as SStatus, clears existing pane timers, and starts a 500 ms blink timer while the count is nonzero."
         page: "docs/network/server/061-0x3d-level-point.md"
       - opcode: "0x3E"
         friendly_name: "Window Change"
@@ -3936,7 +4346,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597BC0 passes opcode 0x51 to the server packet base and installs the SBlockInput vtable."
+        evidence: "Exact RTTI SBlockInput deserializer 0x00597BF0 reads u8 state and a conditional u8 only when state is zero. Handler 0x005F7AA0 maps state 0 to the singleton ClockPane wait-cursor blocker and state 1 to its removal; the conditional byte is unused and no client response is sent."
         page: "docs/network/server/081-0x51-block-input.md"
       - opcode: "0x56"
         friendly_name: "Multi Server"
@@ -3966,7 +4376,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597930 passes opcode 0x5B to the server packet base and installs the SAdvertisement vtable."
+        evidence: "Exact RTTI SAdvertisement constructor 0x00597930 installs opcode 0x5B. Deserializer 0x00597960 reads u16 length, counted bytes, u16, u16, and u8. MainMenuPane handler 0x004B9DA0 saves those fields for a silent post-shutdown CreateProcessA attempt of ad.exe; there is no in-game WorldPane branch or client reply."
         page: "docs/network/server/091-0x5b-advertisement.md"
       - opcode: "0x60"
         friendly_name: "Stipulation"
@@ -3986,7 +4396,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059CDC0 passes opcode 0x62 to the server packet base and installs the SWebBoard vtable."
+        evidence: "Exact RTTI SWebBoard deserializer 0x0059CDF0 reads action, explicit or derived base_url, start_url, and board_data. BrowserDialogPane handles actions 0 and 1 as cookie setup plus navigation; BrowserGameControlPane handles action 3 as start_url + '?' + board_data navigation."
         page: "docs/network/server/098-0x62-web-board.md"
       - opcode: "0x63"
         friendly_name: "Group"
@@ -4039,15 +4449,15 @@ packet_indexes:
         evidence: "Constructor 0x005982F0 passes opcode 0x68 to the server packet base and installs the SCheckTime vtable."
         page: "docs/network/server/104-0x68-check-time.md"
       - opcode: "0x6B"
-        friendly_name: "Screen Shot"
+        friendly_name: "Town Map"
         class_name: "SScreenShot"
         transform: derived
         constructor: "0x0059B930"
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059B930 passes opcode 0x6B to the server packet base and installs the SScreenShot vtable."
-        page: "docs/network/server/107-0x6b-screen-shot.md"
+        evidence: "Exact RTTI SScreenShot deserializer 0x0059B960 reads one u8 key. Handler 0x005F6BC0 opens exact RTTI TownMapPane in _tncoord.txt keyed mode; it neither calls the BMP screenshot writer nor sends a response."
+        page: "docs/network/server/107-0x6b-town-map.md"
       - opcode: "0x6D"
         friendly_name: "Family Name"
         class_name: "SFamilyName"

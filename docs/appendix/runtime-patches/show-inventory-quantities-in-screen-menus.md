@@ -48,6 +48,29 @@ struct InvItemPaneFields {
 
 An invalid slot, missing pane pointer, non-stackable item, or zero quantity uses the original label. This fail-open behavior keeps stale UI state from blocking construction of the server-requested dialog.
 
+## Confirmed call path
+
+For `SScreenMenu` subtype 5, the client reaches this row builder through three direct calls:
+
+| Stage | Static address | RVA | Original call bytes |
+| --- | --- | --- | --- |
+| Subtype 5 dispatch | `0x004CDAA1` | `0x000CDAA1` | `E8 7A 15 00 00` |
+| `ClientItemMenuDialog` construction | `0x004CF083` | `0x000CF083` | `E8 98 5C 00 00` |
+| Inventory row construction | `0x004D4F82` | `0x000D4F82` | `E8 79 E7 FF FF` |
+
+These calls construct the list. They are not called again merely because an already-open dialog is drawn. A counter probe installed after the list appears can therefore report zero at all three sites without disproving this path.
+
+For a useful reachability test, install all probes first, close the current menu, and trigger a fresh subtype 5 response. The first two counters should advance once and the row counter should advance once per active slot accepted by the dialog. A row probe temporarily replaces the quantity hook, so it tests reachability only. Restore the quantity hook and reopen the menu to test the label change.
+
+Interpret the counters together:
+
+| Dispatch | Constructor | Row | Meaning |
+| --- | --- | --- | --- |
+| `0` | `0` | `0` | No fresh subtype 5 construction was observed, or the wrong process or module base was probed. |
+| nonzero | `0` | `0` | The subtype handler ran, but it did not construct this dialog. |
+| nonzero | nonzero | `0` | The dialog was constructed, but no active inventory row reached the builder. |
+| nonzero | nonzero | nonzero | The target is live. If labels remain unchanged after restoring the patch, inspect stub relocation, feature configuration, and the live inventory-pane lookup. |
+
 ## Label bounds
 
 The replacement label is at most 255 bytes plus its terminating zero. The quantity is formatted as unsigned decimal in ` (quantity)`. Space for the complete suffix is reserved before copying the name.

@@ -7,6 +7,14 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x004021D0"
+    name: file_spf_view_initialize
+    confidence: high
+    evidence: Maps the SPF prefix, optional embedded palettes, frame records, and pixel blob without copying them.
+  - address: "0x004022A0"
+    name: file_spf_get_frame
+    confidence: high
+    evidence: Resolves one SPF frame, selects its indexed palette or direct pixel plane, and returns a zero-copy pixmap view.
   - address: "0x004319B0"
     name: file_hpf_decode
     confidence: high
@@ -71,6 +79,14 @@ functions:
     name: file_hea_open
     confidence: high
     evidence: Maps the HEA header, band array, row offsets, and packed run stream.
+  - address: "0x0048B530"
+    name: file_load_image_frame
+    confidence: high
+    evidence: Selects the EPF or SPF reader by extension and resolves one archive image frame.
+  - address: "0x0048BBC0"
+    name: file_load_image_pixmap
+    confidence: high
+    evidence: Loads one image frame into a pixmap view and applies the EPF palette selector when required.
   - address: "0x004A4AA0"
     name: file_load_message_table
     confidence: high
@@ -111,10 +127,38 @@ functions:
     name: file_load_motion_effect_table
     confidence: medium
     evidence: Loads structured motion effect definitions from meffect.tbl.
+  - address: "0x00531B30"
+    name: ui_npc_illustration_load_pixmap
+    confidence: high
+    evidence: Resolves an NPC name and illustration index, then loads frame zero of the mapped image from npcbase.dat.
+  - address: "0x00531C40"
+    name: ui_npc_illustration_asset_at
+    confidence: high
+    evidence: Returns one illustration filename from an NPC name record by zero-based index.
+  - address: "0x00531E10"
+    name: ui_npc_illustration_file_manager_ctor
+    confidence: high
+    evidence: Opens npc/npcbase.dat, initializes the name map, and loads its npci.tbl fallback mapping.
+  - address: "0x00532120"
+    name: ui_npc_illustration_resolve_asset
+    confidence: high
+    evidence: Looks up the exact NPC name, selects its indexed filename, and returns the npcbase.dat archive owner.
   - address: "0x005322A0"
     name: file_load_npc_info_table
-    confidence: medium
-    evidence: Loads the hierarchical npci.tbl text resource.
+    confidence: high
+    evidence: Loads the hierarchical npci.tbl name-to-illustration mapping from npcbase.dat.
+  - address: "0x00532560"
+    name: ui_npc_illustration_handle_event
+    confidence: high
+    evidence: Handles initialization and NPCIllust metadata availability events for NPCIllustFileMan.
+  - address: "0x005325D0"
+    name: ui_npc_illustration_subscribe_metadata
+    confidence: high
+    evidence: Subscribes NPCIllustFileMan to the server-managed NPCIllust metadata table, retrying after one second when required.
+  - address: "0x00532620"
+    name: ui_npc_illustration_apply_metadata
+    confidence: high
+    evidence: Applies exact NPC-name keys; repeated clearing means the final filename replaces earlier values in a multi-value metadata group.
   - address: "0x00546440"
     name: file_load_field_palette_table
     confidence: high

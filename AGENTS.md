@@ -206,6 +206,19 @@ Treat the UI as several connected mechanisms instead of assuming one universal s
 - Do not infer the live pane tree from the static RTTI inventory. Use registration code or runtime observation to establish live parent, sibling, and visibility state.
 - Distinguish vtable name-search results from distinct complete-object RTTI classes. Derive inheritance from the MSVC Class Hierarchy Descriptor and Base Class Array, not from a qualified vtable display name alone.
 
+## Timing and animation documentation
+
+Treat timing values as behavior evidence. When an in-scope investigation exposes an animation constant, timer delay, interval, duration, or threshold, preserve it instead of treating it as incidental.
+
+- Record the exact value and unit, such as 500 ms, 30 ticks, or 4 frames. Distinguish a code constant from a runtime measurement or project-owner observation.
+- Record the timer owner, timer ID when meaningful, callback, time source, and whether it repeats automatically or is requeued by its callback.
+- Record the conditions that start, reschedule, cancel, pause, resume, and reset the timer. State whether hiding or destroying the owner also stops it.
+- Identify the state fields changed on each tick, including frame indexes, phases, counters, visibility flags, palette choices, and progress values.
+- For animations, record frame or phase order, transition rule, cadence, loop behavior, terminal frame, and any input or packet that interrupts or restarts it.
+- Distinguish update cadence from total duration. A 500 ms flash interval, a ten-second effect lifetime, and a server-supplied duration threshold are separate facts.
+- Separate client-owned timing from server-driven updates and asset metadata. State plainly when the client only displays stages supplied by the server.
+- Put useful timing behavior on the relevant packet or system page and retain lookup-heavy addresses, offsets, and confidence evidence in the matching appendix or YAML export.
+
 ## UI layout documentation
 
 - Treat the underscore-prefixed text layouts in `setoa.dat` as named geometry and skin data, not as a complete scene tree.

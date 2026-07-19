@@ -63,6 +63,12 @@ Mouse capture is a shortcut. While a pane owns capture, pointer events go direct
 
 Capture also sends keyboard and application events to that pane. Network events continue through the normal pane tree.
 
+## Server-controlled input blocking
+
+[`SBlockInput`](../network/server/081-0x51-block-input.md) opens the RTTI-backed `ClockPane` as a modal wait cursor. The pane follows pointer movement and returns true for pointer plus keyboard/text events, so those events stop before reaching ordinary UI and world handlers.
+
+The block is represented by the live `ClockPane` singleton rather than a player or world-state flag. Beginning a block also emits button-up events for any held left or right mouse buttons. Ending it removes the pane and restores the normal cursor. Timers and network events continue throughout the block.
+
 ## Network events
 
 `net_post_decoded_server_packet_event` creates type `0x13` after transport decryption. During dispatch, the client may build a typed server packet object. Packets without a registered class can still be handled directly by a pane or manager.

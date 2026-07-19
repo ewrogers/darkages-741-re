@@ -199,6 +199,14 @@ functions:
     name: render_font_map_legacy_hangul_code
     confidence: high
     evidence: Maps CP949 B0A1-C8FE syllables and A4A1-A4D3 jamo to the 2,401 fixed Hangul records.
+  - address: "0x00488320"
+    name: ui_hot_key_pane_ctor
+    confidence: high
+    evidence: Constructs the RTTI-backed HotKeyPane, loads _nhotkem.txt and _nhotkey.txt, and registers it with the screen and event trees.
+  - address: "0x00488D00"
+    name: ui_create_hot_key_pane
+    confidence: high
+    evidence: Allocates a 0x919C-byte HotKeyPane and calls ui_hot_key_pane_ctor; its only direct caller is GUIBackPane action 0.
   - address: "0x0048B390"
     name: file_read_image_metadata
     confidence: high
@@ -371,10 +379,26 @@ functions:
     name: net_deserialize_map_size_server_packet
     confidence: high
     evidence: Reads u16be map number, four bytes, u24be cache value, and string8 name; the handler uses u8 dimensions and ignores the fourth byte.
+  - address: "0x0059D830"
+    name: ui_gui_back_layout_init_common
+    confidence: high
+    evidence: Reads common named controls from one loaded GUIBackPane layout, including BTN_HELP and the other bottom actions.
+  - address: "0x0059FB60"
+    name: ui_gui_back_pane_ctor
+    confidence: high
+    evidence: Constructs the RTTI-backed GUIBackPane and its two size-specific layout records and child panes.
+  - address: "0x005A0B70"
+    name: ui_gui_back_activate_action
+    confidence: high
+    evidence: Dispatches GUIBackPane bottom-action IDs; action 0 creates HotKeyPane, while the other IDs open their normal panes or local actions.
   - address: "0x005A0CF0"
     name: ui_gui_back_handle_pointer
     confidence: high
-    evidence: Handles GUIBackPane pointer input; BTN_HELP is present in the hover path but has no click action.
+    evidence: Hit-tests six bottom-action rectangles on a left-button event; BTN_HELP is slot 0 and is passed to ui_gui_back_activate_action after click debounce.
+  - address: "0x005A3900"
+    name: ui_gui_back_apply_layout
+    confidence: high
+    evidence: Selects one GUIBackPane layout and copies its bottom control rectangles into the six live action slots; BTN_HELP becomes slot 0.
   - address: "0x005B8B50"
     name: render_fill_light_mask_rect
     confidence: high
@@ -546,11 +570,15 @@ functions:
   - address: "0x005D3740"
     name: render_collect_world_objects
     confidence: high
-    evidence: Clips visible objects and assigns them to one of 32 draw-layer queues.
+    evidence: Clips visible objects, assigns ordinary layers to 32 draw queues, retains layer-zero objects in a separate late queue, records the self entry, and draws the ordinary queues without clearing them afterward.
   - address: "0x005D3F70"
     name: render_world_frame
     confidence: high
     evidence: Draws ground, map backgrounds, and sorted world objects for one world frame.
+  - address: "0x005D4360"
+    name: render_replay_layer_zero_and_self
+    confidence: high
+    evidence: After the ordinary world frame, draws the separate layer-zero queue and replays the recorded self entry; the normal non-blinded state supplies the selector that makes living sprites use blend mode 3.
   - address: "0x005D6A50"
     name: render_ground_layer
     confidence: high
@@ -595,14 +623,22 @@ functions:
     name: world_static_effect_ctor
     confidence: high
     evidence: Constructs the exact RTTI WorldObject_StaticEffect and retains its tile Y and X coordinates.
+  - address: "0x005DDFC0"
+    name: world_human_object_ctor
+    confidence: high
+    evidence: Constructs exact RTTI WorldObject_Human by calling world_living_object_ctor, installing the Human vtables, and selecting draw layer 7.
   - address: "0x005DE280"
     name: world_item_object_ctor
     confidence: high
     evidence: Constructs the 0xB8-byte RTTI WorldObject_Item and retains entity ID, Y, X, untagged sprite, resource context, and dye color.
+  - address: "0x005DE5A0"
+    name: render_item_object_get_bounds
+    confidence: high
+    evidence: Returns the item's draw rectangle and its fixed -16 to +16 tile-relative bounds through WorldObject_Item primary-vtable slot 0x14.
   - address: "0x005DE620"
     name: render_item_object
     confidence: high
-    evidence: Draws a ground item with its normal or faded blend state.
+    evidence: Draws a ground item and computes mode 3 for a nonzero fade selector, although the original final body blit reloads the ordinary object mode instead of consuming that local result.
   - address: "0x005DEF70"
     name: render_copy_human_appearance_record
     confidence: high
@@ -867,8 +903,16 @@ comments:
     text: Present the finished software canvas through DirectDraw or the window DC path.
   - address: "0x00598210"
     text: Deserialize the one-byte SChangeWeather payload. No 0x1F consumer exists in the main gameplay dispatcher.
+  - address: "0x0059DCD5"
+    text: Read BTN_HELP from the current GUIBackPane layout; ui_gui_back_apply_layout later copies this rectangle into action slot 0.
+  - address: "0x005A0B9E"
+    text: GUIBackPane action 0 creates the RTTI-backed HotKeyPane through ui_create_hot_key_pane.
+  - address: "0x005A0E16"
+    text: Dispatch the left-clicked bottom action index after hit testing and debounce; index 0 is BTN_HELP.
   - address: "0x005A0FA2"
-    text: BTN_HELP is tested only by the pointer-move tooltip path. The left-button path has no help action in this build.
+    text: BTN_HELP also participates in the pointer-move tooltip path, separately from its action-slot-0 left-click path.
+  - address: "0x005A3AEC"
+    text: Copy the active layout's BTN_HELP rectangle into GUIBackPane bottom action slot 0.
   - address: "0x005B8D14"
     text: Build the object-centered light image name mask1%02d.epf from the server-supplied selector.
   - address: "0x005B9450"
@@ -899,6 +943,8 @@ comments:
     text: Remove any existing shared world object with the same entity ID before creating the replacement WorldObject_Monster.
   - address: "0x005CAC94"
     text: Remove any existing shared world object with the same entity ID before creating the replacement WorldObject_Item.
+  - address: "0x005CE280"
+    text: Arbiter PR 44 wraps the complete WorldPane draw here, clears a bounded item-entry buffer before the original call, then replays captured items in temporary blend mode 3 when native Alt modifier bit 0x01 is set.
   - address: "0x005CF3B0"
     text: Build a one-based static-tile render table from the high nibble of each SOTP.DAT byte.
   - address: "0x005CF4F0"
@@ -908,9 +954,17 @@ comments:
   - address: "0x005D3190"
     text: Dispatch the WorldObject draw method through primary vtable slot 0x18.
   - address: "0x005D3740"
-    text: Collect clipped visible objects and sort them into 32 world draw-layer queues.
+    text: Collect clipped visible objects and sort them into world draw queues. Arbiter PR 44 calls this function first, then copies up to 255 exact WorldObject_Item entries from the retained layer-4 vector into launcher state.
+  - address: "0x005D3C2E"
+    text: Objects whose draw-layer byte is zero enter the separate render-context queue at +0x2A0 instead of an ordinary layer queue.
+  - address: "0x005D3C7B"
+    text: Record the matching self object's draw entry and screen position at render-context offset 0x2B0 for the late replay pass.
+  - address: "0x005D3D59"
+    text: Render the ordinary world queues in ascending index order from 0 through 31; their entries remain available when the function returns.
   - address: "0x005D3F70"
     text: World frame order is ground cache, map background images, then sorted world objects.
+  - address: "0x005D43D7"
+    text: Replay the recorded self after the ordinary world layers. The normal non-blinded state supplies selector 1, making render_living_object choose blend mode 3; the blinded state supplies zero.
   - address: "0x005D8C36"
     text: Rebuild the cached byte for this map cell with map_get_collision_level after the cell or whole collision grid is marked dirty.
   - address: "0x005DBAAF"
@@ -921,12 +975,24 @@ comments:
     text: Effect drawing uses the common software Image blitter with a blend mode stored on the effect object.
   - address: "0x005DD470"
     text: Advance the effect frame through the sequence loaded from Effect.tbl and request the matching cached image.
+  - address: "0x005DDFEB"
+    text: WorldObject_Human writes draw layer 7 after the shared WorldObject_Living constructor; WorldObject_Monster later overrides its layer with 10.
   - address: "0x005DE310"
     text: Retain SDrawObjects ground-item dye_color at WorldObject_Item +0xB4.
   - address: "0x005DE366"
     text: Retain the untagged ground-item sprite at WorldObject_Item +0x7C.
+  - address: "0x005DE394"
+    text: WorldObject_Item uses draw layer 4, before living objects and static map art.
+  - address: "0x005DE5A0"
+    text: WorldObject_Item primary-vtable slot 0x14 returns the current draw rectangle and a fixed -16 to +16 tile-relative rectangle.
+  - address: "0x005DE6AA"
+    text: A nonzero draw selector changes an ordinary item blend mode from 1 to faded mode 3, matching the selector used by the native self replay.
+  - address: "0x005DE7E4"
+    text: The original final item-body blit reloads WorldObject_Item +0xB0 and ignores the faded local mode at EBP-0x18. Arbiter PR 44 leaves these bytes unchanged, temporarily stores mode 3 at +0xB0 for the replay, then restores the original value.
   - address: "0x005DEF79"
     text: Rearrange packet-owned appearance fields into HumanAppearanceRecord741. Shield, overcoat, and later accessories move to renderer-specific offsets.
+  - address: "0x005DF378"
+    text: WorldObject_Living uses draw layer 7, after items and before static map art.
   - address: "0x005DF414"
     text: Initialize WorldObject_Living +0xD4 to false. Human appearance can later set this nonblocking state; normal monster construction leaves it false.
   - address: "0x005E00FB"
@@ -945,10 +1011,16 @@ comments:
     text: Start a moving effect using its client-computed path step interval; SEffectLayer's packet timer is not used on this path.
   - address: "0x005E3F73"
     text: Copy at most 64 bytes including the NUL into WorldObject_Name_Pane +0x198. SDrawObjects attaches this pane instead of filling the living-name buffer.
+  - address: "0x005E4396"
+    text: WorldObject_Static uses draw layer 16, after items at layer 4 and living objects at layer 7.
   - address: "0x005E47FF"
     text: Original JE enters the static draw body when the hidden flag is zero. EB 00 falls into the existing jump to the normal epilogue and hides every static map object.
+  - address: "0x005E487D"
+    text: The rejected hold-Alt prototype replaced the 48-byte static blend selector through 0x005E48AC. Arbiter PR 44 verifies this complete original sequence but never changes it.
   - address: "0x005E4880"
     text: SOTP render flag 0x80 selects blend mode 0x6D. Flag 0x40 selects mode 3.
+  - address: "0x005E488C"
+    text: Original JE skips mode 0x6D when SOTP flag 0x80 is clear.
   - address: "0x005E4ED4"
     text: Mark WorldObject_User at +0x98 so its HumanObjectImageSession can choose a local-player walk sequence. Ordinary WorldObject_Human construction leaves this byte clear.
   - address: "0x005E5B1C"
@@ -973,6 +1045,8 @@ comments:
     text: For non-Passable creatures, movement normally blocks. Type 3, project-named Solid, is the sole exception if inherited WorldObject_Living +0xD4 is already nonblocking.
   - address: "0x005F0676"
     text: Direction values 0 through 3 select collision masks 0x01, 0x02, 0x04, and 0x08 for left, down, right, and up.
+  - address: "0x005F0D20"
+    text: WorldPane receives keyboard event types 8 and 9 with its live this pointer. Arbiter PR 44 leaves this handler unchanged and invalidates the last saved pane from raw key-down and key-up wrappers instead.
   - address: "0x005F1D3E"
     text: SMapSize flags use the low nibble for weather mode and bit 0x80 for alternate ground and static art.
   - address: "0x005F1D51"

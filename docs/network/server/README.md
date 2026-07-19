@@ -77,7 +77,7 @@ Body schemas use the shared [packet body notation](../packet-body-notation.md). 
 | [0x66 - Browser (`SBrowser`)](102-0x66-browser.md) | startup key |
 | [0x67 - Unhandled Field/Map Control](103-0x67-unhandled-field-map-control.md) | session key |
 | [0x68 - Check Time (`SCheckTime`)](104-0x68-check-time.md) | session key |
-| [0x6B - Screen Shot (`SScreenShot`)](107-0x6b-screen-shot.md) | session key |
+| [0x6B - Town Map (`SScreenShot`)](107-0x6b-town-map.md) | session key |
 | [0x6D - Family Name (`SFamilyName`)](109-0x6d-family-name.md) | session key |
 | [0x6F - Meta Data (`SMetaData`)](111-0x6f-meta-data.md) | startup key |
 | [0x7E - Hello (`SHello`)](126-0x7e-hello.md) | raw startup control |

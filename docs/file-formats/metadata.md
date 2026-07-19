@@ -76,6 +76,12 @@ The executable hardcodes the three metadata names and the parser, but not the in
 
 The inspected installation has 19 cached metadata files but no `BItems`, `BSkills`, or `BSpells` file. No supplied capture contains one of these table names. In that state the three runtime lists begin empty and do not block an action.
 
+## NPC illustration table
+
+`NPCIllustFileMan` subscribes to the metadata table named `NPCIllust`. Each group name is an exact NPC name and each value is an image filename in `npc/npcbase.dat`. The update loop clears the name's current list before each append, so only the final value survives when a group supplies several values. The dialog packet supplies an index into the retained list.
+
+The inspected cache contains 170 groups and 26 distinct SPF filenames. Every group has one value, so the observed rows use illustration index zero. The metadata contains no image bytes. It only connects speaker names to shared art. See [NPC dialog illustrations](../systems/npc-dialog-illustrations.md) for the lookup, fallback, and draw path.
+
 ## Evidence
 
 - `net_handle_metadata` at `0x004E4EA0`

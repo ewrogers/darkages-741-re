@@ -124,7 +124,7 @@ All dynamic classes begin with these useful common fields:
 struct WorldObjectCommonFields741 {
     u8 unknown_000[0x24];
     u32 entity_id;                    // +0x24
-    u8 render_subtype;                // +0x28, monster 0x0A, item 4
+    u8 draw_layer;                    // +0x28, monster 0x0A, item 4
     u8 unknown_029[3];
     u32 broad_category;               // +0x2C, monster 2, item 8
     u8 unknown_030;
@@ -137,6 +137,8 @@ struct WorldObjectCommonFields741 {
     WorldObject_Name_Pane *name_pane; // +0x58
 };
 ```
+
+`render_collect_world_objects` uses `draw_layer` directly as one of 32 ordered queues. Ground items normally use layer 4, living objects use layer 7, monsters use layer 10, and static map art uses layer 16.
 
 The `SDrawObjects` creation helpers remove any existing entry with the same ID before inserting the replacement. Repeated descriptions are therefore replacements, not duplicate tree nodes.
 

@@ -92,6 +92,23 @@ struct PaneFields {
 
 The dispatcher stores the captured pane at `+0x40` and the active minimum input priority at `+0x50`. The priority threshold provides modal-style input blocking without removing lower panes from the event tree.
 
+## Clock pane fields
+
+`ClockPane` is the animated wait cursor used by `SBlockInput`. It is a `Pane`, a `TimerHandler`, and a `Singleton<ClockPane>`. The empty singleton base begins at `+0x190` and overlaps the first concrete field without storing per-instance data.
+
+```text
+struct ClockPaneFields {
+    // Pane fields precede these values.
+    s32 image_height             // +0x190
+    s32 image_width              // +0x194
+    s16 current_frame            // +0x198, starts at -1
+    u16 unknown_19A
+    s32 frame_count              // +0x19C
+}                                // total object size 0x1A0
+```
+
+Timer ID `0x1234` advances `current_frame` modulo `frame_count` every 50 ms. The global `clock_pane_singleton_ptr` is null while input is not blocked. While the pane is active, root `ScreenPane +0x27C` contains cursor mode `3`; closing it restores mode `0`.
+
 ## Message pane fields
 
 `GameMessagePane` owns a fixed four-row display buffer. The matching world layout gives each row 49 colored byte cells.
@@ -159,6 +176,46 @@ struct DialogPaneFields {
 ```
 
 Control indexes follow attachment order. They are used for focus, hit testing, and the parent dialog action callback.
+
+## User confirmation pane
+
+`UserConfirmPane` is an RTTI-backed `AlertPane` created from `SMessage` type `0x11`. Its complete object is `0x73C` bytes.
+
+```c
+struct UserConfirmPaneFields {
+    u8 alert_pane_base[0x634];
+    u8 dialog_value_0;          // +0x634, supplied by SMessage
+    u8 dialog_value_1;          // +0x635, supplied by SMessage
+    char value[256];            // +0x636, string8 bytes plus local terminator
+    u8 padding_736[2];
+    u32 value_length;           // +0x738, wire range 0 through 255
+};                              // size 0x73C
+```
+
+The pane displays the main `u16`-counted `SMessage` text. Its OK callback sends `CConfirm` choice `1`; Cancel sends choice `0`. Both echo the stored fields above. The prompt text itself is not retained in this trailing block and is not sent back.
+
+## Town map pane
+
+Exact RTTI `TownMapPane` supports both the built-in map button and server opcode [`0x6B`](../../network/server/107-0x6b-town-map.md).
+
+```c
+struct TownMapPaneFields {
+    u8 pane_base[0x190];
+    u32 animation_phase;        // +0x190, zero then one
+    u32 marker_frame;           // +0x194, advanced modulo seven
+    u8 unrelated_198[4];
+    bool pointer_armed;         // +0x19C
+    u8 unrelated_19D[0x33];
+    u32 town_map_key;           // +0x1D0, packet u8 widened to u32
+    bool current_map_matches;   // +0x1D4
+    bool draw_town_icon;        // +0x1D5
+    bool use_server_key;        // +0x1D6
+};                              // size 0x1D8
+```
+
+The built-in button sets `use_server_key` to zero and selects `_tcoord.txt` using the active map number. `SScreenShot` sets it to one and selects `_tncoord.txt` using `town_map_key`.
+
+Timer `0` starts after 100 ms and is then requeued every 50 ms. It advances `marker_frame`, changes `animation_phase` after the initial counter passes five, and invalidates the pane for redraw. The close path cancels all timers owned by the pane.
 
 ## Main menu stipulation gate
 

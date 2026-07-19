@@ -10,5 +10,6 @@
 - [Suppress the stipulation window](runtime-patches/suppress-stipulation-window.md)
 - [Remove the fixed server-transfer delay](runtime-patches/remove-fixed-server-transfer-delay.md)
 - [Hide all static map art](runtime-patches/hide-all-static-map-art.md)
+- [Hold Alt to show translucent ground-item hints](runtime-patches/reveal-ground-items-through-static-map-art.md)
 - [Skip the exchange count prompt for a one-item stack](runtime-patches/skip-single-item-exchange-count-prompt.md)
 - [Show inventory quantities in screen menus](runtime-patches/show-inventory-quantities-in-screen-menus.md)

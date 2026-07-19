@@ -42,6 +42,11 @@ functions:
     name: event_handle_intro_state
     confidence: high
     evidence: Dispatches intro states 0, 1, and 2 around Bink playback.
+  - address: "0x004ACE00"
+    end_address: "0x004ACE60"
+    name: app_set_post_exit_advertisement
+    confidence: high
+    evidence: "Copies the SAdvertisement string into a 65,536-byte application buffer, terminates it, and saves its length plus three numeric arguments for app_winmain."
   - address: "0x005283E0"
     end_address: "0x005285DE"
     name: ui_new_patch_pane_ctor
@@ -76,6 +81,22 @@ data_symbols:
     name: maybe_app_intro_video_active
     confidence: medium
     evidence: Set entering intro state 1 and cleared entering state 2; wider uses remain unverified.
+  - address: "0x00750408"
+    name: app_post_exit_advertisement_argument_length
+    confidence: high
+    evidence: "SAdvertisement saves its u16 byte count here as u32; app_winmain requires it to be greater than zero before launching ad.exe."
+  - address: "0x0075040C"
+    name: app_post_exit_advertisement_value_1
+    confidence: high
+    evidence: "First SAdvertisement u16 numeric value, widened to u32 and formatted as decimal for ad.exe."
+  - address: "0x00750410"
+    name: app_post_exit_advertisement_value_2
+    confidence: high
+    evidence: "Second SAdvertisement u16 numeric value, widened to u32 and formatted as decimal for ad.exe."
+  - address: "0x00750414"
+    name: app_post_exit_advertisement_value_3
+    confidence: high
+    evidence: "Final SAdvertisement u8 numeric value, widened to u32 and formatted as decimal for ad.exe."
   - address: "0x007AAC2C"
     name: app_single_instance_mutex
     confidence: high
@@ -89,6 +110,10 @@ comments:
     text: Fetch the global intro video pane; the following call starts CIf.bik and CIb.bik.
   - address: "0x004ACAF8"
     text: Begin the two-clip intro sequence using CIf.bik followed by CIb.bik.
+  - address: "0x004ACE1B"
+    text: "Copy the SAdvertisement argument bytes into the application-owned 65,536-byte post-exit buffer and append a local NUL."
+  - address: "0x004ACE32"
+    text: "Save argument_length as the post-exit launch gate, followed by the two u16 values and final u8 value widened to 32-bit integers."
   - address: "0x0052845A"
     text: "SVersionCheck subtype 2 patch notice: u16be required version, followed by u8 file count and repeated u8-length file names."
   - address: "0x005284B3"
@@ -105,6 +130,12 @@ comments:
     text: ERROR_ALREADY_EXISTS (0xB7) means another client already owns the named mutex.
   - address: "0x0057A7D9"
     text: Single-instance gate. Original JNE +7 continues only when the mutex was newly created; a one-byte 0x75 to 0xEB patch always takes the normal startup path.
+  - address: "0x0057A9F7"
+    text: "After normal app_shutdown completes, attempt the deferred advertisement launch only when the saved argument length is greater than zero."
+  - address: "0x0057AA12"
+    text: "Build the exact command line ad.exe %s %d %d %d from the saved SAdvertisement string and three numeric values."
+  - address: "0x0057AA5F"
+    text: "Start the fixed application name ad.exe with the assembled command line. The return value is ignored, so a missing executable fails silently."
   - address: "0x0057AA65"
     text: Close app_single_instance_mutex during normal shutdown, then clear the global handle.
 runtime_patches:

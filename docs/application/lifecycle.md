@@ -53,6 +53,8 @@ This is useful because a launcher can skip the video cleanly by starting at stat
 
 When the game loop returns, the client tears down panes and event objects first. Audio stops its samples, cancels its music timer, closes its stream, and shuts down Miles. The client also releases the main image and map-tile libraries, shuts down the video system, deletes it, and releases DirectDraw. The single-instance mutex is closed before the process exits.
 
+The login server can also save a deferred [`SAdvertisement`](../network/server/091-0x5b-advertisement.md) command. When its saved string is nonempty, `app_winmain` performs the full shutdown first and then tries to launch `ad.exe` with that string and three numeric arguments. The separate program is not present in the matching local installation, and the client ignores launch failure.
+
 The renderer-specific order is covered in [Renderer lifecycle](../rendering/lifecycle.md).
 The audio-specific order is covered in [Audio lifecycle](../audio/lifecycle.md).
 

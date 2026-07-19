@@ -23,3 +23,7 @@ packet SPursuitMessage {
 ```
 
 The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.
+
+## NPC illustration owner
+
+`NPCSession` handles this packet and reads a speaker name plus an illustration index from its decoded object. It uses the same `NPCIllustFileMan` lookup and tile fallback as `SScreenMenu`. See [NPC dialog illustrations](../../systems/npc-dialog-illustrations.md). The full wire field order remains unresolved.

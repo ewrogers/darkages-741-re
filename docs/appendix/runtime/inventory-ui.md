@@ -189,8 +189,16 @@ struct StatusInfoPaneStatusFields {
     u32 weight;                      // +0x1E8
     u8 stat_points;                  // +0x1EC
     bool has_stat_points;            // +0x1ED
+    s8 selected_stat_index;          // +0x1EE, -1 when none
+    u8 stat_selectors[5];            // +0x1EF: 01 04 08 10 02
+    s32 stat_button_rects[5][4];     // +0x1F4
+    u8 blink_phase;                  // +0x244, zero or one
 };
 ```
+
+`has_stat_points` gates drawing all five stat-increase controls. `stat_points` supplies the displayed count and controls whether the dedicated [`SLevelPoint`](../../network/server/061-0x3d-level-point.md) path keeps a 500 ms timer running. The timer toggles `blink_phase`, redraws the pane, and alternates the count and normal button artwork. `SStatus` writes the same two values but does not manage this timer.
+
+The selected control indexes `stat_selectors` when the pane builds [`CAddStat`](../../network/client/071-0x47-add-stat.md). Sending the request does not decrement `stat_points` locally.
 
 `ExtraStatusInfoPane` owns the compact combat view.
 

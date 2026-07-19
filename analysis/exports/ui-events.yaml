@@ -15,6 +15,54 @@ functions:
     name: input_get_event_manager
     confidence: high
     evidence: "Returns input_event_manager_singleton_ptr."
+  - address: "0x0042E800"
+    name: ui_show_input_block_clock
+    confidence: high
+    evidence: "Creates the exact RTTI ClockPane singleton when absent and activates its 50 ms animated wait-cursor path."
+  - address: "0x0042E890"
+    name: ui_hide_input_block_clock
+    confidence: high
+    evidence: "Closes and destroys the active ClockPane singleton when present."
+  - address: "0x0042E8C0"
+    name: ui_clock_pane_ctor
+    confidence: high
+    evidence: "Constructs the 0x1A0-byte exact RTTI ClockPane, loads lodclk.epf metadata, centers it on the current pointer, and registers it in the screen and event trees."
+  - address: "0x0042EB00"
+    name: ui_clock_pane_show
+    confidence: high
+    evidence: "Selects root cursor mode 3, shows ClockPane, draws its next frame, and schedules timer 0x1234 at 50 ms."
+  - address: "0x0042EBA0"
+    name: ui_clock_pane_close
+    confidence: high
+    evidence: "Cancels timer 0x1234, hides ClockPane, restores cursor mode 0, and notifies the optional cursor observer."
+  - address: "0x0042EC00"
+    name: ui_clock_pane_timer_callback
+    confidence: high
+    evidence: "Advances the lodclk.epf frame modulo the loaded frame count and requeues timer 0x1234 using the existing 50 ms interval."
+  - address: "0x0042EC70"
+    name: ui_clock_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Returns true for every keyboard or text event so lower panes do not receive it while ClockPane is active."
+  - address: "0x0042EC80"
+    name: ui_clock_pane_handle_pointer_event
+    confidence: high
+    evidence: "Re-centers ClockPane on pointer-move events and returns true for every pointer event, consuming clicks and wheel input."
+  - address: "0x0042ED00"
+    name: ui_clock_pane_set_frame
+    confidence: high
+    evidence: "Loads and draws one lodclk.epf frame when its signed 16-bit selector differs from ClockPane +0x198."
+  - address: "0x0042EDC0"
+    name: ui_clock_pane_dtor
+    confidence: high
+    evidence: "Destroys ClockPane and clears its Singleton<ClockPane> registration before the optional object free."
+  - address: "0x0042EE70"
+    name: ui_has_clock_pane
+    confidence: high
+    evidence: "Reports whether clock_pane_singleton_ptr is non-null."
+  - address: "0x0042EE90"
+    name: ui_get_clock_pane
+    confidence: high
+    evidence: "Returns the active ClockPane singleton pointer."
   - address: "0x00445260"
     name: ui_dialog_pane_ctor
     confidence: high
@@ -195,10 +243,22 @@ functions:
     name: input_repeat_pointer_move_timer
     confidence: high
     evidence: "EventMan TimerHandler callback that emits stored pointer coordinates and reschedules after 20 ms."
+  - address: "0x00466C40"
+    name: input_get_pointer_position
+    confidence: high
+    evidence: "Copies EventMan's current pointer coordinates from +0x10 and +0x14 into the caller's two-word position."
   - address: "0x00466C80"
     name: input_post_pointer_move
     confidence: high
     evidence: "Public EventMan entry that honors input blocking before updating coordinates and emitting pointer type 0x00."
+  - address: "0x00466CC0"
+    name: input_begin_server_block
+    confidence: high
+    evidence: "Emits releases for held left and right mouse buttons, then opens the singleton ClockPane input blocker."
+  - address: "0x00466D00"
+    name: input_end_server_block
+    confidence: high
+    evidence: "Closes the singleton ClockPane used by the server-controlled input block."
   - address: "0x00466D10"
     name: input_post_left_button_down
     confidence: high
@@ -379,6 +439,26 @@ functions:
     name: app_run_message_loop
     confidence: high
     evidence: "Records the main thread, drains PeekMessageA, and runs the EventDispatcher tick each loop."
+  - address: "0x0052C480"
+    name: ui_npc_session_update_speaker_art
+    confidence: high
+    evidence: "Loads the NPC illustration for the active packet fields or switches to NPCTilePane when lookup or decoding fails."
+  - address: "0x0052C730"
+    name: ui_npc_session_handle_network_event
+    confidence: high
+    evidence: "Routes SScreenMenu 0x2F and SPursuitMessage 0x30 packet objects into their NPCSession update paths."
+  - address: "0x0052CB20"
+    name: ui_npc_illustration_pane_ctor
+    confidence: high
+    evidence: "Constructs the RTTI-backed NPCIllustPane and initializes its pixmap view."
+  - address: "0x0052CBE0"
+    name: ui_npc_illustration_pane_set_image
+    confidence: high
+    evidence: "Resolves the NPC name and illustration index, sizes the pane to the loaded frame, and invalidates it for redraw."
+  - address: "0x0052CC90"
+    name: ui_npc_illustration_pane_draw
+    confidence: high
+    evidence: "Draws the selected illustration pixmap through the transparent software blitter."
   - address: "0x00549490"
     name: ui_pane_ctor
     confidence: high
@@ -455,6 +535,10 @@ functions:
     name: ui_screen_pane_ctor
     confidence: high
     evidence: "Constructs the startup RTTI ScreenPane root with primary Pane and secondary TimerHandler vtables."
+  - address: "0x00554330"
+    name: ui_screen_pane_set_cursor_mode
+    confidence: high
+    evidence: "Stores the cursor image and hotspot table selector at root ScreenPane +0x27C and redraws the cursor state."
   - address: "0x005A8FB0"
     name: ui_new_system_message_text_pane_ctor
     confidence: high
@@ -496,6 +580,10 @@ data_symbols:
     name: input_event_manager_singleton_ptr
     confidence: high
     evidence: "Returned by the EventMan/InputMan singleton accessor used by Win32 input translation."
+  - address: "0x006DA3A8"
+    name: clock_pane_singleton_ptr
+    confidence: high
+    evidence: "Stores the active exact RTTI ClockPane complete-object pointer; null means the server-controlled wait cursor is absent."
   - address: "0x006FCD24"
     name: event_current_timer_due_time
     confidence: high
@@ -525,6 +613,28 @@ data_symbols:
     confidence: high
     evidence: "Written from GetCurrentThreadId at message-loop startup and used by event_dispatch_or_queue."
 comments:
+  - address: "0x0042E82C"
+    text: "Do not allocate a second ClockPane when its singleton already exists. Repeated SBlockInput state 0 therefore does not stack blockers."
+  - address: "0x0042E877"
+    text: "Activate the newly constructed ClockPane with a 50 ms animation interval."
+  - address: "0x0042E951"
+    text: "Load image height, width, and frame count from lodclk.epf into ClockPane +0x190, +0x194, and +0x19C."
+  - address: "0x0042EB2F"
+    text: "Select root ScreenPane cursor mode 3 while the animated ClockPane wait cursor is visible."
+  - address: "0x0042EB92"
+    text: "Schedule ClockPane timer 0x1234 with a 50 ms delay and repeat value."
+  - address: "0x0042EBD0"
+    text: "Restore root ScreenPane cursor mode 0 when the ClockPane block closes."
+  - address: "0x0042EC1A"
+    text: "Advance current_frame modulo frame_count; the TimerHandler this pointer is adjusted back by 0x11C before drawing."
+  - address: "0x0042EC77"
+    text: "Consume every keyboard and text event while ClockPane is registered."
+  - address: "0x0042EC89"
+    text: "Only pointer-move type 0 repositions the clock, but every pointer event returns handled."
+  - address: "0x0042ED9A"
+    text: "Store the drawn frame selector as signed 16-bit ClockPane current_frame at +0x198."
+  - address: "0x0042EE16"
+    text: "Publish the enclosing ClockPane complete-object pointer through clock_pane_singleton_ptr."
   - address: "0x004456FE"
     text: "DialogPane child-control collection pointer at object offset +0x594."
   - address: "0x00446CB8"
@@ -551,6 +661,20 @@ comments:
     text: "Pane virtual +0x54: application and IME event types 0x0D through 0x12."
   - address: "0x0046500D"
     text: "Pane virtual +0x50: network event type 0x13."
+  - address: "0x004668AA"
+    text: "Map left-Alt scan code 0x38 to modifier bit 0x01 in the EventMan constructor."
+  - address: "0x004668B1"
+    text: "Map right-Alt scan code 0xB8 to the same modifier bit 0x01 as left Alt."
+  - address: "0x00466CCA"
+    text: "Read EventMan +0x458 mouse-button bits. Blocking begins by emitting releases for held left bit 0x01 and right bit 0x02."
+  - address: "0x00466CF7"
+    text: "Open ClockPane after held-button release events have cleared pointer state. This path does not write EventMan +0x454."
+  - address: "0x00466D07"
+    text: "End the server-controlled block by closing ClockPane; no EventMan or character-model flag is cleared here."
+  - address: "0x00467C10"
+    text: "Arbiter PR 44 wraps raw key-down emission here. After the original function, scan code 0x38 or 0xB8 invalidates the last saved WorldPane so an Alt-held ground-item pass appears immediately."
+  - address: "0x00467E30"
+    text: "Arbiter PR 44 wraps raw key-up emission here. After the original function, either Alt scan code invalidates the saved WorldPane so the ground-item pass disappears immediately."
   - address: "0x0047C306"
     text: "GameMessagePane uses a 14-pixel row height."
   - address: "0x0047C328"
@@ -559,6 +683,8 @@ comments:
     text: "When the four-row floating overlay fills, rotate out the oldest line before continuing."
   - address: "0x0047C975"
     text: "Each floating-message append starts a 2,000 ms timer before the line begins its fade sequence."
+  - address: "0x00554368"
+    text: "Store the selected cursor mode at root ScreenPane +0x27C. ClockPane uses mode 3 while active and restores mode 0 on close."
   - address: "0x005A9030"
     text: "NewSystemMessagePane listens for SMessage packet events independently of the floating-message handler."
   - address: "0x005A9985"
