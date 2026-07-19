@@ -93,6 +93,8 @@ After queuing navigation or an answer, the client enters response-pending. It de
 
 Choice indexes are sent one-based even though the dialog collection is indexed from zero. `maximum_input_bytes` is applied to the edit control. Type 9 builds a separate ID and masked-password dialog from `lnpcnid.txt`; its regional account manager must accept the form before the client emits an ordinary type-2 text response. The response contains a nonempty string produced in the protected pane's manager-result buffer. It does not serialize the ID and password controls directly.
 
+The protected type-9 pane also has a secondary action that opens the configured item-shop URL through `ShellExecuteA`. This external-browser path is separate from the dormant in-client [`CCashShop`](../client/108-0x6c-cash-shop.md) and [`SItemShop`](069-0x45-item-shop.md) shopping-bag flow.
+
 Simple menu type 3 first sends [`CSay`](../client/014-0x0e-say.md) containing the selected choice text. Simple text type 5 first sends `CSay` containing `input_prolog`, a space, the entered text, another space, and `input_epilog`. It then sends the normal `CPursuit` response.
 
 ## UI flow

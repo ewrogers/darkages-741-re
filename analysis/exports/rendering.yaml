@@ -642,7 +642,7 @@ functions:
   - address: "0x005DEF70"
     name: render_copy_human_appearance_record
     confidence: high
-    evidence: Rearranges the parser-friendly SDrawHumanObjects appearance fields into the stable 0x30-byte HumanAppearanceRecord741 used by world objects and image sessions.
+    evidence: Rearranges the parser-friendly SDrawHumanObjects appearance fields into the stable 0x30-byte HumanAppearanceRecord used by world objects and image sessions.
   - address: "0x005DF230"
     name: world_living_object_ctor
     confidence: high
@@ -658,7 +658,7 @@ functions:
   - address: "0x005E00C0"
     name: render_human_apply_appearance_record
     confidence: high
-    evidence: Copies HumanAppearanceRecord741 to WorldObject_Human +0xA4, derives nonblocking and translucent state, creates the 0x918-byte HumanObjectImageSession, and refreshes direction and motion.
+    evidence: Copies HumanAppearanceRecord to WorldObject_Human +0xA4, derives nonblocking and translucent state, creates the 0x918-byte HumanObjectImageSession, and refreshes direction and motion.
   - address: "0x005E0370"
     name: render_monster_apply_appearance
     confidence: high
@@ -762,7 +762,7 @@ functions:
   - address: "0x006000D0"
     name: render_human_stand_motion_data_ctor
     confidence: high
-    evidence: Constructs standing-motion data and resolves up to 21 body and equipment sprite parts from HumanAppearanceRecord741.
+    evidence: Constructs standing-motion data and resolves up to 21 body and equipment sprite parts from HumanAppearanceRecord.
   - address: "0x00600670"
     name: render_create_human_stand_motion_data
     confidence: high
@@ -782,7 +782,7 @@ functions:
   - address: "0x00602240"
     name: render_human_image_session_ctor
     confidence: high
-    evidence: Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord741 at object offset +0x0C.
+    evidence: Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord at object offset +0x0C.
   - address: "0x00602A40"
     name: render_human_select_motion_sequence
     confidence: high
@@ -990,7 +990,7 @@ comments:
   - address: "0x005DE7E4"
     text: The original final item-body blit reloads WorldObject_Item +0xB0 and ignores the faded local mode at EBP-0x18. The validated launcher patch leaves these bytes unchanged, temporarily stores mode 3 at +0xB0 for the replay, then restores the original value.
   - address: "0x005DEF79"
-    text: Rearrange packet-owned appearance fields into HumanAppearanceRecord741. Shield, overcoat, and later accessories move to renderer-specific offsets.
+    text: Rearrange packet-owned appearance fields into HumanAppearanceRecord. Shield, overcoat, and later accessories move to renderer-specific offsets.
   - address: "0x005DF378"
     text: WorldObject_Living uses draw layer 7, after items and before static map art.
   - address: "0x005DF414"
@@ -1074,13 +1074,13 @@ comments:
   - address: "0x005FFDCD"
     text: Select each tick delay from the fixed timing tables. Local coarse movement uses 114 ms; local smooth movement uses 57 ms.
   - address: "0x00600315"
-    text: Retain rest_position from HumanAppearanceRecord741 and choose between the two standing-motion setups. Friendly value names remain unresolved.
+    text: Retain rest_position from HumanAppearanceRecord and choose between the two standing-motion setups. Friendly value names remain unresolved.
   - address: "0x00601A2D"
     text: Clamp packet palette selectors to four and then to the selected monster resource's available mapping count.
   - address: "0x00601AC4"
     text: Copy one 16-byte resource palette mapping and replace its selector field at +0x08 with the corresponding packet byte.
   - address: "0x006022A9"
-    text: Retain HumanAppearanceRecord741 at HumanObjectImageSession +0x0C for body, equipment, dye, face, and motion resource selection.
+    text: Retain HumanAppearanceRecord at HumanObjectImageSession +0x0C for body, equipment, dye, face, and motion resource selection.
   - address: "0x00602828"
     text: Return the selected walk sequence's delay for the current interpolation tick to the animation scheduler.
   - address: "0x00602CC3"

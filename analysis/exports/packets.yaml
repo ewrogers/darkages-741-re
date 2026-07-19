@@ -127,14 +127,6 @@ functions:
     name: ui_alert_pane_ctor
     confidence: high
     evidence: "Constructs exact RTTI class AlertPane from counted display text, a parent pane, and one or two button assets."
-  - address: "0x0045C500"
-    name: net_send_mercenary_action
-    confidence: high
-    evidence: "EmployeeDialogPane calls this opcode 0x54 builder."
-  - address: "0x0045D550"
-    name: net_init_mercenary_packet
-    confidence: high
-    evidence: "Initializes the opcode 0x54 body prefix used by net_send_mercenary_action."
   - address: "0x0045D970"
     name: ui_equip_pane_handle_network_event
     confidence: high
@@ -155,10 +147,6 @@ functions:
     name: net_send_group
     confidence: high
     evidence: "UserLookPane calls this opcode 0x2E builder with a length-prefixed user name."
-  - address: "0x004719B0"
-    name: net_request_family_name
-    confidence: high
-    evidence: "EquipPane reaches this opcode-only 0x7A request paired with SFamilyName."
   - address: "0x00474310"
     name: ui_field_map_balloon_pane_ctor
     confidence: high
@@ -495,10 +483,6 @@ functions:
     name: ui_load_spell_cast_lines
     confidence: high
     evidence: "Loads up to ten 256-byte per-spell cast strings from the current character's SpellBook.cfg data."
-  - address: "0x004A03B0"
-    name: net_request_cash_shop
-    confidence: high
-    evidence: "ItemShop::ShoppingBagDialogPane sends the opcode 0x6C body during construction."
   - address: "0x004AD250"
     name: ui_open_town_map_for_current_map
     confidence: high
@@ -899,10 +883,26 @@ functions:
     name: render_write_screenshot_bmp
     confidence: high
     evidence: "Captures the current client canvas into numbered lodNNN.bmp files; no SScreenShot receive path calls it."
+  - address: "0x00559DC0"
+    name: ui_server_select_dialog_handle_server_event
+    confidence: high
+    evidence: "ServerSelectDialogPane primary-vtable slot 0x50 accepts an event packet only when its opcode is 0x56, then forwards the exact SMulti object to the dedicated handler."
+  - address: "0x00559E80"
+    name: ui_server_select_dialog_handle_multi
+    confidence: high
+    evidence: "Applies the SMulti replacement list, auto-selects row zero when exactly one record exists, and refreshes the ServerSelectDialogPane controls."
   - address: "0x0055A090"
     name: net_send_multi_server_selection
     confidence: high
-    evidence: "ServerSelectDialogPane sends opcode 0x57 with the selected configured server index."
+    evidence: "Submits CMulti operation 0 with the selected server record's stored ID, not its row index."
+  - address: "0x0055A150"
+    name: net_request_multi_server_list
+    confidence: high
+    evidence: "Submits CMulti operation 1 when ServerSelectDialogPane is constructed after a missing or mismatched local server-list CRC. The third submitted byte is left uninitialized because a zero dword is written at local-buffer offset 8 instead of submitted offset 2."
+  - address: "0x0055AAD0"
+    name: net_apply_multi_server_list
+    confidence: high
+    evidence: "Inflates the SMulti slice into a 0x800-byte buffer, replaces the server table from its count and variable-length records, initializes greetings to one space, and saves mServer.tbl."
   - address: "0x0056A740"
     name: ui_spelled_view_pane_ctor
     confidence: high
@@ -1351,6 +1351,18 @@ functions:
     name: net_deserialize_move_server_packet
     confidence: high
     evidence: "Reads direction, four big-endian coordinate words, and the echoed movement step into the fixed SMove packet object."
+  - address: "0x0059A740"
+    name: net_create_multi_server_packet
+    confidence: high
+    evidence: "Allocates the 0x18-byte exact RTTI SMulti object registered for server opcode 0x56."
+  - address: "0x0059A7C0"
+    name: net_multi_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x56 to the server packet base and installs the exact SMulti vtable."
+  - address: "0x0059A7F0"
+    name: net_deserialize_multi_server_packet
+    confidence: high
+    evidence: "Reads a big-endian u16 compressed length and retains a pointer to exactly that many bytes from the decoded packet buffer."
   - address: "0x0059A870"
     name: net_create_num_users_server_packet
     confidence: high
@@ -2837,6 +2849,10 @@ comments:
     text: "Read SMove unknown_y as big-endian u16. The only typed SMove handler never reads this field."
   - address: "0x0059A5A4"
     text: "Read the echoed CMove step byte. A match with WorldPane's current rolling step enables the latency sample."
+  - address: "0x0059A7FA"
+    text: "Read SMulti compressed_length as a big-endian u16 into packet object +0x10."
+  - address: "0x0059A812"
+    text: "Retain a pointer at packet object +0x14 to compressed_length bytes in the decoded packet body."
   - address: "0x0059A92A"
     text: "Read the complete SNumUsers body as big-endian u16 user_count. The target has no typed or raw opcode 0x47 consumer."
   - address: "0x0059AD27"
@@ -3678,8 +3694,8 @@ packet_indexes:
         transform: derived
         builder: "0x0041CBC0"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Representative builder 0x0041CBC0 writes opcode 0x3B and submits the body."
+        name_confidence: high
+        evidence: "CBulletin is project-owner protocol vocabulary paired with SBulletin. Fifteen local builders emit actions 1 through 7 for board/list requests, entry navigation, article posting, deletion, mail sending, and the optional Hilight control; the mail-list delete form uniquely appends a zero byte."
         page: "docs/network/client/059-0x3b-bulletin.md"
       - opcode: "0x3E"
         friendly_name: "Use Skill"
@@ -3714,8 +3730,8 @@ packet_indexes:
         transform: static
         builder: "0x004CD350"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Builders 0x004CD350 and 0x005F4730 write opcode 0x43, subtype 1, and a u32 object ID. UserClickMode can suppress the WorldPane user-click path."
+        name_confidence: high
+        evidence: "CRequestObjectInfo is project-owner protocol vocabulary paired with provisional SObjectInfo. Builders 0x004CD350 and 0x005F4730 write opcode 0x43, subtype 1, and a u32 object ID. UserClickMode can suppress the WorldPane user-click path."
         page: "docs/network/client/067-0x43-request-object-info.md"
       - opcode: "0x44"
         friendly_name: "Remove Equipment"
@@ -3804,8 +3820,8 @@ packet_indexes:
         transform: derived
         builder: "0x0045C500"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Builder 0x0045C500 is called by an EmployeeDialogPane virtual method; helper 0x0045D550 initializes opcode 0x54."
+        name_confidence: high
+        evidence: "Project-owner protocol name. Six EmployeeDialogPane builders share the 54 01 <employee_id> header and encode actions 0 through 5 for add, withdraw, price, remove, fire, and RequestInfo."
         page: "docs/network/client/084-0x54-mercenary.md"
       - opcode: "0x55"
         friendly_name: "Manual"
@@ -3823,7 +3839,7 @@ packet_indexes:
         builder: "0x0055A090"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "ServerSelectDialogPane and the single-record SVersionCheck path reach builder 0x0055A090, which supplies 57 00 <record ID> 00; the submission layer appends a fifth zero before transformation."
+        evidence: "Builder 0x0055A090 supplies operation 0 as 57 00 <record ID> 00 before the common zero terminator. Builder 0x0055A150 supplies operation 1 after a server-list CRC mismatch; its third submitted byte remains uninitialized because the intended zero store lands outside the submitted slice."
         page: "docs/network/client/087-0x57-multi-server.md"
       - opcode: "0x62"
         friendly_name: "Hello"
@@ -3858,8 +3874,8 @@ packet_indexes:
         transform: derived
         builder: "0x004A03B0"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "ItemShop::ShoppingBagDialogPane calls builder 0x004A03B0 during construction; ItemShop is local UI RTTI while CCashShop is the protocol name."
+        name_confidence: high
+        evidence: "Project-owner protocol name. ItemShop::ShoppingBagDialogPane sends action 0 during construction and action 1 with the selected SItemShop record type and ID."
         page: "docs/network/client/108-0x6c-cash-shop.md"
       - opcode: "0x71"
         friendly_name: "Send Alive"
@@ -3903,8 +3919,8 @@ packet_indexes:
         transform: derived
         builder: "0x004719B0"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "EquipPane reaches opcode-only builder 0x004719B0; CRequestFamilyName is the documented counterpart to exact server RTTI SFamilyName."
+        name_confidence: high
+        evidence: "CRequestFamilyName is project-owner protocol vocabulary. FamilyListDialogPane sends the opcode-only body during construction and consumes exact RTTI SFamilyName in reply."
         page: "docs/network/client/122-0x7a-request-family-name.md"
       - opcode: "0x7B"
         friendly_name: "Meta Data"
@@ -4258,6 +4274,16 @@ packet_indexes:
         name_confidence: high
         evidence: "Constructor 0x0059AA00 installs exact RTTI SPursuitMessage for opcode 0x30. Deserializer 0x0059AA70 reads the common pursuit step and conditional content; NPCSession constructs popup, menu, text, face-menu, protected-input, or close behavior for the locally handled dialog types."
         page: "docs/network/server/048-0x30-pursuit-message.md"
+      - opcode: "0x31"
+        friendly_name: "Bulletin"
+        class_name: "SBulletin"
+        transform: derived
+        constructor: null
+        evidence_source: owner_protocol_name
+        opcode_confidence: high
+        name_confidence: high
+        evidence: "Project-owner protocol name paired with CBulletin. The raw dispatcher bypasses the packet factory; BulletinSession routes response types 1 through 5, while active article and mail dialogs consume operation reply type 7 and article-post status type 8."
+        page: "docs/network/server/049-0x31-bulletin.md"
       - opcode: "0x32"
         friendly_name: "Static Object State"
         class_name: "SStaticObjectState"
@@ -4278,6 +4304,16 @@ packet_indexes:
         name_confidence: high
         evidence: "RTTI constructor 0x00598540 installs opcode 0x33. Deserializer 0x00598570 decodes the complete normal and disguised forms; handler 0x005F3340 creates the local or remote human and applies appearance, names, group ads, and object lighting."
         page: "docs/network/server/051-0x33-draw-human-objects.md"
+      - opcode: "0x34"
+        friendly_name: "Object Info"
+        class_name: "SObjectInfo"
+        transform: derived
+        constructor: null
+        evidence_source: owner_protocol_name
+        opcode_confidence: high
+        name_confidence: medium
+        evidence: "Provisional project-owner protocol name paired with CRequestObjectInfo. The raw handler resolves a u32 object ID to a living object and opens exact RTTI UserInfoPane_ForOthers with equipment, identity, legend, portrait, and profile data."
+        page: "docs/network/server/052-0x34-object-info.md"
       - opcode: "0x35"
         friendly_name: "Show Paper"
         class_name: "SShowPaper"
@@ -4426,7 +4462,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x005996C0 passes opcode 0x45 to the server packet base and installs the SItemShop vtable."
+        evidence: "Exact RTTI SItemShop deserializer 0x00599730 reads a variant byte. Variant 0 reads a u8 record count and complete shopping-bag records; ItemShop::ShoppingBagDialogPane consumes variants 0 and 1."
         page: "docs/network/server/069-0x45-item-shop.md"
       - opcode: "0x47"
         friendly_name: "Num Users"
@@ -4488,6 +4524,16 @@ packet_indexes:
         name_confidence: high
         evidence: "Constructor 0x0059AD20 installs exact RTTI SQuit for opcode 0x4C. Its deserializer reads one u8, and SafeQuitAlert treats value 1 as approval before sending CQuit 00; two observed trailing zero bytes are left unread."
         page: "docs/network/server/076-0x4c-quit.md"
+      - opcode: "0x4F"
+        friendly_name: "Mercenary"
+        class_name: "SMercenary"
+        transform: derived
+        constructor: null
+        evidence_source: owner_protocol_name
+        opcode_confidence: high
+        name_confidence: high
+        evidence: "Project-owner protocol name. The central dispatcher handles decoded opcode 0x4F directly with no server-packet RTTI object; category 1 message 0 constructs EmployeeDialogPane, whose debug strings call the body an Employee packet."
+        page: "docs/network/server/079-0x4f-mercenary.md"
       - opcode: "0x50"
         friendly_name: "Manual"
         class_name: "SManual"
@@ -4516,7 +4562,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059A7C0 passes opcode 0x56 to the server packet base and installs the SMulti vtable."
+        evidence: "Exact RTTI SMulti deserializer 0x0059A7F0 reads u16 compressed_length and retains that byte slice. ServerSelectDialogPane handler 0x00559E80 inflates a count plus ID, IPv4, port, and NUL-terminated name records, saves mServer.tbl, refreshes the list, and auto-selects a sole record."
         page: "docs/network/server/086-0x56-multi.md"
       - opcode: "0x58"
         friendly_name: "Unhandled Control"
@@ -4626,7 +4672,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00599180 passes opcode 0x6D to the server packet base and installs the SFamilyName vtable."
+        evidence: "Exact RTTI SFamilyName deserializer 0x005991B0 reads one string8. FamilyListDialogPane copies it verbatim into its display buffer; the client does not substitute NoName."
         page: "docs/network/server/109-0x6d-family-name.md"
       - opcode: "0x6F"
         friendly_name: "Meta Data"

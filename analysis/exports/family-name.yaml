@@ -1,0 +1,46 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0045F260"
+    name: ui_equip_pane_handle_action
+    confidence: high
+    evidence: "EquipPane action 0x19 allocates the exact RTTI FamilyListDialogPane."
+  - address: "0x00471320"
+    name: ui_family_list_dialog_ctor
+    confidence: high
+    evidence: "Constructs FamilyListDialogPane from lfamily.txt, populates local rows, registers the pane, and sends CRequestFamilyName."
+  - address: "0x004719B0"
+    name: net_request_family_name
+    confidence: high
+    evidence: "Builds and submits the opcode-only CRequestFamilyName body 7A."
+  - address: "0x00471A20"
+    name: ui_family_list_dialog_handle_network_event
+    confidence: high
+    evidence: "Consumes exact RTTI SFamilyName while FamilyListDialogPane is open."
+  - address: "0x00471AF0"
+    name: ui_family_list_dialog_apply_family_name
+    confidence: high
+    evidence: "Copies the SFamilyName string8 bytes verbatim into the pane's 256-byte display buffer."
+  - address: "0x00599100"
+    name: net_create_family_name_server_packet
+    confidence: high
+    evidence: "Allocates and constructs the exact RTTI SFamilyName packet object."
+  - address: "0x00599180"
+    name: net_family_name_server_packet_ctor
+    confidence: high
+    evidence: "Binds opcode 0x6D and installs the exact RTTI SFamilyName vtable."
+  - address: "0x005991B0"
+    name: net_deserialize_family_name_server_packet
+    confidence: high
+    evidence: "Reads one string8 family name and no other fields."
+comments:
+  - address: "0x004716C7"
+    text: "FamilyListDialogPane sends opcode-only CRequestFamilyName after constructing and registering the dialog."
+  - address: "0x00471B0D"
+    text: "Copy SFamilyName bytes verbatim. The client does not substitute NoName in this response path."

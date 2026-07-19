@@ -10,26 +10,38 @@
 
 ## Purpose
 
-The client sends this message for **multi server**.
+This packet either requests a replacement server list or submits the server ID selected in `ServerSelectDialogPane`.
 
 The exact client protocol name is `CMulti`. The more descriptive `CMultiServer` alias is supported by the caller, which selects a server record from configuration, and by the `ServerSelectDialogPane` RTTI owner. Server opcode `0x56` has the exact RTTI name [`SMulti`](../server/086-0x56-multi.md).
 
 The client has no derived packet RTTI for `CMulti` itself. The paired names are preserved as recovered instead of being forced to match a constructed `SMultiServer` name.
 
-## Sent by
+## Operations
 
-The server-selection dialog sends this when the player chooses a row. `SVersionCheck` also reaches the same selection path automatically when the local server table has a matching CRC and contains exactly one entry. That automatic path produced the observed builder fields `57 00 00 00`; the common submission terminator follows them on the wire.
+Operation `0` submits a selection. The dialog sends it when the player chooses a row. [`SVersionCheck`](../server/000-0x00-version-check.md) and [`SMulti`](../server/086-0x56-multi.md) also reach the same path automatically when the active server list contains exactly one record.
+
+Operation `1` requests the replacement list carried by `SMulti`. `SVersionCheck` constructs the dialog in this mode when the local list is empty or its CRC differs from the server's value.
 
 ## Body
 
 ```text
 packet CMulti {
     u8      opcode                    // 0x57
-    u8      reserved_0                // 0
-    u8      server_id                 // first byte of the selected server record
-    u8      reserved_1                // 0
+    u8      operation
+
+    if operation == 0 {
+        u8      server_id             // selected record ID, not row number
+        u8      reserved_0            // 0
+    }
+
+    if operation == 1 {
+        u8      uninitialized_request_byte
+    }
+
     u8      terminator                // 0, appended by net_submit_client_packet
 }
 ```
 
-The dialog row selects a local record, but the packet carries that record's stored ID. It is not necessarily the row number. The builder supplies four bytes; the common submission layer adds the fifth zero before the static transform. The supplied decoded trace omits this common trailing terminator.
+For operation `0`, `net_send_multi_server_selection` supplies `57 00 <server_id> 00`; the common submission layer appends a fifth zero before the static transform. The supplied decoded trace omits this common trailing terminator.
+
+The operation-`1` builder supplies three bytes before the common terminator. It writes `57 01`, then appears intended to clear the third byte. The actual instruction clears a dword at local-buffer offset `8` while submitting only offsets `0` through `2`. The submitted third byte therefore retains previous stack data, and the appended fourth byte is zero. No client code derives meaning from that retained byte; the request purpose follows directly from the CRC-mismatch constructor path and the `SMulti` response handler.

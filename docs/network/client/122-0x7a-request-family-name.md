@@ -1,29 +1,27 @@
 # Request Family Name (`CRequestFamilyName`)
 
+`CRequestFamilyName` asks for the local character's family name when the player opens the family-list dialog.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
-| Command | `0x7A` (122) |
-| Encoding | session key |
-| Related protocol name | `CRequestLoverName` |
-| Name provenance | Project-owner protocol name normalized to the exact server RTTI term `SFamilyName` |
-
-## Purpose
-
-The client sends this message for **request family name**.
-
-The builder submits an opcode-only request. Project vocabulary calls it `CRequestLoverName`; this book uses `CRequestFamilyName` to match the exact RTTI-backed server response [`SFamilyName`](../server/109-0x6d-family-name.md). This is a documented naming choice, not recovered client RTTI.
-
-## Sent by
-
-Known static callers lead to:
-
-- `DialogPane::EquipPane`
+| Opcode | `0x7A` |
+| Transform | `derived` |
+| Name provenance | Project-owner protocol name, paired with exact RTTI server response `SFamilyName` |
+| UI owner | Exact RTTI `FamilyListDialogPane` |
 
 ## Body
 
 ```text
 packet CRequestFamilyName {
-    u8      opcode                    // 0x7A
+    u8 opcode                    // 0x7A
 }
 ```
+
+## Where it is sent
+
+`EquipPane` action `0x19` allocates `FamilyListDialogPane`. The dialog loads `lfamily.txt`, creates its local family-member rows, registers for events, and immediately sends this opcode-only packet from its constructor.
+
+The request is therefore not periodic and is not sent during login. It is sent each time this family-list construction path runs.
+
+The paired response is [`SFamilyName`](../server/109-0x6d-family-name.md).

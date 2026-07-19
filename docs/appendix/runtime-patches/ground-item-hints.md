@@ -27,17 +27,17 @@ The final pass is intentionally simple. It does not calculate which item pixels 
 The launcher allocates a zeroed `0xCF4`-byte state block:
 
 ```c
-struct GroundItemHintState741 {
+struct GroundItemHintState {
     u32 count;                         // +0x000
     RenderContext *render_context;     // +0x004
     Canvas *canvas;                    // +0x008
     byte reserved[0x1C];
     WorldPane *world_pane;             // +0x028
     byte reserved_to_entries[0xD4];
-    WorldDrawEntry741 entries[255];    // +0x100
+    WorldDrawEntry entries[255];    // +0x100
 };
 
-struct WorldDrawEntry741 {
+struct WorldDrawEntry {
     WorldObject *object;
     s32 screen_x;
     s32 screen_y;

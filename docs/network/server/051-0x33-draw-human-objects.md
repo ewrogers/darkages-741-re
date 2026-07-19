@@ -102,7 +102,7 @@ Variants `8` and `9` load the small `MM005` and `WM005` motion families used for
 
 ## Equipment and appearance layers
 
-The normal form is converted into a 0x30-byte `HumanAppearanceRecord741`. The renderer selects body, head, arms, boots, armor, shield, weapon, three accessories, overcoat, and face layers from that record.
+The normal form is converted into a 0x30-byte `HumanAppearanceRecord`. The renderer selects body, head, arms, boots, armor, shield, weapon, three accessories, overcoat, and face layers from that record.
 
 An overcoat suppresses the ordinary pants, armor, and arms layers while it is present. Sprite ID zero suppresses the corresponding part filename. The packet also initializes two internal appearance slots to zero because this wire format does not supply them.
 

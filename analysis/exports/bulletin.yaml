@@ -1,0 +1,172 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0041C280"
+    name: ui_bulletin_session_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI BulletinSession and applies the initial decoded SBulletin body."
+  - address: "0x0041CBC0"
+    name: net_send_bulletin_board_list_request
+    confidence: high
+    evidence: "Writes derived CBulletin body 3B 01 when BulletinSession opens."
+  - address: "0x0041CC40"
+    name: ui_bulletin_session_apply_server_body
+    confidence: high
+    evidence: "Routes SBulletin response types 1 through 5 to board-list, article-list, article, mail-list, and mail UI."
+  - address: "0x0041D350"
+    name: ui_bulletin_open_board_list
+    confidence: high
+    evidence: "Creates exact RTTI BoardListDialog for SBulletin response type 1."
+  - address: "0x0041D410"
+    name: ui_bulletin_open_article_list
+    confidence: high
+    evidence: "Creates exact RTTI ArticleListDialog for SBulletin response type 2."
+  - address: "0x0041D4F0"
+    name: ui_bulletin_open_article
+    confidence: high
+    evidence: "Creates exact RTTI ArticleDialog for SBulletin response type 3, or an alert when its board ID is zero."
+  - address: "0x0041D660"
+    name: ui_bulletin_open_mail_list
+    confidence: high
+    evidence: "Creates exact RTTI MailListDialog for SBulletin response type 4."
+  - address: "0x0041D740"
+    name: ui_bulletin_open_mail
+    confidence: high
+    evidence: "Creates exact RTTI MailDialog for SBulletin response type 5, or an alert when its mailbox ID is zero."
+  - address: "0x0041D8B0"
+    name: ui_board_list_dialog_ctor
+    confidence: high
+    evidence: "Loads _nbdlist.txt and parses a heading plus repeated u16 board ID and string8 name records."
+  - address: "0x0041E350"
+    name: net_send_bulletin_initial_list_request
+    confidence: high
+    evidence: "Writes CBulletin action 2 with selected section ID, cursor 0x7FFF, and direction 0xF0."
+  - address: "0x0041E490"
+    name: ui_article_list_dialog_ctor
+    confidence: high
+    evidence: "Loads _narlist.txt and parses the article-list response body."
+  - address: "0x0041F450"
+    name: ui_article_list_apply_server_body
+    confidence: high
+    evidence: "Routes active-list SBulletin response types 2, 7, and 8."
+  - address: "0x0041F840"
+    name: ui_article_list_apply_post_reply
+    confidence: high
+    evidence: "Consumes SBulletin response 8 status, optionally shows an alert, and refreshes the article list."
+  - address: "0x0041F940"
+    name: ui_article_list_show_operation_reply
+    confidence: high
+    evidence: "Consumes SBulletin response 7 status plus string8 message and creates DeleteReplyAlert."
+  - address: "0x00420D00"
+    name: net_send_bulletin_article_list_request
+    confidence: high
+    evidence: "Writes seven-byte CBulletin action 2 for article-list pagination."
+  - address: "0x00420E40"
+    name: net_send_bulletin_article_request
+    confidence: high
+    evidence: "Writes CBulletin action 3 with board ID, article ID, and direct-selection navigation 0."
+  - address: "0x00420F80"
+    name: net_send_bulletin_highlight_request
+    confidence: high
+    evidence: "Writes CBulletin action 7 for the optional _narlist.txt control spelled Hilight."
+  - address: "0x00421090"
+    name: net_send_bulletin_article_delete_request
+    confidence: high
+    evidence: "Writes six-byte CBulletin action 5 for each article selected for deletion."
+  - address: "0x004211A0"
+    name: ui_article_dialog_ctor
+    confidence: high
+    evidence: "Loads _narti.txt and parses article navigation, author, date, title, and string16 content."
+  - address: "0x00421EE0"
+    name: ui_article_apply_server_body
+    confidence: high
+    evidence: "Routes active-article SBulletin response type 7 to the operation reply UI."
+  - address: "0x004220D0"
+    name: net_send_bulletin_article_navigation_request
+    confidence: high
+    evidence: "Writes CBulletin action 3 with navigation 0xFF or 1 for Previous or Next."
+  - address: "0x00422210"
+    name: net_send_bulletin_article_delete_from_detail
+    confidence: high
+    evidence: "Writes six-byte CBulletin action 5 for the open article."
+  - address: "0x00422C00"
+    name: net_send_bulletin_article_post
+    confidence: high
+    evidence: "Writes CBulletin action 4 as board ID, string8 title, and string16 content."
+  - address: "0x00422EE0"
+    name: ui_mail_list_dialog_ctor
+    confidence: high
+    evidence: "Loads _nmaill.txt and parses the mail-list response body."
+  - address: "0x00423D50"
+    name: ui_mail_list_apply_server_body
+    confidence: high
+    evidence: "Routes active-mail-list SBulletin response types 4 and 7."
+  - address: "0x00424A40"
+    name: net_send_bulletin_mail_list_request
+    confidence: high
+    evidence: "Writes seven-byte CBulletin action 2 for mail-list pagination."
+  - address: "0x00424B80"
+    name: net_send_bulletin_mail_request
+    confidence: high
+    evidence: "Writes CBulletin action 3 with mailbox ID, mail ID, and direct-selection navigation 0."
+  - address: "0x00424CC0"
+    name: net_send_bulletin_mail_list_delete_request
+    confidence: high
+    evidence: "Writes CBulletin action 5 with mailbox ID, mail ID, and the mail-list-only trailing zero."
+  - address: "0x00424E00"
+    name: ui_mail_dialog_ctor
+    confidence: high
+    evidence: "Loads _nmailr.txt and parses mail navigation, author, date, title, and string16 content."
+  - address: "0x00425C00"
+    name: ui_mail_apply_server_body
+    confidence: high
+    evidence: "Routes active-mail SBulletin response type 7 to the operation reply UI."
+  - address: "0x00425DF0"
+    name: net_send_bulletin_mail_navigation_request
+    confidence: high
+    evidence: "Writes CBulletin action 3 with navigation 0xFF or 1 for Previous or Next."
+  - address: "0x00425F30"
+    name: net_send_bulletin_mail_delete_from_detail
+    confidence: high
+    evidence: "Writes six-byte CBulletin action 5 for the open mail entry."
+  - address: "0x004268F0"
+    name: net_send_bulletin_mail
+    confidence: high
+    evidence: "Writes CBulletin action 6 as mailbox ID, receiver, title, and string16 content."
+  - address: "0x005F6CB0"
+    name: net_handle_bulletin_server_body
+    confidence: high
+    evidence: "Forwards raw decoded opcode 0x31 to the BulletinSession opener."
+  - address: "0x005F6CD0"
+    name: ui_open_bulletin_session_from_server_body
+    confidence: high
+    evidence: "Creates BulletinSession for a direct SBulletin body when no conflicting session is active and the admission flag check passes."
+comments:
+  - address: "0x0041CBFD"
+    text: "CBulletin action 1 requests the board list."
+  - address: "0x0041CCAC"
+    text: "SBulletin response codes 1 through 5 open BoardListDialog, ArticleListDialog, ArticleDialog, MailListDialog, and MailDialog."
+  - address: "0x0041E3AB"
+    text: "CBulletin action 2 requests an initial article or mail list page."
+  - address: "0x0041F48A"
+    text: "SBulletin response 7 supplies an operation status and string8 message."
+  - address: "0x0041F490"
+    text: "SBulletin response 8 supplies a post status and refreshes the article list."
+  - address: "0x00420FDB"
+    text: "CBulletin action 7 applies the optional layout control spelled Hilight to an article."
+  - address: "0x004210EB"
+    text: "CBulletin action 5 deletes an article selected in the list."
+  - address: "0x00422CF1"
+    text: "CBulletin action 4 posts an article as board ID, string8 title, and string16 content."
+  - address: "0x00424D1B"
+    text: "CBulletin action 5 deletes mail from the list and uniquely appends a zero byte."
+  - address: "0x00426A2A"
+    text: "CBulletin action 6 sends mail as mailbox ID, receiver, title, and content."
+  - address: "0x005EDFB9"
+    text: "Decoded opcode 0x31 bypasses the server packet factory and is handled directly as owner-named SBulletin."

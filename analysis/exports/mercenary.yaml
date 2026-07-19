@@ -1,0 +1,120 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0045AF00"
+    name: ui_employee_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI EmployeeDialogPane from lshop0.txt, applies an SMercenary Open body, registers the pane, and sends CMercenary RequestInfo."
+  - address: "0x0045B7C0"
+    name: ui_employee_dialog_dtor
+    confidence: high
+    evidence: "Unregisters and destroys EmployeeDialogPane and its attached controls."
+  - address: "0x0045BD90"
+    name: ui_employee_dialog_handle_action
+    confidence: high
+    evidence: "Routes employee-shop controls and item operations to the CMercenary action builders."
+  - address: "0x0045C200"
+    name: ui_employee_dialog_timer_callback
+    confidence: high
+    evidence: "Executes the employee pane's queued item, quantity, price, and confirmation operations on its TimerHandler callback."
+  - address: "0x0045C500"
+    name: net_send_mercenary_add_item
+    confidence: high
+    evidence: "Builds CMercenary action 0 with inventory slot and u32 quantity."
+  - address: "0x0045C5B0"
+    name: net_send_mercenary_withdraw_item
+    confidence: high
+    evidence: "Builds CMercenary action 1 with item ID, quantity, and two trailing u16 values."
+  - address: "0x0045C690"
+    name: net_send_mercenary_apply_price
+    confidence: high
+    evidence: "Builds CMercenary action 2 with item ID, sell price, and buy price."
+  - address: "0x0045C750"
+    name: net_send_mercenary_remove_item
+    confidence: high
+    evidence: "Builds CMercenary action 3 with one item ID."
+  - address: "0x0045C7C0"
+    name: net_send_mercenary_fire
+    confidence: high
+    evidence: "Builds header-only CMercenary action 4."
+  - address: "0x0045C810"
+    name: net_send_mercenary_request_info
+    confidence: high
+    evidence: "Builds header-only CMercenary action 5 and is called immediately when EmployeeDialogPane opens."
+  - address: "0x0045C860"
+    name: ui_employee_dialog_handle_network_event
+    confidence: high
+    evidence: "Consumes decoded SMercenary bodies for the employee ID owned by this pane."
+  - address: "0x0045C8C0"
+    name: ui_employee_dialog_apply_server_body
+    confidence: high
+    evidence: "Dispatches SMercenary message codes 0 through 4."
+  - address: "0x0045C9B0"
+    name: net_is_employee_server_body
+    confidence: high
+    evidence: "Checks opcode 0x4F, category 1, and the pane's employee ID."
+  - address: "0x0045C9E0"
+    name: net_is_employee_open_server_body
+    confidence: high
+    evidence: "Checks the SMercenary header for category 1 and Open message code 0."
+  - address: "0x0045CA10"
+    name: ui_employee_dialog_apply_open
+    confidence: high
+    evidence: "Reads gold, capacity, item count, and the initial employee records."
+  - address: "0x0045CBC0"
+    name: ui_employee_dialog_apply_add_item
+    confidence: high
+    evidence: "Reads one employee item record for SMercenary message code 1."
+  - address: "0x0045CDB0"
+    name: ui_employee_dialog_apply_remove_item
+    confidence: high
+    evidence: "Reads the u32 item ID for SMercenary message code 2 and removes the matching record."
+  - address: "0x0045CE80"
+    name: ui_employee_dialog_apply_start_trade
+    confidence: high
+    evidence: "Reads a previous item ID and replacement trade record for SMercenary message code 3."
+  - address: "0x0045D0A0"
+    name: ui_employee_dialog_apply_request_response
+    confidence: high
+    evidence: "Reads and displays the string8 response for SMercenary message code 4."
+  - address: "0x0045D120"
+    name: net_read_employee_server_header
+    confidence: high
+    evidence: "Reads the category, employee ID, and message code from a decoded opcode 0x4F body."
+  - address: "0x0045D1B0"
+    name: net_read_employee_item_record
+    confidence: high
+    evidence: "Reads employee item ID, sprite, color, name, optional description, unknown byte, quantity, sell price, and buy price."
+  - address: "0x0045D380"
+    name: net_read_employee_trade_record
+    confidence: high
+    evidence: "Reads the previous item ID and nonzero replacement item record used by StartTrade."
+  - address: "0x0045D550"
+    name: net_init_mercenary_packet
+    confidence: high
+    evidence: "Initializes the shared CMercenary header as opcode 0x54, category 1, employee ID, and action."
+  - address: "0x0045D5E0"
+    name: ui_employee_dialog_rebuild_visible_items
+    confidence: high
+    evidence: "Rebuilds the employee pane's visible item controls from the current records."
+  - address: "0x005ED9A0"
+    name: net_dispatch_server_packet
+    confidence: high
+    evidence: "Checks decoded opcode 0x4F directly because SMercenary has no server-factory object, then calls the employee dialog opener."
+  - address: "0x005F6BF0"
+    name: ui_open_employee_dialog_from_server_body
+    confidence: high
+    evidence: "Creates EmployeeDialogPane only for an SMercenary category 1 Open body."
+comments:
+  - address: "0x0045AF00"
+    text: "SMercenary Open constructs EmployeeDialogPane and immediately sends CMercenary RequestInfo for the same employee ID."
+  - address: "0x0045C8C0"
+    text: "Dispatch SMercenary message codes 0 Open, 1 AddItem, 2 RemoveItem, 3 StartTrade, and 4 RequestResponse."
+  - address: "0x005EDEA1"
+    text: "Decoded opcode 0x4F bypasses the server packet factory and is handled directly as SMercenary."

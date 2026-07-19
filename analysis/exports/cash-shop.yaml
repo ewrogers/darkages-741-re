@@ -1,0 +1,64 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0049F450"
+    name: ui_item_shop_shopping_bag_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ItemShop::ShoppingBagDialogPane from lshopba2.txt and sends CCashShop action 0."
+  - address: "0x0049F7E0"
+    name: ui_item_shop_shopping_bag_dtor
+    confidence: high
+    evidence: "Unregisters and destroys ShoppingBagDialogPane and its attached item controls."
+  - address: "0x004A03B0"
+    name: net_request_cash_shop_bag
+    confidence: high
+    evidence: "Builds CCashShop action 0 as the two-byte body 6C 00."
+  - address: "0x004A0430"
+    name: net_request_cash_shop_item
+    confidence: high
+    evidence: "Builds CCashShop action 1 with the selected SItemShop record type and u32 record ID."
+  - address: "0x004A0550"
+    name: ui_item_shop_shopping_bag_handle_network_event
+    confidence: high
+    evidence: "Consumes exact RTTI SItemShop in the shopping-bag pane."
+  - address: "0x004A05B0"
+    name: ui_item_shop_shopping_bag_apply_packet
+    confidence: high
+    evidence: "Replaces records for SItemShop variant 0 and clears the pane's busy state for variants 0 and 1."
+  - address: "0x004A09F0"
+    name: ui_item_shop_browser_dialog_ctor
+    confidence: high
+    evidence: "Constructs the separate exact RTTI ItemShop::ShopDialogPane around BrowserControlPane; no static constructor caller is present."
+  - address: "0x00599640"
+    name: net_create_item_shop_server_packet
+    confidence: high
+    evidence: "Allocates and constructs the exact RTTI SItemShop packet object."
+  - address: "0x005996C0"
+    name: net_item_shop_server_packet_ctor
+    confidence: high
+    evidence: "Binds opcode 0x45 and installs the exact RTTI SItemShop vtable."
+  - address: "0x00599730"
+    name: net_deserialize_item_shop_server_packet
+    confidence: high
+    evidence: "Reads the SItemShop variant and, for variant 0, a u8 count followed by complete shopping-bag records."
+  - address: "0x00599780"
+    name: net_reset_item_shop_record_reader
+    confidence: high
+    evidence: "Resets the SItemShop record cursor before pane consumption."
+  - address: "0x005997B0"
+    name: net_read_item_shop_record
+    confidence: high
+    evidence: "Returns record type, ID, sprite, color, name, description, quantity, mode, and optional alternate description."
+comments:
+  - address: "0x0049F7B4"
+    text: "ShoppingBagDialogPane sends CCashShop action 0 as soon as construction finishes."
+  - address: "0x004A0495"
+    text: "CCashShop action 1 echoes the selected SItemShop record type and u32 record ID."
+  - address: "0x00599742"
+    text: "Only SItemShop variant 0 carries the u8 record count and repeated record bodies."

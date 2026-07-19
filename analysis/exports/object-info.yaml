@@ -1,0 +1,36 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x005B1850"
+    name: ui_other_user_info_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI UserInfoPane_ForOthers and applies a decoded SObjectInfo body."
+  - address: "0x005B1900"
+    name: ui_other_user_info_apply_object_info_body
+    confidence: high
+    evidence: "Reads object ID, 18 equipment records, identity text, legends, and the nested portrait/profile tail."
+  - address: "0x005B1DF0"
+    name: ui_open_other_user_info_from_server_body
+    confidence: high
+    evidence: "Creates or refreshes UserInfoPane_ForOthers and applies the decoded object-info body."
+  - address: "0x005B7D00"
+    name: ui_user_info_apply_legend_body
+    confidence: high
+    evidence: "Reads a u8 count followed by icon, color, string8 key, and string8 text legend records."
+  - address: "0x005F1590"
+    name: ui_open_object_info_from_server_body
+    confidence: high
+    evidence: "Resolves the body u32 object ID to an existing living object before opening UserInfoPane_ForOthers."
+comments:
+  - address: "0x005B1934"
+    text: "SObjectInfo begins with a big-endian u32 object ID, followed by 18 sprite/color appearance records."
+  - address: "0x005B1C6A"
+    text: "After identity text and legend records, SObjectInfo embeds the same nested portrait/profile body decoded elsewhere."
+  - address: "0x005EDDF3"
+    text: "Decoded opcode 0x34 bypasses the server packet factory and opens UserInfoPane_ForOthers for the referenced living object; SObjectInfo is a provisional owner-supplied name."

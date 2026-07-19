@@ -15,7 +15,7 @@ struct ServerTable {
 };
 
 struct ServerTableRecord {
-    u32 value_00;
+    u32 server_id;
     u32 ipv4_value;
     u32 port;
     char name[256];
@@ -34,6 +34,12 @@ transform_text(bytes):
 ```
 
 Applying the transform again restores the original text. The local table contains one record whose decoded name is `Dark Ages` and whose greeting begins with `Welcome to Dark Ages`. The endpoint value is intentionally not reproduced in the book.
+
+## Server-list synchronization
+
+[`SVersionCheck`](server/000-0x00-version-check.md) provides a CRC32 for the list's record count, server IDs, IPv4 values, ports, and names. A missing or mismatched local list causes [`CMulti`](client/087-0x57-multi-server.md) operation `1` to request a replacement.
+
+[`SMulti`](server/086-0x56-multi.md) returns that replacement as a zlib-compressed list. The client rebuilds the same `0x281C`-byte runtime records, initializes each greeting to a single space, and saves the result to `mServer.tbl`. A selected server's greeting is synchronized afterward through `SStipulation`.
 
 ## Greeting synchronization
 
@@ -59,5 +65,7 @@ CRC32 covers the decoded greeting bytes up to the first NUL. It does not cover t
 - `net_load_server_table` at `0x0055A240`
 - `net_save_server_table` at `0x0055A490`
 - `net_transform_server_table_text` at `0x0055A650`
+- `net_apply_multi_server_list` at `0x0055AAD0`
+- `ui_server_select_dialog_handle_multi` at `0x00559E80`
 - `net_handle_stipulation_raw` at `0x004B8570`
 - `net_handle_stipulation` at `0x004B8890`

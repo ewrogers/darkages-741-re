@@ -1,25 +1,26 @@
 # Family Name (`SFamilyName`)
 
+`SFamilyName` returns the text drawn in the open family-list dialog.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
-| Command | `0x6D` (109) |
-| Encoding | session key |
-| Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-The server sends this message for **family name**.
-
-The constructor calls `net_server_packet_base_ctor` with opcode `0x6D` and installs the `SFamilyName` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
+| Opcode | `0x6D` |
+| Concrete class | Exact RTTI `SFamilyName` |
+| Transform | `derived` |
+| UI owner | Exact RTTI `FamilyListDialogPane` |
 
 ## Body
 
 ```text
 packet SFamilyName {
-    u8      opcode                    // 0x6D
-    ...                         // fields pending
+    u8 opcode                    // 0x6D
+    string8 family_name
 }
 ```
 
-The class deserializer, field layout, gameplay handler, state effects, and paired client packet remain to be traced.
+`FamilyListDialogPane` copies `family_name` verbatim into a 256-byte local buffer and redraws. It performs no comparison with `"NoName"` or `"Noname"` and supplies no fallback for an empty response.
+
+The executable does contain the literal `"Noname"`, but the family-list constructor uses it for local member-row placeholders when a row is unavailable. It is not an `SFamilyName` default. If a server returns `"NoName"`, that policy belongs to the server and the client simply displays those bytes.
+
+The paired request is [`CRequestFamilyName`](../client/122-0x7a-request-family-name.md).

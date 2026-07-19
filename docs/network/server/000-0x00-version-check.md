@@ -22,7 +22,7 @@ packet SVersionCheck {
     u8      subtype
 
     if subtype == 0 {
-        u32     configuration_crc
+        u32     server_list_crc
         u8      seed_table_selector
         u8      static_key_length
         bytes   static_key[static_key_length]
@@ -34,7 +34,11 @@ The handler reads the selector from body offset 6, reads the key length from off
 
 Selector values `0` through `9` choose the mappings documented in [Packet transforms](../packet-transforms.md). The executable starts with selector `0` and the embedded nine-byte static key, but this subtype can replace both values.
 
-The observed subtype-0 body carries configuration CRC32 `0x4BDA8542`, seed-table selector `2`, and the nine-byte static key `5E 6B 62 70 56 5B 5F 7D 71`. Its local server-table CRC matches and the table contains one entry, so the handler selects that record automatically and sends [`CMulti`](../client/087-0x57-multi-server.md) with server ID `0`.
+The CRC covers the same uncompressed server-list serialization carried inside [`SMulti`](086-0x56-multi.md): record count followed by each record's ID, IPv4 bytes, big-endian port, and NUL-terminated name. Greeting text is not included.
+
+The observed subtype-0 body carries server-list CRC32 `0x4BDA8542`, seed-table selector `2`, and the nine-byte static key `5E 6B 62 70 56 5B 5F 7D 71`. Its local server-table CRC matches and the table contains one entry, so the handler selects that record automatically and sends [`CMulti`](../client/087-0x57-multi-server.md) operation `0` with server ID `0`.
+
+When the local list is empty or the CRC differs, the client opens `ServerSelectDialogPane` in request mode. Its constructor sends `CMulti` operation `1`; `SMulti` then replaces the list, saves `mServer.tbl`, and refreshes the selection UI.
 
 The supplied decoded capture includes one zero byte after the nine-byte key. The handler stops at the declared key length and assigns no meaning to that extra byte.
 

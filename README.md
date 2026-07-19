@@ -6,7 +6,7 @@ The writing is aimed at game and network programmers. Main pages explain behavio
 
 ## Start here
 
-- [Read the book](docs/README.md)
+- [Read the book](https://ewrogers.github.io/darkages-741-re/)
 - [Set up Binary Ninja and MCP](docs/getting-started.md)
 - [See the analysis method](docs/methodology.md)
 - [Browse the network reference](docs/network/README.md)

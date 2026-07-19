@@ -2,7 +2,11 @@
 
 These messages travel from the server to the game client.
 
-Most concrete names come directly from RTTI and the server packet factory. A few early or manager-owned messages are handled as decoded byte buffers instead. Their pages explain that difference.
+Most concrete names come directly from RTTI and the server packet factory. The central world dispatcher also handles decoded byte buffers directly, so a factory or RTTI scan alone is not a complete server-opcode inventory.
+
+Six confirmed opcodes bypass the factory entirely in this dispatcher: `0x1B`, `0x31`, `0x34`, `0x35`, `0x36`, and `0x4F`. The known handlers open the editable-paper pane, create exact RTTI `BulletinSession`, open exact RTTI `UserInfoPane_ForOthers` for an existing living object, show a read-only paper, show the user list, and open `EmployeeDialogPane`, respectively. `SBulletin` is a project-owner protocol name. `SObjectInfo` is provisional project-owner vocabulary supported by the local UI behavior.
+
+Five factory-backed messages are also read through their decoded bodies here: `0x06`, `0x2E`, `0x3B`, `0x3C`, and `0x42`. This second group does have factory evidence, but its world handler reparses the raw representation.
 
 Body schemas use the shared [packet body notation](../packet-body-notation.md). All multibyte packet integers are big-endian. Reused enum and bit-flag values live in [Shared protocol types](../protocol-types.md).
 
@@ -42,8 +46,10 @@ Body schemas use the shared [packet body notation](../packet-body-notation.md). 
 | [0x2E - Field Map (`SFieldMap`)](046-0x2e-field-map.md) | session key |
 | [0x2F - Screen Menu (`SScreenMenu`)](047-0x2f-screen-menu.md) | session key |
 | [0x30 - Pursuit Message (`SPursuitMessage`)](048-0x30-pursuit-message.md) | session key |
+| [0x31 - Bulletin (`SBulletin`)](049-0x31-bulletin.md) | session key |
 | [0x32 - Static Object State (`SStaticObjectState`)](050-0x32-static-object-state.md) | session key |
 | [0x33 - Draw Human Objects (`SDrawHumanObjects`)](051-0x33-draw-human-objects.md) | session key |
+| [0x34 - Object Info (`SObjectInfo`)](052-0x34-object-info.md) | session key |
 | [0x35 - Show Paper (`SShowPaper`)](053-0x35-show-paper.md) | session key |
 | [0x36 - Show Users (`SShowUsers`)](054-0x36-show-users.md) | session key |
 | [0x37 - Add Equip (`SAddEquip`)](055-0x37-add-equip.md) | session key |
@@ -65,6 +71,7 @@ Body schemas use the shared [packet body notation](../packet-body-notation.md). 
 | [0x4A - Bad Guy (`SBadGuy`)](074-0x4a-bad-guy.md) | session key |
 | [0x4B - Bounce (`SBounce`)](075-0x4b-bounce.md) | session key |
 | [0x4C - Quit (`SQuit`)](076-0x4c-quit.md) | session key |
+| [0x4F - Mercenary (`SMercenary`)](079-0x4f-mercenary.md) | session key |
 | [0x50 - Manual (`SManual`)](080-0x50-manual.md) | session key |
 | [0x51 - Block Input (`SBlockInput`)](081-0x51-block-input.md) | session key |
 | [0x56 - Multi Server (`SMulti`)](086-0x56-multi.md) | startup key |

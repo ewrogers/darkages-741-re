@@ -96,7 +96,7 @@ struct WorldPaneDynamicObjectFields {
     WorldObjectList *object_list;     // +0x194
 };
 
-struct WorldObjectListFields741 {
+struct WorldObjectListFields {
     u8 unknown_00[0x20];
     WorldObjectIdNode *id_tree_head;  // +0x20, sentinel and tree root links
     u8 unknown_24[0x28];
@@ -123,7 +123,7 @@ The spatial side is dense. `cells` contains `width * height` records of `0x60` b
 All dynamic classes begin with these useful common fields:
 
 ```c
-struct WorldObjectCommonFields741 {
+struct WorldObjectCommonFields {
     u8 unknown_000[0x24];
     u32 entity_id;                    // +0x24
     u8 draw_layer;                    // +0x28, monster 0x0A, item 4
@@ -149,8 +149,8 @@ The `SDrawObjects` creation helpers remove any existing entry with the same ID b
 Both creatures and Mundanes, the game's NPCs, use exact RTTI class `WorldObject_Monster`.
 
 ```c
-struct WorldObjectMonsterLayout741 {
-    WorldObjectCommonFields741 common; // through +0x5B
+struct WorldObjectMonsterLayout {
+    WorldObjectCommonFields common; // through +0x5B
     u8 unknown_05C[0x34];
     MonsterObjectImageSession *image_session; // +0x90
     u8 unknown_094[0x7C];
@@ -163,20 +163,20 @@ struct WorldObjectMonsterLayout741 {
     u8 unknown_1ED[3];
 };                                    // size 0x1F0
 
-struct MonsterPaletteMapping741 {
+struct MonsterPaletteMapping {
     u32 source_first;                 // +0x00, first source palette index
     u32 source_last;                  // +0x04, inclusive upper limit
     u32 palette_selector;             // +0x08, replaced from SDrawObjects
     u32 palette_family;               // +0x0C
 };                                    // size 0x10
 
-struct MonsterObjectImageSessionLayout741 {
+struct MonsterObjectImageSessionLayout {
     u8 unknown_000[0x10];
     void *monster_sprite_resource;    // +0x10
     u8 unknown_014[0x89];
     bool palette_overrides_active;    // +0x9D
     u8 unknown_09E[2];
-    MonsterPaletteMapping741 palette_mappings[4]; // +0xA0
+    MonsterPaletteMapping palette_mappings[4]; // +0xA0
     s32 palette_mapping_count;        // +0xE0, at most 4
 };                                    // size 0xE4
 ```
@@ -188,7 +188,7 @@ The `direction` byte belongs to the shared `WorldObject_Living` base. [`SChangeD
 The packet's optional Mundane name does not populate `living_name`. It creates and attaches a separate name pane:
 
 ```c
-struct WorldObjectNamePaneFields741 {
+struct WorldObjectNamePaneFields {
     u8 pane_bases_and_state[0x198];
     char text[0x40];                  // +0x198, at most 63 bytes plus NUL
     u8 style;                         // +0x1D8
@@ -209,8 +209,8 @@ The inherited living-object byte at `+0xD4` is a separate nonblocking state. The
 Ground items use exact RTTI class `WorldObject_Item`.
 
 ```c
-struct WorldObjectItemLayout741 {
-    WorldObjectCommonFields741 common; // through +0x5B
+struct WorldObjectItemLayout {
+    WorldObjectCommonFields common; // through +0x5B
     u8 unknown_05C[0x20];
     u16 sprite;                       // +0x7C, 0x8000 tag removed
     u8 unknown_07E[2];
@@ -233,7 +233,7 @@ The packet retains only the untagged `sprite` and `dye_color` in the item object
 The normal form of `SDrawHumanObjects` is normalized into this 0x30-byte record before it reaches the renderer. The field order is not identical to the wire order.
 
 ```c
-struct HumanAppearanceRecord741 {
+struct HumanAppearanceRecord {
     u8 resource_prefix;              // +0x00, 0 = male/M and 1 = female/W
     u8 pad_01;
     u16 head_sprite;                 // +0x02
@@ -271,7 +271,7 @@ struct HumanAppearanceRecord741 {
     u8 face_shape;                   // +0x2F
 };                                   // size 0x30
 
-struct WorldObjectHumanLayout741 {
+struct WorldObjectHumanLayout {
     u8 unknown_000[0x24];
     u32 entity_id;                   // +0x24
     u8 unknown_028[0x18];
@@ -280,7 +280,7 @@ struct WorldObjectHumanLayout741 {
     u8 unknown_048[0x48];
     ObjectImageSession *image_session; // +0x90
     u8 unknown_094[0x10];
-    HumanAppearanceRecord741 appearance; // +0xA4
+    HumanAppearanceRecord appearance; // +0xA4
     bool nonblocking_human;          // +0xD4, body sprite 2
     bool is_translucent;             // +0xD5, true only when record value is 1
     u8 unknown_0D6[0x2E];
@@ -291,9 +291,9 @@ struct WorldObjectHumanLayout741 {
     u8 unknown_193[0x5D];
 };                                   // WorldObject_Human size 0x1F0
 
-struct HumanObjectImageSessionLayout741 {
+struct HumanObjectImageSessionLayout {
     u8 image_session_base[0x0C];
-    HumanAppearanceRecord741 appearance; // +0x0C
+    HumanAppearanceRecord appearance; // +0x0C
     u8 unknown_03C[0x8DC];
 };                                   // size 0x918
 ```
@@ -315,9 +315,9 @@ An invisible player still has a live object with `entity_id`, `tile_y`, and `til
 The RTTI `SDrawHumanObjects` object exists only while the decoded packet is being handled, but its layout is useful when pausing inside the handler:
 
 ```c
-struct SDrawHumanObjectsPacketLayout741 {
+struct SDrawHumanObjectsPacketLayout {
     u8 server_packet_base[0x10];
-    u8 decoded_appearance[0x32];    // +0x10, typed in BN as HumanAppearancePacketFields741
+    u8 decoded_appearance[0x32];    // +0x10, reconstructed as HumanAppearancePacketFields
     u8 name_style;                  // +0x42
     u8 pad_43;
     s32 name_length;                // +0x44
@@ -334,7 +334,7 @@ struct SDrawHumanObjectsPacketLayout741 {
 };                                  // size 0x264
 ```
 
-The packet-specific `decoded_appearance` area stores fields in a parser-friendly order. Binary Ninja has it typed as `HumanAppearancePacketFields741`. `render_copy_human_appearance_record` rearranges it into `HumanAppearanceRecord741`; the packet page gives the exact wire order.
+The packet-specific `decoded_appearance` area stores fields in a parser-friendly order. The reconstructed type names it `HumanAppearancePacketFields`. `render_copy_human_appearance_record` rearranges it into `HumanAppearanceRecord`; the packet page gives the exact wire order.
 
 ## Static world object fields
 
