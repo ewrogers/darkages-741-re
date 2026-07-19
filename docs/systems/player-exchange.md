@@ -24,6 +24,8 @@ SExchange Started --> ExchangeDialog
 
 [`CExchange`](../network/client/074-0x4a-exchange.md) contains the local action. [`SExchange`](../network/server/066-0x42-exchange.md) contains the server event. The two acknowledgement flags are updated only by server event `0x05`; clicking OK merely sends the request and records that it was sent.
 
+[`SUserAppearance`](../network/server/005-0x05-user-appearance.md) action-state bit `0x01` also participates when an exchange starts. If the lock is set when the server sends the Started event, the client does not create `ExchangeDialog` and replies with `CExchange` action `4`. The ordinary client-side Start request is not gated by this field, so the server remains responsible for deciding whether to offer the exchange in the first place.
+
 ## ExchangeDialog
 
 The exact RTTI class `ExchangeDialog` derives from `DialogPane` and loads `_nexch.txt`. It attaches controls in this order:

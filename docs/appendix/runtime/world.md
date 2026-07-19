@@ -279,7 +279,8 @@ struct WorldObjectHumanLayout {
     s32 tile_x;                      // +0x44
     u8 unknown_048[0x48];
     ObjectImageSession *image_session; // +0x90
-    u8 unknown_094[0x10];
+    ObjectImageSession *ground_tile_image_session; // +0x94, cloned while height-1 state is active
+    u8 unknown_098[0x0C];
     HumanAppearanceRecord appearance; // +0xA4
     bool nonblocking_human;          // +0xD4, body sprite 2
     bool is_translucent;             // +0xD5, true only when record value is 1
@@ -288,7 +289,9 @@ struct WorldObjectHumanLayout {
     u8 unknown_105[0x0D];
     char name[0x80];                 // +0x112, other players
     u8 direction;                    // +0x192
-    u8 unknown_193[0x5D];
+    u8 unknown_193[0x5A];
+    bool ground_tile_height1_state;  // +0x1ED, from gndattr.tbl
+    u8 unknown_1EE[2];
 };                                   // WorldObject_Human size 0x1F0
 
 struct HumanObjectImageSessionLayout {
@@ -298,7 +301,9 @@ struct HumanObjectImageSessionLayout {
 };                                   // size 0x918
 ```
 
-`WorldObject_User` derives from `WorldObject_Human` and adds 0x10 bytes, for a complete size of 0x200. Both classes therefore use the same offsets above. `image_session` points to `HumanObjectImageSession` for the normal form and `MonsterObjectImageSession` for the disguised form.
+`WorldObject_User` derives from `WorldObject_Human` and adds 0x10 bytes, for a complete size of 0x200. Both classes therefore use the same offsets above. `image_session` points to `HumanObjectImageSession` for the normal form and `MonsterObjectImageSession` for the disguised form. `world_human_get_active_image_session` prefers `ground_tile_image_session` when it is non-null and otherwise returns `image_session`.
+
+`ground_tile_height1_state` is initialized to zero and refreshed after position-change messages. The world controller reads the object's current map cell, looks up its ground tile ID in `gndattr.tbl`, and copies the table entry's height-1 marker here. For the local User, a nonzero value enables the privilege-or-skill movement gate. It also suppresses ordinary Human motion starts and selects a cloned image-session snapshot until the state clears. See [Movement and swimming](../../systems/movement-and-swimming.md#ground-tile-state).
 
 The normal handler keeps two copies of the record. The world-object copy is convenient for reading current logical appearance. The image-session copy owns resource and motion selection. Applying a new record replaces the image session, so callers should not retain the old session pointer.
 

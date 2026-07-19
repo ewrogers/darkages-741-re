@@ -451,6 +451,10 @@ functions:
     name: render_update_snow_particles
     confidence: high
     evidence: Moves snow particles down, removes those below the view, and spawns replacements.
+  - address: "0x005C64F0"
+    name: ui_world_controller_pane_ctor
+    confidence: high
+    evidence: Constructs WorldControllerPane, loads gndattr.tbl and both SOTP flag views, and initializes world rendering and object-controller state.
   - address: "0x005C7660"
     name: map_apply_seasonal_tile_mode
     confidence: high
@@ -531,6 +535,10 @@ functions:
     name: ui_world_pane_draw_to_target
     confidence: high
     evidence: Copies WorldPane output to its target and applies the ambient-color and 8-bit light-mask blend when lighting is active below intensity 0x20.
+  - address: "0x005CE990"
+    name: ui_world_controller_handle_object_message
+    confidence: high
+    evidence: Updates world indexes and rendering state for object messages, answers ground-attribute query selector 5, and invokes the object position-refresh virtual after movement.
   - address: "0x005CF360"
     name: map_get_sotp_render_flags
     confidence: high
@@ -551,6 +559,10 @@ functions:
     name: map_get_collision_level
     confidence: high
     evidence: Retains the highest WorldObject +0x31 collision level at one map cell, with fully blocked static SOTP supplying level 1 when no dynamic level does.
+  - address: "0x005CFA70"
+    name: ground_attribute_table_get
+    confidence: high
+    evidence: Returns the interned gndattr.tbl entry for one ground tile ID, extending the indexed table in 1024-entry blocks when needed.
   - address: "0x005D2B70"
     name: render_use_base_ground_bank
     confidence: high
@@ -599,10 +611,18 @@ functions:
     name: map_refresh_collision_cache
     confidence: high
     evidence: Refreshes dirty cells in the map's width-by-height byte collision cache with map_get_collision_level.
+  - address: "0x005DB6D0"
+    name: world_object_set_ground_paint
+    confidence: high
+    evidence: Replaces the WorldObject ground-paint record and publishes a change only when its flag, color, alpha, or depth fields differ.
   - address: "0x005DBA80"
     name: world_object_set_name_pane
     confidence: high
     evidence: Replaces the reference-counted WorldObject_Name_Pane pointer at common WorldObject offset +0x58.
+  - address: "0x005DBE80"
+    name: world_object_query_ground_attributes
+    confidence: high
+    evidence: Broadcasts object query selector 5 so WorldControllerPane can return the gndattr.tbl entry for the object's current ground tile.
   - address: "0x005DD1C0"
     name: world_effect_start_animation
     confidence: high
@@ -626,7 +646,19 @@ functions:
   - address: "0x005DDFC0"
     name: world_human_object_ctor
     confidence: high
-    evidence: Constructs exact RTTI WorldObject_Human by calling world_living_object_ctor, installing the Human vtables, and selecting draw layer 7.
+    evidence: Constructs exact RTTI WorldObject_Human, installs the Human vtables, selects draw layer 7, and clears ground-tile state byte +0x1ED.
+  - address: "0x005DE110"
+    name: world_human_start_motion
+    confidence: high
+    evidence: Suppresses ordinary living-object motion starts while the gndattr.tbl height-1 state is active; otherwise delegates to world_living_start_motion.
+  - address: "0x005DE150"
+    name: world_human_set_ground_tile_state
+    confidence: high
+    evidence: Caches the gndattr.tbl height-1 marker at WorldObject_Human +0x1ED and selects or clears a cloned human image-session snapshot when it changes.
+  - address: "0x005DE1E0"
+    name: world_human_refresh_ground_tile_state
+    confidence: high
+    evidence: Queries current ground attributes, updates the Human height-1 state, and refreshes direction, motion, and ground paint after a position change.
   - address: "0x005DE280"
     name: world_item_object_ctor
     confidence: high
@@ -639,6 +671,10 @@ functions:
     name: render_item_object
     confidence: high
     evidence: Draws a ground item and computes mode 3 for a nonzero fade selector, although the original final body blit reloads the ordinary object mode instead of consuming that local result.
+  - address: "0x005DE820"
+    name: world_item_refresh_ground_paint
+    confidence: high
+    evidence: Applies ordinary gndattr paint, but substitutes bytes 39 AE EF 80 and depth 100 when the tile's height-1 marker is set.
   - address: "0x005DEF70"
     name: render_copy_human_appearance_record
     confidence: high
@@ -651,6 +687,18 @@ functions:
     name: render_living_object
     confidence: high
     evidence: Draws a living sprite with normal, highlighted, or transparent state.
+  - address: "0x005DFD80"
+    name: world_human_get_active_image_session
+    confidence: high
+    evidence: Returns the cloned ground-tile image session at Human +0x94 when present, otherwise the normal image session at +0x90.
+  - address: "0x005DFE40"
+    name: world_human_set_ground_image_session
+    confidence: high
+    evidence: Replaces the reference-counted ground-tile image session at WorldObject_Human +0x94.
+  - address: "0x005DFED0"
+    name: world_human_clear_ground_image_session
+    confidence: high
+    evidence: Clears and releases the cloned ground-tile image session at WorldObject_Human +0x94.
   - address: "0x005E0070"
     name: render_human_apply_appearance
     confidence: high
@@ -679,6 +727,10 @@ functions:
     name: world_living_handle_timer_event
     confidence: high
     evidence: For motion timer 0x02000001, advances the living animation only when the scheduled generation matches the current motion, so an older timer cannot interrupt a newer motion.
+  - address: "0x005E2340"
+    name: world_living_refresh_ground_paint
+    confidence: high
+    evidence: Queries current gndattr color and depth fields and updates the living object's ground-paint record.
   - address: "0x005E2630"
     name: world_monster_object_ctor
     confidence: high
@@ -722,7 +774,11 @@ functions:
   - address: "0x005EFFE0"
     name: map_can_move_direction
     confidence: high
-    evidence: Checks bounds, the saved appearance action lock, dynamic occupants, CreatureType behavior, and direction-specific SOTP masks for a proposed move.
+    evidence: Checks bounds and the saved appearance action lock, lets privilege levels 1 and 2 bypass the remaining dynamic-object and direction-specific SOTP collision checks, and otherwise applies CreatureType behavior and SOTP masks.
+  - address: "0x005F0980"
+    name: map_has_special_movement_permission
+    confidence: high
+    evidence: Grants permission for any nonzero SStatus privilege; otherwise scans the 89 retained skill names for localized message slot 0x77.
   - address: "0x005F1BF0"
     name: net_handle_map_size_server_packet
     confidence: high
@@ -933,6 +989,8 @@ comments:
     text: Write the complete contiguous map buffer once. The write count is not checked, and the caller ignores this function's result.
   - address: "0x005B9761"
     text: fclose flushes any buffered map bytes and releases the exclusive handle before map activation continues.
+  - address: "0x005C67E2"
+    text: Load gndattr.tbl at WorldControllerPane construction; current map ground tile IDs later index this table.
   - address: "0x005C789E"
     text: Build the current map's six-digit HEA resource name as %06d.hea.
   - address: "0x005C8A4F"
@@ -945,6 +1003,12 @@ comments:
     text: Remove any existing shared world object with the same entity ID before creating the replacement WorldObject_Item.
   - address: "0x005CE280"
     text: The validated launcher patch wraps the complete WorldPane draw here, clears a bounded item-entry buffer before the original call, then replays captured items in temporary blend mode 3 when native Alt modifier bit 0x01 is set.
+  - address: "0x005CEFDA"
+    text: After processing an object position-change message, call primary-vtable slot 0x28; Human and User implementations refresh their current ground-tile state.
+  - address: "0x005CF03F"
+    text: Object query selector 5 reads the ground tile ID at the object's current coordinates and returns its gndattr.tbl entry.
+  - address: "0x005CF0D8"
+    text: The query's first output byte receives the gndattr.tbl height-1 marker cached by WorldObject_Human +0x1ED.
   - address: "0x005CF3B0"
     text: Build a one-based static-tile render table from the high nibble of each SOTP.DAT byte.
   - address: "0x005CF4F0"
@@ -977,6 +1041,10 @@ comments:
     text: Advance the effect frame through the sequence loaded from Effect.tbl and request the matching cached image.
   - address: "0x005DDFEB"
     text: WorldObject_Human writes draw layer 7 after the shared WorldObject_Living constructor; WorldObject_Monster later overrides its layer with 10.
+  - address: "0x005DE123"
+    text: While WorldObject_Human +0x1ED is nonzero, return without starting the common living-object motion sequence.
+  - address: "0x005DE171"
+    text: Store the current ground tile's gndattr.tbl height-1 marker at WorldObject_Human +0x1ED.
   - address: "0x005DE310"
     text: Retain SDrawObjects ground-item dye_color at WorldObject_Item +0xB4.
   - address: "0x005DE366"
@@ -989,12 +1057,18 @@ comments:
     text: A nonzero draw selector changes an ordinary item blend mode from 1 to faded mode 3, matching the selector used by the native self replay.
   - address: "0x005DE7E4"
     text: The original final item-body blit reloads WorldObject_Item +0xB0 and ignores the faded local mode at EBP-0x18. The validated launcher patch leaves these bytes unchanged, temporarily stores mode 3 at +0xB0 for the replay, then restores the original value.
+  - address: "0x005DE8B9"
+    text: Items on a gndattr.tbl height-1 tile substitute a fixed translucent ground-paint record with bytes 39 AE EF 80 and depth 100.
   - address: "0x005DEF79"
     text: Rearrange packet-owned appearance fields into HumanAppearanceRecord. Shield, overcoat, and later accessories move to renderer-specific offsets.
   - address: "0x005DF378"
     text: WorldObject_Living uses draw layer 7, after items and before static map art.
   - address: "0x005DF414"
     text: Initialize WorldObject_Living +0xD4 to false. Human appearance can later set this nonblocking state; normal monster construction leaves it false.
+  - address: "0x005DFD93"
+    text: Prefer the cloned ground-tile image session at Human +0x94; fall back to the normal session at +0x90.
+  - address: "0x005DFE72"
+    text: WorldObject_Human +0x94 owns the cloned image session used while the gndattr.tbl height-1 state is active.
   - address: "0x005E00FB"
     text: Copy the complete 0x30-byte normalized appearance record to WorldObject_Human +0xA4.
   - address: "0x005E0119"
@@ -1045,6 +1119,8 @@ comments:
     text: For non-Passable creatures, movement normally blocks. Type 3, project-named Solid, is the sole exception if inherited WorldObject_Living +0xD4 is already nonblocking.
   - address: "0x005F0676"
     text: Direction values 0 through 3 select collision masks 0x01, 0x02, 0x04, and 0x08 for left, down, right, and up.
+  - address: "0x005F0A13"
+    text: If the local Human has the gndattr.tbl height-1 state, require privilege or the localized skill name from message slot 0x77 before sending CMove.
   - address: "0x005F0D20"
     text: WorldPane receives keyboard event types 8 and 9 with its live this pointer. The validated launcher patch leaves this handler unchanged and invalidates the last saved pane from raw key-down and key-up wrappers instead.
   - address: "0x005F1D3E"

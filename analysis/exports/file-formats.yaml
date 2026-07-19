@@ -214,7 +214,19 @@ functions:
   - address: "0x0058B8C0"
     name: file_load_ground_attribute_table
     confidence: high
-    evidence: Loads structured ground attributes from gndattr.tbl.
+    evidence: Loads structured ground attributes from gndattr.tbl in the active asset archive.
+  - address: "0x0058B930"
+    name: file_parse_ground_attribute_table
+    confidence: high
+    evidence: Parses the structured set_attr records and applies each attribute set to its listed tile IDs and inclusive ranges.
+  - address: "0x0058B9B0"
+    name: file_apply_ground_attribute_record
+    confidence: high
+    evidence: Interns one parsed attribute set and assigns it to each ground tile ID covered by the record's apply_to list.
+  - address: "0x0058BA80"
+    name: file_intern_ground_attribute_set
+    confidence: high
+    evidence: Converts ATTR_gnd_paint height 1 and 2 into separate flags while retaining larger heights as color-and-depth paint records.
   - address: "0x00593B00"
     name: render_palette_pack_16bit
     confidence: high
@@ -297,6 +309,10 @@ comments:
     text: A PAL file is exactly 256 RGB triples, or 0x300 bytes, with no header.
   - address: "0x0055A650"
     text: Server table text keeps byte zero and swaps pairs starting at byte one. Applying it twice restores the original.
+  - address: "0x0058BACB"
+    text: ATTR_gnd_paint height 1 becomes the first special ground-tile flag instead of an ordinary paint depth.
+  - address: "0x0058BADD"
+    text: ATTR_gnd_paint height 2 becomes a second stored flag; the Human movement gate does not read it.
   - address: "0x00593B00"
     text: Palette index zero stays packed zero for color-key transparency. Black at another index is changed to packed value one.
   - address: "0x005B8F30"

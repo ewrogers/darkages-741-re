@@ -94,7 +94,7 @@ functions:
   - address: "0x005F2190"
     name: net_handle_exchange_started
     confidence: high
-    evidence: "Handles SExchange event 0x00 before a dialog exists, creates ExchangeDialog when UI state allows it, or replies with CExchange Cancel otherwise."
+    evidence: "Handles SExchange event 0x00 before a dialog exists. SUserAppearance action-state bit 0 or another active exchange blocks dialog creation and replies with CExchange action 4; otherwise it creates ExchangeDialog."
 comments:
   - address: "0x00469E33"
     text: "Write ExchangeDialog +0x62C movable = 0. The inherited DialogPane pointer handler already implements dragging when this field is nonzero."

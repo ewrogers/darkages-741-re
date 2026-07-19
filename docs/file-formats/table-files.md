@@ -35,7 +35,7 @@ parse_palette_line(tokens):
 | --- | --- | --- |
 | `Effect.tbl` | Effect frame sequences | Numeric text records described on the [Effect table](effect-table.md) page |
 | `gndani.tbl`, `stcani.tbl` | Tile animation cycles | Numeric text described on the [animation table](tile-animation-tables.md) page |
-| `gndattr.tbl` | Ground attributes | Structured text with decimal fields and comments |
+| `gndattr.tbl` | Ground paint and special tile states | Structured `set_attr` records applied to tile IDs and inclusive ranges |
 | `color.tbl` | Named color sets | Record ID followed by six RGB triples |
 | `color*.tbl` | Variant color sets | Related RGB text records |
 | `meffect.tbl` | Motion effect definitions | Structured text with several numeric fields |
@@ -45,6 +45,20 @@ parse_palette_line(tokens):
 | `trans_*.tbl` | Optional translation mappings | Reader exists, but no local samples were found |
 
 Do not decode every text field as UTF-8. ASCII is common, while Korean text may use Windows code page 949. Preserve the original bytes when a field's language is not known.
+
+### Ground attributes
+
+`gndattr.tbl` assigns an `ATTR_gnd_paint` tuple to one or more ground tile IDs:
+
+```text
+[ set_attr:
+    [ ATTR_gnd_paint: (red, green, blue, alpha), height ]
+  apply_to:
+    tile_id (first_id, last_id)
+]
+```
+
+The Korean file comment describes `height` as how far up an object the color should be painted. The client reserves heights `1` and `2` as flags instead of ordinary paint depths. Height `1` becomes the ground-tile state used by the Human movement permission check. Items on those tiles receive a fixed translucent paint override. Height `2` becomes a second stored flag, but it does not feed that Human movement gate. See [Movement and swimming](../systems/movement-and-swimming.md#ground-tile-state).
 
 ## Writing tables
 

@@ -17,6 +17,8 @@ The GUI layout names the button `BTN_SCREENSHOT`. `ui_gui_back_activate_action` 
 
 The writer captures the completed client canvas and saves an uncompressed 16-bit Windows bitmap in the working directory. It starts with `lod001.bmp`, scans upward for the first missing filename, and stops before `lod1000.bmp`. The normal 640 by 480 client canvas produces `0x96000` bytes of pixel data.
 
+The writer contains an optional stamp-selection path. Any nonzero `SStatus` privilege while Shift is held skips that path. The feature gate is a constant false stub in this exact binary, so no stamp is selected for ordinary users either and the privilege branch produces no visible difference.
+
 This is unrelated to the RTTI packet named `SScreenShot`. That server packet opens a keyed town map. It does not invoke either local capture path.
 
 ## Capturing an album portrait

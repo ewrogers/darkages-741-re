@@ -50,7 +50,15 @@ functions:
   - address: "0x0041E490"
     name: ui_article_list_dialog_ctor
     confidence: high
-    evidence: "Loads _narlist.txt and parses the article-list response body."
+    evidence: "Loads _narlist.txt, parses the article-list response body, and adds its optional Hilight control for any nonzero SStatus privilege."
+  - address: "0x0041EED0"
+    name: ui_article_list_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Handles ArticleListDialog keyboard commands and enables modifier-based multi-selection only for a nonzero privilege."
+  - address: "0x0041F2E0"
+    name: ui_article_list_update_action_controls
+    confidence: high
+    evidence: "Enables or disables article-list actions from current selection state, including the privileged Hilight control."
   - address: "0x0041F450"
     name: ui_article_list_apply_server_body
     confidence: high
@@ -63,6 +71,34 @@ functions:
     name: ui_article_list_show_operation_reply
     confidence: high
     evidence: "Consumes SBulletin response 7 status plus string8 message and creates DeleteReplyAlert."
+  - address: "0x0041FAE0"
+    name: ui_article_list_confirm_delete
+    confidence: high
+    evidence: "Builds the article delete confirmation and preserves the privileged modifier-based multi-selection."
+  - address: "0x0041FDD0"
+    name: ui_article_list_handle_selection_change
+    confidence: high
+    evidence: "Maintains privileged toggle and range selection from the live keyboard modifiers and invalidates changed rows."
+  - address: "0x00420040"
+    name: ui_article_list_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ArticleListPane and allocates its multi-selection storage only for a nonzero privilege."
+  - address: "0x00420360"
+    name: ui_article_list_delete_selected
+    confidence: high
+    evidence: "Deletes the current article when unprivileged or sends one request for every selected article when privileged."
+  - address: "0x00420450"
+    name: ui_article_list_highlight_selected
+    confidence: high
+    evidence: "Highlights the current article when unprivileged or sends one request for every selected article when privileged."
+  - address: "0x00420590"
+    name: ui_article_list_remove_selected_rows
+    confidence: high
+    evidence: "Removes the current row when unprivileged or sorts and removes every selected row when privileged."
+  - address: "0x004209B0"
+    name: ui_article_list_draw_row
+    confidence: high
+    evidence: "Draws article rows and uses palette index 0x58 for privileged multi-selected rows."
   - address: "0x00420D00"
     name: net_send_bulletin_article_list_request
     confidence: high

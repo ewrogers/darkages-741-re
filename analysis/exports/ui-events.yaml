@@ -139,10 +139,14 @@ functions:
     name: ui_pane_schedule_timer
     confidence: high
     evidence: "Schedules a timer for a Pane by passing its TimerHandler subobject at +0x11C."
+  - address: "0x00464120"
+    name: event_arm_hidden_keyboard_sequence
+    confidence: high
+    evidence: "Arms a ten-second keyboard-sequence reader for literal nim@wmfRpa and a later wake timer; no static caller is present in this build."
   - address: "0x00464180"
     name: event_dispatcher_tick
     confidence: high
-    evidence: "Main-thread tick that drains queued events and invokes at most 0x28 due TimerHandler callbacks."
+    evidence: "Main-thread tick that drains queued events and invokes at most 0x28 due TimerHandler callbacks. An armed hidden-sequence timeout calls exit(-1) only for raw privilege level 1."
   - address: "0x00464430"
     name: event_dispatcher_tick_virtual
     confidence: high

@@ -128,6 +128,8 @@ The wire values for attributes, stat points, and weight are widened in this mode
 
 The retained stats bytes, retained modifier bytes, and `opaque_status_word` have no identified readers in the traced status paths. They remain named by storage behavior rather than an assumed game meaning.
 
+`privilege_level` has four direct readers: `map_can_move_direction`, `map_has_special_movement_permission`, and the two `MapUserInterface` getters `ui_world_pane_is_privileged` and `ui_world_pane_get_privilege_level`. The boolean getter fans out to bulletin, line-input, and dormant screenshot behavior. The raw getter has one exact-level consumer in the event dispatcher. The complete value matrix is on the [`SStatus` privilege page](../../network/server/008-0x08-status.md#privilege-behavior).
+
 ## Local user action state
 
 [`SUserAppearance`](../../network/server/005-0x05-user-appearance.md) owns the self-object and action-state fields embedded in `WorldUserFunc`. A full update writes `self_object_id`, cached facing, the raw guild value, character class, the final unknown byte, and `appearance_action_state`. A state-only update writes only the action state.
@@ -137,3 +139,5 @@ The stored action state is `wire_appearance_state & 0x7F`. Bit `0x01` rejects lo
 `WorldPane_Impl` exposes virtual getters for every field above except cached facing. The guild value is returned without boolean normalization, while the final byte has no identified gameplay consumer. The packet page records the limits on the supplied guild, class, and direction labels.
 
 The constructor clears `appearance_action_state`, and `session_update_from_user_appearance_packet` is its only runtime writer. `SStatus` does not update it. The server can change it during play by resending `SUserAppearance`; wire bit `0x80` lets that resend change only the action state.
+
+Direct field readers are `ui_world_pane_handle_drop_event`, `map_can_move_direction`, and `net_handle_exchange_started`. `ui_world_pane_get_local_action_state` exposes the same byte through `MapUserInterface`; its only identified caller is `net_send_change_slot`. Every consumer masks bit `0x01`. See [`SUserAppearance`](../../network/server/005-0x05-user-appearance.md#action-state-and-partial-updates) for the resulting client behavior.

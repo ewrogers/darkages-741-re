@@ -114,3 +114,9 @@ The decoded body bypasses the server packet factory. The world dispatcher create
 Responses `7` and `8` do not create another child dialog. They are delivered to the active article or mail dialog. Response `7` opens a reply alert from the supplied message. Response `8` refreshes the current article list by sending another [`CBulletin`](../client/059-0x3b-bulletin.md) action `2` request.
 
 When no bulletin session exists, the outer handler also requires bit 0 of the first payload byte to be clear before constructing one. The purpose of that admission check remains unresolved.
+
+## Privileged article controls
+
+Any nonzero [`SStatus`](008-0x08-status.md#privilege-behavior) privilege changes `ArticleListDialog`. The constructor adds the optional control spelled `Hilight` in `_narlist.txt`. The list pane also allocates multi-selection state, honors modifier-based range and toggle selection, colors selected rows differently, and applies delete or highlight to every selected article. Without privilege, delete and highlight operate only on the current row.
+
+This is a simple nonzero test. Privilege values `1`, `2`, and `3` receive the same bulletin behavior.

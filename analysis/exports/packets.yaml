@@ -235,6 +235,10 @@ functions:
     name: ui_inventory_update_gold_from_status_packet
     confidence: high
     evidence: "Copies SStatus gold into the inventory pane and redraws its currency display."
+  - address: "0x00490F40"
+    name: net_send_change_slot
+    confidence: high
+    evidence: "Suppresses CChangeSlot while SUserAppearance action-state bit 0 is set; otherwise writes opcode 0x30, zero, source slot, and destination slot, excluding encoded slot 0x3C."
   - address: "0x00491050"
     name: ui_new_skill_inventory_pane_ctor
     confidence: high
@@ -971,10 +975,18 @@ functions:
     name: ui_text_copy_bytes
     confidence: high
     evidence: "Copies the smaller of the requested byte count and current text length, appends a null terminator, and returns the copied length."
+  - address: "0x0057DD30"
+    name: ui_line_input_paste_clipboard
+    confidence: high
+    evidence: "Pastes clipboard text into LineInputPane only for distribution modes 1 or 15 or for any nonzero SStatus privilege."
   - address: "0x00584A00"
     name: ui_line_input_copy_text
     confidence: high
     evidence: "Calls the LineInputPane text control's bounded copy method and returns its copied byte length."
+  - address: "0x00585040"
+    name: ui_line_input_handle_event
+    confidence: high
+    evidence: "Handles Pane::LineInputPane events and suppresses Ctrl+V outside distribution modes 1 and 15 unless SStatus privilege is nonzero."
   - address: "0x0058F640"
     name: ui_town_map_lookup_current_map
     confidence: high
@@ -1806,7 +1818,7 @@ functions:
   - address: "0x005EF790"
     name: ui_world_pane_handle_drop_event
     confidence: high
-    evidence: "Routes a dragged-pane drop through eligible child panes, then handles an unconsumed inventory-item drop against the world map."
+    evidence: "Rejects the drop while SUserAppearance action-state bit 0 is set; otherwise routes it through eligible child panes and handles an unconsumed inventory-item drop against the world map."
   - address: "0x005F0900"
     name: ui_world_pane_request_change_direction
     confidence: high
@@ -1814,7 +1826,7 @@ functions:
   - address: "0x005F09E0"
     name: map_try_move_local_player
     confidence: high
-    evidence: "Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision, selects the ScrollLevel-controlled local walk sequence, and sends CMove."
+    evidence: "Applies the special-state privilege-or-skill permission check, then the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before selecting the local walk sequence and sending CMove."
   - address: "0x005F0B50"
     name: input_map_key_to_world_direction
     confidence: high
@@ -2007,10 +2019,18 @@ functions:
     name: net_handle_field_map_server_data
     confidence: high
     evidence: "WorldPane's raw opcode 0x2E branch reparses the decoded SFieldMap body and creates the field-map pane instead of consuming the factory-built packet object."
+  - address: "0x005F9D90"
+    name: ui_world_pane_is_privileged
+    confidence: high
+    evidence: "MapUserInterface virtual getter returns whether WorldUserFunc privilege_level is nonzero; bulletin, line-input, and dormant screenshot branches consume it."
+  - address: "0x005F9DC0"
+    name: ui_world_pane_get_privilege_level
+    confidence: high
+    evidence: "MapUserInterface virtual getter returns raw WorldUserFunc privilege_level 0 through 3; the event dispatcher compares it exactly with 1 in a dormant timeout path."
   - address: "0x005F9E50"
     name: ui_world_pane_get_local_action_state
     confidence: high
-    evidence: "WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc."
+    evidence: "WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc; CChangeSlot is its only identified indirect consumer."
   - address: "0x005F9EC0"
     name: ui_world_pane_get_self_object_id
     confidence: high
@@ -2992,7 +3012,7 @@ comments:
   - address: "0x0059CBAC"
     text: "Read the one-byte character class. Project protocol vocabulary supplies the labels; local code directly special-cases numeric value 2."
   - address: "0x0059CBBA"
-    text: "Read appearance_action_state. Bit 0 blocks movement and several actions; bit 0x80 marks a state-only update."
+    text: "Read appearance_action_state. Bit 0 blocks movement, WorldPane drops, exchange opening, and CChangeSlot; bit 0x80 marks a state-only update."
   - address: "0x0059CBC0"
     text: "Read the final parsed appearance byte. It is separate from appearance_action_state and has no identified gameplay consumer."
   - address: "0x0059CCE2"
@@ -3145,8 +3165,10 @@ comments:
     text: "Apply a requested turn to the local WorldObject_User before sending the request."
   - address: "0x005F093F"
     text: "Send CChangeDirection as opcode 0x11 followed by one direction byte."
+  - address: "0x005F0A13"
+    text: "When WorldObject_Human +0x1ED contains the current ground tile's gndattr.tbl height-1 marker, require any privilege or the localized skill name from message slot 0x77 before movement."
   - address: "0x005F0AF4"
-    text: "Normal local movement uses direction-specific dynamic-object and SOTP collision checks. It does not inspect ground tile IDs or search the skillbook for Swimming."
+    text: "After the cached ground-attribute gate, normal local collision uses dynamic objects and direction-specific SOTP flags; ground tile IDs are not part of that later collision test."
   - address: "0x005F0B0B"
     text: "ScrollLevel zero selects four 114 ms local walk ticks; nonzero selects eight 57 ms ticks. Both sequences total 456 ms, and CMove is sent afterward through the same path."
   - address: "0x005F0B74"
@@ -3446,7 +3468,7 @@ comments:
   - address: "0x005FD392"
     text: "Session skill removal accepts slots 1 through 89; other values are ignored."
   - address: "0x005FD3CC"
-    text: "Store appearance_state & 0x7F at WorldUserFunc +0x15C88. Bit 0 blocks local movement and several actions; this is the field's only runtime writer."
+    text: "Store appearance_state & 0x7F at WorldUserFunc +0x15C88. Bit 0 blocks movement, WorldPane drops, exchange opening, and CChangeSlot; this is the field's only runtime writer."
   - address: "0x005FD3DC"
     text: "Bit 0x80 means the packet only changes the stored low-seven-bit state. Other self appearance fields remain unchanged."
   - address: "0x005FD3FA"
@@ -3732,7 +3754,7 @@ packet_indexes:
         builder: "0x00490F40"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x00490F40 writes opcode 0x30 and submits the body."
+        evidence: "Builder 0x00490F40 writes opcode 0x30, zero, source slot, and destination slot, and suppresses the packet while the SUserAppearance action lock is set."
         page: "docs/network/client/048-0x30-change-slot.md"
       - opcode: "0x31"
         friendly_name: "Confirm"

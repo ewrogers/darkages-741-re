@@ -25,7 +25,30 @@ The byte after the opcode selects the blocks that follow. The high two bits are 
 | `0x02` | Standalone state bit; called `Swimming` in project protocol vocabulary, but no 7.41 consumer has been found |
 | `0x01` | Makes the mail-state byte in the modifiers block active |
 
-The privilege value is not reduced to a single administrator boolean. `WorldUserFunc` keeps all four possible values. Several helpers treat any nonzero value as privileged, while map movement has a special bypass for values `1` and `2`. The exact player-facing distinction among values `1`, `2`, and `3` remains unresolved.
+The privilege value is not reduced to a single administrator boolean. `WorldUserFunc` keeps all four possible values, and the client uses both a general `privilege_level != 0` test and exact-value tests.
+
+## Privilege behavior
+
+| Value | Client behavior |
+| ---: | --- |
+| `0` | Ordinary client behavior |
+| `1` | All general privileged behavior, map-collision bypass, and one dormant timeout-exit branch |
+| `2` | All general privileged behavior and map-collision bypass |
+| `3` | General privileged behavior only; no map-collision bypass |
+
+The general nonzero test enables these behaviors:
+
+- `ArticleListDialog` adds its `Hilight` control, modifier-based multi-selection, selected-row coloring, and bulk delete or highlight requests.
+- `LineInputPane` permits Ctrl+V paste even when the active distribution mode would normally suppress it.
+- Local movement bypasses a separate special-movement permission check. Without privilege, that check searches the 89-entry skill array for the name stored in localized message slot `0x77`. The exact localized label is not present in the supplied client files.
+
+Movement treats values `1` and `2` more broadly. After destination bounds and the [`SUserAppearance`](005-0x05-user-appearance.md) action lock are checked, either value bypasses dynamic occupants and direction-specific `SOTP.DAT` collision. Value `3` does not. The same test is used while building click-movement paths, so the path search and the final local step agree.
+
+The screenshot writer also has a nonzero-privilege plus Shift branch that skips optional stamp selection. The stamp gate is a constant false stub in this binary, so ordinary and privileged screenshots are visually identical here.
+
+One raw-value consumer distinguishes only value `1`. If the event dispatcher has armed its hidden keyboard-sequence reader and its ten-second deadline expires, value `1` calls `exit(-1)`. The arming helper has no static caller in this build, so this appears dormant rather than part of normal privileged play.
+
+Privilege does not override the appearance action lock. That bit is tested before the movement bypass.
 
 The standalone `0x02` status bit is separate from the action state carried by [`SUserAppearance`](005-0x05-user-appearance.md). No `SStatus` handler copies it to the saved movement/action lock. Runtime changes to that lock require another opcode `0x05`, normally using its state-only form.
 
@@ -150,6 +173,6 @@ The `opaque_status_word` has a repeatable but incomplete pattern. Across the 31 
 
 ## Known limits
 
-The exact meanings of the three retained stats bytes, five retained or unknown modifier bytes, `opaque_status_word`, privilege sublevels, and standalone `0x02` state are not yet established. The game does have a skill named Swimming, but the client does not use this `SStatus` bit in its movement or swimming-render paths. The value remains preserved without assigning it that behavior.
+The exact meanings of the three retained stats bytes, five retained or unknown modifier bytes, `opaque_status_word`, server-facing names for privilege sublevels, and standalone `0x02` state are not yet established. The game does have a skill named Swimming, but the client does not use this `SStatus` bit in its movement or swimming-render paths. The value remains preserved without assigning it that behavior.
 
 No client request is required before an ordinary status update. During the supplied login flow the server sends one full snapshot, then smaller packets as its load loop adds equipment and inventory entries.

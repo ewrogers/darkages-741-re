@@ -59,7 +59,14 @@ Bit `0x80` of `action_state` changes how the packet is applied:
 
 This makes `0x80` an update marker rather than a persistent state bit. The packet remains fixed-size in both forms, so the other fields are still parsed and then ignored during a state-only update.
 
-Persistent bit `0x01` is an action lock. When set, the client rejects a proposed local move before checking characters or map collision. The same bit restricts several other actions, so it is broader than a `can_move` boolean and its sense is inverted: one means locked.
+Persistent bit `0x01` is an action lock. Its sense is inverted: one means locked. Every confirmed reader masks only bit `0`, so bits `0x02` through `0x40` remain retained but unused.
+
+| Client path | Effect while locked |
+| --- | --- |
+| Tile movement and click-path search | Rejects the step before privilege, occupants, or `SOTP.DAT` collision |
+| Dragged-pane drop reaching `WorldPane` | Rejects the drop, including an inventory item dropped onto the map |
+| Incoming exchange start | Does not open `ExchangeDialog` and sends `CExchange` action `4` to the requester |
+| Inventory slot rearrangement | Suppresses `CChangeSlot` |
 
 ```c
 if (appearance_action_state & 0x01)
@@ -72,7 +79,9 @@ move_local_object(direction);
 send_CMove(direction);
 ```
 
-Bits `0x02` through `0x40` have no identified consumers.
+The lock does not bypass into a common global `can_act` helper. The normal [`CUse`](../client/028-0x1c-use.md), [`CUseSkill`](../client/062-0x3e-use-skill.md), and [`CUseSpell`](../client/015-0x0f-use-spell.md) activation paths do not read this field. Item use consults the server-managed denial table. Skills and spells consult their denial tables and the separate [`SActionDelay`](063-0x3f-action-delay.md) pane flags. Direction-only turning also remains available because it sends `CChangeDirection` without calling the movement check.
+
+This is a client-side trace, not a claim that the server accepts those packets while the character is locked. The server can enforce a broader gameplay restriction independently.
 
 ## Runtime changes
 

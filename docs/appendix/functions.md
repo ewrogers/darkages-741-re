@@ -63,6 +63,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `event_unregister_pane` | `0x00463E80` | high | Clears Pane +0x188 bit 0x02 and removes the pane subtree from EventHandlerList. |
 | `event_enqueue` | `0x00463F50` | high | Thin synchronized queue wrapper used when an event originates off the main thread. |
 | `event_dispatch_immediate` | `0x00463F70` | high | Validates and centrally dispatches an Event, then performs family-specific owned-payload cleanup. |
+| `event_arm_hidden_keyboard_sequence` | `0x00464120` | high | Arms a ten-second keyboard-sequence reader for literal nim@wmfRpa and a later wake timer; no static caller is present in this build. |
 | `event_dispatcher_tick_virtual` | `0x00464430` | high | Calls EventDispatcher primary-vtable +0x08, which resolves to event_dispatcher_tick. |
 | `event_register_pane_internal` | `0x00464450` | high | Calls EventHandlerList virtual insert and refreshes dispatcher state. |
 | `event_unregister_pane_internal` | `0x004644B0` | high | Calls EventHandlerList virtual subtree removal and refreshes dispatcher state. |
@@ -162,10 +163,19 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_bulletin_open_mail_list` | `0x0041D660` | high | Creates exact RTTI MailListDialog for SBulletin response type 4. |
 | `ui_bulletin_open_mail` | `0x0041D740` | high | Creates exact RTTI MailDialog for SBulletin response type 5, or an alert when its mailbox ID is zero. |
 | `ui_board_list_dialog_ctor` | `0x0041D8B0` | high | Loads _nbdlist.txt and parses a heading plus repeated u16 board ID and string8 name records. |
-| `ui_article_list_dialog_ctor` | `0x0041E490` | high | Loads _narlist.txt and parses the article-list response body. |
+| `ui_article_list_dialog_ctor` | `0x0041E490` | high | Loads _narlist.txt, parses the article-list response body, and adds its optional Hilight control for any nonzero SStatus privilege. |
+| `ui_article_list_dialog_handle_keyboard_event` | `0x0041EED0` | high | Handles ArticleListDialog keyboard commands and enables modifier-based multi-selection only for a nonzero privilege. |
+| `ui_article_list_update_action_controls` | `0x0041F2E0` | high | Enables or disables article-list actions from current selection state, including the privileged Hilight control. |
 | `ui_article_list_apply_server_body` | `0x0041F450` | high | Routes active-list SBulletin response types 2, 7, and 8. |
 | `ui_article_list_apply_post_reply` | `0x0041F840` | high | Consumes SBulletin response 8 status, optionally shows an alert, and refreshes the article list. |
 | `ui_article_list_show_operation_reply` | `0x0041F940` | high | Consumes SBulletin response 7 status plus string8 message and creates DeleteReplyAlert. |
+| `ui_article_list_confirm_delete` | `0x0041FAE0` | high | Builds the article delete confirmation and preserves the privileged modifier-based multi-selection. |
+| `ui_article_list_handle_selection_change` | `0x0041FDD0` | high | Maintains privileged toggle and range selection from the live keyboard modifiers and invalidates changed rows. |
+| `ui_article_list_pane_ctor` | `0x00420040` | high | Constructs exact RTTI ArticleListPane and allocates its multi-selection storage only for a nonzero privilege. |
+| `ui_article_list_delete_selected` | `0x00420360` | high | Deletes the current article when unprivileged or sends one request for every selected article when privileged. |
+| `ui_article_list_highlight_selected` | `0x00420450` | high | Highlights the current article when unprivileged or sends one request for every selected article when privileged. |
+| `ui_article_list_remove_selected_rows` | `0x00420590` | high | Removes the current row when unprivileged or sorts and removes every selected row when privileged. |
+| `ui_article_list_draw_row` | `0x004209B0` | high | Draws article rows and uses palette index 0x58 for privileged multi-selected rows. |
 | `ui_article_dialog_ctor` | `0x004211A0` | high | Loads _narti.txt and parses article navigation, author, date, title, and string16 content. |
 | `ui_article_apply_server_body` | `0x00421EE0` | high | Routes active-article SBulletin response type 7 to the operation reply UI. |
 | `ui_mail_list_dialog_ctor` | `0x00422EE0` | high | Loads _nmaill.txt and parses the mail-list response body. |
@@ -543,9 +553,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_text_insert_formatted` | `0x0057B300` | high | Forwards a NUL-terminated string to the rich text insertion and markup path. |
 | `ui_text_copy_bytes` | `0x0057B420` | high | Copies the smaller of the requested byte count and current text length, appends a null terminator, and returns the copied length. |
 | `ui_text_insert_color_markup` | `0x0057D310` | high | Recognizes lowercase three-byte {=a through {=x tokens and changes the following run's palette index. |
+| `ui_line_input_paste_clipboard` | `0x0057DD30` | high | Pastes clipboard text into LineInputPane only for distribution modes 1 or 15 or for any nonzero SStatus privilege. |
 | `ui_text_enforce_max_bytes` | `0x0057F530` | high | Trims oldest TextEditPane bytes from the front when its configured byte limit is exceeded, preserving DBCS boundaries. |
 | `ui_text_enforce_max_lines` | `0x0057F680` | high | Trims oldest TextEditPane lines when its configured line limit is exceeded. |
 | `ui_line_input_copy_text` | `0x00584A00` | high | Calls the LineInputPane text control's bounded copy method and returns its copied byte length. |
+| `ui_line_input_handle_event` | `0x00585040` | high | Handles Pane::LineInputPane events and suppresses Ctrl+V outside distribution modes 1 and 15 unless SStatus privilege is nonzero. |
 | `ui_town_map_lookup_current_map` | `0x0058F640` | high | Finds the active map number in the five-value _tcoord.txt records and returns four placement values. |
 | `ui_town_map_lookup_key` | `0x0058F6F0` | high | Finds a server-supplied key in the first field of a six-value _tncoord.txt record and returns its map asset number plus four placement values. |
 | `ui_town_map_parse_coordinate_table` | `0x0058F7C0` | high | Parses decimal lines into five-value current-map records or six-value server-keyed records. |
@@ -600,7 +612,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_portrait_text_dialog_ctor` | `0x005B11A0` | high | Constructs RTTI-backed PortraitTextInputDialogPane from _nui_pi.txt and loads profile.txt. |
 | `ui_portrait_text_dialog_action` | `0x005B1510` | high | Action 1 saves profile.txt and queues timer 0x1241; action 2 closes without saving. |
 | `ui_other_user_info_ctor` | `0x005B1850` | high | Constructs exact RTTI UserInfoPane_ForOthers and applies a decoded SObjectInfo body. |
-| `ui_other_user_info_apply_object_info_body` | `0x005B1900` | high | Reads entity ID, 18 implicitly ordered equipment records, social status, name, nation, title, group-open state, guild identity, legends, and the optional portrait/biography tail. |
+| `ui_other_user_info_apply_object_info_body` | `0x005B1900` | high | Reads entity ID, 18 implicitly ordered equipment records, user_state in the shared UserState domain, name, nation, title, group-open state, guild identity, legends, and the optional portrait/biography tail. |
 | `ui_open_other_user_info_from_server_body` | `0x005B1DF0` | high | Creates or refreshes UserInfoPane_ForOthers and applies the decoded object-info body for its entity ID. |
 | `ui_open_user_info` | `0x005B1FA0` | high | Opens the singleton UserInfoPane and selects the requested local or other-user mode. |
 | `ui_album_picture_dialog_ctor` | `0x005B24E0` | high | Constructs exact RTTI AlbumPicDialogPane from _nui_alb.txt and attaches SAVE before REMOVE. |
@@ -622,14 +634,16 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_world_balloon_layout` | `0x005C5390` | high | Measures and positions wrapped speech text and the optional balloon frame relative to the speaking world object. |
 | `ui_world_balloon_wrap_text` | `0x005C5490` | high | Wraps speech text into the compact line layout consumed by the world balloon renderer. |
 | `ui_world_balloon_draw` | `0x005C5730` | high | Draws Say and Shout with a frame and draws Chant as centered text without a frame, using palette indexes 0xFF, 0x45, and 0x58. |
+| `ui_world_controller_pane_ctor` | `0x005C64F0` | high | Constructs WorldControllerPane, loads gndattr.tbl and both SOTP flag views, and initializes world rendering and object-controller state. |
 | `ui_world_pane_screen_to_tile` | `0x005C75A0` | high | Converts a screen-space point through the active world controller to map tile coordinates, or returns negative coordinates when no controller is available. |
 | `ui_world_pane_set_blinded` | `0x005C7600` | high | Forwards the SStatus-derived blinded state from WorldPane to the world renderer. |
 | `ui_world_show_speech` | `0x005CBF90` | high | Attaches a timed speech pane to a world object for the requested speech mode and duration. |
 | `ui_world_pane_draw_to_target` | `0x005CE350` | high | Copies WorldPane output to its target and applies the ambient-color and 8-bit light-mask blend when lighting is active below intensity 0x20. |
+| `ui_world_controller_handle_object_message` | `0x005CE990` | high | Updates world indexes and rendering state for object messages, answers ground-attribute query selector 5, and invokes the object position-refresh virtual after movement. |
 | `ui_world_object_name_pane_ctor` | `0x005E3F00` | high | Constructs the 0x1DC-byte RTTI WorldObject_Name_Pane and retains at most 63 text bytes plus a NUL at +0x198. |
 | `ui_world_pane_handle_living_object_message` | `0x005EF120` | high | Handles RTTI-backed WORLD_LIVING_OBJECT_MESSAGE traffic; give event 2 rejects the local character and dispatches TimerHandler event 1 with the target object ID to the source InvItemPane. |
 | `ui_world_pane_handle_inventory_drop` | `0x005EF620` | high | Converts a dragged inventory item's pointer position to a bounded map tile and dispatches it to InvItemPane; it does not compare the tile with the player's position. |
-| `ui_world_pane_handle_drop_event` | `0x005EF790` | high | Routes a dragged-pane drop through eligible child panes, then handles an unconsumed inventory-item drop against the world map. |
+| `ui_world_pane_handle_drop_event` | `0x005EF790` | high | Rejects the drop while SUserAppearance action-state bit 0 is set; otherwise routes it through eligible child panes and handles an unconsumed inventory-item drop against the world map. |
 | `ui_world_pane_request_change_direction` | `0x005F0900` | high | Applies the requested direction to the local WorldObject_User immediately, then sends CChangeDirection. |
 | `ui_world_pane_attack_from_keyboard` | `0x005F0BF0` | high | Handles the Space-key attack path and submits only when the previous accepted Space attack was absent or more than 100 ms ago. |
 | `ui_world_pane_handle_direction_input` | `0x005F0C40` | high | Turns with CChangeDirection when requested facing differs; otherwise attempts one tile of movement. |
@@ -651,8 +665,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_open_manufacture_dialog_from_manual_packet` | `0x005F7AE0` | high | Creates the singleton ManufactureDialogPane only for SManual RecipeCount and ignores Recipe detail messages when no pane exists. |
 | `ui_create_field_map_pane` | `0x005F88B0` | high | Allocates a 640 by 480 FieldMapPane, initializes it from decoded SFieldMap values, registers it with the screen root, and retains it in WorldPane. |
 | `ui_world_capture_self_portrait_to_album` | `0x005F9B00` | high | WorldPane_Impl wrapper that invokes the album capture with zero, selecting the normal cooldown path. |
+| `ui_world_pane_is_privileged` | `0x005F9D90` | high | MapUserInterface virtual getter returns whether WorldUserFunc privilege_level is nonzero; bulletin, line-input, and dormant screenshot branches consume it. |
+| `ui_world_pane_get_privilege_level` | `0x005F9DC0` | high | MapUserInterface virtual getter returns raw WorldUserFunc privilege_level 0 through 3; the event dispatcher compares it exactly with 1 in a dormant timeout path. |
 | `ui_world_pane_change_user_state` | `0x005F9E20` | high | WorldPane_Impl interface method that forwards a requested UserState to CChangeUserState. |
-| `ui_world_pane_get_local_action_state` | `0x005F9E50` | high | WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc. |
+| `ui_world_pane_get_local_action_state` | `0x005F9E50` | high | WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc; CChangeSlot is its only identified indirect consumer. |
 | `ui_world_pane_get_self_object_id` | `0x005F9EC0` | high | WorldPane_Impl virtual getter returns the SUserAppearance user ID stored in WorldUserFunc. |
 | `ui_world_pane_get_appearance_unknown_final` | `0x005FA040` | high | WorldPane_Impl virtual getter returns the final parsed SUserAppearance byte; no client decision based on it is identified. |
 | `ui_world_pane_get_guild_value` | `0x005FA0B0` | medium | WorldPane_Impl virtual getter returns the second post-ID SUserAppearance byte unchanged; project behavioral evidence associates it with guild state. |
@@ -729,6 +745,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_exchange_add_stackable_item` | `0x0046C2A0` | high | Builds opcode 0x4A, action 0x02, exchange ID, staged slot, and u8 quantity. |
 | `net_request_family_name` | `0x004719B0` | high | Builds and submits the opcode-only CRequestFamilyName body 7A. |
 | `net_send_field_map_selection` | `0x00476390` | high | Normal field-map UI builder writes opcode 0x3F followed by the selected node's checksum, map ID, X, and Y words. |
+| `net_send_change_slot` | `0x00490F40` | high | Suppresses CChangeSlot while SUserAppearance action-state bit 0 is set; otherwise writes opcode 0x30, zero, source slot, and destination slot, excluding encoded slot 0x3C. |
 | `net_send_drop` | `0x00496C90` | high | Builds CDrop as opcode 0x08, source slot, target X, target Y, and u32 quantity. |
 | `net_send_give` | `0x00496D90` | high | Builds the 10-byte CGive body as opcode 0x29, u8 source slot, u32 living target object ID, and u32 quantity. |
 | `net_send_use_inventory_item` | `0x00496E90` | high | Checks the item denial list, then builds CUse as opcode 0x1C followed by the one-byte slot retained from SAddInventory. |
@@ -1054,7 +1071,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_remove_skill_server_packet` | `0x005F1BB0` | high | Forwards decoded SRemoveSkill to WorldUserFunc vtable slot +0x1C. |
 | `net_handle_map_size_server_packet` | `0x005F1BF0` | high | Applies u8 map dimensions, NoMap, Winter art, weather mode, local CRC16 cache validation, transfer state, and map lighting. |
 | `net_handle_change_hour_server_packet` | `0x005F2160` | high | Stores the SChangeHour time step at WorldPane +0x25C and immediately recomputes map lighting. |
-| `net_handle_exchange_started` | `0x005F2190` | high | Handles SExchange event 0x00 before a dialog exists, creates ExchangeDialog when UI state allows it, or replies with CExchange Cancel otherwise. |
+| `net_handle_exchange_started` | `0x005F2190` | high | Handles SExchange event 0x00 before a dialog exists. |
 | `net_handle_map_server_body` | `0x005F2840` | high | Consumes raw SMap opcode 0x06 as a u8 rectangle header followed by row-major ground and static tile triples, applying cells only while a cache-miss transfer is active. |
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes one raw SMapPart row into memory, creates MapLoadingPane on the first accepted row, updates row-index progress, and treats height minus one as completion without tracking earlier rows. |
 | `net_handle_request_crc_server_body` | `0x005F2CF0` | high | Reads the raw u16 SRequestCRC challenge, feeds low then high byte through crc16_update from zero, and sends the resulting byte swap as CReplyCRC opcode 0x45. |
@@ -1365,7 +1382,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_add_tile_animation_group` | `0x00587750` | high | Registers one tile-ID cycle and its delay from an animation-table line. |
 | `map_apply_tile_animation_step` | `0x00587C90` | high | Rotates the ground or static mapping and invalidates the affected cached images. |
 | `map_tile_animation_timer` | `0x00587D10` | high | Advances tile animation groups on a shared 100 ms timer. |
-| `file_load_ground_attribute_table` | `0x0058B8C0` | high | Loads structured ground attributes from gndattr.tbl. |
+| `file_load_ground_attribute_table` | `0x0058B8C0` | high | Loads structured ground attributes from gndattr.tbl in the active asset archive. |
+| `file_parse_ground_attribute_table` | `0x0058B930` | high | Parses the structured set_attr records and applies each attribute set to its listed tile IDs and inclusive ranges. |
+| `file_apply_ground_attribute_record` | `0x0058B9B0` | high | Interns one parsed attribute set and assigns it to each ground tile ID covered by the record's apply_to list. |
+| `file_intern_ground_attribute_set` | `0x0058BA80` | high | Converts ATTR_gnd_paint height 1 and 2 into separate flags while retaining larger heights as color-and-depth paint records. |
 | `file_build_character_path` | `0x00592DE0` | high | Builds .\&lt;character&gt;\.\&lt;filename&gt; from the active character name and supplied local filename. |
 | `file_load_character_profile` | `0x005B13E0` | high | Reads at most 0x172 bytes from the current character's profile.txt into the editor buffer. |
 | `file_save_portrait_dialog_profile` | `0x005B15C0` | high | Writes the dialog profile buffer to profile.txt after the 0x172-byte DBCS-safe cap. |
@@ -1389,8 +1409,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_get_collision_level` | `0x005CF5E0` | high | Retains the highest WorldObject +0x31 collision level at one map cell, with fully blocked static SOTP supplying level 1 when no dynamic level does. |
 | `map_get_tile_pixels` | `0x005D7610` | high | Gets one decoded ground-tile diamond from MapTileImageLib. |
 | `map_refresh_collision_cache` | `0x005D8B90` | high | Refreshes dirty cells in the map's width-by-height byte collision cache with map_get_collision_level. |
-| `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds, the saved appearance action lock, dynamic occupants, CreatureType behavior, and direction-specific SOTP masks for a proposed move. |
-| `map_try_move_local_player` | `0x005F09E0` | high | Checks the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision, selects the ScrollLevel-controlled local walk sequence, and sends CMove. |
+| `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds and the saved appearance action lock, lets privilege levels 1 and 2 bypass the remaining dynamic-object and direction-specific SOTP collision checks, and otherwise applies CreatureType behavior and SOTP masks. |
+| `map_has_special_movement_permission` | `0x005F0980` | high | Grants permission for any nonzero SStatus privilege; otherwise scans the 89 retained skill names for localized message slot 0x77. |
+| `map_try_move_local_player` | `0x005F09E0` | high | Applies the special-state privilege-or-skill permission check, then the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before selecting the local walk sequence and sending CMove. |
 | `map_apply_weather_mode` | `0x005F26C0` | high | Creates Snow for mode 1, performs no local setup for project-named Rain mode 2, and enables black ambient plus object light masks for Darkness mode 3. |
 | `map_finish_transfer` | `0x005F2DE0` | high | Destroys MapLoadingPane, advances the WorldPane map generation, and either applies prepared map storage immediately or schedules the alternate completion path. |
 | `file_load_static_tile_pixmap` | `0x005FD500` | high | Opens and decodes one base or alternate static HPF resource into a pixmap view. |
@@ -1444,7 +1465,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_create_moving_effect_between_objects` | `0x005CBBF0` | high | Resolves source and target world objects, converts their positions, constructs an RTTI WorldObject_MovingEffect path between them, and inserts it into the world. |
 | `world_create_object_name_pane` | `0x005CC670` | high | Finds a world object by ID, constructs RTTI WorldObject_Name_Pane from bounded text and style bytes, and attaches it to the object. |
 | `world_show_damage_effect` | `0x005CCD40` | high | Resolves the target object, removes its existing type-7 overlay, constructs exact RTTI WorldObject_Damage, and starts the replacement at the requested stage for 2000 ms. |
+| `ground_attribute_table_get` | `0x005CFA70` | high | Returns the interned gndattr.tbl entry for one ground tile ID, extending the indexed table in 1024-entry blocks when needed. |
+| `world_object_set_ground_paint` | `0x005DB6D0` | high | Replaces the WorldObject ground-paint record and publishes a change only when its flag, color, alpha, or depth fields differ. |
 | `world_object_set_name_pane` | `0x005DBA80` | high | Replaces the reference-counted WorldObject_Name_Pane pointer at common WorldObject offset +0x58. |
+| `world_object_query_ground_attributes` | `0x005DBE80` | high | Broadcasts object query selector 5 so WorldControllerPane can return the gndattr.tbl entry for the object's current ground tile. |
 | `world_damage_object_ctor` | `0x005DC1A0` | high | Constructs exact RTTI WorldObject_Damage and initializes its timer generation, stage, and image state. |
 | `world_damage_object_start` | `0x005DC350` | high | Selects a meter stage, stores current time plus duration minus 100 ms, and schedules timer ID 1 for the full supplied duration. |
 | `world_damage_object_get_bounds` | `0x005DC4B0` | high | Returns the target-relative bounds of the selected five-by-27 damage-meter frame. |
@@ -1452,15 +1476,23 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_effect_start_animation` | `0x005DD1C0` | high | Registers an ordinary world effect with the image pool, prefers the resource's nonzero frame interval over the packet fallback, and schedules its frame timer. |
 | `world_object_effect_ctor` | `0x005DD620` | high | Constructs the exact RTTI WorldObject_ObjectEffect with an Effect.tbl resource index, fallback frame interval, and owning object's facing direction. |
 | `world_static_effect_ctor` | `0x005DD6D0` | high | Constructs the exact RTTI WorldObject_StaticEffect and retains its tile Y and X coordinates. |
-| `world_human_object_ctor` | `0x005DDFC0` | high | Constructs exact RTTI WorldObject_Human by calling world_living_object_ctor, installing the Human vtables, and selecting draw layer 7. |
+| `world_human_object_ctor` | `0x005DDFC0` | high | Constructs exact RTTI WorldObject_Human, installs the Human vtables, selects draw layer 7, and clears ground-tile state byte +0x1ED. |
+| `world_human_start_motion` | `0x005DE110` | high | Suppresses ordinary living-object motion starts while the gndattr.tbl height-1 state is active; otherwise delegates to world_living_start_motion. |
+| `world_human_set_ground_tile_state` | `0x005DE150` | high | Caches the gndattr.tbl height-1 marker at WorldObject_Human +0x1ED and selects or clears a cloned human image-session snapshot when it changes. |
+| `world_human_refresh_ground_tile_state` | `0x005DE1E0` | high | Queries current ground attributes, updates the Human height-1 state, and refreshes direction, motion, and ground paint after a position change. |
 | `world_item_object_ctor` | `0x005DE280` | high | Constructs the 0xB8-byte RTTI WorldObject_Item and retains entity ID, Y, X, untagged sprite, resource context, and dye color. |
+| `world_item_refresh_ground_paint` | `0x005DE820` | high | Applies ordinary gndattr paint, but substitutes bytes 39 AE EF 80 and depth 100 when the tile's height-1 marker is set. |
 | `world_living_object_ctor` | `0x005DF230` | high | Constructs the RTTI WorldObject_Living base, including clearing its +0xD4 nonblocking state. |
+| `world_human_get_active_image_session` | `0x005DFD80` | high | Returns the cloned ground-tile image session at Human +0x94 when present, otherwise the normal image session at +0x90. |
+| `world_human_set_ground_image_session` | `0x005DFE40` | high | Replaces the reference-counted ground-tile image session at WorldObject_Human +0x94. |
+| `world_human_clear_ground_image_session` | `0x005DFED0` | high | Clears and releases the cloned ground-tile image session at WorldObject_Human +0x94. |
 | `world_living_object_refresh_motion` | `0x005E0550` | medium | Clears one live motion flag, invokes the object's motion refresh virtual, and reapplies its current facing; SMove direction 4 uses this when positions already agree. |
 | `world_living_start_move` | `0x005E0590` | high | Updates a living object's direction and destination, starts its image-session movement sequence, and publishes the movement event. |
 | `world_living_start_move_animation` | `0x005E0610` | high | Starts the current image session's movement sequence and passes the local ScrollLevel boolean to its class-specific selector. |
 | `world_living_start_motion` | `0x005E0750` | high | Stores the facing direction, asks the current image session to select a body motion, and schedules its timer using the selector's final duration in milliseconds. |
 | `world_living_object_set_direction` | `0x005E0880` | high | When facing changes, invokes the living-object transition hook, stores direction at +0x192, and refreshes the directional motion or image state. |
 | `world_living_handle_timer_event` | `0x005E1800` | high | For motion timer 0x02000001, advances the living animation only when the scheduled generation matches the current motion, so an older timer cannot interrupt a newer motion. |
+| `world_living_refresh_ground_paint` | `0x005E2340` | high | Queries current gndattr color and depth fields and updates the living object's ground-paint record. |
 | `world_monster_object_ctor` | `0x005E2630` | high | Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level. |
 | `world_moving_effect_ctor` | `0x005E2770` | high | Constructs the exact RTTI WorldObject_MovingEffect and builds its client-timed path between source and target world positions. |
 | `world_moving_effect_start` | `0x005E3710` | high | Schedules a moving effect's path timer using the step interval computed from client effect data. |

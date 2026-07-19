@@ -118,7 +118,7 @@ functions:
   - address: "0x005537F0"
     name: render_write_screenshot_bmp
     confidence: high
-    evidence: "Writes the completed client canvas as the first missing uncompressed 16-bit lod001.bmp through lod999.bmp name."
+    evidence: "Writes the completed client canvas as the first missing uncompressed 16-bit lod001.bmp through lod999.bmp name. Any nonzero privilege plus Shift skips an optional stamp path, but the stamp gate is a constant false stub in this build."
   - address: "0x005A0B70"
     name: ui_gui_back_activate_action
     confidence: high
