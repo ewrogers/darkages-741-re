@@ -167,6 +167,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_create_user_timer` | `0x0043F410` | high | CreateUserDialogPane TimerHandler callback; timer 3 sends CNewUser after the form action schedules a 200 ms delay. |
 | `ui_dialog_pane_ctor` | `0x00445260` | high | Constructs DialogPane over Pane and initializes its control collection and interaction fields. |
 | `ui_dialog_add_control` | `0x00445670` | high | Creates DialogPane +0x594 on first use and inserts the supplied control pointer. |
+| `ui_dialog_set_default_action` | `0x004457D0` | high | Stores a validated attachment-order control index at DialogPane +0x598; Enter and Space dispatch through this index. |
+| `ui_dialog_set_cancel_action` | `0x00445820` | high | Stores a validated attachment-order control index at DialogPane +0x59C; the inherited keyboard handler dispatches Escape through this index. |
 | `ui_dialog_handle_pointer_event` | `0x00445A20` | high | DialogPane primary-vtable +0x48 implementation for hit testing, child dispatch, hover, pressed state, and actions. |
 | `ui_dialog_handle_keyboard_event` | `0x00445FF0` | high | DialogPane primary-vtable +0x4C implementation for focus traversal and focused-control dispatch. |
 | `ui_dialog_handle_application_event` | `0x004462D0` | high | DialogPane primary-vtable +0x54 implementation that forwards application and IME events to the focused control. |
@@ -361,7 +363,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_album_view_export_portrait_jpeg` | `0x0051EA70` | high | Legacy Save composites one album portrait and always writes the extensionless character portrait through the shared JFIF writer. |
 | `ui_album_view_move_portrait` | `0x0051EEC0` | high | Moves a legacy album record, rewrites album.dat, and reloads the pane. |
 | `ui_new_patch_pane_ctor` | `0x005283E0` | high | Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff. |
-| `ui_npc_session_close_active_dialog` | `0x0052C020` | high | Invokes the active NPC message pane's close-response virtual; all confirmed merchant and pursuit submitters call it immediately after queuing a response. |
+| `ui_npc_session_set_response_pending` | `0x0052C020` | high | Invokes the active NPC message pane's response-pending virtual after a merchant or pursuit response is queued; the pursuit implementation deactivates its nested answer pane, disables Previous and Next, and leaves Close available. |
 | `ui_npc_session_update_speaker_art` | `0x0052C480` | high | Loads the NPC illustration for the active packet fields or switches to NPCTilePane when lookup or decoding fails. |
 | `ui_npc_session_handle_network_event` | `0x0052C730` | high | Routes SScreenMenu 0x2F and SPursuitMessage 0x30 packet objects into their NPCSession update paths. |
 | `ui_npc_session_open_screen_menu` | `0x0052C7B0` | high | Copies SScreenMenu state into NPCSession state 1, refreshes speaker art, and constructs exact RTTI NPC_Merchant_MessageDialog. |
@@ -372,6 +374,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_message_dialog_ctor` | `0x0052D460` | high | Constructs the shared lnpcd.txt-backed outer speaker name, content, and scrolling pane used by screen-menu and pursuit dialogs. |
 | `ui_npc_message_dialog_close` | `0x0052D950` | high | Closes the owning NPCSession when present, or destroys a standalone NPC message pane, without sending a merchant or pursuit response. |
 | `ui_npc_menu_dialog_ctor` | `0x0052DCB0` | high | Constructs the shared NPCMenuDialog base used by choice, input, item, skill, and spell subpanes. |
+| `ui_npc_menu_dialog_handle_keyboard_event` | `0x0052DDF0` | high | Returns false for Escape so the outer NPC message dialog can handle its cancel action; all other keyboard events use the inherited DialogPane handler. |
 | `ui_npc_illustration_load_pixmap` | `0x00531B30` | high | Resolves an NPC name and illustration index, then loads frame zero of the mapped image from npcbase.dat. |
 | `ui_npc_illustration_asset_at` | `0x00531C40` | high | Returns one illustration filename from an NPC name record by zero-based index. |
 | `ui_npc_illustration_file_manager_ctor` | `0x00531E10` | high | Opens npc/npcbase.dat, initializes the name map, and loads its npci.tbl fallback mapping. |
@@ -385,7 +388,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_dispatch_screen_menu_type` | `0x00534C40` | high | Maps SScreenMenu values 0 through 11 to text, input, server item, local item, server skill-spell, and local skill-spell models. |
 | `ui_npc_server_item_menu_handle_network_event` | `0x0053A270` | high | NPCMenuDialog::NPCServerItemMenuDialog routes SStatus progression blocks to its gold-display updater. |
 | `ui_npc_server_item_menu_update_gold_from_status_packet` | `0x0053A2D0` | high | Copies SStatus gold into the NPC server-item menu and redraws the dialog. |
-| `ui_npc_pursuit_message_dialog_ctor` | `0x0053CC10` | high | Constructs exact RTTI NPC_Pursuit_MessageDialog and attaches Previous, Next, and Close after the four base message controls. |
+| `ui_npc_pursuit_message_dialog_ctor` | `0x0053CC10` | high | Constructs exact RTTI NPC_Pursuit_MessageDialog, attaches Previous, Next, and Close after the four base message controls, and registers Close action 6 as the Escape cancel action. |
+| `ui_npc_pursuit_dialog_set_response_pending` | `0x0053CD10` | high | Deactivates the nested answer pane, disables Previous and Next, and clears the default action after a CPursuit response; Close action 6 remains available. |
 | `ui_npc_pursuit_message_handle_action` | `0x0053CD90` | high | Routes attachment-order actions 4, 5, and 6 to Previous, Next, and Close response builders. |
 | `ui_npc_pursuit_build_subtype` | `0x0053CE70` | high | Applies speaker content and navigation flags, then constructs pursuit models for types 2, 3, 4, 5, 6, and 9. |
 | `ui_npc_pursuit_protected_dialog_ctor` | `0x0053EBA0` | high | Constructs the lnpcnid.txt protected pursuit dialog with separate ID and masked-password edit controls plus submit and cancel. |
@@ -908,6 +912,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_spelled_server_packet` | `0x0059C0C0` | high | Allocates the 0x14-byte exact RTTI SSpelled object and invokes its concrete constructor. |
 | `net_spelled_server_packet_ctor` | `0x0059C140` | high | Passes opcode 0x3A to the server packet base and installs the exact SSpelled vtable. |
 | `net_deserialize_spelled_server_packet` | `0x0059C170` | high | Reads a big-endian u16 icon followed by one u8 discrete duration stage. |
+| `net_create_static_object_state_server_packet` | `0x0059C1E0` | high | Allocates the exact RTTI SStaticObjectState object and calls its concrete constructor. |
+| `net_static_object_state_server_packet_ctor` | `0x0059C260` | high | Passes opcode 0x32 to the common server packet base and installs the exact SStaticObjectState vtable. |
+| `net_deserialize_static_object_state_server_packet` | `0x0059C290` | high | Reads a u8 count followed by four u8 fields per record: x, y, state, and side. |
 | `net_create_status_server_packet` | `0x0059C360` | high | Allocates a 0x7C-byte RTTI SStatus object and invokes its concrete constructor. |
 | `net_status_server_packet_ctor` | `0x0059C3E0` | high | Passes opcode 0x08 to the server packet base and installs the exact SStatus vtable. |
 | `net_deserialize_status_server_packet` | `0x0059C410` | high | Parses SStatus privilege and conditional stats, vitals, progression, modifiers, standalone state, and mail-state fields. |
@@ -925,6 +932,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_who` | `0x0059D7D0` | high | Builds CWho as opcode 0x18 with no payload and submits the complete one-byte plaintext body. |
 | `net_send_portrait_profile` | `0x005B1160` | high | Calls net_build_send_portrait and submits the result through net_submit_client_packet. |
 | `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode. |
+| `net_handle_static_object_state_server_packet` | `0x005F1690` | high | Applies every record to the selected isometric static layer; state 0 targets pair column 1 and any nonzero state targets column 0. |
 | `net_handle_status_server_packet` | `0x005F1A10` | high | Applies global SStatus effects by updating WorldUserFunc and setting blinded only when the raw blind code equals 0x08. |
 | `net_handle_add_spell_server_packet` | `0x005F1AF0` | high | Forwards decoded SAddSpell fields to the WorldUserFunc session model stored by WorldPane. |
 | `net_handle_remove_spell_server_packet` | `0x005F1B30` | high | Forwards decoded SRemoveSpell to WorldUserFunc vtable slot +0x14. |
@@ -1244,10 +1252,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_set_id` | `0x005B90D0` | high | Stores the u16 map number used for cache naming and validation. |
 | `map_set_cell` | `0x005B90F0` | high | Bounds-checks one X, Y coordinate, stores ground and two static u16 tile IDs in the six-byte row-major map cell, and marks map storage dirty. |
 | `map_update_crc16` | `0x005B9180` | high | Calculates and caches the custom CRC16 across six bytes for each map cell. |
+| `map_get_left_static_tile` | `0x005B9370` | high | Returns the u16 left static tile ID at map-cell offset 2. |
+| `map_get_right_static_tile` | `0x005B93E0` | high | Returns the u16 right static tile ID at map-cell offset 4. |
 | `file_read_map_cells` | `0x005B9450` | high | Opens the cache for shared reading, reads the complete expected row-major map body into temporary storage, copies it only after a full read, and closes the handle immediately. |
 | `file_ensure_maps_directory` | `0x005B9640` | high | Asks Windows to create the maps directory before a map cache read or write. |
 | `file_format_map_path` | `0x005B9660` | high | Formats the path maps backslash lod map-id dot map. |
 | `file_write_map_cells` | `0x005B9680` | high | Opens the cache with wb and no Windows sharing, writes the complete contiguous map array without checking the write count, then closes the exclusive handle. |
+| `map_static_map_ctor` | `0x005BB720` | high | Builds the static-object spatial index, inserting each left map static with internal side 1 and each right map static with internal side 0. |
 | `map_apply_seasonal_tile_mode` | `0x005C7660` | high | Applies the SMapSize 0x80 flag to both ground and static tile storage. |
 | `map_load_hea_resource` | `0x005C7870` | high | Opens the current map ID as a six-digit HEA resource and enables the WorldPane spatial light mask on success. |
 | `map_get_sotp_render_flags` | `0x005CF360` | high | Returns the high-nibble SOTP render flags for one static tile ID. |
@@ -1303,6 +1314,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_reindex_object` | `0x005C92C0` | high | Updates a world object's spatial index entry after its tile coordinates change and refreshes dependent overlay state. |
 | `world_find_object_by_id` | `0x005C9810` | high | Resolves a 32-bit server entity ID through the WorldPane-owned WorldObjectList at object offset +0x194. |
 | `world_find_object_at_tile_by_category` | `0x005C9880` | high | Searches one world tile for the first object whose broad category at +0x2C matches the requested value; B-key pickup requests category 8 ground items. |
+| `world_get_static_object_at_tile_side` | `0x005C9DE0` | high | Resolves one of the two static slots at a coordinate and requires exact RTTI WorldObject_Static; packet side 0 maps to left slot 1 and nonzero maps to right slot 0. |
 | `world_remove_object_by_id` | `0x005C9FA0` | high | Finds an existing world object by ID, optionally creates its removal replacement, and detaches the original from shared indexes. |
 | `world_create_monster_object` | `0x005CA4C0` | high | Replaces a matching ID, allocates RTTI WorldObject_Monster, stores Y and X, inserts it, and retains the packet creature type. |
 | `world_create_item_object` | `0x005CAC60` | high | Replaces a matching ID, allocates RTTI WorldObject_Item from ID, Y, X, untagged sprite, and dye, then inserts it. |
@@ -1326,12 +1338,18 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_monster_object_ctor` | `0x005E2630` | high | Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level. |
 | `world_moving_effect_ctor` | `0x005E2770` | high | Constructs the exact RTTI WorldObject_MovingEffect and builds its client-timed path between source and target world positions. |
 | `world_moving_effect_start` | `0x005E3710` | high | Schedules a moving effect's path timer using the step interval computed from client effect data. |
+| `world_static_set_tile_id` | `0x005E4900` | high | Writes the WorldObject_Static live tile ID, reloads its static image and bounds, and invalidates the object for drawing. |
+| `world_static_handle_state_transition_message` | `0x005E4A30` | high | Handles scheduled message 0x01000001 by advancing the static state transition. |
+| `world_static_transition_to_pair_column_1` | `0x005E4B20` | high | Finds the live tile ID in the 66-row pair table and starts a transition toward column 1. |
+| `world_static_transition_to_pair_column_0` | `0x005E4BD0` | high | Finds the live tile ID in the 66-row pair table and starts a transition toward column 0. |
+| `world_static_advance_state_transition` | `0x005E4C80` | high | Moves the pair column toward its requested endpoint, applies that tile ID, and reschedules after 150 ms only if another step remains. |
 | `world_user_start_move` | `0x005E4FC0` | high | Refreshes WorldObject_User appearance state, then starts the common living-object move with the supplied ScrollLevel flag. |
 | `world_object_list_insert` | `0x005E5D40` | high | Inserts an object into its 0x60-byte coordinate cell and the ordered entity-ID index, then marks WorldObject +0x48 inserted. |
 | `world_object_list_find_by_id` | `0x005E73B0` | high | Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10. |
 | `world_set_view_position` | `0x005EEC70` | high | Publishes a Y, X world-view position and optionally rebuilds the visible world and camera state around it. |
 | `world_get_self_user_object` | `0x005EEDB0` | high | Looks up the saved self object ID and RTTI-casts the result to WorldObject_User. |
 | `world_update_map_lighting` | `0x005EF360` | high | Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, and conditionally loads its HEA mask. |
+| `world_get_static_tile_id_from_object` | `0x005EFEC0` | high | Requires WorldObject_Static and returns its current live tile ID for the movement collision path. |
 | `session_world_user_func_ctor` | `0x005FC5F0` | high | Constructs exact RTTI class WorldUserFunc and clears its fixed inventory, spell, and skill arrays. |
 | `session_find_first_empty_inventory_slot` | `0x005FC900` | high | Returns the first absent inventory record in slots 1 through 60, or 0 when every slot is occupied. |
 | `session_store_inventory_entry` | `0x005FCBB0` | high | Stores one compact 0x106-byte inventory record at WorldUserFunc + 0x1092 + (slot - 1) * 0x106. |

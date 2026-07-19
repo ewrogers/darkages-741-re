@@ -93,6 +93,14 @@ layouts:
     controls: 10
     purpose: protected ID and masked password input
 functions:
+  - address: "0x004457D0"
+    name: ui_dialog_set_default_action
+    confidence: high
+    evidence: "Stores a validated attachment-order control index at DialogPane +0x598; Enter and Space dispatch through this index."
+  - address: "0x00445820"
+    name: ui_dialog_set_cancel_action
+    confidence: high
+    evidence: "Stores a validated attachment-order control index at DialogPane +0x59C; the inherited keyboard handler dispatches Escape through this index."
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high
@@ -102,9 +110,9 @@ functions:
     confidence: high
     evidence: "Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID."
   - address: "0x0052C020"
-    name: ui_npc_session_close_active_dialog
+    name: ui_npc_session_set_response_pending
     confidence: high
-    evidence: "Invokes the active NPC message pane's close-response virtual; all confirmed merchant and pursuit submitters call it immediately after queuing a response."
+    evidence: "Invokes the active NPC message pane's response-pending virtual after a merchant or pursuit response is queued; the pursuit implementation deactivates its nested answer pane, disables Previous and Next, and leaves Close available."
   - address: "0x0052C1C0"
     name: net_build_merchant_response_header
     confidence: high
@@ -133,6 +141,10 @@ functions:
     name: ui_npc_menu_dialog_ctor
     confidence: high
     evidence: "Constructs the shared NPCMenuDialog base used by choice, input, item, skill, and spell subpanes."
+  - address: "0x0052DDF0"
+    name: ui_npc_menu_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Returns false for Escape so the outer NPC message dialog can handle its cancel action; all other keyboard events use the inherited DialogPane handler."
   - address: "0x00534990"
     name: ui_npc_merchant_message_dialog_ctor
     confidence: high
@@ -200,7 +212,11 @@ functions:
   - address: "0x0053CC10"
     name: ui_npc_pursuit_message_dialog_ctor
     confidence: high
-    evidence: "Constructs exact RTTI NPC_Pursuit_MessageDialog and attaches Previous, Next, and Close after the four base message controls."
+    evidence: "Constructs exact RTTI NPC_Pursuit_MessageDialog, attaches Previous, Next, and Close after the four base message controls, and registers Close action 6 as the Escape cancel action."
+  - address: "0x0053CD10"
+    name: ui_npc_pursuit_dialog_set_response_pending
+    confidence: high
+    evidence: "Deactivates the nested answer pane, disables Previous and Next, and clears the default action after a CPursuit response; Close action 6 remains available."
   - address: "0x0053CD90"
     name: ui_npc_pursuit_message_handle_action
     confidence: high
@@ -274,10 +290,20 @@ functions:
     confidence: high
     evidence: "Reads the SScreenMenu common fields, string16 content, and remaining subtype bytes into an owned packet reader."
 comments:
+  - address: "0x0052C98A"
+    text: "SPursuitMessage type 10 has no remaining fields and closes the NPC session immediately."
+  - address: "0x0052DE0D"
+    text: "Return false for Escape so the outer NPC_Pursuit_MessageDialog can run its cancel action and send CPursuit Close."
   - address: "0x00534C40"
     text: "Dispatch SScreenMenu types: 0/1 text, 2/3 input, 4/10 server items, 5/11 local items, 6/7 server spell-skill, 8/9 local spell-skill."
+  - address: "0x0053CCB1"
+    text: "Register attachment-order action 6 (Close) as this dialog's Escape/cancel action."
+  - address: "0x0053CD1C"
+    text: "Enter response-pending state: deactivate the nested answer pane, disable Previous/Next, and clear the default action. Close remains available."
   - address: "0x0053CD90"
     text: "Attachment-order actions 4, 5, and 6 are Previous, Next, and Close. Actions 0 through 3 belong to the base name/content controls."
+  - address: "0x0053CDE1"
+    text: "Close action: send the current-step no-argument CPursuit before closing the NPC session locally."
   - address: "0x0059AA8E"
     text: "Dialog type 10 is CloseDialog and has no fields after the type byte."
   - address: "0x0059AB43"

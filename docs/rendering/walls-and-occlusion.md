@@ -33,7 +33,7 @@ The simplest runtime patch hides every `WorldObject_Static` draw:
 
 The replacement takes an existing jump to the function's normal epilogue. Stack cleanup and the security-cookie check still run.
 
-This hides walls, trees, and all other static map art. Characters, items, effects, ground tiles, and collision remain active. Use the normal [safe launcher workflow](../appendix/runtime-patches/safe-launcher-workflow.md).
+This hides walls, trees, and all other static map art. Characters, items, effects, ground tiles, and collision remain active. Use the normal [safe launcher workflow](../appendix/runtime-patches/safe-launcher.md).
 
 ## What the `?` button opens
 
@@ -86,7 +86,7 @@ The pass replays every eligible visible item, not only items proven to intersect
 
 Two more wrappers surround `input_emit_key_down` and `input_emit_key_up`. After the original input function, scan code `0x38` or `0xB8` invalidates the saved WorldPane. Pressing and releasing either Alt key therefore redraws immediately without mouse movement.
 
-See [Hold Alt to show translucent ground-item hints](../appendix/runtime-patches/reveal-ground-items-through-static-map-art.md) for the allocated state, bounded collector, replay flow, bytes, and rollback rules.
+See [Hold Alt to show translucent ground-item hints](../appendix/runtime-patches/ground-item-hints.md) for the allocated state, bounded collector, replay flow, bytes, and rollback rules.
 
 | Hook | Static address | RVA |
 | --- | --- | --- |

@@ -46,7 +46,7 @@ The two fixed `1` bytes in the `0x004E` form are literal client constants. Their
 
 Argumented menus treat `server_argument` as opaque. The client does not display or reinterpret it; it returns the same bytes when the user submits.
 
-Every confirmed nested-menu submitter asks `NPCSession` to close the active dialog immediately after queuing `CMerchant`. A continuing interaction therefore needs another server packet to construct the next pane.
+Every confirmed nested-menu submitter asks `NPCSession` to enter response-pending after queuing `CMerchant`. This deactivates the current nested menu. A continuing interaction needs another server packet to refresh the session and pane.
 
 ## UI producers
 

@@ -39,6 +39,12 @@ The matching `SOTP.DAT` contains only four byte values:
 
 The engine supports separate direction bits even though this file mostly uses all-or-nothing collision.
 
+### Packet-driven static states
+
+[`SStaticObjectState`](../network/server/050-0x32-static-object-state.md) swaps one live `WorldObject_Static` between two paired tile IDs. `map_can_move_direction` reads the object's current tile ID, not only the original ID stored in the map cell, and applies this file's low-nibble flags to that current ID.
+
+This is how opening a door changes client-side collision. The same replacement tile ID selects the new static art and the new SOTP entry, so there is no independent door-collision flag to synchronize.
+
 ## Render bits
 
 `render_build_static_objects` copies the high nibble into each `WorldObject_Static`.

@@ -57,7 +57,7 @@ For example, selector `1` names `mask101.epf`. `render_light_bitmap_ctor` loads 
 
 This matches the observed Andor lantern behavior: most of the view remains dark while a lantern opens a limited area around its carrier. The client does not derive the selector from [`SAddEquip`](../network/server/055-0x37-add-equip.md), an equipment slot, or an item name. The only callers that attach or remove these images are in the `SDrawHumanObjects` handler. The server therefore sends an already resolved mask choice. Which lantern maps to which selector remains server-owned behavior and is not recoverable from this client alone.
 
-This is also separate from the blinded state in [`SStatus`](../network/server/008-0x08-status.md). The two effects may look similar in play, but Darkness uses the world light-mask compositor rather than setting the status blind flag.
+This is also separate from the blinded state in [`SStatus`](../network/server/008-0x08-status.md). The two effects may look similar in play, but Darkness uses the world light-mask compositor rather than setting the status blind flag. The [No darkness](../appendix/runtime-patches/no-darkness.md) and [No blind](../appendix/runtime-patches/no-blind.md) runtime patches therefore target separate state paths.
 
 ## Day and clock messages
 

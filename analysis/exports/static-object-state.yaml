@@ -1,0 +1,93 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0059C1E0"
+    name: net_create_static_object_state_server_packet
+    confidence: high
+    evidence: "Allocates the exact RTTI SStaticObjectState object and calls its concrete constructor."
+  - address: "0x0059C260"
+    name: net_static_object_state_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x32 to the common server packet base and installs the exact SStaticObjectState vtable."
+  - address: "0x0059C290"
+    name: net_deserialize_static_object_state_server_packet
+    confidence: high
+    evidence: "Reads a u8 count followed by four u8 fields per record: x, y, state, and side."
+  - address: "0x005BB720"
+    name: map_static_map_ctor
+    confidence: high
+    evidence: "Builds the static-object spatial index, inserting each left map static with internal side 1 and each right map static with internal side 0."
+  - address: "0x005B9370"
+    name: map_get_left_static_tile
+    confidence: high
+    evidence: "Returns the u16 left static tile ID at map-cell offset 2."
+  - address: "0x005B93E0"
+    name: map_get_right_static_tile
+    confidence: high
+    evidence: "Returns the u16 right static tile ID at map-cell offset 4."
+  - address: "0x005C9DE0"
+    name: world_get_static_object_at_tile_side
+    confidence: high
+    evidence: "Resolves one of the two static slots at a coordinate and requires exact RTTI WorldObject_Static; packet side 0 maps to left slot 1 and nonzero maps to right slot 0."
+  - address: "0x005E4900"
+    name: world_static_set_tile_id
+    confidence: high
+    evidence: "Writes the WorldObject_Static live tile ID, reloads its static image and bounds, and invalidates the object for drawing."
+  - address: "0x005E4A30"
+    name: world_static_handle_state_transition_message
+    confidence: high
+    evidence: "Handles scheduled message 0x01000001 by advancing the static state transition."
+  - address: "0x005E4B20"
+    name: world_static_transition_to_pair_column_1
+    confidence: high
+    evidence: "Finds the live tile ID in the 66-row pair table and starts a transition toward column 1."
+  - address: "0x005E4BD0"
+    name: world_static_transition_to_pair_column_0
+    confidence: high
+    evidence: "Finds the live tile ID in the 66-row pair table and starts a transition toward column 0."
+  - address: "0x005E4C80"
+    name: world_static_advance_state_transition
+    confidence: high
+    evidence: "Moves the pair column toward its requested endpoint, applies that tile ID, and reschedules after 150 ms only if another step remains."
+  - address: "0x005EFEC0"
+    name: world_get_static_tile_id_from_object
+    confidence: high
+    evidence: "Requires WorldObject_Static and returns its current live tile ID for the movement collision path."
+  - address: "0x005F1690"
+    name: net_handle_static_object_state_server_packet
+    confidence: high
+    evidence: "Applies every record to the selected isometric static layer; state 0 targets pair column 1 and any nonzero state targets column 0."
+data_symbols:
+  - address: "0x0068B8B0"
+    name: world_static_state_tile_pairs
+    confidence: high
+    evidence: "A 66-row by two-column table of u16 static tile IDs used only by the packet-driven state transition path."
+comments:
+  - address: "0x005BB9C2"
+    text: "Insert the map cell's left static tile with internal side 1."
+  - address: "0x005BBA65"
+    text: "Insert the map cell's right static tile with internal side 0."
+  - address: "0x0059C2A1"
+    text: "Record count is a u8. The packet object has room for all 255 possible records."
+  - address: "0x0059C2DB"
+    text: "Record byte 0: map x coordinate."
+  - address: "0x0059C2ED"
+    text: "Record byte 1: map y coordinate."
+  - address: "0x0059C2FF"
+    text: "Record byte 2: state selector. The handler distinguishes zero from any nonzero value."
+  - address: "0x0059C311"
+    text: "Record byte 3: left/right isometric side selector. The handler distinguishes zero from any nonzero value."
+  - address: "0x005E490E"
+    text: "The live tile ID is the shared key for both rendered static art and later SOTP.DAT collision checks."
+  - address: "0x005F0684"
+    text: "Look up collision flags for the current live static tile ID. A packet-driven tile swap therefore changes local collision without a separate override."
+  - address: "0x005F174A"
+    text: "Resolve the selected static layer at this coordinate. Wire side 0 selects left slot 1; nonzero selects right slot 0."
+  - address: "0x005F1762"
+    text: "State 0 selects pair-table column 1. Any nonzero state selects column 0."

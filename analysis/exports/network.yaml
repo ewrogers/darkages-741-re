@@ -648,6 +648,13 @@ runtime_patches:
     original_bytes: 75 6D
     replacement_bytes: EB 6D
     effect: After inflating and saving a replacement greeting, skip AgreementDialogPane construction and still clear MainMenuPane +0x500.
+  - id: early-continue
+    rva: "0x000B7BED"
+    static_address: "0x004B7BED"
+    file_offset_for_reference_only: "0x000B6FED"
+    original_bytes: 74 07
+    replacement_bytes: EB 07
+    effect: Always enter normal title-menu pointer hit testing even while MainMenuPane +0x500 is nonzero; the separate keyboard gate and redirect processing remain unchanged.
   - id: fast-server-transfer
     rva: "0x00164855"
     static_address: "0x00564855"

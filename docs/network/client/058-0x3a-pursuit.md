@@ -55,7 +55,9 @@ The client calculates `step_id` from the current server message:
 
 The server's `has_previous` and `has_next` bytes only enable the two buttons. They do not carry explicit destination steps. Arithmetic on the `u16` is performed by the client.
 
-Every confirmed navigation and answer builder asks `NPCSession` to close the active dialog immediately after queuing `CPursuit`. The server continues the conversation by sending the requested `SPursuitMessage` step, which constructs a fresh pane.
+Every confirmed navigation and answer builder asks `NPCSession` to enter response-pending after queuing `CPursuit`. The client deactivates the nested answer pane, disables Previous and Next, and clears the default action while leaving Close available. The server continues the conversation by sending the requested `SPursuitMessage` step.
+
+The outer pursuit pane registers Close as both attachment-order action 6 and its Escape cancel action. Either input sends the no-argument current-step body, then closes the NPC session locally. Nested menu and input panes return false for Escape so the outer pane can handle it.
 
 ## Simple-dialog speech echo
 
@@ -98,3 +100,5 @@ This is not evidence that `CMerchant` and `CPursuit` use the same outer key. The
 ## Known limits
 
 Argument values other than 1 and 2 are not emitted by any recovered client builder. The protected ID/password controls are handed to a regional account manager. Only its successful state reaches `net_send_pursuit_protected_text_result`, which sends the manager-produced nonempty string rather than directly concatenating the two edit fields. That account policy is separate from the packet layout.
+
+The `target_id` is always a `u32`. Observed reactor IDs may fit in three bytes, but an injected sender must preserve and write all four bytes. A type-10 `SPursuitMessage` body is only `30 0A`; any additional byte shown by a transport or logging layer is not part of the deserialized packet body.

@@ -4,9 +4,12 @@ This patch removes the guaranteed extra second after a transfer connection while
 
 ## Target
 
-| Static address | RVA | File offset, reference only | Verify bytes and instruction | Write bytes and instruction |
-| --- | --- | --- | --- | --- |
-| `0x00564855` | `0x00164855` | `0x00163C55` | `68 E8 03 00 00` `push 1000` | `68 00 00 00 00` `push 0` |
+At static address `0x00564855` (RVA `0x00164855`, file offset `0x00163C55` for reference), replace:
+
+```diff
+- 000: 68 E8 03 00 00 | push 1000 ; sleep for one second after reconnecting
++ 000: 68 00 00 00 00 | push 0    ; yield without adding a fixed transfer delay
+```
 
 `net_reconnect_transfer_endpoint` closes the old connection, resets transport state, applies the endpoint from `STransferServer`, and performs the new blocking connection. It then calls `Sleep(1000)` before the communications queue can continue.
 
@@ -16,4 +19,4 @@ This patch removes the guaranteed extra second after a transfer connection while
 
 The animation may still pause for however long the actual `connect` call takes. Removing that remaining stall requires an asynchronous main-thread state machine, not another safe one-instruction change. See [Initial connection](../../network/connection.md#why-the-screen-pauses-during-a-transfer).
 
-Apply it with the [safe launcher workflow](safe-launcher-workflow.md).
+Apply it with the [safe launcher workflow](safe-launcher.md).

@@ -89,7 +89,7 @@ Types 1 and 3 are real client branches. Type 5 behaves as a simple text-input me
 
 The booleans control availability only. The client performs the arithmetic itself and does not take destination step numbers from the server.
 
-After queuing any navigation, answer, or close response, the client closes the current dialog path. A continuing pursuit must send another `SPursuitMessage` for the requested step.
+After queuing navigation or an answer, the client enters response-pending. It deactivates the answer pane, disables Previous and Next, and leaves Close available while it waits. A continuing pursuit must send another `SPursuitMessage` for the requested step. Close queues the current-step `CPursuit` and then closes the NPC session locally.
 
 Choice indexes are sent one-based even though the dialog collection is indexed from zero. `maximum_input_bytes` is applied to the edit control. Type 9 builds a separate ID and masked-password dialog from `lnpcnid.txt`; its regional account manager must accept the form before the client emits an ordinary type-2 text response. The response contains a nonempty string produced in the protected pane's manager-result buffer. It does not serialize the ID and password controls directly.
 

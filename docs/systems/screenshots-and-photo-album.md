@@ -80,7 +80,7 @@ Remove clears the selected active record, rewrites `album.dat`, and refreshes th
 
 ## Extension options
 
-A narrow patch can bypass the capture cooldown. Separate JPEG patches can raise the default quality and change the sampling to 4:4:4. Higher quality must still remain below the uploader's 8,000-byte JPEG limit. Exact bytes and scope are in [Photo album quality-of-life patches](../appendix/runtime-patches/photo-album-quality-of-life.md).
+A narrow patch can bypass the capture cooldown. Separate JPEG patches can raise the default quality and change the sampling to 4:4:4. Higher quality must still remain below the uploader's 8,000-byte JPEG limit. Exact bytes and scope are in [Photo album quality-of-life patches](../appendix/runtime-patches/photo-album.md).
 
 Saving EPF requires new behavior rather than selecting a dormant client branch. The album stores rendered 16-bit pixels, while portrait EPF stores palette indexes resolved through `legend.pal`. An EPF exporter therefore needs a verified writer plus color quantization or another way to recover palette indexes.
 

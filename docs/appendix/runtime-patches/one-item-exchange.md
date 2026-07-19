@@ -11,18 +11,13 @@ This patch sends a count of one for a one-item stack while preserving the normal
 | `ui_get_gui_back_pane` | `0x005A9C40` | `0x001A9C40` |
 | Existing `CExchange` subtype 2 count builder | `0x0046C2A0` | `0x0006C2A0` |
 
-The hook site must contain exactly:
+The entry hook is:
 
-```text
-000: 55       | push ebp     ; displaced prologue
-001: 8B EC    | mov ebp, esp ; establish the original frame
-003: 6A FF    | push -1      ; displaced exception-state value
-```
-
-Its replacement is:
-
-```text
-000: E9 <stub rel32> | jmp one_item_exchange_stub ; inspect the live stack before opening a prompt
+```diff
+- 000: 55                | push ebp     ; displaced function prologue
+- 001: 8B EC             | mov ebp, esp
+- 003: 6A FF             | push -1
++ 000: E9 <stub rel32>   | jmp one_item_exchange_stub ; inspect the live stack before opening a prompt
 ```
 
 Adding an item to a player exchange is a server-mediated two-step operation. The client first sends `CExchange` subtype 1 with the exchange ID and source inventory slot. When the server replies with `SExchange` subtype 1, `ui_exchange_handle_count_request` opens `AddItemWithCountDialog` without checking the live inventory quantity.
@@ -122,35 +117,21 @@ Write each displacement as a signed little-endian 32-bit integer:
 
 Reject the installation if any displacement does not fit a signed 32-bit integer.
 
-## Hook bytes
+## Hook relocation
 
-After the relocated stub is written, replace the verified five hook bytes at `module_base + 0x0006A690` with:
-
-```text
-000: E9 <signed-rel32> | jmp one_item_exchange_stub ; replace the five-byte prologue
-```
-
-where:
+After the relocated stub is written, calculate the hook operand at `module_base + 0x0006A691` as:
 
 ```text
 signed-rel32 = stub_base - (module_base + 0x0006A695)
 ```
 
-The complete rollback bytes are:
-
-```text
-000: 55       | push ebp     ; restore original prologue
-001: 8B EC    | mov ebp, esp ; restore original frame setup
-003: 6A FF    | push -1      ; restore original exception-state value
-```
-
 As a relocation test vector only, placing the stub at preferred address `0x0066867A` produces:
 
 ```text
-stub +0x17: AB 15 F4 FF
-stub +0x5D: C5 3B E0 FF
-stub +0x79: 9E 1F E0 FF
-hook bytes: E9 E5 DF 1F 00
+017: AB 15 F4 FF | call ui_get_gui_back_pane ; example stub rel32 operand
+05D: C5 3B E0 FF | call exchange_builder      ; example stub rel32 operand
+079: 9E 1F E0 FF | jmp original_continuation ; example stub rel32 operand
+hook bytes: E9 E5 DF 1F 00 | jmp one_item_exchange_stub ; example installed hook
 ```
 
 Do not use those test-vector displacements when ASLR or a different allocation address changes either base.
@@ -168,4 +149,4 @@ Install while the process is suspended:
 
 To remove the patch, suspend execution, restore the five original hook bytes first, flush the instruction cache, and only then release the stub allocation. If installation fails before the hook is written, release the unused stub and leave the hook untouched.
 
-The general checks in the [safe launcher workflow](safe-launcher-workflow.md) also apply.
+The general checks in the [safe launcher workflow](safe-launcher.md) also apply.

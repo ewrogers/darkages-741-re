@@ -24,16 +24,11 @@ This specification applies only to the 3,112,960-byte executable with SHA-256 `0
 | Dormant archive pointer global | `0x006FD084` | `0x002FD084` | Not file-backed |
 | `misc.dat` archive pointer global | `0x006FD088` | `0x002FD088` | Not file-backed |
 
-The startup call site must contain exactly:
+At the startup call site, replace:
 
-```text
-000: E8 0C 72 FC FF | call file_archive_open ; original setoa.dat open
-```
-
-Replace it with:
-
-```text
-000: E8 <open wrapper rel32> | call open_wrapper ; open setoa.dat, then cious.dat
+```diff
+- 000: E8 0C 72 FC FF        | call file_archive_open ; open setoa.dat only
++ 000: E8 <open wrapper rel32> | call open_wrapper      ; open setoa.dat, then cious.dat
 ```
 
 where:
@@ -42,19 +37,14 @@ where:
 signed-rel32 = stub_base - (module_base + 0x000AABF4)
 ```
 
-The `file_archive_find_entry` entry must contain exactly:
+At the `file_archive_find_entry` entry, replace:
 
-```text
-000: 55          | push ebp      ; displaced function prologue
-001: 8B EC       | mov ebp, esp  ; establish the original frame
-003: 83 EC 34    | sub esp, 0x34 ; reserve the original locals
-```
-
-Replace it with:
-
-```text
-000: E9 <lookup wrapper rel32> | jmp lookup_wrapper ; apply the cious.dat overlay
-005: 90                         | nop                ; cover the sixth displaced byte
+```diff
+- 000: 55                         | push ebp           ; displaced function prologue
+- 001: 8B EC                      | mov ebp, esp       ; establish the original frame
+- 003: 83 EC 34                   | sub esp, 0x34      ; reserve the original locals
++ 000: E9 <lookup wrapper rel32>  | jmp lookup_wrapper ; apply the cious.dat overlay
++ 005: 90                         | nop                ; fill the sixth displaced byte
 ```
 
 where:
@@ -183,4 +173,4 @@ Install while the process is suspended:
 
 To remove the patch, suspend execution, restore both original hook sequences, flush the instruction cache, and only then release the stub allocation. Do not remove it from a process that has already opened `cious.dat`; use it as a launch-time patch for the complete process lifetime.
 
-The general checks in the [safe launcher workflow](safe-launcher-workflow.md) also apply.
+The general checks in the [safe launcher workflow](safe-launcher.md) also apply.

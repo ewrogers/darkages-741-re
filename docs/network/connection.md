@@ -53,7 +53,7 @@ The stipulation dialog normally makes this less noticeable. A patch that suppres
 
 ### Patch direction
 
-The narrow patch changes the worker's `Sleep(1000)` argument to `Sleep(0)`. It preserves socket shutdown, state resets, the reconnect, queue ordering, completion cleanup, and the later `CTransferServer`. The main thread can still pause for the actual blocking `connect`, but the guaranteed extra second is removed. See [Remove the fixed server-transfer delay](../appendix/runtime-patches/remove-fixed-server-transfer-delay.md).
+The narrow patch changes the worker's `Sleep(1000)` argument to `Sleep(0)`. It preserves socket shutdown, state resets, the reconnect, queue ordering, completion cleanup, and the later `CTransferServer`. The main thread can still pause for the actual blocking `connect`, but the guaranteed extra second is removed. See [Remove the fixed server-transfer delay](../appendix/runtime-patches/fast-server-transfer.md).
 
 Removing the main-thread wait call as well is not a clean byte patch. The queued completion object still needs to be reclaimed, and `CTransferServer` must remain ordered after the reconnect and protocol-state update.
 
@@ -71,7 +71,7 @@ This is practical as an injected state-machine hook, but it is not yet reduced t
 
 If the first `connect` fails, the client resolves `da0.kru.com` again, creates a fresh socket, and tries once more. A new lookup can pick up a changed DNS address.
 
-This means the built-in behavior is not strictly "connect to the configured address or fail." A runtime launcher that supplies a custom endpoint may also disable this fallback. See [Disable the official endpoint fallback](../appendix/runtime-patches/disable-official-endpoint-fallback.md).
+This means the built-in behavior is not strictly "connect to the configured address or fail." A runtime launcher that supplies a custom endpoint may also disable this fallback. See [Disable the official endpoint fallback](../appendix/runtime-patches/disable-endpoint-fallback.md).
 
 ## Failure behavior
 

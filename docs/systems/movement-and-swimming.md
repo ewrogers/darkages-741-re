@@ -38,7 +38,7 @@ The server answers or overrides facing with [`SChangeDirection`](../network/serv
 
 The action-state bit rejects the move before ordinary collision checks. It also restricts some non-movement actions, so it is best understood as an action lock rather than a simple movement permission.
 
-The static collision step examines the two static tile IDs on the source and destination edges. It does not inspect the ground tile ID. See [SOTP static tile flags](../file-formats/sotp.md).
+The static collision step examines the two live `WorldObject_Static` tile IDs on the source and destination edges. It does not inspect the ground tile ID. A packet-driven door change therefore takes effect immediately because [`SStaticObjectState`](../network/server/050-0x32-static-object-state.md) replaces the live static tile ID that this check sends to `SOTP.DAT`. See [SOTP static tile flags](../file-formats/sotp.md).
 
 ## Server acknowledgement and correction
 

@@ -14,7 +14,7 @@ Darkages.exe <host-or-ip> [port]
 
 `net_parse_endpoint_override` can read this form, resolve a hostname, and store the address and port. The normal configuration path does not call it. The parser is dormant because `app_select_distribution_mode` always chooses distribution mode 1.
 
-Changing the whole distribution mode would affect more than networking. A launcher should instead redirect only the endpoint setup call. See [Enable the positional endpoint parser](../appendix/runtime-patches/enable-positional-endpoint-parser.md).
+Changing the whole distribution mode would affect more than networking. A launcher should instead redirect only the endpoint setup call. See [Enable the positional endpoint parser](../appendix/runtime-patches/command-line-endpoint.md).
 
 The executable also contains an older `.nfo` marker scanner and country- and ISP-specific endpoint integrations. They are not reached by this build's hardcoded selector. See [Distribution markers](distribution-markers.md).
 
@@ -40,7 +40,7 @@ port:       2610
 
 If `%SystemRoot%\System32\Mscfg.dll` exists, the port becomes `2601`. This file is not a library used by the client. The [`SBadGuy`](../network/server/074-0x4a-bad-guy.md) handler creates it as a persistent client-installation soft-ban marker.
 
-The [Good Guy runtime patch](../appendix/runtime-patches/ignore-local-bad-guy-marker.md) keeps the marker-present flag clear. It restores the normal endpoint and login path for later launches while leaving the file and installation IDs unchanged.
+The [Good Guy runtime patch](../appendix/runtime-patches/ignore-bad-guy-marker.md) keeps the marker-present flag clear. It restores the normal endpoint and login path for later launches while leaving the file and installation IDs unchanged.
 
 The `Port: 5` setting in `Darkages.cfg` selects the transport labeled `PPP or LAN`. It does not mean TCP port 5. Selectors 1 through 4 are the compiled `MODEM COM1` through `MODEM COM4` paths described in [Network transport](../network/transport.md). The final TCP port is the base port plus a normally zero signed offset from the configuration object.
 
@@ -71,7 +71,7 @@ Two policies are useful:
 - **Custom first:** use the supplied endpoint, but keep the official backup if it fails.
 - **Connect or fail:** use only the supplied endpoint and show the normal connection error if it fails.
 
-The second policy also disables the `da0.kru.com` fallback. Exact bytes and safety checks are kept in [Disable the official endpoint fallback](../appendix/runtime-patches/disable-official-endpoint-fallback.md).
+The second policy also disables the `da0.kru.com` fallback. Exact bytes and safety checks are kept in [Disable the official endpoint fallback](../appendix/runtime-patches/disable-endpoint-fallback.md).
 
 ## Connection results
 

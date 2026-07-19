@@ -67,4 +67,4 @@ Suppressing the alert must not skip the remaining close path. A narrow patch can
 
 That direct append reproduces the floating message bar only. It does not create a real [`SMessage`](../network/server/010-0x0a-message.md) or add the text to persistent history. A hook that needs both destinations should queue a bounded synthetic message event through the ordinary main-thread event path. Exchange messages can be 255 bytes, while the floating overlay is safe only through 130 bytes, so a redirect must clamp or reject longer text.
 
-Static addresses, verified bytes, and the two no-popup patches are in [Exchange UI quality-of-life hooks](../appendix/runtime-patches/exchange-ui-quality-of-life.md).
+Static addresses, verified bytes, and the two no-popup patches are in [Exchange UI quality-of-life hooks](../appendix/runtime-patches/exchange-ui.md).

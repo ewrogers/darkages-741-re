@@ -90,7 +90,7 @@ The packet does not overwrite or delete the registry-backed installation IDs. Th
 
 ## Local Good Guy patch
 
-The [Good Guy runtime patch](../../appendix/runtime-patches/ignore-local-bad-guy-marker.md) changes the marker-present branch to write `0` to the flag. A client left unusable by the marker can then use the normal port and submit `CLogin` again without deleting the file.
+The [Good Guy runtime patch](../../appendix/runtime-patches/ignore-bad-guy-marker.md) changes the marker-present branch to write `0` to the flag. A client left unusable by the marker can then use the normal port and submit `CLogin` again without deleting the file.
 
 This patch affects startup detection only. A newly received `SBadGuy` still creates the marker when possible and terminates the current process. It also does not change the installation IDs or any server-side decision about them.
 

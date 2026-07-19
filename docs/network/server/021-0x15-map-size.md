@@ -52,11 +52,11 @@ The reader consumes those bytes with a generic `u24` helper, while the writer ze
 
 `flags` uses the shared [`MapFlags`](../protocol-types.md#mapflags) type. The client keeps the low nibble as a single weather or lighting mode. Bits `0x40` and `0x80` are independent options that may be combined with it.
 
-`NoMap` is checked before the Rogue class branch. A Rogue therefore cannot open or zoom the Tab map when `flags & 0x40` is set. Map setup also disables an overlay that was already open.
+`NoMap` is checked before the Rogue class branch. A Rogue therefore cannot open or zoom the Tab map when `flags & 0x40` is set. Map setup also disables an overlay that was already open. [Allow map](../../appendix/runtime-patches/allow-map.md) disables both client checks, while [Map zoom](../../appendix/runtime-patches/map-zoom.md) selects the zoom-enabled configuration for every class.
 
 `Winter` selects `tileas.bmp` and the `stsNNNNN.hpf` static-art family, with fallback to the ordinary art. It is independent of falling snow. See [Snow and weather](../../rendering/weather.md).
 
-`Darkness` is the lantern-style Andor path. While it is active, [`SDrawHumanObjects`](051-0x33-draw-human-objects.md) may attach a server-selected `mask1%02d.epf` light image to a human. See [Map lighting](../../rendering/lighting.md).
+`Darkness` is the lantern-style Andor path. While it is active, [`SDrawHumanObjects`](051-0x33-draw-human-objects.md) may attach a server-selected `mask1%02d.epf` light image to a human. See [Map lighting](../../rendering/lighting.md). The [No darkness](../../appendix/runtime-patches/no-darkness.md) runtime patch disables all three client comparisons with this mode.
 
 The executable contains a nearby constant for bit `0x20`, but no code references it. Its protocol meaning remains unknown.
 

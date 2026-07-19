@@ -108,7 +108,7 @@ A receive-side zero may follow the selected blocks. It is not consumed by `net_d
 
 [`SLevelPoint`](061-0x3d-level-point.md) carries `has_stat_points` and `stat_points` in the same order and writes the same two `StatusInfoPane` fields. Its dedicated handler also clears and starts the pane's 500 ms flashing timer. The `SStatus` path copies the values without managing that timer.
 
-The combat-modifier block also sets the global blinded state. Only `blind_code == 0x08` is treated as blinded. The renderer stores that boolean and redraws the world view.
+The combat-modifier block also sets the global blinded state. Only `blind_code == 0x08` is treated as blinded. The renderer stores that boolean and redraws the world view. The [No blind](../../appendix/runtime-patches/no-blind.md) runtime patch preserves this update path but forces the boolean to false.
 
 `unknown_modifier_4` is copied to an application field at `+0x444`, but no read of that destination has been confirmed. Its meaning remains unknown.
 

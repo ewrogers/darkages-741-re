@@ -41,9 +41,11 @@ Mode 1 inflates the replacement into a buffer capped at 10,000 bytes, saves the 
 
 After a matching mode-0 check or a successful mode-1 replacement, the normal US path constructs `AgreementDialogPane` from `_nagree.txt`. The pane's OK action only closes and unregisters the pane. It sends no acknowledgement packet.
 
-`MainMenuPane +0x500` is the local input gate. Its pointer and keyboard handlers consume input immediately while this value is nonzero. Both successful stipulation paths clear it to zero after the agreement decision, which restores normal menu input and makes Login clickable.
+`MainMenuPane +0x500` is the local input gate. Its pointer and keyboard handlers consume input immediately while this value is nonzero. Both successful stipulation paths clear it to zero after the agreement decision, which restores normal menu input and makes the Continue button clickable.
 
-The Japan distribution path already skips constructing the agreement pane and still reaches that same gate-clearing code. The [suppress-stipulation runtime patch](../../appendix/runtime-patches/suppress-stipulation-window.md) makes the two successful paths follow this existing branch for every distribution. CRC comparison, table replacement, homepage requesting, and the main-menu state transition are left intact.
+The Japan distribution path already skips constructing the agreement pane and still reaches that same gate-clearing code. The [Hide stipulation](../../appendix/runtime-patches/hide-stipulation.md) runtime patch makes the two successful paths follow this existing branch for every distribution. CRC comparison, table replacement, homepage requesting, and the main-menu state transition are left intact.
+
+The separate [Early Continue](../../appendix/runtime-patches/early-continue.md) patch lets pointer clicks enter normal title-menu hit testing before the gate clears. It does not change the keyboard gate or stipulation processing.
 
 ## Handlers
 

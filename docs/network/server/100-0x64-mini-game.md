@@ -56,7 +56,7 @@ The local installation keeps all 167 mini-game entries in `cious.dat`. This incl
 
 The client does not open `cious.dat` during normal startup. These constructors pass no archive override to `ui_layout_load`, so the lookup falls back to the already-open `setoa.dat`. Sending `64 04 01` in this state reaches `RopeSkipping::Game`, fails to find `lminig.txt`, raises the client's fatal invalid-layout error, and terminates the process. Puzzle selectors `2` and `4` have the same problem with `lpz_dlg.txt`. Find Farmpet avoids that first text-layout lookup but still expects its art in the same unavailable archive.
 
-This installation therefore needs its mini-game archive integrated before any selector is safe to test. The [Minigame support patch](../../appendix/runtime-patches/minigame-support.md) opens `cious.dat` in a dormant client archive object and adds it as a lookup fallback while preserving `misc.dat`, `setoa.dat`, and every other original archive. It does not merge or rewrite the DAT files and does not use a DLL.
+This installation therefore needs its mini-game archive integrated before any selector is safe to test. The [Minigame support patch](../../appendix/runtime-patches/minigame-assets.md) opens `cious.dat` in a dormant client archive object and adds it as a lookup fallback while preserving `misc.dat`, `setoa.dat`, and every other original archive. It does not merge or rewrite the DAT files and does not use a DLL.
 
 ## Body
 

@@ -4222,7 +4222,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059C260 passes opcode 0x32 to the server packet base and installs the SStaticObjectState vtable."
+        evidence: "Constructor 0x0059C260 passes opcode 0x32 to the server packet base and installs exact RTTI SStaticObjectState. Deserializer 0x0059C290 reads a count followed by x, y, state, and side bytes. Handler 0x005F1690 selects one isometric static layer and swaps its live tile ID through a 66-row state-pair table; later SOTP.DAT lookup applies collision for that replacement ID."
         page: "docs/network/server/050-0x32-static-object-state.md"
       - opcode: "0x33"
         friendly_name: "Draw Human Objects"

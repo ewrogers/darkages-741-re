@@ -12,16 +12,11 @@ This patch releases the client's held keys when the game loses focus. It prevent
 | `input_post_key_up` | `0x00466E60` | `0x00066E60` |
 | `GetMessageTime` import thunk | `0x0062006E` | `0x0022006E` |
 
-The hook site must contain exactly:
+At the inactive `WM_ACTIVATE` call site, replace:
 
-```text
-000: E8 CA 2B 00 00 | call original_activation_state ; original inactive-focus behavior
-```
-
-This is the original `CALL` to the activation-state function. Replace it with:
-
-```text
-000: E8 <stub rel32> | call modifier_cleanup_stub ; release keys before original behavior
+```diff
+- 000: E8 CA 2B 00 00 | call original_activation_state ; original inactive-focus behavior
++ 000: E8 <stub rel32> | call modifier_cleanup_stub     ; release keys before original behavior
 ```
 
 where:
@@ -128,4 +123,4 @@ To remove the patch, suspend execution, restore the original five-byte call firs
 
 The hook site, original bytes, helper targets, object fields, and import thunk above were rechecked against the local version-741 executable.
 
-The general checks in the [safe launcher workflow](safe-launcher-workflow.md) also apply.
+The general checks in the [safe launcher workflow](safe-launcher.md) also apply.

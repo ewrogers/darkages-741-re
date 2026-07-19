@@ -116,6 +116,8 @@ Keyboard and IME events go to the focused edit control. Tab and reverse-Tab use 
 
 For `NPC_Pursuit_MessageDialog`, outer action IDs 4, 5, and 6 are Previous, Next, and Close. IDs 0 through 3 belong to the base message controls. The menu row handler converts a zero-based control index to the one-based choice number sent on the wire.
 
+The constructor also registers action 6 as the dialog's cancel action. The inherited keyboard handler dispatches Escape through that action. Nested `NPCMenuDialog` panes return false for Escape instead of consuming it, so the event reaches the outer pursuit pane. The visible Close button and Escape therefore use the same `net_send_pursuit_close_current` path.
+
 For `NPC_Merchant_MessageDialog`, action 4 is Top and action 5 is Close. Top sends `CRequestObjectInfo` subtype 1 with the active target ID and then closes the NPC session. Close sends no packet. Only a nested menu selection or submission produces `CMerchant`.
 
 The protected type-9 dialog has separate ID and masked-password edit controls. Its submit handler first calls the regional account manager and may wait, show a local error, or continue. Only the accepted state sends `CPursuit`, using a manager-produced nonempty result string. The two visible input buffers are not copied directly into the packet builder.
@@ -137,11 +139,42 @@ See [`SScreenMenu`](../network/server/047-0x2f-screen-menu.md) and [`CMerchant`]
 
 The pursuit pane treats the server's `step_id` as the current page. Previous sends current minus one; Next and answers send current plus one; Close returns the current step. Menu and text arguments are explicitly tagged in `CPursuit`.
 
-All confirmed merchant submissions and pursuit actions invoke `ui_npc_session_close_active_dialog` after queuing their response. The server does not mutate controls in place to continue. It sends the next `SScreenMenu` or `SPursuitMessage`, and `NPCSession` builds the next pane from that message.
+After queuing a navigation or answer, the client calls `ui_npc_session_set_response_pending`. The pursuit implementation deactivates the nested answer pane, disables Previous and Next, and clears the default action. It leaves Close available. The server continues by sending the next `SPursuitMessage`, which refreshes the session and pane. A type-10 message closes the session.
+
+Close is different from an ordinary answer. Action 6 queues a ten-byte, no-argument `CPursuit` for the current step and then closes the NPC session locally.
 
 Simple question and text modes also send `CSay` before their pursuit answer. The speech echo is an additional server-visible action, not a replacement for `CPursuit`.
 
 See [`SPursuitMessage`](../network/server/048-0x30-pursuit-message.md) and [`CPursuit`](../network/client/058-0x3a-pursuit.md).
+
+## Stale pursuit recovery
+
+The project owner reports that a timed reactor can expire while its pursuit dialog is open. If the player answers afterward, the server can ignore the answer and later reject other actions with a "You're stuck" message. The client has no target-lifetime check. It only enters response-pending and waits for another `SPursuitMessage`.
+
+The normal recovery already exists while the live pursuit pane receives input. Close or Escape sends the current-step `CPursuit` before closing locally. If that packet is absent in a reproduction, log these four points in order:
+
+1. `ui_npc_pursuit_message_handle_action` receives action 6.
+2. `net_send_pursuit_close_current` runs.
+3. `net_submit_client_packet` receives an opcode-`0x3A`, ten-byte body.
+4. The communications worker emits the wrapped and transformed packet.
+
+This separates an input-routing failure from a builder, queue, or transport failure.
+
+An injected fallback should recover only a known pending pursuit:
+
+```text
+on SPursuitMessage type != 10: cache target_type, target_id, pursuit_id, step_id
+on non-close CPursuit:         arm this context as response-pending
+on another SPursuitMessage:    update or clear the pending context
+on map, session, or connection reset: clear the pending context
+
+on Escape while pending and no native close was queued:
+    queue the cached ten-byte close body on the main-thread dispatcher
+```
+
+The fallback should pass the plaintext body to `net_submit_client_packet`. That preserves the dialog wrapper, CRC, transform, sequence ownership, and communications queue. It should use a generation counter to prevent a native close and fallback close from both being sent, keep the full `u32 target_id`, expire stale cached contexts, and rate-limit retries.
+
+Do not send a close automatically after a fixed timeout alone. A valid script may answer slowly or finish through another server message. A captured `SMessage` carrying the exact stuck response could become a stronger optional trigger, but its type and text bytes must be confirmed first.
 
 ## Special response protection
 

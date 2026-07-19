@@ -12,16 +12,11 @@ This patch changes stackable item labels in `ClientItemMenuDialog` from `Potion`
 | `ui_text_truncate_dbcs_safe` | `0x0047D670` | `0x0007D670` |
 | `wsprintfA` import address-table entry | `0x00669380` | `0x00269380` |
 
-The hook site must contain exactly:
+The row-builder hook is:
 
-```text
-000: E8 79 E7 FF FF | call item_list_row_builder ; original row construction
-```
-
-Its replacement is:
-
-```text
-000: E8 <stub rel32> | call menu_item_quantity_stub ; rewrite only the temporary label
+```diff
+- 000: E8 79 E7 FF FF    | call item_list_row_builder   ; build the original menu row
++ 000: E8 <stub rel32>   | call menu_item_quantity_stub ; rewrite only the temporary label
 ```
 
 The original code builds each row from a one-based inventory slot. The name is passed separately from that slot and is copied immediately into a 256-byte local buffer by the row builder. The hook changes only the temporary name pointer. The slot, icon, dye, selection value, and every other argument remain unchanged.
@@ -213,34 +208,22 @@ Write `rel32` displacements as signed little-endian 32-bit integers. Write `abs3
 
 Reject the installation if either `rel32` displacement does not fit a signed 32-bit integer.
 
-## Hook bytes
+## Hook relocation
 
-After the relocated stub is written, replace the verified five hook bytes at `module_base + 0x000D4F82` with:
-
-```text
-000: E8 <signed-rel32> | call menu_item_quantity_stub ; replace the original row-builder call
-```
-
-where:
+After the relocated stub is written, calculate the hook operand at `module_base + 0x000D4F83` as:
 
 ```text
 signed-rel32 = stub_base - (module_base + 0x000D4F87)
 ```
 
-The complete rollback bytes are:
-
-```text
-000: E8 79 E7 FF FF | call item_list_row_builder ; restore the original call
-```
-
 As a relocation test vector only, using preferred `module_base = 0x00400000` and `stub_base = 0x10000000` produces:
 
 ```text
-stub +0x036: 06 9C 5A F0
-stub +0x099: 80 93 66 00
-stub +0x0F4: 78 D5 47 F0
-stub +0x15A: A2 35 4D F0
-hook bytes: E8 79 B0 B2 0F
+036: 06 9C 5A F0 | call ui_get_gui_back_pane       ; example stub rel32 operand
+099: 80 93 66 00 | call [wsprintfA IAT]            ; example stub abs32 operand
+0F4: 78 D5 47 F0 | call ui_text_truncate_dbcs_safe ; example stub rel32 operand
+15A: A2 35 4D F0 | call item_list_row_builder      ; example stub rel32 operand
+hook bytes: E8 79 B0 B2 0F | call menu_item_quantity_stub  ; example installed hook
 ```
 
 Do not use those test-vector values when ASLR or a different allocation address changes either base.
@@ -258,4 +241,4 @@ Install while the process is suspended:
 
 To remove the patch, suspend execution, restore the five original hook bytes first, flush the instruction cache, and only then release the stub allocation. If installation fails before the hook is written, release the unused stub and leave the hook untouched.
 
-The general checks in the [safe launcher workflow](safe-launcher-workflow.md) also apply. The related packet path is described on [Screen Menu (`SScreenMenu`)](../../network/server/047-0x2f-screen-menu.md).
+The general checks in the [safe launcher workflow](safe-launcher.md) also apply. The related packet path is described on [Screen Menu (`SScreenMenu`)](../../network/server/047-0x2f-screen-menu.md).

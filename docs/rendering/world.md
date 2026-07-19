@@ -26,6 +26,8 @@ This order lets the map act as the floor while characters, items, and effects ap
 
 The map cell itself stores three tile IDs. The first is the ground. The other two create left and right isometric static layers. See the [map format](../file-formats/map.md).
 
+[`SStaticObjectState`](../network/server/050-0x32-static-object-state.md) can replace the live tile ID of either isometric static layer. It selects a row in a built-in 66-pair state table, swaps the `WorldObject_Static` image to the other tile ID, and leaves the original map-cell value unchanged. Doors use this path for their open and closed art.
+
 The server can select the alternate ground and static art during map setup. See [Snow and weather](weather.md) and [raw map tile banks](../file-formats/map-tile-banks.md).
 
 ## Tile animation
