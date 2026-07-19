@@ -22,8 +22,7 @@ The client requests one named metadata table after the server inventory shows th
 packet CMetaData {
     u8      opcode                    // 0x7B
     u8      operation                 // 0, request one table
-    u8      name_length
-    bytes   name[name_length]
+    string8 name
 }
 ```
 

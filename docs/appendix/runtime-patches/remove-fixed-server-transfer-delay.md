@@ -1,12 +1,12 @@
-# Remove the fixed server-transfer delay
+# Fast server transfer
 
 This patch removes the guaranteed extra second after a transfer connection while preserving the transfer flow.
 
 ## Target
 
-| Static address | RVA | File offset, reference only | Verify | Write |
+| Static address | RVA | File offset, reference only | Verify bytes and instruction | Write bytes and instruction |
 | --- | --- | --- | --- | --- |
-| `0x00564855` | `0x00164855` | `0x00163C55` | `68 E8 03 00 00` | `68 00 00 00 00` |
+| `0x00564855` | `0x00164855` | `0x00163C55` | `68 E8 03 00 00` `push 1000` | `68 00 00 00 00` `push 0` |
 
 `net_reconnect_transfer_endpoint` closes the old connection, resets transport state, applies the endpoint from `STransferServer`, and performs the new blocking connection. It then calls `Sleep(1000)` before the communications queue can continue.
 

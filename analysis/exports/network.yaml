@@ -620,14 +620,14 @@ comments:
   - address: "0x005FC7DB"
     text: Write the normalized UserState as the packet's only payload byte.
 runtime_patches:
-  - id: good-guy-ignore-bad-guy-marker
+  - id: ignore-bad-guy-marker
     rva: "0x00031F85"
     static_address: "0x00431F85"
     file_offset_for_reference_only: "0x00031385"
     original_bytes: C6 82 68 06 00 00 01
     replacement_bytes: C6 82 68 06 00 00 00
     effect: Keep app_config +0x668 clear when Mscfg.dll exists, preserving the normal port and CLogin path without skipping field initialization. A live SBadGuy still terminates the current process.
-  - id: enable-command-line-endpoint
+  - id: command-line-endpoint
     rva: "0x00032253"
     static_address: "0x00432253"
     file_offset_for_reference_only: "0x00031653"
@@ -648,14 +648,14 @@ runtime_patches:
     original_bytes: 75 6D
     replacement_bytes: EB 6D
     effect: After inflating and saving a replacement greeting, skip AgreementDialogPane construction and still clear MainMenuPane +0x500.
-  - id: remove-fixed-server-transfer-delay
+  - id: fast-server-transfer
     rva: "0x00164855"
     static_address: "0x00564855"
     file_offset_for_reference_only: "0x00163C55"
     original_bytes: 68 E8 03 00 00
     replacement_bytes: 68 00 00 00 00
     effect: Preserve the transfer reconnect and completion barrier while changing its fixed post-connect Sleep from 1,000 ms to a zero-duration yield.
-  - id: disable-official-endpoint-fallback
+  - id: disable-endpoint-fallback
     rva: "0x001655F4"
     static_address: "0x005655F4"
     file_offset_for_reference_only: "0x001649F4"

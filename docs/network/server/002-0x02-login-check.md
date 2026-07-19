@@ -25,8 +25,7 @@ packet LobbyResult {
     // and password-change responses.
     // A creation-completion response may also supply it, but the
     // client ignores that stage's bytes after status.
-    u8      message_length
-    bytes   message[message_length]
+    string8 message
 }
 ```
 

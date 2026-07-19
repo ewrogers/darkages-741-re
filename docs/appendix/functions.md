@@ -240,17 +240,21 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_inventory_remove_item_from_packet` | `0x00490D30` | high | Accepts SRemoveInventory slots 1 through 60 and removes the matching live InvItemPane when present. |
 | `ui_inventory_update_gold_from_status_packet` | `0x00490F10` | high | Copies SStatus gold into the inventory pane and redraws its currency display. |
 | `ui_new_skill_inventory_pane_ctor` | `0x00491050` | high | Constructs exact RTTI class NewSkillInventoryPane with a 90-entry NewInventoryPane&lt;SkillInvItemPane&gt; base. |
+| `ui_skill_inventory_action_delay_timer` | `0x004914B0` | high | NewSkillInventoryPane TimerHandler callback for ID 0; resolves the one-based slot payload and clears action_delay_active on the item currently occupying that slot. |
 | `ui_skill_inventory_create_skill_item` | `0x004915B0` | high | Allocates a 0x348-byte SkillInvItemPane from the SAddSkill slot, icon, and name, then inserts it at slot - 1. |
 | `ui_skill_inventory_remove_slot` | `0x00491670` | high | Converts a one-based skill slot to the skill inventory's zero-based removal index. |
-| `ui_skill_inventory_handle_network_event` | `0x00491690` | high | NewSkillInventoryPane network-event handler routes RTTI SAddSkill and SRemoveSkill objects to their UI paths. |
+| `ui_skill_inventory_handle_network_event` | `0x00491690` | high | NewSkillInventoryPane network-event handler routes SAddSkill, SRemoveSkill, and SActionDelay selector 1 to their UI paths. |
 | `ui_skill_inventory_add_skill_from_packet` | `0x00491730` | high | Accepts SAddSkill slots 1 through 90, replaces an existing UI item, and constructs a new SkillInvItemPane. |
 | `ui_skill_inventory_remove_skill_from_packet` | `0x004917D0` | high | Accepts SRemoveSkill slots 1 through 90 and removes the slot when its SkillInvItemPane pointer is non-null. |
+| `ui_skill_inventory_apply_action_delay` | `0x00491850` | high | Accepts SActionDelay selector 1 and slots 1 through 90, sets the live item delay flag, starts the skill progress visual, and schedules the inventory expiry timer. |
 | `ui_new_spell_inventory_pane_ctor` | `0x004919E0` | high | Constructs exact RTTI class NewSpellInventoryPane and initializes its 90-entry spell-item pointer array. |
+| `ui_spell_inventory_action_delay_timer` | `0x00491F70` | high | NewSpellInventoryPane TimerHandler callback for ID 0; resolves the one-based slot payload and clears action_delay_active on the current spell item. |
 | `ui_spell_inventory_create_spell_item` | `0x00492070` | high | Allocates SpellInvItemPane and passes the SAddSpell slot, icon, argument type, name, prompt, and cast-line count to its constructor. |
 | `ui_spell_inventory_remove_slot` | `0x00492140` | high | Converts a one-based spell slot to the inventory container's zero-based index and removes the corresponding UI item. |
-| `ui_spell_inventory_handle_network_event` | `0x00492160` | high | NewSpellInventoryPane network-event handler routes RTTI SAddSpell and SRemoveSpell objects to the matching UI paths. |
+| `ui_spell_inventory_handle_network_event` | `0x00492160` | high | NewSpellInventoryPane network-event handler routes SAddSpell, SRemoveSpell, and SActionDelay selector 0 to the matching UI paths. |
 | `ui_spell_inventory_add_spell_from_packet` | `0x00492200` | high | Accepts SAddSpell slots 1 through 90, replaces the existing UI entry, and constructs a new SpellInvItemPane. |
 | `ui_spell_inventory_remove_spell_from_packet` | `0x004922B0` | high | Accepts SRemoveSpell slots 1 through 90 and removes the slot when its SpellInvItemPane pointer is non-null. |
+| `ui_spell_inventory_apply_action_delay` | `0x00492330` | high | Accepts SActionDelay selector 0 and slots 1 through 90, sets the live spell item delay flag, and schedules the inventory expiry timer. |
 | `ui_skill_inventory_set_item_at` | `0x00492B30` | high | Replaces a checked zero-based skill inventory entry and attaches the new SkillInvItemPane to its visible slot. |
 | `ui_skill_inventory_remove_item_at` | `0x00492C00` | high | Checks a zero-based skill inventory index, releases its live UI item, and clears the pointer entry. |
 | `ui_spell_inventory_remove_item_at` | `0x00493460` | high | Checks a zero-based spell inventory index, releases its live SpellInvItemPane through the shared UI owner, and clears the pointer entry. |
@@ -274,14 +278,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_map_item_pane_handle_pointer_event` | `0x00498020` | high | Handles MapItem_Pane pointer events; a left double click inside the pane finds an empty inventory slot and sends CGet for the pane's world coordinates. |
 | `ui_map_item_pane_handle_timer` | `0x00498400` | high | TimerHandler callback for MapItem_Pane; resolves an inventory slot when needed and sends CGet through the pane-owned builder. |
 | `ui_skill_inventory_item_ctor` | `0x00498940` | high | Constructs exact RTTI class SkillInvItemPane and retains the SAddSkill icon, name, and one-based slot. |
-| `ui_skill_inventory_activate` | `0x004992F0` | high | Checks SkillInvItemPane state, sends any configured skill text, and reaches the CUseSkill sender. |
+| `ui_skill_item_start_cooldown_visual` | `0x00498AD0` | high | Sets progress to zero, records timeGetTime start and end values, marks the visual active, redraws, and schedules timer ID 0x10204 after 100 ms. |
+| `ui_skill_item_set_cooldown_progress` | `0x00498B40` | high | Stores a changed 0 through 30 skill cooldown step and invalidates the item pane. |
+| `ui_skill_item_cooldown_visual_timer` | `0x00498C10` | high | For timer ID 0x10204, maps elapsed time to 30 integer steps, redraws, and reschedules at 100 ms while the delay and visual-active flags remain set. |
+| `ui_skill_inventory_item_handle_pointer_event` | `0x00498D40` | high | Skill item pointer handler checks complete-object offset +0x322 and blocks drag start, activation, and information actions while action-delayed. |
+| `ui_skill_inventory_item_draw` | `0x004991D0` | high | Draws the skill icon, applies palette index 0x58 across a delayed icon, and palette index 0x18 below a vertical boundary derived from the 0 through 30 progress step. |
+| `ui_skill_inventory_activate` | `0x004992F0` | high | Blocks activation while SActionDelay flag +0x322 or unresolved state +0x323 is set, then sends any configured skill text and reaches the CUseSkill sender. |
 | `ui_skill_is_denied` | `0x004994C0` | high | Looks up the skill name in DeniedItemList mode 1 before CUseSkill construction; a match suppresses the packet. |
+| `ui_skill_item_clear_action_delay` | `0x00499570` | high | Clears SkillInvItemPane +0x322 and invalidates the item rectangle. |
+| `ui_skill_item_set_action_delay` | `0x004995A0` | high | Sets SkillInvItemPane +0x322 to one and invalidates the item rectangle. |
 | `ui_spell_inventory_item_ctor` | `0x00499DE0` | high | Constructs exact RTTI class SpellInvItemPane and retains slot, icon, argument type, 128-byte name and prompt buffers, and cast_lines. |
+| `ui_spell_inventory_item_handle_pointer_event` | `0x00499FB0` | high | Spell item pointer handler checks complete-object offset +0x297 and blocks drag start, activation, and information actions while action-delayed. |
+| `ui_spell_inventory_item_draw` | `0x0049A420` | high | Draws the spell icon and applies palette index 0x58 across the complete icon while action_delay_active is set. |
 | `ui_spell_begin_target_selection` | `0x0049A4E0` | high | Handles spell argument type 2 by creating a DraggedSpellInvItemPane for target selection. |
-| `ui_spell_inventory_activate` | `0x0049A670` | high | Dispatches SpellInvItemPane activation by argument types 1 through 7; type 8 is not handled in this switch. |
+| `ui_spell_inventory_activate` | `0x0049A670` | high | Blocks activation while SActionDelay flag +0x297 is one, then dispatches SpellInvItemPane argument types 1 through 7; type 8 is not handled in this switch. |
 | `ui_spell_open_string_input` | `0x0049A720` | high | Handles spell argument type 1 by opening RTTI class StringSpellInputPane with the SAddSpell prompt. |
 | `ui_spell_open_number_inputs` | `0x0049A950` | high | Opens NumberArgsSpellInputPane for one through four numeric values selected by spell argument types 7, 6, 4, and 3. |
 | `ui_spell_is_denied` | `0x0049AC90` | high | Looks up the spell name in DeniedItemList mode 2 before any cast delay starts; a match suppresses the cast. |
+| `ui_spell_item_clear_action_delay` | `0x0049AE10` | high | Clears SpellInvItemPane +0x297 and invalidates the item rectangle. |
+| `ui_spell_item_set_action_delay` | `0x0049AE40` | high | Sets SpellInvItemPane +0x297 to one and invalidates the item rectangle. |
 | `ui_spell_text_input_submit` | `0x0049B190` | high | Builds the CUseSpell text form as opcode, slot, and unprefixed raw text bytes after a nonempty input is submitted. |
 | `ui_spell_numeric_input_submit` | `0x0049B380` | high | Builds the numeric CUseSpell form as opcode, slot, and one through four big-endian u16 values selected by spell argument type. |
 | `ui_spell_delay_control_pane_ctor` | `0x0049B6F0` | high | Constructs the exact RTTI class SpellDelayControlPane, allocates its 0x8C98-byte object, and initializes cast_active at +0x8C94 to zero. |
@@ -306,6 +321,20 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_change_password_handle_action` | `0x004BB840` | high | Handles ChangePasswordDialogPane action 0 as submit and action 1 as cancel. |
 | `ui_change_password_submit` | `0x004BBA50` | high | Checks new-password confirmation locally, then sends directly in distribution modes 1 and 15 or opens the regional birthdate step. |
 | `ui_input_birthdate_dialog_ctor` | `0x004BC220` | high | Constructs RTTI class InputBirthdateDialogPane from _npw2.txt for the regional password-change verification branch. |
+| `ui_manufacture_dialog_ctor` | `0x004C20D0` | high | Constructs exact RTTI ManufactureDialogPane from lmanu.txt, attaches ten controls, applies the opening typed SManual, and registers the modal pane. |
+| `ui_manufacture_dialog_dtor` | `0x004C25E0` | high | Clears the singleton, unregisters the pane from event routing, and runs the DialogPane destructor. |
+| `ui_manufacture_dialog_apply_manual_packet` | `0x004C2BC0` | high | Applies typed SManual fields, validates the source inventory slot, requests recipe zero after a nonzero count, and stores recipe display state. |
+| `ui_manufacture_dialog_handle_add_inventory` | `0x004C2E50` | high | Clears the optional selected slot when SAddInventory replaces that inventory entry. |
+| `ui_manufacture_dialog_handle_remove_inventory` | `0x004C2EE0` | high | Clears a removed additional slot and closes the pane when SRemoveInventory removes the source manual slot. |
+| `ui_manufacture_dialog_handle_keyboard_event` | `0x004C30A0` | high | Maps internal key values 0x80, 0x82, 0x93, and 0x94 to recipe request deltas -1, +1, -10, and +10 with bounds checks. |
+| `ui_manufacture_dialog_handle_action` | `0x004C3230` | high | Maps attachment-order actions 0 through 3 to craft, close, next recipe, and previous recipe. |
+| `ui_manufacture_dialog_handle_network_event` | `0x004C32F0` | high | Routes typed SManual 0x50, SAddInventory 0x0F, and SRemoveInventory 0x10 to the manufacture pane handlers. |
+| `ui_manufacture_dialog_handle_pointer_event` | `0x004C3390` | high | Clears the optional additional inventory slot when the user clicks inside its canvas. |
+| `ui_manufacture_dialog_reset_session` | `0x004C3490` | high | Resets manufacture ID, recipe count, and current recipe before applying a RecipeCount message. |
+| `ui_manufacture_dialog_clear_recipe` | `0x004C34D0` | high | Clears index, sprite, all three recipe strings, additional-item mode, and the selected additional slot. |
+| `ui_manufacture_dialog_refresh` | `0x004C3750` | high | Updates navigation controls, count text, recipe icon and strings, and the additional inventory-item preview. |
+| `ui_manufacture_dialog_handle_additional_item_drop` | `0x004C3CA0` | high | When additional-item mode equals 1, copies a dropped inventory item's image and records its one-based slot. |
+| `ui_manufacture_dialog_set_additional_slot` | `0x004C3E00` | high | Stores the one-byte inventory slot sent by CManual CraftRecipe; zero clears the selection. |
 | `ui_server_item_menu_dialog_handle_network_event` | `0x004CAC20` | high | TaskListDialog::ServerItemMenuDialog3 network-event handler accepts SStatus updates containing progression and currency. |
 | `ui_server_item_menu_update_gold_from_status_packet` | `0x004CAC90` | high | Copies SStatus gold into the server-item menu dialog and redraws its currency display. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
@@ -552,6 +581,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_apply_mini_game_server_packet` | `0x005F6AB0` | high | Launches selectors 1 through 4 for SMiniGame action 4 and consumes action 8 after the world-specific path. |
 | `ui_open_town_map_from_screen_shot_packet` | `0x005F6BC0` | high | Reads SScreenShot's retained u8 key and opens TownMapPane in the server-keyed _tncoord.txt mode. |
 | `ui_apply_block_input_server_packet` | `0x005F7AA0` | high | Maps SBlockInput state 0 to held-button release plus ClockPane creation and state 1 to ClockPane removal; other states are ignored. |
+| `ui_open_manufacture_dialog_from_manual_packet` | `0x005F7AE0` | high | Creates the singleton ManufactureDialogPane only for SManual RecipeCount and ignores Recipe detail messages when no pane exists. |
 | `ui_create_field_map_pane` | `0x005F88B0` | high | Allocates a 640 by 480 FieldMapPane, initializes it from decoded SFieldMap values, registers it with the screen root, and retains it in WorldPane. |
 | `ui_world_capture_self_portrait_to_album` | `0x005F9B00` | high | WorldPane_Impl wrapper that invokes the album capture with zero, selecting the normal cooldown path. |
 | `ui_world_pane_change_user_state` | `0x005F9E20` | high | WorldPane_Impl interface method that forwards a requested UserState to CChangeUserState. |
@@ -634,7 +664,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_change_password_result` | `0x004BBCB0` | high | Handles state-dependent lobby opcode 0x02; status 0 closes successfully, 0x0F resets the existing password, and other failures reset the new-password controls. |
 | `net_send_change_password` | `0x004BC050` | high | Builds CChangePassword opcode 0x26 with u8-length name, existing password, and new password. |
 | `net_calculate_login_block_integrity` | `0x004BCAD0` | high | Applies the custom 0x1021-table recurrence over the first 12 CLogin installation-block bytes. |
-| `net_send_manual_action` | `0x004C26D0` | high | ManufactureDialogPane calls this opcode 0x55 crafting action builder. |
+| `net_send_manual_recipe_request` | `0x004C26D0` | high | Builds CManual action 0 with the echoed manufacture ID and a zero-based u8 recipe index. |
+| `net_send_manual_craft` | `0x004C27C0` | high | Builds CManual action 1 with the echoed manufacture ID, string8 recipe name, and additional inventory slot. |
+| `net_read_manual_length_prefixed_text` | `0x004C3E50` | high | Reads 1-, 2-, 3-, or 4-byte big-endian lengths, copies a bounded prefix, terminates it, and advances over the full declared value. |
 | `net_request_object_info` | `0x004CD350` | high | Merchant menu paths call this opcode 0x43 object information request. |
 | `net_send_merchant_selection` | `0x004CFE60` | high | MerchantDialogPane::TextMenuDialogEx virtual method that builds and sends CMerchant opcode 0x39. |
 | `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
@@ -751,6 +783,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_server_packet_factory_ctor` | `0x00595F00` | high | Registers 61 opcode-specific server packet constructors in a 256-entry factory. |
 | `net_deserialize_server_packet` | `0x005963F0` | high | Creates the registered server packet class and invokes its deserializer; it does not require the reader to consume the complete supplied body. |
 | `net_create_server_packet` | `0x00596780` | high | Calls the registered constructor for a server opcode. |
+| `net_action_delay_server_packet_ctor` | `0x00597160` | high | Passes opcode 0x3F to the server packet base and installs the exact RTTI SActionDelay vtable. |
+| `net_deserialize_action_delay_server_packet` | `0x00597190` | high | Reads u8 selector at object +0x10, u8 one-based slot at +0x11, and big-endian u32 duration_seconds at +0x14. |
 | `net_create_add_equip_server_packet` | `0x00597210` | high | Allocates a 0x124-byte RTTI SAddEquip object and calls its concrete constructor. |
 | `net_add_equip_server_packet_ctor` | `0x00597290` | high | Passes opcode 0x37 to the server packet base and installs the exact SAddEquip vtable. |
 | `net_deserialize_add_equip_server_packet` | `0x005972C0` | high | Reads slot, u16 sprite, dye, string8 name, one skipped byte, and two u32 durability values into SAddEquip. |
@@ -763,6 +797,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_add_spell_server_packet` | `0x00597640` | high | Allocates a 0x224-byte RTTI SAddSpell object and calls its concrete constructor. |
 | `net_add_spell_server_packet_ctor` | `0x005976C0` | high | Passes opcode 0x17 to the server packet base and installs the exact SAddSpell vtable. |
 | `net_deserialize_add_spell_server_packet` | `0x005976F0` | high | Reads slot, u16 icon, argument type, string8 name, string8 prompt, and cast_lines into SAddSpell. |
+| `net_create_add_user_server_packet` | `0x005977B0` | high | Allocates exactly the 0x10-byte server packet base for exact RTTI SAddUser; the class has no derived fields. |
+| `net_add_user_server_packet_ctor` | `0x00597830` | high | Passes opcode 0x44 to the server packet base and installs the exact SAddUser vtable. |
+| `net_deserialize_add_user_server_packet` | `0x00597860` | high | Empty deserializer; SAddUser consumes no bytes after opcode 0x44. |
 | `net_create_advertisement_server_packet` | `0x005978B0` | high | Allocates a zeroed 0x24-byte exact RTTI SAdvertisement object and calls its concrete constructor. |
 | `net_advertisement_server_packet_ctor` | `0x00597930` | high | Passes opcode 0x5B to the common server packet base and installs the exact SAdvertisement vtable. |
 | `net_deserialize_advertisement_server_packet` | `0x00597960` | high | Reads u16 argument_length, a counted byte view, u16 value_1, u16 value_2, and u8 value_3. |
@@ -783,6 +820,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_change_hour_server_packet_ctor` | `0x005980D0` | high | Passes opcode 0x20 to the server packet base and installs the exact SChangeHour vtable. |
 | `net_deserialize_change_hour_server_packet` | `0x00598100` | high | Reads exactly one u8 time step into SChangeHour object offset +0x10 and leaves any remaining body bytes unread. |
 | `net_decode_s_change_weather` | `0x00598210` | high | Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer. |
+| `net_create_check_time_server_packet` | `0x00598270` | high | Allocates a 0x14-byte SCheckTime object containing the packet base and one u32 server value. |
+| `net_check_time_server_packet_ctor` | `0x005982F0` | high | Passes opcode 0x68 to the server packet base and installs the exact SCheckTime vtable. |
+| `net_deserialize_check_time_server_packet` | `0x00598320` | high | Reads one big-endian u32 server_value into SCheckTime object offset +0x10. |
 | `net_create_draw_human_objects_server_packet` | `0x005984C0` | high | Allocates a 0x264-byte RTTI SDrawHumanObjects object and invokes its concrete constructor. |
 | `net_draw_human_objects_server_packet_ctor` | `0x00598540` | high | Passes opcode 0x33 to the server packet base and installs the exact SDrawHumanObjects vtable. |
 | `net_deserialize_draw_human_objects_server_packet` | `0x00598570` | high | Parses X, Y, direction, entity ID, the complete normal or monster-disguise appearance variant, name style, name, group-ad text, and the normal variant's u8 light-mask selector. |
@@ -805,6 +845,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_level_point_server_packet` | `0x00599940` | high | Allocates the 0x14-byte exact RTTI SLevelPoint object and invokes its concrete constructor. |
 | `net_level_point_server_packet_ctor` | `0x005999C0` | high | Passes opcode 0x3D to the server packet base and installs the exact SLevelPoint vtable. |
 | `net_deserialize_level_point_server_packet` | `0x005999F0` | high | Reads exactly two u8 payload fields: has_stat_points followed by stat_points. |
+| `net_create_manual_server_packet` | `0x00599A60` | high | Allocates a 0x34-byte exact RTTI SManual object and calls its concrete constructor. |
+| `net_manual_server_packet_ctor` | `0x00599AE0` | high | Passes opcode 0x50 to the common server packet base and installs the exact SManual vtable. |
+| `net_deserialize_manual_server_packet` | `0x00599B10` | high | Reads the common two-byte ID and message type, then RecipeCount or the complete Recipe variant including the trailing additional-item mode. |
 | `net_create_map_server_packet` | `0x00599C60` | high | Allocates the 0x1C-byte exact RTTI SMap object and invokes its concrete constructor. |
 | `net_map_server_packet_ctor` | `0x00599CE0` | high | Passes opcode 0x06 to the server packet base and installs the exact RTTI SMap vtable. |
 | `net_deserialize_map_server_packet` | `0x00599D10` | high | Reads u8 start X, start Y, rectangle width, and rectangle height, then retains a pointer to the remaining map-cell records. |
@@ -914,7 +957,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_message_server_packet` | `0x005F6D80` | high | Routes SMessage to the floating GameMessagePane, WindowMessageDialogPane, or ScorePane according to its type byte. |
 | `net_handle_enter_editing_mode_server_data` | `0x005F71C0` | high | WorldPane's raw opcode 0x1B branch allocates exact RTTI EditablePaperPane and constructs it in editable mode directly from the decoded body. |
 | `net_handle_show_paper_server_data` | `0x005F7250` | high | WorldPane's raw opcode 0x35 branch constructs the same EditablePaperPane in read-only mode. |
-| `net_send_check_time` | `0x005F7830` | high | Direct response to SCheckTime opcode 0x68; echoes a server value and appends timeGetTime(). |
+| `net_send_check_time` | `0x005F7830` | high | Immediate response to SCheckTime opcode 0x68; builds CCheckTime as opcode 0x75, echoed u32 server_value, and one timeGetTime() u32 sample without local comparison or enforcement. |
 | `net_handle_bad_guy_server_packet` | `0x005F7900` | high | Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths. |
 | `net_handle_show_users` | `0x005F7B80` | high | Handles raw decoded server opcode 0x36, applies the replacement list, and opens the RTTI-backed ShowUsersPane. |
 | `net_send_group_automatic_response` | `0x005F8620` | high | Builds CGroup opcode 0x2E, action 3, and a length-prefixed user string for the GroupAnswer automatic path. |
@@ -1235,6 +1278,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
 | `maybe_app_configure_distribution_mode_12` | `0x00436A10` | medium | Dormant mode 12 handler with no matching marker return; sets connection flags without installing an endpoint. |
+| `maybe_ui_manufacture_dialog_ctor_from_body` | `0x004C1AD0` | medium | Duplicates the lmanu.txt construction path and applies a decoded opcode-first body, but no live static caller was recovered. |
+| `maybe_ui_manufacture_dialog_apply_manual_body` | `0x004C2990` | medium | Applies RecipeCount or Recipe from a decoded opcode-first body for the duplicate raw-body pane path. |
 
 ## Other
 

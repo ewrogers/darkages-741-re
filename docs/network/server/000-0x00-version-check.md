@@ -48,8 +48,7 @@ record VersionPatchNotice {
     u8      file_count
 
     repeat file_count {
-        u8      name_length
-        bytes   name[name_length]
+        string8 name
     }
 }
 ```

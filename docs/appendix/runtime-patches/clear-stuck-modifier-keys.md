@@ -1,4 +1,4 @@
-# Clear stuck modifier keys on focus loss
+# Stuck modifiers
 
 This patch releases the client's held keys when the game loses focus. It prevents Alt, Ctrl, Shift, and other keys from remaining logically pressed when their physical key-up messages go to another window.
 
@@ -15,13 +15,13 @@ This patch releases the client's held keys when the game loses focus. It prevent
 The hook site must contain exactly:
 
 ```text
-E8 CA 2B 00 00
+000: E8 CA 2B 00 00 | call original_activation_state ; original inactive-focus behavior
 ```
 
 This is the original `CALL` to the activation-state function. Replace it with:
 
 ```text
-E8 <stub rel32>
+000: E8 <stub rel32> | call modifier_cleanup_stub ; release keys before original behavior
 ```
 
 where:
@@ -64,11 +64,33 @@ The stub preserves the caller's flags and general-purpose registers. Its final `
 Allocate at least 68 executable bytes in the target process. Build this template at `stub_base`. The four zeroed `rel32` operands are filled from the relocation table below.
 
 ```text
-00: 9C 60 E8 00 00 00 00 85 C0 74 32 89 C3 E8 00 00
-10: 00 00 89 C7 31 F6 F6 84 33 34 03 00 00 80 74 0D
-20: 6A 00 57 6A 00 56 89 D9 E8 00 00 00 00 46 81 FE
-30: 00 01 00 00 7C E0 C6 83 34 04 00 00 00 61 9D E9
-40: 00 00 00 00
+000: 9C                         | pushfd                              ; preserve caller flags
+001: 60                         | pushad                              ; preserve general-purpose registers
+002: E8 00 00 00 00             | call input_get_event_manager        ; rel32, obtain EventMan
+007: 85 C0                      | test eax, eax                       ; a missing manager is safe
+009: 74 32                      | je cleanup_done                     ; skip the scan when EventMan is null
+00B: 89 C3                      | mov ebx, eax                        ; EBX = EventMan
+00D: E8 00 00 00 00             | call GetMessageTime                ; rel32 through the import thunk
+012: 89 C7                      | mov edi, eax                        ; timestamp for synthetic key-up events
+014: 31 F6                      | xor esi, esi                        ; scan_code = 0
+scan_loop:
+016: F6 84 33 34 03 00 00 80    | test byte ptr [ebx+esi+0x334],0x80 ; is this scan code pressed?
+01E: 74 0D                      | je next_scan                       ; no event is needed when clear
+020: 6A 00                      | push 0                              ; final key-up argument
+022: 57                         | push edi                            ; message timestamp
+023: 6A 00                      | push 0                              ; repeat state
+025: 56                         | push esi                            ; scan code
+026: 89 D9                      | mov ecx, ebx                        ; this = EventMan
+028: E8 00 00 00 00             | call input_post_key_up              ; rel32, use the native event path
+next_scan:
+02D: 46                         | inc esi                             ; advance to the next scan code
+02E: 81 FE 00 01 00 00          | cmp esi, 256                        ; cover the complete key-state array
+034: 7C E0                      | jl scan_loop                        ; continue until all 256 entries were checked
+036: C6 83 34 04 00 00 00       | mov byte ptr [ebx+0x434],0         ; clear the cached modifier mask
+cleanup_done:
+03D: 61                         | popad                               ; restore registers
+03E: 9D                         | popfd                               ; restore flags
+03F: E9 00 00 00 00             | jmp original_activation_state      ; rel32, resume the displaced call target
 ```
 
 Write each displacement as a signed little-endian 32-bit integer:
@@ -85,7 +107,7 @@ Reject the installation if any displacement does not fit a signed 32-bit integer
 The target at RVA `0x0022006E` is executable import-thunk code:
 
 ```text
-FF 25 64 93 66 00
+000: FF 25 64 93 66 00 | jmp dword ptr [GetMessageTime_IAT] ; executable import thunk
 ```
 
 Use a direct relative `CALL` to that thunk. Do not interpret the thunk bytes as an indirect function pointer.

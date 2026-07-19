@@ -20,12 +20,9 @@ The client has no derived packet RTTI for this name.
 ```text
 packet CNewUser {
     u8      opcode                    // 0x02
-    u8      name_length
-    bytes   name[name_length]
-    u8      password_length
-    bytes   password[password_length]
-    u8      account_text_length
-    bytes   account_text[account_text_length]
+    string8 name
+    string8 password
+    string8 account_text
 
     // Japan distribution mode 13 only
     u16     isp_selector

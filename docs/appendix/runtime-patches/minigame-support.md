@@ -1,4 +1,4 @@
-# Minigame support patch
+# Minigame assets
 
 This patch makes the installed `cious.dat` mini-game assets available to the version 741 client. It keeps every original DAT unchanged, preserves the existing `misc.dat` overlay, and does not require a DLL.
 
@@ -27,10 +27,16 @@ This specification applies only to the 3,112,960-byte executable with SHA-256 `0
 The startup call site must contain exactly:
 
 ```text
-E8 0C 72 FC FF
+000: E8 0C 72 FC FF | call file_archive_open ; original setoa.dat open
 ```
 
-Replace it with `E8 <open wrapper rel32>`, where:
+Replace it with:
+
+```text
+000: E8 <open wrapper rel32> | call open_wrapper ; open setoa.dat, then cious.dat
+```
+
+where:
 
 ```text
 signed-rel32 = stub_base - (module_base + 0x000AABF4)
@@ -39,10 +45,19 @@ signed-rel32 = stub_base - (module_base + 0x000AABF4)
 The `file_archive_find_entry` entry must contain exactly:
 
 ```text
-55 8B EC 83 EC 34
+000: 55          | push ebp      ; displaced function prologue
+001: 8B EC       | mov ebp, esp  ; establish the original frame
+003: 83 EC 34    | sub esp, 0x34 ; reserve the original locals
 ```
 
-Replace it with `E9 <lookup wrapper rel32> 90`, where:
+Replace it with:
+
+```text
+000: E9 <lookup wrapper rel32> | jmp lookup_wrapper ; apply the cious.dat overlay
+005: 90                         | nop                ; cover the sixth displaced byte
+```
+
+where:
 
 ```text
 signed-rel32 = (stub_base + 0x40) - (module_base + 0x00072475)
@@ -78,16 +93,65 @@ The dormant singleton is already closed and destroyed by the client's normal shu
 Allocate at least 160 bytes in the target process. Build this template at `stub_base`. Offsets `0x00`, `0x40`, `0x80`, and `0x90` contain the open wrapper, lookup wrapper, original-function gateway, and `cious.dat` filename.
 
 ```text
-00: 55 8B EC FF 75 10 FF 75 0C FF 75 08 E8 00 00 00
-10: 00 85 C0 74 19 E8 00 00 00 00 85 C0 74 10 6A 00
-20: 6A 14 68 00 00 00 00 8B C8 E8 00 00 00 00 8B E5
-30: 5D C2 0C 00 CC CC CC CC CC CC CC CC CC CC CC CC
-40: 55 8B EC 56 8B F1 3B 35 00 00 00 00 74 1E 3B 35
-50: 00 00 00 00 74 16 8B 0D 00 00 00 00 85 C9 74 0C
-60: FF 75 08 E8 18 00 00 00 85 C0 75 0A 8B CE FF 75
-70: 08 E8 0A 00 00 00 5E 5D C2 04 00 CC CC CC CC CC
-80: 55 8B EC 83 EC 34 E9 00 00 00 00 CC CC CC CC CC
-90: 63 69 6F 75 73 2E 64 61 74 00 CC CC CC CC CC CC
+open_wrapper:
+000: 55                         | push ebp                       ; standard frame
+001: 8B EC                      | mov ebp, esp                   ; preserve caller arguments
+003: FF 75 10                   | push dword ptr [ebp+0x10]      ; original third argument
+006: FF 75 0C                   | push dword ptr [ebp+0x0C]      ; original second argument
+009: FF 75 08                   | push dword ptr [ebp+0x08]      ; original archive filename
+00C: E8 00 00 00 00             | call file_archive_open         ; rel32, keep the setoa.dat open
+011: 85 C0                      | test eax, eax                  ; did the original open succeed?
+013: 74 19                      | je open_done                   ; preserve its failure result
+015: E8 00 00 00 00             | call dormant_archive_accessor  ; rel32, obtain spare archive object
+01A: 85 C0                      | test eax, eax                  ; accessor may fail
+01C: 74 10                      | je open_done                   ; preserve original result if unavailable
+01E: 6A 00                      | push 0                         ; normal open flags
+020: 6A 14                      | push 20                        ; match the normal handle capacity
+022: 68 00 00 00 00             | push cious_filename            ; abs32 at stub_base+0x90
+027: 8B C8                      | mov ecx, eax                   ; this = dormant archive object
+029: E8 00 00 00 00             | call file_archive_open         ; rel32, return cious.dat open result
+open_done:
+02E: 8B E5                      | mov esp, ebp                   ; release wrapper frame
+030: 5D                         | pop ebp                        ; restore caller frame
+031: C2 0C 00                   | ret 0x0C                       ; callee removes three arguments
+034: CC CC CC CC CC CC CC CC CC CC CC CC | int3 padding ; trap accidental execution
+
+lookup_wrapper:
+040: 55                         | push ebp                       ; standard frame
+041: 8B EC                      | mov ebp, esp                   ; expose the name argument
+043: 56                         | push esi                       ; preserve ESI
+044: 8B F1                      | mov esi, ecx                   ; ESI = requested archive
+046: 3B 35 00 00 00 00          | cmp esi, [cious_archive_ptr]   ; abs32, avoid recursive overlay lookup
+04C: 74 1E                      | je requested_lookup           ; search cious.dat directly
+04E: 3B 35 00 00 00 00          | cmp esi, [misc_archive_ptr]    ; abs32, preserve misc.dat behavior
+054: 74 16                      | je requested_lookup           ; search misc.dat directly
+056: 8B 0D 00 00 00 00          | mov ecx, [cious_archive_ptr]   ; abs32, use cious.dat as the overlay
+05C: 85 C9                      | test ecx, ecx                  ; archive may not have opened
+05E: 74 0C                      | je requested_lookup           ; fail open to the requested archive
+060: FF 75 08                   | push dword ptr [ebp+0x08]      ; requested entry name
+063: E8 18 00 00 00             | call original_lookup_gateway   ; fixed local call into the gateway
+068: 85 C0                      | test eax, eax                  ; was the entry found in cious.dat?
+06A: 75 0A                      | jne lookup_done               ; return the overlay entry
+requested_lookup:
+06C: 8B CE                      | mov ecx, esi                   ; restore the requested archive
+06E: FF 75 08                   | push dword ptr [ebp+0x08]      ; same entry name
+071: E8 0A 00 00 00             | call original_lookup_gateway   ; run the normal archive lookup
+lookup_done:
+076: 5E                         | pop esi                        ; restore ESI
+077: 5D                         | pop ebp                        ; restore caller frame
+078: C2 04 00                   | ret 4                          ; callee removes the name argument
+07B: CC CC CC CC CC          | int3 padding                   ; trap accidental execution
+
+original_lookup_gateway:
+080: 55                         | push ebp                       ; reproduce displaced prologue
+081: 8B EC                      | mov ebp, esp                   ; reproduce displaced prologue
+083: 83 EC 34                   | sub esp, 0x34                  ; reproduce displaced local allocation
+086: E9 00 00 00 00             | jmp original_lookup_continue   ; rel32 to RVA 0x00072476
+08B: CC CC CC CC CC          | int3 padding                   ; separate code from filename data
+
+cious_filename:
+090: 63 69 6F 75 73 2E 64 61 74 00 | db "cious.dat", 0 ; archive filename
+09A: CC CC CC CC CC CC       | int3 padding                   ; fill the 160-byte allocation
 ```
 
 Fill each zeroed operand before writing the stub:

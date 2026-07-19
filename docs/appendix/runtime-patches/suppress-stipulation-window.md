@@ -1,13 +1,13 @@
-# Suppress the stipulation window
+# Hide stipulation
 
 This patch hides the agreement window while preserving `SStipulation` processing and the normal main-menu continuation.
 
 ## Targets
 
-| Path | Static address | RVA | File offset, reference only | Verify | Write |
+| Path | Static address | RVA | File offset, reference only | Verify bytes and instruction | Write bytes and instruction |
 | --- | --- | --- | --- | --- | --- |
-| Cached greeting CRC matches | `0x004B897C` | `0x000B897C` | `0x000B7D7C` | `75 6C` | `EB 6C` |
-| Replacement greeting was inflated and saved | `0x004B8ACF` | `0x000B8ACF` | `0x000B7ECF` | `75 6D` | `EB 6D` |
+| Cached greeting CRC matches | `0x004B897C` | `0x000B897C` | `0x000B7D7C` | `75 6C` `jne skip_agreement` | `EB 6C` `jmp skip_agreement` |
+| Replacement greeting was inflated and saved | `0x004B8ACF` | `0x000B8ACF` | `0x000B7ECF` | `75 6D` `jne skip_agreement` | `EB 6D` `jmp skip_agreement` |
 
 These two same-size jump changes hide the agreement window without skipping [`SStipulation`](../../network/server/096-0x60-stipulation.md) processing.
 

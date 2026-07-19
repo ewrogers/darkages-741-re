@@ -22,8 +22,7 @@ packet SNewUserCheck {
     u8      status
 
     if status in 3..11 {
-        u8      message_length
-        bytes   message[message_length]
+        string8 message
     }
 }
 ```

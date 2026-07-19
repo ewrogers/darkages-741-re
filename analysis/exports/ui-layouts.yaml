@@ -226,6 +226,9 @@ layout_files:
   - file: _nusers.txt
     controls: 9
     class_names: [ShowUsersPane_A]
+  - file: lmanu.txt
+    controls: 11
+    class_names: [ManufactureDialogPane]
   - file: lnpcd.txt
     controls: 13
     class_names: [NPCMessageDialog]

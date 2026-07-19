@@ -23,10 +23,10 @@ packet CUseSkill {
 
 ## Local checks
 
-The normal activation path checks two skill-item state bytes before sending. Their exact game-facing meanings remain unresolved.
+The normal activation path first checks `SkillInvItemPane + 0x322`. [`SActionDelay`](../server/063-0x3f-action-delay.md) sets this flag for selector `1` and clears it with a local expiry timer. A nonzero value blocks activation before this packet is built. The second checked state byte at `+0x323` remains unresolved.
 
 It then looks up the skill name in `DeniedItemList` mode 1. This object subscribes to the server-managed `BItems`, `BSkills`, and `BSpells` metadata names, then routes rows tagged `Skill` into this lookup. The names of denied skills are not hardcoded. A match suppresses `CUseSkill` locally. The current 19-file metadata cache contains none of those three tables, so this check has no entries unless the server advertises and supplies one.
 
 This is only a client-side restriction. The server must still decide whether the skill can be used and apply its effect.
 
-The paired skill definition is [Add Skill (`SAddSkill`)](../server/044-0x2c-add-skill.md). Metadata delivery is described in [Metadata](../../file-formats/metadata.md).
+The paired skill definition is [Add Skill (`SAddSkill`)](../server/044-0x2c-add-skill.md). The action-delay UI flow is described in [Skill and spell action delays](../../systems/action-delays.md). Metadata delivery is described in [Metadata](../../file-formats/metadata.md).

@@ -1,4 +1,4 @@
-# Safe launcher workflow
+# Safe launcher
 
 These changes are intended for a launcher that writes to the suspended process. They do not modify `Darkages.exe` on disk.
 

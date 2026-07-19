@@ -84,6 +84,8 @@ struct WorldObjectPositionFields {
 
 [`SUserPosition`](../../network/server/004-0x04-user-position.md) carries X, Y on the wire, sign-extends both words, writes these fields, and reindexes the local `WorldObject_User`. It then copies Y, X to `WorldPane.view_y` and `WorldPane.view_x` before rebuilding the visible map state.
 
+Despite its RTTI name, [`SAddUser`](../../network/server/068-0x44-add-user.md) does not create, insert, position, or refresh this object. Its opcode-only packet has no active consumer in version 741.
+
 ## Dynamic object index
 
 `WorldPane` owns one shared collection for humans, creatures, and ground items. It is not a flat object array.

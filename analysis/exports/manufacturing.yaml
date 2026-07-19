@@ -1,0 +1,144 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x004C1AD0"
+    name: maybe_ui_manufacture_dialog_ctor_from_body
+    confidence: medium
+    evidence: "Duplicates the lmanu.txt construction path and applies a decoded opcode-first body, but no live static caller was recovered."
+  - address: "0x004C20D0"
+    name: ui_manufacture_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ManufactureDialogPane from lmanu.txt, attaches ten controls, applies the opening typed SManual, and registers the modal pane."
+  - address: "0x004C25E0"
+    name: ui_manufacture_dialog_dtor
+    confidence: high
+    evidence: "Clears the singleton, unregisters the pane from event routing, and runs the DialogPane destructor."
+  - address: "0x004C26D0"
+    name: net_send_manual_recipe_request
+    confidence: high
+    evidence: "Builds CManual opcode 0x55, echoed two-byte manufacture ID, action 0, and a zero-based u8 recipe index."
+  - address: "0x004C27C0"
+    name: net_send_manual_craft
+    confidence: high
+    evidence: "Builds CManual opcode 0x55, echoed two-byte manufacture ID, action 1, string8 recipe name, and selected additional inventory slot."
+  - address: "0x004C2990"
+    name: maybe_ui_manufacture_dialog_apply_manual_body
+    confidence: medium
+    evidence: "Applies RecipeCount or Recipe from a decoded opcode-first body for the duplicate raw-body pane path."
+  - address: "0x004C2BC0"
+    name: ui_manufacture_dialog_apply_manual_packet
+    confidence: high
+    evidence: "Applies typed SManual fields, validates the source inventory slot, requests recipe zero after a nonzero count, and stores recipe display state."
+  - address: "0x004C2E50"
+    name: ui_manufacture_dialog_handle_add_inventory
+    confidence: high
+    evidence: "Clears the optional selected slot when SAddInventory replaces that inventory entry."
+  - address: "0x004C2EE0"
+    name: ui_manufacture_dialog_handle_remove_inventory
+    confidence: high
+    evidence: "Clears a removed additional slot and closes the pane when SRemoveInventory removes the source manual slot."
+  - address: "0x004C30A0"
+    name: ui_manufacture_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Maps internal key values 0x80, 0x82, 0x93, and 0x94 to recipe request deltas -1, +1, -10, and +10 with bounds checks."
+  - address: "0x004C3230"
+    name: ui_manufacture_dialog_handle_action
+    confidence: high
+    evidence: "Maps attachment-order actions 0 through 3 to craft, close, next recipe, and previous recipe."
+  - address: "0x004C32F0"
+    name: ui_manufacture_dialog_handle_network_event
+    confidence: high
+    evidence: "Routes typed SManual 0x50, SAddInventory 0x0F, and SRemoveInventory 0x10 to the manufacture pane handlers."
+  - address: "0x004C3390"
+    name: ui_manufacture_dialog_handle_pointer_event
+    confidence: high
+    evidence: "Clears the optional additional inventory slot when the user clicks inside its canvas."
+  - address: "0x004C3490"
+    name: ui_manufacture_dialog_reset_session
+    confidence: high
+    evidence: "Resets manufacture ID, recipe count, and current recipe before applying a RecipeCount message."
+  - address: "0x004C34D0"
+    name: ui_manufacture_dialog_clear_recipe
+    confidence: high
+    evidence: "Clears index, sprite, all three recipe strings, additional-item mode, and the selected additional slot."
+  - address: "0x004C3750"
+    name: ui_manufacture_dialog_refresh
+    confidence: high
+    evidence: "Updates navigation controls, count text, recipe icon and strings, and the additional inventory-item preview."
+  - address: "0x004C3CA0"
+    name: ui_manufacture_dialog_handle_additional_item_drop
+    confidence: high
+    evidence: "When additional-item mode equals 1, copies a dropped inventory item's image and records its one-based slot."
+  - address: "0x004C3E00"
+    name: ui_manufacture_dialog_set_additional_slot
+    confidence: high
+    evidence: "Stores the one-byte inventory slot sent by CManual CraftRecipe; zero clears the selection."
+  - address: "0x004C3E50"
+    name: net_read_manual_length_prefixed_text
+    confidence: high
+    evidence: "Reads 1-, 2-, 3-, or 4-byte big-endian lengths, copies a bounded prefix, terminates it, and advances over the full declared value."
+  - address: "0x00599A60"
+    name: net_create_manual_server_packet
+    confidence: high
+    evidence: "Allocates a 0x34-byte exact RTTI SManual object and calls its concrete constructor."
+  - address: "0x00599AE0"
+    name: net_manual_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x50 to the common server packet base and installs the exact SManual vtable."
+  - address: "0x00599B10"
+    name: net_deserialize_manual_server_packet
+    confidence: high
+    evidence: "Reads the common two-byte ID and message type, then RecipeCount or the complete Recipe variant including the trailing additional-item mode."
+  - address: "0x005F7AE0"
+    name: ui_open_manufacture_dialog_from_manual_packet
+    confidence: high
+    evidence: "Creates the singleton ManufactureDialogPane only for SManual RecipeCount and ignores Recipe detail messages when no pane exists."
+comments:
+  - address: "0x004C2757"
+    text: "CManual RequestRecipe action is 0."
+  - address: "0x004C2775"
+    text: "RequestRecipe carries one zero-based u8 recipe index."
+  - address: "0x004C2880"
+    text: "CManual CraftRecipe action is 1."
+  - address: "0x004C28A4"
+    text: "CraftRecipe identifies the displayed recipe by string8 name, not by index."
+  - address: "0x004C2939"
+    text: "CraftRecipe ends with the selected additional item's one-based inventory slot, or zero."
+  - address: "0x004C2C71"
+    text: "A nonzero RecipeCount immediately triggers RequestRecipe for index zero."
+  - address: "0x004C2D96"
+    text: "Preserve the Recipe trailing additional-item mode; value 1 enables inventory-item drop handling."
+  - address: "0x004C3256"
+    text: "Action 0 sends CraftRecipe and leaves the manufacture pane open."
+  - address: "0x004C326F"
+    text: "Action 1 closes locally; CManual has no close action."
+  - address: "0x004C3CD8"
+    text: "Accept an inventory-item drop only when additional-item mode is exactly 1."
+  - address: "0x00599B24"
+    text: "Read the preserved manufacture ID high byte."
+  - address: "0x00599B32"
+    text: "Read the manufacture ID low byte, used by the pane as a one-based source inventory slot."
+  - address: "0x00599B40"
+    text: "Read SManual message type: 0 RecipeCount, 1 Recipe."
+  - address: "0x00599B60"
+    text: "RecipeCount carries one u8 count."
+  - address: "0x00599B80"
+    text: "Recipe begins with one zero-based u8 recipe index."
+  - address: "0x00599B8E"
+    text: "Recipe sprite is a tagged u16 wire value used to draw the icon."
+  - address: "0x00599B9D"
+    text: "Read string8 recipe name."
+  - address: "0x00599BC1"
+    text: "Read string16 recipe description."
+  - address: "0x00599BE6"
+    text: "Read string16 ingredient text."
+  - address: "0x00599C03"
+    text: "Read the trailing u8 additional-item mode; value 1 enables the drop target."
+  - address: "0x005F7B11"
+    text: "Only RecipeCount may create ManufactureDialogPane."

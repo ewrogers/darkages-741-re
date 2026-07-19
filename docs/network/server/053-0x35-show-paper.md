@@ -13,12 +13,12 @@
 
 ```text
 packet SShowPaper {
-    u8              opcode                    // 0x35
-    PaperBackground paper_background
-    u8              width_blocks
-    u8              height_blocks
-    u8              center_text
-    string16         content
+    u8       opcode                    // 0x35
+    u8       paper_background          // PaperBackground
+    u8       width_blocks
+    u8       height_blocks
+    u8       center_text
+    string16 content
 }
 ```
 

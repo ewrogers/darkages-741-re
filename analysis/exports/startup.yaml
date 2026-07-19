@@ -139,7 +139,7 @@ comments:
   - address: "0x0057AA65"
     text: Close app_single_instance_mutex during normal shutdown, then clear the global handle.
 runtime_patches:
-  - id: skip-intro-videos
+  - id: skip-intro
     rva: "0x000ACA85"
     static_address: "0x004ACA85"
     file_offset_for_reference_only: "0x000ABE85"
@@ -147,7 +147,7 @@ runtime_patches:
     replacement_bytes: 6A 02
     changed_byte_rva: "0x000ACA86"
     effect: Post intro state 2 instead of playback state 1.
-  - id: allow-multiple-clients
+  - id: multiple-clients
     rva: "0x0017A7D9"
     static_address: "0x0057A7D9"
     file_offset_for_reference_only: "0x00179BD9"

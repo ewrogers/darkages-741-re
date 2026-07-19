@@ -22,8 +22,7 @@ packet SMessage {
         string8 value
     }
 
-    u16     message_length
-    bytes   message[message_length]
+    string16 message
 }
 ```
 

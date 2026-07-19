@@ -1,0 +1,118 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x004914B0"
+    name: ui_skill_inventory_action_delay_timer
+    confidence: high
+    evidence: "NewSkillInventoryPane TimerHandler callback for ID 0; resolves the one-based slot payload and clears action_delay_active on the item currently occupying that slot."
+  - address: "0x00491690"
+    name: ui_skill_inventory_handle_network_event
+    confidence: high
+    evidence: "Routes opcode 0x3F to the skill action-delay helper in addition to the skill add and remove packets."
+  - address: "0x00491850"
+    name: ui_skill_inventory_apply_action_delay
+    confidence: high
+    evidence: "Accepts SActionDelay selector 1 and slots 1 through 90, sets the live item delay flag, starts the skill progress visual, and schedules the inventory expiry timer."
+  - address: "0x00491F70"
+    name: ui_spell_inventory_action_delay_timer
+    confidence: high
+    evidence: "NewSpellInventoryPane TimerHandler callback for ID 0; resolves the one-based slot payload and clears action_delay_active on the current spell item."
+  - address: "0x00492160"
+    name: ui_spell_inventory_handle_network_event
+    confidence: high
+    evidence: "Routes opcode 0x3F to the spell action-delay helper in addition to the spell add and remove packets."
+  - address: "0x00492330"
+    name: ui_spell_inventory_apply_action_delay
+    confidence: high
+    evidence: "Accepts SActionDelay selector 0 and slots 1 through 90, sets the live spell item delay flag, and schedules the inventory expiry timer."
+  - address: "0x00498AD0"
+    name: ui_skill_item_start_cooldown_visual
+    confidence: high
+    evidence: "Sets progress to zero, records timeGetTime start and end values, marks the visual active, redraws, and schedules timer ID 0x10204 after 100 ms."
+  - address: "0x00498B40"
+    name: ui_skill_item_set_cooldown_progress
+    confidence: high
+    evidence: "Stores a changed 0 through 30 skill cooldown step and invalidates the item pane."
+  - address: "0x00498C10"
+    name: ui_skill_item_cooldown_visual_timer
+    confidence: high
+    evidence: "For timer ID 0x10204, maps elapsed time to 30 integer steps, redraws, and reschedules at 100 ms while the delay and visual-active flags remain set."
+  - address: "0x00498D40"
+    name: ui_skill_inventory_item_handle_pointer_event
+    confidence: high
+    evidence: "Skill item pointer handler checks complete-object offset +0x322 and blocks drag start, activation, and information actions while action-delayed."
+  - address: "0x004991D0"
+    name: ui_skill_inventory_item_draw
+    confidence: high
+    evidence: "Draws the skill icon, applies palette index 0x58 across a delayed icon, and palette index 0x18 below a vertical boundary derived from the 0 through 30 progress step."
+  - address: "0x004992F0"
+    name: ui_skill_inventory_activate
+    confidence: high
+    evidence: "Returns without reaching CUseSkill while SkillInvItemPane action_delay_active at +0x322 is nonzero."
+  - address: "0x00499570"
+    name: ui_skill_item_clear_action_delay
+    confidence: high
+    evidence: "Clears SkillInvItemPane +0x322 and invalidates the item rectangle."
+  - address: "0x004995A0"
+    name: ui_skill_item_set_action_delay
+    confidence: high
+    evidence: "Sets SkillInvItemPane +0x322 to one and invalidates the item rectangle."
+  - address: "0x00499FB0"
+    name: ui_spell_inventory_item_handle_pointer_event
+    confidence: high
+    evidence: "Spell item pointer handler checks complete-object offset +0x297 and blocks drag start, activation, and information actions while action-delayed."
+  - address: "0x0049A420"
+    name: ui_spell_inventory_item_draw
+    confidence: high
+    evidence: "Draws the spell icon and applies palette index 0x58 across the complete icon while action_delay_active is set."
+  - address: "0x0049A670"
+    name: ui_spell_inventory_activate
+    confidence: high
+    evidence: "Returns before dispatching spell argument types or building CUseSpell while SpellInvItemPane action_delay_active at +0x297 is one."
+  - address: "0x0049AE10"
+    name: ui_spell_item_clear_action_delay
+    confidence: high
+    evidence: "Clears SpellInvItemPane +0x297 and invalidates the item rectangle."
+  - address: "0x0049AE40"
+    name: ui_spell_item_set_action_delay
+    confidence: high
+    evidence: "Sets SpellInvItemPane +0x297 to one and invalidates the item rectangle."
+  - address: "0x00597160"
+    name: net_action_delay_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x3F to the server packet base and installs the exact RTTI SActionDelay vtable."
+  - address: "0x00597190"
+    name: net_deserialize_action_delay_server_packet
+    confidence: high
+    evidence: "Reads u8 selector at object +0x10, u8 one-based slot at +0x11, and big-endian u32 duration_seconds at +0x14."
+comments:
+  - address: "0x00491863"
+    text: "The skill inventory consumes SActionDelay only when selector == 1."
+  - address: "0x004918E5"
+    text: "Start the skill-only 30-step cooldown wipe; updates are requested every 100 ms."
+  - address: "0x00491907"
+    text: "Schedule the slot's action-delay clear at duration_seconds * 1000. No prior timer for this slot is cancelled."
+  - address: "0x00492342"
+    text: "The spell inventory consumes SActionDelay only when selector == 0."
+  - address: "0x004923D2"
+    text: "Schedule the slot's action-delay clear at duration_seconds * 1000. Spells have no per-item progress timer."
+  - address: "0x00498B38"
+    text: "Timer ID 0x10204 drives skill cooldown progress at 100 ms intervals."
+  - address: "0x00498CDE"
+    text: "Map elapsed time to 30 integer progress steps, clamped to 30."
+  - address: "0x00499245"
+    text: "While action-delayed, tint the full skill icon and add a second tint below the 30-step progress boundary."
+  - address: "0x0049A4B2"
+    text: "While action-delayed, tint the full spell icon. Spell cooldowns have no moving progress boundary."
+  - address: "0x005971A2"
+    text: "SActionDelay selector: 0 routes to the spell inventory and 1 routes to the skill inventory."
+  - address: "0x005971B0"
+    text: "One-based slot in the selected 90-entry inventory pane."
+  - address: "0x005971B6"
+    text: "Unsigned duration in whole seconds. Inventory handlers multiply this value by 1000 for client timers."

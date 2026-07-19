@@ -20,6 +20,8 @@
 - [Movement and swimming](systems/movement-and-swimming.md)
 - [Player popup menu](systems/player-popup-menu.md)
 - [Player exchange](systems/player-exchange.md)
+- [Manufacturing manuals](systems/manufacturing.md)
+- [Skill and spell action delays](systems/action-delays.md)
 - [Messages and history](systems/messages-and-history.md)
 - [Game settings](systems/game-settings.md)
 - [Character creation](systems/character-creation.md)

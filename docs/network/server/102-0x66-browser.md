@@ -30,8 +30,7 @@ packet SBrowser {
     }
 
     if subtype == 3 {
-        u8      url_size
-        bytes   url[url_size]
+        string8 url
     }
 }
 ```

@@ -52,6 +52,7 @@ An unresolved row means the asset exists but no matching filename reference was 
 | `_nui_ske.txt` | 12 | `SkillSpellInfoDialogPane` |
 | `_nui_ski.txt` | 5 | `nui_ElemListPane` |
 | `_nusers.txt` | 9 | `ShowUsersPane_A` |
+| `lmanu.txt` | 11 | `ManufactureDialogPane` |
 | `lnpcd.txt` | 13 | `NPCMessageDialog` |
 | `lnpcd2.txt` | 9 | `NPCMenuDialog` |
 | `lnpcd3.txt` | 18 | `NPCServerItemMenuDialog` |

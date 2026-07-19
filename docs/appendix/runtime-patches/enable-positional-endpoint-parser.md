@@ -1,12 +1,12 @@
-# Enable the positional endpoint parser
+# Command-line endpoint
 
 This patch redirects endpoint setup to the client's existing positional command-line parser.
 
 ## Target
 
-| Static address | RVA | Verify | Write |
+| Static address | RVA | Verify bytes and instruction | Write bytes and instruction |
 | --- | --- | --- | --- |
-| `0x00432253` | `0x00032253` | `E8 28 11 00 00` | `E8 B8 0D 00 00` |
+| `0x00432253` | `0x00032253` | `E8 28 11 00 00` `call net_configure_default_endpoint` | `E8 B8 0D 00 00` `call net_parse_endpoint_override` |
 
 `app_config_ctor` normally calls `net_configure_default_endpoint`. The replacement `CALL` targets the existing `net_parse_endpoint_override` instead.
 

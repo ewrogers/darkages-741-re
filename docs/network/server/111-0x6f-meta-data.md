@@ -22,8 +22,7 @@ packet SMetaData {
     u8      operation
 
     if operation == 0 {
-        u8      name_length
-        bytes   name[name_length]
+        string8 name
         u32     crc
         u16     payload_length
         bytes   payload[payload_length]
@@ -32,8 +31,7 @@ packet SMetaData {
     if operation == 1 {
         u16     entry_count
         repeat entry_count {
-            u8      name_length
-            bytes   name[name_length]
+            string8 name
             u32     crc
         }
     }

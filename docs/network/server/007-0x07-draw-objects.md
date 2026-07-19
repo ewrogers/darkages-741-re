@@ -24,7 +24,9 @@ packet SDrawObjects {
         u16     tagged_sprite
 
         if tagged_sprite in 0x4000..0x7FFF {
-            u8      palette_selectors[4]
+            repeat 4 {
+                u8      palette_selector
+            }
             u8      direction         // Direction
             u8      unused
             u8      creature_type     // CreatureType
@@ -36,7 +38,7 @@ packet SDrawObjects {
 
         if tagged_sprite in 0x8000..0xBFFF {
             u8      dye_color
-            u8      unused[2]
+            bytes   unused[2]
         }
     }
 }

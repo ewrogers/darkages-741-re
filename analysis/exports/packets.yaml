@@ -262,7 +262,7 @@ functions:
   - address: "0x00491690"
     name: ui_skill_inventory_handle_network_event
     confidence: high
-    evidence: "NewSkillInventoryPane network-event handler routes RTTI SAddSkill and SRemoveSkill objects to their UI paths."
+    evidence: "NewSkillInventoryPane network-event handler routes SAddSkill, SRemoveSkill, and SActionDelay selector 1 to their UI paths."
   - address: "0x00491730"
     name: ui_skill_inventory_add_skill_from_packet
     confidence: high
@@ -286,7 +286,7 @@ functions:
   - address: "0x00492160"
     name: ui_spell_inventory_handle_network_event
     confidence: high
-    evidence: "NewSpellInventoryPane network-event handler routes RTTI SAddSpell and SRemoveSpell objects to the matching UI paths."
+    evidence: "NewSpellInventoryPane network-event handler routes SAddSpell, SRemoveSpell, and SActionDelay selector 0 to the matching UI paths."
   - address: "0x00492200"
     name: ui_spell_inventory_add_spell_from_packet
     confidence: high
@@ -414,7 +414,7 @@ functions:
   - address: "0x004992F0"
     name: ui_skill_inventory_activate
     confidence: high
-    evidence: "Checks SkillInvItemPane state, sends any configured skill text, and reaches the CUseSkill sender."
+    evidence: "Blocks activation while SActionDelay flag +0x322 or unresolved state +0x323 is set, then sends any configured skill text and reaches the CUseSkill sender."
   - address: "0x00499420"
     name: net_send_use_skill
     confidence: high
@@ -434,7 +434,7 @@ functions:
   - address: "0x0049A670"
     name: ui_spell_inventory_activate
     confidence: high
-    evidence: "Dispatches SpellInvItemPane activation by argument types 1 through 7; type 8 is not handled in this switch."
+    evidence: "Blocks activation while SActionDelay flag +0x297 is one, then dispatches SpellInvItemPane argument types 1 through 7; type 8 is not handled in this switch."
   - address: "0x0049A720"
     name: ui_spell_open_string_input
     confidence: high
@@ -572,9 +572,13 @@ functions:
     confidence: high
     evidence: "Applies the custom 0x1021-table recurrence over the first 12 CLogin installation-block bytes."
   - address: "0x004C26D0"
-    name: net_send_manual_action
+    name: net_send_manual_recipe_request
     confidence: high
-    evidence: "ManufactureDialogPane calls this opcode 0x55 crafting action builder."
+    evidence: "Builds CManual action 0 with the echoed manufacture ID and a zero-based u8 recipe index."
+  - address: "0x004C27C0"
+    name: net_send_manual_craft
+    confidence: high
+    evidence: "Builds CManual action 1 with the echoed manufacture ID, string8 recipe name, and additional inventory slot."
   - address: "0x004CAC20"
     name: ui_server_item_menu_dialog_handle_network_event
     confidence: high
@@ -1111,6 +1115,18 @@ functions:
     name: net_deserialize_add_spell_server_packet
     confidence: high
     evidence: "Reads slot, u16 icon, argument type, string8 name, string8 prompt, and cast_lines into SAddSpell."
+  - address: "0x005977B0"
+    name: net_create_add_user_server_packet
+    confidence: high
+    evidence: "Allocates exactly the 0x10-byte server packet base for exact RTTI SAddUser; the class has no derived fields."
+  - address: "0x00597830"
+    name: net_add_user_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x44 to the server packet base and installs the exact SAddUser vtable."
+  - address: "0x00597860"
+    name: net_deserialize_add_user_server_packet
+    confidence: high
+    evidence: "Empty deserializer; SAddUser consumes no bytes after opcode 0x44."
   - address: "0x005978B0"
     name: net_create_advertisement_server_packet
     confidence: high
@@ -1183,6 +1199,18 @@ functions:
     name: net_deserialize_change_hour_server_packet
     confidence: high
     evidence: "Reads exactly one u8 time step into SChangeHour object offset +0x10 and leaves any remaining body bytes unread."
+  - address: "0x00598270"
+    name: net_create_check_time_server_packet
+    confidence: high
+    evidence: "Allocates a 0x14-byte SCheckTime object containing the packet base and one u32 server value."
+  - address: "0x005982F0"
+    name: net_check_time_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x68 to the server packet base and installs the exact SCheckTime vtable."
+  - address: "0x00598320"
+    name: net_deserialize_check_time_server_packet
+    confidence: high
+    evidence: "Reads one big-endian u32 server_value into SCheckTime object offset +0x10."
   - address: "0x005984C0"
     name: net_create_draw_human_objects_server_packet
     confidence: high
@@ -1854,7 +1882,7 @@ functions:
   - address: "0x005F7830"
     name: net_send_check_time
     confidence: high
-    evidence: "Direct response to SCheckTime opcode 0x68; echoes a server value and appends timeGetTime()."
+    evidence: "Immediate response to SCheckTime opcode 0x68; builds CCheckTime as opcode 0x75, echoed u32 server_value, and one timeGetTime() u32 sample without local comparison or enforcement."
   - address: "0x005F7900"
     name: net_handle_bad_guy_server_packet
     confidence: high
@@ -2639,6 +2667,10 @@ comments:
     text: "Reads the prompt as a one-byte-length-prefixed string and appends a local NUL."
   - address: "0x00597755"
     text: "Reads cast_lines as one byte. The UI retains it for delayed casting."
+  - address: "0x005977D9"
+    text: "SAddUser allocates exactly the 0x10-byte server packet base. It has no derived payload fields."
+  - address: "0x00597860"
+    text: "Empty SAddUser deserializer: opcode 0x44 is the complete plaintext body."
   - address: "0x00597975"
     text: "Read SAdvertisement.argument_length as u16, then retain and advance over exactly that many decoded bytes."
   - address: "0x0059799B"
@@ -2665,6 +2697,10 @@ comments:
     text: "Read SChangeDirection.direction as one byte. These are the only fields after the opcode."
   - address: "0x0059810A"
     text: "SChangeHour reads exactly one u8 time step into object +0x10. Any remaining decoded body bytes are left unread."
+  - address: "0x00598299"
+    text: "SCheckTime allocates 0x14 bytes: base packet plus one u32 server value."
+  - address: "0x0059832A"
+    text: "Read the big-endian u32 server value echoed by CCheckTime."
   - address: "0x0059857C"
     text: "Initialize the object light-mask selector to 1. Disguised records retain this default because only normal-human records read the wire field."
   - address: "0x00598598"
@@ -2939,6 +2975,8 @@ comments:
     text: "Dispatch typed SBounce opcode 0x4B to the automatic client-body submission handler."
   - address: "0x005EDECD"
     text: "Dispatch exact server opcode 0x6B to the keyed TownMapPane opener."
+  - address: "0x005EDEF7"
+    text: "Dispatch typed SCheckTime opcode 0x68 directly to the CCheckTime response builder."
   - address: "0x005EDF3D"
     text: "Dispatch RTTI packet SBadGuy opcode 0x4A to net_handle_bad_guy_server_packet."
   - address: "0x005EDF89"
@@ -2946,7 +2984,7 @@ comments:
   - address: "0x005EDFE6"
     text: "Raw opcode 0x1B bypasses the packet factory and constructs EditablePaperPane through net_handle_enter_editing_mode_server_data."
   - address: "0x005EE185"
-    text: "Unhandled WorldPane server events return false here. There is no branch for raw opcode 0x1E, 0x58, or 0x67."
+    text: "Unhandled WorldPane server events return false here. There is no branch for typed SAddUser opcode 0x44 or raw opcode 0x1E, 0x58, or 0x67."
   - address: "0x005EE4C8"
     text: "Initialize the rolling CMove step counter to zero. The adjacent send time and last round-trip fields are also initialized to zero."
   - address: "0x005EF184"
@@ -3177,6 +3215,12 @@ comments:
     text: "Types 0x08 and 0x09 replace tab bytes with carriage returns and open the standard scrollable WindowMessageDialogPane."
   - address: "0x005F7074"
     text: "Type 0x0A replaces tab bytes with carriage returns and opens the alternate woodbk.epf WindowMessageDialogPane layout."
+  - address: "0x005F784C"
+    text: "Copy the u32 server_value supplied by SCheckTime for the CCheckTime echo."
+  - address: "0x005F7852"
+    text: "Sample the Windows multimedia millisecond tick count once with timeGetTime()."
+  - address: "0x005F786D"
+    text: "Build CCheckTime as opcode 0x75, echoed u32 server_value, and u32 client tick count."
   - address: "0x005F793D"
     text: "Apply the client-installation soft ban only when mode is 0 and the u32 guard equals 0x7D3AFF99."
   - address: "0x005F79D9"
@@ -3725,8 +3769,8 @@ packet_indexes:
         transform: derived
         builder: "0x004C26D0"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "All known builder 0x004C26D0 call paths belong to ManufactureDialogPane and align with server SManual."
+        name_confidence: high
+        evidence: "ManufactureDialogPane builders 0x004C26D0 and 0x004C27C0 confirm actions 0 RequestRecipe and 1 CraftRecipe. CraftRecipe includes a trailing additional inventory slot after the string8 recipe name."
         page: "docs/network/client/085-0x55-manual.md"
       - opcode: "0x57"
         friendly_name: "Multi Server"
@@ -3797,8 +3841,8 @@ packet_indexes:
         transform: derived
         builder: "0x005F7830"
         opcode_confidence: high
-        name_confidence: low
-        evidence: "Server opcode 0x68 SCheckTime dispatches directly to builder 0x005F7830, which echoes a server value with timeGetTime()."
+        name_confidence: medium
+        evidence: "SCheckTime opcode 0x68 dispatches directly to builder 0x005F7830, which writes opcode 0x75, the echoed u32 server_value, and one big-endian u32 timeGetTime() sample."
         page: "docs/network/client/117-0x75-check-time.md"
       - opcode: "0x79"
         friendly_name: "Change User State"
@@ -4298,7 +4342,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597160 passes opcode 0x3F to the server packet base and installs the SActionDelay vtable."
+        evidence: "Exact RTTI SActionDelay deserializer 0x00597190 reads a u8 selector, one-based u8 slot, and u32 duration in seconds. Selector 0 targets spells and selector 1 targets skills; both paths block item actions and schedule a local expiry timer, while skills also run a 100 ms 30-step visual timer."
         page: "docs/network/server/063-0x3f-action-delay.md"
       - opcode: "0x40"
         friendly_name: "Send Patch"
@@ -4328,7 +4372,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597830 passes opcode 0x44 to the server packet base and installs the SAddUser vtable."
+        evidence: "Exact RTTI SAddUser allocates only the 0x10-byte packet base and its deserializer 0x00597860 reads no payload. No pane or world handler consumes typed or raw opcode 0x44, so it changes no game state and sends no response."
         page: "docs/network/server/068-0x44-add-user.md"
       - opcode: "0x45"
         friendly_name: "Item Shop"
@@ -4408,7 +4452,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00599AE0 passes opcode 0x50 to the server packet base and installs the SManual vtable."
+        evidence: "Exact RTTI SManual constructor 0x00599AE0 binds opcode 0x50. Deserializer 0x00599B10 confirms RecipeCount type 0 and Recipe type 1, including the trailing additional-item mode byte consumed by ManufactureDialogPane."
         page: "docs/network/server/080-0x50-manual.md"
       - opcode: "0x51"
         friendly_name: "Block Input"
@@ -4518,7 +4562,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x005982F0 passes opcode 0x68 to the server packet base and installs the SCheckTime vtable."
+        evidence: "Exact RTTI SCheckTime deserializer 0x00598320 reads one u32 server_value. WorldPane dispatches it immediately to CCheckTime builder 0x005F7830, which echoes the value and appends timeGetTime()."
         page: "docs/network/server/104-0x68-check-time.md"
       - opcode: "0x6B"
         friendly_name: "Town Map"

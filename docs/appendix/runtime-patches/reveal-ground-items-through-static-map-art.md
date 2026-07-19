@@ -1,4 +1,4 @@
-# Hold Alt to show translucent ground-item hints
+# Ground item hints
 
 This launcher patch replays visible ground items as translucent hints after the complete world pane has finished drawing. Walls, foliage, pillars, lighting, players, monsters, and effects keep their ordinary render paths. Holding either Alt key enables the extra item pass. Releasing Alt removes it immediately.
 

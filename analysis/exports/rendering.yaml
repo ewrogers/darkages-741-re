@@ -1094,7 +1094,7 @@ comments:
   - address: "0x00644333"
     text: CreateFileA receives the access and sharing modes selected above. A conflicting process open returns a sharing violation.
 runtime_patches:
-  - id: hide-static-map-art
+  - id: hide-map-art
     rva: "0x001E47FF"
     static_address: "0x005E47FF"
     file_offset_for_reference_only: "0x001E3BFF"

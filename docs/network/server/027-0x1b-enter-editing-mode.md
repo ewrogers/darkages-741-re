@@ -13,12 +13,12 @@
 
 ```text
 packet SEnterEditingMode {
-    u8              opcode                    // 0x1B
-    u8              slot
-    PaperBackground paper_background
-    u8              width_blocks
-    u8              height_blocks
-    string16         content
+    u8       opcode                    // 0x1B
+    u8       slot
+    u8       paper_background          // PaperBackground
+    u8       width_blocks
+    u8       height_blocks
+    string16 content
 }
 ```
 

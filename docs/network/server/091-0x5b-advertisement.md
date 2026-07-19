@@ -16,8 +16,7 @@
 ```text
 packet SAdvertisement {
     u8 opcode                              // 0x5B
-    u16 argument_length
-    bytes argument[argument_length]
+    string16 argument
     u16 value_1
     u16 value_2
     u8 value_3

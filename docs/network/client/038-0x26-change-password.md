@@ -20,12 +20,9 @@ The lobby client sends this request after the player enters an account name, the
 ```text
 packet CChangePassword {
     u8      opcode                    // 0x26
-    u8      name_length
-    bytes   name[name_length]
-    u8      existing_password_length
-    bytes   existing_password[existing_password_length]
-    u8      new_password_length
-    bytes   new_password[new_password_length]
+    string8 name
+    string8 existing_password
+    string8 new_password
 }
 ```
 

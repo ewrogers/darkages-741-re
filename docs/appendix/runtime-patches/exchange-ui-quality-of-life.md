@@ -1,4 +1,4 @@
-# Exchange UI quality-of-life hooks
+# Exchange UI
 
 These changes make `ExchangeDialog` draggable and optionally suppress or redirect its final alerts. The patch does not change the main-UI layout or inventory expansion state.
 
@@ -17,9 +17,9 @@ Use the actual module base plus each RVA at runtime. Apply changes only after ve
 
 `ExchangeDialog` inherits the standard `DialogPane` pointer handler. Its constructor disables movement by writing zero to `this + 0x62C`. Changing only that immediate enables the existing movement path.
 
-| Static address | RVA | File offset, reference only | Verify | Write |
+| Static address | RVA | File offset, reference only | Verify bytes and instruction | Write bytes and instruction |
 | --- | --- | --- | --- | --- |
-| `0x00469E33` | `0x00069E33` | `0x00069233` | `C7 82 2C 06 00 00 00 00 00 00` | `C7 82 2C 06 00 00 01 00 00 00` |
+| `0x00469E33` | `0x00069E33` | `0x00069233` | `C7 82 2C 06 00 00 00 00 00 00` `mov dword ptr [edx+0x62C], 0` | `C7 82 2C 06 00 00 01 00 00 00` `mov dword ptr [edx+0x62C], 1` |
 
 This does not add a custom drag handler. Controls keep their normal hit testing, while unused dialog background can start a drag through primary-vtable slot `+0x48`.
 
@@ -27,15 +27,16 @@ This does not add a custom drag handler. Controls keep their normal hit testing,
 
 Both close paths allocate a `0x634`-byte one-button alert and already handle allocation failure by skipping construction. Replacing the allocation sequence with `EAX = 0` takes that existing no-alert branch without allocating or leaking an object. The exchange-removal call remains unchanged.
 
-| Result | Static address | RVA | File offset, reference only | Verify |
+| Result | Static address | RVA | File offset, reference only | Verify bytes and instructions |
 | --- | --- | --- | --- | --- |
-| Cancelled event `0x04` | `0x0046AA81` | `0x0006AA81` | `0x00069E81` | `6A 00 68 34 06 00 00 E8 43 9A 04 00` |
-| Final Accepted event `0x05` | `0x0046AC57` | `0x0006AC57` | `0x0006A057` | `6A 00 68 34 06 00 00 E8 6D 98 04 00` |
+| Cancelled event `0x04` | `0x0046AA81` | `0x0006AA81` | `0x00069E81` | `6A 00` `push 0`; `68 34 06 00 00` `push 0x634`; `E8 43 9A 04 00` call the allocation helper |
+| Final Accepted event `0x05` | `0x0046AC57` | `0x0006AC57` | `0x0006A057` | `6A 00` `push 0`; `68 34 06 00 00` `push 0x634`; `E8 6D 98 04 00` call the allocation helper |
 
 The same-size replacement for either row is:
 
 ```text
-31 C0 90 90 90 90 90 90 90 90 90 90
+000: 31 C0                         | xor eax, eax ; force the existing allocation-failure branch
+002: 90 90 90 90 90 90 90 90 90 90 | nop x10      ; fill the rest of the verified 12-byte block
 ```
 
 Apply both rows to suppress both messages. Event `0x05` reaches its patched block only after both parties are accepted. Earlier acceptance updates still redraw the acknowledgement state and keep the dialog open.
@@ -44,11 +45,11 @@ Apply both rows to suppress both messages. Event `0x05` reaches its patched bloc
 
 Redirection needs a detour because the visible text is packet data. The narrow design combines the no-alert patches above with hooks at the two event handlers:
 
-| Role | Static address | RVA | First five bytes |
+| Role | Static address | RVA | First five bytes and instructions |
 | --- | --- | --- | --- |
-| Cancelled handler | `0x0046A9E0` | `0x0006A9E0` | `55 8B EC 6A FF` |
-| Accepted handler | `0x0046AB20` | `0x0006AB20` | `55 8B EC 6A FF` |
-| Floating palette append | `0x004803A0` | `0x000803A0` | `55 8B EC 51 8D` |
+| Cancelled handler | `0x0046A9E0` | `0x0006A9E0` | `55` `push ebp`; `8B EC` `mov ebp, esp`; `6A FF` `push -1` |
+| Accepted handler | `0x0046AB20` | `0x0006AB20` | `55` `push ebp`; `8B EC` `mov ebp, esp`; `6A FF` `push -1` |
+| Floating palette append | `0x004803A0` | `0x000803A0` | `55` `push ebp`; `8B EC` `mov ebp, esp`; `51` `push ecx`; first byte of the following `lea` |
 
 For Cancelled, the decoded body is:
 

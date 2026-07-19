@@ -1,4 +1,4 @@
-# Skip the exchange count prompt for a one-item stack
+# One-item exchange
 
 This patch sends a count of one for a one-item stack while preserving the normal prompt for every other case.
 
@@ -14,13 +14,15 @@ This patch sends a count of one for a one-item stack while preserving the normal
 The hook site must contain exactly:
 
 ```text
-55 8B EC 6A FF
+000: 55       | push ebp     ; displaced prologue
+001: 8B EC    | mov ebp, esp ; establish the original frame
+003: 6A FF    | push -1      ; displaced exception-state value
 ```
 
 Its replacement is:
 
 ```text
-E9 <stub rel32>
+000: E9 <stub rel32> | jmp one_item_exchange_stub ; inspect the live stack before opening a prompt
 ```
 
 Adding an item to a player exchange is a server-mediated two-step operation. The client first sends `CExchange` subtype 1 with the exchange ID and source inventory slot. When the server replies with `SExchange` subtype 1, `ui_exchange_handle_count_request` opens `AddItemWithCountDialog` without checking the live inventory quantity.
@@ -62,14 +64,52 @@ At the hook entry, `ECX` is the `ExchangeDialog *` and `[ESP + 4]` points to the
 Allocate at least 125 executable bytes in the target process. Build this template at the allocated `stub_base`. The three zeroed `rel32` operands are filled using the relocation table below.
 
 ```text
-00: 53 56 57 89 CE 8B 7C 24 10 0F B6 5F 02 84 DB 74
-10: 5F 80 FB 3C 77 5A E8 00 00 00 00 85 C0 74 51 8B
-20: 80 88 4F 00 00 85 C0 74 47 0F B6 CB 49 8B 84 88
-30: A0 01 00 00 85 C0 74 38 80 B8 44 02 00 00 00 74
-40: 2F 83 B8 40 02 00 00 01 75 26 0F B6 86 34 06 00
-50: 00 50 88 9E 34 06 00 00 6A 01 89 F1 E8 00 00 00
-60: 00 5A 88 96 34 06 00 00 5F 5E 5B 31 C0 C2 04 00
-70: 5F 5E 5B 55 89 E5 6A FF E9 00 00 00 00
+000: 53                         | push ebx                         ; preserve working registers
+001: 56                         | push esi                         ; preserve working registers
+002: 57                         | push edi                         ; preserve working registers
+003: 89 CE                      | mov esi, ecx                     ; ESI = ExchangeDialog
+005: 8B 7C 24 10                | mov edi, [esp+0x10]              ; EDI = decoded SExchange body
+009: 0F B6 5F 02                | movzx ebx, byte ptr [edi+2]      ; BL = one-based inventory slot
+00D: 84 DB                      | test bl, bl                      ; slot zero is invalid
+00F: 74 5F                      | je original_prompt               ; fail open
+011: 80 FB 3C                   | cmp bl, 60                       ; inventory has 60 slots
+014: 77 5A                      | ja original_prompt               ; fail open when out of range
+016: E8 00 00 00 00             | call ui_get_gui_back_pane        ; rel32, obtain the live UI root
+01B: 85 C0                      | test eax, eax                    ; root may be absent
+01D: 74 51                      | je original_prompt               ; fail open
+01F: 8B 80 88 4F 00 00          | mov eax, [eax+0x4F88]           ; current inventory pane
+025: 85 C0                      | test eax, eax                    ; pane may be absent
+027: 74 47                      | je original_prompt               ; fail open
+029: 0F B6 CB                   | movzx ecx, bl                    ; convert slot to an index
+02C: 49                         | dec ecx                           ; one-based to zero-based
+02D: 8B 84 88 A0 01 00 00       | mov eax, [eax+ecx*4+0x1A0]      ; inventory item pane
+034: 85 C0                      | test eax, eax                    ; slot may be empty
+036: 74 38                      | je original_prompt               ; fail open
+038: 80 B8 44 02 00 00 00       | cmp byte ptr [eax+0x244], 0     ; can this item stack?
+03F: 74 2F                      | je original_prompt               ; non-stackable items keep the prompt
+041: 83 B8 40 02 00 00 01       | cmp dword ptr [eax+0x240], 1    ; is the live quantity exactly one?
+048: 75 26                      | jne original_prompt              ; other quantities keep the prompt
+04A: 0F B6 86 34 06 00 00       | movzx eax, byte ptr [esi+0x634] ; save the dialog's local state byte
+051: 50                         | push eax                          ; preserve it across the builder call
+052: 88 9E 34 06 00 00          | mov byte ptr [esi+0x634], bl    ; temporarily supply the inventory slot
+058: 6A 01                      | push 1                            ; count = 1
+05A: 89 F1                      | mov ecx, esi                     ; this = ExchangeDialog
+05C: E8 00 00 00 00             | call exchange_count_builder     ; rel32, send the native subtype 2 response
+061: 5A                         | pop edx                           ; recover the saved state byte
+062: 88 96 34 06 00 00          | mov byte ptr [esi+0x634], dl    ; restore dialog state
+068: 5F                         | pop edi                           ; restore registers
+069: 5E                         | pop esi                           ; restore registers
+06A: 5B                         | pop ebx                           ; restore registers
+06B: 31 C0                      | xor eax, eax                     ; handled, no prompt
+06D: C2 04 00                   | ret 4                            ; consume the packet-body argument
+original_prompt:
+070: 5F                         | pop edi                           ; restore registers
+071: 5E                         | pop esi                           ; restore registers
+072: 5B                         | pop ebx                           ; restore registers
+073: 55                         | push ebp                          ; replay displaced prologue
+074: 89 E5                      | mov ebp, esp                     ; replay displaced prologue
+076: 6A FF                      | push -1                           ; replay displaced exception-state value
+078: E9 00 00 00 00             | jmp original_continuation        ; rel32 to RVA 0x0006A695
 ```
 
 Write each displacement as a signed little-endian 32-bit integer:
@@ -87,7 +127,7 @@ Reject the installation if any displacement does not fit a signed 32-bit integer
 After the relocated stub is written, replace the verified five hook bytes at `module_base + 0x0006A690` with:
 
 ```text
-E9 <signed-rel32>
+000: E9 <signed-rel32> | jmp one_item_exchange_stub ; replace the five-byte prologue
 ```
 
 where:
@@ -99,7 +139,9 @@ signed-rel32 = stub_base - (module_base + 0x0006A695)
 The complete rollback bytes are:
 
 ```text
-55 8B EC 6A FF
+000: 55       | push ebp     ; restore original prologue
+001: 8B EC    | mov ebp, esp ; restore original frame setup
+003: 6A FF    | push -1      ; restore original exception-state value
 ```
 
 As a relocation test vector only, placing the stub at preferred address `0x0066867A` produces:

@@ -31,9 +31,10 @@ A capitalized field comment such as `// Direction` names a type from [Shared pro
 | `u24`, `s24` | Three-byte big-endian integer |
 | `u32`, `s32` | Four-byte big-endian integer |
 | `string8` | `u8` byte length followed by that many text bytes |
+| `string16` | `u16` byte length followed by that many text bytes |
 | `bytes value[count]` | Exactly `count` opaque bytes |
 
-`string8` is byte text, not a promise of Unicode. The client may interpret those bytes through an ANSI code page, including Korean code page 949 where applicable.
+`string8` and `string16` are byte text, not a promise of Unicode. The client may interpret those bytes through an ANSI code page, including Korean code page 949 where applicable.
 
 An array count may use an earlier field or a simple expression. For example, `bytes greeting[body_size - 2]` consumes the rest of a body whose common frame size includes the opcode and one control byte.
 

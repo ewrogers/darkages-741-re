@@ -79,6 +79,8 @@ If the server sends [Spell Delay Cancel (`SSpellDelayCancel`)](../server/072-0x4
 
 The text form is also built by a separate bulletin batch flow. It uses the same opcode, slot, and unprefixed trailing text layout rather than a distinct packet format.
 
+Before argument dispatch, the normal activation path checks `SpellInvItemPane + 0x297`. [`SActionDelay`](../server/063-0x3f-action-delay.md) sets this flag for selector `0`; while it is one, the client returns without building or queuing `CUseSpell`. This slot cooldown is independent from the cast-line timers described above. See [Skill and spell action delays](../../systems/action-delays.md).
+
 ## Local denial check
 
 Each normal builder checks the spell name in `DeniedItemList` mode 2 before starting the cast delay. This object subscribes to the server-managed `BItems`, `BSkills`, and `BSpells` metadata names, then routes rows tagged `Spell` into this lookup. A match suppresses the delay packets and `CUseSpell`. The current local metadata cache has none of those tables, so the list remains empty unless the server supplies one.
