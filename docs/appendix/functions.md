@@ -871,6 +871,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_deserialize_motion_server_packet` | `0x0059A420` | high | Reads u32 object_id, u8 animation, and u16 duration_10ms. |
 | `net_move_server_packet_ctor` | `0x0059A520` | high | Passes opcode 0x0B to the server packet base and installs the exact RTTI SMove vtable. |
 | `net_deserialize_move_server_packet` | `0x0059A550` | high | Reads direction, four big-endian coordinate words, and the echoed movement step into the fixed SMove packet object. |
+| `net_create_num_users_server_packet` | `0x0059A870` | high | Allocates the 0x14-byte exact RTTI SNumUsers object registered for server opcode 0x47. |
+| `net_num_users_server_packet_ctor` | `0x0059A8F0` | high | Passes opcode 0x47 to the common server packet base and installs the exact SNumUsers vtable. |
+| `net_deserialize_num_users_server_packet` | `0x0059A920` | high | Reads the complete SNumUsers payload as one big-endian u16 user_count; no opcode consumer was found in the target client. |
 | `net_pursuit_message_server_packet_ctor` | `0x0059AA00` | high | Passes opcode 0x30 to the server packet base and installs the exact RTTI SPursuitMessage vtable. |
 | `net_deserialize_pursuit_message_server_packet` | `0x0059AA70` | high | Reads the SPursuitMessage common fields, conditional content, and owned subtype tail; type 10 stops after the type byte. |
 | `net_create_quit_server_packet` | `0x0059ACA0` | high | Allocates a 0x14-byte RTTI SQuit object and calls its concrete constructor. |

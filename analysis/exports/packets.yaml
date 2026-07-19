@@ -1351,6 +1351,18 @@ functions:
     name: net_deserialize_move_server_packet
     confidence: high
     evidence: "Reads direction, four big-endian coordinate words, and the echoed movement step into the fixed SMove packet object."
+  - address: "0x0059A870"
+    name: net_create_num_users_server_packet
+    confidence: high
+    evidence: "Allocates the 0x14-byte exact RTTI SNumUsers object registered for server opcode 0x47."
+  - address: "0x0059A8F0"
+    name: net_num_users_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x47 to the common server packet base and installs the exact SNumUsers vtable."
+  - address: "0x0059A920"
+    name: net_deserialize_num_users_server_packet
+    confidence: high
+    evidence: "Reads the complete SNumUsers payload as one big-endian u16 user_count; no opcode consumer was found in the target client."
   - address: "0x0059ACA0"
     name: net_create_quit_server_packet
     confidence: high
@@ -2825,6 +2837,8 @@ comments:
     text: "Read SMove unknown_y as big-endian u16. The only typed SMove handler never reads this field."
   - address: "0x0059A5A4"
     text: "Read the echoed CMove step byte. A match with WorldPane's current rolling step enables the latency sample."
+  - address: "0x0059A92A"
+    text: "Read the complete SNumUsers body as big-endian u16 user_count. The target has no typed or raw opcode 0x47 consumer."
   - address: "0x0059AD27"
     text: "Construct exact RTTI SQuit for server opcode 0x4C."
   - address: "0x0059AD5A"
@@ -4422,7 +4436,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059A8F0 passes opcode 0x47 to the server packet base and installs the SNumUsers vtable."
+        evidence: "Exact RTTI SNumUsers deserializer 0x0059A920 reads one big-endian u16 user_count. All 35 functions that call net_get_server_packet_opcode were checked, including the world dispatcher and pane handlers, and none handles opcode 0x47; the remaining literal 0x47 comparisons are unrelated to network dispatch."
         page: "docs/network/server/071-0x47-num-users.md"
       - opcode: "0x48"
         friendly_name: "Spell Delay Cancel"
