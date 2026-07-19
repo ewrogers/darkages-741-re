@@ -14,4 +14,5 @@
 - [Hold Alt to show translucent ground-item hints](runtime-patches/reveal-ground-items-through-static-map-art.md)
 - [Skip the exchange count prompt for a one-item stack](runtime-patches/skip-single-item-exchange-count-prompt.md)
 - [Exchange UI quality-of-life hooks](runtime-patches/exchange-ui-quality-of-life.md)
+- [Photo album quality-of-life patches](runtime-patches/photo-album-quality-of-life.md)
 - [Show inventory quantities in screen menus](runtime-patches/show-inventory-quantities-in-screen-menus.md)

@@ -16,6 +16,7 @@ The client mixes simple archives, text lookup tables, indexed images, and a few 
 | [Raw map tile banks](map-tile-banks.md) | Isometric ground pixels | Confirmed | Fixed-record output described |
 | [Tile animation tables](tile-animation-tables.md) | Ground and static animation cycles | Confirmed | Plain decimal text |
 | [SOTP.DAT](sotp.md) | Static collision and render flags | Confirmed | Raw byte output described |
+| [Album.dat](album.md) | Local portrait album | Container and zlib payloads confirmed | Confirmed in client |
 | [EPF](epf.md) | Indexed image frames | Container mapped | Pixel encoder incomplete |
 | [SPF](spf.md) | Indexed image frames | Container mapped | Generated inverse not yet tested |
 | [EFA](efa.md) | Compressed effect frames | Main decode path mapped | Generated inverse incomplete |

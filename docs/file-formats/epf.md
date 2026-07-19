@@ -51,15 +51,17 @@ The portrait upload path accepts one narrow EPF profile:
 ```text
 file_size == 0xB1C
 header.table_displacement == 0xAF0
-first_bounds.width == 56
-first_bounds.height == 48
+bound_2 - bound_0 == 56   // vertical span
+bound_3 - bound_1 == 48   // horizontal span
 ```
 
-The client uploads the complete EPF file without converting it. The portrait decoder copies the `0xAF0`-byte pixel stream and uses the first bounds to build a 56 by 48 pixmap. The remaining layout still follows the EPF container rules above.
+The client uploads the complete EPF file without converting it. The portrait decoder copies the `0xAF0`-byte pixel stream and uses the first bounds to build a pixmap 48 pixels wide and 56 pixels high. The remaining layout still follows the EPF container rules above.
 
 For local display, the portrait decoder assigns palette selector 0. The renderer resolves those indexed pixels through `legend.pal`. JPEG portraits take a separate direct-pixel path and do not use this palette.
 
-This does not make every 56 by 48 EPF a valid portrait. The exact size and displacement checks must also pass. See [Portraits and profiles](../systems/portraits-and-profiles.md) for filename priority and packet limits.
+This does not make every 48 by 56 EPF a valid portrait. The exact size and displacement checks must also pass. See [Portraits and profiles](../systems/portraits-and-profiles.md) for filename priority and packet limits.
+
+The photo album Save action does not call an EPF writer. It always writes JPEG. The client can upload an EPF created elsewhere, but no dormant album branch converts its stored 16-bit pixels back into palette indexes.
 
 ## Generated writer shape
 

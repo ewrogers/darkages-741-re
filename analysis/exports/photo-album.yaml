@@ -1,0 +1,196 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x00402E30"
+    name: file_album_record_replace_pixels
+    confidence: high
+    evidence: "Replaces one runtime record's compressed blob, inflates width times height times two bytes, and converts the canonical 16-bit pixels for the active renderer when required."
+  - address: "0x00403010"
+    name: file_album_ctor
+    confidence: high
+    evidence: "Installs the exact RTTI AlbumFile vtable and clears its initialized and record-pointer fields."
+  - address: "0x00403070"
+    name: file_album_create
+    confidence: high
+    evidence: "Creates an empty 100-record album, builds the per-character album.dat path, saves its initial file, and reloads it."
+  - address: "0x004031D0"
+    name: file_album_load
+    confidence: high
+    evidence: "Reads the 0x40-byte header, accepts capacities 1 through 100, reads 0x60 bytes per record, and inflates every active payload."
+  - address: "0x004035A0"
+    name: file_album_save
+    confidence: high
+    evidence: "Recomputes active payload offsets and rewrites the header, complete record table, and compressed pixel payloads when dirty."
+  - address: "0x004037E0"
+    name: file_album_close
+    confidence: high
+    evidence: "Releases the runtime record array and its per-record compressed and inflated buffers."
+  - address: "0x00403850"
+    name: file_album_add_portrait
+    confidence: high
+    evidence: "Uses the first inactive record, zlib-compresses the supplied 16-bit pixels, and optionally stores time(NULL) in the album header."
+  - address: "0x004039E0"
+    name: file_album_move_portrait
+    confidence: high
+    evidence: "Copies an active source record and caption into a destination slot, then clears the source and marks the album dirty."
+  - address: "0x00403B10"
+    name: file_album_remove_portrait
+    confidence: high
+    evidence: "Clears one checked active record and marks the album dirty."
+  - address: "0x00403B90"
+    name: file_album_get_portrait
+    confidence: high
+    evidence: "Returns one active record's inflated pixels and writes its width and height."
+  - address: "0x00403C20"
+    name: file_album_get_caption
+    confidence: high
+    evidence: "Returns the 0x4C-byte caption field for an active record."
+  - address: "0x00403C80"
+    name: file_album_set_caption
+    confidence: high
+    evidence: "Copies a bounded caption into an active record and marks the album dirty."
+  - address: "0x00403CF0"
+    name: file_album_build_path
+    confidence: high
+    evidence: "Builds .\\<character>\\album.dat in the AlbumFile path buffer."
+  - address: "0x00403D70"
+    name: file_album_get_last_capture_time
+    confidence: high
+    evidence: "Returns the time_t value serialized at album header offset 0x04."
+  - address: "0x00403D90"
+    name: file_album_get_capacity
+    confidence: high
+    evidence: "Returns the album header capacity, normally 100."
+  - address: "0x00403DB0"
+    name: file_album_set_last_capture_time
+    confidence: high
+    evidence: "Updates the time_t value serialized at album header offset 0x04."
+  - address: "0x00403DD0"
+    name: file_album_is_dirty
+    confidence: high
+    evidence: "Returns the AlbumFile rewrite-needed flag."
+  - address: "0x0044D730"
+    name: render_write_canvas_jpeg
+    confidence: high
+    evidence: "Locks one canvas and sends its RGB16 pixels to the shared JFIF writer."
+  - address: "0x004A1840"
+    name: file_decode_jpeg_to_rgb16
+    confidence: high
+    evidence: "Uses bundled IJG version 62 to decode an in-memory JPEG to renderer-native 16-bit pixels and returns its width and height."
+  - address: "0x004A1AF0"
+    name: file_write_jpeg_from_rgb16
+    confidence: high
+    evidence: "Converts RGB555 or RGB565 source pixels to RGB triples and writes JFIF with IJG defaults: quality 75 and 4:2:0 sampling."
+  - address: "0x0051BC70"
+    name: ui_album_info_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI AlbumInfoPane and owns one AlbumViewPane."
+  - address: "0x0051BFA0"
+    name: ui_album_view_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI AlbumViewPane from llalbum.txt with Portrait, Del, and Save regions and an AlbumFile owner."
+  - address: "0x0051C630"
+    name: ui_album_view_reload
+    confidence: high
+    evidence: "Reloads the active character's album.dat through the AlbumViewPane AlbumFile object and invalidates the pane."
+  - address: "0x0051D100"
+    name: ui_album_view_handle_action
+    confidence: high
+    evidence: "Handles legacy album remove, save, and move confirmation events 0x1000 through 0x1003."
+  - address: "0x0051EA20"
+    name: ui_album_view_remove_portrait
+    confidence: high
+    evidence: "Clears the selected legacy album record, rewrites album.dat, and reloads the pane."
+  - address: "0x0051EA70"
+    name: ui_album_view_export_portrait_jpeg
+    confidence: high
+    evidence: "Legacy Save composites one album portrait and always writes the extensionless character portrait through the shared JFIF writer."
+  - address: "0x0051EEC0"
+    name: ui_album_view_move_portrait
+    confidence: high
+    evidence: "Moves a legacy album record, rewrites album.dat, and reloads the pane."
+  - address: "0x005537F0"
+    name: render_write_screenshot_bmp
+    confidence: high
+    evidence: "Writes the completed client canvas as the first missing uncompressed 16-bit lod001.bmp through lod999.bmp name."
+  - address: "0x005A0B70"
+    name: ui_gui_back_activate_action
+    confidence: high
+    evidence: "Maps GUIBackPane bottom action 4 to the ordinary BMP screenshot writer."
+  - address: "0x005B04A0"
+    name: ui_user_info_reload_album
+    confidence: high
+    evidence: "Loads the active character's album.dat and repopulates the current nui_AlbumPane tiles."
+  - address: "0x005B0580"
+    name: ui_user_info_export_album_portrait_jpeg
+    confidence: high
+    evidence: "Current Save fills transparent pixels from _nportbk.spf, copies the prior extensionless portrait to .bak, and always writes JFIF."
+  - address: "0x005B0AB0"
+    name: ui_user_info_handle_album_action
+    confidence: high
+    evidence: "Maps album tile action 0 to Save confirmation event 0x1242 and action 1 to Remove confirmation event 0x1243."
+  - address: "0x005B1FA0"
+    name: ui_open_user_info
+    confidence: high
+    evidence: "Opens the singleton UserInfoPane and selects the requested local or other-user mode."
+  - address: "0x005B24E0"
+    name: ui_album_picture_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI AlbumPicDialogPane from _nui_alb.txt and attaches SAVE before REMOVE."
+  - address: "0x005B2A00"
+    name: ui_album_picture_handle_action
+    confidence: high
+    evidence: "Forwards local action 0 or 1 with this tile's 0x1234-based event ID."
+  - address: "0x005B2A70"
+    name: ui_nui_album_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI nui_AlbumPane from _nui_al.txt and creates 100 picture dialogs."
+  - address: "0x005B31C0"
+    name: ui_nui_album_show_page_pair
+    confidence: high
+    evidence: "Displays 12 records as two six-item pages and labels the current adjacent page numbers."
+  - address: "0x005B3320"
+    name: ui_nui_album_load_records
+    confidence: high
+    evidence: "Clears all 100 tile previews and fills active entries from one loaded AlbumFile."
+  - address: "0x005B3700"
+    name: ui_nui_album_handle_page_action
+    confidence: high
+    evidence: "Moves the visible page base backward or forward by two, clamped to 0 through 15."
+  - address: "0x005B3770"
+    name: ui_nui_album_handle_picture_action
+    confidence: high
+    evidence: "Converts picture events 0x1234 through 0x1297 into parent album action and zero-based record index."
+  - address: "0x005F5200"
+    name: ui_capture_self_portrait_to_album
+    confidence: high
+    evidence: "Renders the local player to 48 by 56 pixels, enforces the 0xE10-second normal cooldown, captions the first free record with ctime, and saves album.dat."
+  - address: "0x005F9B00"
+    name: ui_world_capture_self_portrait_to_album
+    confidence: high
+    evidence: "WorldPane_Impl wrapper that invokes the album capture with zero, selecting the normal cooldown path."
+comments:
+  - address: "0x004A1BDC"
+    text: "Call jpeg_set_defaults. No explicit quality or sampling override occurs before jpeg_start_compress."
+  - address: "0x0051EE7B"
+    text: "Legacy AlbumViewPane Save always calls the JFIF writer; no EPF selection branch exists."
+  - address: "0x005A0C3A"
+    text: "GUIBack action 4 writes a full-client BMP and does not add a record to album.dat."
+  - address: "0x005AD771"
+    text: "Confirmed current Remove path: clear the selected album.dat record, save, close, and refresh."
+  - address: "0x005B0A15"
+    text: "Current UserInfo album Save always calls the JFIF writer; no EPF selection branch exists."
+  - address: "0x005F531D"
+    text: "Block a normal capture while last_capture_time + 0xE10 is later than time(NULL); a nonzero capture argument bypasses the branch."
+  - address: "0x005F551F"
+    text: "Add the 48-by-56 portrait to the first free slot and update the stored capture time."
+  - address: "0x0060D6E3"
+    text: "Install IJG default quality 75 with force_baseline enabled."
+  - address: "0x0060DA08"
+    text: "Set both luma sampling factors to 2 while chroma remains 1 by 1, producing 4:2:0."

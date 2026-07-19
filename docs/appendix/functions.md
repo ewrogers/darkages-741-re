@@ -457,7 +457,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_gui_back_pane_update_vitals_from_status_packet` | `0x0059D6C0` | high | Copies current and maximum health and mana from SStatus into GUIBackPane bar targets. |
 | `ui_gui_back_layout_init_common` | `0x0059D830` | high | Reads common named controls from one loaded GUIBackPane layout, including BTN_HELP and the other bottom actions. |
 | `ui_gui_back_pane_ctor` | `0x0059FB60` | high | Constructs the RTTI-backed GUIBackPane and its two size-specific layout records and child panes. |
-| `ui_gui_back_activate_action` | `0x005A0B70` | high | Dispatches GUIBackPane bottom-action IDs; action 0 creates HotKeyPane, while the other IDs open their normal panes or local actions. |
+| `ui_gui_back_activate_action` | `0x005A0B70` | high | Dispatches GUIBackPane bottom-action IDs; action 0 creates HotKeyPane and action 4 writes a numbered BMP screenshot. |
 | `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Hit-tests six bottom-action rectangles on a left-button event; BTN_HELP is slot 0 and is passed to ui_gui_back_activate_action after click debounce. |
 | `ui_gui_back_pane_draw` | `0x005A2050` | high | Draws GUIBackPane state, including selection of the network indicator image from the latest movement round-trip value. |
 | `ui_gui_back_pane_set_network_latency` | `0x005A2B80` | high | Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region. |
@@ -478,12 +478,32 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_user_info_handle_server_packet` | `0x005AD160` | high | The UserInfoPane vtable event handler sends the local portrait response when the decoded opcode is 0x49. |
 | `ui_user_info_refresh_local_portrait` | `0x005AD5D0` | high | Builds the local portrait body and reapplies it to UserInfoPane without calling the network submitter. |
 | `ui_user_info_timer` | `0x005AD600` | high | Timer 0x1241 calls the local portrait refresh after the profile editor saves. |
+| `ui_album_info_pane_ctor` | `0x0051BC70` | high | Constructs the older AlbumInfoPane and its AlbumViewPane child. |
+| `ui_album_view_pane_ctor` | `0x0051BFA0` | high | Constructs AlbumViewPane from llalbum.txt with Portrait, Del, and Save regions. |
+| `ui_album_view_reload` | `0x0051C630` | high | Reloads album.dat through the older AlbumViewPane owner and invalidates it. |
+| `ui_album_view_handle_action` | `0x0051D100` | high | Handles the older album's remove, save, and move confirmation events. |
+| `ui_album_view_remove_portrait` | `0x0051EA20` | high | Clears one older album record, rewrites album.dat, and refreshes the view. |
+| `ui_album_view_export_portrait_jpeg` | `0x0051EA70` | high | Composites one older album portrait and always writes the extensionless JFIF portrait. |
+| `ui_album_view_move_portrait` | `0x0051EEC0` | high | Moves one older album record, rewrites album.dat, and refreshes the view. |
+| `ui_user_info_reload_album` | `0x005B04A0` | high | Loads the current character's album.dat and repopulates the nui_AlbumPane picture tiles. |
+| `ui_user_info_export_album_portrait_jpeg` | `0x005B0580` | high | Fills transparent album pixels from _nportbk.spf, backs up the extensionless portrait, and always writes JFIF. |
+| `ui_user_info_handle_album_action` | `0x005B0AB0` | high | Maps album action 0 to Save confirmation and action 1 to Remove confirmation. |
 | `ui_user_info_update_status_from_packet` | `0x005B0C40` | high | Updates UserInfoPane's five attributes and signed armor class from present SStatus blocks. |
 | `ui_user_info_apply_self_look` | `0x005B0D10` | high | Copies SSelfLook identity and nation fields into UserInfoPane, rebuilds its legend list, and reloads SClass metadata when the class changes. |
 | `ui_user_info_add_equipment_from_packet` | `0x005B1070` | high | Maps SAddEquip slots 1 through 18 to UserInfoPane child-view indices 0 through 17 and forwards the visible item fields. |
 | `ui_user_info_remove_equipment_from_packet` | `0x005B1100` | high | Maps a checked SRemoveEquip slot and asks the UserInfoPane child equipment view to clear that entry. |
 | `ui_portrait_text_dialog_ctor` | `0x005B11A0` | high | Constructs RTTI-backed PortraitTextInputDialogPane from _nui_pi.txt and loads profile.txt. |
 | `ui_portrait_text_dialog_action` | `0x005B1510` | high | Action 1 saves profile.txt and queues timer 0x1241; action 2 closes without saving. |
+| `ui_open_user_info` | `0x005B1FA0` | high | Opens the singleton UserInfoPane in the requested local or other-user mode. |
+| `ui_album_picture_dialog_ctor` | `0x005B24E0` | high | Constructs AlbumPicDialogPane from _nui_alb.txt and attaches SAVE before REMOVE. |
+| `ui_album_picture_handle_action` | `0x005B2A00` | high | Forwards one picture tile's Save or Remove action with its 0x1234-based record event. |
+| `ui_nui_album_pane_ctor` | `0x005B2A70` | high | Constructs nui_AlbumPane from _nui_al.txt and creates 100 picture tiles. |
+| `ui_nui_album_show_page_pair` | `0x005B31C0` | high | Shows two adjacent six-item album pages and updates their page-number labels. |
+| `ui_nui_album_load_records` | `0x005B3320` | high | Clears all 100 previews and fills active records from one AlbumFile. |
+| `ui_nui_album_handle_page_action` | `0x005B3700` | high | Moves the visible album base backward or forward by two pages. |
+| `ui_nui_album_handle_picture_action` | `0x005B3770` | high | Converts tile events 0x1234 through 0x1297 into Save or Remove plus a zero-based record index. |
+| `ui_capture_self_portrait_to_album` | `0x005F5200` | high | Renders the local player at 48 by 56, enforces the client-only 3,600-second cooldown, and adds the first free album.dat record. |
+| `ui_world_capture_self_portrait_to_album` | `0x005F9B00` | high | Invokes the self-portrait capture with the normal cooldown argument. |
 | `ui_nui_legend_pane_apply_self_look` | `0x005B7ED0` | high | Clears and rebuilds RTTI class nui_LegendPane from SSelfLook's legend records. |
 | `ui_map_loading_pane_ctor` | `0x005BA040` | high | Constructs RTTI class MapLoadingPane from _nloadm.txt, registers its singleton, and adds it as a visible screen pane at zero percent. |
 | `ui_map_loading_pane_dtor` | `0x005BA2B0` | high | Unregisters MapLoadingPane from the screen and clears its global singleton during destruction. |
@@ -884,6 +904,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_canvas_release` | `0x0044B0D0` | high | Releases the current Canvas storage. |
 | `render_canvas_begin` | `0x0044B160` | high | Begins pixel access and locks a wrapped surface when needed. |
 | `render_canvas_end` | `0x0044B1B0` | high | Ends pixel access and unlocks a wrapped surface when needed. |
+| `render_write_canvas_jpeg` | `0x0044D730` | high | Converts one 16-bit Canvas to RGB scanlines and passes them to the shared JPEG writer. |
 | `render_get_direct_draw` | `0x0044D820` | high | Returns the DirectDraw wrapper singleton. |
 | `render_get_palette_manager` | `0x0044D830` | high | Returns the RTTI-backed PaletteMan singleton. |
 | `render_blit_image` | `0x0044DE30` | high | Draws a decoded Image with copy, blend, alpha, and special plane modes. |
@@ -928,7 +949,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_palette_manager_ctor` | `0x00544B70` | high | Constructs RTTI class PaletteMan, registers its palette families, loads the installed PAL series, and packs them for the active 16-bit display mode. |
 | `render_palette_resolve_table` | `0x00548510` | high | Decodes bits 24 through 30 as a family and the low 24 bits as a palette number, then returns its 256-entry packed-color table. |
 | `render_palette_family_get_or_create` | `0x00548AB0` | high | Grows one palette-family vector in blocks of 16 and allocates a 0x200-byte packed table for a missing palette number. |
-| `render_write_screenshot_bmp` | `0x005537F0` | high | Captures the current client canvas into numbered lodNNN.bmp files; no SScreenShot receive path calls it. |
+| `render_write_screenshot_bmp` | `0x005537F0` | high | Captures the client canvas as the first missing uncompressed 16-bit lod001.bmp through lod999.bmp file. |
 | `render_screen_tree_frame` | `0x00554040` | high | Redraws the dirty root screen tree and presents the completed frame. |
 | `render_screen_subtree` | `0x00555560` | high | Clips and draws one pane subtree through the vtable draw-to-target slot. |
 | `render_probe_display_capabilities` | `0x0057A640` | high | Accepts 16-bit or 32-bit desktop color and selects 2x presentation at 1280 by 960 or larger, otherwise 1x on a supported smaller desktop. |
@@ -1060,6 +1081,23 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | --- | --- | --- | --- |
 | `file_spf_view_initialize` | `0x004021D0` | high | Maps the SPF prefix, optional palette, frame table, and pixel blob. |
 | `file_spf_get_frame` | `0x004022A0` | high | Returns one SPF frame view from its 0x20-byte record. |
+| `file_album_record_replace_pixels` | `0x00402E30` | high | Replaces one runtime album record's copied 16-bit portrait pixels and dimensions. |
+| `file_album_ctor` | `0x00403010` | high | Constructs the RTTI-backed AlbumFile object and its fixed 100-record runtime array. |
+| `file_album_create` | `0x00403070` | high | Creates an empty album.dat state with capacity 100 and the current capture time cleared. |
+| `file_album_load` | `0x004031D0` | high | Loads the little-endian album header and records, validates the capacity, and inflates active portrait payloads. |
+| `file_album_save` | `0x004035A0` | high | Rewrites a dirty album.dat with fixed records and zlib-compressed 16-bit portrait payloads. |
+| `file_album_close` | `0x004037E0` | high | Saves a dirty album when requested and releases every runtime portrait record. |
+| `file_album_add_portrait` | `0x00403850` | high | Copies one rendered portrait and caption into the first free album slot. |
+| `file_album_move_portrait` | `0x004039E0` | high | Copies a portrait to a destination slot and clears its source slot. |
+| `file_album_remove_portrait` | `0x00403B10` | high | Clears one active portrait slot and marks the album dirty. |
+| `file_album_get_portrait` | `0x00403B90` | high | Returns the dimensions and copied 16-bit pixels for one active album slot. |
+| `file_album_get_caption` | `0x00403C20` | high | Returns the stored caption for one active album slot. |
+| `file_album_set_caption` | `0x00403C80` | high | Replaces one active album caption and marks the album dirty. |
+| `file_album_build_path` | `0x00403CF0` | high | Builds the local character-directory path for album.dat. |
+| `file_album_get_last_capture_time` | `0x00403D70` | high | Returns the persisted client-side timestamp used by portrait capture cooldown logic. |
+| `file_album_get_capacity` | `0x00403D90` | high | Returns the loaded album slot capacity. |
+| `file_album_set_last_capture_time` | `0x00403DB0` | high | Stores a new portrait capture timestamp and marks the album dirty. |
+| `file_album_is_dirty` | `0x00403DD0` | high | Reports whether album.dat needs to be rewritten. |
 | `file_hpf_decode` | `0x004319B0` | high | Checks magic 0xFF02AA55, decodes symbols through an adaptive tree, and accepts raw input when magic is absent. |
 | `file_hpf_tree_initialize` | `0x00431B80` | high | Builds the complete initial tree for byte symbols and the 256 terminator. |
 | `file_hpf_decode_symbol` | `0x00431C40` | high | Reads bits least-significant bit first and walks the active HPF tree to a symbol leaf. |
@@ -1079,6 +1117,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_read_image_metadata` | `0x0048B390` | high | Reads shared EPF metadata or dispatches SPF metadata parsing. |
 | `file_load_image_frame` | `0x0048B530` | high | Loads one EPF or SPF frame for the shared image library. |
 | `file_load_image_pixmap` | `0x0048BBC0` | high | Loads one image frame into a pixmap view and applies the EPF palette selector when required. |
+| `file_decode_jpeg_to_rgb16` | `0x004A1840` | high | Decodes a JPEG into copied 16-bit pixels and enforces the 48 by 56 portrait dimensions. |
+| `file_write_jpeg_from_rgb16` | `0x004A1AF0` | high | Encodes 16-bit portrait pixels with the bundled IJG defaults, including quality 75 and 4:2:0 sampling. |
 | `file_load_message_table` | `0x004A4AA0` | high | Loads the line-oriented msg.tbl data from an archive or loose file. |
 | `file_decode_ctf_map_tile` | `0x004C7000` | high | Palette-converts one alternate 784-byte indexed tile source to 16-bit pixels. |
 | `file_decode_dtf_map_tile` | `0x004C7180` | high | Reads one alternate 1568-byte 16-bit tile source and converts color format when needed. |
@@ -1098,7 +1138,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_palette_table_parse_ranges` | `0x00547810` | high | Parses two-token single IDs and three-token inclusive ID ranges from palette TBL files. |
 | `file_palette_load_rgb` | `0x00548650` | high | Copies exactly 0x300 bytes of RGB triples and passes them to the 16-bit palette packer. |
 | `file_save_character_profile` | `0x0054CD30` | high | Writes at most 0x172 bytes to profile.txt under the current character directory. |
-| `file_decode_portrait_image` | `0x0054D680` | high | Decodes an in-memory portrait as a 56 by 48 JFIF JPEG or the legacy EPF form. |
+| `file_decode_portrait_image` | `0x0054D680` | high | Decodes an in-memory portrait 48 pixels wide and 56 pixels high as JFIF JPEG or legacy EPF. |
 | `file_initialize_skill_tables` | `0x00561490` | medium | Initializes the Skill_e.tbl and Skill_i.tbl table families. |
 | `file_parse_skill_table` | `0x00561840` | medium | Parses numeric skill table rows while accepting semicolon comments. |
 | `map_rotate_static_tile_mapping` | `0x00586900` | high | Rotates every static tile ID in an animation group to the next mapped ID. |

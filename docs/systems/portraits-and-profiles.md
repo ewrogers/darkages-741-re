@@ -38,17 +38,27 @@ The bundled portrait helper contains `face.jpg` as its default output name. The 
 
 The profile is always named `profile.txt` in the same character folder.
 
+## Album Save output
+
+The current photo album Save action writes the first, extensionless portrait name in the list above. It copies any existing file to `<character>.bak`, composites transparent portrait pixels over `_nportbk.spf`, and overwrites the portrait with JFIF JPEG bytes. The older `AlbumViewPane` Save action reaches the same JPEG writer.
+
+`file_write_jpeg_from_rgb16` uses the bundled IJG version 62 defaults. The effective quality is 75, and its YCbCr output uses 4:2:0 chroma sampling. There is no quality choice in the UI.
+
+There is also no EPF or PCX branch in either album Save implementation. EPF support in this client is limited to loading, displaying, and uploading an already-created portrait-sized EPF. Because the extensionless JPEG has first priority, remove or rename it before expecting `<character>.epf` to be selected.
+
+The capture cooldown, album panes, and exact save and remove flow are documented in [Screenshots and the photo album](screenshots-and-photo-album.md).
+
 ## Accepted portraits
 
 The response carries the complete source file without converting it.
 
-JPEG portraits must contain `JFIF` at file offset 6 and be smaller than 8,000 bytes. The local display decoder also expects a 56 by 48 image. A JFIF JPEG at 56 by 48 is therefore the safe form to create.
+JPEG portraits must contain `JFIF` at file offset 6 and be smaller than 8,000 bytes. The local display decoder also expects an image 48 pixels wide and 56 pixels high. That is therefore the safe size to create.
 
 The legacy EPF path is stricter:
 
 - Total file size is exactly `0xB1C` bytes.
 - The little-endian table displacement at file offset 8 is `0xAF0`.
-- The first frame bounds measure 56 by 48.
+- The first frame bounds describe a portrait 48 pixels wide and 56 pixels high.
 
 These checks describe a portrait-sized EPF profile. See [EPF images](../file-formats/epf.md) for the general container.
 
@@ -91,5 +101,5 @@ The image and profile fields are independent. Either length may be zero.
 
 - The client-side checks do not prove which additional rules the server applies.
 - JPEG EXIF data without a JFIF marker does not enter the JPEG path.
-- The builder accepts a small JFIF file before checking its dimensions. The local decoder still requires 56 by 48.
+- The builder accepts a small JFIF file before checking its dimensions. The local decoder still requires 48 pixels wide by 56 pixels high.
 - The profile is a byte string. Its displayed language depends on the text's encoding and the Windows environment.

@@ -1,6 +1,6 @@
 # Exchange UI quality-of-life hooks
 
-These changes make `ExchangeDialog` draggable, optionally suppress its final alerts, and provide lifecycle hooks for temporarily using the small main-UI layout while an expanded item inventory is visible.
+These changes make `ExchangeDialog` draggable and optionally suppress or redirect its final alerts. The patch does not change the main-UI layout or inventory expansion state.
 
 The pure byte patches and the hook design target only this client:
 
@@ -62,57 +62,10 @@ Copy at most 130 bytes to a hook-owned stack buffer, add a null terminator, appe
 
 This mirrors only the floating `SMessage` type `0x00` display branch. Do not call the network parser recursively. If persistent history is also required, queue a bounded synthetic message event for the normal main-thread dispatcher.
 
-## Detect and track ExchangeDialog
+## Installation scope
 
-There is no exchange singleton. The general modal count at `0x006FCFF8` is not specific enough.
+The draggable-dialog change and the two no-alert changes are independent, same-size byte patches. Redirecting alert text to the floating message bar remains an optional detour.
 
-| Role | Static address | RVA | First five bytes |
-| --- | --- | --- | --- |
-| `ui_exchange_dialog_ctor` | `0x00469560` | `0x00069560` | `55 8B EC 6A FF` |
-| `ui_exchange_dialog_dtor` | `0x00469E70` | `0x00069E70` | `55 8B EC 6A FF` |
-| Exact primary vtable | `0x0067442C` | `0x0027442C` | Not a code hook |
+No constructor hook, destructor hook, exchange pointer tracking, or `GUIBackPane` layout save and restore is required. The player can drag the exchange window away from the expanded inventory instead of temporarily forcing the small main-UI layout.
 
-Retain the exact object pointer after the constructor trampoline returns. Clear it after the destructor trampoline returns. Use a generation token so a delayed cleanup for an older object cannot restore state for a newer exchange.
-
-## Force the small layout and restore it safely
-
-The relevant `GUIBackPane` fields are:
-
-```c
-s32 layout_index;       // +0x4DF0: 0 _nbk_s.txt, 1 _nbk_l.txt
-s32 current_page;       // +0x4FA8: 0 item inventory
-u8  page_is_expanded;   // +0x4FB0
-```
-
-The native helpers are:
-
-| Role | Static address | RVA |
-| --- | --- | --- |
-| `ui_gui_back_select_page_mode` | `0x005A2FB0` | `0x001A2FB0` |
-| `ui_gui_back_apply_layout` | `0x005A3900` | `0x001A3900` |
-| `ui_get_gui_back_pane` | `0x005A9C40` | `0x001A9C40` |
-
-`ui_gui_back_select_page_mode` is a method of the secondary controller at `GUIBackPane +0x194`. Its call shape for this use is page `0`, expanded `1`.
-
-Before calling the exchange constructor trampoline:
-
-```c
-gui = ui_get_gui_back_pane();
-
-if (gui != NULL &&
-    gui->layout_index == 1 &&
-    gui->current_page == 0 &&
-    gui->page_is_expanded != 0) {
-    save_hook_generation_and_exchange_state();
-    ui_gui_back_apply_layout(gui, 0);
-    ui_gui_back_select_page_mode((u8 *)gui + 0x194, 0, 1);
-}
-```
-
-Calling the page method after the layout method matters. The layout change first applies the normal item rectangle; the page call then selects the small layout's expanded item rectangle.
-
-After the matching exchange destructor finishes, restore layout `1` and re-apply page `0`, expanded `1`, only when the generation still matches and all three UI fields still describe the hook-installed state. If the player changed layout, page, or expansion, discard the saved state and leave the newer choice untouched.
-
-The constructor hook runs on the main event thread and is reached only when the native start handler creates the dialog. A refused exchange therefore cannot change the layout. The destructor hook covers every verified pane-removal path.
-
-Apply all code changes with the [safe launcher workflow](safe-launcher-workflow.md). Keep hook state bounded and local, resolve addresses from the loaded module base, and never wait for controller IPC from these hooks.
+Apply all code changes with the [safe launcher workflow](safe-launcher-workflow.md). Resolve addresses from the loaded module base, and never wait for controller IPC from a text-redirection hook.

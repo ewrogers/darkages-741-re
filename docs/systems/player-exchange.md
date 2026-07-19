@@ -57,32 +57,7 @@ struct ExchangeDialogFields {
 
 `ExchangeDialog` inherits `ui_dialog_handle_pointer_event` at primary-vtable slot `+0x48`. That base handler already implements window movement, but only when `movable` is nonzero. Setting this field to one after construction makes the existing dialog draggable without replacing its pointer handler. Empty dialog background starts the drag; controls keep their normal event handling.
 
-## Detecting an open exchange
-
-`ExchangeDialog` is not a singleton. The global count changed by its constructor and destructor counts modal dialogs in general, so it cannot identify exchange by itself.
-
-A hook should retain the object pointer after `ui_exchange_dialog_ctor` returns and clear it in `ui_exchange_dialog_dtor`. A read-only pane-tree walk can instead compare the primary vtable with the exact `ExchangeDialog` vtable, but lifecycle tracking is simpler and avoids scanning live containers.
-
-## Main UI size and inventory expansion
-
-`GUIBackPane` owns the main interface and keeps these states separately:
-
-```c
-struct GUIBackPaneExchangeState {
-    u8  unrelated_0000[0x4DF0];
-    s32 layout_index;             // +0x4DF0: 0 small, 1 large
-    u8  unrelated_4DF4[0x1B4];
-    s32 current_page;             // +0x4FA8: 0 is item inventory
-    u8  unrelated_4FAC[4];
-    u8  page_is_expanded;         // +0x4FB0
-};
-```
-
-Layout index `0` selects `_nbk_s.txt`, the small or minimal main UI. Index `1` selects `_nbk_l.txt`, the large UI. The constructor initializes the small layout first, and `ui_gui_back_apply_layout` records the selected index while applying its named geometry.
-
-The item inventory is visibly in its extra-row state when `current_page == 0` and `page_is_expanded != 0`. These fields are stronger evidence than measuring the current pane rectangle. Expansion and main-UI size are independent. The item page can use its expanded geometry in the small layout even though several other pages are forced to their compact form there.
-
-Changing the size layout applies the page's normal rectangle first. To preserve an expanded item inventory, call `ui_gui_back_select_page_mode` afterward with page `0` and expanded `1`. This re-applies the selected layout's expanded inventory rectangle.
+The quality-of-life patch leaves the small or large main-UI layout and the inventory's expansion state alone. Making the dialog draggable is sufficient because the player can move it away from the inventory. No exchange lifecycle tracking or layout restoration is needed.
 
 ## Completion and cancellation popups
 
@@ -91,18 +66,5 @@ The Cancelled handler reads its `string8` message, creates a one-button alert pa
 Suppressing the alert must not skip the remaining close path. A narrow patch can make the two alert allocations return null through their existing no-allocation branches. A redirecting hook can instead append the already-decoded message through `ui_append_game_message_palette` with palette `0x58`, followed by the same newline used by `SMessage` type `0x00`.
 
 That direct append reproduces the floating message bar only. It does not create a real [`SMessage`](../network/server/010-0x0a-message.md) or add the text to persistent history. A hook that needs both destinations should queue a bounded synthetic message event through the ordinary main-thread event path. Exchange messages can be 255 bytes, while the floating overlay is safe only through 130 bytes, so a redirect must clamp or reject longer text.
-
-## Force minimal while exchanging
-
-The quality-of-life flow is feasible with two lifecycle hooks:
-
-1. At exchange construction, read `GUIBackPane` through `ui_get_gui_back_pane`.
-2. If the item page is expanded and the layout is large, save that state, call `ui_gui_back_apply_layout(gui, 0)`, then re-apply page `0` with expanded mode `1`.
-3. Construct and position `ExchangeDialog` in the now-small layout, set its inherited `movable` field to one, and retain its pointer with a generation token.
-4. After that exact dialog is destroyed, restore layout `1` and re-apply expanded item page `0` only if the UI still matches the state installed by the hook.
-
-The constructor hook runs only after the native start handler has decided that a dialog may open. This avoids changing the UI when the client automatically refuses an exchange. Restoring from the destructor covers server cancellation, completion, local cancellation after the server reply, and other teardown paths.
-
-The restore check should fail open. If the player changes layout, page, or expansion while the exchange is open, leave the newer state alone. All calls already occur on the main event thread, and no hook should wait for IPC or another process.
 
 Static addresses, verified bytes, and the two no-popup patches are in [Exchange UI quality-of-life hooks](../appendix/runtime-patches/exchange-ui-quality-of-life.md).
