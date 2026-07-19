@@ -16,16 +16,28 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_select_distribution_mode` | `0x00434EF0` | high | Returns the constant distribution mode 1 in this target. |
 | `app_detect_distribution_mode_from_markers` | `0x00434F00` | high | Dormant unreferenced scanner that maps country and Korean ISP .nfo markers to distribution modes 1 through 15. |
 | `app_derive_installation_id16` | `0x00436E10` | high | Applies the client's custom 0x1021-table recurrence to the four little-endian bytes of the persistent 32-bit installation ID. |
+| `app_context_dumper_ctor` | `0x00437BB0` | high | Constructs exact RTTI ContextDumper and an x86 StackWalker over the supplied crashing CONTEXT. |
+| `app_collect_stack_trace_text` | `0x00437D70` | high | Collects StackWalker frames into the bounded 8192-byte LCrash.nfo trace buffer with newline separators. |
+| `app_exception_handler_ctor` | `0x00468AD0` | high | Constructs exact RTTI ExceptionHandler, installs app_unhandled_exception_filter, and retains the previous top-level filter. |
+| `app_exception_handler_dtor` | `0x00468B10` | high | Restores the previous Win32 unhandled exception filter and clears the ExceptionHandler singleton. |
+| `app_unhandled_exception_filter` | `0x00468EB0` | high | Top-level Win32 exception filter that writes LCrash.nfo and then chains to the previously installed filter. |
+| `app_write_unhandled_exception_report` | `0x00468F00` | high | Writes LCrash.nfo as build/distribution text plus raw CS:EIP frames produced from EXCEPTION_POINTERS. |
+| `app_get_exception_code_name` | `0x004690A0` | high | Maps common Win32 exception codes to names or formats an NTDLL fallback; the active LCrash writer discards the returned name. |
+| `app_resolve_fault_module_section` | `0x00469390` | high | Uses VirtualQuery and PE section headers to resolve the fault address to module, section index, and offset; the active writer does not serialize the results. |
+| `app_get_exception_handler` | `0x00469550` | high | Returns the application-wide ExceptionHandler singleton used by the filter, uploader, and live diagnostic builder. |
 | `app_language_mode_from_distribution` | `0x004A49B0` | high | Maps distribution modes to Korean 0, English 1, Japanese 2, or Taiwan 3 language modes. |
 | `app_get_text_code_page` | `0x004A4A30` | high | Returns the code-page value selected with the current language mode. |
 | `app_get_language_message_label` | `0x004A4A60` | high | Maps language modes to msgkor.h, msgeng.h, msgjpn.h, or msgtai.h labels retained by the client. |
 | `app_set_language_mode` | `0x004A4CE0` | high | Stores the language mode, selects the retained message label, and records code page 949 or 932 for Korean or Japanese. |
+| `app_check_speedhack_clocks` | `0x004A98A0` | high | Compares several local time sources, counts differences greater than five seconds, and sends one SpeedHack CException report per process after repeated mismatches. |
 | `app_shutdown` | `0x004AC060` | high | Tears down runtime managers and panes, then closes and destroys the DAT archive singletons before window cleanup. |
 | `app_set_post_exit_advertisement` | `0x004ACE00` | high | Copies the SAdvertisement string into a 65,536-byte application buffer, terminates it, and saves its length plus three numeric arguments for app_winmain. |
 | `app_is_japan_distribution_mode` | `0x004ACEE0` | high | Returns true when app_get_distribution_mode reports mode 13, selecting the create-user email and ISP-selector variant. |
 | `app_set_working_directory_from_executable` | `0x004AD3A0` | high | Derives the executable directory from GetCommandLineA and makes it the process working directory. |
 | `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client. |
 | `app_quit_after_patcher_launch` | `0x005287B0` | high | Destroys NewPatchPane, posts WM_QUIT, and terminates after the patcher launch attempt. |
+| `app_stack_walker_ctor` | `0x0056D540` | high | Constructs exact RTTI StackWalker and copies the supplied 0x2CC-byte x86 CONTEXT. |
+| `app_stack_walker_format_next_frame` | `0x0056D660` | high | Calls DbgHelp StackWalk for IMAGE_FILE_MACHINE_I386 and formats flags-1 output as raw CS:EIP text. |
 | `app_handle_d_option_stub` | `0x0057A460` | high | Empty function called for the suffix of an uppercase -D command-line token. |
 | `app_parse_command_line` | `0x0057A550` | high | Scans the WinMain command tail for space-delimited dash tokens and recognizes only uppercase D. |
 | `app_winmain` | `0x0057A710` | high | Called by the CRT startup wrapper with the WinMain argument set. |
@@ -707,6 +719,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_post_decoded_server_packet_event` | `0x00467060` | high | Copies a decoded opcode-first server body and queues it as network packet event type 0x13. |
 | `net_queue_raw_server_bytes_event` | `0x00468180` | high | Builds event type 0x13 around an owned raw receive buffer for TerminalPane2. |
 | `net_queue_server_packet_event` | `0x00468220` | high | Builds and enqueues the event object used for a decoded server packet body. |
+| `net_upload_and_delete_saved_crash_report` | `0x00468B40` | high | Reads at most 4096 text bytes from LCrash.nfo, conditionally sends CException report kind 1, and always attempts DeleteFileA. |
+| `net_send_exception_report_text` | `0x00468D30` | high | Sends a 1..4095-byte in-memory diagnostic through the same CException report-kind-1 body used by saved crash reports. |
 | `net_send_exchange_start` | `0x0046A2F0` | medium | Builds CExchange as opcode 0x4A, action 0x00, and a big-endian u32 argument; no live static caller was recovered. |
 | `net_send_exchange_accept` | `0x0046A390` | high | Builds opcode 0x4A, action 0x05, and ExchangeDialog +0x630. |
 | `net_send_exchange_cancel` | `0x0046A440` | high | Builds opcode 0x4A, action 0x04, and the supplied target or exchange ID. |
@@ -1066,6 +1080,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_check_time` | `0x005F7830` | high | Immediate response to SCheckTime opcode 0x68; builds CCheckTime as opcode 0x75, echoed u32 server_value, and one timeGetTime() u32 sample without local comparison or enforcement. |
 | `net_handle_bad_guy_server_packet` | `0x005F7900` | high | Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths. |
 | `net_handle_show_users` | `0x005F7B80` | high | Handles raw decoded server opcode 0x36, applies the replacement list, and opens the RTTI-backed ShowUsersPane. |
+| `net_handle_world_transfer_server_packet` | `0x005F7BB0` | high | Handles in-world STransferServer, reconnects, sends CTransferServer, then attempts the saved LCrash.nfo upload. |
 | `net_send_group_automatic_response` | `0x005F8620` | high | Builds CGroup opcode 0x2E, action 3, and a length-prefixed user string for the GroupAnswer automatic path. |
 | `net_handle_group_server_packet` | `0x005F8720` | high | Handles SGroup by either opening the normal prompt or immediately sending CGroup action 3 according to AppConfig GroupAnswer. |
 | `net_handle_field_map_server_data` | `0x005F8A10` | high | WorldPane's raw opcode 0x2E branch reparses the decoded SFieldMap body and creates the field-map pane instead of consuming the factory-built packet object. |

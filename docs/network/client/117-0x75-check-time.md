@@ -12,7 +12,9 @@
 
 The client sends `CCheckTime` only as the immediate response to [`SCheckTime`](../server/104-0x68-check-time.md). It returns the server's four-byte value unchanged and reports the current `timeGetTime()` tick count.
 
-The client does not decide whether time is advancing correctly. It supplies the measurement; any comparison, tolerance, retry, or speed-hack response belongs to the server.
+The `CCheckTime` handler does not decide whether this sampled value is advancing correctly. It supplies the measurement; any comparison, tolerance, or retry for this exchange belongs to the server.
+
+The application separately runs a local multi-clock comparison from its main loop. Repeated differences greater than five seconds can produce a one-per-process [`CException`](066-0x42-exception.md) report beginning with `SpeedHack`. That path is not triggered by `SCheckTime` and does not reuse the echoed server value.
 
 ## Body
 

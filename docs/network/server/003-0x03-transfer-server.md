@@ -17,6 +17,8 @@ The constructor calls `net_server_packet_base_ctor` with opcode `0x03` and insta
 
 The handler waits on the game and UI thread while the communications worker reconnects and then sleeps for a fixed second. That is why visible main-menu animation can pause during this exchange. The cause and runtime patch are described in [Initial connection](../connection.md#why-the-screen-pauses-during-a-transfer).
 
+The gameplay world dispatcher has a second handler for the same typed packet. `net_handle_world_transfer_server_packet` performs the reconnect and sends `CTransferServer`, then calls the one-shot [`LCrash.nfo` uploader](../client/066-0x42-exception.md). That uploader reads at most 4096 report bytes into `CException` and deletes the file after the attempt. The main-menu handler has no call to the crash-report uploader.
+
 ## Body
 
 ```text

@@ -3721,8 +3721,8 @@ packet_indexes:
         transform: static
         builder: "0x00468B40"
         opcode_confidence: high
-        name_confidence: medium
-        evidence: "Representative builder 0x00468B40 writes opcode 0x42 and submits the body."
+        name_confidence: high
+        evidence: "Project-owner protocol vocabulary identifies CException. Builders 0x00468B40 and 0x00468D30 write report kind 1, a u16 text length, report bytes, and an explicit zero before the common terminator. Sources are the LCrash.nfo upload and the one-per-process SpeedHack clock diagnostic."
         page: "docs/network/client/066-0x42-exception.md"
       - opcode: "0x43"
         friendly_name: "Request Object Info"

@@ -15,6 +15,8 @@
 
 This exchange can let a server compare client-clock progress with server-observed elapsed time. Speed-hack or tick-rate validation is therefore a plausible server-side use, but the trigger policy is not present in the client. The server could send the request periodically, after suspicious movement, or for another timing purpose. The client cannot distinguish those cases.
 
+Separately, the application main loop compares several local clock sources and can send a [`CException`](../client/066-0x42-exception.md) report beginning with `SpeedHack`. That local detector does not depend on this packet. It is not evidence that a particular server-side `SCheckTime` policy exists.
+
 ## Body
 
 ```text
@@ -35,7 +37,7 @@ The main world packet dispatcher recognizes typed opcode `0x68` and calls `net_s
 3. Builds the nine-byte plaintext `CCheckTime` body.
 4. Submits it immediately through the normal client packet sender.
 
-There is no timer, deliberate delay, UI change, character-state write, comparison, tolerance check, or local enforcement action.
+There is no timer, deliberate delay, UI change, character-state write, comparison, tolerance check, or local enforcement action in this packet handler.
 
 This handler belongs to the gameplay `WorldPane`. Test the packet after the character has entered the world and that pane is registered. During login or another screen without the world handler, the decoded packet has no confirmed responder.
 

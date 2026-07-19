@@ -38,6 +38,7 @@ def main() -> None:
         "# Application",
         "",
         "- [Application lifecycle](application/lifecycle.md)",
+        "- [Crash reporting](application/crash-reporting.md)",
         "- [Configuration](application/configuration.md)",
         "- [Distribution markers](application/distribution-markers.md)",
         "- [Game loop](application/game-loop.md)",
