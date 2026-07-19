@@ -130,6 +130,7 @@ def main() -> None:
         "  - [Safe launcher](appendix/runtime-patches/safe-launcher.md)",
         "  - [Multiple clients](appendix/runtime-patches/multiple-clients.md)",
         "  - [Stuck modifiers](appendix/runtime-patches/stuck-modifiers.md)",
+        "  - [Stale pursuit](appendix/runtime-patches/stale-pursuit.md)",
         "  - [Minigame assets](appendix/runtime-patches/minigame-assets.md)",
         "  - [Skip intro](appendix/runtime-patches/skip-intro.md)",
         "  - [Ignore Bad Guy marker](appendix/runtime-patches/ignore-bad-guy-marker.md)",

@@ -172,7 +172,7 @@ on Escape while pending and no native close was queued:
     queue the cached ten-byte close body on the main-thread dispatcher
 ```
 
-The fallback should pass the plaintext body to `net_submit_client_packet`. That preserves the dialog wrapper, CRC, transform, sequence ownership, and communications queue. It should use a generation counter to prevent a native close and fallback close from both being sent, keep the full `u32 target_id`, expire stale cached contexts, and rate-limit retries.
+The documented [Stale pursuit runtime patch](../appendix/runtime-patches/stale-pursuit.md) implements this boundary for version 741. It clears its pending marker on the native Close path or the next incoming pursuit message, keeps the full `u32 target_id`, and expires the patch-owned context after 30 seconds.
 
 Do not send a close automatically after a fixed timeout alone. A valid script may answer slowly or finish through another server message. A captured `SMessage` carrying the exact stuck response could become a stronger optional trigger, but its type and text bytes must be confirmed first.
 
