@@ -68,7 +68,7 @@ original(gui_back, action_id);
 
 ## Make occluded items visible
 
-The working no-DLL solution keeps static art unchanged and adds a separate translucent item pass while either Alt key is held. Its source is [`ewrogers/Arbiter` pull request 44](https://github.com/ewrogers/Arbiter/pull/44).
+The working no-DLL solution keeps static art unchanged and adds a separate translucent item pass while either Alt key is held.
 
 ### Capture during the world draw
 

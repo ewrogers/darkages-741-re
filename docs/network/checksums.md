@@ -20,7 +20,7 @@ crc16(bytes):
 
 The check value for ASCII `123456789` is `0xBEEF`. This is a useful way to catch an accidental replacement with a standard library CRC16.
 
-Known uses include dialog data, six bytes per map cell, and the request challenge response. Multi-byte values in those call sites are fed low byte first, then high byte.
+Known uses include the [`CMerchant` and `CPursuit` inner wrapper](packet-transforms.md#dialog-response-inner-wrapper), six bytes per map cell, and the request challenge response. The dialog wrapper feeds the original body bytes after the opcode in their existing wire order. The map and challenge helpers feed their selected multibyte values low byte first, then high byte.
 
 ### Request challenge
 

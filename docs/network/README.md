@@ -20,7 +20,7 @@ Keeping these layers separate makes packet work much easier. A gameplay packet p
 - [Transport](transport.md) follows packets between game code and TCP.
 - [Packet body notation](packet-body-notation.md) defines the field lists used on packet pages.
 - [Shared protocol types](protocol-types.md) centralizes enums and bit flags used by several packets.
-- [Packet transforms](packet-transforms.md) explains the startup key, session key, and seed table.
+- [Packet transforms](packet-transforms.md) explains the startup key, session key, seed table, and the `CMerchant`/`CPursuit` inner wrapper.
 - [Checksums](checksums.md) documents the custom CRC16 and standard CRC32.
 - [Server list and greeting](server-tables.md) covers `mServer.tbl` and stipulation updates.
 - [Client packet index](client/README.md) lists messages sent by the client.

@@ -2,6 +2,8 @@
 
 NPC dialogs can replace the small world sprite with a large speaker illustration. The server supplies the NPC name, the client maps that name to an image in `npc/npcbase.dat`, and `NPCIllustPane` draws the decoded image beside the dialog. If any step fails, the normal NPC tile remains visible instead.
 
+This page covers the art path. The packet-driven pane construction, controls, and responses are in [NPC dialogs](npc-dialogs.md).
+
 ## Flow
 
 ```text

@@ -90,7 +90,7 @@ functions:
   - address: "0x00563E00"
     name: net_submit_client_packet
     confidence: high
-    evidence: "Ordinary bodies are copied with an appended transmitted zero and a one-byte length increase before socket event command 6; opcodes 0x39 and 0x3A use a separate CRC wrapper."
+    evidence: "Ordinary bodies gain a transmitted zero. Only opcodes 0x39 and 0x3A instead gain a random header, encoded inner length, custom CRC16 over bytes after the opcode, incrementing-XOR inner payload, and final zero before the ordinary opcode-selected outer transform."
   - address: "0x00564140"
     name: net_write_u8
     confidence: high
@@ -339,6 +339,12 @@ comments:
     text: "Queue command 10 with one selector byte and request a waitable completion record. STransferServer uses its FIFO position as a reconnect barrier."
   - address: "0x00563E00"
     text: "Submit an opcode-first client packet to socket event command 6. Ordinary bodies gain an appended zero that is included in the queued length before framing and transformation."
+  - address: "0x00563E2C"
+    text: "Only CMerchant 0x39 and CPursuit 0x3A enter the dialog-response inner wrapper."
+  - address: "0x00563F35"
+    text: "Compute CRC16 over the original body after the opcode. Store the two checksum bytes before the copied payload."
+  - address: "0x00563FBE"
+    text: "XOR the checksum-plus-payload segment with an incrementing byte key starting at random2 plus 0x28 modulo 256."
   - address: "0x00564039"
     text: "Append a zero byte after the builder-provided body."
   - address: "0x00564045"

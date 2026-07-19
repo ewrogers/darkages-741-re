@@ -3573,7 +3573,7 @@ packet_indexes:
         builder: "0x004CFE60"
         opcode_confidence: high
         name_confidence: high
-        evidence: "CMerchant is project-owner protocol vocabulary. Builder 0x004CFE60 is a MerchantDialogPane::TextMenuDialogEx virtual method, which confirms the merchant behavior."
+        evidence: "CMerchant is project-owner protocol vocabulary. Local NPCSession and MerchantDialogPane builders confirm the normal target-and-pursuit header plus text, argument, item-name, record-ID, quantity, inventory-slot, skill, and spell tails. Exact RTTI FaceMenuDialog emits a separate nine-byte selector body. net_submit_client_packet applies the opcode-0x39 inner CRC wrapper before the derived transform."
         page: "docs/network/client/057-0x39-merchant.md"
       - opcode: "0x3A"
         friendly_name: "Pursuit"
@@ -3582,7 +3582,7 @@ packet_indexes:
         builder: "0x004DBC90"
         opcode_confidence: high
         name_confidence: high
-        evidence: "CPursuit is project-owner protocol vocabulary. Builder 0x004DBC90 is shared by MessageDialog and SimpleMessageDialog selection paths."
+        evidence: "CPursuit is project-owner protocol vocabulary. NPC_Pursuit and MessageDialogBase builders confirm previous, current, next, one-based menu-choice, and string8 text responses; net_submit_client_packet applies the opcode-0x3A inner CRC wrapper before the static transform."
         page: "docs/network/client/058-0x3a-pursuit.md"
       - opcode: "0x3B"
         friendly_name: "Bulletin"
@@ -4158,7 +4158,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059B6C0 passes opcode 0x2F to the server packet base and installs the SScreenMenu vtable."
+        evidence: "Constructor 0x0059B6C0 installs exact RTTI SScreenMenu for opcode 0x2F. Deserializer 0x0059B730 reads the common speaker and content header; NPCSession subtype models parse types 0 through 11 into text, input, item, inventory, skill, and spell dialogs."
         page: "docs/network/server/047-0x2f-screen-menu.md"
       - opcode: "0x30"
         friendly_name: "Pursuit Message"
@@ -4168,7 +4168,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059AA00 passes opcode 0x30 to the server packet base and installs the SPursuitMessage vtable."
+        evidence: "Constructor 0x0059AA00 installs exact RTTI SPursuitMessage for opcode 0x30. Deserializer 0x0059AA70 reads the common pursuit step and conditional content; NPCSession constructs popup, menu, text, face-menu, protected-input, or close behavior for the locally handled dialog types."
         page: "docs/network/server/048-0x30-pursuit-message.md"
       - opcode: "0x32"
         friendly_name: "Static Object State"

@@ -308,6 +308,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_input_birthdate_dialog_ctor` | `0x004BC220` | high | Constructs RTTI class InputBirthdateDialogPane from _npw2.txt for the regional password-change verification branch. |
 | `ui_server_item_menu_dialog_handle_network_event` | `0x004CAC20` | high | TaskListDialog::ServerItemMenuDialog3 network-event handler accepts SStatus updates containing progression and currency. |
 | `ui_server_item_menu_update_gold_from_status_packet` | `0x004CAC90` | high | Copies SStatus gold into the server-item menu dialog and redraws its currency display. |
+| `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
 | `ui_find_farmpet_apply_mini_game_update` | `0x004EC3E0` | high | Consumes only SMiniGame action 7, matching its first u32 against two tracked IDs and storing the second u32 as the corresponding value. |
@@ -323,12 +324,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_group_ad_pane_apply_self_look` | `0x00513E80` | high | Builds GroupAdPane's recruiting model from SSelfLook; it copies name and note but omits the already-parsed leader string. |
 | `ui_group_ad_info_dialog_handle_action` | `0x005140C0` | high | Routes GroupAdInfoDialogPane's join control to CGroup action 7 and then closes the dialog. |
 | `ui_group_ad_show_recruit_info` | `0x00514230` | high | Converts SGroup action 4 into the recruiting UI model, preserving five maximum/current class pairs and summing both columns. |
+| `ui_album_info_pane_ctor` | `0x0051BC70` | high | Constructs exact RTTI AlbumInfoPane and owns one AlbumViewPane. |
+| `ui_album_view_pane_ctor` | `0x0051BFA0` | high | Constructs exact RTTI AlbumViewPane from llalbum.txt with Portrait, Del, and Save regions and an AlbumFile owner. |
+| `ui_album_view_reload` | `0x0051C630` | high | Reloads the active character's album.dat through the AlbumViewPane AlbumFile object and invalidates the pane. |
+| `ui_album_view_handle_action` | `0x0051D100` | high | Handles legacy album remove, save, and move confirmation events 0x1000 through 0x1003. |
+| `ui_album_view_remove_portrait` | `0x0051EA20` | high | Clears the selected legacy album record, rewrites album.dat, and reloads the pane. |
+| `ui_album_view_export_portrait_jpeg` | `0x0051EA70` | high | Legacy Save composites one album portrait and always writes the extensionless character portrait through the shared JFIF writer. |
+| `ui_album_view_move_portrait` | `0x0051EEC0` | high | Moves a legacy album record, rewrites album.dat, and reloads the pane. |
 | `ui_new_patch_pane_ctor` | `0x005283E0` | high | Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff. |
+| `ui_npc_session_close_active_dialog` | `0x0052C020` | high | Invokes the active NPC message pane's close-response virtual; all confirmed merchant and pursuit submitters call it immediately after queuing a response. |
 | `ui_npc_session_update_speaker_art` | `0x0052C480` | high | Loads the NPC illustration for the active packet fields or switches to NPCTilePane when lookup or decoding fails. |
 | `ui_npc_session_handle_network_event` | `0x0052C730` | high | Routes SScreenMenu 0x2F and SPursuitMessage 0x30 packet objects into their NPCSession update paths. |
+| `ui_npc_session_open_screen_menu` | `0x0052C7B0` | high | Copies SScreenMenu state into NPCSession state 1, refreshes speaker art, and constructs exact RTTI NPC_Merchant_MessageDialog. |
+| `ui_npc_session_open_pursuit_message` | `0x0052C950` | high | Closes on SPursuitMessage type 10 or copies the message into NPCSession state 2 and constructs exact RTTI NPC_Pursuit_MessageDialog. |
 | `ui_npc_illustration_pane_ctor` | `0x0052CB20` | high | Constructs the RTTI-backed NPCIllustPane and initializes its pixmap view. |
 | `ui_npc_illustration_pane_set_image` | `0x0052CBE0` | high | Resolves the NPC name and illustration index, sizes the pane to the loaded frame, and invalidates it for redraw. |
 | `ui_npc_illustration_pane_draw` | `0x0052CC90` | high | Draws the selected illustration pixmap through the transparent software blitter. |
+| `ui_npc_message_dialog_ctor` | `0x0052D460` | high | Constructs the shared lnpcd.txt-backed outer speaker name, content, and scrolling pane used by screen-menu and pursuit dialogs. |
+| `ui_npc_message_dialog_close` | `0x0052D950` | high | Closes the owning NPCSession when present, or destroys a standalone NPC message pane, without sending a merchant or pursuit response. |
+| `ui_npc_menu_dialog_ctor` | `0x0052DCB0` | high | Constructs the shared NPCMenuDialog base used by choice, input, item, skill, and spell subpanes. |
 | `ui_npc_illustration_load_pixmap` | `0x00531B30` | high | Resolves an NPC name and illustration index, then loads frame zero of the mapped image from npcbase.dat. |
 | `ui_npc_illustration_asset_at` | `0x00531C40` | high | Returns one illustration filename from an NPC name record by zero-based index. |
 | `ui_npc_illustration_file_manager_ctor` | `0x00531E10` | high | Opens npc/npcbase.dat, initializes the name map, and loads its npci.tbl fallback mapping. |
@@ -336,8 +350,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_illustration_handle_event` | `0x00532560` | high | Handles initialization and NPCIllust metadata availability events for NPCIllustFileMan. |
 | `ui_npc_illustration_subscribe_metadata` | `0x005325D0` | high | Subscribes NPCIllustFileMan to the server-managed NPCIllust metadata table, retrying after one second when required. |
 | `ui_npc_illustration_apply_metadata` | `0x00532620` | high | Applies exact NPC-name keys; repeated clearing means the final filename replaces earlier values in a multi-value metadata group. |
+| `ui_npc_merchant_message_dialog_ctor` | `0x00534990` | high | Constructs exact RTTI NPC_Merchant_MessageDialog, attaches its outer buttons, and dispatches the SScreenMenu subtype. |
+| `ui_npc_merchant_request_object_info` | `0x00534A90` | high | Top sends CRequestObjectInfo opcode 0x43 subtype 1 with the SScreenMenu target ID, then closes the active NPC session. |
+| `ui_npc_merchant_message_handle_action` | `0x00534B70` | high | Routes base actions 0 through 3 to content handling, action 4 to Top object-info request, and action 5 to local close. |
+| `ui_npc_dispatch_screen_menu_type` | `0x00534C40` | high | Maps SScreenMenu values 0 through 11 to text, input, server item, local item, server skill-spell, and local skill-spell models. |
 | `ui_npc_server_item_menu_handle_network_event` | `0x0053A270` | high | NPCMenuDialog::NPCServerItemMenuDialog routes SStatus progression blocks to its gold-display updater. |
 | `ui_npc_server_item_menu_update_gold_from_status_packet` | `0x0053A2D0` | high | Copies SStatus gold into the NPC server-item menu and redraws the dialog. |
+| `ui_npc_pursuit_message_dialog_ctor` | `0x0053CC10` | high | Constructs exact RTTI NPC_Pursuit_MessageDialog and attaches Previous, Next, and Close after the four base message controls. |
+| `ui_npc_pursuit_message_handle_action` | `0x0053CD90` | high | Routes attachment-order actions 4, 5, and 6 to Previous, Next, and Close response builders. |
+| `ui_npc_pursuit_build_subtype` | `0x0053CE70` | high | Applies speaker content and navigation flags, then constructs pursuit models for types 2, 3, 4, 5, 6, and 9. |
+| `ui_npc_pursuit_protected_dialog_ctor` | `0x0053EBA0` | high | Constructs the lnpcnid.txt protected pursuit dialog with separate ID and masked-password edit controls plus submit and cancel. |
+| `ui_npc_pursuit_protected_handle_action` | `0x0053ECD0` | high | Hands submission to the regional account manager and sends only after its accepted state; pending and error states stay in local UI paths. |
 | `ui_option_pane_create_alert` | `0x00540580` | high | OptionPane alert factory selects five alert classes; type 4 allocates and constructs exact RTTI SafeQuitAlert. |
 | `ui_game_setting_apply_local` | `0x00541D20` | high | Builds or toggles client-owned setting IDs 7 and 9 through 13 using fields in the global AppConfig object. |
 | `ui_game_setting_dialog_ctor` | `0x00542370` | high | Constructs exact RTTI GameSettingDialog from _nsett.txt, attaches 13 setting controls, and requests server settings with CUserSetting ID 0. |
@@ -457,7 +480,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_gui_back_pane_update_vitals_from_status_packet` | `0x0059D6C0` | high | Copies current and maximum health and mana from SStatus into GUIBackPane bar targets. |
 | `ui_gui_back_layout_init_common` | `0x0059D830` | high | Reads common named controls from one loaded GUIBackPane layout, including BTN_HELP and the other bottom actions. |
 | `ui_gui_back_pane_ctor` | `0x0059FB60` | high | Constructs the RTTI-backed GUIBackPane and its two size-specific layout records and child panes. |
-| `ui_gui_back_activate_action` | `0x005A0B70` | high | Dispatches GUIBackPane bottom-action IDs; action 0 creates HotKeyPane and action 4 writes a numbered BMP screenshot. |
+| `ui_gui_back_activate_action` | `0x005A0B70` | high | Dispatches GUIBackPane bottom-action IDs; action 0 creates HotKeyPane, while the other IDs open their normal panes or local actions. |
 | `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Hit-tests six bottom-action rectangles on a left-button event; BTN_HELP is slot 0 and is passed to ui_gui_back_activate_action after click debounce. |
 | `ui_gui_back_pane_draw` | `0x005A2050` | high | Draws GUIBackPane state, including selection of the network indicator image from the latest movement round-trip value. |
 | `ui_gui_back_pane_set_network_latency` | `0x005A2B80` | high | Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region. |
@@ -478,32 +501,23 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_user_info_handle_server_packet` | `0x005AD160` | high | The UserInfoPane vtable event handler sends the local portrait response when the decoded opcode is 0x49. |
 | `ui_user_info_refresh_local_portrait` | `0x005AD5D0` | high | Builds the local portrait body and reapplies it to UserInfoPane without calling the network submitter. |
 | `ui_user_info_timer` | `0x005AD600` | high | Timer 0x1241 calls the local portrait refresh after the profile editor saves. |
-| `ui_album_info_pane_ctor` | `0x0051BC70` | high | Constructs the older AlbumInfoPane and its AlbumViewPane child. |
-| `ui_album_view_pane_ctor` | `0x0051BFA0` | high | Constructs AlbumViewPane from llalbum.txt with Portrait, Del, and Save regions. |
-| `ui_album_view_reload` | `0x0051C630` | high | Reloads album.dat through the older AlbumViewPane owner and invalidates it. |
-| `ui_album_view_handle_action` | `0x0051D100` | high | Handles the older album's remove, save, and move confirmation events. |
-| `ui_album_view_remove_portrait` | `0x0051EA20` | high | Clears one older album record, rewrites album.dat, and refreshes the view. |
-| `ui_album_view_export_portrait_jpeg` | `0x0051EA70` | high | Composites one older album portrait and always writes the extensionless JFIF portrait. |
-| `ui_album_view_move_portrait` | `0x0051EEC0` | high | Moves one older album record, rewrites album.dat, and refreshes the view. |
-| `ui_user_info_reload_album` | `0x005B04A0` | high | Loads the current character's album.dat and repopulates the nui_AlbumPane picture tiles. |
-| `ui_user_info_export_album_portrait_jpeg` | `0x005B0580` | high | Fills transparent album pixels from _nportbk.spf, backs up the extensionless portrait, and always writes JFIF. |
-| `ui_user_info_handle_album_action` | `0x005B0AB0` | high | Maps album action 0 to Save confirmation and action 1 to Remove confirmation. |
+| `ui_user_info_reload_album` | `0x005B04A0` | high | Loads the active character's album.dat and repopulates the current nui_AlbumPane tiles. |
+| `ui_user_info_export_album_portrait_jpeg` | `0x005B0580` | high | Current Save fills transparent pixels from _nportbk.spf, copies the prior extensionless portrait to .bak, and always writes JFIF. |
+| `ui_user_info_handle_album_action` | `0x005B0AB0` | high | Maps album tile action 0 to Save confirmation event 0x1242 and action 1 to Remove confirmation event 0x1243. |
 | `ui_user_info_update_status_from_packet` | `0x005B0C40` | high | Updates UserInfoPane's five attributes and signed armor class from present SStatus blocks. |
 | `ui_user_info_apply_self_look` | `0x005B0D10` | high | Copies SSelfLook identity and nation fields into UserInfoPane, rebuilds its legend list, and reloads SClass metadata when the class changes. |
 | `ui_user_info_add_equipment_from_packet` | `0x005B1070` | high | Maps SAddEquip slots 1 through 18 to UserInfoPane child-view indices 0 through 17 and forwards the visible item fields. |
 | `ui_user_info_remove_equipment_from_packet` | `0x005B1100` | high | Maps a checked SRemoveEquip slot and asks the UserInfoPane child equipment view to clear that entry. |
 | `ui_portrait_text_dialog_ctor` | `0x005B11A0` | high | Constructs RTTI-backed PortraitTextInputDialogPane from _nui_pi.txt and loads profile.txt. |
 | `ui_portrait_text_dialog_action` | `0x005B1510` | high | Action 1 saves profile.txt and queues timer 0x1241; action 2 closes without saving. |
-| `ui_open_user_info` | `0x005B1FA0` | high | Opens the singleton UserInfoPane in the requested local or other-user mode. |
-| `ui_album_picture_dialog_ctor` | `0x005B24E0` | high | Constructs AlbumPicDialogPane from _nui_alb.txt and attaches SAVE before REMOVE. |
-| `ui_album_picture_handle_action` | `0x005B2A00` | high | Forwards one picture tile's Save or Remove action with its 0x1234-based record event. |
-| `ui_nui_album_pane_ctor` | `0x005B2A70` | high | Constructs nui_AlbumPane from _nui_al.txt and creates 100 picture tiles. |
-| `ui_nui_album_show_page_pair` | `0x005B31C0` | high | Shows two adjacent six-item album pages and updates their page-number labels. |
-| `ui_nui_album_load_records` | `0x005B3320` | high | Clears all 100 previews and fills active records from one AlbumFile. |
-| `ui_nui_album_handle_page_action` | `0x005B3700` | high | Moves the visible album base backward or forward by two pages. |
-| `ui_nui_album_handle_picture_action` | `0x005B3770` | high | Converts tile events 0x1234 through 0x1297 into Save or Remove plus a zero-based record index. |
-| `ui_capture_self_portrait_to_album` | `0x005F5200` | high | Renders the local player at 48 by 56, enforces the client-only 3,600-second cooldown, and adds the first free album.dat record. |
-| `ui_world_capture_self_portrait_to_album` | `0x005F9B00` | high | Invokes the self-portrait capture with the normal cooldown argument. |
+| `ui_open_user_info` | `0x005B1FA0` | high | Opens the singleton UserInfoPane and selects the requested local or other-user mode. |
+| `ui_album_picture_dialog_ctor` | `0x005B24E0` | high | Constructs exact RTTI AlbumPicDialogPane from _nui_alb.txt and attaches SAVE before REMOVE. |
+| `ui_album_picture_handle_action` | `0x005B2A00` | high | Forwards local action 0 or 1 with this tile's 0x1234-based event ID. |
+| `ui_nui_album_pane_ctor` | `0x005B2A70` | high | Constructs exact RTTI nui_AlbumPane from _nui_al.txt and creates 100 picture dialogs. |
+| `ui_nui_album_show_page_pair` | `0x005B31C0` | high | Displays 12 records as two six-item pages and labels the current adjacent page numbers. |
+| `ui_nui_album_load_records` | `0x005B3320` | high | Clears all 100 tile previews and fills active entries from one loaded AlbumFile. |
+| `ui_nui_album_handle_page_action` | `0x005B3700` | high | Moves the visible page base backward or forward by two, clamped to 0 through 15. |
+| `ui_nui_album_handle_picture_action` | `0x005B3770` | high | Converts picture events 0x1234 through 0x1297 into parent album action and zero-based record index. |
 | `ui_nui_legend_pane_apply_self_look` | `0x005B7ED0` | high | Clears and rebuilds RTTI class nui_LegendPane from SSelfLook's legend records. |
 | `ui_map_loading_pane_ctor` | `0x005BA040` | high | Constructs RTTI class MapLoadingPane from _nloadm.txt, registers its singleton, and adds it as a visible screen pane at zero percent. |
 | `ui_map_loading_pane_dtor` | `0x005BA2B0` | high | Unregisters MapLoadingPane from the screen and clears its global singleton during destruction. |
@@ -531,6 +545,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_world_pane_draw_content` | `0x005F27A0` | high | WorldPane content hook that draws the world when ready or clears the pane. |
 | `ui_world_pane_reset_movement_state` | `0x005F4900` | medium | Resets WorldPane movement and queued-path state after authoritative position changes and the SMove direction-4 path. |
 | `ui_world_pane_attack_target` | `0x005F4A70` | high | Faces and attacks an adjacent selected target through CAttack without using the Space-key throttle. |
+| `ui_capture_self_portrait_to_album` | `0x005F5200` | high | Renders the local player to 48 by 56 pixels, enforces the 0xE10-second normal cooldown, captions the first free record with ctime, and saves album.dat. |
 | `ui_has_map_loading_pane` | `0x005F6470` | high | Reports whether the global MapLoadingPane pointer is non-null. |
 | `ui_get_map_loading_pane` | `0x005F6490` | high | Returns the current global MapLoadingPane pointer used by SMapPart progress handling. |
 | `ui_close_map_loading_pane` | `0x005F64A0` | high | Invokes the deleting destructor for the current MapLoadingPane when a map transfer finishes. |
@@ -538,6 +553,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_open_town_map_from_screen_shot_packet` | `0x005F6BC0` | high | Reads SScreenShot's retained u8 key and opens TownMapPane in the server-keyed _tncoord.txt mode. |
 | `ui_apply_block_input_server_packet` | `0x005F7AA0` | high | Maps SBlockInput state 0 to held-button release plus ClockPane creation and state 1 to ClockPane removal; other states are ignored. |
 | `ui_create_field_map_pane` | `0x005F88B0` | high | Allocates a 640 by 480 FieldMapPane, initializes it from decoded SFieldMap values, registers it with the screen root, and retains it in WorldPane. |
+| `ui_world_capture_self_portrait_to_album` | `0x005F9B00` | high | WorldPane_Impl wrapper that invokes the album capture with zero, selecting the normal cooldown path. |
 | `ui_world_pane_change_user_state` | `0x005F9E20` | high | WorldPane_Impl interface method that forwards a requested UserState to CChangeUserState. |
 | `ui_world_pane_get_local_action_state` | `0x005F9E50` | high | WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc. |
 | `ui_world_pane_get_self_object_id` | `0x005F9EC0` | high | WorldPane_Impl virtual getter returns the SUserAppearance user ID stored in WorldUserFunc. |
@@ -621,6 +637,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_manual_action` | `0x004C26D0` | high | ManufactureDialogPane calls this opcode 0x55 crafting action builder. |
 | `net_request_object_info` | `0x004CD350` | high | Merchant menu paths call this opcode 0x43 object information request. |
 | `net_send_merchant_selection` | `0x004CFE60` | high | MerchantDialogPane::TextMenuDialogEx virtual method that builds and sends CMerchant opcode 0x39. |
+| `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
 | `net_send_pursuit_selection` | `0x004DBC90` | high | MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method. |
 | `net_dispatch_metadata_events` | `0x004E4D80` | high | MetaTableManager recognizes decoded SMetaData opcode 0x6F outside the packet factory. |
 | `net_handle_metadata` | `0x004E4EA0` | high | Parses SMetaData table entries and validates or applies named metadata blobs. |
@@ -636,6 +653,30 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_group_recruit_stop` | `0x00513A40` | high | Builds CGroup action 6 with the local character name to stop recruiting. |
 | `net_send_group_recruit_start` | `0x00513B30` | high | Builds CGroup action 4 with local name, group name, note, level range, and five maximum class counts. |
 | `net_send_group_recruit_join` | `0x00514140` | high | Builds CGroup action 7 with the leader retained by GroupAdInfoDialogPane. |
+| `net_build_merchant_response_header` | `0x0052C1C0` | high | Writes CMerchant opcode 0x39, target type, big-endian target ID, and big-endian pursuit ID as the common eight-byte body. |
+| `net_build_pursuit_response_header` | `0x0052C270` | high | Writes CPursuit opcode 0x3A, target type, target ID, pursuit ID, and step ID as the common ten-byte body. |
+| `net_send_merchant_text_menu_selection` | `0x00535590` | high | Sends the selected row's pursuit ID and echoes the optional type-1 server argument in CMerchant. |
+| `net_parse_merchant_text_menu` | `0x00535750` | high | Parses optional type-1 string8 argument, u8 row count, and repeated string8 text plus u16 pursuit ID. |
+| `net_send_merchant_text_input` | `0x005359D0` | high | Sends CMerchant with optional type-3 server argument followed by the entered string8 text. |
+| `net_parse_merchant_text_input_menu` | `0x00535BA0` | high | Parses the optional type-3 string8 server argument and the common u16 pursuit ID for a merchant text input. |
+| `net_send_merchant_inventory_item_selection` | `0x005362A0` | high | Sends a selected local inventory slot; pursuit 0x004E uses the alternate literal-1, slot, literal-1 tail. |
+| `net_parse_merchant_client_item_menu` | `0x00536390` | high | Parses pursuit ID and a u8 count of one-based local inventory slots, with one extra u32 per row for pursuit 0x004E. |
+| `net_send_merchant_server_skill_spell_selection` | `0x00536620` | high | Sends the selected server-supplied skill or spell name as string8 after the CMerchant common header. |
+| `net_parse_merchant_server_skill_spell_menu` | `0x00536AD0` | high | Parses pursuit ID and u16-counted graphic type, sprite, color, and string8 name records. |
+| `net_send_merchant_client_skill_spell_selection` | `0x00536D60` | high | Sends one selected local spell-book or skill-book slot after the CMerchant common header. |
+| `net_parse_merchant_client_skill_spell_menu` | `0x00536E00` | high | Parses pursuit ID and an optional u8-counted slot whitelist; absent or zero count enumerates all learned slots 1 through 89. |
+| `net_send_merchant_server_item_selection` | `0x00538710` | high | Sends an ordinary selected item name or the pursuit-0x004B marker, u32 record ID, and u8 quantity tail. |
+| `net_parse_merchant_server_item_menu` | `0x005388F0` | high | Parses ordinary server item records or the larger pursuit-0x004B record with ID, quantity, optional description, and two counters. |
+| `net_send_pursuit_previous` | `0x0053D940` | high | Sends a no-argument CPursuit with current step minus one. |
+| `net_send_pursuit_next` | `0x0053D9D0` | high | Sends a no-argument CPursuit with current step plus one. |
+| `net_send_pursuit_close_current` | `0x0053DA90` | high | Sends a no-argument CPursuit with the current step before the pane closes locally. |
+| `net_send_pursuit_menu_selection` | `0x0053DC30` | high | Sends current step plus one, argument type 1, and a one-based menu choice. |
+| `net_parse_pursuit_menu_choices` | `0x0053DD00` | high | Parses a u8 choice count followed by that many string8 choices for pursuit types 2, 3, and 6. |
+| `net_send_pursuit_say_and_menu_selection` | `0x0053DE00` | high | Sends CSay with the selected simple-menu text, then sends the normal type-1 CPursuit answer. |
+| `net_send_pursuit_text_input` | `0x0053E070` | high | Sends current step plus one, argument type 2, and the entered string8 text. |
+| `net_parse_pursuit_text_prompt` | `0x0053E1D0` | high | Parses string8 prolog, u8 maximum input bytes, and string8 epilog for pursuit types 4, 5, and 9. |
+| `net_send_pursuit_say_and_text_input` | `0x0053E270` | high | Sends CSay with prolog, input, and epilog separated by spaces, then sends the normal type-2 CPursuit answer. |
+| `net_send_pursuit_protected_text_result` | `0x0053F060` | high | Sends argument type 2 with the manager-produced nonempty string at protected dialog offset +0x638, rather than directly serializing both edit controls. |
 | `net_send_user_setting` | `0x00542E60` | high | Builds the fixed two-byte CUserSetting body from opcode 0x1B and one setting ID. |
 | `net_packet_preprocessor_handle_server_packet` | `0x005449A0` | high | PacketPreprocessor intercepts typed SMessage opcode 0x0A before pane-tree delivery and consumes only message type 0x11. |
 | `net_send_exit_editing_mode` | `0x0054A7D0` | high | Copies up to 8000 edited bytes, converts carriage returns to wire tab bytes, and sends CExitEditingMode opcode 0x23 with retained slot and string16 content. |
@@ -656,7 +697,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_queue_seed_table_barrier` | `0x00563D70` | high | Queues communications command 10 with a one-byte seed selector and returns its waitable completion handle. |
 | `net_queue_transfer_endpoint` | `0x00563DA0` | high | Queues communications command 4 with the IPv4 address and port supplied by STransferServer. |
 | `net_reset_client_packet_sequence` | `0x00563DE0` | high | Resets the client-to-server encrypted-packet sequence to zero. |
-| `net_submit_client_packet` | `0x00563E00` | high | Ordinary bodies are copied with an appended transmitted zero and a one-byte length increase before socket event command 6; opcodes 0x39 and 0x3A use a separate CRC wrapper. |
+| `net_submit_client_packet` | `0x00563E00` | high | Ordinary bodies gain a transmitted zero. |
 | `net_queue_raw_stream_mode` | `0x00564070` | high | Queues communications command 7, whose worker-side case writes the socket raw-stream-mode byte. |
 | `net_set_text_framing_enabled` | `0x00564120` | high | Writes the socket flag that selects printable text framing when true and binary 0xAA framing when false. |
 | `net_write_u8` | `0x00564140` | high | Writes one byte to a packet body. |
@@ -780,6 +821,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_deserialize_motion_server_packet` | `0x0059A420` | high | Reads u32 object_id, u8 animation, and u16 duration_10ms. |
 | `net_move_server_packet_ctor` | `0x0059A520` | high | Passes opcode 0x0B to the server packet base and installs the exact RTTI SMove vtable. |
 | `net_deserialize_move_server_packet` | `0x0059A550` | high | Reads direction, four big-endian coordinate words, and the echoed movement step into the fixed SMove packet object. |
+| `net_pursuit_message_server_packet_ctor` | `0x0059AA00` | high | Passes opcode 0x30 to the server packet base and installs the exact RTTI SPursuitMessage vtable. |
+| `net_deserialize_pursuit_message_server_packet` | `0x0059AA70` | high | Reads the SPursuitMessage common fields, conditional content, and owned subtype tail; type 10 stops after the type byte. |
 | `net_create_quit_server_packet` | `0x0059ACA0` | high | Allocates a 0x14-byte RTTI SQuit object and calls its concrete constructor. |
 | `net_quit_server_packet_ctor` | `0x0059AD20` | high | Passes opcode 0x4C to the server packet base and installs the exact RTTI SQuit vtable. |
 | `net_deserialize_quit_server_packet` | `0x0059AD50` | high | Reads exactly one u8 after the opcode into SQuit offset +0x10; observed following zero bytes are not consumed. |
@@ -803,6 +846,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_say_server_packet` | `0x0059B510` | high | Allocates the RTTI-backed SSay object registered for server opcode 0x0D. |
 | `net_say_server_packet_ctor` | `0x0059B590` | high | Constructs SSay with opcode 0x0D and installs its concrete vtable. |
 | `net_deserialize_say_server_packet` | `0x0059B5C0` | high | Reads speech mode 0, 1, or 2, a u32 sender world-object ID, and string8 speech text. |
+| `net_screen_menu_server_packet_ctor` | `0x0059B6C0` | high | Passes opcode 0x2F to the server packet base and installs the exact RTTI SScreenMenu vtable. |
+| `net_deserialize_screen_menu_server_packet` | `0x0059B730` | high | Reads the SScreenMenu common fields, string16 content, and remaining subtype bytes into an owned packet reader. |
 | `net_create_screen_shot_server_packet` | `0x0059B8B0` | high | Allocates the 0x14-byte exact RTTI SScreenShot object and invokes its concrete constructor. |
 | `net_screen_shot_server_packet_ctor` | `0x0059B930` | high | Passes opcode 0x6B to the server packet base and installs the exact SScreenShot vtable. |
 | `net_deserialize_screen_shot_server_packet` | `0x0059B960` | high | Reads exactly one u8 payload field, used by the consumer as a keyed town-map table selector. |
@@ -904,7 +949,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_canvas_release` | `0x0044B0D0` | high | Releases the current Canvas storage. |
 | `render_canvas_begin` | `0x0044B160` | high | Begins pixel access and locks a wrapped surface when needed. |
 | `render_canvas_end` | `0x0044B1B0` | high | Ends pixel access and unlocks a wrapped surface when needed. |
-| `render_write_canvas_jpeg` | `0x0044D730` | high | Converts one 16-bit Canvas to RGB scanlines and passes them to the shared JPEG writer. |
+| `render_write_canvas_jpeg` | `0x0044D730` | high | Locks one canvas and sends its RGB16 pixels to the shared JFIF writer. |
 | `render_get_direct_draw` | `0x0044D820` | high | Returns the DirectDraw wrapper singleton. |
 | `render_get_palette_manager` | `0x0044D830` | high | Returns the RTTI-backed PaletteMan singleton. |
 | `render_blit_image` | `0x0044DE30` | high | Draws a decoded Image with copy, blend, alpha, and special plane modes. |
@@ -949,7 +994,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_palette_manager_ctor` | `0x00544B70` | high | Constructs RTTI class PaletteMan, registers its palette families, loads the installed PAL series, and packs them for the active 16-bit display mode. |
 | `render_palette_resolve_table` | `0x00548510` | high | Decodes bits 24 through 30 as a family and the low 24 bits as a palette number, then returns its 256-entry packed-color table. |
 | `render_palette_family_get_or_create` | `0x00548AB0` | high | Grows one palette-family vector in blocks of 16 and allocates a 0x200-byte packed table for a missing palette number. |
-| `render_write_screenshot_bmp` | `0x005537F0` | high | Captures the client canvas as the first missing uncompressed 16-bit lod001.bmp through lod999.bmp file. |
+| `render_write_screenshot_bmp` | `0x005537F0` | high | Writes the completed client canvas as the first missing uncompressed 16-bit lod001.bmp through lod999.bmp name. |
 | `render_screen_tree_frame` | `0x00554040` | high | Redraws the dirty root screen tree and presents the completed frame. |
 | `render_screen_subtree` | `0x00555560` | high | Clips and draws one pane subtree through the vtable draw-to-target slot. |
 | `render_probe_display_capabilities` | `0x0057A640` | high | Accepts 16-bit or 32-bit desktop color and selects 2x presentation at 1280 by 960 or larger, otherwise 1x on a supported smaller desktop. |
@@ -1081,23 +1126,23 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | --- | --- | --- | --- |
 | `file_spf_view_initialize` | `0x004021D0` | high | Maps the SPF prefix, optional palette, frame table, and pixel blob. |
 | `file_spf_get_frame` | `0x004022A0` | high | Returns one SPF frame view from its 0x20-byte record. |
-| `file_album_record_replace_pixels` | `0x00402E30` | high | Replaces one runtime album record's copied 16-bit portrait pixels and dimensions. |
-| `file_album_ctor` | `0x00403010` | high | Constructs the RTTI-backed AlbumFile object and its fixed 100-record runtime array. |
-| `file_album_create` | `0x00403070` | high | Creates an empty album.dat state with capacity 100 and the current capture time cleared. |
-| `file_album_load` | `0x004031D0` | high | Loads the little-endian album header and records, validates the capacity, and inflates active portrait payloads. |
-| `file_album_save` | `0x004035A0` | high | Rewrites a dirty album.dat with fixed records and zlib-compressed 16-bit portrait payloads. |
-| `file_album_close` | `0x004037E0` | high | Saves a dirty album when requested and releases every runtime portrait record. |
-| `file_album_add_portrait` | `0x00403850` | high | Copies one rendered portrait and caption into the first free album slot. |
-| `file_album_move_portrait` | `0x004039E0` | high | Copies a portrait to a destination slot and clears its source slot. |
-| `file_album_remove_portrait` | `0x00403B10` | high | Clears one active portrait slot and marks the album dirty. |
-| `file_album_get_portrait` | `0x00403B90` | high | Returns the dimensions and copied 16-bit pixels for one active album slot. |
-| `file_album_get_caption` | `0x00403C20` | high | Returns the stored caption for one active album slot. |
-| `file_album_set_caption` | `0x00403C80` | high | Replaces one active album caption and marks the album dirty. |
-| `file_album_build_path` | `0x00403CF0` | high | Builds the local character-directory path for album.dat. |
-| `file_album_get_last_capture_time` | `0x00403D70` | high | Returns the persisted client-side timestamp used by portrait capture cooldown logic. |
-| `file_album_get_capacity` | `0x00403D90` | high | Returns the loaded album slot capacity. |
-| `file_album_set_last_capture_time` | `0x00403DB0` | high | Stores a new portrait capture timestamp and marks the album dirty. |
-| `file_album_is_dirty` | `0x00403DD0` | high | Reports whether album.dat needs to be rewritten. |
+| `file_album_record_replace_pixels` | `0x00402E30` | high | Replaces one runtime record's compressed blob, inflates width times height times two bytes, and converts the canonical 16-bit pixels for the active renderer when required. |
+| `file_album_ctor` | `0x00403010` | high | Installs the exact RTTI AlbumFile vtable and clears its initialized and record-pointer fields. |
+| `file_album_create` | `0x00403070` | high | Creates an empty 100-record album, builds the per-character album.dat path, saves its initial file, and reloads it. |
+| `file_album_load` | `0x004031D0` | high | Reads the 0x40-byte header, accepts capacities 1 through 100, reads 0x60 bytes per record, and inflates every active payload. |
+| `file_album_save` | `0x004035A0` | high | Recomputes active payload offsets and rewrites the header, complete record table, and compressed pixel payloads when dirty. |
+| `file_album_close` | `0x004037E0` | high | Releases the runtime record array and its per-record compressed and inflated buffers. |
+| `file_album_add_portrait` | `0x00403850` | high | Uses the first inactive record, zlib-compresses the supplied 16-bit pixels, and optionally stores time(NULL) in the album header. |
+| `file_album_move_portrait` | `0x004039E0` | high | Copies an active source record and caption into a destination slot, then clears the source and marks the album dirty. |
+| `file_album_remove_portrait` | `0x00403B10` | high | Clears one checked active record and marks the album dirty. |
+| `file_album_get_portrait` | `0x00403B90` | high | Returns one active record's inflated pixels and writes its width and height. |
+| `file_album_get_caption` | `0x00403C20` | high | Returns the 0x4C-byte caption field for an active record. |
+| `file_album_set_caption` | `0x00403C80` | high | Copies a bounded caption into an active record and marks the album dirty. |
+| `file_album_build_path` | `0x00403CF0` | high | Builds .\&lt;character&gt;\album.dat in the AlbumFile path buffer. |
+| `file_album_get_last_capture_time` | `0x00403D70` | high | Returns the time_t value serialized at album header offset 0x04. |
+| `file_album_get_capacity` | `0x00403D90` | high | Returns the album header capacity, normally 100. |
+| `file_album_set_last_capture_time` | `0x00403DB0` | high | Updates the time_t value serialized at album header offset 0x04. |
+| `file_album_is_dirty` | `0x00403DD0` | high | Returns the AlbumFile rewrite-needed flag. |
 | `file_hpf_decode` | `0x004319B0` | high | Checks magic 0xFF02AA55, decodes symbols through an adaptive tree, and accepts raw input when magic is absent. |
 | `file_hpf_tree_initialize` | `0x00431B80` | high | Builds the complete initial tree for byte symbols and the 256 terminator. |
 | `file_hpf_decode_symbol` | `0x00431C40` | high | Reads bits least-significant bit first and walks the active HPF tree to a symbol leaf. |
@@ -1117,8 +1162,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_read_image_metadata` | `0x0048B390` | high | Reads shared EPF metadata or dispatches SPF metadata parsing. |
 | `file_load_image_frame` | `0x0048B530` | high | Loads one EPF or SPF frame for the shared image library. |
 | `file_load_image_pixmap` | `0x0048BBC0` | high | Loads one image frame into a pixmap view and applies the EPF palette selector when required. |
-| `file_decode_jpeg_to_rgb16` | `0x004A1840` | high | Decodes a JPEG into copied 16-bit pixels and enforces the 48 by 56 portrait dimensions. |
-| `file_write_jpeg_from_rgb16` | `0x004A1AF0` | high | Encodes 16-bit portrait pixels with the bundled IJG defaults, including quality 75 and 4:2:0 sampling. |
+| `file_decode_jpeg_to_rgb16` | `0x004A1840` | high | Uses bundled IJG version 62 to decode an in-memory JPEG to renderer-native 16-bit pixels and returns its width and height. |
+| `file_write_jpeg_from_rgb16` | `0x004A1AF0` | high | Converts RGB555 or RGB565 source pixels to RGB triples and writes JFIF with IJG defaults: quality 75 and 4:2:0 sampling. |
 | `file_load_message_table` | `0x004A4AA0` | high | Loads the line-oriented msg.tbl data from an archive or loose file. |
 | `file_decode_ctf_map_tile` | `0x004C7000` | high | Palette-converts one alternate 784-byte indexed tile source to 16-bit pixels. |
 | `file_decode_dtf_map_tile` | `0x004C7180` | high | Reads one alternate 1568-byte 16-bit tile source and converts color format when needed. |
@@ -1138,7 +1183,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_palette_table_parse_ranges` | `0x00547810` | high | Parses two-token single IDs and three-token inclusive ID ranges from palette TBL files. |
 | `file_palette_load_rgb` | `0x00548650` | high | Copies exactly 0x300 bytes of RGB triples and passes them to the 16-bit palette packer. |
 | `file_save_character_profile` | `0x0054CD30` | high | Writes at most 0x172 bytes to profile.txt under the current character directory. |
-| `file_decode_portrait_image` | `0x0054D680` | high | Decodes an in-memory portrait 48 pixels wide and 56 pixels high as JFIF JPEG or legacy EPF. |
+| `file_decode_portrait_image` | `0x0054D680` | high | Decodes an in-memory portrait as a 56 by 48 JFIF JPEG or the legacy EPF form. |
 | `file_initialize_skill_tables` | `0x00561490` | medium | Initializes the Skill_e.tbl and Skill_i.tbl table families. |
 | `file_parse_skill_table` | `0x00561840` | medium | Parses numeric skill table rows while accepting semicolon comments. |
 | `map_rotate_static_tile_mapping` | `0x00586900` | high | Rotates every static tile ID in an animation group to the next mapped ID. |

@@ -2,7 +2,7 @@
 
 This launcher patch replays visible ground items as translucent hints after the complete world pane has finished drawing. Walls, foliage, pillars, lighting, players, monsters, and effects keep their ordinary render paths. Holding either Alt key enables the extra item pass. Releasing Alt removes it immediately.
 
-The working implementation is [`ewrogers/Arbiter` pull request 44](https://github.com/ewrogers/Arbiter/pull/44), specifically [`GameClientService.GroundItems.cs`](https://github.com/ewrogers/Arbiter/blob/3e58beb43defbe0efc8b330427ddafcd499b1da3/Arbiter.App/Services/Client/GameClientService.GroundItems.cs). It uses launcher-allocated state and four executable stubs. It does not inject a DLL or modify the executable on disk.
+The working implementation uses launcher-allocated state and four executable stubs. It does not inject a DLL or modify the executable on disk.
 
 ## Resulting frame flow
 
@@ -87,7 +87,7 @@ This temporary write is why the working patch does not need to change `render_it
 
 The world pane is cached. Without invalidation, the visual change can wait for mouse movement or another dirty event.
 
-Arbiter hooks `input_emit_key_down` and `input_emit_key_up`, calls each original function first, then tests the raw scan code:
+The launcher hooks `input_emit_key_down` and `input_emit_key_up`, calls each original function first, then tests the raw scan code:
 
 | Scan code | Key |
 | --- | --- |
@@ -96,7 +96,7 @@ Arbiter hooks `input_emit_key_down` and `input_emit_key_up`, calls each original
 
 For either code, the wrapper loads the last saved `WorldPane *` and calls `ui_pane_invalidate(pane, NULL)`. Separate key-down and key-up hooks make the hint appear and disappear without depending on later world input propagation.
 
-Enabling this option in Arbiter also enables the [stuck-modifier cleanup](clear-stuck-modifier-keys.md), so a lost Alt key-up during a focus change cannot leave the overlay active.
+Enabling this option also enables the [stuck-modifier cleanup](clear-stuck-modifier-keys.md), so a lost Alt key-up during a focus change cannot leave the overlay active.
 
 ## Hook sites
 
@@ -130,7 +130,7 @@ The native local-player replay remains separate. `render_replay_layer_zero_and_s
 
 ## Preserve the static renderer
 
-Before allocating anything, Arbiter verifies the original 48-byte static mode selector at `0x005E487D`:
+Before allocating anything, the launcher verifies the original 48-byte static mode selector at `0x005E487D`:
 
 ```text
 8B 55 D0 0F B6 82 B9 00 00 00 25 80 00 00 00 74

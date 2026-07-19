@@ -1,0 +1,288 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+screen_menu_types:
+  - value: 0
+    model: NPC_Merchant_TextMenu
+    behavior: text_menu
+  - value: 1
+    model: NPC_Merchant_TextMenu
+    behavior: argumented_text_menu
+  - value: 2
+    model: NPC_Merchant_TextInputMenu
+    behavior: text_input
+  - value: 3
+    model: NPC_Merchant_TextInputMenu
+    behavior: argumented_text_input
+  - value: 4
+    model: NPCServerItemMenu
+    behavior: server_item_list
+  - value: 5
+    model: NPCClientItemMenu
+    behavior: local_inventory_list
+  - value: 6
+    model: NPCServerSkillSpellMenu
+    behavior: server_spell_list
+  - value: 7
+    model: NPCServerSkillSpellMenu
+    behavior: server_skill_list
+  - value: 8
+    model: NPCClientSpellMenu
+    behavior: local_spell_book
+  - value: 9
+    model: NPCClientSkillMenu
+    behavior: local_skill_book
+  - value: 10
+    model: NPCServerItemMenu
+    behavior: second_server_item_list_mode
+  - value: 11
+    model: NPCClientItemMenu
+    behavior: second_local_inventory_mode
+pursuit_dialog_types:
+  - value: 0
+    model: NPC_Pursuit_MessageDialog
+    behavior: popup
+  - value: 1
+    model: NPC_Pursuit_MessageDialog
+    behavior: simple_popup
+  - value: 2
+    model: NPC_Pursuit_MenuQuestionMessage
+    behavior: menu_question
+  - value: 3
+    model: NPC_Pursuit_SimpleMenuQuestionMessage
+    behavior: simple_menu_question_with_say
+  - value: 4
+    model: NPC_Pursuit_TextMessage
+    behavior: text_input
+  - value: 5
+    model: NPC_Pursuit_SimpleTextMessage
+    behavior: simple_text_input_with_say
+  - value: 6
+    model: NPC_Pursuit_QuestionMessageFace
+    behavior: face_menu_question
+  - value: 9
+    model: NPC_Pursuit_NexonclubIdTextMessage
+    behavior: protected_id_password_input
+  - value: 10
+    model: none
+    behavior: close_dialog
+layouts:
+  - file: lnpcd.txt
+    owner: NPCMessageDialog
+    controls: 13
+    purpose: outer speaker message and navigation controls
+  - file: lnpcd2.txt
+    owner: NPCMenuDialog
+    controls: 9
+    purpose: text menus, generic lists, and ordinary text input
+  - file: lnpcd3.txt
+    owner: NPCServerItemMenuDialog
+    controls: 18
+    purpose: tabbed item list, details, money, and paging
+  - file: lnpcd4.txt
+    owner: NPC_Pursuit_TextInputMenuDialog
+    controls: 6
+    purpose: pursuit prolog, text input, epilog, and submit
+  - file: lnpcnid.txt
+    owner: NPC_Pursuit_NexonIdDialog
+    controls: 10
+    purpose: protected ID and masked password input
+functions:
+  - address: "0x004D74E0"
+    name: ui_merchant_face_menu_handle_action
+    confidence: high
+    evidence: "Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form."
+  - address: "0x004D77D0"
+    name: net_send_merchant_face_menu_selection
+    confidence: high
+    evidence: "Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID."
+  - address: "0x0052C020"
+    name: ui_npc_session_close_active_dialog
+    confidence: high
+    evidence: "Invokes the active NPC message pane's close-response virtual; all confirmed merchant and pursuit submitters call it immediately after queuing a response."
+  - address: "0x0052C1C0"
+    name: net_build_merchant_response_header
+    confidence: high
+    evidence: "Writes CMerchant opcode 0x39, target type, big-endian target ID, and big-endian pursuit ID as the common eight-byte body."
+  - address: "0x0052C270"
+    name: net_build_pursuit_response_header
+    confidence: high
+    evidence: "Writes CPursuit opcode 0x3A, target type, target ID, pursuit ID, and step ID as the common ten-byte body."
+  - address: "0x0052C7B0"
+    name: ui_npc_session_open_screen_menu
+    confidence: high
+    evidence: "Copies SScreenMenu state into NPCSession state 1, refreshes speaker art, and constructs exact RTTI NPC_Merchant_MessageDialog."
+  - address: "0x0052C950"
+    name: ui_npc_session_open_pursuit_message
+    confidence: high
+    evidence: "Closes on SPursuitMessage type 10 or copies the message into NPCSession state 2 and constructs exact RTTI NPC_Pursuit_MessageDialog."
+  - address: "0x0052D460"
+    name: ui_npc_message_dialog_ctor
+    confidence: high
+    evidence: "Constructs the shared lnpcd.txt-backed outer speaker name, content, and scrolling pane used by screen-menu and pursuit dialogs."
+  - address: "0x0052D950"
+    name: ui_npc_message_dialog_close
+    confidence: high
+    evidence: "Closes the owning NPCSession when present, or destroys a standalone NPC message pane, without sending a merchant or pursuit response."
+  - address: "0x0052DCB0"
+    name: ui_npc_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs the shared NPCMenuDialog base used by choice, input, item, skill, and spell subpanes."
+  - address: "0x00534990"
+    name: ui_npc_merchant_message_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI NPC_Merchant_MessageDialog, attaches its outer buttons, and dispatches the SScreenMenu subtype."
+  - address: "0x00534A90"
+    name: ui_npc_merchant_request_object_info
+    confidence: high
+    evidence: "Top sends CRequestObjectInfo opcode 0x43 subtype 1 with the SScreenMenu target ID, then closes the active NPC session."
+  - address: "0x00534B70"
+    name: ui_npc_merchant_message_handle_action
+    confidence: high
+    evidence: "Routes base actions 0 through 3 to content handling, action 4 to Top object-info request, and action 5 to local close."
+  - address: "0x00534C40"
+    name: ui_npc_dispatch_screen_menu_type
+    confidence: high
+    evidence: "Maps SScreenMenu values 0 through 11 to text, input, server item, local item, server skill-spell, and local skill-spell models."
+  - address: "0x00535590"
+    name: net_send_merchant_text_menu_selection
+    confidence: high
+    evidence: "Sends the selected row's pursuit ID and echoes the optional type-1 server argument in CMerchant."
+  - address: "0x00535750"
+    name: net_parse_merchant_text_menu
+    confidence: high
+    evidence: "Parses optional type-1 string8 argument, u8 row count, and repeated string8 text plus u16 pursuit ID."
+  - address: "0x005359D0"
+    name: net_send_merchant_text_input
+    confidence: high
+    evidence: "Sends CMerchant with optional type-3 server argument followed by the entered string8 text."
+  - address: "0x00535BA0"
+    name: net_parse_merchant_text_input_menu
+    confidence: high
+    evidence: "Parses the optional type-3 string8 server argument and the common u16 pursuit ID for a merchant text input."
+  - address: "0x005362A0"
+    name: net_send_merchant_inventory_item_selection
+    confidence: high
+    evidence: "Sends a selected local inventory slot; pursuit 0x004E uses the alternate literal-1, slot, literal-1 tail."
+  - address: "0x00536390"
+    name: net_parse_merchant_client_item_menu
+    confidence: high
+    evidence: "Parses pursuit ID and a u8 count of one-based local inventory slots, with one extra u32 per row for pursuit 0x004E."
+  - address: "0x00536620"
+    name: net_send_merchant_server_skill_spell_selection
+    confidence: high
+    evidence: "Sends the selected server-supplied skill or spell name as string8 after the CMerchant common header."
+  - address: "0x00536AD0"
+    name: net_parse_merchant_server_skill_spell_menu
+    confidence: high
+    evidence: "Parses pursuit ID and u16-counted graphic type, sprite, color, and string8 name records."
+  - address: "0x00536D60"
+    name: net_send_merchant_client_skill_spell_selection
+    confidence: high
+    evidence: "Sends one selected local spell-book or skill-book slot after the CMerchant common header."
+  - address: "0x00536E00"
+    name: net_parse_merchant_client_skill_spell_menu
+    confidence: high
+    evidence: "Parses pursuit ID and an optional u8-counted slot whitelist; absent or zero count enumerates all learned slots 1 through 89."
+  - address: "0x00538710"
+    name: net_send_merchant_server_item_selection
+    confidence: high
+    evidence: "Sends an ordinary selected item name or the pursuit-0x004B marker, u32 record ID, and u8 quantity tail."
+  - address: "0x005388F0"
+    name: net_parse_merchant_server_item_menu
+    confidence: high
+    evidence: "Parses ordinary server item records or the larger pursuit-0x004B record with ID, quantity, optional description, and two counters."
+  - address: "0x0053CC10"
+    name: ui_npc_pursuit_message_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI NPC_Pursuit_MessageDialog and attaches Previous, Next, and Close after the four base message controls."
+  - address: "0x0053CD90"
+    name: ui_npc_pursuit_message_handle_action
+    confidence: high
+    evidence: "Routes attachment-order actions 4, 5, and 6 to Previous, Next, and Close response builders."
+  - address: "0x0053CE70"
+    name: ui_npc_pursuit_build_subtype
+    confidence: high
+    evidence: "Applies speaker content and navigation flags, then constructs pursuit models for types 2, 3, 4, 5, 6, and 9."
+  - address: "0x0053D940"
+    name: net_send_pursuit_previous
+    confidence: high
+    evidence: "Sends a no-argument CPursuit with current step minus one."
+  - address: "0x0053D9D0"
+    name: net_send_pursuit_next
+    confidence: high
+    evidence: "Sends a no-argument CPursuit with current step plus one."
+  - address: "0x0053DA90"
+    name: net_send_pursuit_close_current
+    confidence: high
+    evidence: "Sends a no-argument CPursuit with the current step before the pane closes locally."
+  - address: "0x0053DC30"
+    name: net_send_pursuit_menu_selection
+    confidence: high
+    evidence: "Sends current step plus one, argument type 1, and a one-based menu choice."
+  - address: "0x0053DD00"
+    name: net_parse_pursuit_menu_choices
+    confidence: high
+    evidence: "Parses a u8 choice count followed by that many string8 choices for pursuit types 2, 3, and 6."
+  - address: "0x0053DE00"
+    name: net_send_pursuit_say_and_menu_selection
+    confidence: high
+    evidence: "Sends CSay with the selected simple-menu text, then sends the normal type-1 CPursuit answer."
+  - address: "0x0053E070"
+    name: net_send_pursuit_text_input
+    confidence: high
+    evidence: "Sends current step plus one, argument type 2, and the entered string8 text."
+  - address: "0x0053E1D0"
+    name: net_parse_pursuit_text_prompt
+    confidence: high
+    evidence: "Parses string8 prolog, u8 maximum input bytes, and string8 epilog for pursuit types 4, 5, and 9."
+  - address: "0x0053E270"
+    name: net_send_pursuit_say_and_text_input
+    confidence: high
+    evidence: "Sends CSay with prolog, input, and epilog separated by spaces, then sends the normal type-2 CPursuit answer."
+  - address: "0x0053EBA0"
+    name: ui_npc_pursuit_protected_dialog_ctor
+    confidence: high
+    evidence: "Constructs the lnpcnid.txt protected pursuit dialog with separate ID and masked-password edit controls plus submit and cancel."
+  - address: "0x0053ECD0"
+    name: ui_npc_pursuit_protected_handle_action
+    confidence: high
+    evidence: "Hands submission to the regional account manager and sends only after its accepted state; pending and error states stay in local UI paths."
+  - address: "0x0053F060"
+    name: net_send_pursuit_protected_text_result
+    confidence: high
+    evidence: "Sends argument type 2 with the manager-produced nonempty string at protected dialog offset +0x638, rather than directly serializing both edit controls."
+  - address: "0x0059AA00"
+    name: net_pursuit_message_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x30 to the server packet base and installs the exact RTTI SPursuitMessage vtable."
+  - address: "0x0059AA70"
+    name: net_deserialize_pursuit_message_server_packet
+    confidence: high
+    evidence: "Reads the SPursuitMessage common fields, conditional content, and owned subtype tail; type 10 stops after the type byte."
+  - address: "0x0059B6C0"
+    name: net_screen_menu_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x2F to the server packet base and installs the exact RTTI SScreenMenu vtable."
+  - address: "0x0059B730"
+    name: net_deserialize_screen_menu_server_packet
+    confidence: high
+    evidence: "Reads the SScreenMenu common fields, string16 content, and remaining subtype bytes into an owned packet reader."
+comments:
+  - address: "0x00534C40"
+    text: "Dispatch SScreenMenu types: 0/1 text, 2/3 input, 4/10 server items, 5/11 local items, 6/7 server spell-skill, 8/9 local spell-skill."
+  - address: "0x0053CD90"
+    text: "Attachment-order actions 4, 5, and 6 are Previous, Next, and Close. Actions 0 through 3 belong to the base name/content controls."
+  - address: "0x0059AA8E"
+    text: "Dialog type 10 is CloseDialog and has no fields after the type byte."
+  - address: "0x0059AB43"
+    text: "Only dialog types 0, 2, 4, 6, and 9 read string16 content. Types 1, 3, and 5 continue directly to the subtype tail."
+  - address: "0x0059B761"
+    text: "Skip one common-header byte. The 7.41 client does not interpret it."
+  - address: "0x0059B788"
+    text: "Skip four common-header bytes as one opaque block. External implementations split this block, but the 7.41 client does not."

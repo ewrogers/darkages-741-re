@@ -26,6 +26,7 @@
 - [Changing a password](systems/change-password.md)
 - [Screenshots and the photo album](systems/screenshots-and-photo-album.md)
 - [Portraits and profiles](systems/portraits-and-profiles.md)
+- [NPC dialogs](systems/npc-dialogs.md)
 - [NPC dialog illustrations](systems/npc-dialog-illustrations.md)
 - [Text color markup](systems/text-color-markup.md)
 - [Event proxy design](systems/event-proxy.md)

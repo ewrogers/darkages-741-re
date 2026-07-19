@@ -52,6 +52,11 @@ An unresolved row means the asset exists but no matching filename reference was 
 | `_nui_ske.txt` | 12 | `SkillSpellInfoDialogPane` |
 | `_nui_ski.txt` | 5 | `nui_ElemListPane` |
 | `_nusers.txt` | 9 | `ShowUsersPane_A` |
+| `lnpcd.txt` | 13 | `NPCMessageDialog` |
+| `lnpcd2.txt` | 9 | `NPCMenuDialog` |
+| `lnpcd3.txt` | 18 | `NPCServerItemMenuDialog` |
+| `lnpcd4.txt` | 6 | `NPC_Pursuit_TextInputMenuDialog` |
+| `lnpcnid.txt` | 10 | `NPC_Pursuit_NexonIdDialog` |
 | `lpopup.txt` | 5 | `PopupMenuPane` |
 
 The full pane inheritance inventory remains in [Pane types and inheritance](pane-types.md). See [UI layout files](../systems/ui-layouts.md) for the text grammar and callback model.

@@ -104,6 +104,6 @@ Install while the process is suspended:
 
 To remove the patch, suspend execution, restore the original five-byte call first, flush the instruction cache, and only then release the stub allocation.
 
-The launcher implementation and byte-level tests are recorded in [Arbiter PR #43](https://github.com/ewrogers/Arbiter/pull/43). The hook site, original bytes, helper targets, object fields, and import thunk above were rechecked against the local version-741 executable.
+The hook site, original bytes, helper targets, object fields, and import thunk above were rechecked against the local version-741 executable.
 
 The general checks in the [safe launcher workflow](safe-launcher-workflow.md) also apply.

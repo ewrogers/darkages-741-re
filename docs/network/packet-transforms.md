@@ -25,6 +25,63 @@ The special CRC wrappers for opcodes `0x39` and `0x3A` follow their own construc
 
 The client does not explain why this byte was included in the protocol. It is compatible with code that treats the end of a packet as a C string, and it may be a historical convenience, but the 7.41 receive code does not use it as a successful-decryption marker.
 
+## Dialog-response inner wrapper
+
+Only client opcodes `0x39` [`CMerchant`](client/057-0x39-merchant.md) and `0x3A` [`CPursuit`](client/058-0x3a-pursuit.md) enter this branch in `net_submit_client_packet`. It is an inner protection layer built before the ordinary command-selected transform.
+
+Let `N` be the length of the original opcode-first builder body. Let `payload` be its `N - 1` bytes after the opcode. The inner wrapper has length `N + 7`:
+
+```text
+record DialogResponseInnerBody {
+    u8 opcode
+    u8 random_1
+    u8 encoded_random_2
+    u8 encoded_inner_length_high
+    u8 encoded_inner_length_low
+    bytes encrypted_inner[inner_length]
+    u8 zero                              // literal 0
+}
+```
+
+Construction is:
+
+```text
+random_1 = rand() & 0xFF
+random_2 = rand() & 0xFF
+inner_length = N + 1
+
+encoded_random_2 = ((random_1 + 0xD3) & 0xFF) XOR random_2
+encoded_inner_length_high = high(inner_length) XOR ((random_2 + 0x72) & 0xFF)
+encoded_inner_length_low  = low(inner_length)  XOR ((random_2 + 0x73) & 0xFF)
+
+plain_inner = big_endian_crc16(payload) + payload
+key = (random_2 + 0x28) & 0xFF
+for each byte in plain_inner
+    encrypted_inner[i] = plain_inner[i] XOR key
+    key = (key + 1) & 0xFF
+```
+
+The CRC is the client's [custom CRC16](checksums.md), initialized to zero and calculated over the original payload only. It does not include the opcode, random header, encoded length, or final zero.
+
+A receiver can recover `random_2` directly:
+
+```text
+random_2 = encoded_random_2 XOR ((random_1 + 0xD3) & 0xFF)
+```
+
+It can then decode the two length bytes, reverse the incrementing XOR, split the first two plaintext bytes as the big-endian CRC, and verify the remaining payload.
+
+The final zero is part of the inner body length. It is left clear by this construction step, then included when the complete wrapper passes through the outer static or derived transform. The copy routine writes scratch bytes beyond the meaningful inner segment, but they are not part of the transmitted body and must not be treated as fields.
+
+The complete outgoing order is:
+
+```text
+CMerchant 0x39: builder body -> inner wrapper -> derived transform -> frame
+CPursuit  0x3A: builder body -> inner wrapper -> static transform  -> frame
+```
+
+Sharing this inner wrapper does not make the outer transforms equal. The opcode still selects its ordinary transport mode after wrapping.
+
 ## Receive-side zero bytes
 
 The server direction is not symmetric. Server bodies do not consistently carry a transmitted trailing zero. Captured packets such as `STransferServer`, `SStipulation`, and `SBrowser` end on meaningful nonzero field data.

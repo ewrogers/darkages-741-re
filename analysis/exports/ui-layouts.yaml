@@ -226,3 +226,18 @@ layout_files:
   - file: _nusers.txt
     controls: 9
     class_names: [ShowUsersPane_A]
+  - file: lnpcd.txt
+    controls: 13
+    class_names: [NPCMessageDialog]
+  - file: lnpcd2.txt
+    controls: 9
+    class_names: [NPCMenuDialog]
+  - file: lnpcd3.txt
+    controls: 18
+    class_names: [NPCServerItemMenuDialog]
+  - file: lnpcd4.txt
+    controls: 6
+    class_names: [NPC_Pursuit_TextInputMenuDialog]
+  - file: lnpcnid.txt
+    controls: 10
+    class_names: [NPC_Pursuit_NexonIdDialog]

@@ -6,7 +6,7 @@ The binary exposes only the client packet base class through RTTI. Concrete name
 
 Body schemas use the shared [packet body notation](../packet-body-notation.md). All multibyte packet integers are big-endian. Reused enum and bit-flag values live in [Shared protocol types](../protocol-types.md).
 
-Plain packet bodies begin with the command byte. For ordinary client packets, `net_submit_client_packet` appends one transmitted zero byte after the builder-provided fields. `CHello` is listed for sequence research, but its `baram` text is a special control message rather than a compiler-recovered packet class.
+Plain packet bodies begin with the command byte. For ordinary client packets, `net_submit_client_packet` appends one transmitted zero byte after the builder-provided fields. `CMerchant` and `CPursuit` are the only exceptions: each receives the [dialog-response inner wrapper](../packet-transforms.md#dialog-response-inner-wrapper) before its normal outer transform. `CHello` is listed for sequence research, but its `baram` text is a special control message rather than a compiler-recovered packet class.
 
 | Packet | Encoding |
 | --- | --- |
@@ -42,8 +42,8 @@ Plain packet bodies begin with the command byte. For ordinary client packets, `n
 | [0x30 - Change Slot (`CChangeSlot`)](048-0x30-change-slot.md) | session key |
 | [0x31 - Confirm (`CConfirm`)](049-0x31-confirm.md) | session key |
 | [0x38 - Refresh User (`CRefreshUser`)](056-0x38-refresh-user.md) | session key |
-| [0x39 - Merchant (`CMerchant`)](057-0x39-merchant.md) | session key |
-| [0x3A - Pursuit (`CPursuit`)](058-0x3a-pursuit.md) | startup key |
+| [0x39 - Merchant (`CMerchant`)](057-0x39-merchant.md) | dialog wrapper + session key |
+| [0x3A - Pursuit (`CPursuit`)](058-0x3a-pursuit.md) | dialog wrapper + startup key |
 | [0x3B - Bulletin (`CBulletin`)](059-0x3b-bulletin.md) | session key |
 | [0x3E - Use Skill (`CUseSkill`)](062-0x3e-use-skill.md) | session key |
 | [0x3F - Field Map (`CFieldMap`)](063-0x3f-field-map.md) | session key |
