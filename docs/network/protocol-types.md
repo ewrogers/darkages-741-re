@@ -111,7 +111,9 @@ Used by [`CChangeUserState`](client/121-0x79-change-user-state.md) and [`SShowUs
 
 The client confirms the numeric shape: `0` is a sentinel, and wire values `1` through `18` map directly to internal indices `0` through `17`. The slot names are project-owner protocol vocabulary supported by observed equipment behavior, not a recovered C++ enum.
 
-Used by [`SAddEquip`](server/055-0x37-add-equip.md) and [`SRemoveEquip`](server/056-0x38-remove-equip.md).
+`SObjectInfo` carries 18 position-only equipment records rather than slot bytes. Its implicit order is values `1..12`, `14`, `13`, then `15..18`, so Accessory 1 appears before Boots.
+
+Used by [`SObjectInfo`](server/052-0x34-object-info.md), [`SAddEquip`](server/055-0x37-add-equip.md), and [`SRemoveEquip`](server/056-0x38-remove-equip.md).
 
 ## Element
 
@@ -158,7 +160,7 @@ Used by [`SMapSize`](server/021-0x15-map-size.md).
 
 Local `NationDesc` metadata confirms Suomi and values `3` through `7` by name. Piet, Abel, and Undine are project-owner protocol vocabulary. No matching local name was recovered for values `2`, `8`, `10`, or `13`.
 
-Used by [`SSelfLook`](server/057-0x39-self-look.md).
+Used by [`SObjectInfo`](server/052-0x34-object-info.md) and [`SSelfLook`](server/057-0x39-self-look.md).
 
 ## LegendMarkIcon
 
@@ -172,7 +174,7 @@ Used by [`SSelfLook`](server/057-0x39-self-look.md).
 
 The names are project-owner protocol vocabulary. `LegendListPane` loads exactly eight drawable frames, values `0` through `7`. Value `8` is a sentinel and is not a ninth drawable icon.
 
-Used by legend records in [`SSelfLook`](server/057-0x39-self-look.md).
+Used by legend records in [`SObjectInfo`](server/052-0x34-object-info.md) and [`SSelfLook`](server/057-0x39-self-look.md).
 
 ## PaperBackground
 
@@ -196,6 +198,7 @@ Some shared byte fields look enum-like but do not have a verified value table:
 
 - `dye_color` is a palette or dye index used by inventory and equipment.
 - Legend `color` and human `name_style` are palette indexes, not named enums.
+- `social_status` is retained from `SObjectInfo`, but no client value table or later read of the stored byte was found.
 - `rest_position` changes standing-motion setup, but its value-to-pose mapping is unresolved.
 - `light_mask_id` selects `mask1%02d.epf` while Darkness mode is active. It is an asset selector, not a recovered lantern enum.
 - `spell_args_type` selects spell targeting or prompt behavior, but the complete value mapping is not yet established.

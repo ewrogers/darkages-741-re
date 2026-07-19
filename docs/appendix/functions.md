@@ -600,8 +600,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_portrait_text_dialog_ctor` | `0x005B11A0` | high | Constructs RTTI-backed PortraitTextInputDialogPane from _nui_pi.txt and loads profile.txt. |
 | `ui_portrait_text_dialog_action` | `0x005B1510` | high | Action 1 saves profile.txt and queues timer 0x1241; action 2 closes without saving. |
 | `ui_other_user_info_ctor` | `0x005B1850` | high | Constructs exact RTTI UserInfoPane_ForOthers and applies a decoded SObjectInfo body. |
-| `ui_other_user_info_apply_object_info_body` | `0x005B1900` | high | Reads object ID, 18 equipment records, identity text, legends, and the nested portrait/profile tail. |
-| `ui_open_other_user_info_from_server_body` | `0x005B1DF0` | high | Creates or refreshes UserInfoPane_ForOthers and applies the decoded object-info body. |
+| `ui_other_user_info_apply_object_info_body` | `0x005B1900` | high | Reads entity ID, 18 implicitly ordered equipment records, social status, name, nation, title, group-open state, guild identity, legends, and the optional portrait/biography tail. |
+| `ui_open_other_user_info_from_server_body` | `0x005B1DF0` | high | Creates or refreshes UserInfoPane_ForOthers and applies the decoded object-info body for its entity ID. |
 | `ui_open_user_info` | `0x005B1FA0` | high | Opens the singleton UserInfoPane and selects the requested local or other-user mode. |
 | `ui_album_picture_dialog_ctor` | `0x005B24E0` | high | Constructs exact RTTI AlbumPicDialogPane from _nui_alb.txt and attaches SAVE before REMOVE. |
 | `ui_album_picture_handle_action` | `0x005B2A00` | high | Forwards local action 0 or 1 with this tile's 0x1234-based event ID. |
@@ -634,7 +634,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_world_pane_attack_from_keyboard` | `0x005F0BF0` | high | Handles the Space-key attack path and submits only when the previous accepted Space attack was absent or more than 100 ms ago. |
 | `ui_world_pane_handle_direction_input` | `0x005F0C40` | high | Turns with CChangeDirection when requested facing differs; otherwise attempts one tile of movement. |
 | `ui_world_pane_handle_keyboard_event` | `0x005F0D20` | high | Handles WorldPane keyboard commands; the Tab map-overlay path gives character class 2 the zoom-enabled configuration observed for Rogues. |
-| `ui_open_object_info_from_server_body` | `0x005F1590` | high | Resolves the body u32 object ID to an existing living object before opening UserInfoPane_ForOthers. |
+| `ui_open_object_info_from_server_body` | `0x005F1590` | high | Resolves the body u32 entity ID to an existing living object before opening UserInfoPane_ForOthers. |
 | `ui_world_handle_mini_game_server_packet` | `0x005F2350` | high | Handles SMiniGame action 8 subtype 1 as a world/map interaction, then forwards the packet to the common mini-game action handler. |
 | `ui_world_pane_draw_content` | `0x005F27A0` | high | WorldPane content hook that draws the world when ready or clears the pane. |
 | `ui_world_pane_reset_movement_state` | `0x005F4900` | medium | Resets WorldPane movement and queued-path state after authoritative position changes and the SMove direction-4 path. |

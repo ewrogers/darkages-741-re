@@ -14,11 +14,11 @@ functions:
   - address: "0x005B1900"
     name: ui_other_user_info_apply_object_info_body
     confidence: high
-    evidence: "Reads object ID, 18 equipment records, identity text, legends, and the nested portrait/profile tail."
+    evidence: "Reads entity ID, 18 implicitly ordered equipment records, social status, name, nation, title, group-open state, guild identity, legends, and the optional portrait/biography tail."
   - address: "0x005B1DF0"
     name: ui_open_other_user_info_from_server_body
     confidence: high
-    evidence: "Creates or refreshes UserInfoPane_ForOthers and applies the decoded object-info body."
+    evidence: "Creates or refreshes UserInfoPane_ForOthers and applies the decoded object-info body for its entity ID."
   - address: "0x005B7D00"
     name: ui_user_info_apply_legend_body
     confidence: high
@@ -26,11 +26,19 @@ functions:
   - address: "0x005F1590"
     name: ui_open_object_info_from_server_body
     confidence: high
-    evidence: "Resolves the body u32 object ID to an existing living object before opening UserInfoPane_ForOthers."
+    evidence: "Resolves the body u32 entity ID to an existing living object before opening UserInfoPane_ForOthers."
 comments:
   - address: "0x005B1934"
-    text: "SObjectInfo begins with a big-endian u32 object ID, followed by 18 sprite/color appearance records."
+    text: "SObjectInfo begins with a big-endian u32 entity ID, followed by 18 sprite/dye appearance records."
+  - address: "0x005B1974"
+    text: "Map the 18 position-only equipment records to internal indices 0..11, 13, 12, 14..17; Accessory 1 precedes Boots."
+  - address: "0x005B19BF"
+    text: "Store the wire sprite u16 unchanged after widening it to the runtime u32 field; this path does not clear sprite flag bits."
+  - address: "0x005B1A37"
+    text: "Read the project-owner social_status byte. The client retains it, but no later read or value table was found."
+  - address: "0x005B1AD0"
+    text: "Read Nation after string8 name, then continue with string8 title, u8 is_group_open, guild rank, display class, and guild."
   - address: "0x005B1C6A"
-    text: "After identity text and legend records, SObjectInfo embeds the same nested portrait/profile body decoded elsewhere."
+    text: "After legend records, SObjectInfo embeds the same nested portrait/biography body decoded elsewhere. A zero content length clears both; any nonzero value attempts both nested reads."
   - address: "0x005EDDF3"
     text: "Decoded opcode 0x34 bypasses the server packet factory and opens UserInfoPane_ForOthers for the referenced living object; SObjectInfo is a provisional owner-supplied name."

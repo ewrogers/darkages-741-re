@@ -4394,7 +4394,7 @@ packet_indexes:
         evidence_source: owner_protocol_name
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Provisional project-owner protocol name paired with CRequestObjectInfo. The raw handler resolves a u32 object ID to a living object and opens exact RTTI UserInfoPane_ForOthers with equipment, identity, legend, portrait, and profile data."
+        evidence: "Provisional project-owner protocol name paired with CRequestObjectInfo. The raw handler resolves a u32 entity ID to a living object. Its body parser reads 18 implicitly ordered sprite/dye records, social status, name, nation, title, group-open state, guild identity, legend marks, and an optional portrait/biography tail before opening exact RTTI UserInfoPane_ForOthers."
         page: "docs/network/server/052-0x34-object-info.md"
       - opcode: "0x35"
         friendly_name: "Show Paper"
