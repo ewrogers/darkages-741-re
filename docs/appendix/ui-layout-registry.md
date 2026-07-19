@@ -1,6 +1,6 @@
 # UI layout registry
 
-This registry maps the underscore-prefixed text layouts in `setoa.dat` to the pane classes that load them. Class names come from Microsoft C++ RTTI at the loading call site. The control count comes from the matching local archive.
+This registry maps confirmed text layouts in `setoa.dat` to the pane classes that load them. Class names come from Microsoft C++ RTTI at the loading call site. The control count comes from the matching local archive.
 
 An unresolved row means the asset exists but no matching filename reference was found in the client. It does not prove that the file is unused because a name could still be built at runtime.
 
@@ -52,5 +52,6 @@ An unresolved row means the asset exists but no matching filename reference was 
 | `_nui_ske.txt` | 12 | `SkillSpellInfoDialogPane` |
 | `_nui_ski.txt` | 5 | `nui_ElemListPane` |
 | `_nusers.txt` | 9 | `ShowUsersPane_A` |
+| `lpopup.txt` | 5 | `PopupMenuPane` |
 
 The full pane inheritance inventory remains in [Pane types and inheritance](pane-types.md). See [UI layout files](../systems/ui-layouts.md) for the text grammar and callback model.

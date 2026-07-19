@@ -1,0 +1,58 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0054BDB0"
+    name: ui_popup_menu_open_for_user
+    confidence: high
+    evidence: "Creates the exact RTTI PopupMenuPane singleton for a target object ID, positions it at the click, and registers it in the screen and event trees."
+  - address: "0x0054BF90"
+    name: ui_popup_menu_close
+    confidence: high
+    evidence: "Unregisters an open PopupMenuPane from screen and event routing, clears its open flag and target ID, and removes its embedded screen pane."
+  - address: "0x0054C010"
+    name: ui_popup_menu_pane_ctor
+    confidence: high
+    evidence: "Constructs the 0x36C-byte exact RTTI PopupMenuPane, loads lpopup.txt, and reads Box0 plus exactly three action rectangles."
+  - address: "0x0054C310"
+    name: ui_popup_menu_update_group_label
+    confidence: high
+    evidence: "Resolves the target name, checks the current group roster, and selects msg.tbl label 0x52, 0x53, or 0x54 for the middle action."
+  - address: "0x0054C530"
+    name: ui_popup_menu_handle_pointer_event
+    confidence: high
+    evidence: "PopupMenuPane primary-vtable +0x48 handler updates row hover, dispatches left presses, and closes on left or right press."
+  - address: "0x0054C6D0"
+    name: ui_popup_menu_handle_keyboard_event
+    confidence: high
+    evidence: "PopupMenuPane primary-vtable +0x4C handler closes the popup and returns false so keyboard or text input can continue."
+  - address: "0x0054C6F0"
+    name: ui_popup_menu_draw
+    confidence: high
+    evidence: "Draws the target name, three action rectangles, hover highlight, and localized labels for PopupMenuPane."
+  - address: "0x0054C990"
+    name: ui_popup_menu_dispatch_action
+    confidence: high
+    evidence: "Maps row 0 to CRequestObjectInfo subtype 1, row 1 to CGroup action 2, and row 2 to tell-target preparation."
+  - address: "0x0054CA50"
+    name: net_send_popup_group_request
+    confidence: high
+    evidence: "Resolves the popup target name and builds CGroup opcode 0x2E action 2 with that counted name."
+  - address: "0x0054CBD0"
+    name: ui_popup_menu_hit_test_action
+    confidence: high
+    evidence: "Tests the pointer against exactly three action rectangles and returns index 0 through 2 or -1."
+comments:
+  - address: "0x0054C165"
+    text: "Read exactly Box1 through Box3 into three 16-byte Rect values. The embedded Pane starts at +0x1D0, immediately after the third Rect."
+  - address: "0x0054C4D0"
+    text: "Choose group disband when the target is marked grouped and the local name is in the roster; choose currently in group for a grouped target without the local name; otherwise choose group request."
+  - address: "0x0054C9A3"
+    text: "Action indexes are fixed: 0 requests object info, 1 sends CGroup action 2, and 2 prepares a whisper target."
+  - address: "0x005EF25E"
+    text: "Ctrl bit 0x02 enters the popup path only for another category-1 user; the branch runs before the ordinary UserClickMode check."

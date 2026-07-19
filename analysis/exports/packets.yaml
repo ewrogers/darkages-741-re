@@ -595,10 +595,54 @@ functions:
     name: net_send_pursuit_selection
     confidence: high
     evidence: "MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method."
+  - address: "0x004EAE40"
+    name: ui_open_find_farmpet
+    confidence: high
+    evidence: "Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton."
+  - address: "0x004EB000"
+    name: ui_find_farmpet_pane_handle_network_event
+    confidence: high
+    evidence: "FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method."
+  - address: "0x004EC3E0"
+    name: ui_find_farmpet_apply_mini_game_update
+    confidence: high
+    evidence: "Consumes only SMiniGame action 7, matching its first u32 against two tracked IDs and storing the second u32 as the corresponding value."
+  - address: "0x004F2730"
+    name: ui_puzzle_game_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI Puzzle::Game in either selector-2 mode 1 or selector-4 mode 0 and builds its lpz_dlg.txt dialog."
+  - address: "0x004F6A20"
+    name: ui_puzzle_play_pane_handle_network_event
+    confidence: high
+    evidence: "Puzzle::PlayPane accepts server opcode 0x64 and forwards it to its action-7 update method."
+  - address: "0x004F6A80"
+    name: ui_puzzle_play_apply_mini_game_update
+    confidence: high
+    evidence: "Consumes only SMiniGame action 7 and forwards its two u32 values to the active Puzzle game state."
+  - address: "0x00500B20"
+    name: ui_rope_skipping_game_ctor
+    confidence: high
+    evidence: "Mini-game selector 1 constructs exact RTTI RopeSkipping::Game and its lminig.txt-backed GameDialogPane."
+  - address: "0x0050C400"
+    name: ui_launch_mini_game
+    confidence: high
+    evidence: "Maps SMiniGame action-4 selectors 1 through 4 to RopeSkipping, Puzzle mode 1, FindFarmpet, and Puzzle mode 0 respectively."
+  - address: "0x0050C600"
+    name: net_send_mini_game_close
+    confidence: high
+    evidence: "Builds CMiniGame action 5 with no action-specific payload; both AbstractGame and FindFarmpet destruction paths call it."
+  - address: "0x0050C670"
+    name: net_send_mini_game_action_6
+    confidence: high
+    evidence: "Builds CMiniGame action 6 as one u8 value followed by a one-byte length and that many text bytes."
   - address: "0x0050C7C0"
     name: net_send_web_board_game_request
     confidence: high
     evidence: "Builds CWebBoard as opcode 0x73, action 3, selector_1, and selector_2 for web-backed in-game views."
+  - address: "0x0050C890"
+    name: net_send_mini_game_action_7
+    confidence: high
+    evidence: "Builds CMiniGame action 7 with one big-endian u32 nonzero client counter."
   - address: "0x0050DC50"
     name: ui_browser_game_control_handle_network_event
     confidence: high
@@ -1251,6 +1295,18 @@ functions:
     name: net_deserialize_message_server_packet
     confidence: high
     evidence: "Reads the message type, the type-0x11-only prefix, a u16 message length, and the message bytes."
+  - address: "0x0059A1C0"
+    name: net_create_mini_game_server_packet
+    confidence: high
+    evidence: "Allocates the 0x1C-byte RTTI-backed SMiniGame object registered for server opcode 0x64."
+  - address: "0x0059A240"
+    name: net_mini_game_server_packet_ctor
+    confidence: high
+    evidence: "Constructs SMiniGame with opcode 0x64 and installs its concrete vtable."
+  - address: "0x0059A270"
+    name: net_deserialize_mini_game_server_packet
+    confidence: high
+    evidence: "Reads the action plus one u8 for actions 3, 4, and 8 or two big-endian u32 values for action 7."
   - address: "0x0059A3F0"
     name: net_motion_server_packet_ctor
     confidence: high
@@ -1671,6 +1727,10 @@ functions:
     name: net_handle_change_hour_server_packet
     confidence: high
     evidence: "Stores the SChangeHour time step at WorldPane +0x25C and immediately recomputes map lighting."
+  - address: "0x005F2350"
+    name: ui_world_handle_mini_game_server_packet
+    confidence: high
+    evidence: "Handles SMiniGame action 8 subtype 1 as a world/map interaction, then forwards the packet to the common mini-game action handler."
   - address: "0x005F2840"
     name: net_handle_map_server_body
     confidence: high
@@ -1771,6 +1831,10 @@ functions:
     name: net_handle_bounce_server_packet
     confidence: high
     evidence: "Submits SBounce's counted embedded bytes directly as an ordinary opcode-first client body and performs no other game or UI action."
+  - address: "0x005F6AB0"
+    name: ui_apply_mini_game_server_packet
+    confidence: high
+    evidence: "Launches selectors 1 through 4 for SMiniGame action 4 and consumes action 8 after the world-specific path."
   - address: "0x005F6BC0"
     name: ui_open_town_map_from_screen_shot_packet
     confidence: high
@@ -2267,6 +2331,8 @@ comments:
     text: "CChangePassword body begins with opcode 0x26 followed by u8-length name, existing password, and new password."
   - address: "0x004BC1EA"
     text: "Write a local zero after the builder body. net_submit_client_packet receives the length before this byte and adds the common transmitted terminator."
+  - address: "0x0050C4C0"
+    text: "SMiniGame action-4 selector 1 opens RopeSkipping, 2 opens Puzzle mode 1, 3 opens FindFarmpet, and 4 opens Puzzle mode 0."
   - address: "0x0050C7E5"
     text: "Build CWebBoard action 3 as opcode 0x73, action 3, selector_1, selector_2."
   - address: "0x0050DC8A"
@@ -2683,6 +2749,8 @@ comments:
     text: "Read the main message length as u16. The parser itself does not impose a semantic text limit."
   - address: "0x0059A16D"
     text: "Retain a pointer to exactly message_length bytes from the decoded packet body; no wire terminator is required."
+  - address: "0x0059A284"
+    text: "SMiniGame actions 3 and 4 read one u8, action 7 reads two big-endian u32 values, action 8 reads one u8, and actions 5 and 6 read no payload."
   - address: "0x0059A427"
     text: "Deserialize SMotion as u32 object_id, u8 animation, and u16 duration_10ms. No sound byte is read."
   - address: "0x0059A562"
@@ -2961,6 +3029,8 @@ comments:
     text: "Serialize the locally computed CRC16 as 00 followed by the CRC high and low bytes in CMapRequest."
   - address: "0x005F2170"
     text: "Store the SChangeHour time step at WorldPane +0x25C, then immediately recompute map lighting."
+  - address: "0x005F2396"
+    text: "SMiniGame action 8 subtype 1 follows a world/map-specific path; it does not open a mini-game pane."
   - address: "0x005F287D"
     text: "Ignore SMap unless SMapSize previously marked a cache-miss map transfer active."
   - address: "0x005F28B9"
@@ -3087,6 +3157,8 @@ comments:
     text: "Load the retained view of the embedded opcode-first client body."
   - address: "0x005F6A9C"
     text: "Submit the embedded bytes as an ordinary client body; the first embedded byte selects the outbound transform."
+  - address: "0x005F6AC3"
+    text: "Apply SMiniGame UI actions: action 4 launches selector 1 through 4, while action 8 is consumed after the world-specific handler."
   - address: "0x005F6BCC"
     text: "Read SScreenShot town_map_key and open TownMapPane in server-keyed mode."
   - address: "0x005F6DD9"
@@ -3600,7 +3672,7 @@ packet_indexes:
         builder: "0x0046A390"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x0046A390 writes opcode 0x4A and submits the body."
+        evidence: "Local builders cover actions 0x00 through 0x05: start, add item, add stackable item, set gold, cancel, and accept. Their callers confirm the conditional slot, quantity, and gold fields."
         page: "docs/network/client/074-0x4a-exchange.md"
       - opcode: "0x4B"
         friendly_name: "Stipulation"
@@ -3690,7 +3762,7 @@ packet_indexes:
         builder: "0x0050C600"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Representative builder 0x0050C600 writes opcode 0x6A and submits the body."
+        evidence: "Five local opcode write sites confirm action 5 close, action 6 u8 plus counted text, action 7 u32 counter, and action 8 world-pane forms."
         page: "docs/network/client/106-0x6a-mini-game.md"
       - opcode: "0x6C"
         friendly_name: "Cash Shop"
@@ -4246,7 +4318,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00598F50 passes opcode 0x42 to the server packet base and installs the SExchange vtable."
+        evidence: "Exact RTTI constructor 0x00598F50 binds opcode 0x42. Deserializer 0x00598F80 reads six event-dependent bodies, and ExchangeDialog routes events 0x01 through 0x05 to their UI handlers."
         page: "docs/network/server/066-0x42-exchange.md"
       - opcode: "0x44"
         friendly_name: "Add User"
@@ -4416,7 +4488,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059A240 passes opcode 0x64 to the server packet base and installs the SMiniGame vtable."
+        evidence: "RTTI constructor 0x0059A240 installs opcode 0x64. Deserializer 0x0059A270 reads actions 3 through 8, and action 4 reaches the live selector launcher for RopeSkipping, Puzzle, and FindFarmpet."
         page: "docs/network/server/100-0x64-mini-game.md"
       - opcode: "0x66"
         friendly_name: "Browser"

@@ -1,0 +1,112 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x00469560"
+    name: ui_exchange_dialog_ctor
+    confidence: high
+    evidence: "Constructs the exact RTTI ExchangeDialog from _nexch.txt, attaches its offer controls, registers it under GUIBackPane, and stores the Started event ID at +0x630."
+  - address: "0x00469E70"
+    name: ui_exchange_dialog_dtor
+    confidence: high
+    evidence: "Decrements the modal count, unregisters ExchangeDialog from event and screen routing, and runs the DialogPane destructor."
+  - address: "0x00469FF0"
+    name: ui_exchange_dialog_handle_action
+    confidence: high
+    evidence: "Maps attachment-order action 0 to CExchange Accept 0x05 and action 1 to Cancel 0x04."
+  - address: "0x0046A030"
+    name: ui_exchange_dialog_handle_inventory_drop
+    confidence: high
+    evidence: "Reads the source InvItemPane one-based slot and sends CExchange AddItem 0x01."
+  - address: "0x0046A1E0"
+    name: ui_exchange_dialog_handle_network_event
+    confidence: high
+    evidence: "Consumes decoded opcode 0x42 and forwards it to the ExchangeDialog server-event dispatcher."
+  - address: "0x0046A240"
+    name: ui_exchange_dialog_dispatch_server_event
+    confidence: high
+    evidence: "Routes SExchange events 0x01 through 0x05 to quantity, item, gold, cancelled, and accepted handlers."
+  - address: "0x0046A2F0"
+    name: net_send_exchange_start
+    confidence: medium
+    evidence: "Builds CExchange as opcode 0x4A, action 0x00, and a big-endian u32 argument; no live static caller was recovered."
+  - address: "0x0046A390"
+    name: net_send_exchange_accept
+    confidence: high
+    evidence: "Builds opcode 0x4A, action 0x05, and ExchangeDialog +0x630."
+  - address: "0x0046A440"
+    name: net_send_exchange_cancel
+    confidence: high
+    evidence: "Builds opcode 0x4A, action 0x04, and the supplied target or exchange ID."
+  - address: "0x0046A4F0"
+    name: net_send_exchange_set_gold
+    confidence: high
+    evidence: "Builds opcode 0x4A, action 0x03, exchange ID, and big-endian u32 gold amount."
+  - address: "0x0046A5C0"
+    name: net_send_exchange_add_item
+    confidence: high
+    evidence: "Builds opcode 0x4A, action 0x01, exchange ID, and one-based u8 inventory slot."
+  - address: "0x0046A690"
+    name: ui_exchange_handle_count_request
+    confidence: high
+    evidence: "Reads SExchange event 0x01 slot and creates AddItemWithCountDialog with that slot and the active exchange ID."
+  - address: "0x0046A760"
+    name: ui_exchange_handle_item_added
+    confidence: high
+    evidence: "Reads event 0x02 party, index, tagged u16 sprite, dye byte, and string8 name, then updates MyExchange for party zero or YourExchange otherwise."
+  - address: "0x0046A900"
+    name: ui_exchange_handle_gold_added
+    confidence: high
+    evidence: "Reads event 0x03 party and big-endian u32 gold, then updates MyMoney for party zero or YourMoney otherwise."
+  - address: "0x0046A9E0"
+    name: ui_exchange_handle_cancelled
+    confidence: high
+    evidence: "Skips the party byte, opens the supplied string8 message in a one-button alert, and removes ExchangeDialog immediately."
+  - address: "0x0046AB20"
+    name: ui_exchange_handle_accepted
+    confidence: high
+    evidence: "Marks the indicated party accepted and opens the final message alert only when both local and other acknowledgement flags are set."
+  - address: "0x0046C2A0"
+    name: net_send_exchange_add_stackable_item
+    confidence: high
+    evidence: "Builds opcode 0x4A, action 0x02, exchange ID, staged slot, and u8 quantity."
+  - address: "0x00598F50"
+    name: net_exchange_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x42 to the server packet base and installs the exact RTTI SExchange vtable."
+  - address: "0x00598F80"
+    name: net_deserialize_exchange_server_packet
+    confidence: high
+    evidence: "Reads the six event-dependent SExchange bodies and retains the item sprite as its raw big-endian u16."
+  - address: "0x005A2FB0"
+    name: ui_gui_back_select_page_mode
+    confidence: high
+    evidence: "Selects one GUIBackPane page, records its expanded flag, and applies normal or expanded geometry from the active small or large layout record."
+  - address: "0x005A3900"
+    name: ui_gui_back_apply_layout
+    confidence: high
+    evidence: "Selects GUIBackPane layout 0 for _nbk_s.txt or 1 for _nbk_l.txt and reapplies child-pane geometry."
+  - address: "0x005F2190"
+    name: net_handle_exchange_started
+    confidence: high
+    evidence: "Handles SExchange event 0x00 before a dialog exists, creates ExchangeDialog when UI state allows it, or replies with CExchange Cancel otherwise."
+comments:
+  - address: "0x00469E33"
+    text: "Write ExchangeDialog +0x62C movable = 0. The inherited DialogPane pointer handler already implements dragging when this field is nonzero."
+  - address: "0x0046A27B"
+    text: "Dispatch event values 1 through 5 in order: QuantityPrompt, ItemAdded, GoldAdded, Cancelled, Accepted."
+  - address: "0x0046AA81"
+    text: "Allocate the one-button alert used by SExchange Cancelled event 0x04; the existing null-allocation branch still closes ExchangeDialog without a popup."
+  - address: "0x0046ABED"
+    text: "Only parse the Accepted message and close when both party acknowledgement flags are one."
+  - address: "0x0046AC57"
+    text: "Allocate the final one-button alert after both parties accepted; the existing null-allocation branch still removes ExchangeDialog."
+  - address: "0x005A05FC"
+    text: "Initialize GUIBackPane +0x4FB0 page_is_expanded to zero."
+  - address: "0x005A33C7"
+    text: "Store the selected page's expansion state at GUIBackPane +0x4FB0; page 0 is the item inventory."

@@ -3,6 +3,7 @@
 - [Safe launcher workflow](runtime-patches/safe-launcher-workflow.md)
 - [Allow multiple clients](runtime-patches/allow-multiple-clients.md)
 - [Clear stuck modifier keys on focus loss](runtime-patches/clear-stuck-modifier-keys.md)
+- [Minigame support patch](runtime-patches/minigame-support.md)
 - [Skip the intro](runtime-patches/skip-intro.md)
 - [Ignore the local Bad Guy marker (Good Guy)](runtime-patches/ignore-local-bad-guy-marker.md)
 - [Enable the positional endpoint parser](runtime-patches/enable-positional-endpoint-parser.md)
@@ -12,4 +13,5 @@
 - [Hide all static map art](runtime-patches/hide-all-static-map-art.md)
 - [Hold Alt to show translucent ground-item hints](runtime-patches/reveal-ground-items-through-static-map-art.md)
 - [Skip the exchange count prompt for a one-item stack](runtime-patches/skip-single-item-exchange-count-prompt.md)
+- [Exchange UI quality-of-life hooks](runtime-patches/exchange-ui-quality-of-life.md)
 - [Show inventory quantities in screen menus](runtime-patches/show-inventory-quantities-in-screen-menus.md)

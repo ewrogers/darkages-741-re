@@ -4,27 +4,56 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x6A` (106) |
-| Encoding | session key |
-| Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
+| Encoding | derived |
+| Name provenance | Related class vocabulary matched to locally confirmed builders and mini-game RTTI |
 
 ## Purpose
 
-The client sends this message for **mini game**.
+The client sends this packet for mini-game lifecycle and interaction traffic. The locally confirmed builders emit actions `5`, `6`, `7`, and `8`.
 
-## Sent by
+## Actions
 
-Known static callers lead to:
+| Value | Client behavior |
+| ---: | --- |
+| `5` | Sent when `MiniGame::AbstractGame` or `FindFarmpet::FindFarmpetPane` closes. |
+| `6` | Sends one game value and a counted text value from mini-game controls. |
+| `7` | Sends a client-generated nonzero `u32` counter used by mini-game play paths. |
+| `8` | Sends a world-pane action with subtype `2` and two flag bytes. |
 
-- UI or subsystem owner not known yet
-- `Pane::FindFarmpet::FindFarmpetPane`
+No local builder for actions `0` through `4` was found.
 
 ## Body
 
 ```text
 packet CMiniGame {
     u8      opcode                    // 0x6A
-    ...                         // fields pending
+    u8      action
+
+    if action == 6 {
+        u8      game_value
+        string8 text
+    }
+
+    if action == 7 {
+        u32     request_id
+    }
+
+    if action == 8 {
+        u8      subtype               // locally built as 2
+        u8      flag
+        u8      reserved_zero
+    }
 }
 ```
 
-Field order, variants, state effects, and paired packets remain to be traced.
+Action `5` has no payload after the action byte. The common submission path adds its normal transmitted terminator outside the builder's logical body length.
+
+The action `7` builder changes a zero counter to one before sending and increments it again afterward. The exact server-side meaning of that counter remains unresolved.
+
+## Paired server packet
+
+[`SMiniGame`](../server/100-0x64-mini-game.md) action `4` opens Rope Skipping, Puzzle, or Find Farmpet. Its action `7` carries the two-value update consumed by active Find Farmpet and Puzzle play panes.
+
+## Known limits
+
+The field layouts above come from all five local opcode `0x6A` write sites. Names such as `game_value`, `request_id`, and `flag` describe their client use; server behavior is not yet available to supply stronger protocol names.

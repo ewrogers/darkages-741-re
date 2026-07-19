@@ -183,6 +183,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_equip_pane_remove_equipment_from_packet` | `0x004602B0` | high | Clears the selected EquipPane sprite, name, and durability fields without clearing the retained dye byte. |
 | `ui_pane_schedule_timer` | `0x00464050` | high | Schedules a timer for a Pane by passing its TimerHandler subobject at +0x11C. |
 | `ui_pane_cancel_timers` | `0x00464740` | high | Converts a Pane pointer to TimerHandler +0x11C and cancels matching timers. |
+| `ui_exchange_dialog_ctor` | `0x00469560` | high | Constructs the exact RTTI ExchangeDialog from _nexch.txt, attaches its offer controls, registers it under GUIBackPane, and stores the Started event ID at +0x630. |
+| `ui_exchange_dialog_dtor` | `0x00469E70` | high | Decrements the modal count, unregisters ExchangeDialog from event and screen routing, and runs the DialogPane destructor. |
+| `ui_exchange_dialog_handle_action` | `0x00469FF0` | high | Maps attachment-order action 0 to CExchange Accept 0x05 and action 1 to Cancel 0x04. |
+| `ui_exchange_dialog_handle_inventory_drop` | `0x0046A030` | high | Reads the source InvItemPane one-based slot and sends CExchange AddItem 0x01. |
+| `ui_exchange_dialog_handle_network_event` | `0x0046A1E0` | high | Consumes decoded opcode 0x42 and forwards it to the ExchangeDialog server-event dispatcher. |
+| `ui_exchange_dialog_dispatch_server_event` | `0x0046A240` | high | Routes SExchange events 0x01 through 0x05 to quantity, item, gold, cancelled, and accepted handlers. |
+| `ui_exchange_handle_count_request` | `0x0046A690` | high | Reads SExchange event 0x01 slot and creates AddItemWithCountDialog with that slot and the active exchange ID. |
+| `ui_exchange_handle_item_added` | `0x0046A760` | high | Reads event 0x02 party, index, tagged u16 sprite, dye byte, and string8 name, then updates MyExchange for party zero or YourExchange otherwise. |
+| `ui_exchange_handle_gold_added` | `0x0046A900` | high | Reads event 0x03 party and big-endian u32 gold, then updates MyMoney for party zero or YourMoney otherwise. |
+| `ui_exchange_handle_cancelled` | `0x0046A9E0` | high | Skips the party byte, opens the supplied string8 message in a one-button alert, and removes ExchangeDialog immediately. |
+| `ui_exchange_handle_accepted` | `0x0046AB20` | high | Marks the indicated party accepted and opens the final message alert only when both local and other acknowledgement flags are set. |
 | `ui_field_map_balloon_pane_ctor` | `0x00474310` | high | Constructs exact RTTI FieldMapBalloonPane, loads its EPF and optional palette, and retains its parent FieldMapPane for animation completion. |
 | `ui_field_map_balloon_handle_timer` | `0x00474660` | high | FieldMapBalloonPane TimerHandler callback advances the marker every 50 ms and schedules FieldMapPane completion event 1 when movement ends. |
 | `ui_field_map_balloon_set_target` | `0x00474A50` | high | Stores the marker target, movement-step count, correlation time, and parent completion-event selector; equal current and target coordinates collapse the step count to zero. |
@@ -297,6 +308,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_input_birthdate_dialog_ctor` | `0x004BC220` | high | Constructs RTTI class InputBirthdateDialogPane from _npw2.txt for the regional password-change verification branch. |
 | `ui_server_item_menu_dialog_handle_network_event` | `0x004CAC20` | high | TaskListDialog::ServerItemMenuDialog3 network-event handler accepts SStatus updates containing progression and currency. |
 | `ui_server_item_menu_update_gold_from_status_packet` | `0x004CAC90` | high | Copies SStatus gold into the server-item menu dialog and redraws its currency display. |
+| `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
+| `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
+| `ui_find_farmpet_apply_mini_game_update` | `0x004EC3E0` | high | Consumes only SMiniGame action 7, matching its first u32 against two tracked IDs and storing the second u32 as the corresponding value. |
+| `ui_puzzle_game_ctor` | `0x004F2730` | high | Constructs exact RTTI Puzzle::Game in either selector-2 mode 1 or selector-4 mode 0 and builds its lpz_dlg.txt dialog. |
+| `ui_puzzle_play_pane_handle_network_event` | `0x004F6A20` | high | Puzzle::PlayPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
+| `ui_puzzle_play_apply_mini_game_update` | `0x004F6A80` | high | Consumes only SMiniGame action 7 and forwards its two u32 values to the active Puzzle game state. |
+| `ui_rope_skipping_game_ctor` | `0x00500B20` | high | Mini-game selector 1 constructs exact RTTI RopeSkipping::Game and its lminig.txt-backed GameDialogPane. |
+| `ui_launch_mini_game` | `0x0050C400` | high | Maps SMiniGame action-4 selectors 1 through 4 to RopeSkipping, Puzzle mode 1, FindFarmpet, and Puzzle mode 0 respectively. |
 | `ui_browser_game_control_handle_network_event` | `0x0050DC50` | high | MiniGame::BrowserGameControlPane dispatches exact RTTI SWebBoard opcode 0x62 through its web-board virtual method. |
 | `ui_browser_game_control_apply_web_board` | `0x0050DCB0` | high | Accepts SWebBoard action 3, applies its derived base URL, and navigates to start_url plus a question mark and board_data. |
 | `ui_group_ad_dialog_apply_model` | `0x00511F90` | high | Applies leader, group name, note, level range, totals, and five ordered maximum/current class pairs to GroupAdDialogPane controls. |
@@ -352,6 +371,15 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_editable_paper_handle_action` | `0x0054A9B0` | high | EditablePaperPane dialog action 0 sends CExitEditingMode only in editable mode, then dismisses either editable or read-only panes. |
 | `ui_dismiss_editable_paper` | `0x0054A9F0` | high | Unregisters EditablePaperPane from the screen and event systems and removes it from its owner without independently submitting text. |
 | `ui_editable_paper_build_controls` | `0x0054AA30` | high | Converts wire tabs to editor carriage returns, computes 16-pixel block geometry, builds the editable or read-only text control, and centers the pane within the native 640 by 480 view. |
+| `ui_popup_menu_open_for_user` | `0x0054BDB0` | high | Creates the exact RTTI PopupMenuPane singleton for a target object ID, positions it at the click, and registers it in the screen and event trees. |
+| `ui_popup_menu_close` | `0x0054BF90` | high | Unregisters an open PopupMenuPane from screen and event routing, clears its open flag and target ID, and removes its embedded screen pane. |
+| `ui_popup_menu_pane_ctor` | `0x0054C010` | high | Constructs the 0x36C-byte exact RTTI PopupMenuPane, loads lpopup.txt, and reads Box0 plus exactly three action rectangles. |
+| `ui_popup_menu_update_group_label` | `0x0054C310` | high | Resolves the target name, checks the current group roster, and selects msg.tbl label 0x52, 0x53, or 0x54 for the middle action. |
+| `ui_popup_menu_handle_pointer_event` | `0x0054C530` | high | PopupMenuPane primary-vtable +0x48 handler updates row hover, dispatches left presses, and closes on left or right press. |
+| `ui_popup_menu_handle_keyboard_event` | `0x0054C6D0` | high | PopupMenuPane primary-vtable +0x4C handler closes the popup and returns false so keyboard or text input can continue. |
+| `ui_popup_menu_draw` | `0x0054C6F0` | high | Draws the target name, three action rectangles, hover highlight, and localized labels for PopupMenuPane. |
+| `ui_popup_menu_dispatch_action` | `0x0054C990` | high | Maps row 0 to CRequestObjectInfo subtype 1, row 1 to CGroup action 2, and row 2 to tell-target preparation. |
+| `ui_popup_menu_hit_test_action` | `0x0054CBD0` | high | Tests the pointer against exactly three action rectangles and returns index 0 through 2 or -1. |
 | `ui_open_say_input` | `0x0054F840` | high | Creates ChatInputPane in Say mode 0 or Shout mode 1 and formats the local name prefix as colon-space or exclamation-space. |
 | `ui_open_tell_receiver_input` | `0x0054F9D0` | high | Creates exact RTTI class TellReceiverInputPane when the world keyboard handler receives the double-quote key. |
 | `ui_open_tell_input` | `0x0054FAB0` | high | Formats the local arrow, target name, and colon prefix, then creates exact RTTI class TellInputPane. |
@@ -435,6 +463,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_gui_back_pane_set_network_latency` | `0x005A2B80` | high | Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region. |
 | `ui_gui_back_pane_request_show_users` | `0x005A2C60` | high | GUIBackPane interface method that requests the current world-user list through CWho. |
 | `ui_game_interface_activate_number_key` | `0x005A2D90` | high | Routes number keys by the selected GUIBackPane mode; item mode maps keys 1 through 9 and 0 to inventory slots 1 through 10. |
+| `ui_gui_back_select_page_mode` | `0x005A2FB0` | high | Selects one GUIBackPane page, records its expanded flag, and applies normal or expanded geometry from the active small or large layout record. |
 | `ui_gui_back_apply_layout` | `0x005A3900` | high | Selects one GUIBackPane layout and copies its bottom control rectangles into the six live action slots; BTN_HELP becomes slot 0. |
 | `ui_new_system_message_text_pane_ctor` | `0x005A8FB0` | high | Constructs the TextEditPane child that stores and renders persistent message history. |
 | `ui_new_system_message_pane_handle_packet_event` | `0x005A9000` | high | Recognizes SMessage packet events and forwards them to the history type router. |
@@ -478,12 +507,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_world_pane_attack_from_keyboard` | `0x005F0BF0` | high | Handles the Space-key attack path and submits only when the previous accepted Space attack was absent or more than 100 ms ago. |
 | `ui_world_pane_handle_direction_input` | `0x005F0C40` | high | Turns with CChangeDirection when requested facing differs; otherwise attempts one tile of movement. |
 | `ui_world_pane_handle_keyboard_event` | `0x005F0D20` | high | Handles WorldPane keyboard commands; the Tab map-overlay path gives character class 2 the zoom-enabled configuration observed for Rogues. |
+| `ui_world_handle_mini_game_server_packet` | `0x005F2350` | high | Handles SMiniGame action 8 subtype 1 as a world/map interaction, then forwards the packet to the common mini-game action handler. |
 | `ui_world_pane_draw_content` | `0x005F27A0` | high | WorldPane content hook that draws the world when ready or clears the pane. |
 | `ui_world_pane_reset_movement_state` | `0x005F4900` | medium | Resets WorldPane movement and queued-path state after authoritative position changes and the SMove direction-4 path. |
 | `ui_world_pane_attack_target` | `0x005F4A70` | high | Faces and attacks an adjacent selected target through CAttack without using the Space-key throttle. |
 | `ui_has_map_loading_pane` | `0x005F6470` | high | Reports whether the global MapLoadingPane pointer is non-null. |
 | `ui_get_map_loading_pane` | `0x005F6490` | high | Returns the current global MapLoadingPane pointer used by SMapPart progress handling. |
 | `ui_close_map_loading_pane` | `0x005F64A0` | high | Invokes the deleting destructor for the current MapLoadingPane when a map transfer finishes. |
+| `ui_apply_mini_game_server_packet` | `0x005F6AB0` | high | Launches selectors 1 through 4 for SMiniGame action 4 and consumes action 8 after the world-specific path. |
 | `ui_open_town_map_from_screen_shot_packet` | `0x005F6BC0` | high | Reads SScreenShot's retained u8 key and opens TownMapPane in the server-keyed _tncoord.txt mode. |
 | `ui_apply_block_input_server_packet` | `0x005F7AA0` | high | Maps SBlockInput state 0 to held-button release plus ClockPane creation and state 1 to ClockPane removal; other states are ignored. |
 | `ui_create_field_map_pane` | `0x005F88B0` | high | Allocates a 640 by 480 FieldMapPane, initializes it from decoded SFieldMap values, registers it with the screen root, and retains it in WorldPane. |
@@ -530,6 +561,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_post_decoded_server_packet_event` | `0x00467060` | high | Copies a decoded opcode-first server body and queues it as network packet event type 0x13. |
 | `net_queue_raw_server_bytes_event` | `0x00468180` | high | Builds event type 0x13 around an owned raw receive buffer for TerminalPane2. |
 | `net_queue_server_packet_event` | `0x00468220` | high | Builds and enqueues the event object used for a decoded server packet body. |
+| `net_send_exchange_start` | `0x0046A2F0` | medium | Builds CExchange as opcode 0x4A, action 0x00, and a big-endian u32 argument; no live static caller was recovered. |
+| `net_send_exchange_accept` | `0x0046A390` | high | Builds opcode 0x4A, action 0x05, and ExchangeDialog +0x630. |
+| `net_send_exchange_cancel` | `0x0046A440` | high | Builds opcode 0x4A, action 0x04, and the supplied target or exchange ID. |
+| `net_send_exchange_set_gold` | `0x0046A4F0` | high | Builds opcode 0x4A, action 0x03, exchange ID, and big-endian u32 gold amount. |
+| `net_send_exchange_add_item` | `0x0046A5C0` | high | Builds opcode 0x4A, action 0x01, exchange ID, and one-based u8 inventory slot. |
+| `net_send_exchange_add_stackable_item` | `0x0046C2A0` | high | Builds opcode 0x4A, action 0x02, exchange ID, staged slot, and u8 quantity. |
 | `net_request_family_name` | `0x004719B0` | high | EquipPane reaches this opcode-only 0x7A request paired with SFamilyName. |
 | `net_send_field_map_selection` | `0x00476390` | high | Normal field-map UI builder writes opcode 0x3F followed by the selected node's checksum, map ID, X, and Y words. |
 | `net_send_drop` | `0x00496C90` | high | Builds CDrop as opcode 0x08, source slot, target X, target Y, and u32 quantity. |
@@ -571,7 +608,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_metadata_uncompress` | `0x004E54F0` | high | Inflates metadata zlib data into a buffer capped at 0x20000 bytes. |
 | `net_metadata_crc32` | `0x004E5790` | high | Calculates standard CRC32 over inflated metadata bytes. |
 | `net_parse_metadata_table` | `0x004E57C0` | high | Parses big-endian group counts and length-prefixed metadata names and values. |
+| `net_send_mini_game_close` | `0x0050C600` | high | Builds CMiniGame action 5 with no action-specific payload; both AbstractGame and FindFarmpet destruction paths call it. |
+| `net_send_mini_game_action_6` | `0x0050C670` | high | Builds CMiniGame action 6 as one u8 value followed by a one-byte length and that many text bytes. |
 | `net_send_web_board_game_request` | `0x0050C7C0` | high | Builds CWebBoard as opcode 0x73, action 3, selector_1, and selector_2 for web-backed in-game views. |
+| `net_send_mini_game_action_7` | `0x0050C890` | high | Builds CMiniGame action 7 with one big-endian u32 nonzero client counter. |
 | `net_send_group_request` | `0x00513960` | high | Builds CGroup action 2 with a string8 target name; SGroup action 5 and group UI paths call it. |
 | `net_send_group_recruit_stop` | `0x00513A40` | high | Builds CGroup action 6 with the local character name to stop recruiting. |
 | `net_send_group_recruit_start` | `0x00513B30` | high | Builds CGroup action 4 with local name, group name, note, level range, and five maximum class counts. |
@@ -579,6 +619,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_user_setting` | `0x00542E60` | high | Builds the fixed two-byte CUserSetting body from opcode 0x1B and one setting ID. |
 | `net_packet_preprocessor_handle_server_packet` | `0x005449A0` | high | PacketPreprocessor intercepts typed SMessage opcode 0x0A before pane-tree delivery and consumes only message type 0x11. |
 | `net_send_exit_editing_mode` | `0x0054A7D0` | high | Copies up to 8000 edited bytes, converts carriage returns to wire tab bytes, and sends CExitEditingMode opcode 0x23 with retained slot and string16 content. |
+| `net_send_popup_group_request` | `0x0054CA50` | high | Resolves the popup target name and builds CGroup opcode 0x2E action 2 with that counted name. |
 | `net_build_send_portrait` | `0x0054CE10` | high | Builds opcode 0x4F with nested portrait and profile lengths after applying the local image checks. |
 | `net_decode_portrait_profile_body` | `0x0054D570` | high | Reads the nested big-endian portrait and profile lengths used by the portrait body. |
 | `net_send_say` | `0x0054FD90` | high | Builds CSay opcode 0x0E with the retained Say or Shout mode and a string8 message of at most 72 bytes. |
@@ -692,6 +733,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_effect_layer_server_packet` | `0x00598D30` | high | Allocates the 0x28-byte RTTI SEffectLayer object and invokes its concrete constructor. |
 | `net_effect_layer_server_packet_ctor` | `0x00598DB0` | high | Passes opcode 0x29 to the server packet base and installs the exact SEffectLayer vtable. |
 | `net_deserialize_effect_layer_server_packet` | `0x00598DE0` | high | Reads the target ID and conditional object or tile form, including X-before-Y coordinates when target_id is zero. |
+| `net_exchange_server_packet_ctor` | `0x00598F50` | high | Passes opcode 0x42 to the server packet base and installs the exact RTTI SExchange vtable. |
+| `net_deserialize_exchange_server_packet` | `0x00598F80` | high | Reads the six event-dependent SExchange bodies and retains the item sprite as its raw big-endian u16. |
 | `net_create_field_map_server_packet` | `0x00599210` | high | Allocates the exact RTTI SFieldMap object and invokes its concrete constructor. |
 | `net_field_map_server_packet_ctor` | `0x00599290` | high | Passes opcode 0x2E to the server packet base and installs the exact SFieldMap vtable. |
 | `net_deserialize_field_map_server_packet` | `0x005992C0` | high | Reads field-name string8, node count, current-node index, and each node's screen position, name, checksum, map ID, X, and Y. |
@@ -710,6 +753,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_message_server_packet` | `0x0059A050` | high | Allocates the RTTI-backed SMessage object registered for server opcode 0x0A. |
 | `net_message_server_packet_ctor` | `0x0059A0D0` | high | Constructs SMessage with opcode 0x0A and installs its concrete vtable. |
 | `net_deserialize_message_server_packet` | `0x0059A100` | high | Reads the message type, the type-0x11-only prefix, a u16 message length, and the message bytes. |
+| `net_create_mini_game_server_packet` | `0x0059A1C0` | high | Allocates the 0x1C-byte RTTI-backed SMiniGame object registered for server opcode 0x64. |
+| `net_mini_game_server_packet_ctor` | `0x0059A240` | high | Constructs SMiniGame with opcode 0x64 and installs its concrete vtable. |
+| `net_deserialize_mini_game_server_packet` | `0x0059A270` | high | Reads the action plus one u8 for actions 3, 4, and 8 or two big-endian u32 values for action 7. |
 | `net_motion_server_packet_ctor` | `0x0059A3F0` | high | Passes opcode 0x1A to the server packet base and installs the exact RTTI SMotion vtable. |
 | `net_deserialize_motion_server_packet` | `0x0059A420` | high | Reads u32 object_id, u8 animation, and u16 duration_10ms. |
 | `net_move_server_packet_ctor` | `0x0059A520` | high | Passes opcode 0x0B to the server packet base and installs the exact RTTI SMove vtable. |
@@ -778,6 +824,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_remove_skill_server_packet` | `0x005F1BB0` | high | Forwards decoded SRemoveSkill to WorldUserFunc vtable slot +0x1C. |
 | `net_handle_map_size_server_packet` | `0x005F1BF0` | high | Applies u8 map dimensions, NoMap, Winter art, weather mode, local CRC16 cache validation, transfer state, and map lighting. |
 | `net_handle_change_hour_server_packet` | `0x005F2160` | high | Stores the SChangeHour time step at WorldPane +0x25C and immediately recomputes map lighting. |
+| `net_handle_exchange_started` | `0x005F2190` | high | Handles SExchange event 0x00 before a dialog exists, creates ExchangeDialog when UI state allows it, or replies with CExchange Cancel otherwise. |
 | `net_handle_map_server_body` | `0x005F2840` | high | Consumes raw SMap opcode 0x06 as a u8 rectangle header followed by row-major ground and static tile triples, applying cells only while a cache-miss transfer is active. |
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes one raw SMapPart row into memory, creates MapLoadingPane on the first accepted row, updates row-index progress, and treats height minus one as completion without tracking earlier rows. |
 | `net_handle_request_crc_server_body` | `0x005F2CF0` | high | Reads the raw u16 SRequestCRC challenge, feeds low then high byte through crc16_update from zero, and sends the resulting byte swap as CReplyCRC opcode 0x45. |

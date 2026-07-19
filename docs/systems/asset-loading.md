@@ -31,6 +31,14 @@ An archive also has a small bounded pool of entry handles. `file_archive_find_en
 
 The startup calls request 20 handle slots per archive. This pool limits simultaneous open entry descriptions. It is not an asset cache.
 
+## `misc.dat` is a global overlay
+
+The client checks `misc.dat` before the archive requested by the caller. When `file_archive_find_entry` receives any other archive object, it first asks the `misc.dat` archive whether it contains the requested name. If it does, the function returns the `misc.dat` entry instead of looking in the original archive.
+
+This makes `misc.dat` a small patch archive. A same-named entry can replace an archived UI layout, image, palette, or other asset without rebuilding the DAT that normally owns it. The match is by archive-entry name and ignores ASCII letter case, just like an ordinary DAT lookup.
+
+The override applies only to requests that pass through this archive lookup path. It does not replace loose files, map files opened directly from disk, or formats handled by unrelated readers. A bad replacement is also global: every caller requesting that name receives the `misc.dat` copy.
+
 ## Loading is synchronous
 
 The active paths perform archive lookup, parsing, decompression, palette conversion, and middleware setup in the calling path. No background asset worker or asynchronous completion queue was found.
