@@ -509,7 +509,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_user_confirm_pane_ctor` | `0x005921C0` | high | Constructs the 0x73C-byte exact RTTI UserConfirmPane and stores the SMessage reply context at +0x634 through +0x738. |
 | `ui_user_confirm_pane_send_ok` | `0x00592260` | high | UserConfirmPane's OK callback calls net_send_confirm with choice 1; the button label and reply were confirmed by project-owner runtime testing. |
 | `ui_user_confirm_pane_send_cancel` | `0x00592280` | high | UserConfirmPane's Cancel callback calls net_send_confirm with choice 0; the button label and reply were confirmed by project-owner runtime testing. |
-| `ui_gui_back_pane_handle_network_event` | `0x0059D1D0` | high | GUIBackPane routes SStatus packets containing vitals to its health and mana bar updater. |
+| `ui_gui_back_pane_handle_network_event` | `0x0059D1D0` | high | GUIBackPane routes SStatus packets containing vitals to its bars and SWindowChange to its lower-tray page selector. |
+| `ui_gui_back_pane_apply_window_change` | `0x0059D370` | high | Maps SWindowChange codes 0 through 4 to Items, Skills, Spells, Chat, and Status while preserving GUIBackPane's expanded state. |
 | `ui_gui_back_pane_update_vitals_from_status_packet` | `0x0059D6C0` | high | Copies current and maximum health and mana from SStatus into GUIBackPane bar targets. |
 | `ui_gui_back_layout_init_common` | `0x0059D830` | high | Reads common named controls from one loaded GUIBackPane layout, including BTN_HELP and the other bottom actions. |
 | `ui_gui_back_pane_ctor` | `0x0059FB60` | high | Constructs the RTTI-backed GUIBackPane and its two size-specific layout records and child panes. |
@@ -518,9 +519,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_gui_back_pane_draw` | `0x005A2050` | high | Draws GUIBackPane state, including selection of the network indicator image from the latest movement round-trip value. |
 | `ui_gui_back_pane_set_network_latency` | `0x005A2B80` | high | Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region. |
 | `ui_gui_back_pane_request_show_users` | `0x005A2C60` | high | GUIBackPane interface method that requests the current world-user list through CWho. |
+| `ui_gui_back_get_page_expanded` | `0x005A2CC0` | high | Returns GUIBackPane's page_is_expanded flag at complete object offset +0x4FB0. |
 | `ui_game_interface_activate_number_key` | `0x005A2D90` | high | Routes number keys by the selected GUIBackPane mode; item mode maps keys 1 through 9 and 0 to inventory slots 1 through 10. |
 | `ui_gui_back_select_page_mode` | `0x005A2FB0` | high | Selects one GUIBackPane page, records its expanded flag, and applies normal or expanded geometry from the active small or large layout record. |
 | `ui_gui_back_apply_layout` | `0x005A3900` | high | Selects one GUIBackPane layout and copies its bottom control rectangles into the six live action slots; BTN_HELP becomes slot 0. |
+| `ui_inventory_select_buttons_handle_action` | `0x005A5210` | high | Handles local lower-tray selection buttons through the same page-mode interface used by SWindowChange, with additional paired-page toggles and collapse. |
 | `ui_new_system_message_text_pane_ctor` | `0x005A8FB0` | high | Constructs the TextEditPane child that stores and renders persistent message history. |
 | `ui_new_system_message_pane_handle_packet_event` | `0x005A9000` | high | Recognizes SMessage packet events and forwards them to the history type router. |
 | `ui_new_system_message_pane_ctor` | `0x005A9060` | high | Constructs NewSystemMessagePane with one visible row, a TextEditPane child, and ten initial blank lines. |
@@ -929,6 +932,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_web_board_server_packet` | `0x0059CD40` | high | Allocates a zeroed 0x314-byte exact RTTI SWebBoard object and calls its concrete constructor. |
 | `net_web_board_server_packet_ctor` | `0x0059CDC0` | high | Passes opcode 0x62 to the common server packet base and installs the exact SWebBoard vtable. |
 | `net_deserialize_web_board_server_packet` | `0x0059CDF0` | high | Reads action and three string8 buffers; action 3 omits base_url from the wire and derives it from start_url. |
+| `net_create_window_change_server_packet` | `0x0059CF50` | high | Allocates the 0x14-byte exact RTTI SWindowChange object registered for server opcode 0x3E. |
+| `net_window_change_server_packet_ctor` | `0x0059CFD0` | high | Passes opcode 0x3E to the common server packet base and installs the exact SWindowChange vtable. |
+| `net_deserialize_window_change_server_packet` | `0x0059D000` | high | Reads the complete SWindowChange payload as one u8 window_code into packet object offset +0x10. |
 | `net_send_who` | `0x0059D7D0` | high | Builds CWho as opcode 0x18 with no payload and submits the complete one-byte plaintext body. |
 | `net_send_portrait_profile` | `0x005B1160` | high | Calls net_build_send_portrait and submits the result through net_submit_client_packet. |
 | `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode. |

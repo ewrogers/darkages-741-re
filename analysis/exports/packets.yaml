@@ -1551,10 +1551,26 @@ functions:
     name: net_deserialize_web_board_server_packet
     confidence: high
     evidence: "Reads action and three string8 buffers; action 3 omits base_url from the wire and derives it from start_url."
+  - address: "0x0059CF50"
+    name: net_create_window_change_server_packet
+    confidence: high
+    evidence: "Allocates the 0x14-byte exact RTTI SWindowChange object registered for server opcode 0x3E."
+  - address: "0x0059CFD0"
+    name: net_window_change_server_packet_ctor
+    confidence: high
+    evidence: "Passes opcode 0x3E to the common server packet base and installs the exact SWindowChange vtable."
+  - address: "0x0059D000"
+    name: net_deserialize_window_change_server_packet
+    confidence: high
+    evidence: "Reads the complete SWindowChange payload as one u8 window_code into packet object offset +0x10."
   - address: "0x0059D1D0"
     name: ui_gui_back_pane_handle_network_event
     confidence: high
-    evidence: "GUIBackPane routes SStatus packets containing vitals to its health and mana bar updater."
+    evidence: "GUIBackPane routes SStatus packets containing vitals to its bars and SWindowChange to its lower-tray page selector."
+  - address: "0x0059D370"
+    name: ui_gui_back_pane_apply_window_change
+    confidence: high
+    evidence: "Maps SWindowChange codes 0 through 4 to Items, Skills, Spells, Chat, and Status while preserving GUIBackPane's expanded state."
   - address: "0x0059D6C0"
     name: ui_gui_back_pane_update_vitals_from_status_packet
     confidence: high
@@ -1567,10 +1583,18 @@ functions:
     name: ui_gui_back_pane_set_network_latency
     confidence: high
     evidence: "Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region."
+  - address: "0x005A2CC0"
+    name: ui_gui_back_get_page_expanded
+    confidence: high
+    evidence: "Returns GUIBackPane's page_is_expanded flag at complete object offset +0x4FB0."
   - address: "0x005A2D90"
     name: ui_game_interface_activate_number_key
     confidence: high
     evidence: "Routes number keys by the selected GUIBackPane mode; item mode maps keys 1 through 9 and 0 to inventory slots 1 through 10."
+  - address: "0x005A5210"
+    name: ui_inventory_select_buttons_handle_action
+    confidence: high
+    evidence: "Handles local lower-tray selection buttons through the same page-mode interface used by SWindowChange, with additional paired-page toggles and collapse."
   - address: "0x005A9DA0"
     name: ui_report_movement_round_trip
     confidence: high
@@ -2899,6 +2923,12 @@ comments:
     text: "For actions other than 3, read explicit base_url followed by start_url as string8 fields."
   - address: "0x0059CEFA"
     text: "Read the common final string8 board_data field. Actions 0 and 1 parse it as cookie material; action 3 appends it as a URL query."
+  - address: "0x0059D00A"
+    text: "Read the only SWindowChange field: u8 window_code."
+  - address: "0x0059D2A8"
+    text: "Opcode 0x3E dispatches the decoded SWindowChange body to the GUIBackPane handler."
+  - address: "0x0059D37C"
+    text: "Map window_code 0, 1, 2, 3, and 4 to page modes 0, 3, 1, 5, and 7 while preserving the current expanded flag."
   - address: "0x005A0BAE"
     text: "GUI back-button action 1 opens TownMapPane from the current map without sending a packet."
   - address: "0x005A15CA"
@@ -4332,7 +4362,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059CFD0 passes opcode 0x3E to the server packet base and installs the SWindowChange vtable."
+        evidence: "Exact RTTI SWindowChange parser 0x0059D000 reads one u8 window_code. GUIBackPane handler 0x0059D370 maps codes 0 through 4 to Items, Skills, Spells, Chat, and Status while preserving the lower tray's expanded state; other values are consumed without changing the page."
         page: "docs/network/server/062-0x3e-window-change.md"
       - opcode: "0x3F"
         friendly_name: "Action Delay"
