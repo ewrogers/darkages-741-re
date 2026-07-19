@@ -92,7 +92,7 @@ Used by [`SUserAppearance`](server/005-0x05-user-appearance.md) and [`SSelfLook`
 
 The names are project-owner protocol vocabulary matched to the state choices shown by the game. The client independently confirms the `0..7` range in both directions: `CChangeUserState` normalizes any other value to `0`, and the world-list renderer has exactly eight state visuals and also displays an out-of-range value as state `0`.
 
-Used by `social_status` in [`SObjectInfo`](server/052-0x34-object-info.md), [`CChangeUserState`](client/121-0x79-change-user-state.md), and [`SShowUsers`](server/054-0x36-show-users.md).
+Used by `user_state` in [`SObjectInfo`](server/052-0x34-object-info.md), [`CChangeUserState`](client/121-0x79-change-user-state.md), and [`SShowUsers`](server/054-0x36-show-users.md).
 
 ## EquipmentSlot
 
