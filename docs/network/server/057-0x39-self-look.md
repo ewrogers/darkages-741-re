@@ -84,6 +84,8 @@ Both the older legend dialog and RTTI class `nui_LegendPane` rebuild their lists
 
 `ui_equip_pane_apply_self_look` copies the title, guild, guild rank, display class, and group-member text into `EquipPane`. The group-member string enters the formatted text path, so inline color codes are interpreted. `is_group_open` also changes the group button skin.
 
+`WorldUserFunc` also parses `group_members` into a fixed cache used by the world pane. Each accepted line begins with `"* "` or two spaces. The client strips those two bytes, stores up to 64 bytes of name storage plus a `starred` byte, and uses `IsDBCSLeadByte` while scanning. The world refresh path clamps its iteration to 64 cached entries and matches each name against live user objects. The parser itself does not separately enforce the 64-record or 64-byte destination limits.
+
 `BtmButtonsPane_A` treats this packet as the response to `CSelfLook`. It updates the group-button state, cancels the one-second request retry, and clears the pending-profile flag. After `CGroupToggle`, this response supplies the authoritative `is_group_open` value. The click path does not change the icon optimistically.
 
 The newer `UserInfoPane` keeps the same identity fields and nation value for its profile view. The packet object is large because it reserves room for all 255 possible legend records, not because every response is normally that large.

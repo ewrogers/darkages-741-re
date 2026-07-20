@@ -131,6 +131,10 @@ functions:
     name: ui_equip_pane_handle_network_event
     confidence: high
     evidence: "Exact RTTI class EquipPane routes SAddEquip, SRemoveEquip, and SSelfLook from its primary-vtable network-event slot."
+  - address: "0x0045DA10"
+    name: ui_equip_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class EquipPane over a 0x630-byte DialogPane base, 18 contiguous 0x34-byte slot-view records, profile text, named layout rectangles, and the worn-equipment arrays."
   - address: "0x0045FDC0"
     name: ui_equip_pane_apply_self_look
     confidence: high
@@ -1855,6 +1859,10 @@ functions:
     name: ui_world_pane_handle_keyboard_event
     confidence: high
     evidence: "Handles WorldPane keyboard commands; the Tab map-overlay path gives character class 2 the zoom-enabled configuration observed for Rogues."
+  - address: "0x005F1990"
+    name: net_handle_self_look_server_packet
+    confidence: high
+    evidence: "Forwards SSelfLook to WorldUserFunc, then refreshes the live group-member matches immediately or after the existing one-second timer path."
   - address: "0x005F1A10"
     name: net_handle_status_server_packet
     confidence: high
@@ -2043,6 +2051,10 @@ functions:
     name: ui_world_pane_get_privilege_level
     confidence: high
     evidence: "MapUserInterface virtual getter returns raw WorldUserFunc privilege_level 0 through 3; the event dispatcher compares it exactly with 1 in a dormant timeout path."
+  - address: "0x005F9DF0"
+    name: ui_world_pane_get_user_state
+    confidence: high
+    evidence: "MapUserInterface virtual getter returns the low byte of the normalized UserState stored as a u32 at WorldUserFunc +0x1048."
   - address: "0x005F9E50"
     name: ui_world_pane_get_local_action_state
     confidence: high
@@ -2063,10 +2075,30 @@ functions:
     name: ui_world_pane_get_character_class
     confidence: high
     evidence: "WorldPane_Impl virtual getter returns the third post-ID SUserAppearance byte; the Tab map-overlay path gives value 2 the Rogue-only zoom-enabled configuration."
+  - address: "0x005FA100"
+    name: ui_world_pane_get_self_look_show_ability_metadata
+    confidence: high
+    evidence: "Returns the SSelfLook show_ability_metadata byte widened and cached at WorldUserFunc +0x15C78."
+  - address: "0x005FA130"
+    name: ui_world_pane_get_self_look_show_master_metadata
+    confidence: high
+    evidence: "Returns the SSelfLook show_master_metadata byte widened and cached at WorldUserFunc +0x15C74."
+  - address: "0x005FA220"
+    name: ui_world_pane_set_group_members_text
+    confidence: high
+    evidence: "Forwards formatted SSelfLook group_members text to the WorldUserFunc fixed-record parser."
+  - address: "0x005FA250"
+    name: ui_world_pane_get_group_member_entry
+    confidence: high
+    evidence: "Returns WorldUserFunc +4 + index*0x41 without an internal bounds check; each entry holds a 64-byte name and one starred byte."
+  - address: "0x005FA280"
+    name: ui_world_pane_get_group_member_count
+    confidence: high
+    evidence: "Returns the parsed group-member count at WorldUserFunc +0x1044."
   - address: "0x005FC5F0"
     name: session_world_user_func_ctor
     confidence: high
-    evidence: "Constructs exact RTTI class WorldUserFunc and clears its fixed inventory, spell, and skill arrays."
+    evidence: "Constructs exact RTTI class WorldUserFunc, embeds exact RTTI UserInfo at +0x15C8C, and clears its fixed inventory, spell, and skill arrays; the allocation site requests 0x167D0 bytes."
   - address: "0x005FC900"
     name: session_find_first_empty_inventory_slot
     confidence: high
@@ -2095,6 +2127,10 @@ functions:
     name: session_clear_skill_entry
     confidence: high
     evidence: "Clears a skill record's present flag and name[0] without overwriting its icon or remaining name bytes."
+  - address: "0x005FCDC0"
+    name: session_rebuild_group_member_cache
+    confidence: high
+    evidence: "Parses SSelfLook group_members lines with DBCS-aware scanning into 0x41-byte records at WorldUserFunc +4 and stores the count at +0x1044."
   - address: "0x005FCFD0"
     name: session_update_from_status_packet
     confidence: high
@@ -2127,6 +2163,10 @@ functions:
     name: session_update_from_user_appearance_packet
     confidence: high
     evidence: "Stores user ID, cached facing, raw guild value, character class, final unknown byte, and action state & 0x7F; bit 0 locks movement and actions, while wire bit 0x80 suppresses the other field updates."
+  - address: "0x005FD450"
+    name: session_update_from_self_look_packet
+    confidence: high
+    evidence: "Caches widened SSelfLook show_master_metadata, show_ability_metadata, and character_class at +0x15C74 through +0x15C7C, then rebuilds the fixed group-member records from group_members."
   - address: "0x00667B20"
     name: net_register_bad_guy_server_packet_factory
     confidence: high
@@ -2215,6 +2255,16 @@ comments:
     text: "EquipPane dispatches opcode 0x37 (SAddEquip) to its local worn-equipment update."
   - address: "0x0045D9EE"
     text: "EquipPane dispatches opcode 0x38 (SRemoveEquip) to its local worn-equipment removal."
+  - address: "0x0045DA50"
+    text: "Construct the exact RTTI DialogPane base at EquipPane +0x000; its complete base storage occupies 0x630 bytes."
+  - address: "0x0045DAA3"
+    text: "Construct 18 contiguous 0x34-byte per-slot view-state records at EquipPane +0x630."
+  - address: "0x0045DB7C"
+    text: "Load EquipPane geometry and skin data from the lequip.txt layout."
+  - address: "0x0045EBBA"
+    text: "Resolve the NATIONFLAG control image into the 0x100-byte image storage at EquipPane +0x9DC."
+  - address: "0x0045FDD0"
+    text: "Copy SSelfLook nation into EquipPane +0x9DB before refreshing the nation-flag presentation."
   - address: "0x00460201"
     text: "Convert wire slots 1..18 to array indices 0..17. This signed upper-bound check does not reject slot 0 after decrement."
   - address: "0x00460215"
@@ -3445,6 +3495,8 @@ comments:
     text: "Return the first inventory slot from 1 through 60 whose compact session record is absent."
   - address: "0x005FC952"
     text: "Return slot 0 when all 60 inventory records are occupied."
+  - address: "0x005FC603"
+    text: "Construct the exact RTTI UserInfo subobject at WorldUserFunc +0x15C8C; the 0xB44-byte subobject reaches the end of the caller's 0x167D0-byte allocation."
   - address: "0x005FCBB9"
     text: "Inventory record address is WorldUserFunc + 0x1092 + (slot - 1) * 0x106."
   - address: "0x005FCBD3"
@@ -3477,6 +3529,12 @@ comments:
     text: "Store the opaque stats u32 in WorldUserFunc. The value is write-only in the static client paths checked."
   - address: "0x005FD150"
     text: "Copy six retained modifier bytes, including blind code and raw mail state, into WorldUserFunc. The four reserved bytes are not consumed elsewhere."
+  - address: "0x005FCDD3"
+    text: "Reset the WorldUserFunc group-member count before rebuilding the cache from SSelfLook group_members text."
+  - address: "0x005FCED3"
+    text: "Accept only group-member lines prefixed by '* ' or two spaces; the first form sets the entry's starred byte."
+  - address: "0x005FCF58"
+    text: "Append a 0x41-byte group-member record without an internal 64-entry or 64-byte-name bound; the later WorldPane consumer clamps iteration to 64 entries."
   - address: "0x005FD1E6"
     text: "WorldUserFunc accepts SAddInventory slots 1 through 60 and retains only sprite, dye color, and name in its compact record."
   - address: "0x005FD232"
@@ -3509,6 +3567,12 @@ comments:
     text: "Register the SBadGuy constructor in the server_packet_factory initialization path."
 runtime_patches: []
 packet_indexes:
+  - address: "0x005FD463"
+    text: "Copy SSelfLook character_class from packet +0x550 to WorldUserFunc +0x15C7C."
+  - address: "0x005FD475"
+    text: "Copy SSelfLook show_ability_metadata from packet +0x548 to WorldUserFunc +0x15C78."
+  - address: "0x005FD487"
+    text: "Copy SSelfLook show_master_metadata from packet +0x54C to WorldUserFunc +0x15C74."
   client_to_server:
     evidence: "Inline opcode-first builders and the outbound transform-policy switch."
     packets:

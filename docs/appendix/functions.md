@@ -242,6 +242,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_exchange_dialog_ctor` | `0x00469560` | high | Constructs the exact RTTI ExchangeDialog from _nexch.txt, attaches its offer controls, registers it under GUIBackPane, and stores the Started event ID at +0x630. |
 | `ui_exchange_dialog_dtor` | `0x00469E70` | high | Decrements the modal count, unregisters ExchangeDialog from event and screen routing, and runs the DialogPane destructor. |
 | `ui_exchange_dialog_handle_action` | `0x00469FF0` | high | Maps attachment-order action 0 to CExchange Accept 0x05 and action 1 to Cancel 0x04. |
+| `ui_equip_pane_ctor` | `0x0045DA10` | high | Constructs exact RTTI class EquipPane over a 0x630-byte DialogPane base, 18 contiguous 0x34-byte slot-view records, profile text, named layout rectangles, and the worn-equipment arrays. |
 | `ui_exchange_dialog_handle_inventory_drop` | `0x0046A030` | high | Reads the source InvItemPane one-based slot and sends CExchange AddItem 0x01. |
 | `ui_exchange_dialog_handle_network_event` | `0x0046A1E0` | high | Consumes decoded opcode 0x42 and forwards it to the ExchangeDialog server-event dispatcher. |
 | `ui_exchange_dialog_dispatch_server_event` | `0x0046A240` | high | Routes SExchange events 0x01 through 0x05 to quantity, item, gold, cancelled, and accepted handlers. |
@@ -682,12 +683,18 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 ## Network
 
 | Function | Static address | Confidence | Role |
+| `ui_world_pane_get_user_state` | `0x005F9DF0` | high | MapUserInterface virtual getter returns the low byte of the normalized UserState stored as a u32 at WorldUserFunc +0x1048. |
 | --- | --- | --- | --- |
 | `net_send_web_board_dialog_request` | `0x004160A0` | high | Builds the exact two-byte CWebBoard action-0 body and starts BrowserDialogPane's 20-second response timer. |
 | `net_percent_encode_web_board_cookie_value` | `0x00416810` | high | Percent-encodes reserved, unsafe, control, and non-ASCII bytes before BrowserDialogPane stores the boardinfo cookie. |
 | `net_send_self_look` | `0x0041B840` | high | Builds the exact one-byte CSelfLook plaintext body as opcode 0x2D and submits length one. |
 | `net_send_group_toggle` | `0x0041B8E0` | high | Builds and submits the exact one-byte CGroupToggle plaintext body containing only opcode 0x2F. |
 | `net_send_bulletin_board_list_request` | `0x0041CBC0` | high | Writes derived CBulletin body 3B 01 when BulletinSession opens. |
+| `ui_world_pane_get_self_look_show_ability_metadata` | `0x005FA100` | high | Returns the SSelfLook show_ability_metadata byte widened and cached at WorldUserFunc +0x15C78. |
+| `ui_world_pane_get_self_look_show_master_metadata` | `0x005FA130` | high | Returns the SSelfLook show_master_metadata byte widened and cached at WorldUserFunc +0x15C74. |
+| `ui_world_pane_set_group_members_text` | `0x005FA220` | high | Forwards formatted SSelfLook group_members text to the WorldUserFunc fixed-record parser. |
+| `ui_world_pane_get_group_member_entry` | `0x005FA250` | high | Returns WorldUserFunc +4 + index*0x41 without an internal bounds check; each entry holds a 64-byte name and one starred byte. |
+| `ui_world_pane_get_group_member_count` | `0x005FA280` | high | Returns the parsed group-member count at WorldUserFunc +0x1044. |
 | `net_send_bulletin_initial_list_request` | `0x0041E350` | high | Writes CBulletin action 2 with selected section ID, cursor 0x7FFF, and direction 0xF0. |
 | `net_send_bulletin_article_list_request` | `0x00420D00` | high | Writes seven-byte CBulletin action 2 for article-list pagination. |
 | `net_send_bulletin_article_request` | `0x00420E40` | high | Writes CBulletin action 3 with board ID, article ID, and direct-selection navigation 0. |
@@ -1081,6 +1088,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_exchange_started` | `0x005F2190` | high | Handles SExchange event 0x00 before a dialog exists. |
 | `net_handle_map_server_body` | `0x005F2840` | high | Consumes raw SMap opcode 0x06 as a u8 rectangle header followed by row-major ground and static tile triples, applying cells only while a cache-miss transfer is active. |
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes one raw SMapPart row into memory, creates MapLoadingPane on the first accepted row, updates row-index progress, and treats height minus one as completion without tracking earlier rows. |
+| `net_handle_self_look_server_packet` | `0x005F1990` | high | Forwards SSelfLook to WorldUserFunc, then refreshes the live group-member matches immediately or after the existing one-second timer path. |
 | `net_handle_request_crc_server_body` | `0x005F2CF0` | high | Reads the raw u16 SRequestCRC challenge, feeds low then high byte through crc16_update from zero, and sends the resulting byte swap as CReplyCRC opcode 0x45. |
 | `net_handle_user_appearance_server_packet` | `0x005F2E90` | high | Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage. |
 | `net_handle_user_position_server_packet` | `0x005F2F00` | high | Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view. |
@@ -1515,7 +1523,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_get_self_user_object` | `0x005EEDB0` | high | Looks up the saved self object ID and RTTI-casts the result to WorldObject_User. |
 | `world_update_map_lighting` | `0x005EF360` | high | Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, and conditionally loads its HEA mask. |
 | `world_get_static_tile_id_from_object` | `0x005EFEC0` | high | Requires WorldObject_Static and returns its current live tile ID for the movement collision path. |
-| `session_world_user_func_ctor` | `0x005FC5F0` | high | Constructs exact RTTI class WorldUserFunc and clears its fixed inventory, spell, and skill arrays. |
+| `session_world_user_func_ctor` | `0x005FC5F0` | high | Constructs exact RTTI class WorldUserFunc, embeds exact RTTI UserInfo at +0x15C8C, and clears its fixed inventory, spell, and skill arrays; the allocation site requests 0x167D0 bytes. |
 | `session_find_first_empty_inventory_slot` | `0x005FC900` | high | Returns the first absent inventory record in slots 1 through 60, or 0 when every slot is occupied. |
 | `session_store_inventory_entry` | `0x005FCBB0` | high | Stores one compact 0x106-byte inventory record at WorldUserFunc + 0x1092 + (slot - 1) * 0x106. |
 | `session_clear_inventory_entry` | `0x005FCC10` | high | Clears an inventory record's present flag, sprite, and name[0] without overwriting its dye byte or remaining name bytes. |
@@ -1535,3 +1543,5 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `crt_time` | `0x00622873` | high | Reads the current Windows FILETIME and converts it to Unix-epoch seconds; CLogin passes the result to crt_srand. |
 | `crt_srand` | `0x006275DE` | high | Stores the seed used by the client runtime random-number state. |
 | `crt_rand` | `0x006275F0` | high | Implements the Microsoft runtime linear-congruential update and returns a 15-bit value. |
+| `session_rebuild_group_member_cache` | `0x005FCDC0` | high | Parses SSelfLook group_members lines with DBCS-aware scanning into 0x41-byte records at WorldUserFunc +4 and stores the count at +0x1044. |
+| `session_update_from_self_look_packet` | `0x005FD450` | high | Caches widened SSelfLook show_master_metadata, show_ability_metadata, and character_class at +0x15C74 through +0x15C7C, then rebuilds the fixed group-member records from group_members. |

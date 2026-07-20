@@ -134,8 +134,8 @@ struct SSelfLookFields {
 
     u8 legend_count;             // +0x544
     u8 padding_545[3];
-    u32 maybe_show_ability;      // +0x548, decoded from u8
-    u32 maybe_show_master;       // +0x54C, decoded from u8
+    u32 show_ability_metadata;   // +0x548, decoded from u8
+    u32 show_master_metadata;    // +0x54C, decoded from u8
     u32 character_class;         // +0x550, decoded from u8
     SelfLookLegendMark marks[255]; // +0x554
 

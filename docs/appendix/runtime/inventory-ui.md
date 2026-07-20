@@ -138,8 +138,39 @@ struct EquipmentDurability {
     u32 current;                    // +0x04
 };                                  // size 0x08
 
+struct EquipPaneSlotViewState {
+    u8 unresolved[0x34];             // per-slot drawing and resource state
+};                                  // size 0x34
+
+struct LayoutRect {
+    s32 left;
+    s32 top;
+    s32 right;
+    s32 bottom;
+};                                  // size 0x10
+
 struct EquipPaneEquipmentFields {
-    u8 unknown_0000[0x111C];
+    DialogPane dialog;               // +0x000, complete base size 0x630
+    EquipPaneSlotViewState views[18]; // +0x630
+    u8 retained_flags[3];            // +0x9D8, initialized but no reader found
+    u8 nation;                       // +0x9DB, Nation
+    u8 nation_flag_images[0x100];    // +0x9DC, NATIONFLAG layout image storage
+    char title[0x100];               // +0xADC
+    char display_class[0x80];        // +0xBDC
+    char guild[0x80];                // +0xC5C
+    char guild_rank[0x80];           // +0xCDC
+    char group_members[0x200];       // +0xD5C
+    LayoutRect equipment_rects[18];  // +0xF5C
+    LayoutRect group_button_rect;    // +0x107C
+    LayoutRect close_button_rect;    // +0x108C
+    LayoutRect title_text_rect;      // +0x109C
+    LayoutRect class_text_rect;      // +0x10AC
+    LayoutRect clan_text_rect;       // +0x10BC
+    LayoutRect clan_title_rect;      // +0x10CC
+    LayoutRect legend_button_rect;   // +0x10DC
+    LayoutRect view_button_rect;     // +0x10EC
+    LayoutRect name_rect;            // +0x10FC
+    LayoutRect nation_flag_rect;     // +0x110C
     u16 sprites[18];                // +0x111C
     u8 dye_colors[18];              // +0x1140
     char names[18][128];            // +0x1152
@@ -147,6 +178,10 @@ struct EquipPaneEquipmentFields {
     EquipmentDurability values[18]; // +0x1A54
 };
 ```
+
+The former `unknown_0000[0x111C]` is ordinary pane and profile state. The exact `DialogPane` base occupies the first `0x630` bytes. The empty `Singleton<EquipPane>` base is adjusted to `+0x630` and overlaps the first derived member without taking storage. Eighteen `0x34`-byte view records follow, one per equipment slot.
+
+The `NATIONFLAG` named layout images, five profile strings, 18 equipment rectangles, and ten other named control rectangles account for the rest of the prefix. `ui_equip_pane_apply_self_look` copies `title`, `display_class`, `guild`, `guild_rank`, and `group_members` directly from `SSelfLook`, and stores `nation` for the `nation.epf` frame selection. The member meanings inside each `0x34`-byte slot view remain unresolved.
 
 [`SAddEquip`](../../network/server/055-0x37-add-equip.md) writes all five values and redraws the pane. [`SRemoveEquip`](../../network/server/056-0x38-remove-equip.md) clears the sprite, first name byte, maximum durability, and current durability. It leaves the dye byte and remaining name-buffer bytes untouched.
 
