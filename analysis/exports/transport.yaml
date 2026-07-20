@@ -18,7 +18,7 @@ functions:
   - address: "0x0043F780"
     name: net_dispatch_create_user_events
     confidence: high
-    evidence: "CreateUserDialogPane routes decoded opcode 0x02 and alias 0x01 through the same state-specific creation-result handlers outside the packet factory."
+    evidence: "CreateUserDialogPane routes decoded opcode 0x02 and alias 0x01 through state-specific creation-result handlers outside the packet factory, and accepts raw opcode 0x30 through a no-op path."
   - address: "0x0043F820"
     name: net_handle_new_user_check_opcode_1
     confidence: high
@@ -27,6 +27,10 @@ functions:
     name: net_handle_new_user_check_opcode_2
     confidence: high
     evidence: "Routes live SNewUserCheck opcode 0x02 according to CreateUserDialogPane creation stage."
+  - address: "0x0043F8C0"
+    name: ui_create_user_accept_opcode_30
+    confidence: high
+    evidence: "Returns handled for raw server opcode 0x30 without reading the body or changing CreateUserDialogPane state."
   - address: "0x004647C0"
     name: event_dispatch
     confidence: high
@@ -297,6 +301,10 @@ comments:
     text: "Live lobby opcode 0x02 is SNewUserCheck while CreateUserDialogPane owns the event. The same opcode is SLoginCheck while MainMenuPane owns it."
   - address: "0x0043F7DC"
     text: "Opcode 0x01 is a compiled SNewUserCheck alias. It reaches the same state-specific handlers as live opcode 0x02."
+  - address: "0x0043F7FD"
+    text: "CreateUserDialogPane recognizes raw opcode 0x30, then returns handled without reading the packet body or changing UI state."
+  - address: "0x0043F8E8"
+    text: "No-op raw opcode 0x30 path: return true so CreateUserDialogPane treats the event as handled."
   - address: "0x00464982"
     text: "Use decoded body byte 0 as the server opcode, create the registered server packet class, and deserialize through its vtable."
   - address: "0x004B77A8"

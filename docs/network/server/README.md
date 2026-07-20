@@ -2,11 +2,20 @@
 
 These messages travel from the server to the game client.
 
-Most concrete names come directly from RTTI and the server packet factory. The central world dispatcher also handles decoded byte buffers directly, so a factory or RTTI scan alone is not a complete server-opcode inventory.
+Most concrete names come directly from RTTI and the server packet factory. A decoded network event also retains the opcode-first body beside its optional packet object, so panes and managers can handle a message without a factory class.
 
-Six confirmed opcodes bypass the factory entirely in this dispatcher: `0x1B`, `0x31`, `0x34`, `0x35`, `0x36`, and `0x4F`. The known handlers open the editable-paper pane, create exact RTTI `BulletinSession`, open exact RTTI `UserInfoPane_ForOthers` for an existing living object, show a read-only paper, show the user list, and open `EmployeeDialogPane`, respectively. `SBulletin` is a project-owner protocol name. `SObjectInfo` is provisional project-owner vocabulary supported by the local UI behavior.
+## Raw event coverage
 
-Five factory-backed messages are also read through their decoded bodies here: `0x06`, `0x2E`, `0x3B`, `0x3C`, and `0x42`. This second group does have factory evidence, but its world handler reparses the raw representation.
+The raw-event audit checked every target-client function that reads the decoded body field and every direct comparison of its first byte. It found no additional server opcode beyond the packet index below.
+
+| Route | Opcodes | Result |
+| --- | --- | --- |
+| No factory class, handled from the decoded body | `0x00`, `0x01`, `0x02`, `0x1B`, `0x31`, `0x34`, `0x35`, `0x36`, `0x4F`, `0x6F` | Lobby panes, the world dispatcher, bulletin panes, `GUIBackPane`, `EmployeeDialogPane`, or the metadata manager own the behavior. |
+| No factory class and no decoded-body consumer | `0x1E`, `0x40`, `0x58`, `0x67` | The body remains available in the event, but no pane or manager acts on it. `0x40` has only a transport-policy entry. |
+| Factory-backed, but also watched or reparsed as raw body bytes | `0x06`, `0x2E`, `0x2F`, `0x30`, `0x3B`, `0x3C`, `0x42`, `0x63` | These remain the RTTI-backed packet named on their pages. The raw route is an additional consumer, not a second packet schema. |
+| Initial raw receive before decoded-body events | `0x7E` | `TerminalPane2` recognizes the startup control in the complete received bytes. |
+
+The central world dispatcher owns the factory-less `0x1B`, `0x31`, `0x34`, `0x35`, `0x36`, and `0x4F` routes. Their handlers open editing, bulletin, object-information, paper, user-list, and employee UI. The other direct consumers are state-specific. For example, the creation pane accepts raw `0x30` as a no-op, while `DescPane` closes when it sees raw `0x42` or `0x63` without reading either packet body.
 
 Body schemas use the shared [packet body notation](../packet-body-notation.md). All multibyte packet integers are big-endian. Reused enum and bit-flag values live in [Shared protocol types](../protocol-types.md).
 

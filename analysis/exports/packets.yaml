@@ -4376,7 +4376,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x0059AA00 installs exact RTTI SPursuitMessage for opcode 0x30. Deserializer 0x0059AA70 reads the common pursuit step and conditional content; NPCSession constructs popup, menu, text, face-menu, protected-input, or close behavior for the locally handled dialog types."
+        evidence: "Constructor 0x0059AA00 installs exact RTTI SPursuitMessage for opcode 0x30. Deserializer 0x0059AA70 reads the common pursuit step and conditional content; NPCSession constructs popup, menu, text, face-menu, protected-input, or close behavior. CreateUserDialogPane separately accepts raw 0x30 as a no-op without reading its body."
         page: "docs/network/server/048-0x30-pursuit-message.md"
       - opcode: "0x31"
         friendly_name: "Bulletin"
@@ -4536,7 +4536,7 @@ packet_indexes:
         evidence_source: owner_protocol_name
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Opcode 0x40 appears in the inbound raw transform-policy branch but has no factory registration; SSendPatch is project-owner protocol vocabulary."
+        evidence: "Opcode 0x40 appears in the inbound raw transform-policy branch but has no factory registration or decoded-body event consumer; SSendPatch is project-owner protocol vocabulary."
         page: "docs/network/server/064-0x40-send-patch.md"
       - opcode: "0x42"
         friendly_name: "Exchange"
@@ -4546,7 +4546,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Exact RTTI constructor 0x00598F50 binds opcode 0x42. Deserializer 0x00598F80 reads six event-dependent bodies, and ExchangeDialog routes events 0x01 through 0x05 to their UI handlers."
+        evidence: "Exact RTTI constructor 0x00598F50 binds opcode 0x42. Deserializer 0x00598F80 reads six event-dependent bodies, and ExchangeDialog routes events 0x01 through 0x05. DescPane also watches raw 0x42 only to close itself and reads no exchange fields."
         page: "docs/network/server/066-0x42-exchange.md"
       - opcode: "0x44"
         friendly_name: "Add User"
@@ -4716,7 +4716,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI constructor 0x005994C0 installs opcode 0x63. Deserializer 0x005994F0 reads names for actions 1 and 5, recruiting details with five ordered maximum/current pairs for action 4, and no payload for other actions; the handler applies those three parsed forms."
+        evidence: "RTTI constructor 0x005994C0 installs opcode 0x63. Deserializer 0x005994F0 reads names for actions 1 and 5, recruiting details with five ordered maximum/current pairs for action 4, and no payload for other actions. DescPane also watches raw 0x63 only to close itself."
         page: "docs/network/server/099-0x63-group.md"
       - opcode: "0x64"
         friendly_name: "Mini Game"

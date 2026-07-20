@@ -101,6 +101,8 @@ Simple menu type 3 first sends [`CSay`](../client/014-0x0e-say.md) containing th
 
 `net_deserialize_pursuit_message_server_packet` builds the packet object. `ui_npc_session_open_pursuit_message` closes immediately for type 10; otherwise it updates `NPCSession` and creates `NPC_Pursuit_MessageDialog`. `ui_npc_pursuit_build_subtype` adds the question or input model.
 
+`CreateUserDialogPane` also compares the raw decoded opcode with `0x30`. That lobby path immediately returns handled without reading the body or changing UI state. It therefore does not establish a second `0x30` body layout; the only parsed `0x30` server schema recovered from this client remains `SPursuitMessage`.
+
 The outer pane uses `lnpcd.txt`. Choice dialogs use `lnpcd2.txt`, ordinary input uses `lnpcd4.txt`, and protected input uses `lnpcnid.txt`. The outer `DialogPane` attachment order makes actions 4, 5, and 6 Previous, Next, and Close. Actions 0 through 3 belong to the base name, content, and scrolling controls.
 
 See [NPC dialogs](../../systems/npc-dialogs.md) for the complete pane and response model and [NPC dialog illustrations](../../systems/npc-dialog-illustrations.md) for the optional speaker art.

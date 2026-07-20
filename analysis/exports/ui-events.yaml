@@ -435,6 +435,14 @@ functions:
     name: input_translate_win32_message
     confidence: high
     evidence: "Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events."
+  - address: "0x0049C980"
+    name: ui_close_desc_pane
+    confidence: high
+    evidence: "Unregisters the current RTTI-backed DescPane from event and screen routing and clears its active state."
+  - address: "0x0049CC30"
+    name: ui_desc_pane_handle_network_event
+    confidence: high
+    evidence: "Closes DescPane when a decoded raw body begins with SExchange opcode 0x42 or SGroup opcode 0x63; it reads no packet fields."
   - address: "0x004A9C30"
     name: app_window_proc
     confidence: high
@@ -687,6 +695,10 @@ comments:
     text: "When the four-row floating overlay fills, rotate out the oldest line before continuing."
   - address: "0x0047C975"
     text: "Each floating-message append starts a 2,000 ms timer before the line begins its fade sequence."
+  - address: "0x0049CC6B"
+    text: "Raw SGroup opcode 0x63 only closes DescPane here. The factory-backed SGroup parser and world handler own the packet body."
+  - address: "0x0049CC8C"
+    text: "Raw SExchange opcode 0x42 only closes DescPane here. This handler does not consume exchange fields."
   - address: "0x00554368"
     text: "Store the selected cursor mode at root ScreenPane +0x27C. ClockPane uses mode 3 while active and restores mode 0 on close."
   - address: "0x005A9030"

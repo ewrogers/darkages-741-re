@@ -15,6 +15,8 @@ The server sends this message for **send patch**.
 
 The opcode has an explicit raw policy in `net_receive_frames`, but `net_server_packet_factory_ctor` does not register a concrete RTTI class for it. The protocol name is `SSendPatch`; its special parser and relationship to client [`CRequestPatch`](../client/072-0x48-request-patch.md) remain to be located.
 
+A complete scan of decoded-body event consumers found no pane or manager that compares raw opcode `0x40`. The transport-policy entry is the only recovered client reference that treats this byte as a server opcode.
+
 `SSendPatch` is therefore preserved as protocol vocabulary, not claimed as a compiler-recovered class name.
 
 This opcode is not on the verified `Patcher2.exe` launch path. The 7.41 client receives that notification through [`SVersionCheck`](000-0x00-version-check.md) subtype `2`. The purpose of this separate raw opcode remains unresolved.

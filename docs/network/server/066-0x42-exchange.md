@@ -80,4 +80,6 @@ Event `0x00` is handled before an exchange pane exists. If the client is in a st
 
 Events `0x01` through `0x05` reach the open dialog through its primary-vtable network-event slot. Cancelled and final Accepted both remove the exchange only after processing their message. Earlier Accepted events update the acknowledgement image and leave the pane open.
 
+The RTTI-backed `DescPane` also watches the raw decoded opcode. Any `0x42` event closes the current description pane, but that auxiliary route reads no exchange fields. The packet factory and exchange handlers remain the owners of the body layout above.
+
 See [Player exchange](../../systems/player-exchange.md) for the complete UI flow and popup behavior.

@@ -205,6 +205,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_create_user_handle_pointer_event` | `0x0043DC80` | high | Handles CreateUserDialogPane appearance clicks, including gender selection and conversion of the 2-by-7 hair-color swatch grid into palette indexes. |
 | `ui_create_user_handle_action` | `0x0043EAD0` | high | Collects name, password, confirmation, and distribution-dependent account text; checks matching passwords and schedules the create-user send timer. |
 | `ui_create_user_timer` | `0x0043F410` | high | CreateUserDialogPane TimerHandler callback; timer 3 sends CNewUser after the form action schedules a 200 ms delay. |
+| `ui_create_user_accept_opcode_30` | `0x0043F8C0` | high | Returns handled for raw server opcode 0x30 without reading the body or changing CreateUserDialogPane state. |
 | `ui_dialog_pane_ctor` | `0x00445260` | high | Constructs DialogPane over Pane and initializes its control collection and interaction fields. |
 | `ui_dialog_add_control` | `0x00445670` | high | Creates DialogPane +0x594 on first use and inserts the supplied control pointer. |
 | `ui_dialog_set_default_action` | `0x004457D0` | high | Stores a validated attachment-order control index at DialogPane +0x598; Enter and Space dispatch through this index. |
@@ -363,6 +364,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_start_spell_cast` | `0x0049B900` | high | Copies CUseSpell to +0xB92, its length to +0x8C92, the spell name to +0x8B92, and cast counters to +0x190/+0x191 before beginning the delay sequence. |
 | `ui_cancel_spell_delay` | `0x0049BA50` | high | Clears SpellDelayControlPane::cast_active at +0x8C94 and cancels every timer owned by the pane with the 0x7FFFFFFF wildcard. |
 | `ui_load_spell_cast_lines` | `0x0049BD80` | high | Loads up to ten 256-byte per-spell cast strings from the current character's SpellBook.cfg data. |
+| `ui_close_desc_pane` | `0x0049C980` | high | Unregisters the current RTTI-backed DescPane from event and screen routing and clears its active state. |
+| `ui_desc_pane_handle_network_event` | `0x0049CC30` | high | Closes DescPane when a decoded raw body begins with SExchange opcode 0x42 or SGroup opcode 0x63; it reads no packet fields. |
 | `ui_item_shop_shopping_bag_ctor` | `0x0049F450` | high | Constructs exact RTTI ItemShop::ShoppingBagDialogPane from lshopba2.txt and sends CCashShop action 0. |
 | `ui_item_shop_shopping_bag_dtor` | `0x0049F7E0` | high | Unregisters and destroys ShoppingBagDialogPane and its attached item controls. |
 | `ui_item_shop_shopping_bag_handle_network_event` | `0x004A0550` | high | Consumes exact RTTI SItemShop in the shopping-bag pane. |
@@ -715,7 +718,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_new_user_validation_result` | `0x0043E360` | high | Parses the first creation result: status 0 sends appearance, 3 and 4 reset name, 5 through 10 reset both password controls, and 11 displays only the message. |
 | `net_handle_new_user_completion_result` | `0x0043E7B0` | high | Parses the second creation result; status 0 displays localized success text, closes CreateUserDialogPane, and ignores body bytes after status. |
 | `net_send_new_user_appearance` | `0x0043E8F0` | high | Accepted SNewUserCheck flow sends opcode 0x04 with hair style, one-based gender, and hair-color palette index. |
-| `net_dispatch_create_user_events` | `0x0043F780` | high | CreateUserDialogPane routes decoded opcode 0x02 and alias 0x01 through the same state-specific creation-result handlers outside the packet factory. |
+| `net_dispatch_create_user_events` | `0x0043F780` | high | CreateUserDialogPane routes decoded opcode 0x02 and alias 0x01 through state-specific creation-result handlers outside the packet factory, and accepts raw opcode 0x30 through a no-op path. |
 | `net_handle_new_user_check_opcode_1` | `0x0043F820` | high | Routes compiled SNewUserCheck alias opcode 0x01 according to CreateUserDialogPane creation stage. |
 | `net_handle_new_user_check_opcode_2` | `0x0043F870` | high | Routes live SNewUserCheck opcode 0x02 according to CreateUserDialogPane creation stage. |
 | `net_send_mercenary_add_item` | `0x0045C500` | high | Builds CMercenary action 0 with inventory slot and u32 quantity. |
