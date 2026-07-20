@@ -306,6 +306,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_skill_inventory_add_skill_from_packet` | `0x00491730` | high | Accepts SAddSkill slots 1 through 90, replaces an existing UI item, and constructs a new SkillInvItemPane. |
 | `ui_skill_inventory_remove_skill_from_packet` | `0x004917D0` | high | Accepts SRemoveSkill slots 1 through 90 and removes the slot when its SkillInvItemPane pointer is non-null. |
 | `ui_skill_inventory_apply_action_delay` | `0x00491850` | high | Accepts SActionDelay selector 1 and slots 1 through 90, sets the live item delay flag, starts the skill progress visual, and schedules the inventory expiry timer. |
+| `ui_skill_inventory_change_slot` | `0x00491920` | high | Validates a NewSkillInventoryPane drag destination, rejects slots divisible by 36 and entries under SActionDelay, then requests CChangeSlot category 2. |
 | `ui_new_spell_inventory_pane_ctor` | `0x004919E0` | high | Constructs exact RTTI class NewSpellInventoryPane and initializes its 90-entry spell-item pointer array. |
 | `ui_spell_inventory_action_delay_timer` | `0x00491F70` | high | NewSpellInventoryPane TimerHandler callback for ID 0; resolves the one-based slot payload and clears action_delay_active on the current spell item. |
 | `ui_spell_inventory_create_spell_item` | `0x00492070` | high | Allocates SpellInvItemPane and passes the SAddSpell slot, icon, argument type, name, prompt, and cast-line count to its constructor. |
@@ -314,6 +315,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_spell_inventory_add_spell_from_packet` | `0x00492200` | high | Accepts SAddSpell slots 1 through 90, replaces the existing UI entry, and constructs a new SpellInvItemPane. |
 | `ui_spell_inventory_remove_spell_from_packet` | `0x004922B0` | high | Accepts SRemoveSpell slots 1 through 90 and removes the slot when its SpellInvItemPane pointer is non-null. |
 | `ui_spell_inventory_apply_action_delay` | `0x00492330` | high | Accepts SActionDelay selector 0 and slots 1 through 90, sets the live spell item delay flag, and schedules the inventory expiry timer. |
+| `ui_spell_inventory_change_slot` | `0x004923F0` | high | Validates a NewSpellInventoryPane drag destination, rejects slots divisible by 36 and entries under SActionDelay, then requests CChangeSlot category 1. |
 | `ui_skill_inventory_set_item_at` | `0x00492B30` | high | Replaces a checked zero-based skill inventory entry and attaches the new SkillInvItemPane to its visible slot. |
 | `ui_skill_inventory_remove_item_at` | `0x00492C00` | high | Checks a zero-based skill inventory index, releases its live UI item, and clears the pointer entry. |
 | `ui_spell_inventory_remove_item_at` | `0x00493460` | high | Checks a zero-based spell inventory index, releases its live SpellInvItemPane through the shared UI owner, and clears the pointer entry. |
@@ -671,7 +673,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_world_pane_is_privileged` | `0x005F9D90` | high | MapUserInterface virtual getter returns whether WorldUserFunc privilege_level is nonzero; bulletin, line-input, and dormant screenshot branches consume it. |
 | `ui_world_pane_get_privilege_level` | `0x005F9DC0` | high | MapUserInterface virtual getter returns raw WorldUserFunc privilege_level 0 through 3; the event dispatcher compares it exactly with 1 in a dormant timeout path. |
 | `ui_world_pane_change_user_state` | `0x005F9E20` | high | WorldPane_Impl interface method that forwards a requested UserState to CChangeUserState. |
-| `ui_world_pane_get_local_action_state` | `0x005F9E50` | high | WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc; CChangeSlot is its only identified indirect consumer. |
+| `ui_world_pane_get_local_action_state` | `0x005F9E50` | high | WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc; the item-inventory CChangeSlot category-0 sender is its only identified indirect consumer. |
 | `ui_world_pane_get_self_object_id` | `0x005F9EC0` | high | WorldPane_Impl virtual getter returns the SUserAppearance user ID stored in WorldUserFunc. |
 | `ui_world_pane_get_appearance_unknown_final` | `0x005FA040` | high | WorldPane_Impl virtual getter returns the final parsed SUserAppearance byte; no client decision based on it is identified. |
 | `ui_world_pane_get_guild_value` | `0x005FA0B0` | medium | WorldPane_Impl virtual getter returns the second post-ID SUserAppearance byte unchanged; project behavioral evidence associates it with guild state. |
@@ -748,7 +750,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_exchange_add_stackable_item` | `0x0046C2A0` | high | Builds opcode 0x4A, action 0x02, exchange ID, staged slot, and u8 quantity. |
 | `net_request_family_name` | `0x004719B0` | high | Builds and submits the opcode-only CRequestFamilyName body 7A. |
 | `net_send_field_map_selection` | `0x00476390` | high | Normal field-map UI builder writes opcode 0x3F followed by the selected node's checksum, map ID, X, and Y words. |
-| `net_send_change_slot` | `0x00490F40` | high | Suppresses CChangeSlot while SUserAppearance action-state bit 0 is set; otherwise writes opcode 0x30, zero, source slot, and destination slot, excluding encoded slot 0x3C. |
+| `net_send_inventory_change_slot` | `0x00490F40` | high | Writes CChangeSlot category 0 for item inventory, followed by one-based source and destination slots; it excludes slot 60 and suppresses this category while SUserAppearance action-state bit 0 is set. |
+| `net_send_skill_change_slot` | `0x00492CE0` | high | Builds the four-byte CChangeSlot body with category 2, one-based source skill slot, and one-based destination skill slot. |
+| `net_send_spell_change_slot` | `0x00493540` | high | Builds the four-byte CChangeSlot body with category 1, one-based source spell slot, and one-based destination spell slot. |
 | `net_send_drop` | `0x00496C90` | high | Builds CDrop as opcode 0x08, source slot, target X, target Y, and u32 quantity. |
 | `net_send_give` | `0x00496D90` | high | Builds the 10-byte CGive body as opcode 0x29, u8 source slot, u32 living target object ID, and u32 quantity. |
 | `net_send_use_inventory_item` | `0x00496E90` | high | Checks the item denial list, then builds CUse as opcode 0x1C followed by the one-byte slot retained from SAddInventory. |

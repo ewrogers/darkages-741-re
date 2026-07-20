@@ -66,7 +66,7 @@ Persistent bit `0x01` is an action lock. Its sense is inverted: one means locked
 | Tile movement and click-path search | Rejects the step before privilege, occupants, or `SOTP.DAT` collision |
 | Dragged-pane drop reaching `WorldPane` | Rejects the drop, including an inventory item dropped onto the map |
 | Incoming exchange start | Does not open `ExchangeDialog` and sends `CExchange` action `4` to the requester |
-| Inventory slot rearrangement | Suppresses `CChangeSlot` |
+| Item-inventory slot rearrangement | Suppresses category-`0` `CChangeSlot`; the spell and skill category senders do not check this field |
 
 ```c
 if (appearance_action_state & 0x01)

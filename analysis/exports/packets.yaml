@@ -236,9 +236,9 @@ functions:
     confidence: high
     evidence: "Copies SStatus gold into the inventory pane and redraws its currency display."
   - address: "0x00490F40"
-    name: net_send_change_slot
+    name: net_send_inventory_change_slot
     confidence: high
-    evidence: "Suppresses CChangeSlot while SUserAppearance action-state bit 0 is set; otherwise writes opcode 0x30, zero, source slot, and destination slot, excluding encoded slot 0x3C."
+    evidence: "Writes CChangeSlot category 0 for item inventory, followed by one-based source and destination slots; it excludes slot 60 and suppresses this category while SUserAppearance action-state bit 0 is set."
   - address: "0x00491050"
     name: ui_new_skill_inventory_pane_ctor
     confidence: high
@@ -263,6 +263,10 @@ functions:
     name: ui_skill_inventory_remove_skill_from_packet
     confidence: high
     evidence: "Accepts SRemoveSkill slots 1 through 90 and removes the slot when its SkillInvItemPane pointer is non-null."
+  - address: "0x00491920"
+    name: ui_skill_inventory_change_slot
+    confidence: high
+    evidence: "Validates a NewSkillInventoryPane drag destination, rejects slots divisible by 36 and entries under SActionDelay, then requests CChangeSlot category 2."
   - address: "0x004919E0"
     name: ui_new_spell_inventory_pane_ctor
     confidence: high
@@ -287,6 +291,10 @@ functions:
     name: ui_spell_inventory_remove_spell_from_packet
     confidence: high
     evidence: "Accepts SRemoveSpell slots 1 through 90 and removes the slot when its SpellInvItemPane pointer is non-null."
+  - address: "0x004923F0"
+    name: ui_spell_inventory_change_slot
+    confidence: high
+    evidence: "Validates a NewSpellInventoryPane drag destination, rejects slots divisible by 36 and entries under SActionDelay, then requests CChangeSlot category 1."
   - address: "0x00492B30"
     name: ui_skill_inventory_set_item_at
     confidence: high
@@ -295,10 +303,18 @@ functions:
     name: ui_skill_inventory_remove_item_at
     confidence: high
     evidence: "Checks a zero-based skill inventory index, releases its live UI item, and clears the pointer entry."
+  - address: "0x00492CE0"
+    name: net_send_skill_change_slot
+    confidence: high
+    evidence: "Builds the four-byte CChangeSlot body with category 2, one-based source skill slot, and one-based destination skill slot."
   - address: "0x00493460"
     name: ui_spell_inventory_remove_item_at
     confidence: high
     evidence: "Checks a zero-based spell inventory index, releases its live SpellInvItemPane through the shared UI owner, and clears the pointer entry."
+  - address: "0x00493540"
+    name: net_send_spell_change_slot
+    confidence: high
+    evidence: "Builds the four-byte CChangeSlot body with category 1, one-based source spell slot, and one-based destination spell slot."
   - address: "0x00495C60"
     name: ui_item_pane_ctor
     confidence: high
@@ -2030,7 +2046,7 @@ functions:
   - address: "0x005F9E50"
     name: ui_world_pane_get_local_action_state
     confidence: high
-    evidence: "WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc; CChangeSlot is its only identified indirect consumer."
+    evidence: "WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc; the item-inventory CChangeSlot category-0 sender is its only identified indirect consumer."
   - address: "0x005F9EC0"
     name: ui_world_pane_get_self_object_id
     confidence: high
@@ -2231,6 +2247,8 @@ comments:
     text: "Replace an occupied inventory slot before constructing the new InvItemPane."
   - address: "0x00490D3C"
     text: "The inventory UI accepts SRemoveInventory slots 1 through 60 and ignores empty slots."
+  - address: "0x00490FC9"
+    text: "CChangeSlot category 0 selects item inventory; the following bytes are one-based source and destination slots."
   - address: "0x0049107D"
     text: "NewSkillInventoryPane uses a 90-entry UI inventory."
   - address: "0x004915DF"
@@ -2251,6 +2269,8 @@ comments:
     text: "The UI accepts SRemoveSkill slots 1 through 90."
   - address: "0x0049182E"
     text: "Only a live SkillInvItemPane is removed; an empty slot is ignored."
+  - address: "0x00491940"
+    text: "Skill slot changes reject one-based slots divisible by 36, including 36 and 72 in the 90-slot pane."
   - address: "0x00492147"
     text: "Convert the one-based protocol slot to the inventory container's zero-based index."
   - address: "0x004921B6"
@@ -2263,16 +2283,22 @@ comments:
     text: "Read the one-based SRemoveSpell slot from packet object offset +0x10."
   - address: "0x0049230E"
     text: "Only an in-range UI slot with a live SpellInvItemPane is removed."
+  - address: "0x00492410"
+    text: "Spell slot changes reject one-based slots divisible by 36, including 36 and 72 in the 90-slot pane."
   - address: "0x00492CBF"
     text: "Release the live SkillInvItemPane through the shared UI ownership manager."
   - address: "0x00492CC7"
     text: "Clear the skill inventory pointer entry after releasing its item."
+  - address: "0x00492D12"
+    text: "CChangeSlot category 2 selects skills; the following bytes are one-based source and destination slots."
   - address: "0x004934A6"
     text: "Locate the live UI item pointer for the checked zero-based inventory index."
   - address: "0x0049351F"
     text: "Release the live spell item through the shared UI ownership manager."
   - address: "0x00493527"
     text: "Clear the spell inventory entry pointer after releasing the SpellInvItemPane."
+  - address: "0x00493572"
+    text: "CChangeSlot category 1 selects spells; the following bytes are one-based source and destination slots."
   - address: "0x00495C8C"
     text: "Store the inventory item sprite at ItemPane +0x190."
   - address: "0x00495C97"
@@ -3012,7 +3038,7 @@ comments:
   - address: "0x0059CBAC"
     text: "Read the one-byte character class. Project protocol vocabulary supplies the labels; local code directly special-cases numeric value 2."
   - address: "0x0059CBBA"
-    text: "Read appearance_action_state. Bit 0 blocks movement, WorldPane drops, exchange opening, and CChangeSlot; bit 0x80 marks a state-only update."
+    text: "Read appearance_action_state. Bit 0 blocks movement, WorldPane drops, exchange opening, and item-inventory CChangeSlot category 0; bit 0x80 marks a state-only update."
   - address: "0x0059CBC0"
     text: "Read the final parsed appearance byte. It is separate from appearance_action_state and has no identified gameplay consumer."
   - address: "0x0059CCE2"
@@ -3468,7 +3494,7 @@ comments:
   - address: "0x005FD392"
     text: "Session skill removal accepts slots 1 through 89; other values are ignored."
   - address: "0x005FD3CC"
-    text: "Store appearance_state & 0x7F at WorldUserFunc +0x15C88. Bit 0 blocks movement, WorldPane drops, exchange opening, and CChangeSlot; this is the field's only runtime writer."
+    text: "Store appearance_state & 0x7F at WorldUserFunc +0x15C88. Bit 0 blocks movement, WorldPane drops, exchange opening, and item-inventory CChangeSlot category 0; this is the field's only runtime writer."
   - address: "0x005FD3DC"
     text: "Bit 0x80 means the packet only changes the stored low-seven-bit state. Other self appearance fields remain unchanged."
   - address: "0x005FD3FA"
@@ -3754,7 +3780,7 @@ packet_indexes:
         builder: "0x00490F40"
         opcode_confidence: high
         name_confidence: medium
-        evidence: "Builder 0x00490F40 writes opcode 0x30, zero, source slot, and destination slot, and suppresses the packet while the SUserAppearance action lock is set."
+        evidence: "Three local builders write opcode 0x30 followed by category, source slot, and destination slot: item inventory uses category 0, spells use 1, and skills use 2. Only the category-0 builder directly checks SUserAppearance action-state bit 0."
         page: "docs/network/client/048-0x30-change-slot.md"
       - opcode: "0x31"
         friendly_name: "Confirm"
