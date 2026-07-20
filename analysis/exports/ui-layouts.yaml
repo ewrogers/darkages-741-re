@@ -59,6 +59,14 @@ functions:
     name: ui_layout_serialize_control
     confidence: high
     evidence: "Writes one parsed control back to the same line-oriented layout grammar."
+  - address: "0x005ABA30"
+    name: ui_user_info_pane_ctor
+    confidence: high
+    evidence: "Constructs UserInfoPane, initializes seven page-enable flags, and creates page children with action IDs 0x101 through 0x107 at offsets +0x584 through +0x59C."
+  - address: "0x005B2110"
+    name: ui_user_info_visual_state_ctor
+    confidence: high
+    evidence: "Constructs two arrays of seven 0x34-byte animation states inside the 0x3B8-byte UserInfoPane visual subobject at complete-object offset +0x1B4."
 data_symbols:
   - address: "0x006D8FC4"
     name: ui_layout_manager

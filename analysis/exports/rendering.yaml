@@ -459,6 +459,10 @@ functions:
     name: map_apply_seasonal_tile_mode
     confidence: high
     evidence: Applies the SMapSize 0x80 flag to both ground and static tile storage.
+  - address: "0x005C7700"
+    name: world_object_list_create
+    confidence: high
+    evidence: Allocates the 0x68-byte WorldObjectList, constructs width times height 0x60-byte cells, and installs it at WorldPane +0x194.
   - address: "0x005C7870"
     name: map_load_hea_resource
     confidence: high
@@ -611,6 +615,10 @@ functions:
     name: map_refresh_collision_cache
     confidence: high
     evidence: Refreshes dirty cells in the map's width-by-height byte collision cache with map_get_collision_level.
+  - address: "0x005DB3F0"
+    name: world_object_ctor
+    confidence: high
+    evidence: Constructs the 0x7C-byte common WorldObject prefix, including identity, render offsets, tile coordinates, attached panes, object lighting, and ground-paint state.
   - address: "0x005DB6D0"
     name: world_object_set_ground_paint
     confidence: high
@@ -675,6 +683,10 @@ functions:
     name: world_item_refresh_ground_paint
     confidence: high
     evidence: Applies ordinary gndattr paint, but substitutes bytes 39 AE EF 80 and depth 100 when the tile's height-1 marker is set.
+  - address: "0x005DE8F0"
+    name: world_item_handle_pointer_event
+    confidence: high
+    evidence: Arms WorldObject_Item +0xB5 on a pointer press inside its interaction rectangle, then consumes and clears that state on release or cancel.
   - address: "0x005DEF70"
     name: render_copy_human_appearance_record
     confidence: high
@@ -682,7 +694,7 @@ functions:
   - address: "0x005DF230"
     name: world_living_object_ctor
     confidence: high
-    evidence: Constructs the RTTI WorldObject_Living base, including clearing its +0xD4 nonblocking state.
+    evidence: Extends the 0x7C-byte WorldObject base with image sessions, a composite Canvas, name and direction state, and four 0x14-byte timed motion slots through +0x1E3.
   - address: "0x005DF950"
     name: render_living_object
     confidence: high
@@ -723,6 +735,18 @@ functions:
     name: world_living_start_motion
     confidence: high
     evidence: Stores the facing direction, asks the current image session to select a body motion, and schedules its timer using the selector's final duration in milliseconds.
+  - address: "0x005E10B0"
+    name: world_living_update_motion_slot
+    confidence: high
+    evidence: Creates or updates one of four 0x14-byte motion slots and stores zero or current tick plus duration as its expiry time.
+  - address: "0x005E16C0"
+    name: world_living_adjust_render_offset_for_direction
+    confidence: high
+    evidence: Applies direction-table deltas to the signed WorldObject render-displacement pair at +0x38 and +0x3C.
+  - address: "0x005E1770"
+    name: world_living_set_render_offset
+    confidence: high
+    evidence: Replaces the signed render-displacement pair at WorldObject +0x38 and +0x3C independently of tile Y and X.
   - address: "0x005E1800"
     name: world_living_handle_timer_event
     confidence: high
@@ -759,6 +783,10 @@ functions:
     name: world_user_start_move
     confidence: high
     evidence: Refreshes WorldObject_User appearance state, then starts the common living-object move with the supplied ScrollLevel flag.
+  - address: "0x005E5290"
+    name: world_object_list_ctor
+    confidence: high
+    evidence: Constructs the 0x68-byte object list, its ordered entity-ID tree and secondary indexes, and width times height spatial cells of 0x60 bytes each.
   - address: "0x005E5D40"
     name: world_object_list_insert
     confidence: high
@@ -826,7 +854,7 @@ functions:
   - address: "0x006017C0"
     name: render_monster_image_session_ctor
     confidence: high
-    evidence: Constructs the 0xE4-byte RTTI MonsterObjectImageSession and resolves standing, attack, and movement resources for the selected monster sprite.
+    evidence: Constructs the 0xE4-byte RTTI MonsterObjectImageSession, including resource pointers, frame and animation state, and four 0x10-byte palette mappings.
   - address: "0x00601A20"
     name: render_monster_apply_palette_selectors
     confidence: high
@@ -838,7 +866,7 @@ functions:
   - address: "0x00602240"
     name: render_human_image_session_ctor
     confidence: high
-    evidence: Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord at object offset +0x0C.
+    evidence: Constructs the 0x918-byte RTTI-backed HumanObjectImageSession with HumanAppearanceRecord, a 21-part frame cache, 21 0x50-byte render states, and animation state.
   - address: "0x00602A40"
     name: render_human_select_motion_sequence
     confidence: high

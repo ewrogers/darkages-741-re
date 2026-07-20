@@ -185,14 +185,34 @@ The `NATIONFLAG` named layout images, five profile strings, 18 equipment rectang
 
 [`SAddEquip`](../../network/server/055-0x37-add-equip.md) writes all five values and redraws the pane. [`SRemoveEquip`](../../network/server/056-0x38-remove-equip.md) clears the sprite, first name byte, maximum durability, and current durability. It leaves the dye byte and remaining name-buffer bytes untouched.
 
-The RTTI class `UserInfoPane` owns a second view.
+The RTTI class `UserInfoPane` owns a second view. Its large middle region is a page-visual subobject, not opaque equipment data.
 
 ```c
+struct UserInfoPageVisualState {
+    LayoutRect page_rect;             // +0x000, also the third layout rectangle
+    u8 unknown_010[0x60];
+    u8 page_animation_a[7][0x34];     // +0x070
+    u8 unknown_1DC[0x70];
+    u8 page_animation_b[7][0x34];     // +0x24C
+};                                    // size 0x3B8
+
 struct UserInfoEquipmentFields {
-    u8 unknown_0000[0x588];
-    void *equipment_view;           // +0x588, exact derived class unresolved
-};
+    Pane pane;                       // +0x000, size 0x190
+    bool for_user;                   // +0x190, selects the local-user setup
+    u8 pad_191[3];
+    LayoutRect page_rect_194;         // +0x194
+    LayoutRect page_rect_1A4;         // +0x1A4
+    UserInfoPageVisualState visuals;  // +0x1B4
+    bool page_enabled[7];            // +0x56C
+    u8 unknown_573[0x11];
+    void *pages[7];                  // +0x584, action IDs 0x101 through 0x107
+    u32 local_owner_state;           // +0x5A0, local-user derived form
+    bool local_initialized;          // +0x5A4
+    u8 unknown_5A5[0x7F];
+};                                    // local-user form size 0x624
 ```
+
+The equipment/status view is `pages[1]` at `+0x588`; it is not an embedded equipment record. `pages[2]` at `+0x58C` is the self-look/profile child. All seven page pointers are constructed with action IDs `0x101` through `0x107`. `visuals` contains two parallel arrays of seven `0x34`-byte animation or image-playback records, with two still-unresolved `0x70`-byte metadata blocks around them. The `+0x5A0` tail belongs to the larger local-user-derived form, not the common pane prefix.
 
 The static `equipment_slot_to_ui_index` table contains 19 signed entries. Slot `0` maps to `-1`; slots `1` through `18` map to indices `0` through `17`. The child view receives maximum durability before current durability, matching the order stored by `EquipPane` even though the wire packet sends current first.
 

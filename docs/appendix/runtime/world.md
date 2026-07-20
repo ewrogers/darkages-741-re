@@ -4,22 +4,97 @@ World objects keep the appearance and map-art state needed by the live scene. Th
 
 ## World lighting state
 
-`WorldPane` retains the last server time step and the resolved ambient state across map setup.
+`WorldPane` retains lighting, map, view, transfer, and object-list state in one object. The earlier lighting, map, and dynamic-object structures were overlapping views of this same layout. The constructor now accounts for most of the large prefix:
 
 ```c
-struct WorldPaneLightingFields {
-    u8 unknown_0000[0x1E8];
+struct PointerVector16 {
+    void *begin;
+    void *end;
+    void *capacity;
+    u32 state;
+};
+
+struct WorldPaneLayout {
+    Pane pane;                       // +0x000, size 0x190
+    void *unknown_190;
+    WorldObjectList *object_list;    // +0x194
+    void *unknown_198;
+    void *large_buffer_owner;        // +0x19C, constructed for 0x10000 bytes
+    u8 unknown_1A0[0x20];
+    void *temporary_layout_resource; // +0x1C0, released and cleared by constructor
+    s32 map_width;                   // +0x1C4
+    s32 map_height;                  // +0x1C8
+    bool map_ready;                  // +0x1CC
+    u8 pad_1CD[3];
+    void *child_controller_1D0;
+    void *child_controller_1D4;
+    u8 unknown_1D8[8];
+    u32 tab_map_reference_state;     // +0x1E0
+    void *tab_map_controller;        // +0x1E4
     bool light_mask_active;          // +0x1E8, HEA or forced Darkness base
     bool object_light_masks_active;  // +0x1E9, Darkness mode 3
-    u8 unknown_1EA[0x16];
+    u8 pad_1EA[2];
+    PointerVector16 light_regions;   // +0x1EC, element meaning unresolved
+    u32 unknown_1FC;
     u8 ambient_intensity;            // +0x200
     u8 unknown_201;
     u16 ambient_color;               // +0x202, packed 16-bit RGB
-    u8 unknown_204[0x58];
+    void *render_helper;              // +0x204, allocated as a 0x30-byte object
+    bool unknown_208;
+    u8 pad_209[3];
+    void *world_runtime;              // +0x20C, allocated as a 0x2CC-byte object
+    u8 unknown_210[8];
+    u32 unknown_218;                  // constructor writes 0x12
+    u8 unknown_21C[0x10];
+    Pane *child_pane;                 // +0x22C, created as a 0x190-byte Pane
+    u32 unknown_230;
+    u32 unknown_234;
+    s32 view_y;                       // +0x238
+    s32 view_x;                       // +0x23C
+    bool unknown_240;
+    u8 unknown_241[0x0B];
+    u32 unknown_24C;
+    u32 unknown_250;
+    u8 unknown_254[4];
+    u32 map_helper;                   // +0x258, four-byte subobject
     u8 time_step;                    // +0x25C, from SChangeHour
-    u8 unknown_25D[0x0F];
-    u32 map_id;                      // +0x26C
+    u8 pad_25D[3];
+    u32 map_flags;                    // +0x260, full SMapSize flags byte
+    u8 weather_mode;                  // +0x264, map_flags & 0x0F
+    u8 pad_265[3];
+    u32 previous_map_number;          // +0x268
+    u32 current_map_number;           // +0x26C
+    u32 unknown_270;
+    bool map_enabled;                 // +0x274, separate constructor-initialized state
+    bool map_transfer_active;         // +0x275
+    u8 map_transfer_progress;         // +0x276, SMapPart percentage
+    u8 unknown_277;
+    bool unknown_278;
+    bool unknown_279;
+    bool unknown_27A;
+    u8 pad_27B;
+    MapCellStorage *map_cell_storage; // +0x27C
+    bool unknown_280;
+    bool unknown_281;
+    u8 pad_282[2];
+    u32 unknown_284;
+    u8 unknown_288;
+    bool unknown_289;
+    bool unknown_28A;
+    u8 pad_28B;
+    u32 unknown_28C;
+    u32 unknown_290;
+    u32 unknown_294;
+    PointerVector16 unknown_vector_298;
+    PointerVector16 unknown_vector_2A8;
+    u8 unknown_2B8[0x10];
+    u32 unknown_2C8;
+    WorldUserFunc *user_functions;    // +0x2CC
 };
+
+typedef WorldPaneLayout WorldPaneLightingFields;
+typedef WorldPaneLayout WorldPaneMapFields;
+typedef WorldPaneLayout WorldPaneDynamicObjectFields;
 
 struct LightProfileEntry {
     void *next;                      // +0x00, container link
@@ -40,35 +115,11 @@ The base light mask is active for either an HEA-backed profile or forced Darknes
 
 `SMapSize` installs the active map into `WorldPane`. The dimensions are widened in memory, but client 7.41 supplies them from the packet's two low bytes.
 
-```c
-struct WorldPaneMapFields {
-    u8 unknown_0000[0x1C4];
-    s32 map_width;                   // +0x1C4, zero-extended packet u8
-    s32 map_height;                  // +0x1C8, zero-extended packet u8
-    u8 unknown_1CC[0x14];
-    void *tab_map_controller;        // +0x1E0, NoMap and Rogue zoom paths
-    u8 unknown_1E4[0x54];
-    s32 view_y;                      // +0x238
-    s32 view_x;                      // +0x23C
-    u8 unknown_240[0x20];
-    u32 map_flags;                   // +0x260, full SMapSize flags byte
-    u8 weather_mode;                 // +0x264, map_flags & 0x0F
-    u8 unknown_265[3];
-    u32 previous_map_number;         // +0x268
-    u32 current_map_number;          // +0x26C
-    u8 unknown_270[5];
-    bool map_transfer_active;        // +0x275
-    u8 map_transfer_progress;        // +0x276, SMapPart percentage
-    u8 unknown_277[5];
-    void *map_cell_storage;          // +0x27C
-};
-```
-
 `map_cell_storage` keeps `u16` width and height fields internally and owns `width * height` six-byte map-cell records. The only live-network resize path receives its dimensions from `SMapSize`, so the wider internal types do not restore the discarded high dimension bytes.
 
 `map_transfer_active` is set when `SMapSize` cannot accept the local cache. Both `SMap` and `SMapPart` ignore their cell data while it is clear. `SMapPart` updates `map_transfer_progress` and clears the active flag after the final row; `SMap` only writes its rectangle and leaves both completion duties untouched.
 
-The object at `tab_map_controller` serves the Tab-key map UI. Flag `0x40` prevents that path before the class check, while class value 2 enables Rogue zoom when the map is allowed. The packet's string8 map name is parsed but not copied into these `WorldPane` fields by the main handler.
+The logical Tab-map reference begins at `+0x1E0`; its raw controller pointer is at `+0x1E4`. Flag `0x40` prevents that path before the class check, while class value 2 enables Rogue zoom when the map is allowed. The packet's string8 map name is parsed but not copied into these `WorldPane` fields by the main handler.
 
 ## World position fields
 
@@ -76,7 +127,9 @@ World objects keep tile coordinates as signed 32-bit integers in Y, X memory ord
 
 ```c
 struct WorldObjectPositionFields {
-    u8 unknown_0000[0x40];
+    u8 object_identity_and_state[0x38];
+    s32 render_offset_y;             // +0x38, pixel displacement
+    s32 render_offset_x;             // +0x3C, pixel displacement
     s32 tile_y;                      // +0x40
     s32 tile_x;                      // +0x44
 };
@@ -88,23 +141,40 @@ Despite its RTTI name, [`SAddUser`](../../network/server/068-0x44-add-user.md) d
 
 ## Dynamic object index
 
-`WorldPane` owns one shared collection for humans, creatures, and ground items. It is not a flat object array.
+`WorldPane` owns one shared collection for humans, creatures, and ground items. It is not a flat object array. The pointer is the `WorldPaneLayout.object_list` field at `+0x194`.
 
 ```c
-struct WorldPaneDynamicObjectFields {
-    u8 unknown_000[0x194];
-    WorldObjectList *object_list;     // +0x194
-};
-
 struct WorldObjectListFields {
-    u8 unknown_00[0x20];
+    void *vtable;                     // +0x00
+    u32 busy_tag;                     // +0x04, initialized to "busy"
+    u32 unknown_08;
+    u8 container_0C[0x10];
+    u8 id_tree[0x10];                 // +0x1C, ordered entity-ID tree
     WorldObjectIdNode *id_tree_head;  // +0x20, sentinel and tree root links
-    u8 unknown_24[0x28];
+    u8 container_2C[0x10];
+    u8 container_3C[0x10];
     WorldObjectCell *cells;           // +0x4C, width * height records
-    u8 unknown_50[0x0C];
+    WorldObjectCell *cells_end;       // +0x50
+    WorldObjectCell *cells_capacity;  // +0x54
+    u32 unknown_58;
     s32 width;                        // +0x5C
     s32 height;                       // +0x60
-};
+    bool unknown_64;
+    u8 pad_65[3];
+};                                    // size 0x68
+
+struct WorldObjectCellFields {
+    u8 unknown_00[4];
+    void *unknown_04;
+    u8 unknown_08[0x30];
+    u32 linear_index;                 // +0x38, y * width + x
+    void *link_3C;
+    void *link_40;
+    u32 unknown_44;
+    u32 unknown_48;
+    void *object_heads[4];            // +0x4C, per-cell object groups
+    void *unknown_5C;
+};                                    // size 0x60
 
 struct WorldObjectIdNode {
     WorldObjectIdNode *left;          // +0x00
@@ -124,21 +194,38 @@ All dynamic classes begin with these useful common fields:
 
 ```c
 struct WorldObjectCommonFields {
-    u8 unknown_000[0x24];
+    void *vtable;                     // +0x00
+    u32 ref_count;                    // +0x04
+    void *secondary_vtable;           // +0x08
+    u32 busy_tag;                     // +0x0C, initialized to "busy"
+    u32 unknown_10;
+    u8 small_container_14[0x10];
     u32 entity_id;                    // +0x24
     u8 draw_layer;                    // +0x28, monster 0x0A, item 4
-    u8 unknown_029[3];
+    u8 pad_029[3];
     u32 broad_category;               // +0x2C, monster 2, item 8
-    u8 unknown_030;
+    bool unknown_030;
     u8 collision_level;               // +0x31
-    u8 unknown_032[0x0E];
+    u8 pad_032[2];
+    u32 unknown_034;                  // constructor writes 1
+    s32 render_offset_y;              // +0x38
+    s32 render_offset_x;              // +0x3C
     s32 tile_y;                       // +0x40
     s32 tile_x;                       // +0x44
     bool inserted;                    // +0x48
-    u8 unknown_049[0x0F];
+    u8 pad_049[3];
+    s32 unknown_04C;                  // constructor writes -1
+    void *speech_pane;                // +0x50, used by world speech path
+    u32 speech_state;                 // +0x54
     WorldObject_Name_Pane *name_pane; // +0x58
-};
+    void *object_light_image;         // +0x5C
+    s32 cached_light_bounds[4];       // +0x60
+    u32 unknown_070;                  // constructor writes 2
+    u8 ground_paint[8];               // +0x74
+};                                    // size 0x7C
 ```
+
+The `+0x38` and `+0x3C` pair is a render-time pixel displacement. Direction-aware movement code updates it independently of the authoritative tile coordinates. The `+0x50` and `+0x54` pair is reached by world speech, but the exact lifetime and value meanings remain unresolved. The final eight bytes are the record written by `world_object_set_ground_paint`; its inner color and mode fields are not yet split confidently.
 
 `render_collect_world_objects` uses `draw_layer` directly as one of 32 ordered queues. Ground items normally use layer 4, living objects use layer 7, monsters use layer 10, and static map art uses layer 16.
 
@@ -149,18 +236,52 @@ The `SDrawObjects` creation helpers remove any existing entry with the same ID b
 Both creatures and Mundanes, the game's NPCs, use exact RTTI class `WorldObject_Monster`.
 
 ```c
+struct LivingMotionSlot {
+    bool active;                      // +0x00
+    u8 pad_01[3];
+    u32 channel;                      // +0x04, 0 through 3
+    u32 motion_value;                 // +0x08
+    u16 parameter;                    // +0x0C
+    u16 pad_0E;
+    u32 expires_at_tick;              // +0x10, zero means no expiry
+};                                    // size 0x14
+
 struct WorldObjectMonsterLayout {
-    WorldObjectCommonFields common; // through +0x5B
-    u8 unknown_05C[0x34];
-    MonsterObjectImageSession *image_session; // +0x90
-    u8 unknown_094[0x7C];
-    bool unknown_110;                 // +0x110, constructor writes 1
-    u8 unknown_111;
+    WorldObjectCommonFields common;   // +0x000 through +0x07B
+    void *motion_records_begin;       // +0x07C
+    void *motion_records_end;         // +0x080
+    void *motion_records_capacity;    // +0x084
+    u32 unknown_088;
+    bool unknown_08C;
+    u8 pad_08D[3];
+    MonsterObjectImageSession *image_session; // +0x090
+    ObjectImageSession *alternate_image_session; // +0x094
+    bool is_local_user;               // +0x098, normally false here
+    u8 pad_099[3];
+    void *monster_sprite_resource;    // +0x09C
+    u32 image_session_configuration;  // +0x0A0
+    u8 monster_state_0A4[0x30];       // meaning unresolved
+    bool nonblocking;                 // +0x0D4
+    bool is_translucent;              // +0x0D5
+    u8 pad_0D6[2];
+    Canvas *composite_canvas;         // +0x0D8
+    u8 unknown_0DC[0x20];
+    bool image_or_motion_dirty;       // +0x0FC
+    u8 pad_0FD[3];
+    u32 motion_generation;            // +0x100
+    bool uses_human_appearance;       // +0x104
+    bool transition_active;           // +0x105
+    u8 unknown_106[0x0A];
+    bool image_enabled;               // +0x110, constructor writes 1
+    bool unknown_111;
     char living_name[0x80];           // +0x112, not filled by SDrawObjects
     u8 direction;                     // +0x192
-    u8 unknown_193[0x59];
+    u8 pad_193;
+    LivingMotionSlot motion_slots[4]; // +0x194
+    u32 render_extent_y;              // +0x1E4, resource-derived
+    u32 render_extent_x;              // +0x1E8, resource-derived
     u8 creature_type;                 // +0x1EC
-    u8 unknown_1ED[3];
+    u8 pad_1ED[3];
 };                                    // size 0x1F0
 
 struct MonsterPaletteMapping {
@@ -171,17 +292,34 @@ struct MonsterPaletteMapping {
 };                                    // size 0x10
 
 struct MonsterObjectImageSessionLayout {
-    u8 unknown_000[0x10];
+    void *vtable;                     // +0x00
+    u32 ref_count;                    // +0x04
+    void *current_motion_data;        // +0x08
+    u32 unknown_0C;
     void *monster_sprite_resource;    // +0x10
-    u8 unknown_014[0x89];
+    bool resource_valid;              // +0x14, constructor writes 1
+    u8 pad_15[3];
+    u32 unknown_18;
+    void *standing_motion_resource;   // +0x1C
+    void *alternate_motion_resource;  // +0x20
+    void *direction_resources[3];     // +0x24
+    u8 unknown_30[8];
+    bool unknown_38;
+    u8 pad_39[3];
+    u8 frame_descriptor[0x28];        // +0x3C
+    u8 animation_state[0x34];         // +0x64
+    u32 session_configuration;        // +0x98
+    u8 session_option;                // +0x9C
     bool palette_overrides_active;    // +0x9D
-    u8 unknown_09E[2];
+    u8 pad_09E[2];
     MonsterPaletteMapping palette_mappings[4]; // +0xA0
     s32 palette_mapping_count;        // +0xE0, at most 4
 };                                    // size 0xE4
 ```
 
 The four creature bytes in [`SDrawObjects`](../../network/server/007-0x07-draw-objects.md) become the `palette_selector` fields. The client first copies each range description from the selected monster resource, then replaces only the selector. `palette_mapping_count` is the smaller of four and the number of ranges declared by that resource.
+
+The monster image session's former `+0x14` through `+0x9C` blob is resource and playback state. It retains standing and alternate motion resources, a three-entry directional resource set, a `0x28`-byte frame descriptor, and a `0x34`-byte animation state. Their boundaries and lifetimes are confirmed, but several inner selectors remain unresolved.
 
 The `direction` byte belongs to the shared `WorldObject_Living` base. [`SChangeDirection`](../../network/server/017-0x11-change-direction.md) can update it on users, humans, and monsters after an RTTI check. A changed value also refreshes the object's directional motion or image state.
 
@@ -204,16 +342,17 @@ Creature type is retained at `+0x1EC`. Construction maps types `1`, `2`, and `3`
 
 The inherited living-object byte at `+0xD4` is a separate nonblocking state. The living constructor clears it, and normal monster creation does not set it. Type `3`, project-named Solid, has a special movement branch that permits it only if this state has already become true. The client path that would set the state on a monster remains unresolved.
 
+Living objects also own four timed motion slots at `+0x194`. Each slot records a channel, motion value, 16-bit parameter, and optional expiration tick. A zero expiration means the slot has no timeout; otherwise the client stores the current tick plus the supplied duration.
+
 ### Ground items
 
 Ground items use exact RTTI class `WorldObject_Item`.
 
 ```c
 struct WorldObjectItemLayout {
-    WorldObjectCommonFields common; // through +0x5B
-    u8 unknown_05C[0x20];
+    WorldObjectCommonFields common;   // +0x000 through +0x07B
     u16 sprite;                       // +0x7C, 0x8000 tag removed
-    u8 unknown_07E[2];
+    u8 pad_07E[2];
     void *item_resource_context;      // +0x80
     void *image;                      // +0x84
     s32 source_rect[4];               // +0x88
@@ -222,11 +361,14 @@ struct WorldObjectItemLayout {
     s32 image_offset_y;               // +0xAC
     s32 blend_mode;                   // +0xB0
     u8 dye_color;                     // +0xB4
-    u8 unknown_0B5[3];
+    bool pointer_press_armed;          // +0xB5
+    u8 pad_0B6[2];
 };                                    // size 0xB8
 ```
 
 The packet retains only the untagged `sprite` and `dye_color` in the item object. Its two trailing bytes are parsed but never copied into this layout or used by the item-image refresh path.
+
+`pointer_press_armed` is set only when a pointer-press event hits the item's small interaction rectangle. Release or cancel consumes and clears it, so it is input state rather than another packet field.
 
 ## Human appearance
 
@@ -272,34 +414,84 @@ struct HumanAppearanceRecord {
 };                                   // size 0x30
 
 struct WorldObjectHumanLayout {
-    u8 unknown_000[0x24];
-    u32 entity_id;                   // +0x24
-    u8 unknown_028[0x18];
-    s32 tile_y;                      // +0x40
-    s32 tile_x;                      // +0x44
-    u8 unknown_048[0x48];
-    ObjectImageSession *image_session; // +0x90
-    ObjectImageSession *ground_tile_image_session; // +0x94, cloned while height-1 state is active
-    u8 unknown_098[0x0C];
+    WorldObjectCommonFields common;   // +0x000 through +0x07B
+    void *motion_records_begin;       // +0x07C
+    void *motion_records_end;         // +0x080
+    void *motion_records_capacity;    // +0x084
+    u32 unknown_088;
+    bool unknown_08C;
+    u8 pad_08D[3];
+    ObjectImageSession *image_session; // +0x090
+    ObjectImageSession *ground_tile_image_session; // +0x094
+    bool is_local_user;               // +0x098
+    u8 pad_099[3];
+    void *human_resource_context;     // +0x09C
+    u32 image_session_configuration;  // +0x0A0
     HumanAppearanceRecord appearance; // +0xA4
     bool nonblocking_human;          // +0xD4, body sprite 2
     bool is_translucent;             // +0xD5, true only when record value is 1
-    u8 unknown_0D6[0x2E];
+    u8 pad_0D6[2];
+    Canvas *composite_canvas;         // +0x0D8
+    u8 unknown_0DC[0x20];
+    bool image_or_motion_dirty;       // +0x0FC
+    u8 pad_0FD[3];
+    u32 motion_generation;            // +0x100
     bool uses_human_appearance;      // +0x104, false for monster disguise
-    u8 unknown_105[0x0D];
+    bool transition_active;           // +0x105
+    u8 unknown_106[0x0A];
+    bool image_enabled;               // +0x110
+    bool unknown_111;
     char name[0x80];                 // +0x112, other players
     u8 direction;                    // +0x192
-    u8 unknown_193[0x5A];
+    u8 pad_193;
+    LivingMotionSlot motion_slots[4]; // +0x194
+    u32 render_extent_y;              // +0x1E4, constructor writes 0x3D
+    u32 render_extent_x;              // +0x1E8, constructor writes 0x49
+    u8 unknown_1EC;
     bool ground_tile_height1_state;  // +0x1ED, from gndattr.tbl
-    u8 unknown_1EE[2];
+    u8 pad_1EE[2];
 };                                   // WorldObject_Human size 0x1F0
 
+struct HumanFramePartRecord {
+    u8 state[0x14];                  // inner pointers and selectors unresolved
+};                                   // size 0x14
+
+struct HumanFramePartCache {
+    u8 header[0x20];
+    HumanFramePartRecord parts[21];  // +0x20
+    u8 state;                        // +0x1C4
+    u8 tail[0x0B];
+};                                   // size 0x1D0
+
+struct HumanPartRenderState {
+    u8 state[0x50];                  // one per body/equipment category
+};                                   // size 0x50
+
 struct HumanObjectImageSessionLayout {
-    u8 image_session_base[0x0C];
+    void *vtable;                     // +0x000
+    u32 ref_count;                    // +0x004
+    void *current_motion_data;        // +0x008
     HumanAppearanceRecord appearance; // +0x0C
-    u8 unknown_03C[0x8DC];
+    void *active_motion_data;         // +0x03C
+    void *standing_motion_data;       // +0x040
+    u8 direction;                     // +0x044
+    u8 pad_045[3];
+    HumanFramePartCache frame_part_cache; // +0x048
+    bool frame_parts_cached;          // +0x218
+    u8 pad_219[3];
+    HumanPartRenderState part_render_states[21]; // +0x21C
+    u32 render_state_header;          // +0x8AC
+    u8 animation_state[0x34];         // +0x8B0
+    u8 unknown_8E4[0x20];
+    s32 mirrored_render_offset_a;     // +0x904
+    u32 unknown_908;
+    s32 mirrored_render_offset_b;     // +0x90C
+    s32 directional_motion_delta_a;   // +0x910
+    s32 directional_motion_delta_b;   // +0x914
 };                                   // size 0x918
 ```
+
+The human session carries two parallel 21-entry groups. The compact `0x14`-byte records cache selected part resources and frame choices; the `0x50`-byte records hold the corresponding render state. The constructor and frame builder establish the boundaries and category count, but the inner pointer and selector meanings are not yet complete. Mirroring swaps and negates the `+0x904` and `+0x90C` pair. The final pair is multiplied by direction tables as motion advances, so both pairs are signed render displacement rather than packet appearance fields.
 
 `WorldObject_User` derives from `WorldObject_Human` and adds 0x10 bytes, for a complete size of 0x200. Both classes therefore use the same offsets above. `image_session` points to `HumanObjectImageSession` for the normal form and `MonsterObjectImageSession` for the disguised form. `world_human_get_active_image_session` prefers `ground_tile_image_session` when it is non-null and otherwise returns `image_session`.
 
