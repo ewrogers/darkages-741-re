@@ -111,6 +111,14 @@ functions:
     name: event_dispatcher_ctor
     confidence: high
     evidence: "Constructs the 0x1BC-byte EventDispatcher, queue, timer list, packet factory, capture state, and EventHandlerList."
+  - address: "0x00463C40"
+    name: event_allocate_or_reuse
+    confidence: high
+    evidence: "Returns a pooled Event pointer from EventDispatcher +0x28 when available, otherwise allocates 0xA8 bytes and calls event_ctor."
+  - address: "0x00463CF0"
+    name: event_recycle
+    confidence: high
+    evidence: "Returns an Event pointer to the separate pool at EventDispatcher +0x28 without using an intrusive Event field."
   - address: "0x00463D10"
     name: event_queue_push_copy
     confidence: high
@@ -222,7 +230,11 @@ functions:
   - address: "0x00466680"
     name: event_ctor
     confidence: high
-    evidence: "Constructs Event and initializes its signed type byte at +0x0C to 0xFF."
+    evidence: "Calls lobject_ctor, installs the RTTI-backed Event vtable, and initializes the signed type byte at +0x0C to -1; +0x08 remains untouched."
+  - address: "0x004666B0"
+    name: event_dtor
+    confidence: high
+    evidence: "Restores the Event vtable, resets signed type to -1, and calls lobject_dtor, which clears the live cookie."
   - address: "0x004666E0"
     name: event_is_pointer
     confidence: high
@@ -395,6 +407,10 @@ functions:
     name: input_emit_ime_candidate_list_close
     confidence: high
     evidence: "Builds candidate-list-close event type 0x11."
+  - address: "0x004689D0"
+    name: event_scalar_deleting_dtor
+    confidence: high
+    evidence: "Calls event_dtor and frees the Event when the MSVC deleting-destructor flag requests it."
   - address: "0x0047C2A0"
     name: ui_game_message_pane_ctor
     confidence: high
@@ -451,6 +467,18 @@ functions:
     name: app_run_message_loop
     confidence: high
     evidence: "Records the main thread, drains PeekMessageA, and runs the EventDispatcher tick each loop."
+  - address: "0x004B4480"
+    name: lobject_ctor
+    confidence: high
+    evidence: "Installs the LObject vtable and writes live-cookie bytes 62 6F 73 79 (\"bosy\") at +0x04."
+  - address: "0x004B44B0"
+    name: lobject_dtor
+    confidence: high
+    evidence: "Restores the LObject vtable and clears the live cookie at +0x04 to zero."
+  - address: "0x004B4550"
+    name: lobject_is_live
+    confidence: high
+    evidence: "Returns true only when LObject +0x04 equals 0x79736F62; event_dispatch_immediate uses it before dispatch."
   - address: "0x0052C480"
     name: ui_npc_session_update_speaker_art
     confidence: high
@@ -653,6 +681,12 @@ comments:
     text: "Focused control index is stored at DialogPane +0x5AC."
   - address: "0x0044892C"
     text: "WindowMessageDialogPane receives a signed 16-bit length and copies into a 32,768-byte local text buffer. Lengths through 32,767 leave room for the added terminator."
+  - address: "0x00463C78"
+    text: "The separate Event pointer pool is empty here, so allocate 0xA8 bytes and construct a new Event."
+  - address: "0x00463CCD"
+    text: "Reuse an Event pointer popped from EventDispatcher +0x28; the pool does not use Event +0x08 as an intrusive link."
+  - address: "0x00463F7C"
+    text: "Reject dispatch when the Event's inherited LObject live cookie is not 0x79736F62."
   - address: "0x004642B0"
     text: "Timer callback budget is 0x28 per main-thread tick."
   - address: "0x004643C2"
@@ -673,6 +707,8 @@ comments:
     text: "Pane virtual +0x54: application and IME event types 0x0D through 0x12."
   - address: "0x0046500D"
     text: "Pane virtual +0x50: network event type 0x13."
+  - address: "0x0046669B"
+    text: "Initialize the one-byte signed Event type to -1. Event +0x08 and bytes +0x0D through +0x0F remain untouched."
   - address: "0x004668AA"
     text: "Map left-Alt scan code 0x38 to modifier bit 0x01 in the EventMan constructor."
   - address: "0x004668B1"
@@ -699,6 +735,12 @@ comments:
     text: "Raw SGroup opcode 0x63 only closes DescPane here. The factory-backed SGroup parser and world handler own the packet body."
   - address: "0x0049CC8C"
     text: "Raw SExchange opcode 0x42 only closes DescPane here. This handler does not consume exchange fields."
+  - address: "0x004B4493"
+    text: "Write the LObject live cookie at +0x04 as raw bytes 62 6F 73 79 (\"bosy\")."
+  - address: "0x004B44C3"
+    text: "Clear the LObject live cookie at +0x04 during base destruction."
+  - address: "0x004B455C"
+    text: "Validate object liveness by comparing LObject +0x04 with 0x79736F62."
   - address: "0x00554368"
     text: "Store the selected cursor mode at root ScreenPane +0x27C. ClockPane uses mode 3 while active and restores mode 0 on close."
   - address: "0x005A9030"

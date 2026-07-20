@@ -6,11 +6,35 @@ The event dispatcher routes input, network messages, application events, and tim
 
 ```text
 struct Event {
-    unknown header[0x0C]
+    void *vtable                // +0x00, Event vtable for its LObject base
+    u32 live_cookie             // +0x04, 0x79736F62 or bytes "bosy"
+    u32 unobserved_08           // +0x08, not initialized or consumed
     s8 type                     // +0x0C, starts as -1
-    type-specific data[...]     // starts at +0x10
+    u8 reserved_0d[3]           // +0x0D, no confirmed use
+    u8 data[0x98]               // +0x10, family-specific payload
 }                               // total size 0xA8
 ```
+
+`Event` is the exact RTTI complete-object class name. It derives from the eight-byte `LObject` base. `lobject_ctor` installs the base vtable and writes `live_cookie`. `event_ctor` then installs the `Event` vtable and sets `type` to `-1`. Destruction reverses those steps and clears the cookie. `lobject_is_live` compares the cookie with `0x79736F62`, and `event_dispatch_immediate` performs that check before central dispatch.
+
+The `+0x08` word is copied along with the rest of the object but is not initialized by either constructor. A review of all 26 direct `event_ctor` references found 25 stack events and one heap allocation helper. None of the stack-event functions accesses `+0x08`; the heap helper also leaves it untouched. The confirmed queue, classification, dispatch, and destruction paths do not consume it. Treat it as an unobserved or dormant member, not a zero-filled field.
+
+Queue storage does not explain the word. `event_allocate_or_reuse` obtains a separate `Event*` from the dispatcher pool or creates a new `0xA8`-byte object. `event_recycle` returns that pointer to the pool. Queue push and pop copy the complete object with a fixed `0xA8`-byte copy.
+
+The addresses below are static Binary Ninja virtual addresses for the preferred image base `0x00400000`.
+
+| Function | Address | Header evidence |
+| --- | ---: | --- |
+| `event_allocate_or_reuse` | `0x00463C40` | Reuses a pooled pointer or allocates and constructs a `0xA8`-byte `Event`. |
+| `event_recycle` | `0x00463CF0` | Returns an `Event*` to the separate dispatcher pool. |
+| `event_queue_push_copy` | `0x00463D10` | Copies all `0xA8` bytes into queued storage. |
+| `event_queue_pop_copy` | `0x00463D60` | Copies all `0xA8` bytes back to the caller. |
+| `event_dispatch_immediate` | `0x00463F70` | Checks the `LObject` cookie before dispatch. |
+| `event_ctor` | `0x00466680` | Installs the Event vtable and writes signed type `-1`. |
+| `event_dtor` | `0x004666B0` | Resets type, then calls the base destructor. |
+| `lobject_ctor` | `0x004B4480` | Installs the base vtable and writes the `bosy` cookie. |
+| `lobject_dtor` | `0x004B44B0` | Restores the base vtable and clears the cookie. |
+| `lobject_is_live` | `0x004B4550` | Returns whether the cookie equals `0x79736F62`. |
 
 ### Event types
 
