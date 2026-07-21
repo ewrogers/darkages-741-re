@@ -21,6 +21,12 @@ packet CUseSkill {
 
 `net_send_use_skill` writes the two meaningful bytes. The common submission helper supplies the encrypted client packet's trailing zero.
 
+## Configured skill line
+
+The normal activation path first looks up the selected skill in the character's `SkillBook.cfg`. If its `Skill:` value is nonempty, the client sends that text through [Spell Delay Say (`CSpellDelaySay`)](078-0x4e-spell-delay-say.md) immediately before this packet. A missing file, missing skill section, or empty value does not block `CUseSkill`.
+
+The file layout and per-character directory are described in [Per-character configuration](../../application/configuration.md#per-character-configuration).
+
 ## Local checks
 
 The normal activation path first checks `SkillInvItemPane + 0x322`. [`SActionDelay`](../server/063-0x3f-action-delay.md) sets this flag for selector `1` and clears it with a local expiry timer. A nonzero value blocks activation before this packet is built. The second checked state byte at `+0x323` remains unresolved.

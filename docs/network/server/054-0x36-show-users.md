@@ -67,4 +67,6 @@ Before drawing a row, the client compares its name with two local 20-entry lists
 
 The family or guild check runs second, so `0x24` wins when a name appears in both lists. These highlights are client-side display overrides. They do not modify the packet row or the server's stored list.
 
+Both files are twenty-line local name lists stored in the active character's directory. Their complete layout is described in [Per-character configuration](../../application/configuration.md#per-character-configuration).
+
 `Familylist.cfg` is the target client's filename. The game behavior and project vocabulary call this the guild or family list; the binary does not expose a separate English enum that resolves the naming difference.

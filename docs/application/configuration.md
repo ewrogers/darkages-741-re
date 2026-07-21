@@ -81,6 +81,89 @@ On failure, the socket is closed and reset to `INVALID_SOCKET`. Name lookup fail
 
 See [Initial connection](../network/connection.md) for the network side of this flow.
 
+## Per-character configuration
+
+The client keeps several local conveniences separate for each character. When an in-game character becomes active, it creates a directory from that character's name and reads the character's spell lines, skill line, user lists, and text macros from that directory.
+
+The path builder produces this form:
+
+```text
+.\<character-name>.\<filename>
+```
+
+The dot before the second backslash is part of the client path. Normal Win32 path handling removes the trailing dot from that directory component, so the directory normally appears on disk as `<character-name>`. These files belong to the local client. They are not server-synchronized character state.
+
+| File | Contents |
+| --- | --- |
+| `SpellBook.cfg` | Up to ten timed chant lines for each named spell |
+| `SkillBook.cfg` | One optional line for each named skill |
+| `Familylist.cfg` | Twenty locally classified family or guild names |
+| `Friendlist.cfg` | Twenty locally classified friend names |
+| `Macro.cfg` | Ten numbered quick-text macros |
+
+`Darkages.cfg` and `Legend.cfg` do not use this path. They remain installation-level configuration files beside the executable.
+
+### Spell lines
+
+`SpellBook.cfg` begins with a marker and then repeats one section per spell:
+
+```text
+SpellbookUsed
+<spell name>
+Spell0:<first line>
+Spell1:<second line>
+...
+Spell9:<tenth line>
+<next spell name>
+...
+```
+
+The names between record groups are spell names, not character names. The character has already been selected by the directory.
+
+`SpellDelayControlPane` finds the current spell's section and loads ten 256-byte runtime slots. It sends the configured lines through [`CSpellDelaySay`](../network/client/078-0x4e-spell-delay-say.md) at one-second intervals during the timed cast. A missing file or section leaves the slots empty.
+
+### Skill lines
+
+`SkillBook.cfg` uses the same section idea with one value per skill:
+
+```text
+SkillbookUsed
+<skill name>
+Skill:<configured line>
+<next skill name>
+Skill:<configured line>
+```
+
+When a skill passes its local activation checks, `SkillInvItemPane` loads the matching line. A nonempty value is sent once through `CSpellDelaySay` immediately before [`CUseSkill`](../network/client/062-0x3e-use-skill.md). This is separate from the server-controlled slot lock described in [Skill and spell action delays](../systems/action-delays.md).
+
+### Family and friend lists
+
+`Familylist.cfg` and `Friendlist.cfg` each contain exactly twenty lines. Each line is one character name, and unused entries are blank. The client keeps each entry in a 40-byte runtime slot, so a compatible file should keep a name within 39 bytes plus its terminating zero.
+
+These lists change how matching names appear in the online-user pane. A friend match uses palette index `0x80`; a family or guild match uses `0x24`. See [Show Users (`SShowUsers`)](../network/server/054-0x36-show-users.md) for the row-building behavior.
+
+### Text macros
+
+`Macro.cfg` contains ten quoted records. Their file order follows the keyboard digits `1` through `9`, then `0`:
+
+```text
+Macro1: "<text>"
+Macro2: "<text>"
+...
+Macro9: "<text>"
+Macro0: "<text>"
+```
+
+Each macro has a 128-byte runtime slot. The reader looks for the next opening quote and copies until the next closing quote. It does not provide an escape form for a quote inside the value. If the file is absent, the client supplies ten built-in quick-text defaults.
+
+### Text and save behavior
+
+All five files contain ordinary byte strings. There is no binary header, encryption, or checksum. The Korean client expects ANSI text and treats Korean text as DBCS data, which normally means Windows code page 949 in its original environment.
+
+The family, friend, and macro files use C text mode. Their writers therefore produce CRLF line endings on Windows. They are loaded when their shared manager is created and all records are written again when that manager is destroyed.
+
+The spell and skill editors use binary mode and write LF line endings. They preserve other ability sections by copying the file through a working-directory `tmp.cfg`, deleting the old file, and renaming the temporary file. Their editor-side `%s` parsing also makes whitespace inside spell names, skill names, or configured lines unreliable. Manual changes are safest while the client is closed.
+
 ## Saved audio levels
 
 `Darkages.cfg` stores `Sound Volume` and `Music Volume` as user levels. A new configuration starts both at `3`. The options pane limits them to `0` through `10`, while the audio manager multiplies each value by `20` before passing it to Miles.
