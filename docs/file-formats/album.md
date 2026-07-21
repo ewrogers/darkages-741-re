@@ -11,22 +11,30 @@ The path is:
 All integers are little-endian. The file has no magic value or version field.
 
 ```text
-struct AlbumHeader {
-    u32 capacity              // +0x00, normally 100
-    u32 last_capture_time     // +0x04, time_t seconds
-    u32 record_table_offset   // +0x08, 0x40
-    u32 payload_base_offset   // +0x0C, 0x40 + capacity * 0x60
-    u8  reserved[0x30]        // +0x10
-}                            // size 0x40
-
-struct AlbumRecord {
-    u32 flags                 // +0x00, bit 0 means active
-    u32 width                 // +0x04
-    u32 height                // +0x08
-    u32 payload_offset        // +0x0C, relative to payload_base_offset
-    u32 compressed_size       // +0x10
-    char caption[0x4C]        // +0x14, zero-terminated local bytes
-}                            // size 0x60
+file Album {
+    record header {
+        u32le capacity            // +0x00, normally 100
+        u32le last_capture_time   // +0x04, time_t seconds
+        u32le record_table_offset // +0x08, normally 0x40
+        u32le payload_base_offset // +0x0C, 0x40 + capacity * 0x60
+        bytes reserved[0x30]      // +0x10
+    }                             // 0x40 bytes
+    at header.record_table_offset {
+        repeat header.capacity {
+            record entry {
+                u32le flags           // +0x00, bit 0 means active
+                u32le width           // +0x04
+                u32le height          // +0x08
+                u32le payload_offset  // +0x0C, from payload_base_offset
+                u32le compressed_size // +0x10
+                bytes caption[0x4C]   // +0x14, NUL-terminated local bytes
+            }                         // 0x60 bytes
+        }
+    }
+    at header.payload_base_offset {
+        bytes zlib_payloads[to end_of_file]
+    }
+}
 ```
 
 The record table always has `capacity` entries. Compressed payloads for active records follow it. The ordinary client-created file uses capacity 100, a record table at `0x40`, and a payload base at `0x25C0`.

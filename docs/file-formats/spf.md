@@ -3,43 +3,43 @@
 SPF stores one or more rectangular images without compressing their pixel bytes. A frame can use palette indexes or direct 16-bit pixels. `file_spf_view_initialize` maps the file, and `file_spf_get_frame` returns a zero-copy view of one frame.
 
 ```text
-struct SpfPrefix {
-    u8 unknown[8]     // +0x00
-    u8 pixel_mode     // +0x08
-    u8 palette_mode   // +0x09
-    u8 unknown_0a[2]  // +0x0A
+file Spf {
+    record prefix {
+        bytes unknown[8]    // +0x00
+        u8 pixel_mode       // +0x08
+        u8 palette_mode     // +0x09
+        bytes unknown_0a[2] // +0x0A
+    }                        // 0x0C bytes
+    if prefix.pixel_mode == 0 && prefix.palette_mode == 0 {
+        repeat 256 {
+            u16le rgb565_color
+        }
+        repeat 256 {
+            u16le rgb555_color
+        }
+    }                        // 0x400 bytes
+    u32le frame_count
+    repeat frame_count {
+        record frame {
+            u16le left             // +0x00
+            u16le top              // +0x02
+            u16le right            // +0x04
+            u16le bottom           // +0x06
+            u16le optional_08      // +0x08, used when flags bit 0 is set
+            u16le optional_0a      // +0x0A, used when flags bit 0 is set
+            u32le flags            // +0x0C
+            u32le data_offset      // +0x10
+            u32le pitch            // +0x14, source bytes per row
+            u32le unknown_18       // +0x18
+            u32le alternate_offset // +0x1C, used by one pixel mode
+        }                           // 0x20 bytes
+    }
+    u32le pixel_blob_size
+    bytes pixel_blob[pixel_blob_size]
 }
-
-struct SpfFrameRecord {
-    u16le left             // +0x00
-    u16le top              // +0x02
-    u16le right            // +0x04
-    u16le bottom           // +0x06
-    u16le optional_08      // +0x08, used when flags bit 0 is set
-    u16le optional_0a      // +0x0A, used when flags bit 0 is set
-    u32le flags            // +0x0C
-    u32le data_offset      // +0x10
-    u32le pitch            // +0x14, source bytes per row
-    u32le unknown_18       // +0x18
-    u32le alternate_offset // +0x1C, used by one pixel mode
-}                          // size 0x20
 ```
 
-If both mode bytes are zero, a 0x400-byte palette block follows the 12-byte prefix:
-
-```text
-u16le rgb565_palette[256]
-u16le rgb555_palette[256]
-```
-
-The client selects the first table for RGB565 output and the second for RGB555 output. Next come:
-
-```text
-u32le frame_count
-SpfFrameRecord frames[frame_count]
-u32le pixel_blob_size
-u8 pixel_blob[pixel_blob_size]
-```
+The conditional palette block is 0x400 bytes. The client selects its first table for RGB565 output and its second for RGB555 output.
 
 The normal frame pointer is `pixel_blob + data_offset`. Bounds define the visible rectangle:
 

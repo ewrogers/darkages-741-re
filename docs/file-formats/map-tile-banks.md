@@ -17,10 +17,16 @@ The local banks contain 19,415 base records and 19,243 alternate records. The di
 
 Each tile is one fixed-size record:
 
-```c
-struct RawMapTile {
-    u8 rows[27][56];          // palette indexes
-};                            // 0x5E8 bytes
+```text
+file RawMapTileBank {
+    repeat to end_of_file {
+        record tile {
+            repeat 27 {
+                bytes palette_index_row[56]
+            }
+        }                     // 0x5E8 bytes
+    }
+}
 ```
 
 Only the diamond inside the 56 by 27 rectangle is visible.

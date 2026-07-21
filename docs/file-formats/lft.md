@@ -8,27 +8,23 @@ The local `da.lft` and `lod.lft` entries are stored inside `national.dat`. Each 
 
 All multi-byte fields are little-endian.
 
-```c
-struct LftHeader {
-    u16le nominal_width;       // 12 in the matching entries
-    u16le nominal_height;      // 12 in the matching entries
-};
-
-struct LftGlyphRecord {
-    u8    advance;
-    u8    left;
-    u8    top;
-    u8    right;
-    u8    bottom;
-    u16le packed_size;
-    u32le bitmap_offset;       // relative to the bitmap region
-};                              // 11 bytes
-
-struct LftFile {
-    LftHeader      header;
-    LftGlyphRecord glyphs[65535];   // keys 0x0000 through 0xFFFE
-    u8             bitmap_data[];   // begins at 0x0AFFF9
-};
+```text
+file Lft {
+    u16le nominal_width        // 12 in the matching entries
+    u16le nominal_height       // 12 in the matching entries
+    repeat 65535 {
+        record glyph {
+            u8 advance
+            u8 left
+            u8 top
+            u8 right
+            u8 bottom
+            u16le packed_size
+            u32le bitmap_offset // relative to bitmap_data
+        }                       // 11 bytes, keys 0x0000 through 0xFFFE
+    }
+    bytes bitmap_data[to end_of_file] // begins at 0x0AFFF9
+}
 ```
 
 The client seeks directly to `0x0AFFF9` to establish the bitmap-data base. This matches `4 + 65535 * 11` exactly.

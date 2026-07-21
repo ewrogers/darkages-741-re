@@ -4,11 +4,11 @@ HPF stores palette-indexed static art such as `stcNNNNN.hpf`. Most files use a s
 
 ## Stream format
 
-```c
-struct HpfStream {
-    u32le magic;             // 0xFF02AA55
-    u8    bits[];            // least-significant bit first
-};
+```text
+file HpfCompressedStream {
+    u32le magic               // 0xFF02AA55
+    bits_lsb_first tree_stream[to end_of_file]
+}
 ```
 
 If the magic is absent, `file_hpf_decode` copies the input unchanged. This is an intentional raw fallback, not a failed decode.
@@ -79,10 +79,13 @@ This encoder was checked by decoding, encoding, and decoding several local stati
 `file_open_static_tile` ignores the first eight decoded bytes. The remaining bytes are palette indexes for an image that is 28 pixels wide.
 
 ```text
-header = decoded[0 : 8]       // meaning not confirmed, preserve it
-pixels = decoded[8 :]
+decoded HpfStaticImage {
+    bytes unknown_header[8]   // preserve exactly
+    u8 palette_indexes[to end_of_decoded_data]
+}
+
 width = 28
-height = pixels.length / 28
+height = palette_indexes.length / 28
 ```
 
 The palette comes from `stcpal.tbl`. In the common sprite path, palette index 0 is transparent. See [PAL files](pal.md) and [Exporting images](image-export.md).

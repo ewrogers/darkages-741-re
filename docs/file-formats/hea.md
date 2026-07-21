@@ -6,33 +6,38 @@ All 34 HEA files found in the inspected client data use the layout below.
 
 ## Layout
 
-```c
-struct HeaHeader {
-    u32le unknown_00;        // observed as 0
-    u32le unknown_04;        // observed as 640
-    u32le unknown_08;        // observed as 480
-    u32le unknown_0c;        // observed as 640
-    u32le unknown_10;        // observed as 480
-    u32le map_width;
-    u32le map_height;
-    u32le world_width;
-    u32le row_count;         // matches world height in inspected files
-    u32le band_count;
-};                          // 0x28 bytes
-
-u32le band_y[band_count];
-u32le row_offset[band_count][row_count];
-u16le runs[];
+```text
+file Hea {
+    record header {
+        u32le unknown_00      // observed as 0
+        u32le unknown_04      // observed as 640
+        u32le unknown_08      // observed as 480
+        u32le unknown_0c      // observed as 640
+        u32le unknown_10      // observed as 480
+        u32le map_width
+        u32le map_height
+        u32le world_width
+        u32le row_count       // matches world height in inspected files
+        u32le band_count
+    }                         // 0x28 bytes
+    repeat header.band_count {
+        u32le band_y
+    }
+    repeat header.band_count {
+        repeat header.row_count {
+            u32le row_offset // measured in 16-bit words from runs
+        }
+    }
+    repeat to end_of_file {
+        record run {
+            u8 intensity_and_flags // low 6 bits are intensity
+            u8 length              // number of output pixels
+        }
+    }
+}
 ```
 
 Each row offset is measured in 16-bit run words from the start of `runs`.
-
-```c
-struct HeaRun {
-    u8 intensity_and_flags;  // low 6 bits are intensity
-    u8 length;               // number of output pixels
-};
-```
 
 `render_hea_decode_mask` caps or masks the intensity for the requested render path. The meaning of the top two low-byte bits is not confirmed.
 

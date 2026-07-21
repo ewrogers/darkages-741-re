@@ -1,19 +1,19 @@
 # PAL color palettes
 
-A PAL file is exactly 768 bytes. It contains 256 colors with no header and no compression.
+A palette consumed by `file_palette_load_rgb` is exactly 768 bytes. It contains 256 colors with no header and no compression.
 
-All 847 PAL entries found in the inspected client data have this exact size.
+Of the 847 `.pal`-named entries in the inspected archives, 846 use this raw layout. The remaining entry is a 1,048-byte RIFF `PAL ` resource. Its extension does not make it compatible with this reader, and a client use site for that alternate resource has not been confirmed.
 
-```c
-struct PalColor {
-    u8 red;
-    u8 green;
-    u8 blue;
-};
-
-struct PalFile {
-    PalColor colors[256];
-};
+```text
+file Pal {
+    repeat 256 {
+        record color {
+            u8 red
+            u8 green
+            u8 blue
+        }
+    }
+}
 ```
 
 The bytes are full 0 through 255 color channels. They are not VGA 6-bit colors.

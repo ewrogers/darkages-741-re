@@ -2,11 +2,13 @@
 
 `SOTP.DAT` gives each static tile its collision and render flags. The file is a raw byte array with no header.
 
-```c
-struct SotpEntry {
-    u8 flags;                  // low nibble: collision
+```text
+file Sotp {
+    repeat to end_of_file {
+        u8 flags               // low nibble: collision
                                // high nibble: rendering
-};
+    }
+}
 ```
 
 File byte zero belongs to static tile ID 1. The client adds an empty runtime entry at index zero, so map tile IDs can index the loaded tables directly.

@@ -3,30 +3,38 @@
 EFA stores compressed effect frames. Each frame has a 64-byte descriptor and its own zlib-compressed payload.
 
 ```text
-struct EfaHeader {
-    u32le unknown_00
-    u32le frame_count   // +0x04
-    u32le frame_interval_ms // +0x08, zero allows a caller-supplied interval
-    u8 unknown_0c[0x34]
-}                       // size 0x40
-
-struct EfaFrameRecord {
-    u32le unknown_00
-    u32le data_offset       // +0x04, from payload area
-    u32le compressed_size   // +0x08
-    u32le decoded_size      // +0x0C
-    u32le plane_kind        // +0x10
-    u32le pixel_offset      // +0x14, inside decoded data
-    u32le pixel_pitch       // +0x18
-    u32le pixel_mode        // +0x1C
-    u32le second_offset     // +0x20, optional second plane
-    u32le second_pitch      // +0x24
-    u16le value_28          // +0x28
-    u16le value_2a          // +0x2A
-    u16le bounds[4]         // +0x2C
-    u16le crop[4]           // +0x34
-    u8 unknown_3c[4]
-}                           // size 0x40
+file Efa {
+    record header {
+        u32le unknown_00
+        u32le frame_count       // +0x04
+        u32le frame_interval_ms // +0x08, zero permits a caller interval
+        bytes unknown_0c[0x34]
+    }                           // 0x40 bytes
+    repeat header.frame_count {
+        record frame {
+            u32le unknown_00
+            u32le data_offset     // +0x04, from compressed_payloads
+            u32le compressed_size // +0x08
+            u32le decoded_size    // +0x0C
+            u32le plane_kind      // +0x10
+            u32le pixel_offset    // +0x14, inside decoded data
+            u32le pixel_pitch     // +0x18
+            u32le pixel_mode      // +0x1C
+            u32le second_offset   // +0x20, optional second plane
+            u32le second_pitch    // +0x24
+            u16le value_28        // +0x28
+            u16le value_2a        // +0x2A
+            repeat 4 {
+                u16le bound       // begins at +0x2C
+            }
+            repeat 4 {
+                u16le crop        // begins at +0x34
+            }
+            bytes unknown_3c[4]
+        }                         // 0x40 bytes
+    }
+    bytes compressed_payloads[to end_of_file] // one zlib stream per frame
+}
 ```
 
 The frame records start at file offset `0x40`. Compressed payloads start after all records:

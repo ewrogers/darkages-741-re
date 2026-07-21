@@ -6,15 +6,23 @@ The asset DAT archives handled by `file_archive_open` are simple containers. Oth
 
 ## Legacy layout
 
-```c
-struct DatHeader {
-    u32le index_count;       // includes the final blank sentinel
-};
-
-struct DatIndexEntry {
-    u32le data_offset;       // absolute file offset
-    char  name[13];          // at most 12 visible bytes, NUL padded
-};                          // 17 bytes
+```text
+file LegacyDatArchive {
+    u32le index_count        // includes the final blank sentinel
+    repeat index_count {
+        record index_entry {
+            u32le data_offset // absolute file offset
+            bytes name[13]    // at most 12 visible bytes, NUL padded
+        }                     // 17 bytes
+    }
+    at index_entry[0].data_offset {
+        bytes payloads[
+            index_entry[index_count - 1].data_offset
+            - index_entry[0].data_offset
+        ]
+    }
+    bytes unused_trailer[to end_of_file] // 0 or 8 bytes in local archives
+}
 ```
 
 The entries are sorted without regard to ASCII letter case. The final entry has a blank name. Its offset marks the end of the last real payload.
@@ -80,12 +88,12 @@ The reader also recognizes an extended format when the first word is `0xFFFFFFFF
 
 The extended header and index descriptors are XOR-obfuscated in 32-bit words. The index is split into chunks, and each chunk is inflated with zlib. Its decoded records use this shape:
 
-```c
-struct ExtendedDatNameRecord {
-    u32le relative_data_offset;
-    u32le name_length;
-    u8    name[name_length];
-};
+```text
+record ExtendedDatNameRecord {
+    u32le relative_data_offset
+    u32le name_length
+    bytes name[name_length]
+}
 ```
 
 `file_archive_open` adds a decoded data-base value to each relative offset. Several header fields and one chunk descriptor field remain unknown. Do not generate this variant until a real sample can be checked.

@@ -3,11 +3,17 @@
 A map file is a row-major array of six-byte cells. It has no header. The caller must already know the width and height.
 
 ```text
-struct MapCell {
-    u16le ground_tile        // floor diamond
-    u16le left_static_tile   // one isometric foreground side
-    u16le right_static_tile  // the other isometric foreground side
-}                            // size 6 bytes
+file Map(width, height) {
+    repeat height {
+        repeat width {
+            record cell {
+                u16le ground_tile       // floor diamond
+                u16le left_static_tile  // one isometric foreground side
+                u16le right_static_tile // the other isometric foreground side
+            }                           // 6 bytes
+        }
+    }
+}
 ```
 
 The meaningful file body is:

@@ -8,23 +8,25 @@ Local examples include item information, lighting, NPC illustrations, nation des
 
 All counts and lengths are big-endian.
 
-```c
-struct MetadataTable {
-    u16be group_count;
-    MetadataGroup groups[group_count];
-};
-
-struct MetadataGroup {
-    u8    name_length;
-    u8    name[name_length];
-    u16be value_count;
-    MetadataValue values[value_count];
-};
-
-struct MetadataValue {
-    u16be length;
-    u8    bytes[length];
-};
+```text
+file MetadataCache {
+    compressed zlib {
+        u16be group_count
+        repeat group_count {
+            record group {
+                u8 name_length
+                bytes name[name_length]
+                u16be value_count
+                repeat value_count {
+                    record value {
+                        u16be length
+                        bytes data[length]
+                    }
+                }
+            }
+        }
+    }
+}
 ```
 
 Names and values are not NUL terminated on disk. Treat value data as bytes until that table's schema proves it is text. Text may use Windows code page 949.
