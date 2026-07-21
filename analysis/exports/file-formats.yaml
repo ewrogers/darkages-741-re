@@ -74,11 +74,15 @@ functions:
   - address: "0x00487380"
     name: file_hea_build_row_views
     confidence: high
-    evidence: Builds row pointers from HEA band thresholds and lookup offsets for a clipped region.
+    evidence: Clips a mask-canvas rectangle and builds one run pointer per pixel scanline; it scans horizontal band checkpoints but client 7.41 always uses band 0's row-offset table.
   - address: "0x004875B0"
     name: file_hea_open
     confidence: high
     evidence: Maps the HEA header, band array, row offsets, and packed run stream.
+  - address: "0x004876D0"
+    name: file_hea_project_map_position
+    confidence: high
+    evidence: Projects two map axes into the padded HEA mask canvas with 28-pixel horizontal and 14-pixel vertical steps, using header screen width and height as margins.
   - address: "0x0048B530"
     name: file_load_image_frame
     confidence: high
@@ -293,8 +297,22 @@ comments:
     text: A metadata event applies the available table and replaces the active denial lists.
   - address: "0x00471E00"
     text: Legacy DAT uses fixed 17-byte index rows and a final blank sentinel. The extended 0xFFFFFFFF path uses XOR and zlib index chunks.
+  - address: "0x004874D7"
+    text: Scan ascending horizontal band_start_x values until the first checkpoint beyond the clipped rectangle's left edge.
+  - address: "0x004874F7"
+    text: The candidate HEA band index is computed but not used afterward by client 7.41.
+  - address: "0x00487510"
+    text: Horizontal RLE skip is measured from band_start_x[0], confirming that the active row-offset table remains band 0.
+  - address: "0x00487529"
+    text: Use the first band's row-offset table without advancing by the computed band index.
   - address: "0x004875B0"
-    text: HEA maps a 0x28-byte header, band thresholds, band by row offsets, then 16-bit run words.
+    text: HEA maps a 0x28-byte header, horizontal band checkpoints, band by scanline offsets, then 16-bit run words.
+  - address: "0x004876D0"
+    text: HEA screen_width and screen_height are the fixed 640 by 480 logical screen dimensions used to pad the mask canvas.
+  - address: "0x0048771C"
+    text: Horizontal mask coordinate equals (axis_a - axis_b + map_height) times 28 plus screen_width.
+  - address: "0x00487737"
+    text: Vertical mask coordinate equals (axis_a + axis_b) times 14 plus screen_height.
   - address: "0x004B8570"
     text: SStipulation mode 0 checks greeting CRC32. Mode 1 inflates and saves replacement greeting text.
   - address: "0x004E4EA0"

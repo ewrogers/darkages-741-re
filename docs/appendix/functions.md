@@ -1379,8 +1379,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_archive_get_entry_data` | `0x00472900` | high | Returns the mapped data pointer for an archive entry. |
 | `file_get_main_archive` | `0x00472C70` | high | Lazily constructs and returns the archive object opened as Legend.dat with DarkAges.dat fallback during startup. |
 | `file_load_variant_color_table` | `0x0047DEB0` | medium | Loads one numbered color table family used by renderable assets. |
-| `file_hea_build_row_views` | `0x00487380` | high | Builds row pointers from HEA band thresholds and lookup offsets for a clipped region. |
+| `file_hea_build_row_views` | `0x00487380` | high | Builds one run pointer per clipped pixel scanline; client 7.41 scans horizontal band checkpoints but always uses band 0's table. |
 | `file_hea_open` | `0x004875B0` | high | Maps the HEA header, band array, row offsets, and packed run stream. |
+| `file_hea_project_map_position` | `0x004876D0` | high | Projects two map axes into the padded HEA mask canvas using the fixed logical screen width and height as margins. |
 | `file_read_image_metadata` | `0x0048B390` | high | Reads shared EPF metadata or dispatches SPF metadata parsing. |
 | `file_load_image_frame` | `0x0048B530` | high | Loads one EPF or SPF frame for the shared image library. |
 | `file_load_image_pixmap` | `0x0048BBC0` | high | Loads one image frame into a pixmap view and applies the EPF palette selector when required. |
