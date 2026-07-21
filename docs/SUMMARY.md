@@ -77,6 +77,7 @@
   - [Packet transforms](network/packet-transforms.md)
   - [Checksums](network/checksums.md)
   - [Server list and greeting](network/server-tables.md)
+  - [Packet interaction flows](network/interaction-flows.md)
   - [Client packets](network/client/README.md)
     - [0x00 - Version (`CVersion`)](network/client/000-0x00-version.md)
     - [0x02 - New User (`CNewUser`)](network/client/002-0x02-new-user.md)

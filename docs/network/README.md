@@ -23,6 +23,7 @@ Keeping these layers separate makes packet work much easier. A gameplay packet p
 - [Packet transforms](packet-transforms.md) explains the startup key, session key, seed table, and the `CMerchant`/`CPursuit` inner wrapper.
 - [Checksums](checksums.md) documents the custom CRC16 and standard CRC32.
 - [Server list and greeting](server-tables.md) covers `mServer.tbl` and stipulation updates.
+- [Packet interaction flows](interaction-flows.md) follows bulletin, exchange, group, and NPC screen-menu conversations in both directions.
 - [Client packet index](client/README.md) lists messages sent by the client.
 - [Server packet index](server/README.md) lists messages sent by the server.
 

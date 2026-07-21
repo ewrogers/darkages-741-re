@@ -108,6 +108,7 @@ def main() -> None:
         "  - [Packet transforms](network/packet-transforms.md)",
         "  - [Checksums](network/checksums.md)",
         "  - [Server list and greeting](network/server-tables.md)",
+        "  - [Packet interaction flows](network/interaction-flows.md)",
         "  - [Client packets](network/client/README.md)",
     ]
     lines.extend(packet_lines("client", "    "))
