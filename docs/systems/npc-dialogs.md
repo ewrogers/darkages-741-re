@@ -74,6 +74,8 @@ NPCMessageDialog
 
 The type model parses the remaining packet bytes. The visible dialog then builds rows or controls from that model. This is why the common server-packet deserializer can keep the subtype tail opaque.
 
+The server-item family has a zero-delay queued hover path into the shared `DescPane`. The local-inventory list is a different control family and should not be assumed to use the same producer. See [Item and ability descriptions](item-and-ability-descriptions.md) for the confirmed paths and remaining shop and bank mapping limit.
+
 ### Pursuit classes
 
 The outer exact class is `NPC_Pursuit_MessageDialog`. `ui_npc_pursuit_build_subtype` adds one of these answer models:

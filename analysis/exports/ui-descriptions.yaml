@@ -1,0 +1,98 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x00495FF0"
+    name: ui_inventory_item_show_desc
+    confidence: high
+    evidence: "Builds an InvItemPane tooltip anchor, keeps it within 640 by 480, resolves the item's description provider, and opens the shared DescPane with the item as owner."
+  - address: "0x00498B90"
+    name: ui_skill_inventory_item_get_base_name
+    confidence: high
+    evidence: "Copies the retained skill name only through the suffix split position and appends a NUL terminator."
+  - address: "0x00499660"
+    name: ui_parse_skill_spell_level_suffix
+    confidence: high
+    evidence: "Scans backward for a space plus parenthesized slash pair, parses the two sides with atoi, and returns the base-name split position; it does not test the literal Lev label."
+  - address: "0x00499F30"
+    name: ui_spell_inventory_item_get_base_name
+    confidence: high
+    evidence: "Copies the retained spell name only through the suffix split position and appends a NUL terminator."
+  - address: "0x0049C6B0"
+    name: ui_desc_pane_show
+    confidence: high
+    evidence: "Creates the DescPane singleton as needed, optionally reloads content by item name, lays it out at an anchor, marks it active, and retains the optional hover owner."
+  - address: "0x004CACD0"
+    name: ui_merchant_server_item_menu3_timer_callback
+    confidence: high
+    evidence: "TimerHandler callback installed by exact RTTI ServerItemMenuDialog3; subtype 1 applies the scroll offset and updates a row tooltip, while subtype 2 closes DescPane."
+  - address: "0x004CAD70"
+    name: ui_merchant_server_item_menu3_show_hover_desc
+    confidence: high
+    evidence: "Builds or repositions the older MerchantDialogPane server-item tooltip through the shared DescPane helper and retains the hovered row."
+  - address: "0x005308F0"
+    name: ui_npc_item_list_row_queue_hover
+    confidence: high
+    evidence: "Resolves a valid row and schedules the owner TimerHandler with its timer ID, a zero-millisecond delay, subtype 2, and the row's u16 index."
+  - address: "0x00530960"
+    name: ui_npc_item_list_row_queue_hover_close
+    confidence: high
+    evidence: "Schedules the owner TimerHandler with a zero-millisecond delay, subtype 3, and a zero payload when the row hover ends."
+  - address: "0x00539340"
+    name: ui_npc_server_item_menu_timer_callback
+    confidence: high
+    evidence: "NPCServerItemMenuDialog TimerHandler callback; timer ID 1 routes subtype 2 to the row tooltip update and subtype 3 to tooltip close."
+  - address: "0x005393F0"
+    name: ui_npc_server_item_menu_handle_pointer_event
+    confidence: high
+    evidence: "Stores pointer coordinates on move, closes the tooltip outside the visible client bounds, and then delegates to DialogPane pointer handling."
+  - address: "0x00539600"
+    name: ui_npc_server_item_menu_show_hover_desc
+    confidence: high
+    evidence: "Resolves a changed server-item row by name, opens DescPane near the pointer, repositions existing content for the same row, and refreshes the dialog's detail controls."
+  - address: "0x00539A30"
+    name: ui_npc_server_item_menu_clear_hover_desc
+    confidence: high
+    evidence: "Closes the shared DescPane and resets NPCServerItemMenuDialog's hovered-row field to -1."
+  - address: "0x005A4440"
+    name: ui_skill_spell_book_find_current_level
+    confidence: high
+    evidence: "Scans 89 live spell or skill slots by stripped base name and returns the parsed left suffix value for the first exact match."
+  - address: "0x005ADFB0"
+    name: ui_skill_spell_format_level_requirement
+    confidence: high
+    evidence: "Formats the SkillSpellInfoDialogPane LEV text from definition requirement fields and localized message strings, independently of the live name-suffix values."
+  - address: "0x005AE090"
+    name: ui_skill_spell_info_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI SkillSpellInfoDialogPane from _nui_ske.txt, selects the skill or spell icon, retains definition fields, and joins at most 32 description lines."
+  - address: "0x005AE710"
+    name: ui_skill_spell_info_dialog_draw
+    confidence: high
+    evidence: "Draws the icon, level requirement, five colored stat requirements, definition name, subtitles, and description into the layout rectangles."
+  - address: "0x005AEA10"
+    name: ui_open_skill_spell_info_dialog
+    confidence: high
+    evidence: "Decodes the spell-or-skill inventory selection, resolves its definition, classifies learned and requirement state, constructs the detail pane, centers it, and opens it."
+data_symbols: []
+comments:
+  - address: "0x00499660"
+    text: "The accepted suffix shape is space + parenthesized left/right values. The parser never compares the label with the literal Lev:."
+  - address: "0x0053094C"
+    text: "Queue hover subtype 2 for this row with a compiled delay of 0 ms; the timer is a main-thread handoff, not a dwell threshold."
+  - address: "0x00530992"
+    text: "Queue hover-close subtype 3 with a compiled delay of 0 ms."
+  - address: "0x005A44E8"
+    text: "Return the spell item's parsed left suffix value after an exact stripped-name match."
+  - address: "0x005A45B7"
+    text: "Return the skill item's parsed left suffix value after an exact stripped-name match."
+  - address: "0x005AEB0A"
+    text: "The learned lookup writes the current parsed level to a temporary that this detail builder does not copy into the LEV display field."
+  - address: "0x005AEB45"
+    text: "Copy the definition name for the NAME control; LEV is built separately from definition requirement fields."
+runtime_patches: []

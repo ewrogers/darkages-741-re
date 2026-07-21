@@ -21,6 +21,7 @@
   - [Player exchange](systems/player-exchange.md)
   - [Manufacturing manuals](systems/manufacturing.md)
   - [Skill and spell action delays](systems/action-delays.md)
+  - [Item and ability descriptions](systems/item-and-ability-descriptions.md)
   - [Messages and history](systems/messages-and-history.md)
   - [Game settings](systems/game-settings.md)
   - [Character creation](systems/character-creation.md)

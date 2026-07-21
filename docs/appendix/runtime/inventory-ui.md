@@ -52,6 +52,10 @@ struct SpellInvItemPaneFields {
     u8 cast_lines;                  // +0x295
     u8 state_296;                   // exact purpose unknown
     u8 action_delay_active;         // +0x297, set by SActionDelay selector 0
+    u8 unknown_298[0x18];
+    s32 level_suffix_left;          // +0x2B0, returned by learned-level lookup
+    s32 level_suffix_right;         // +0x2B4, retained meaning unresolved
+    s32 base_name_length;           // +0x2B8, excludes the suffix
 };
 
 struct NewSpellInventoryPaneFields {
@@ -70,6 +74,8 @@ struct SkillSpellInventoryPaneFields {
 The UI accepts slots 1 through 90, one more than `WorldUserFunc`. Removing a live spell releases its `SpellInvItemPane` and sets the corresponding pointer to null. No use for slot 90 has been established.
 
 `action_delay_active` blocks spell activation and ordinary item pointer actions. The draw path tints the full icon while it is set. The owning `NewSpellInventoryPane` clears it with a slot-keyed expiry timer. See [Skill and spell action delays](../../systems/action-delays.md).
+
+The three suffix fields come from the optional parenthesized `left/right` text appended to the spell name. See [Item and ability descriptions](../../systems/item-and-ability-descriptions.md) for the parser and the separate right-click detail line.
 
 ### Spell casting control
 
@@ -112,7 +118,10 @@ struct SkillInvItemPaneFields {
     u8 state_321;                   // exact purpose unknown
     u8 action_delay_active;         // +0x322, set by SActionDelay selector 1
     u8 state_323;                   // exact purpose unknown
-    u8 unknown_324[0x24];
+    u8 unknown_324[0x18];
+    s32 level_suffix_left;          // +0x33C, returned by learned-level lookup
+    s32 level_suffix_right;         // +0x340, retained meaning unresolved
+    s32 base_name_length;           // +0x344, excludes the suffix
 };                                  // size 0x348
 
 struct NewSkillInventoryPaneFields {
@@ -125,6 +134,8 @@ struct NewSkillInventoryPaneFields {
 The UI replaces an existing item before insertion. Removal releases the live `SkillInvItemPane` and writes null to its pointer entry. As with spells, the UI accepts slot 90 while the session model stops at slot 89.
 
 `action_delay_active` blocks skill activation and ordinary item pointer actions. Skills also update `cooldown_progress` every 100 ms with timer ID `0x10204`, producing a 30-step vertical tint boundary. The owning `NewSkillInventoryPane` separately clears the flag at the requested duration. See [Skill and spell action delays](../../systems/action-delays.md).
+
+The suffix fields use the same parser and base-name lookup as spells. The parsed left value is the learned level; the later use of the right value remains unresolved.
 
 ## Equipment panes
 

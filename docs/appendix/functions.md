@@ -25,6 +25,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_get_exception_code_name` | `0x004690A0` | high | Maps common Win32 exception codes to names or formats an NTDLL fallback; the active LCrash writer discards the returned name. |
 | `app_resolve_fault_module_section` | `0x00469390` | high | Uses VirtualQuery and PE section headers to resolve the fault address to module, section index, and offset; the active writer does not serialize the results. |
 | `app_get_exception_handler` | `0x00469550` | high | Returns the application-wide ExceptionHandler singleton used by the filter, uploader, and live diagnostic builder. |
+| `ui_inventory_item_show_desc` | `0x00495FF0` | high | Builds an InvItemPane tooltip anchor, keeps it within 640 by 480, resolves the item's description provider, and opens the shared DescPane with the item as owner. |
+| `ui_skill_inventory_item_get_base_name` | `0x00498B90` | high | Copies the retained skill name only through the suffix split position and appends a NUL terminator. |
+| `ui_parse_skill_spell_level_suffix` | `0x00499660` | high | Scans backward for a space plus parenthesized slash pair, parses the two sides with atoi, and returns the base-name split position; it does not test the literal Lev label. |
+| `ui_spell_inventory_item_get_base_name` | `0x00499F30` | high | Copies the retained spell name only through the suffix split position and appends a NUL terminator. |
+| `ui_desc_pane_show` | `0x0049C6B0` | high | Creates the DescPane singleton as needed, optionally reloads content by item name, lays it out at an anchor, marks it active, and retains the optional hover owner. |
 | `app_language_mode_from_distribution` | `0x004A49B0` | high | Maps distribution modes to Korean 0, English 1, Japanese 2, or Taiwan 3 language modes. |
 | `app_get_text_code_page` | `0x004A4A30` | high | Returns the code-page value selected with the current language mode. |
 | `app_get_language_message_label` | `0x004A4A60` | high | Maps language modes to msgkor.h, msgeng.h, msgjpn.h, or msgtai.h labels retained by the client. |
@@ -34,8 +39,16 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_set_post_exit_advertisement` | `0x004ACE00` | high | Copies the SAdvertisement string into a 65,536-byte application buffer, terminates it, and saves its length plus three numeric arguments for app_winmain. |
 | `app_is_japan_distribution_mode` | `0x004ACEE0` | high | Returns true when app_get_distribution_mode reports mode 13, selecting the create-user email and ISP-selector variant. |
 | `app_set_working_directory_from_executable` | `0x004AD3A0` | high | Derives the executable directory from GetCommandLineA and makes it the process working directory. |
+| `ui_merchant_server_item_menu3_timer_callback` | `0x004CACD0` | high | TimerHandler callback installed by exact RTTI ServerItemMenuDialog3; subtype 1 applies the scroll offset and updates a row tooltip, while subtype 2 closes DescPane. |
+| `ui_merchant_server_item_menu3_show_hover_desc` | `0x004CAD70` | high | Builds or repositions the older MerchantDialogPane server-item tooltip through the shared DescPane helper and retains the hovered row. |
 | `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client. |
 | `app_quit_after_patcher_launch` | `0x005287B0` | high | Destroys NewPatchPane, posts WM_QUIT, and terminates after the patcher launch attempt. |
+| `ui_npc_item_list_row_queue_hover` | `0x005308F0` | high | Resolves a valid row and schedules the owner TimerHandler with its timer ID, a zero-millisecond delay, subtype 2, and the row's u16 index. |
+| `ui_npc_item_list_row_queue_hover_close` | `0x00530960` | high | Schedules the owner TimerHandler with a zero-millisecond delay, subtype 3, and a zero payload when the row hover ends. |
+| `ui_npc_server_item_menu_timer_callback` | `0x00539340` | high | NPCServerItemMenuDialog TimerHandler callback; timer ID 1 routes subtype 2 to the row tooltip update and subtype 3 to tooltip close. |
+| `ui_npc_server_item_menu_handle_pointer_event` | `0x005393F0` | high | Stores pointer coordinates on move, closes the tooltip outside the visible client bounds, and then delegates to DialogPane pointer handling. |
+| `ui_npc_server_item_menu_show_hover_desc` | `0x00539600` | high | Resolves a changed server-item row by name, opens DescPane near the pointer, repositions existing content for the same row, and refreshes the dialog's detail controls. |
+| `ui_npc_server_item_menu_clear_hover_desc` | `0x00539A30` | high | Closes the shared DescPane and resets NPCServerItemMenuDialog's hovered-row field to -1. |
 | `app_stack_walker_ctor` | `0x0056D540` | high | Constructs exact RTTI StackWalker and copies the supplied 0x2CC-byte x86 CONTEXT. |
 | `app_stack_walker_format_next_frame` | `0x0056D660` | high | Calls DbgHelp StackWalk for IMAGE_FILE_MACHINE_I386 and formats flags-1 output as raw CS:EIP text. |
 | `app_handle_d_option_stub` | `0x0057A460` | high | Empty function called for the suffix of an uppercase -D command-line token. |
@@ -133,6 +146,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_emit_ime_candidate_list_data` | `0x004688A0` | high | Builds candidate-list event type 0x10 with pointer-bearing candidate data. |
 | `input_emit_ime_candidate_list_close` | `0x00468940` | high | Builds candidate-list-close event type 0x11. |
 | `input_translate_win32_message` | `0x0048E980` | high | Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events. |
+| `ui_skill_spell_book_find_current_level` | `0x005A4440` | high | Scans 89 live spell or skill slots by stripped base name and returns the parsed left suffix value for the first exact match. |
+| `ui_skill_spell_format_level_requirement` | `0x005ADFB0` | high | Formats the SkillSpellInfoDialogPane LEV text from definition requirement fields and localized message strings, independently of the live name-suffix values. |
+| `ui_skill_spell_info_dialog_ctor` | `0x005AE090` | high | Constructs exact RTTI SkillSpellInfoDialogPane from _nui_ske.txt, selects the skill or spell icon, retains definition fields, and joins at most 32 description lines. |
+| `ui_skill_spell_info_dialog_draw` | `0x005AE710` | high | Draws the icon, level requirement, five colored stat requirements, definition name, subtitles, and description into the layout rectangles. |
+| `ui_open_skill_spell_info_dialog` | `0x005AEA10` | high | Decodes the spell-or-skill inventory selection, resolves its definition, classifies learned and requirement state, constructs the detail pane, centers it, and opens it. |
 | `input_map_key_to_world_direction` | `0x005F0B50` | high | Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3. |
 
 ## UI
