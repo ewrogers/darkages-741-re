@@ -53,11 +53,23 @@ effect_index = target_animation - 10000;
 create_moving_effect(source_id, target_id, effect_index);
 ```
 
-The client computes the path from the two objects' current world positions. In this mode it ignores `source_animation` and the packet's `frame_interval`; client effect data supplies the movement style and step timing.
+The client computes the path from the two objects' current world positions. In this mode it ignores `source_animation` and the packet's `frame_interval`; client effect data supplies the movement style and step timing. The moving object uses the separate timer event `0x00010001` and schedules it with the path step interval stored on the object.
 
 ## Timing and special values
 
 For ordinary static and attached effects, `frame_interval` is read as a signed 16-bit timer value. It is not the total effect duration. When the chosen effect resource has a nonzero client-side interval, `world_effect_start_animation` replaces the packet value with that resource interval. The packet value remains in use only when the resource interval is zero.
+
+Ordinary effects use timer event `0x01000001`. The effect records its start time, effective interval, sequence index, selected frame, and active resource. For a positive interval, each tick derives the sequence position from elapsed time:
+
+```c
+sequence_index = (dispatcher_now - effect_start) / frame_interval;
+```
+
+This lets a delayed main-thread timer skip to the appropriate frame instead of slowing the entire effect. A zero interval advances the stored sequence index by one per callback.
+
+The `0xFF` terminator in the in-memory `Effect.tbl` sequence marks completion. A loop-enabled static effect resets its start time and sequence index and selects frame zero again. An object-attached effect is constructed as nonlooping. When a nonlooping sequence ends, the client clears its active flag and detaches the effect.
+
+The start routine computes a local `max(resource_interval, 50)`, but that result is not written to the timer field. The original resource or packet interval is what gets scheduled, so this path does not enforce an effective 50 ms minimum.
 
 `target_animation == 0x00FF` is an explicit no-op sentinel. A zero target animation also creates nothing, including a possible source effect.
 

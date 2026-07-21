@@ -39,6 +39,10 @@ payload_base = 0x40 + frame_count * 0x40
 
 `file_open_efa` returns both `frame_count` and `frame_interval_ms` from the header. Ordinary world effects prefer a nonzero EFA interval over the fallback timer supplied by [`SEffectLayer`](../network/server/041-0x29-effect-layer.md). A zero interval leaves that packet value in use. The timer advances frames, so this is not the effect's total lifetime.
 
+The ordinary-effect start path contains a dead calculation that raises a local copy of the resource interval to 50 ms. The scheduled timer still reads the original stored interval, so the client does not actually enforce that apparent minimum.
+
+When the effective interval is positive, the client selects the current `Effect.tbl` entry from elapsed time divided by the interval. If the main-thread timer runs late, the effect may therefore skip frames to catch up instead of extending its total playback time.
+
 ## Decode
 
 ```text

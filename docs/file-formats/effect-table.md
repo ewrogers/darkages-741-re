@@ -4,6 +4,17 @@
 
 At runtime, `render_update_effect_frame` advances through that sequence. The image pool then asks the active EFA or EPF session for the selected image frame.
 
+The sequence contains frame selectors only. It does not contain timing. Ordinary effects take their effective interval from the active EFA resource when nonzero, or from the packet fallback when the resource interval is zero.
+
+For a positive interval, the runtime index is derived from elapsed time rather than simply incremented:
+
+```text
+sequence_index = (current_tick - effect_start_tick) / frame_interval_ms
+frame_number = effect_sequence[sequence_index]
+```
+
+The internal `0xFF` marker ends the sequence. A loop-enabled effect resets its start tick and index to zero. A nonlooping effect becomes inactive and is removed from the world.
+
 ## Decode
 
 ```text
