@@ -7,6 +7,26 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x00402B50"
+    name: file_album_header_clear
+    confidence: high
+    evidence: "Clears the complete 0x40-byte album.dat header used before an empty album is initialized."
+  - address: "0x00402B70"
+    name: file_album_record_clear_serialized_fields
+    confidence: high
+    evidence: "Clears the 0x60-byte serialized portion of one album record without touching its two runtime buffer pointers."
+  - address: "0x00402B90"
+    name: file_album_record_ctor
+    confidence: high
+    evidence: "Clears both runtime buffer pointers and initializes the 0x60-byte serialized portion of one 0x68-byte album record."
+  - address: "0x00402BC0"
+    name: file_album_record_dtor
+    confidence: high
+    evidence: "Releases one album record's retained compressed payload and inflated pixel buffer."
+  - address: "0x00402C10"
+    name: file_album_record_copy_assign
+    confidence: high
+    evidence: "Releases the destination buffers, deep-copies an active source record's compressed payload, inflates its pixels, and converts for the active renderer when required."
   - address: "0x00402E30"
     name: file_album_record_replace_pixels
     confidence: high
@@ -75,6 +95,10 @@ functions:
     name: file_album_is_dirty
     confidence: high
     evidence: "Returns the AlbumFile rewrite-needed flag."
+  - address: "0x00403E20"
+    name: file_album_record_vector_deleting_dtor
+    confidence: high
+    evidence: "Implements the MSVC scalar/vector deleting-destructor wrapper for one record or a count-prefixed array of 0x68-byte album records."
   - address: "0x0044D730"
     name: render_write_canvas_jpeg
     confidence: high
@@ -176,6 +200,8 @@ functions:
     confidence: high
     evidence: "WorldPane_Impl wrapper that invokes the album capture with zero, selecting the normal cooldown path."
 comments:
+  - address: "0x00402C10"
+    text: "Deep-copy an album record's compressed payload, inflate its runtime pixels, and convert RGB565 to RGB555 when required."
   - address: "0x004A1BDC"
     text: "Call jpeg_set_defaults. No explicit quality or sampling override occurs before jpeg_start_compress."
   - address: "0x0051EE7B"

@@ -6,6 +6,8 @@ This directory contains deterministic Binary Ninja exports such as user symbols,
 
 [`bulletin.yaml`](bulletin.yaml) records the raw `SBulletin` response family and its five RTTI-backed dialogs. [`object-info.yaml`](object-info.yaml) records the raw provisional `SObjectInfo` path into `UserInfoPane_ForOthers`. [`exception-reporting.yaml`](exception-reporting.yaml) records process-wide crash capture, stack walking, saved-report upload, and the separate live clock diagnostic sent through `CException`.
 
+[`crypto.yaml`](crypto.yaml) records standalone checksum and cryptographic primitives recovered during the local-function naming sweep.
+
 Use [`sync_user_analysis.py`](../../binaryninja/scripts/sync_user_analysis.py) from Binary Ninja's Python console to import or refresh tracked names and comments and to normalize packet records. The script requires [PyYAML](https://pyyaml.org/). Pass `client/Darkages.exe` as `binary_path` so the script fails before changing analysis when the private input does not match.
 
 Do not copy legacy exports here without revalidation.

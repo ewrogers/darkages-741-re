@@ -7,6 +7,10 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x00402AC0"
+    name: ui_get_layout_manager
+    confidence: high
+    evidence: "Returns the global layout manager used by pane constructors and named-control lookup helpers."
   - address: "0x00481CE0"
     name: ui_layout_find_cached_file
     confidence: high

@@ -15,6 +15,50 @@ functions:
     name: file_spf_get_frame
     confidence: high
     evidence: Returns one SPF frame view from its 0x20-byte record.
+  - address: "0x00403E90"
+    name: ui_alpha_screen_pane_ctor
+    confidence: high
+    evidence: "Constructs the exact RTTI AlphaScreenPane over Pane and selects its palette-resolved fill color."
+  - address: "0x00403F20"
+    name: ui_alpha_screen_pane_dtor
+    confidence: high
+    evidence: "Releases AlphaScreenPane's retained child-pointer array, then runs the Pane base destructor."
+  - address: "0x00403FC0"
+    name: ui_alpha_screen_pane_draw_content
+    confidence: high
+    evidence: "Fills the AlphaScreenPane content rectangle with its selected Canvas color."
+  - address: "0x00404110"
+    name: ui_segmented_alpha_screen_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI AlphaScreenPaneSegmented and creates 33 colored child panes with linearly stepped pane values."
+  - address: "0x00404260"
+    name: ui_segmented_alpha_screen_pane_dtor
+    confidence: high
+    evidence: "Destroys all 33 child panes, then runs the Pane base destructor for AlphaScreenPaneSegmented."
+  - address: "0x00404300"
+    name: ui_segmented_alpha_screen_pane_register_screen
+    confidence: high
+    evidence: "Registers the parent, divides its rectangle into 33 vertical child strips, registers each child, and clears each child canvas with the shared color."
+  - address: "0x00404440"
+    name: ui_segmented_alpha_screen_pane_unregister_screen
+    confidence: high
+    evidence: "Unregisters all 33 child strips before unregistering the AlphaScreenPaneSegmented parent."
+  - address: "0x004044A0"
+    name: ui_alpha_screen_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the AlphaScreenPane destructor and conditionally frees the complete object."
+  - address: "0x004044D0"
+    name: ui_segmented_alpha_screen_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the AlphaScreenPaneSegmented destructor and conditionally frees the complete object."
+  - address: "0x00404500"
+    name: ui_alpha_screen_pane_timer_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the AlphaScreenPane scalar deleting destructor."
+  - address: "0x00404510"
+    name: ui_segmented_alpha_screen_pane_timer_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the AlphaScreenPaneSegmented scalar deleting destructor."
   - address: "0x00404A00"
     name: render_get_image_library
     confidence: high
@@ -1041,6 +1085,8 @@ data_symbols:
     confidence: high
     evidence: Pointer to the 256 by 256 six-bit component blend table.
 comments:
+  - address: "0x00404369"
+    text: "Split the registered screen rectangle into 33 vertical child panes, then clear each child canvas with the shared overlay color."
   - address: "0x0040D4A0"
     text: Blend mode 0x6D uses a screen-style per-component software blend in RGB565 or RGB555.
   - address: "0x00449FA7"

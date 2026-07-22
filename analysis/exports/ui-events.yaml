@@ -7,6 +7,30 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x00402860"
+    name: ui_agreement_dialog_pane_dtor
+    confidence: high
+    evidence: "Destroys the exact RTTI AgreementDialogPane, unregisters it from pane events and its singleton, then runs the DialogPane base destructor."
+  - address: "0x004029F0"
+    name: ui_agreement_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "AgreementDialogPane's keyboard-event override delegates directly to the DialogPane implementation."
+  - address: "0x00402A10"
+    name: ui_agreement_dialog_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the AgreementDialogPane destructor and conditionally frees the complete object for the scalar-deleting-destructor vtable slot."
+  - address: "0x00402A40"
+    name: ui_agreement_dialog_register_singleton
+    confidence: high
+    evidence: "Registers the complete AgreementDialogPane pointer from its Singleton subobject at object offset 0x630."
+  - address: "0x00402A80"
+    name: ui_agreement_dialog_unregister_singleton
+    confidence: high
+    evidence: "Clears the AgreementDialogPane singleton only when it still refers to the complete object derived from the 0x630 secondary base."
+  - address: "0x00402AD0"
+    name: ui_agreement_dialog_pane_timer_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the AgreementDialogPane scalar deleting destructor."
   - address: "0x0041AE80"
     name: event_get_dispatcher
     confidence: high
@@ -677,6 +701,8 @@ data_symbols:
     confidence: high
     evidence: "Written from GetCurrentThreadId at message-loop startup and used by event_dispatch_or_queue."
 comments:
+  - address: "0x00402AD0"
+    text: "TimerHandler secondary-base deleting-destructor thunk: subtract 0x11C to recover the complete AgreementDialogPane object."
   - address: "0x0042E82C"
     text: "Do not allocate a second ClockPane when its singleton already exists. Repeated SBlockInput state 0 therefore does not stack blockers."
   - address: "0x0042E877"

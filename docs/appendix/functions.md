@@ -144,7 +144,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
 | `ui_agreement_dialog_pane_ctor` | `0x00402430` | high | Constructs RTTI-backed AgreementDialogPane from _nagree.txt, attaches OK and Cancel controls, inserts the current greeting, and registers the pane. |
+| `ui_agreement_dialog_pane_dtor` | `0x00402860` | high | Destroys the exact RTTI AgreementDialogPane, unregisters it from pane events and its singleton, then runs the DialogPane base destructor. |
 | `ui_agreement_dialog_handle_action` | `0x004028F0` | high | Action 0 closes and unregisters the agreement pane without sending a packet. |
+| `ui_agreement_dialog_handle_keyboard_event` | `0x004029F0` | high | AgreementDialogPane's keyboard-event override delegates directly to the DialogPane implementation. |
+| `ui_agreement_dialog_pane_scalar_deleting_dtor` | `0x00402A10` | high | Runs the AgreementDialogPane destructor and conditionally frees the complete object for the scalar-deleting-destructor vtable slot. |
+| `ui_agreement_dialog_register_singleton` | `0x00402A40` | high | Registers the complete AgreementDialogPane pointer from its Singleton subobject at object offset 0x630. |
+| `ui_agreement_dialog_unregister_singleton` | `0x00402A80` | high | Clears the AgreementDialogPane singleton only when it still refers to the complete object derived from the 0x630 secondary base. |
+| `ui_get_layout_manager` | `0x00402AC0` | high | Returns the global layout manager used by pane constructors and named-control lookup helpers. |
+| `ui_agreement_dialog_pane_timer_deleting_dtor_thunk` | `0x00402AD0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the AgreementDialogPane scalar deleting destructor. |
+| `ui_alpha_screen_pane_ctor` | `0x00403E90` | high | Constructs the exact RTTI AlphaScreenPane over Pane and selects its palette-resolved fill color. |
+| `ui_alpha_screen_pane_dtor` | `0x00403F20` | high | Releases AlphaScreenPane's retained child-pointer array, then runs the Pane base destructor. |
+| `ui_alpha_screen_pane_draw_content` | `0x00403FC0` | high | Fills the AlphaScreenPane content rectangle with its selected Canvas color. |
+| `ui_segmented_alpha_screen_pane_ctor` | `0x00404110` | high | Constructs exact RTTI AlphaScreenPaneSegmented and creates 33 colored child panes with linearly stepped pane values. |
+| `ui_segmented_alpha_screen_pane_dtor` | `0x00404260` | high | Destroys all 33 child panes, then runs the Pane base destructor for AlphaScreenPaneSegmented. |
+| `ui_segmented_alpha_screen_pane_register_screen` | `0x00404300` | high | Registers the parent, divides its rectangle into 33 vertical child strips, registers each child, and clears each child canvas with the shared color. |
+| `ui_segmented_alpha_screen_pane_unregister_screen` | `0x00404440` | high | Unregisters all 33 child strips before unregistering the AlphaScreenPaneSegmented parent. |
+| `ui_alpha_screen_pane_scalar_deleting_dtor` | `0x004044A0` | high | Runs the AlphaScreenPane destructor and conditionally frees the complete object. |
+| `ui_segmented_alpha_screen_pane_scalar_deleting_dtor` | `0x004044D0` | high | Runs the AlphaScreenPaneSegmented destructor and conditionally frees the complete object. |
+| `ui_alpha_screen_pane_timer_deleting_dtor_thunk` | `0x00404500` | high | Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the AlphaScreenPane scalar deleting destructor. |
+| `ui_segmented_alpha_screen_pane_timer_deleting_dtor_thunk` | `0x00404510` | high | Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the AlphaScreenPaneSegmented scalar deleting destructor. |
 | `ui_browser_dialog_ctor` | `0x00415CB0` | high | Constructs exact RTTI BrowserDialogPane with an embedded BrowserControlPane; when no response or initial URL is supplied, sends CWebBoard action 0. |
 | `ui_browser_dialog_apply_web_board` | `0x004165A0` | high | Accepts SWebBoard actions 0 and 1, installs domain and boardinfo WinINet cookies, sets the embedded browser base URL, and navigates to start_url. |
 | `ui_browser_dialog_handle_network_event` | `0x00416A50` | high | BrowserDialogPane's network-event handler dispatches exact RTTI SWebBoard opcode 0x62 to its cookie and navigation path. |
@@ -1417,6 +1435,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | --- | --- | --- | --- |
 | `file_spf_view_initialize` | `0x004021D0` | high | Maps the SPF prefix, optional palette, frame table, and pixel blob. |
 | `file_spf_get_frame` | `0x004022A0` | high | Returns one SPF frame view from its 0x20-byte record. |
+| `file_album_header_clear` | `0x00402B50` | high | Clears the complete 0x40-byte album.dat header used before an empty album is initialized. |
+| `file_album_record_clear_serialized_fields` | `0x00402B70` | high | Clears the 0x60-byte serialized portion of one album record without touching its two runtime buffer pointers. |
+| `file_album_record_ctor` | `0x00402B90` | high | Clears both runtime buffer pointers and initializes the 0x60-byte serialized portion of one 0x68-byte album record. |
+| `file_album_record_dtor` | `0x00402BC0` | high | Releases one album record's retained compressed payload and inflated pixel buffer. |
+| `file_album_record_copy_assign` | `0x00402C10` | high | Releases the destination buffers, deep-copies an active source record's compressed payload, inflates its pixels, and converts for the active renderer when required. |
 | `file_album_record_replace_pixels` | `0x00402E30` | high | Replaces one runtime record's compressed blob, inflates width times height times two bytes, and converts the canonical 16-bit pixels for the active renderer when required. |
 | `file_album_ctor` | `0x00403010` | high | Installs the exact RTTI AlbumFile vtable and clears its initialized and record-pointer fields. |
 | `file_album_create` | `0x00403070` | high | Creates an empty 100-record album, builds the per-character album.dat path, saves its initial file, and reloads it. |
@@ -1434,6 +1457,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_album_get_capacity` | `0x00403D90` | high | Returns the album header capacity, normally 100. |
 | `file_album_set_last_capture_time` | `0x00403DB0` | high | Updates the time_t value serialized at album header offset 0x04. |
 | `file_album_is_dirty` | `0x00403DD0` | high | Returns the AlbumFile rewrite-needed flag. |
+| `file_album_record_vector_deleting_dtor` | `0x00403E20` | high | Implements the MSVC scalar/vector deleting-destructor wrapper for one record or a count-prefixed array of 0x68-byte album records. |
 | `file_hpf_decode` | `0x004319B0` | high | Checks magic 0xFF02AA55, decodes symbols through an adaptive tree, and accepts raw input when magic is absent. |
 | `file_hpf_tree_initialize` | `0x00431B80` | high | Builds the complete initial tree for byte symbols and the 256 terminator. |
 | `file_hpf_decode_symbol` | `0x00431C40` | high | Reads bits least-significant bit first and walks the active HPF tree to a symbol leaf. |
@@ -1528,6 +1552,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
+| `crypto_md5_init` | `0x00401000` | high | Initializes the four standard MD5 chaining words and clears the 64-bit bit count. |
+| `crypto_md5_update` | `0x00401040` | high | Updates the MD5 bit count, fills the pending 64-byte block, and transforms every complete input block. |
+| `crypto_md5_final` | `0x00401150` | high | Pads to byte 56 modulo 64, appends the original little-endian bit count, emits the 16-byte digest, and clears the context. |
+| `crypto_md5_digest` | `0x00401200` | high | Performs init, update, and final to hash one caller-supplied byte span into a 16-byte MD5 digest. |
+| `crypto_md5_transform` | `0x00401250` | high | Runs the standard 64-step MD5 compression function over one 64-byte block and adds the result to the chaining state. |
+| `crypto_md5_encode_words_le` | `0x004020B0` | high | Serializes 32-bit words into little-endian bytes for the MD5 digest and bit-count paths. |
+| `crypto_md5_decode_words_le` | `0x00402150` | high | Decodes little-endian bytes into 32-bit words for the MD5 compression block. |
 | `crypto_md5_hex_string` | `0x004C7D80` | high | Hashes a NUL-terminated string and returns lowercase MD5 hexadecimal text. |
 | `crypto_md5_bytes` | `0x004C7E30` | high | Hashes an explicit byte span and retains the raw MD5 digest. |
 

@@ -1,0 +1,46 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x00401000"
+    name: crypto_md5_init
+    confidence: high
+    evidence: "Initializes the four standard MD5 chaining words and clears the 64-bit bit count."
+  - address: "0x00401040"
+    name: crypto_md5_update
+    confidence: high
+    evidence: "Updates the MD5 bit count, fills the pending 64-byte block, and transforms every complete input block."
+  - address: "0x00401150"
+    name: crypto_md5_final
+    confidence: high
+    evidence: "Pads to byte 56 modulo 64, appends the original little-endian bit count, emits the 16-byte digest, and clears the context."
+  - address: "0x00401200"
+    name: crypto_md5_digest
+    confidence: high
+    evidence: "Performs init, update, and final to hash one caller-supplied byte span into a 16-byte MD5 digest."
+  - address: "0x00401250"
+    name: crypto_md5_transform
+    confidence: high
+    evidence: "Runs the standard 64-step MD5 compression function over one 64-byte block and adds the result to the chaining state."
+  - address: "0x004020B0"
+    name: crypto_md5_encode_words_le
+    confidence: high
+    evidence: "Serializes 32-bit words into little-endian bytes for the MD5 digest and bit-count paths."
+  - address: "0x00402150"
+    name: crypto_md5_decode_words_le
+    confidence: high
+    evidence: "Decodes little-endian bytes into 32-bit words for the MD5 compression block."
+data_symbols: []
+comments:
+  - address: "0x0040101A"
+    text: "Initialize the four standard MD5 chaining words and clear the 64-bit bit count."
+  - address: "0x004011B5"
+    text: "Append MD5 padding to byte offset 56 modulo 64, then append the original 64-bit bit count."
+  - address: "0x0040128D"
+    text: "Decode one 64-byte MD5 block into sixteen little-endian 32-bit words."
+runtime_patches: []

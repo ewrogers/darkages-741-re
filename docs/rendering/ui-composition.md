@@ -29,6 +29,12 @@ The pane is therefore drawn before its descendants. Siblings encountered later c
 
 The event tree is separate. Input uses child-first event propagation, while visual composition uses this parent-before-children spatial walk.
 
+## Solid-color overlays
+
+`AlphaScreenPane` is a small overlay pane. Its constructor resolves one palette color, and `ui_alpha_screen_pane_draw_content` fills the pane's content rectangle with that color before the normal pane-to-target copy.
+
+`AlphaScreenPaneSegmented` builds a graduated version from 33 ordinary child panes. When the parent joins the screen tree, `ui_segmented_alpha_screen_pane_register_screen` divides its rectangle into 33 vertical strips, registers each child, and clears each child canvas with the shared overlay color. The constructor gives those children linearly stepped pane values, so the finished parent can present a segmented transition instead of one uniform overlay.
+
 ## Where the world fits
 
 `WorldPane` overrides the content path. Its work is:
