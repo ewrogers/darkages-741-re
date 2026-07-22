@@ -2338,6 +2338,35 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_message_dialog_ctor` | `0x004DAD50` | high | Constructs exact RTTI MessageDialog, parses its server payload, and invokes its control builder. |
 | `ui_message_dialog_ctor_for_derived` | `0x004DADD0` | high | Protected constructor used by derived message classes; installs MessageDialog vtables without parsing a payload. |
 | `ui_message_dialog_build_controls` | `0x004DAFD0` | high | Builds wrapped text, enabled action buttons, optional monster or item art, and the variable-height lmsg frame. |
+| `ui_message_dialog_draw_segmented_frame` | `0x004DB940` | high | Draws the variable-height message frame from the lmsg.txt top, repeated middle, and bottom image segments. |
+| `ui_message_dialog_handle_action` | `0x004DBBF0` | high | Routes attachment actions 0, 1, and 2 to previous-step, next-step, and current-step response virtuals, then closes the dialog. |
+| `ui_simple_message_dialog_ctor` | `0x004DBDF0` | high | Constructs the exact RTTI SimpleMessageDialog used by server message variant 1. |
+| `ui_simple_message_dialog_build_controls` | `0x004DBFD0` | high | Builds the fixed 240 by 52 simple message pane with three navigation/action buttons. |
+| `ui_simple_message_dialog_draw` | `0x004DC310` | high | Clears the simple message canvas and blits its single cached background image. |
+| `ui_question_message_dialog_ctor` | `0x004DC350` | high | Constructs exact RTTI QuestionMessageDialog for server message variant 2. |
+| `ui_question_message_dialog_build_controls` | `0x004DC760` | high | Builds the question prompt, optional art, navigation buttons, and one extended text button per server-supplied choice. |
+| `ui_question_message_dialog_draw_segmented_frame` | `0x004DCCF0` | high | Draws a segmented lmsg frame whose repeated middle-row count follows the question dialog's measured content. |
+| `ui_question_message_dialog_add_choice` | `0x004DCEC0` | high | Creates and attaches one extended text button for a parsed question choice. |
+| `ui_question_message_dialog_finalize_controls` | `0x004DCFC0` | high | Finishes question-control attachment and establishes the dialog's default and cancel actions. |
+| `ui_question_message_dialog_handle_action` | `0x004DD120` | high | Maps actions 0 and 1 to previous/current responses and attachment actions 4 and above to one-based choices. |
+| `ui_question_message_face_dialog_ctor` | `0x004DD620` | high | Constructs exact RTTI QuestionMessageFaceDialog for server message variant 6. |
+| `ui_question_message_face_dialog_draw_segmented_frame` | `0x004DDA30` | high | Draws the variable-height segmented frame used by the human-preview question variant. |
+| `ui_question_message_face_dialog_add_choice` | `0x004DDC00` | high | Creates and attaches one extended choice button to QuestionMessageFaceDialog. |
+| `ui_question_message_face_dialog_finalize_controls` | `0x004DDD00` | high | Finishes the face-question control set and configures its default and cancel actions. |
+| `ui_question_message_face_dialog_handle_action` | `0x004DDE60` | high | Routes previous/current actions and one-based server choices for QuestionMessageFaceDialog, then closes it. |
+| `ui_question_message_face_dialog_build_controls` | `0x004DE360` | high | Builds the variant-6 prompt, choice buttons, navigation controls, and HumanImageControlPane preview. |
+| `ui_simple_question_message_dialog_ctor` | `0x004DE760` | high | Constructs exact RTTI SimpleQuestionMessageDialog for server message variant 3. |
+| `ui_simple_question_message_dialog_build_controls` | `0x004DEAF0` | high | Builds the compact choice-only pane with navigation controls and choices spaced 32 pixels apart. |
+| `ui_simple_question_message_dialog_add_choice` | `0x004DED10` | high | Creates and attaches one compact text choice button for SimpleQuestionMessageDialog. |
+| `ui_simple_question_message_dialog_finalize_controls` | `0x004DEDF0` | high | Finishes compact choice attachment and configures the dialog's default and cancel actions. |
+| `ui_simple_question_message_dialog_handle_action` | `0x004DEF20` | high | Routes previous/current actions or passes a one-based choice plus its displayed text to the choice-response virtual. |
+| `ui_text_message_dialog_ctor` | `0x004DF5D0` | high | Constructs exact RTTI TextMessageDialog for server message variant 4. |
+| `ui_text_message_dialog_build_controls` | `0x004DF900` | high | Builds navigation and submit buttons, optional art, message and prompt labels, a bounded text editor, and trailing label. |
+| `ui_text_message_dialog_draw_segmented_frame` | `0x004E0230` | high | Draws TextMessageDialog from the lmsg.txt top, two repeated middle, and bottom frame segments. |
+| `ui_text_message_dialog_position_and_activate` | `0x004E03D0` | high | Sets the text editor as default action, centers the dialog over the viewport, and applies inherited pane activation. |
+| `ui_text_message_dialog_handle_action` | `0x004E0530` | high | Routes previous, submit-text, and current-step actions, then uses deferred dialog close. |
+| `ui_simple_text_message_dialog_ctor` | `0x004E0AD0` | high | Constructs exact RTTI SimpleTextMessageDialog for compact server message variant 5. |
+| `ui_simple_text_message_dialog_build_controls` | `0x004E0DA0` | high | Builds the compact text-entry pane with navigation/submit buttons, prompt, bounded editor, and trailing label. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
 | `ui_find_farmpet_apply_mini_game_update` | `0x004EC3E0` | high | Consumes only SMiniGame action 7, matching its first u32 against two tracked IDs and storing the second u32 as the corresponding value. |
@@ -2369,6 +2398,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_album_view_export_portrait_jpeg` | `0x0051EA70` | high | Legacy Save composites one album portrait and always writes the extensionless character portrait through the shared JFIF writer. |
 | `ui_album_view_move_portrait` | `0x0051EEC0` | high | Moves a legacy album record, rewrites album.dat, and reloads the pane. |
 | `ui_new_patch_pane_ctor` | `0x005283E0` | high | Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff. |
+| `ui_nexonclub_dialog_ctor` | `0x00528D90` | high | Constructs exact RTTI NexonclubDialog for server message variant 9. |
+| `ui_nexonclub_dialog_dtor` | `0x00529070` | high | Restores the NexonclubDialog vtables and destroys its inherited DialogPane state. |
+| `ui_nexonclub_dialog_build_controls` | `0x005290A0` | high | Builds variant 9 with optional art, ID and masked password editors, navigation/submit controls, and account-registration button. |
+| `ui_nexonclub_dialog_handle_action` | `0x0052A160` | high | Routes previous, authenticate, current-step, and Nexon account-registration actions. |
+| `ui_nexonclub_dialog_poll_auth_timer` | `0x0052A200` | high | Polls asynchronous NexonClub authentication on a requeued one-second timer and dispatches success or failure UI. |
+| `ui_nexonclub_dialog_start_auth` | `0x0052A3F0` | high | Copies ID and password controls, starts background authentication, opens its progress alert, and schedules polling. |
+| `ui_nexonclub_dialog_complete_auth` | `0x0052A590` | high | Sends the authenticated ID as a CPursuit type-2 response at step plus one, then closes the dialog. |
+| `ui_nexonclub_dialog_draw_segmented_frame` | `0x0052A8C0` | high | Draws the four-row segmented frame and fixed ID and Password labels. |
+| `ui_nexonclub_dialog_position_and_activate` | `0x0052AB20` | high | Sets submit as the default action, centers the dialog, and applies inherited pane activation. |
+| `ui_nexonclub_dialog_scalar_deleting_dtor` | `0x0052AC40` | high | Implements the complete-object MSVC scalar-deleting destructor contract for NexonclubDialog. |
+| `ui_nexonclub_dialog_timer_scalar_deleting_dtor` | `0x0052AC70` | high | Adjusts TimerHandler this by -0x11C before tail-calling the complete-object deleting destructor. |
 | `ui_npc_session_set_response_pending` | `0x0052C020` | high | Invokes the active NPC message pane's response-pending virtual after a merchant or pursuit response is queued; the pursuit implementation deactivates its nested answer pane, disables Previous and Next, and leaves Close available. |
 | `ui_npc_session_update_speaker_art` | `0x0052C480` | high | Loads the NPC illustration for the active packet fields or switches to NPCTilePane when lookup or decoding fails. |
 | `ui_npc_session_handle_network_event` | `0x0052C730` | high | Routes SScreenMenu 0x2F and SPursuitMessage 0x30 packet objects into their NPCSession update paths. |
@@ -2825,6 +2865,24 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_parse_screen_menu_common_fields` | `0x004D8C60` | high | Parses the fixed SScreenMenu header into a temporary view and retains the string16 content pointer and length. |
 | `net_parse_message_dialog_payload` | `0x004DAE10` | high | Parses common target and graphic fields, two navigation-enable bytes, and a string16 message. |
 | `net_send_pursuit_selection` | `0x004DBC90` | high | MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method. |
+| `net_parse_simple_message_dialog_payload` | `0x004DBE70` | high | Parses the compact variant-1 payload, which retains common pursuit, graphic, step, and navigation fields but carries no message string. |
+| `net_parse_question_message_dialog_payload` | `0x004DC3D0` | high | Parses common pursuit fields, a string16 prompt, and a counted sequence of string8 choices for variant 2. |
+| `net_send_question_message_previous` | `0x004DD1A0` | high | Sends CPursuit 0x3A with the question dialog's pursuit step decremented by one. |
+| `net_send_question_message_current` | `0x004DD300` | high | Sends CPursuit 0x3A for the question dialog's current step without an argument. |
+| `net_send_question_message_choice` | `0x004DD460` | high | Sends CPursuit 0x3A for step plus one with argument type 1 and a one-byte choice index. |
+| `net_parse_question_message_face_dialog_payload` | `0x004DD6A0` | high | Parses variant 6 common fields, string16 prompt, and counted string8 choices before building its human preview. |
+| `net_send_question_message_face_previous` | `0x004DDEE0` | high | Sends CPursuit 0x3A for the previous step of the face-question dialog. |
+| `net_send_question_message_face_current` | `0x004DE040` | high | Sends CPursuit 0x3A for the face-question dialog's current step without an argument. |
+| `net_send_question_message_face_choice` | `0x004DE1A0` | high | Sends the face-question choice as CPursuit argument type 1 at step plus one. |
+| `net_parse_simple_question_message_dialog_payload` | `0x004DE7E0` | high | Parses the compact variant-3 payload as common fields followed by counted string8 choices with no prompt string. |
+| `net_send_simple_question_message_previous` | `0x004DF050` | high | Sends CPursuit 0x3A for the previous SimpleQuestionMessageDialog step. |
+| `net_send_simple_question_message_current` | `0x004DF1B0` | high | Sends CPursuit 0x3A for the current compact-question step without an argument. |
+| `net_send_simple_question_message_choice` | `0x004DF310` | high | Sends the displayed choice through CSay 0x0E, then advances CPursuit with argument type 1 and the one-based choice. |
+| `net_parse_text_message_dialog_payload` | `0x004DF650` | high | Parses variant 4 common fields, string16 message, string8 prompt and trailing label, input-byte limit, and navigation flags. |
+| `net_send_text_message_previous` | `0x004E05B0` | high | Sends CPursuit 0x3A for the previous TextMessageDialog pursuit step. |
+| `net_send_text_message_current` | `0x004E0710` | high | Sends CPursuit 0x3A for the current TextMessageDialog step without an argument. |
+| `net_send_text_message_response` | `0x004E0870` | high | Copies bounded editor text and sends it at step plus one as a CPursuit type-2 length-prefixed argument. |
+| `net_parse_simple_text_message_dialog_payload` | `0x004E0B50` | high | Parses variant 5 common fields, string8 prompt and trailing label, input-byte limit, and navigation flags without a message string. |
 | `net_dispatch_metadata_events` | `0x004E4D80` | high | MetaTableManager recognizes decoded SMetaData opcode 0x6F outside the packet factory. |
 | `net_handle_metadata` | `0x004E4EA0` | high | Parses SMetaData table entries and validates or applies named metadata blobs. |
 | `net_request_metadata` | `0x004E53F0` | high | Builds CMetaData operation 0 with a one-byte name length and the requested table name. |
@@ -2839,6 +2897,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_group_recruit_stop` | `0x00513A40` | high | Builds CGroup action 6 with the local character name to stop recruiting. |
 | `net_send_group_recruit_start` | `0x00513B30` | high | Builds CGroup action 4 with local name, group name, note, level range, and five maximum class counts. |
 | `net_send_group_recruit_join` | `0x00514140` | high | Builds CGroup action 7 with the leader retained by GroupAdInfoDialogPane. |
+| `net_parse_nexonclub_dialog_payload` | `0x00528E10` | high | Parses variant 9 common fields, string16 message, string8 prompt and label, credential limit, and navigation flags. |
+| `net_send_nexonclub_dialog_step` | `0x0052A760` | high | Sends CPursuit 0x3A for an explicit NexonclubDialog step without an argument. |
 | `net_build_merchant_response_header` | `0x0052C1C0` | high | Writes CMerchant opcode 0x39, target type, big-endian target ID, and big-endian pursuit ID as the common eight-byte body. |
 | `net_build_pursuit_response_header` | `0x0052C270` | high | Writes CPursuit opcode 0x3A, target type, target ID, pursuit ID, and step ID as the common ten-byte body. |
 | `net_send_merchant_text_menu_selection` | `0x00535590` | high | Sends the selected row's pursuit ID and echoes the optional type-1 server argument in CMerchant. |
@@ -3142,6 +3202,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_enter_editing_mode_server_data` | `0x005F71C0` | high | WorldPane's raw opcode 0x1B branch allocates exact RTTI EditablePaperPane and constructs it in editable mode directly from the decoded body. |
 | `net_handle_show_paper_server_data` | `0x005F7250` | high | WorldPane's raw opcode 0x35 branch constructs the same EditablePaperPane in read-only mode. |
 | `net_handle_screen_menu_raw` | `0x005F72E0` | high | Raw SScreenMenu handler that constructs MerchantSession from the decoded body and reports the event consumed. |
+| `net_dispatch_server_message_dialog` | `0x005F7390` | high | Reads the message variant and constructs exact dialog classes for variants 0 through 6 and 9; other values are ignored. |
 | `net_send_check_time` | `0x005F7830` | high | Immediate response to SCheckTime opcode 0x68; builds CCheckTime as opcode 0x75, echoed u32 server_value, and one timeGetTime() u32 sample without local comparison or enforcement. |
 | `net_handle_bad_guy_server_packet` | `0x005F7900` | high | Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths. |
 | `net_handle_show_users` | `0x005F7B80` | high | Handles raw decoded server opcode 0x36, applies the replacement list, and opens the RTTI-backed ShowUsersPane. |

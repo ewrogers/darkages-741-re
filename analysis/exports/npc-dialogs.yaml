@@ -1081,6 +1081,246 @@ functions:
     name: ui_message_dialog_build_controls
     confidence: high
     evidence: "Builds wrapped text, enabled action buttons, optional monster or item art, and the variable-height lmsg frame."
+  - address: "0x004DB940"
+    name: ui_message_dialog_draw_segmented_frame
+    confidence: high
+    evidence: "Draws the variable-height message frame from the lmsg.txt top, repeated middle, and bottom image segments."
+  - address: "0x004DBBF0"
+    name: ui_message_dialog_handle_action
+    confidence: high
+    evidence: "Routes attachment actions 0, 1, and 2 to previous-step, next-step, and current-step response virtuals, then closes the dialog."
+  - address: "0x004DBDF0"
+    name: ui_simple_message_dialog_ctor
+    confidence: high
+    evidence: "Constructs the exact RTTI SimpleMessageDialog used by server message variant 1."
+  - address: "0x004DBE70"
+    name: net_parse_simple_message_dialog_payload
+    confidence: high
+    evidence: "Parses the compact variant-1 payload, which retains common pursuit, graphic, step, and navigation fields but carries no message string."
+  - address: "0x004DBFD0"
+    name: ui_simple_message_dialog_build_controls
+    confidence: high
+    evidence: "Builds the fixed 240 by 52 simple message pane with three navigation/action buttons."
+  - address: "0x004DC310"
+    name: ui_simple_message_dialog_draw
+    confidence: high
+    evidence: "Clears the simple message canvas and blits its single cached background image."
+  - address: "0x004DC350"
+    name: ui_question_message_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI QuestionMessageDialog for server message variant 2."
+  - address: "0x004DC3D0"
+    name: net_parse_question_message_dialog_payload
+    confidence: high
+    evidence: "Parses common pursuit fields, a string16 prompt, and a counted sequence of string8 choices for variant 2."
+  - address: "0x004DC760"
+    name: ui_question_message_dialog_build_controls
+    confidence: high
+    evidence: "Builds the question prompt, optional art, navigation buttons, and one extended text button per server-supplied choice."
+  - address: "0x004DCCF0"
+    name: ui_question_message_dialog_draw_segmented_frame
+    confidence: high
+    evidence: "Draws a segmented lmsg frame whose repeated middle-row count follows the question dialog's measured content."
+  - address: "0x004DCEC0"
+    name: ui_question_message_dialog_add_choice
+    confidence: high
+    evidence: "Creates and attaches one extended text button for a parsed question choice."
+  - address: "0x004DCFC0"
+    name: ui_question_message_dialog_finalize_controls
+    confidence: high
+    evidence: "Finishes question-control attachment and establishes the dialog's default and cancel actions."
+  - address: "0x004DD120"
+    name: ui_question_message_dialog_handle_action
+    confidence: high
+    evidence: "Maps actions 0 and 1 to previous/current responses and attachment actions 4 and above to one-based choices."
+  - address: "0x004DD1A0"
+    name: net_send_question_message_previous
+    confidence: high
+    evidence: "Sends CPursuit 0x3A with the question dialog's pursuit step decremented by one."
+  - address: "0x004DD300"
+    name: net_send_question_message_current
+    confidence: high
+    evidence: "Sends CPursuit 0x3A for the question dialog's current step without an argument."
+  - address: "0x004DD460"
+    name: net_send_question_message_choice
+    confidence: high
+    evidence: "Sends CPursuit 0x3A for step plus one with argument type 1 and a one-byte choice index."
+  - address: "0x004DD620"
+    name: ui_question_message_face_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI QuestionMessageFaceDialog for server message variant 6."
+  - address: "0x004DD6A0"
+    name: net_parse_question_message_face_dialog_payload
+    confidence: high
+    evidence: "Parses variant 6 common fields, string16 prompt, and counted string8 choices before building its human preview."
+  - address: "0x004DDA30"
+    name: ui_question_message_face_dialog_draw_segmented_frame
+    confidence: high
+    evidence: "Draws the variable-height segmented frame used by the human-preview question variant."
+  - address: "0x004DDC00"
+    name: ui_question_message_face_dialog_add_choice
+    confidence: high
+    evidence: "Creates and attaches one extended choice button to QuestionMessageFaceDialog."
+  - address: "0x004DDD00"
+    name: ui_question_message_face_dialog_finalize_controls
+    confidence: high
+    evidence: "Finishes the face-question control set and configures its default and cancel actions."
+  - address: "0x004DDE60"
+    name: ui_question_message_face_dialog_handle_action
+    confidence: high
+    evidence: "Routes previous/current actions and one-based server choices for QuestionMessageFaceDialog, then closes it."
+  - address: "0x004DDEE0"
+    name: net_send_question_message_face_previous
+    confidence: high
+    evidence: "Sends CPursuit 0x3A for the previous step of the face-question dialog."
+  - address: "0x004DE040"
+    name: net_send_question_message_face_current
+    confidence: high
+    evidence: "Sends CPursuit 0x3A for the face-question dialog's current step without an argument."
+  - address: "0x004DE1A0"
+    name: net_send_question_message_face_choice
+    confidence: high
+    evidence: "Sends the face-question choice as CPursuit argument type 1 at step plus one."
+  - address: "0x004DE360"
+    name: ui_question_message_face_dialog_build_controls
+    confidence: high
+    evidence: "Builds the variant-6 prompt, choice buttons, navigation controls, and HumanImageControlPane preview."
+  - address: "0x004DE760"
+    name: ui_simple_question_message_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI SimpleQuestionMessageDialog for server message variant 3."
+  - address: "0x004DE7E0"
+    name: net_parse_simple_question_message_dialog_payload
+    confidence: high
+    evidence: "Parses the compact variant-3 payload as common fields followed by counted string8 choices with no prompt string."
+  - address: "0x004DEAF0"
+    name: ui_simple_question_message_dialog_build_controls
+    confidence: high
+    evidence: "Builds the compact choice-only pane with navigation controls and choices spaced 32 pixels apart."
+  - address: "0x004DED10"
+    name: ui_simple_question_message_dialog_add_choice
+    confidence: high
+    evidence: "Creates and attaches one compact text choice button for SimpleQuestionMessageDialog."
+  - address: "0x004DEDF0"
+    name: ui_simple_question_message_dialog_finalize_controls
+    confidence: high
+    evidence: "Finishes compact choice attachment and configures the dialog's default and cancel actions."
+  - address: "0x004DEF20"
+    name: ui_simple_question_message_dialog_handle_action
+    confidence: high
+    evidence: "Routes previous/current actions or passes a one-based choice plus its displayed text to the choice-response virtual."
+  - address: "0x004DF050"
+    name: net_send_simple_question_message_previous
+    confidence: high
+    evidence: "Sends CPursuit 0x3A for the previous SimpleQuestionMessageDialog step."
+  - address: "0x004DF1B0"
+    name: net_send_simple_question_message_current
+    confidence: high
+    evidence: "Sends CPursuit 0x3A for the current compact-question step without an argument."
+  - address: "0x004DF310"
+    name: net_send_simple_question_message_choice
+    confidence: high
+    evidence: "Sends the displayed choice through CSay 0x0E, then advances CPursuit with argument type 1 and the one-based choice."
+  - address: "0x004DF5D0"
+    name: ui_text_message_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TextMessageDialog for server message variant 4."
+  - address: "0x004DF650"
+    name: net_parse_text_message_dialog_payload
+    confidence: high
+    evidence: "Parses variant 4 common fields, string16 message, string8 prompt and trailing label, input-byte limit, and navigation flags."
+  - address: "0x004DF900"
+    name: ui_text_message_dialog_build_controls
+    confidence: high
+    evidence: "Builds navigation and submit buttons, optional art, message and prompt labels, a bounded text editor, and trailing label."
+  - address: "0x004E0230"
+    name: ui_text_message_dialog_draw_segmented_frame
+    confidence: high
+    evidence: "Draws TextMessageDialog from the lmsg.txt top, two repeated middle, and bottom frame segments."
+  - address: "0x004E03D0"
+    name: ui_text_message_dialog_position_and_activate
+    confidence: high
+    evidence: "Sets the text editor as default action, centers the dialog over the viewport, and applies inherited pane activation."
+  - address: "0x004E0530"
+    name: ui_text_message_dialog_handle_action
+    confidence: high
+    evidence: "Routes previous, submit-text, and current-step actions, then uses deferred dialog close."
+  - address: "0x004E05B0"
+    name: net_send_text_message_previous
+    confidence: high
+    evidence: "Sends CPursuit 0x3A for the previous TextMessageDialog pursuit step."
+  - address: "0x004E0710"
+    name: net_send_text_message_current
+    confidence: high
+    evidence: "Sends CPursuit 0x3A for the current TextMessageDialog step without an argument."
+  - address: "0x004E0870"
+    name: net_send_text_message_response
+    confidence: high
+    evidence: "Copies bounded editor text and sends it at step plus one as a CPursuit type-2 length-prefixed argument."
+  - address: "0x004E0AD0"
+    name: ui_simple_text_message_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI SimpleTextMessageDialog for compact server message variant 5."
+  - address: "0x004E0B50"
+    name: net_parse_simple_text_message_dialog_payload
+    confidence: high
+    evidence: "Parses variant 5 common fields, string8 prompt and trailing label, input-byte limit, and navigation flags without a message string."
+  - address: "0x004E0DA0"
+    name: ui_simple_text_message_dialog_build_controls
+    confidence: high
+    evidence: "Builds the compact text-entry pane with navigation/submit buttons, prompt, bounded editor, and trailing label."
+  - address: "0x00528D90"
+    name: ui_nexonclub_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI NexonclubDialog for server message variant 9."
+  - address: "0x00528E10"
+    name: net_parse_nexonclub_dialog_payload
+    confidence: high
+    evidence: "Parses variant 9 common fields, string16 message, string8 prompt and label, credential limit, and navigation flags."
+  - address: "0x00529070"
+    name: ui_nexonclub_dialog_dtor
+    confidence: high
+    evidence: "Restores the NexonclubDialog vtables and destroys its inherited DialogPane state."
+  - address: "0x005290A0"
+    name: ui_nexonclub_dialog_build_controls
+    confidence: high
+    evidence: "Builds variant 9 with optional art, ID and masked password editors, navigation/submit controls, and account-registration button."
+  - address: "0x0052A160"
+    name: ui_nexonclub_dialog_handle_action
+    confidence: high
+    evidence: "Routes previous, authenticate, current-step, and Nexon account-registration actions."
+  - address: "0x0052A200"
+    name: ui_nexonclub_dialog_poll_auth_timer
+    confidence: high
+    evidence: "Polls asynchronous NexonClub authentication on a requeued one-second timer and dispatches success or failure UI."
+  - address: "0x0052A3F0"
+    name: ui_nexonclub_dialog_start_auth
+    confidence: high
+    evidence: "Copies ID and password controls, starts background authentication, opens its progress alert, and schedules polling."
+  - address: "0x0052A590"
+    name: ui_nexonclub_dialog_complete_auth
+    confidence: high
+    evidence: "Sends the authenticated ID as a CPursuit type-2 response at step plus one, then closes the dialog."
+  - address: "0x0052A760"
+    name: net_send_nexonclub_dialog_step
+    confidence: high
+    evidence: "Sends CPursuit 0x3A for an explicit NexonclubDialog step without an argument."
+  - address: "0x0052A8C0"
+    name: ui_nexonclub_dialog_draw_segmented_frame
+    confidence: high
+    evidence: "Draws the four-row segmented frame and fixed ID and Password labels."
+  - address: "0x0052AB20"
+    name: ui_nexonclub_dialog_position_and_activate
+    confidence: high
+    evidence: "Sets submit as the default action, centers the dialog, and applies inherited pane activation."
+  - address: "0x0052AC40"
+    name: ui_nexonclub_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Implements the complete-object MSVC scalar-deleting destructor contract for NexonclubDialog."
+  - address: "0x0052AC70"
+    name: ui_nexonclub_dialog_timer_scalar_deleting_dtor
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C before tail-calling the complete-object deleting destructor."
   - address: "0x0052C020"
     name: ui_npc_session_set_response_pending
     confidence: high
@@ -1325,6 +1565,10 @@ functions:
     name: ui_create_merchant_session
     confidence: high
     evidence: "Allocates exact RTTI MerchantSession and passes the decoded SScreenMenu body to its constructor."
+  - address: "0x005F7390"
+    name: net_dispatch_server_message_dialog
+    confidence: high
+    evidence: "Reads the message variant and constructs exact dialog classes for variants 0 through 6 and 9; other values are ignored."
 comments:
   - address: "0x0052C98A"
     text: "SPursuitMessage type 10 has no remaining fields and closes the NPC session immediately."
