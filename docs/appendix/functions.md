@@ -1808,6 +1808,98 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_item_shop_icon_inventory_control_timer_scalar_deleting_dtor_thunk` | `0x004A1670` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls IconInvControlPane's scalar deleting destructor. |
 | `ui_item_shop_get_alert_timer_scalar_deleting_dtor_thunk` | `0x004A1680` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls SBGetAlertPane's scalar deleting destructor. |
 | `ui_item_shop_browser_dialog_timer_scalar_deleting_dtor_thunk` | `0x004A1690` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls ShopDialogPane's scalar deleting destructor. |
+| `ui_layout_definition_collection_ctor` | `0x004A4E40` | high | Initializes an empty owned list of parsed UI control definitions. |
+| `ui_layout_definition_collection_dtor` | `0x004A4E70` | high | Destroys every owned definition and the pointer-list storage. |
+| `ui_layout_definition_collection_add_control` | `0x004A4EF0` | high | Returns a name match or creates, initializes, and appends a new 0x60-byte definition. |
+| `ui_layout_definition_collection_find_control` | `0x004A4FB0` | high | Walks the definition pointer list for a matching NAME string. |
+| `ui_layout_definition_collection_find_control_const` | `0x004A5040` | high | Const-style definition lookup by NAME. |
+| `ui_layout_definition_collection_remove_control` | `0x004A50D0` | high | Erases, destroys, and frees the named definition. |
+| `ui_layout_definition_collection_append_control` | `0x004A51D0` | high | Appends one control-definition pointer to the owned list. |
+| `ui_layout_definition_collection_erase_iterator` | `0x004A5220` | high | Unlinks and frees one list node and returns its successor. |
+| `ui_layout_definition_collection_begin` | `0x004A5240` | high | Returns the first mutable definition-list iterator. |
+| `ui_layout_definition_collection_next` | `0x004A5270` | high | Advances a mutable definition-list iterator. |
+| `ui_layout_definition_collection_begin_const` | `0x004A52E0` | high | Returns the first const-style definition-list iterator. |
+| `ui_layout_definition_collection_next_const` | `0x004A5310` | high | Advances a const-style definition-list iterator. |
+| `ui_layout_definition_collection_clear` | `0x004A5380` | high | Destroys every owned definition and clears the pointer list. |
+| `ui_layout_image_entry_copy_ctor` | `0x004A5400` | high | Copies an IMAGE filename string and its trailing integer. |
+| `ui_layout_image_entry_equals` | `0x004A5440` | high | Compares both fields of two IMAGE entries. |
+| `ui_layout_control_definition_copy_assign` | `0x004A54C0` | high | Copies NAME, TYPE, RECT, IMAGE, VALUE, and COLOR into an existing definition. |
+| `ui_layout_control_definition_copy_ctor` | `0x004A5570` | high | Copy-constructs a complete parsed control definition. |
+| `ui_layout_control_definition_init_fields` | `0x004A5610` | high | Initializes NAME to CONTROL and constructs the three repeated-field vectors. |
+| `ui_layout_control_definition_set_name_string` | `0x004A5740` | high | Assigns NAME from an owned string object. |
+| `ui_layout_control_definition_set_name` | `0x004A5770` | high | Assigns NAME from a NUL-terminated byte string. |
+| `ui_layout_control_definition_set_type` | `0x004A5840` | high | Stores the integer TYPE field. |
+| `ui_layout_control_definition_set_rect` | `0x004A5860` | high | Copies the four-integer RECT field. |
+| `ui_layout_control_definition_add_image` | `0x004A5890` | high | Appends one ordered IMAGE entry. |
+| `ui_layout_control_definition_add_value` | `0x004A58B0` | high | Appends one ordered VALUE integer. |
+| `ui_layout_control_definition_set_value` | `0x004A58D0` | high | Grows VALUE with defaults and assigns one indexed element. |
+| `ui_layout_control_definition_add_color` | `0x004A5950` | high | Appends one ordered COLOR integer. |
+| `ui_layout_control_definition_set_color` | `0x004A5970` | high | Grows COLOR with defaults and assigns one indexed element. |
+| `ui_layout_control_definition_remove_image` | `0x004A59F0` | high | Erases the first IMAGE entry equal to the requested pair. |
+| `ui_layout_control_definition_remove_value` | `0x004A5A90` | high | Erases the first VALUE integer equal to the request. |
+| `ui_layout_control_definition_remove_color` | `0x004A5B70` | high | Erases the first COLOR integer equal to the request. |
+| `ui_layout_control_definition_is_control_block` | `0x004A5C50` | high | Tests whether NAME equals the grammar marker CONTROL. |
+| `ui_layout_control_definition_get_rect` | `0x004A5CB0` | high | Copies the stored RECT field to the caller. |
+| `ui_layout_control_definition_get_name_string` | `0x004A5CE0` | high | Copies NAME into an owned string result. |
+| `ui_layout_control_definition_get_name` | `0x004A5D10` | high | Copies NAME into a bounded C-string buffer. |
+| `ui_layout_control_definition_get_type` | `0x004A5D60` | high | Returns the stored TYPE integer. |
+| `ui_layout_control_definition_get_image_count` | `0x004A5D80` | high | Returns the number of 0x20-byte IMAGE entries. |
+| `ui_layout_control_definition_get_image` | `0x004A5DB0` | high | Copies one indexed IMAGE entry. |
+| `ui_layout_control_definition_get_value_count` | `0x004A5E00` | high | Returns the number of VALUE integers. |
+| `ui_layout_control_definition_get_value` | `0x004A5E30` | high | Returns one indexed VALUE integer. |
+| `ui_layout_control_definition_get_color_count` | `0x004A5E80` | high | Returns the number of COLOR integers. |
+| `ui_layout_control_definition_get_color` | `0x004A5EB0` | high | Returns one indexed COLOR integer. |
+| `ui_layout_image_entry_vector_copy_assign` | `0x004A5F00` | high | Copy-assigns ordered IMAGE entries and their owned strings. |
+| `ui_layout_image_entry_vector_insert_copy` | `0x004A6250` | high | Inserts a copied IMAGE entry and preserves an in-vector source across growth. |
+| `ui_layout_image_entry_vector_erase_one` | `0x004A6330` | high | Shifts IMAGE entries down and destroys the old tail. |
+| `ui_layout_image_entry_vector_clear` | `0x004A63F0` | high | Erases all IMAGE entries while retaining capacity. |
+| `ui_layout_value_vector_copy_assign` | `0x004A6440` | high | Copy-assigns the ordered 32-bit VALUE vector. |
+| `ui_layout_value_vector_insert_copy` | `0x004A66F0` | high | Inserts a copied VALUE integer with growth when required. |
+| `ui_layout_value_vector_clear` | `0x004A67D0` | high | Erases all VALUE integers while retaining capacity. |
+| `ui_layout_color_vector_copy_assign` | `0x004A6820` | high | Copy-assigns the ordered 32-bit COLOR vector. |
+| `ui_layout_color_vector_insert_copy` | `0x004A6AD0` | high | Inserts a copied COLOR integer with growth when required. |
+| `ui_layout_color_vector_clear` | `0x004A6BB0` | high | Erases all COLOR integers while retaining capacity. |
+| `ui_layout_control_pointer_list_ctor` | `0x004A6C00` | high | Allocates and links an empty sentinel node. |
+| `ui_layout_control_pointer_list_dtor` | `0x004A6C60` | high | Clears list nodes and frees the sentinel. |
+| `ui_layout_control_pointer_list_clear` | `0x004A6CD0` | high | Unlinks and frees every non-sentinel node. |
+| `ui_layout_control_pointer_list_remove_value` | `0x004A6D60` | high | Removes every node holding the requested definition pointer. |
+| `ui_layout_image_entry_vector_erase_range` | `0x004A6E00` | high | Moves later IMAGE entries over a removed range and destroys the tail. |
+| `ui_layout_image_entry_vector_allocate_storage` | `0x004A6EF0` | high | Initializes IMAGE vector pointers and optionally allocates requested capacity. |
+| `ui_layout_image_entry_vector_ensure_additional_capacity` | `0x004A6F90` | high | Checks length and grows IMAGE storage for additional entries. |
+| `ui_layout_value_vector_erase_range` | `0x004A7020` | high | Moves later VALUE integers over a removed range. |
+| `ui_layout_value_vector_allocate_storage` | `0x004A70D0` | high | Initializes VALUE vector pointers and optionally allocates requested capacity. |
+| `ui_layout_value_vector_ensure_additional_capacity` | `0x004A7170` | high | Checks length and grows VALUE storage for additional elements. |
+| `ui_layout_color_vector_erase_range` | `0x004A7200` | high | Moves later COLOR integers over a removed range. |
+| `ui_layout_color_vector_allocate_storage` | `0x004A72B0` | high | Initializes COLOR vector pointers and optionally allocates requested capacity. |
+| `ui_layout_color_vector_ensure_additional_capacity` | `0x004A7350` | high | Checks length and grows COLOR storage for additional elements. |
+| `ui_layout_image_entry_vector_deallocate` | `0x004A73E0` | high | Frees the IMAGE vector raw storage block. |
+| `ui_layout_image_entry_vector_reallocate` | `0x004A7410` | high | Reallocates IMAGE storage and copy-constructs its live entries. |
+| `ui_layout_image_entry_vector_reallocate_unwind` | `0x004A74DC` | high | Exception cleanup for IMAGE-vector reallocation. |
+| `ui_layout_image_entry_vector_growth_capacity` | `0x004A75D0` | high | Chooses requested or 1.5-times-old IMAGE capacity. |
+| `ui_layout_value_vector_reallocate` | `0x004A7650` | high | Reallocates VALUE storage and copies its live integers. |
+| `ui_layout_value_vector_reallocate_unwind` | `0x004A771D` | high | Exception cleanup for VALUE-vector reallocation. |
+| `ui_layout_value_vector_growth_capacity` | `0x004A77D0` | high | Chooses requested or 1.5-times-old VALUE capacity. |
+| `ui_layout_color_vector_reallocate` | `0x004A7850` | high | Reallocates COLOR storage and copies its live integers. |
+| `ui_layout_color_vector_reallocate_unwind` | `0x004A791D` | high | Exception cleanup for COLOR-vector reallocation. |
+| `ui_layout_color_vector_growth_capacity` | `0x004A79D0` | high | Chooses requested or 1.5-times-old COLOR capacity. |
+| `ui_layout_image_entry_placement_copy_ctor` | `0x004A7A50` | high | Null-checked placement copy construction for an IMAGE entry. |
+| `ui_layout_image_entry_placement_copy_ctor_duplicate` | `0x004A7AC0` | high | Duplicate placement copy construction for an IMAGE entry. |
+| `ui_layout_value_placement_copy_ctor` | `0x004A7B40` | high | Null-checked placement copy construction for a VALUE integer. |
+| `ui_layout_value_placement_copy_ctor_duplicate` | `0x004A7B80` | high | Duplicate placement copy construction for a VALUE integer. |
+| `ui_layout_color_placement_copy_ctor` | `0x004A7BC0` | high | Null-checked placement copy construction for a COLOR integer. |
+| `ui_layout_control_pointer_list_allocator_dtor_noop` | `0x004A7C00` | high | No-op destructor for the embedded pointer-list allocator. |
+| `ui_layout_image_entry_array_allocate` | `0x004A7C10` | high | Allocates checked raw storage for 0x20-byte IMAGE entries. |
+| `ui_layout_value_array_allocate` | `0x004A7C80` | high | Allocates checked raw storage for 32-bit VALUE elements. |
+| `ui_layout_color_array_allocate` | `0x004A7CF0` | high | Allocates checked raw storage for 32-bit COLOR elements. |
+| `ui_layout_control_pointer_list_allocate_nodes` | `0x004A7D60` | high | Allocates checked raw storage for 12-byte pointer-list nodes. |
+| `ui_layout_image_entry_copy_ctor_internal` | `0x004A7DD0` | high | Copies an IMAGE entry's owned string and trailing integer. |
+| `ui_layout_control_pointer_list_insert_before` | `0x004A7E50` | high | Creates and links one pointer-list node before an iterator. |
+| `ui_layout_image_entry_range_copy_construct` | `0x004A7EE0` | high | Copy-constructs an IMAGE range into uninitialized storage. |
+| `ui_layout_image_entry_range_copy_unwind` | `0x004A7F4B` | high | Destroys partially copied IMAGE entries during exception unwinding. |
+| `ui_layout_image_entry_range_copy_construct_duplicate` | `0x004A7FB0` | high | Second compiler-emitted IMAGE range copy path. |
+| `ui_layout_control_pointer_list_create_node` | `0x004A8080` | high | Allocates a 12-byte list node and constructs its stored pointer. |
+| `ui_layout_image_entry_placement_copy_ctor_internal` | `0x004A8140` | high | Internal placement copy construction for an IMAGE entry. |
+| `ui_layout_control_pointer_placement_copy_ctor` | `0x004A81B0` | high | Null-checked placement copy construction for a definition pointer. |
 | `ui_layout_parse_control` | `0x004A81F0` | high | Parses CONTROL, NAME, TYPE, RECT, IMAGE, VALUE, COLOR, and ENDCONTROL tokens. |
 | `ui_layout_serialize_control` | `0x004A8820` | high | Writes one parsed control back to the same line-oriented layout grammar. |
 | `ui_open_town_map_for_current_map` | `0x004AD250` | high | Opens exact RTTI TownMapPane in the built-in button mode, which selects _tcoord.txt from the active client map number. |

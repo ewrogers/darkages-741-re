@@ -74,6 +74,8 @@ A missing layout or a missing named control reaches a fatal invalid-layout error
 
 Each parsed `CONTROL` owns its `NAME` string, a vector of 0x20-byte IMAGE entries, and separate four-byte VALUE and COLOR vectors. The cache owns the parsed control collection. Clearing or destroying the layout manager walks both cache levels, deletes each parsed layout, destroys the filename strings and vectors, and then releases the map sentinels.
 
+The parsed-layout collection is keyed by `NAME`, but it preserves definition order in an owned pointer list. Adding a definition first returns an existing name match; otherwise it creates a 0x60-byte definition, initializes its name to `CONTROL`, applies the requested `NAME` and `TYPE`, and appends it. Removing a definition unlinks the list node and destroys the complete definition. The repeated `IMAGE`, `VALUE`, and `COLOR` fields remain ordered, and indexed VALUE or COLOR assignment grows the corresponding vector with default entries when needed.
+
 The image-button path has two stages. `ui_layout_prepare_image_button` reads the rectangle, optional skin value, and up to three ordered image states into shared settings. `ui_layout_create_image_button` then allocates and constructs the actual control from those settings. This distinction matters for injected UI code because preparing a definition alone does not attach or even allocate a pane.
 
 Some older UI images also pass through `ui_layout_get_legacy_palette_for_image`. That helper uses a hardcoded filename and prefix table for assets such as `album.epf`, `legends.epf`, and `staff.epf`; the selector is not stored in the layout grammar. Unknown filenames receive selector zero.

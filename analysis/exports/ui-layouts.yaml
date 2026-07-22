@@ -443,6 +443,374 @@ functions:
     name: ui_layout_filename_cache_value_copy_ctor_duplicate
     confidence: high
     evidence: "Duplicate code path that copies a filename and parsed-layout pointer."
+  - address: "0x004A4E40"
+    name: ui_layout_definition_collection_ctor
+    confidence: high
+    evidence: "Initializes an empty owned list of parsed UI control definitions."
+  - address: "0x004A4E70"
+    name: ui_layout_definition_collection_dtor
+    confidence: high
+    evidence: "Destroys every owned definition and the pointer-list storage."
+  - address: "0x004A4EF0"
+    name: ui_layout_definition_collection_add_control
+    confidence: high
+    evidence: "Returns a name match or creates, initializes, and appends a new 0x60-byte definition."
+  - address: "0x004A4FB0"
+    name: ui_layout_definition_collection_find_control
+    confidence: high
+    evidence: "Walks the definition pointer list for a matching NAME string."
+  - address: "0x004A5040"
+    name: ui_layout_definition_collection_find_control_const
+    confidence: high
+    evidence: "Const-style definition lookup by NAME."
+  - address: "0x004A50D0"
+    name: ui_layout_definition_collection_remove_control
+    confidence: high
+    evidence: "Erases, destroys, and frees the named definition."
+  - address: "0x004A51D0"
+    name: ui_layout_definition_collection_append_control
+    confidence: high
+    evidence: "Appends one control-definition pointer to the owned list."
+  - address: "0x004A5220"
+    name: ui_layout_definition_collection_erase_iterator
+    confidence: high
+    evidence: "Unlinks and frees one list node and returns its successor."
+  - address: "0x004A5240"
+    name: ui_layout_definition_collection_begin
+    confidence: high
+    evidence: "Returns the first mutable definition-list iterator."
+  - address: "0x004A5270"
+    name: ui_layout_definition_collection_next
+    confidence: high
+    evidence: "Advances a mutable definition-list iterator."
+  - address: "0x004A52E0"
+    name: ui_layout_definition_collection_begin_const
+    confidence: high
+    evidence: "Returns the first const-style definition-list iterator."
+  - address: "0x004A5310"
+    name: ui_layout_definition_collection_next_const
+    confidence: high
+    evidence: "Advances a const-style definition-list iterator."
+  - address: "0x004A5380"
+    name: ui_layout_definition_collection_clear
+    confidence: high
+    evidence: "Destroys every owned definition and clears the pointer list."
+  - address: "0x004A5400"
+    name: ui_layout_image_entry_copy_ctor
+    confidence: high
+    evidence: "Copies an IMAGE filename string and its trailing integer."
+  - address: "0x004A5440"
+    name: ui_layout_image_entry_equals
+    confidence: high
+    evidence: "Compares both fields of two IMAGE entries."
+  - address: "0x004A54C0"
+    name: ui_layout_control_definition_copy_assign
+    confidence: high
+    evidence: "Copies NAME, TYPE, RECT, IMAGE, VALUE, and COLOR into an existing definition."
+  - address: "0x004A5570"
+    name: ui_layout_control_definition_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs a complete parsed control definition."
+  - address: "0x004A5610"
+    name: ui_layout_control_definition_init_fields
+    confidence: high
+    evidence: "Initializes NAME to CONTROL and constructs the three repeated-field vectors."
+  - address: "0x004A5740"
+    name: ui_layout_control_definition_set_name_string
+    confidence: high
+    evidence: "Assigns NAME from an owned string object."
+  - address: "0x004A5770"
+    name: ui_layout_control_definition_set_name
+    confidence: high
+    evidence: "Assigns NAME from a NUL-terminated byte string."
+  - address: "0x004A5840"
+    name: ui_layout_control_definition_set_type
+    confidence: high
+    evidence: "Stores the integer TYPE field."
+  - address: "0x004A5860"
+    name: ui_layout_control_definition_set_rect
+    confidence: high
+    evidence: "Copies the four-integer RECT field."
+  - address: "0x004A5890"
+    name: ui_layout_control_definition_add_image
+    confidence: high
+    evidence: "Appends one ordered IMAGE entry."
+  - address: "0x004A58B0"
+    name: ui_layout_control_definition_add_value
+    confidence: high
+    evidence: "Appends one ordered VALUE integer."
+  - address: "0x004A58D0"
+    name: ui_layout_control_definition_set_value
+    confidence: high
+    evidence: "Grows VALUE with defaults and assigns one indexed element."
+  - address: "0x004A5950"
+    name: ui_layout_control_definition_add_color
+    confidence: high
+    evidence: "Appends one ordered COLOR integer."
+  - address: "0x004A5970"
+    name: ui_layout_control_definition_set_color
+    confidence: high
+    evidence: "Grows COLOR with defaults and assigns one indexed element."
+  - address: "0x004A59F0"
+    name: ui_layout_control_definition_remove_image
+    confidence: high
+    evidence: "Erases the first IMAGE entry equal to the requested pair."
+  - address: "0x004A5A90"
+    name: ui_layout_control_definition_remove_value
+    confidence: high
+    evidence: "Erases the first VALUE integer equal to the request."
+  - address: "0x004A5B70"
+    name: ui_layout_control_definition_remove_color
+    confidence: high
+    evidence: "Erases the first COLOR integer equal to the request."
+  - address: "0x004A5C50"
+    name: ui_layout_control_definition_is_control_block
+    confidence: high
+    evidence: "Tests whether NAME equals the grammar marker CONTROL."
+  - address: "0x004A5CB0"
+    name: ui_layout_control_definition_get_rect
+    confidence: high
+    evidence: "Copies the stored RECT field to the caller."
+  - address: "0x004A5CE0"
+    name: ui_layout_control_definition_get_name_string
+    confidence: high
+    evidence: "Copies NAME into an owned string result."
+  - address: "0x004A5D10"
+    name: ui_layout_control_definition_get_name
+    confidence: high
+    evidence: "Copies NAME into a bounded C-string buffer."
+  - address: "0x004A5D60"
+    name: ui_layout_control_definition_get_type
+    confidence: high
+    evidence: "Returns the stored TYPE integer."
+  - address: "0x004A5D80"
+    name: ui_layout_control_definition_get_image_count
+    confidence: high
+    evidence: "Returns the number of 0x20-byte IMAGE entries."
+  - address: "0x004A5DB0"
+    name: ui_layout_control_definition_get_image
+    confidence: high
+    evidence: "Copies one indexed IMAGE entry."
+  - address: "0x004A5E00"
+    name: ui_layout_control_definition_get_value_count
+    confidence: high
+    evidence: "Returns the number of VALUE integers."
+  - address: "0x004A5E30"
+    name: ui_layout_control_definition_get_value
+    confidence: high
+    evidence: "Returns one indexed VALUE integer."
+  - address: "0x004A5E80"
+    name: ui_layout_control_definition_get_color_count
+    confidence: high
+    evidence: "Returns the number of COLOR integers."
+  - address: "0x004A5EB0"
+    name: ui_layout_control_definition_get_color
+    confidence: high
+    evidence: "Returns one indexed COLOR integer."
+  - address: "0x004A5F00"
+    name: ui_layout_image_entry_vector_copy_assign
+    confidence: high
+    evidence: "Copy-assigns ordered IMAGE entries and their owned strings."
+  - address: "0x004A6250"
+    name: ui_layout_image_entry_vector_insert_copy
+    confidence: high
+    evidence: "Inserts a copied IMAGE entry and preserves an in-vector source across growth."
+  - address: "0x004A6330"
+    name: ui_layout_image_entry_vector_erase_one
+    confidence: high
+    evidence: "Shifts IMAGE entries down and destroys the old tail."
+  - address: "0x004A63F0"
+    name: ui_layout_image_entry_vector_clear
+    confidence: high
+    evidence: "Erases all IMAGE entries while retaining capacity."
+  - address: "0x004A6440"
+    name: ui_layout_value_vector_copy_assign
+    confidence: high
+    evidence: "Copy-assigns the ordered 32-bit VALUE vector."
+  - address: "0x004A66F0"
+    name: ui_layout_value_vector_insert_copy
+    confidence: high
+    evidence: "Inserts a copied VALUE integer with growth when required."
+  - address: "0x004A67D0"
+    name: ui_layout_value_vector_clear
+    confidence: high
+    evidence: "Erases all VALUE integers while retaining capacity."
+  - address: "0x004A6820"
+    name: ui_layout_color_vector_copy_assign
+    confidence: high
+    evidence: "Copy-assigns the ordered 32-bit COLOR vector."
+  - address: "0x004A6AD0"
+    name: ui_layout_color_vector_insert_copy
+    confidence: high
+    evidence: "Inserts a copied COLOR integer with growth when required."
+  - address: "0x004A6BB0"
+    name: ui_layout_color_vector_clear
+    confidence: high
+    evidence: "Erases all COLOR integers while retaining capacity."
+  - address: "0x004A6C00"
+    name: ui_layout_control_pointer_list_ctor
+    confidence: high
+    evidence: "Allocates and links an empty sentinel node."
+  - address: "0x004A6C60"
+    name: ui_layout_control_pointer_list_dtor
+    confidence: high
+    evidence: "Clears list nodes and frees the sentinel."
+  - address: "0x004A6CD0"
+    name: ui_layout_control_pointer_list_clear
+    confidence: high
+    evidence: "Unlinks and frees every non-sentinel node."
+  - address: "0x004A6D60"
+    name: ui_layout_control_pointer_list_remove_value
+    confidence: high
+    evidence: "Removes every node holding the requested definition pointer."
+  - address: "0x004A6E00"
+    name: ui_layout_image_entry_vector_erase_range
+    confidence: high
+    evidence: "Moves later IMAGE entries over a removed range and destroys the tail."
+  - address: "0x004A6EF0"
+    name: ui_layout_image_entry_vector_allocate_storage
+    confidence: high
+    evidence: "Initializes IMAGE vector pointers and optionally allocates requested capacity."
+  - address: "0x004A6F90"
+    name: ui_layout_image_entry_vector_ensure_additional_capacity
+    confidence: high
+    evidence: "Checks length and grows IMAGE storage for additional entries."
+  - address: "0x004A7020"
+    name: ui_layout_value_vector_erase_range
+    confidence: high
+    evidence: "Moves later VALUE integers over a removed range."
+  - address: "0x004A70D0"
+    name: ui_layout_value_vector_allocate_storage
+    confidence: high
+    evidence: "Initializes VALUE vector pointers and optionally allocates requested capacity."
+  - address: "0x004A7170"
+    name: ui_layout_value_vector_ensure_additional_capacity
+    confidence: high
+    evidence: "Checks length and grows VALUE storage for additional elements."
+  - address: "0x004A7200"
+    name: ui_layout_color_vector_erase_range
+    confidence: high
+    evidence: "Moves later COLOR integers over a removed range."
+  - address: "0x004A72B0"
+    name: ui_layout_color_vector_allocate_storage
+    confidence: high
+    evidence: "Initializes COLOR vector pointers and optionally allocates requested capacity."
+  - address: "0x004A7350"
+    name: ui_layout_color_vector_ensure_additional_capacity
+    confidence: high
+    evidence: "Checks length and grows COLOR storage for additional elements."
+  - address: "0x004A73E0"
+    name: ui_layout_image_entry_vector_deallocate
+    confidence: high
+    evidence: "Frees the IMAGE vector raw storage block."
+  - address: "0x004A7410"
+    name: ui_layout_image_entry_vector_reallocate
+    confidence: high
+    evidence: "Reallocates IMAGE storage and copy-constructs its live entries."
+  - address: "0x004A74DC"
+    name: ui_layout_image_entry_vector_reallocate_unwind
+    confidence: high
+    evidence: "Exception cleanup for IMAGE-vector reallocation."
+  - address: "0x004A75D0"
+    name: ui_layout_image_entry_vector_growth_capacity
+    confidence: high
+    evidence: "Chooses requested or 1.5-times-old IMAGE capacity."
+  - address: "0x004A7650"
+    name: ui_layout_value_vector_reallocate
+    confidence: high
+    evidence: "Reallocates VALUE storage and copies its live integers."
+  - address: "0x004A771D"
+    name: ui_layout_value_vector_reallocate_unwind
+    confidence: high
+    evidence: "Exception cleanup for VALUE-vector reallocation."
+  - address: "0x004A77D0"
+    name: ui_layout_value_vector_growth_capacity
+    confidence: high
+    evidence: "Chooses requested or 1.5-times-old VALUE capacity."
+  - address: "0x004A7850"
+    name: ui_layout_color_vector_reallocate
+    confidence: high
+    evidence: "Reallocates COLOR storage and copies its live integers."
+  - address: "0x004A791D"
+    name: ui_layout_color_vector_reallocate_unwind
+    confidence: high
+    evidence: "Exception cleanup for COLOR-vector reallocation."
+  - address: "0x004A79D0"
+    name: ui_layout_color_vector_growth_capacity
+    confidence: high
+    evidence: "Chooses requested or 1.5-times-old COLOR capacity."
+  - address: "0x004A7A50"
+    name: ui_layout_image_entry_placement_copy_ctor
+    confidence: high
+    evidence: "Null-checked placement copy construction for an IMAGE entry."
+  - address: "0x004A7AC0"
+    name: ui_layout_image_entry_placement_copy_ctor_duplicate
+    confidence: high
+    evidence: "Duplicate placement copy construction for an IMAGE entry."
+  - address: "0x004A7B40"
+    name: ui_layout_value_placement_copy_ctor
+    confidence: high
+    evidence: "Null-checked placement copy construction for a VALUE integer."
+  - address: "0x004A7B80"
+    name: ui_layout_value_placement_copy_ctor_duplicate
+    confidence: high
+    evidence: "Duplicate placement copy construction for a VALUE integer."
+  - address: "0x004A7BC0"
+    name: ui_layout_color_placement_copy_ctor
+    confidence: high
+    evidence: "Null-checked placement copy construction for a COLOR integer."
+  - address: "0x004A7C00"
+    name: ui_layout_control_pointer_list_allocator_dtor_noop
+    confidence: high
+    evidence: "No-op destructor for the embedded pointer-list allocator."
+  - address: "0x004A7C10"
+    name: ui_layout_image_entry_array_allocate
+    confidence: high
+    evidence: "Allocates checked raw storage for 0x20-byte IMAGE entries."
+  - address: "0x004A7C80"
+    name: ui_layout_value_array_allocate
+    confidence: high
+    evidence: "Allocates checked raw storage for 32-bit VALUE elements."
+  - address: "0x004A7CF0"
+    name: ui_layout_color_array_allocate
+    confidence: high
+    evidence: "Allocates checked raw storage for 32-bit COLOR elements."
+  - address: "0x004A7D60"
+    name: ui_layout_control_pointer_list_allocate_nodes
+    confidence: high
+    evidence: "Allocates checked raw storage for 12-byte pointer-list nodes."
+  - address: "0x004A7DD0"
+    name: ui_layout_image_entry_copy_ctor_internal
+    confidence: high
+    evidence: "Copies an IMAGE entry's owned string and trailing integer."
+  - address: "0x004A7E50"
+    name: ui_layout_control_pointer_list_insert_before
+    confidence: high
+    evidence: "Creates and links one pointer-list node before an iterator."
+  - address: "0x004A7EE0"
+    name: ui_layout_image_entry_range_copy_construct
+    confidence: high
+    evidence: "Copy-constructs an IMAGE range into uninitialized storage."
+  - address: "0x004A7F4B"
+    name: ui_layout_image_entry_range_copy_unwind
+    confidence: high
+    evidence: "Destroys partially copied IMAGE entries during exception unwinding."
+  - address: "0x004A7FB0"
+    name: ui_layout_image_entry_range_copy_construct_duplicate
+    confidence: high
+    evidence: "Second compiler-emitted IMAGE range copy path."
+  - address: "0x004A8080"
+    name: ui_layout_control_pointer_list_create_node
+    confidence: high
+    evidence: "Allocates a 12-byte list node and constructs its stored pointer."
+  - address: "0x004A8140"
+    name: ui_layout_image_entry_placement_copy_ctor_internal
+    confidence: high
+    evidence: "Internal placement copy construction for an IMAGE entry."
+  - address: "0x004A81B0"
+    name: ui_layout_control_pointer_placement_copy_ctor
+    confidence: high
+    evidence: "Null-checked placement copy construction for a definition pointer."
   - address: "0x004A81F0"
     name: ui_layout_parse_control
     confidence: high
