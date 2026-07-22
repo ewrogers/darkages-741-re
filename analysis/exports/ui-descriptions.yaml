@@ -87,6 +87,78 @@ functions:
     name: ui_desc_pane_draw_frame
     confidence: high
     evidence: "Tiles the eight 16 by 16 border and corner pixmaps around the current DescPane bounds."
+  - address: "0x0049D3C0"
+    name: metadata_item_description_manager_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class ItemMetaDescMan."
+  - address: "0x0049D3F0"
+    name: metadata_item_description_map_cleanup
+    confidence: high
+    evidence: "Exception-cleanup wrapper that destroys the ItemMetaDescMan record map."
+  - address: "0x0049D410"
+    name: metadata_item_description_manager_get_text
+    confidence: high
+    evidence: "Optionally resolves and caches a description record by item type and exact name, then returns its text."
+  - address: "0x0049D490"
+    name: metadata_item_description_manager_find_record
+    confidence: high
+    evidence: "Builds a string key and returns the record pointer for an exact name match, or null."
+  - address: "0x0049D550"
+    name: metadata_item_description_lookup_key_dtor
+    confidence: high
+    evidence: "Destroys the temporary std::string key used by ItemMetaDescMan lookup."
+  - address: "0x0049D5B0"
+    name: ui_desc_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class DescPane."
+  - address: "0x0049D5E0"
+    name: metadata_item_description_map_ctor
+    confidence: high
+    evidence: "Constructs the string-keyed ItemMetaDescMan record map and its sentinel node."
+  - address: "0x0049D610"
+    name: metadata_item_description_map_dtor
+    confidence: high
+    evidence: "Erases every ItemMetaDescMan map node and releases the sentinel node."
+  - address: "0x0049D6B0"
+    name: metadata_item_description_map_find
+    confidence: high
+    evidence: "Finds an exact std::string key by lower_bound and returns the map sentinel when absent."
+  - address: "0x0049D790"
+    name: metadata_item_description_map_storage_dtor
+    confidence: high
+    evidence: "Destroys all map values while leaving sentinel release to the containing destructor."
+  - address: "0x0049D7F0"
+    name: metadata_item_description_map_head_cleanup
+    confidence: high
+    evidence: "Exception-cleanup helper that releases the ItemMetaDescMan map sentinel node."
+  - address: "0x0049D820"
+    name: metadata_item_description_map_erase_range
+    confidence: high
+    evidence: "Erases map nodes in a half-open iterator range and returns the successor iterator."
+  - address: "0x0049D900"
+    name: metadata_item_description_map_lower_bound
+    confidence: high
+    evidence: "Walks the red-black tree to find the first key not less than the supplied string."
+  - address: "0x0049D9A0"
+    name: metadata_item_description_map_initialize
+    confidence: high
+    evidence: "Allocates and initializes the map sentinel, tree links, and element count."
+  - address: "0x0049DA20"
+    name: metadata_item_description_map_erase
+    confidence: high
+    evidence: "Unlinks one red-black-tree node, repairs invariants, destroys its value, and releases the node."
+  - address: "0x0049DF00"
+    name: metadata_item_description_map_clear
+    confidence: high
+    evidence: "Destroys the map tree and resets sentinel links and element count."
+  - address: "0x0049DF60"
+    name: metadata_item_description_map_iterator_ctor
+    confidence: high
+    evidence: "Constructs an ItemMetaDescMan map iterator from a node pointer."
+  - address: "0x0049DF80"
+    name: metadata_item_description_map_iterator_next
+    confidence: high
+    evidence: "Advances an ItemMetaDescMan map iterator to its in-order successor."
   - address: "0x004CACD0"
     name: ui_merchant_server_item_menu3_timer_callback
     confidence: high

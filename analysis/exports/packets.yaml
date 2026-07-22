@@ -2075,6 +2075,66 @@ functions:
     name: file_read_spell_book_line
     confidence: high
     evidence: "Reads one SpellBook.cfg line through LF, CRLF, EOF, or error and appends a NUL terminator."
+  - address: "0x0049D100"
+    name: ui_item_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class ItemPane."
+  - address: "0x0049D130"
+    name: ui_item_pane_ctor_cleanup
+    confidence: high
+    evidence: "Exception cleanup that destroys the Pane base during ItemPane or InvItemPane construction."
+  - address: "0x0049D150"
+    name: ui_inventory_item_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class InvItemPane."
+  - address: "0x0049D180"
+    name: ui_drop_gold_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class DropGoldDialogPane."
+  - address: "0x0049D1B0"
+    name: ui_give_gold_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class GiveGoldDialogPane."
+  - address: "0x0049D1E0"
+    name: ui_dragged_inventory_item_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class DraggedInvItemPane."
+  - address: "0x0049D210"
+    name: ui_map_item_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class MapItem_Pane."
+  - address: "0x0049D240"
+    name: ui_dragged_map_item_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class DraggedMapItemPane."
+  - address: "0x0049D270"
+    name: ui_skill_inventory_item_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class SkillInvItemPane."
+  - address: "0x0049D2A0"
+    name: ui_dragged_skill_inventory_item_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class DraggedSkillInvItemPane."
+  - address: "0x0049D2D0"
+    name: ui_spell_inventory_item_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class SpellInvItemPane."
+  - address: "0x0049D300"
+    name: ui_dragged_spell_inventory_item_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class DraggedSpellInvItemPane."
+  - address: "0x0049D330"
+    name: ui_string_spell_input_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class StringSpellInputPane."
+  - address: "0x0049D360"
+    name: ui_number_args_spell_input_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class NumberArgsSpellInputPane."
+  - address: "0x0049D390"
+    name: ui_spell_delay_control_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class SpellDelayControlPane."
   - address: "0x004AD250"
     name: ui_open_town_map_for_current_map
     confidence: high

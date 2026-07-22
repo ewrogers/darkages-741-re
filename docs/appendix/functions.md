@@ -1667,6 +1667,22 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_desc_pane_close_for_opcode_0x63` | `0x0049CCB0` | high | Closes DescPane after its network-event handler recognizes leading byte 0x63. |
 | `ui_desc_pane_close_for_opcode_0x42` | `0x0049CCD0` | high | Closes DescPane after its network-event handler recognizes leading byte 0x42. |
 | `ui_desc_pane_draw_frame` | `0x0049CCF0` | high | Tiles the eight 16 by 16 border and corner pixmaps around the current DescPane bounds. |
+| `ui_item_pane_scalar_deleting_dtor` | `0x0049D100` | high | MSVC scalar deleting destructor for exact RTTI class ItemPane. |
+| `ui_item_pane_ctor_cleanup` | `0x0049D130` | high | Exception cleanup that destroys the Pane base during ItemPane or InvItemPane construction. |
+| `ui_inventory_item_scalar_deleting_dtor` | `0x0049D150` | high | MSVC scalar deleting destructor for exact RTTI class InvItemPane. |
+| `ui_drop_gold_dialog_scalar_deleting_dtor` | `0x0049D180` | high | MSVC scalar deleting destructor for exact RTTI class DropGoldDialogPane. |
+| `ui_give_gold_dialog_scalar_deleting_dtor` | `0x0049D1B0` | high | MSVC scalar deleting destructor for exact RTTI class GiveGoldDialogPane. |
+| `ui_dragged_inventory_item_scalar_deleting_dtor` | `0x0049D1E0` | high | MSVC scalar deleting destructor for exact RTTI class DraggedInvItemPane. |
+| `ui_map_item_pane_scalar_deleting_dtor` | `0x0049D210` | high | MSVC scalar deleting destructor for exact RTTI class MapItem_Pane. |
+| `ui_dragged_map_item_scalar_deleting_dtor` | `0x0049D240` | high | MSVC scalar deleting destructor for exact RTTI class DraggedMapItemPane. |
+| `ui_skill_inventory_item_scalar_deleting_dtor` | `0x0049D270` | high | MSVC scalar deleting destructor for exact RTTI class SkillInvItemPane. |
+| `ui_dragged_skill_inventory_item_scalar_deleting_dtor` | `0x0049D2A0` | high | MSVC scalar deleting destructor for exact RTTI class DraggedSkillInvItemPane. |
+| `ui_spell_inventory_item_scalar_deleting_dtor` | `0x0049D2D0` | high | MSVC scalar deleting destructor for exact RTTI class SpellInvItemPane. |
+| `ui_dragged_spell_inventory_item_scalar_deleting_dtor` | `0x0049D300` | high | MSVC scalar deleting destructor for exact RTTI class DraggedSpellInvItemPane. |
+| `ui_string_spell_input_pane_scalar_deleting_dtor` | `0x0049D330` | high | MSVC scalar deleting destructor for exact RTTI class StringSpellInputPane. |
+| `ui_number_args_spell_input_pane_scalar_deleting_dtor` | `0x0049D360` | high | MSVC scalar deleting destructor for exact RTTI class NumberArgsSpellInputPane. |
+| `ui_spell_delay_control_pane_scalar_deleting_dtor` | `0x0049D390` | high | MSVC scalar deleting destructor for exact RTTI class SpellDelayControlPane. |
+| `ui_desc_pane_scalar_deleting_dtor` | `0x0049D5B0` | high | MSVC scalar deleting destructor for exact RTTI class DescPane. |
 | `ui_item_shop_shopping_bag_ctor` | `0x0049F450` | high | Constructs exact RTTI ItemShop::ShoppingBagDialogPane from lshopba2.txt and sends CCashShop action 0. |
 | `ui_item_shop_shopping_bag_dtor` | `0x0049F7E0` | high | Unregisters and destroys ShoppingBagDialogPane and its attached item controls. |
 | `ui_item_shop_shopping_bag_handle_network_event` | `0x004A0550` | high | Consumes exact RTTI SItemShop in the shopping-bag pane. |
@@ -3864,6 +3880,23 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_item_description_manager_apply_table` | `0x0049C2C0` | high | Parses each two-value SItemDes row into a numeric ID plus text record and inserts it by group name. |
 | `metadata_item_description_manager_dump_debug_file` | `0x0049C550` | high | Writes the current description map to IDDump.txt; no live static caller was recovered. |
 | `metadata_item_description_manager_handle_event` | `0x0049C670` | high | Accepts internal metadata event tag 0x1234 and applies the selected table when status reports success. |
+| `metadata_item_description_manager_scalar_deleting_dtor` | `0x0049D3C0` | high | MSVC scalar deleting destructor for exact RTTI class ItemMetaDescMan. |
+| `metadata_item_description_map_cleanup` | `0x0049D3F0` | high | Exception-cleanup wrapper that destroys the ItemMetaDescMan record map. |
+| `metadata_item_description_manager_get_text` | `0x0049D410` | high | Optionally resolves and caches a description record by item type and exact name, then returns its text. |
+| `metadata_item_description_manager_find_record` | `0x0049D490` | high | Builds a string key and returns the record pointer for an exact name match, or null. |
+| `metadata_item_description_lookup_key_dtor` | `0x0049D550` | high | Destroys the temporary std::string key used by ItemMetaDescMan lookup. |
+| `metadata_item_description_map_ctor` | `0x0049D5E0` | high | Constructs the string-keyed ItemMetaDescMan record map and its sentinel node. |
+| `metadata_item_description_map_dtor` | `0x0049D610` | high | Erases every ItemMetaDescMan map node and releases the sentinel node. |
+| `metadata_item_description_map_find` | `0x0049D6B0` | high | Finds an exact std::string key by lower_bound and returns the map sentinel when absent. |
+| `metadata_item_description_map_storage_dtor` | `0x0049D790` | high | Destroys all map values while leaving sentinel release to the containing destructor. |
+| `metadata_item_description_map_head_cleanup` | `0x0049D7F0` | high | Exception-cleanup helper that releases the ItemMetaDescMan map sentinel node. |
+| `metadata_item_description_map_erase_range` | `0x0049D820` | high | Erases map nodes in a half-open iterator range and returns the successor iterator. |
+| `metadata_item_description_map_lower_bound` | `0x0049D900` | high | Walks the red-black tree to find the first key not less than the supplied string. |
+| `metadata_item_description_map_initialize` | `0x0049D9A0` | high | Allocates and initializes the map sentinel, tree links, and element count. |
+| `metadata_item_description_map_erase` | `0x0049DA20` | high | Unlinks one red-black-tree node, repairs invariants, destroys its value, and releases the node. |
+| `metadata_item_description_map_clear` | `0x0049DF00` | high | Destroys the map tree and resets sentinel links and element count. |
+| `metadata_item_description_map_iterator_ctor` | `0x0049DF60` | high | Constructs an ItemMetaDescMan map iterator from a node pointer. |
+| `metadata_item_description_map_iterator_next` | `0x0049DF80` | high | Advances an ItemMetaDescMan map iterator to its in-order successor. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |
