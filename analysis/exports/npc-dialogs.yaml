@@ -101,6 +101,94 @@ functions:
     name: ui_dialog_set_cancel_action
     confidence: high
     evidence: "Stores an attachment-order control index at DialogPane +0x59C. Escape dispatches the enabled target with action code 8; -1 disables the shortcut."
+  - address: "0x004ACE90"
+    name: ui_is_server_item_menu_dialog3_enabled
+    confidence: high
+    evidence: "Build selector for the newer ServerItemMenuDialog3 merchant UI; this client always returns false."
+  - address: "0x004C9D90"
+    name: ui_load_server_item_menu_dialog3_layout
+    confidence: high
+    evidence: "Loads lmerc2.txt and caches the newer merchant dialog's background, detail, paging, category-tab, content, and item geometry."
+  - address: "0x004CA4F0"
+    name: ui_item_list_new_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ItemListPane_New, installs its TimerHandler secondary vtable, and retains its owner and timer ID."
+  - address: "0x004CA570"
+    name: ui_item_list_new_schedule_owner_timer_mode1
+    confidence: high
+    evidence: "Schedules the owning dialog's retained timer ID with caller delay and mode value 1."
+  - address: "0x004CA5B0"
+    name: ui_item_list_new_schedule_owner_timer_mode2
+    confidence: high
+    evidence: "Schedules the owning dialog's retained timer ID with zero delay and mode value 2."
+  - address: "0x004CA5F0"
+    name: ui_item_list_new_get_item_icon_position
+    confidence: high
+    evidence: "Computes an item icon origin from its row rectangle and the lmerc2 Content-to-ItemIcon1 offset."
+  - address: "0x004CA650"
+    name: ui_item_list_new_get_item_name_position
+    confidence: high
+    evidence: "Computes item-name text origin from its row rectangle and the lmerc2 Content-to-ItemName1 offset."
+  - address: "0x004CA6A0"
+    name: ui_item_list_new_get_item_price_position
+    confidence: high
+    evidence: "Computes item-price text origin from its row rectangle and the lmerc2 item-name geometry."
+  - address: "0x004CA6F0"
+    name: ui_server_item_menu_dialog3_rebuild_categories
+    confidence: high
+    evidence: "Groups parsed merchant items by metadata category label and stores their indexes in 0xA0-byte category records."
+  - address: "0x004CAA80"
+    name: ui_server_item_menu_dialog3_set_category_window
+    confidence: high
+    evidence: "Clamps the four-category visible window, updates previous and next button visibility, and invalidates the dialog."
+  - address: "0x004CABF0"
+    name: ui_server_item_menu_dialog3_category_for_visible_slot
+    confidence: high
+    evidence: "Maps one of four visible category-tab slots to its backing category record index."
+  - address: "0x004CAD30"
+    name: ui_server_item_menu_dialog3_set_detail_text
+    confidence: high
+    evidence: "Sets text on one indexed detail control in the dialog's control collection."
+  - address: "0x004CB240"
+    name: ui_server_item_menu_dialog3_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ServerItemMenuDialog3, parses its payload, builds ItemListPane_New, groups categories, and initializes paging and hover state."
+  - address: "0x004CB560"
+    name: ui_server_item_menu_dialog3_dtor
+    confidence: high
+    evidence: "Frees parsed merchant items, destroys the category vector, and runs the DialogPane base destructor."
+  - address: "0x004CB610"
+    name: ui_server_item_menu_dialog3_build_controls
+    confidence: high
+    evidence: "Attaches item and category paging buttons plus class, level, weight, and description controls from lmerc2.txt."
+  - address: "0x004CB960"
+    name: ui_server_item_menu_dialog3_show_item_page
+    confidence: high
+    evidence: "Loads up to four active-category items into ItemListPane_New and updates the remembered page."
+  - address: "0x004CBAC0"
+    name: ui_server_item_menu_dialog3_handle_control_action
+    confidence: high
+    evidence: "Routes base controls, item-page previous and next, and category-window previous and next actions."
+  - address: "0x004CBBA0"
+    name: ui_server_item_menu_dialog3_handle_pointer_event
+    confidence: high
+    evidence: "Handles category-tab clicks, retains hover coordinates, closes descriptions outside content, and delegates other pointer behavior."
+  - address: "0x004CBD70"
+    name: ui_server_item_menu_dialog3_draw
+    confidence: high
+    evidence: "Draws the lmerc2 background, page count, player money, and four selected or unselected category tabs."
+  - address: "0x004CC270"
+    name: net_parse_server_item_menu_dialog3_items
+    confidence: high
+    evidence: "Parses the newer merchant payload into fixed 0x224-byte item records; menu type 0x4B uses the extended record form."
+  - address: "0x004CC970"
+    name: ui_load_merchant_dialog_layouts
+    confidence: high
+    evidence: "Loads lmerc2, lmerc, and lmerd once and caches their pixmaps, control rectangles, segment sizes, and derived offsets."
+  - address: "0x004CEEF0"
+    name: ui_open_server_item_menu_dialog
+    confidence: high
+    evidence: "Chooses and constructs a merchant server-item dialog; the always-false build selector leaves ServerItemMenuDialog3 dormant and selects the older dialog."
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high

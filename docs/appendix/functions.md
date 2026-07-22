@@ -1947,6 +1947,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_layout_stream_write_quoted_text` | `0x004A94C0` | high | Writes a byte string between double-quote delimiters. |
 | `ui_layout_stream_read_int` | `0x004A9560` | high | Reads an integer-classified token and parses it with the retained %d format. |
 | `ui_layout_stream_write_int` | `0x004A95E0` | high | Formats a signed integer with %d and writes its decimal bytes. |
+| `ui_is_server_item_menu_dialog3_enabled` | `0x004ACE90` | high | Build selector for the newer ServerItemMenuDialog3 merchant UI; this client always returns false. |
 | `ui_open_town_map_for_current_map` | `0x004AD250` | high | Opens exact RTTI TownMapPane in the built-in button mode, which selects _tcoord.txt from the active client map number. |
 | `ui_open_town_map_for_key` | `0x004AD2E0` | high | Opens exact RTTI TownMapPane in server-keyed mode unless its singleton is already active. |
 | `ui_town_map_schedule_close` | `0x004AD370` | high | Queues immediate TownMapPane timer 0x4D2, whose callback closes the pane. |
@@ -2115,10 +2116,30 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_manufacture_dialog_register_singleton` | `0x004C3F60` | high | Registers the owning ManufactureDialogPane from its embedded singleton helper at offset 0x630. |
 | `ui_manufacture_dialog_unregister_singleton` | `0x004C3FA0` | high | Clears the global singleton when it still points to the ManufactureDialogPane that owns the embedded helper. |
 | `ui_manufacture_dialog_timer_scalar_deleting_dtor_thunk` | `0x004C3FE0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the ManufactureDialogPane scalar deleting destructor. |
+| `ui_load_server_item_menu_dialog3_layout` | `0x004C9D90` | high | Loads lmerc2.txt and caches the newer merchant dialog's background, detail, paging, category-tab, content, and item geometry. |
+| `ui_item_list_new_ctor` | `0x004CA4F0` | high | Constructs exact RTTI ItemListPane_New, installs its TimerHandler secondary vtable, and retains its owner and timer ID. |
+| `ui_item_list_new_schedule_owner_timer_mode1` | `0x004CA570` | high | Schedules the owning dialog's retained timer ID with caller delay and mode value 1. |
+| `ui_item_list_new_schedule_owner_timer_mode2` | `0x004CA5B0` | high | Schedules the owning dialog's retained timer ID with zero delay and mode value 2. |
+| `ui_item_list_new_get_item_icon_position` | `0x004CA5F0` | high | Computes an item icon origin from its row rectangle and the lmerc2 Content-to-ItemIcon1 offset. |
+| `ui_item_list_new_get_item_name_position` | `0x004CA650` | high | Computes item-name text origin from its row rectangle and the lmerc2 Content-to-ItemName1 offset. |
+| `ui_item_list_new_get_item_price_position` | `0x004CA6A0` | high | Computes item-price text origin from its row rectangle and the lmerc2 item-name geometry. |
+| `ui_server_item_menu_dialog3_rebuild_categories` | `0x004CA6F0` | high | Groups parsed merchant items by metadata category label and stores their indexes in 0xA0-byte category records. |
+| `ui_server_item_menu_dialog3_set_category_window` | `0x004CAA80` | high | Clamps the four-category visible window, updates previous and next button visibility, and invalidates the dialog. |
+| `ui_server_item_menu_dialog3_category_for_visible_slot` | `0x004CABF0` | high | Maps one of four visible category-tab slots to its backing category record index. |
 | `ui_server_item_menu_dialog_handle_network_event` | `0x004CAC20` | high | TaskListDialog::ServerItemMenuDialog3 network-event handler accepts SStatus updates containing progression and currency. |
 | `ui_server_item_menu_update_gold_from_status_packet` | `0x004CAC90` | high | Copies SStatus gold into the server-item menu dialog and redraws its currency display. |
-| `ui_merchant_server_item_menu3_timer_callback` | `0x004CACD0` | high | TimerHandler callback installed by exact RTTI ServerItemMenuDialog3; subtype 1 applies the scroll offset and updates a row tooltip, while subtype 2 closes DescPane. |
-| `ui_merchant_server_item_menu3_show_hover_desc` | `0x004CAD70` | high | Builds or repositions the older MerchantDialogPane server-item tooltip through the shared DescPane helper and retains the hovered row. |
+| `ui_server_item_menu_dialog3_handle_timer_event` | `0x004CACD0` | high | TimerHandler callback installed by exact RTTI ServerItemMenuDialog3; mode 1 applies the row offset and updates the tooltip, while mode 2 closes DescPane. |
+| `ui_server_item_menu_dialog3_set_detail_text` | `0x004CAD30` | high | Sets text on one indexed detail control in the dialog's control collection. |
+| `ui_server_item_menu_dialog3_show_item_details` | `0x004CAD70` | high | Resolves one category-local item, builds or repositions its shared DescPane tooltip, updates four metadata detail controls, and retains the selected row. |
+| `ui_server_item_menu_dialog3_ctor` | `0x004CB240` | high | Constructs exact RTTI ServerItemMenuDialog3, parses its payload, builds ItemListPane_New, groups categories, and initializes paging and hover state. |
+| `ui_server_item_menu_dialog3_dtor` | `0x004CB560` | high | Frees parsed merchant items, destroys the category vector, and runs the DialogPane base destructor. |
+| `ui_server_item_menu_dialog3_build_controls` | `0x004CB610` | high | Attaches item and category paging buttons plus class, level, weight, and description controls from lmerc2.txt. |
+| `ui_server_item_menu_dialog3_show_item_page` | `0x004CB960` | high | Loads up to four active-category items into ItemListPane_New and updates the remembered page. |
+| `ui_server_item_menu_dialog3_handle_control_action` | `0x004CBAC0` | high | Routes base controls, item-page previous and next, and category-window previous and next actions. |
+| `ui_server_item_menu_dialog3_handle_pointer_event` | `0x004CBBA0` | high | Handles category-tab clicks, retains hover coordinates, closes descriptions outside content, and delegates other pointer behavior. |
+| `ui_server_item_menu_dialog3_draw` | `0x004CBD70` | high | Draws the lmerc2 background, page count, player money, and four selected or unselected category tabs. |
+| `ui_load_merchant_dialog_layouts` | `0x004CC970` | high | Loads lmerc2, lmerc, and lmerd once and caches their pixmaps, control rectangles, segment sizes, and derived offsets. |
+| `ui_open_server_item_menu_dialog` | `0x004CEEF0` | high | Chooses and constructs a merchant server-item dialog; the always-false build selector leaves ServerItemMenuDialog3 dormant and selects the older dialog. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
@@ -2581,6 +2602,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_manual_craft` | `0x004C27C0` | high | Builds CManual action 1 with the echoed manufacture ID, string8 recipe name, and additional inventory slot. |
 | `net_handle_input_server_block_raw` | `0x004C2DC0` | high | Reads the raw input-block state byte, ending the event manager's server block when nonzero or beginning it after consuming the zero-state's extra byte. |
 | `net_read_manual_length_prefixed_text` | `0x004C3E50` | high | Reads 1-, 2-, 3-, or 4-byte big-endian lengths, copies a bounded prefix, terminates it, and advances over the full declared value. |
+| `net_parse_server_item_menu_dialog3_items` | `0x004CC270` | high | Parses the newer merchant payload into fixed 0x224-byte item records; menu type 0x4B uses the extended record form. |
 | `net_request_object_info` | `0x004CD350` | high | Merchant menu paths call this opcode 0x43 object information request. |
 | `net_send_merchant_selection` | `0x004CFE60` | high | MerchantDialogPane::TextMenuDialogEx virtual method that builds and sends CMerchant opcode 0x39. |
 | `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |

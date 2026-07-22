@@ -248,13 +248,13 @@ functions:
     confidence: high
     evidence: "Returns the exact RTTI DescPane singleton pointer."
   - address: "0x004CACD0"
-    name: ui_merchant_server_item_menu3_timer_callback
+    name: ui_server_item_menu_dialog3_handle_timer_event
     confidence: high
-    evidence: "TimerHandler callback installed by exact RTTI ServerItemMenuDialog3; subtype 1 applies the scroll offset and updates a row tooltip, while subtype 2 closes DescPane."
+    evidence: "TimerHandler callback installed by exact RTTI ServerItemMenuDialog3; mode 1 applies the row offset and updates the tooltip, while mode 2 closes DescPane."
   - address: "0x004CAD70"
-    name: ui_merchant_server_item_menu3_show_hover_desc
+    name: ui_server_item_menu_dialog3_show_item_details
     confidence: high
-    evidence: "Builds or repositions the older MerchantDialogPane server-item tooltip through the shared DescPane helper and retains the hovered row."
+    evidence: "Resolves one category-local item, builds or repositions its shared DescPane tooltip, updates four metadata detail controls, and retains the selected row."
   - address: "0x005308F0"
     name: ui_npc_item_list_row_queue_hover
     confidence: high
