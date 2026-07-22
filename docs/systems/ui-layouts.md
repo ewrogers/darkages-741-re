@@ -61,6 +61,8 @@ A missing layout or a missing named control reaches a fatal invalid-layout error
 <ENDCONTROL>
 ```
 
+The stream reader skips bytes at or below ASCII space, keeps quoted text together without the quote bytes, recognizes angle-bracket tags, and classifies unquoted decimal tokens separately from ordinary text. The writer mirrors those forms with explicit tag, quoted-text, decimal-integer, tab, and space helpers.
+
 `ui_layout_parse_control` recognizes these fields:
 
 | Field | Meaning |

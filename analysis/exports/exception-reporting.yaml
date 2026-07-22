@@ -127,10 +127,22 @@ functions:
     name: app_get_exception_handler
     confidence: high
     evidence: "Returns the application-wide ExceptionHandler singleton used by the filter, uploader, and live diagnostic builder."
+  - address: "0x004A9690"
+    name: app_initialize_speedhack_clock_baselines
+    confidence: high
+    evidence: "Captures four local clock baselines and formats the legacy Windows-version label."
   - address: "0x004A98A0"
     name: app_check_speedhack_clocks
     confidence: high
     evidence: "Compares several local time sources, counts differences greater than five seconds, and sends one SpeedHack CException report per process after repeated mismatches."
+  - address: "0x004AD5B0"
+    name: app_destroy_exception_handler
+    confidence: high
+    evidence: "Deletes the registered process exception handler through its virtual deleting destructor."
+  - address: "0x004AE420"
+    name: app_has_exception_handler
+    confidence: high
+    evidence: "Reports whether the process exception-handler singleton pointer is non-null."
   - address: "0x0056D4E0"
     name: app_stack_walker_from_thread_ctor
     confidence: high

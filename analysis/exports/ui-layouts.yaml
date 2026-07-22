@@ -799,10 +799,18 @@ functions:
     name: ui_layout_image_entry_range_copy_construct_duplicate
     confidence: high
     evidence: "Second compiler-emitted IMAGE range copy path."
+  - address: "0x004A801B"
+    name: ui_layout_image_entry_range_copy_unwind_duplicate
+    confidence: high
+    evidence: "Destroys IMAGE entries already constructed by the duplicate range-copy path during unwinding."
   - address: "0x004A8080"
     name: ui_layout_control_pointer_list_create_node
     confidence: high
     evidence: "Allocates a 12-byte list node and constructs its stored pointer."
+  - address: "0x004A80F2"
+    name: ui_layout_control_pointer_list_create_node_unwind
+    confidence: high
+    evidence: "Frees a newly allocated list node when construction of its stored pointer fails."
   - address: "0x004A8140"
     name: ui_layout_image_entry_placement_copy_ctor_internal
     confidence: high
@@ -819,6 +827,62 @@ functions:
     name: ui_layout_serialize_control
     confidence: high
     evidence: "Writes one parsed control back to the same line-oriented layout grammar."
+  - address: "0x004A9040"
+    name: ui_layout_stream_read_classified_token
+    confidence: high
+    evidence: "Reads quoted or whitespace-delimited input and classifies tags, integers, and text."
+  - address: "0x004A9230"
+    name: ui_layout_stream_write_bytes
+    confidence: high
+    evidence: "Writes a caller-supplied byte span through the stream's virtual writer."
+  - address: "0x004A9290"
+    name: ui_layout_stream_read_tag_name
+    confidence: high
+    evidence: "Reads an angle-bracket token and removes its delimiters."
+  - address: "0x004A9320"
+    name: ui_layout_stream_write_tag
+    confidence: high
+    evidence: "Writes a supplied tag name between angle brackets."
+  - address: "0x004A93C0"
+    name: ui_layout_stream_read_token
+    confidence: high
+    evidence: "Reads one token while discarding its classification."
+  - address: "0x004A93F0"
+    name: ui_layout_stream_write_tabs
+    confidence: high
+    evidence: "Writes the requested number of tab bytes."
+  - address: "0x004A9440"
+    name: ui_layout_stream_write_spaces
+    confidence: high
+    evidence: "Writes the requested number of space bytes."
+  - address: "0x004A9490"
+    name: ui_layout_stream_copy_next_byte
+    confidence: high
+    evidence: "Reads one byte through the virtual reader and writes it through the virtual writer."
+  - address: "0x004A94C0"
+    name: ui_layout_stream_write_quoted_text
+    confidence: high
+    evidence: "Writes a byte string between double-quote delimiters."
+  - address: "0x004A9560"
+    name: ui_layout_stream_read_int
+    confidence: high
+    evidence: "Reads an integer-classified token and parses it with the retained %d format."
+  - address: "0x004A95E0"
+    name: ui_layout_stream_write_int
+    confidence: high
+    evidence: "Formats a signed integer with %d and writes its decimal bytes."
+  - address: "0x004ADC20"
+    name: ui_destroy_layout_manager
+    confidence: high
+    evidence: "Destroys and frees the registered UI layout manager."
+  - address: "0x004AE310"
+    name: ui_layout_value_vector_dtor_with_seh
+    confidence: high
+    evidence: "Compiler wrapper that destroys a layout VALUE vector under an exception frame."
+  - address: "0x004AE5C0"
+    name: ui_has_layout_manager
+    confidence: high
+    evidence: "Reports whether the UI layout-manager singleton pointer is non-null."
   - address: "0x005ABA30"
     name: ui_user_info_pane_ctor
     confidence: high

@@ -27,6 +27,10 @@ The names below can be searched in Binary Ninja. Addresses and confidence notes 
 6. The window, renderer, audio, input, pane, and network objects are prepared.
 7. `event_handle_intro_state` starts the opening sequence.
 
+The large `app_initialize` routine owns step 6. It starts Winsock, registers and creates the main window, opens the required archives, then constructs the core managers and panes in dependency order. If any required stage fails, `app_initialize_failure_cleanup` walks the completed stages in reverse, deletes each registered singleton, closes the archives, destroys the partial window, and unregisters its window class.
+
+Win32 activation remains separate from construction. `app_set_active` applies the configured process-priority override while inactive, restores the saved priority when active, forwards the state to the video system, and invalidates the root pane after reactivation. Window move and size messages update the DirectDraw presentation origin only in windowed mode.
+
 The mutex is named `Nexon.SingleInstance`. If Windows reports that it already exists, the original client exits. This is only a local guard. It does not change any account or server rules.
 
 ## Patch handoff
@@ -53,7 +57,7 @@ This is useful because a launcher can skip the video cleanly by starting at stat
 
 ## Shutdown
 
-When the game loop returns, the client tears down panes and event objects first. Audio stops its samples, cancels its music timer, closes its stream, and shuts down Miles. The client also releases the main image and map-tile libraries, shuts down the video system, deletes it, and releases DirectDraw. The single-instance mutex is closed before the process exits.
+When the game loop returns, the client tears down panes and event objects first. The same small `has`, `get`, and `destroy` helpers make each singleton cleanup conditional and preserve reverse construction order. Audio stops its samples, cancels its music timer, closes its stream, and shuts down Miles. The client also releases the tile-remapping tables, image and map-tile libraries, shuts down the video system, deletes it, and releases DirectDraw. The single-instance mutex is closed before the process exits.
 
 The login server can also save a deferred [`SAdvertisement`](../network/server/091-0x5b-advertisement.md) command. When its saved string is nonempty, `app_winmain` performs the full shutdown first and then tries to launch `ad.exe` with that string and three numeric arguments. The separate program is not present in the matching local installation, and the client ignores launch failure.
 

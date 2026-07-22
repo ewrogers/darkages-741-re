@@ -859,6 +859,18 @@ functions:
     name: file_load_message_table
     confidence: high
     evidence: Loads the line-oriented msg.tbl data from an archive or loose file.
+  - address: "0x004AD6B0"
+    name: file_destroy_hpf_compressor
+    confidence: high
+    evidence: "Deletes the registered HPF compressor singleton through its virtual deleting destructor."
+  - address: "0x004AE460"
+    name: file_has_hpf_compressor
+    confidence: high
+    evidence: "Reports whether the HPF compressor singleton pointer is non-null."
+  - address: "0x004AE480"
+    name: file_get_hpf_compressor
+    confidence: high
+    evidence: "Returns the HPF compressor singleton pointer."
   - address: "0x004B8570"
     name: net_handle_stipulation_raw
     confidence: high

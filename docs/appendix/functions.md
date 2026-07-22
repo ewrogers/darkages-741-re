@@ -49,11 +49,41 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_language_manager_scalar_deleting_dtor` | `0x004A4D90` | high | Runs exact RTTI Language's destructor and conditionally frees the complete object. |
 | `app_language_manager_bind_singleton` | `0x004A4DC0` | high | Binds exact RTTI Language after adjusting from its Singleton base subobject. |
 | `app_language_manager_unbind_singleton` | `0x004A4E00` | high | Clears the Language singleton only when it still references this adjusted complete object. |
+| `app_initialize_speedhack_clock_baselines` | `0x004A9690` | high | Captures four local clock baselines and formats the legacy Windows-version label. |
 | `app_check_speedhack_clocks` | `0x004A98A0` | high | Compares several local time sources, counts differences greater than five seconds, and sends one SpeedHack CException report per process after repeated mismatches. |
+| `app_apply_process_priority_override` | `0x004A9B40` | high | Saves the current process priority once and applies the configured override. |
+| `app_restore_process_priority` | `0x004A9BE0` | high | Restores the saved process-priority class and clears its saved-state flag. |
+| `app_state_ctor` | `0x004A9EA0` | high | Registers and initializes the fixed 0x00740408 application-state object. |
+| `app_state_dtor` | `0x004A9F10` | high | Unregisters the fixed application-state object during CRT shutdown. |
+| `app_post_window_message` | `0x004A9F30` | high | Posts one Win32 message to the saved main-window handle. |
+| `app_initialize` | `0x004A9F80` | high | Starts Winsock, creates the window, opens required archives, and constructs core managers and panes. |
+| `app_initialize_failure_cleanup` | `0x004ABC9E` | high | Unwinds partial startup in reverse order, destroys the window, unregisters its class, and returns -1. |
 | `app_shutdown` | `0x004AC060` | high | Tears down runtime managers and panes, then closes and destroys the DAT archive singletons before window cleanup. |
+| `app_acquire_main_window_dc` | `0x004AC8C0` | high | Caches GetDC for the saved main-window handle. |
+| `app_release_main_window_dc` | `0x004AC910` | high | Releases the cached main-window device context. |
+| `app_set_active` | `0x004AC950` | high | Synchronizes process priority, video active state, and root-pane invalidation with Win32 activation. |
+| `app_deactivate_video` | `0x004AC9D0` | high | Marks the initialized video system inactive for WM_CLOSE and WM_DESTROY. |
+| `app_update_windowed_render_origin` | `0x004ACA00` | high | Updates the DirectDraw presentation origin after WM_MOVE or WM_SIZE in windowed mode. |
 | `app_set_post_exit_advertisement` | `0x004ACE00` | high | Copies the SAdvertisement string into a 65,536-byte application buffer, terminates it, and saves its length plus three numeric arguments for app_winmain. |
+| `app_is_ahnlab_security_enabled` | `0x004ACE70` | high | Returns false in this build, leaving the optional AhnLab update path dormant. |
+| `app_is_korean_distribution_mode` | `0x004ACE98` | high | Accepts only the default distribution after excluding English, Japanese, and Taiwan modes. |
 | `app_is_japan_distribution_mode` | `0x004ACEE0` | high | Returns true when app_get_distribution_mode reports mode 13, selecting the create-user email and ISP-selector variant. |
+| `app_is_english_distribution_mode` | `0x004ACF00` | high | Tests active distribution mode 1. |
+| `app_is_taiwan_distribution_mode` | `0x004ACF20` | high | Tests distribution mode 14, which maps to Taiwan language behavior and code T. |
+| `app_is_secondary_english_distribution_mode` | `0x004ACF40` | high | Tests distribution mode 15, which maps to English language behavior and code S. |
+| `app_is_town_map_enabled` | `0x004ACF60` | high | Returns true in this build and gates both town-map opening paths. |
+| `app_uses_asian_distribution_ui` | `0x004ACF70` | high | Returns false for the two English modes and true for Korean, Japanese, and Taiwan modes. |
+| `app_is_intro_video_active` | `0x004ACFC0` | high | Returns the byte set while the intro-video state is active. |
+| `app_get_distribution_code_letter` | `0x004ACFF0` | high | Maps the five distribution families to E, J, T, S, or default K. |
 | `app_set_working_directory_from_executable` | `0x004AD3A0` | high | Derives the executable directory from GetCommandLineA and makes it the process working directory. |
+| `app_state_singleton_register` | `0x004AD500` | high | Registers the fixed application-state object. |
+| `app_state_singleton_unregister` | `0x004AD520` | high | Clears the application-state singleton when the supplied instance owns it. |
+| `app_destroy_exception_handler` | `0x004AD5B0` | high | Deletes the registered process exception handler through its virtual deleting destructor. |
+| `app_get_language_manager` | `0x004AD650` | high | Returns the registered exact RTTI Language singleton. |
+| `app_destroy_language_manager` | `0x004AD660` | high | Deletes the registered exact RTTI Language singleton. |
+| `app_has_config` | `0x004AE0C0` | high | Reports whether the Config singleton pointer is non-null. |
+| `app_has_exception_handler` | `0x004AE420` | high | Reports whether the process exception-handler singleton pointer is non-null. |
+| `app_has_language_manager` | `0x004AE440` | high | Reports whether the exact RTTI Language singleton pointer is non-null. |
 | `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client. |
 | `app_quit_after_patcher_launch` | `0x005287B0` | high | Destroys NewPatchPane, posts WM_QUIT, and terminates after the patcher launch attempt. |
 | `app_stack_walker_from_thread_ctor` | `0x0056D4E0` | high | Constructs exact RTTI StackWalker and captures the supplied thread or current thread into an x86 CONTEXT. |
@@ -271,6 +301,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_keyboard_manager_get_layout` | `0x004A4610` | high | Returns the numeric KeyboardMan layout selected by the KeyBoard configuration entry. |
 | `input_keyboard_manager_get_alternate_mode` | `0x004A4630` | high | Returns the secondary KeyboardMan input-mode flag. |
 | `input_keyboard_manager_scalar_deleting_dtor` | `0x004A4690` | high | Runs exact RTTI KeyboardMan's destructor and conditionally frees the complete object. |
+| `input_destroy_event_manager` | `0x004AE0E0` | high | Deletes the registered input-event manager. |
 | `input_map_key_to_world_direction` | `0x005F0B50` | high | Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3. |
 
 ## UI
@@ -1897,15 +1928,62 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_layout_image_entry_range_copy_construct` | `0x004A7EE0` | high | Copy-constructs an IMAGE range into uninitialized storage. |
 | `ui_layout_image_entry_range_copy_unwind` | `0x004A7F4B` | high | Destroys partially copied IMAGE entries during exception unwinding. |
 | `ui_layout_image_entry_range_copy_construct_duplicate` | `0x004A7FB0` | high | Second compiler-emitted IMAGE range copy path. |
+| `ui_layout_image_entry_range_copy_unwind_duplicate` | `0x004A801B` | high | Destroys IMAGE entries already constructed by the duplicate range-copy path during unwinding. |
 | `ui_layout_control_pointer_list_create_node` | `0x004A8080` | high | Allocates a 12-byte list node and constructs its stored pointer. |
+| `ui_layout_control_pointer_list_create_node_unwind` | `0x004A80F2` | high | Frees a newly allocated list node when construction of its stored pointer fails. |
 | `ui_layout_image_entry_placement_copy_ctor_internal` | `0x004A8140` | high | Internal placement copy construction for an IMAGE entry. |
 | `ui_layout_control_pointer_placement_copy_ctor` | `0x004A81B0` | high | Null-checked placement copy construction for a definition pointer. |
 | `ui_layout_parse_control` | `0x004A81F0` | high | Parses CONTROL, NAME, TYPE, RECT, IMAGE, VALUE, COLOR, and ENDCONTROL tokens. |
 | `ui_layout_serialize_control` | `0x004A8820` | high | Writes one parsed control back to the same line-oriented layout grammar. |
+| `ui_layout_stream_read_classified_token` | `0x004A9040` | high | Reads quoted or whitespace-delimited input and classifies tags, integers, and text. |
+| `ui_layout_stream_write_bytes` | `0x004A9230` | high | Writes a caller-supplied byte span through the stream's virtual writer. |
+| `ui_layout_stream_read_tag_name` | `0x004A9290` | high | Reads an angle-bracket token and removes its delimiters. |
+| `ui_layout_stream_write_tag` | `0x004A9320` | high | Writes a supplied tag name between angle brackets. |
+| `ui_layout_stream_read_token` | `0x004A93C0` | high | Reads one token while discarding its classification. |
+| `ui_layout_stream_write_tabs` | `0x004A93F0` | high | Writes the requested number of tab bytes. |
+| `ui_layout_stream_write_spaces` | `0x004A9440` | high | Writes the requested number of space bytes. |
+| `ui_layout_stream_copy_next_byte` | `0x004A9490` | high | Reads one byte through the virtual reader and writes it through the virtual writer. |
+| `ui_layout_stream_write_quoted_text` | `0x004A94C0` | high | Writes a byte string between double-quote delimiters. |
+| `ui_layout_stream_read_int` | `0x004A9560` | high | Reads an integer-classified token and parses it with the retained %d format. |
+| `ui_layout_stream_write_int` | `0x004A95E0` | high | Formats a signed integer with %d and writes its decimal bytes. |
 | `ui_open_town_map_for_current_map` | `0x004AD250` | high | Opens exact RTTI TownMapPane in the built-in button mode, which selects _tcoord.txt from the active client map number. |
 | `ui_open_town_map_for_key` | `0x004AD2E0` | high | Opens exact RTTI TownMapPane in server-keyed mode unless its singleton is already active. |
+| `ui_town_map_schedule_close` | `0x004AD370` | high | Queues immediate TownMapPane timer 0x4D2, whose callback closes the pane. |
+| `ui_destroy_ime_candidate_pane` | `0x004AD700` | high | Deletes the registered IME candidate pane. |
+| `ui_destroy_text_input_service` | `0x004AD7F0` | high | Deletes the registered text-input service. |
+| `ui_destroy_equip_pane` | `0x004AD840` | high | Deletes the registered equipment pane. |
+| `ui_has_terminal_pane_2` | `0x004AD890` | high | Reports whether exact RTTI TerminalPane2 is registered. |
+| `ui_get_terminal_pane_2` | `0x004AD8B0` | high | Returns the exact RTTI TerminalPane2 singleton. |
+| `ui_destroy_terminal_pane_2` | `0x004AD8C0` | high | Deletes the registered TerminalPane2. |
+| `ui_destroy_logo_pane` | `0x004AD910` | high | Deletes the registered exact RTTI LogoPane. |
+| `ui_has_transfer_server_progress_pane` | `0x004AD960` | high | Reports whether exact RTTI TransferServerProgress is registered. |
+| `ui_get_transfer_server_progress_pane` | `0x004AD980` | high | Returns the exact RTTI TransferServerProgress singleton. |
+| `ui_destroy_transfer_server_progress_pane` | `0x004AD990` | high | Deletes the registered TransferServerProgress pane. |
+| `ui_destroy_intro_video_pane` | `0x004AD9E0` | high | Deletes the registered intro-video pane. |
+| `ui_destroy_bottom_buttons` | `0x004ADAD0` | high | Deletes the registered bottom-button pane. |
+| `ui_has_show_users_pane` | `0x004ADB20` | high | Reports whether exact RTTI ShowUsersPane is registered. |
+| `ui_get_show_users_pane` | `0x004ADB40` | high | Returns the exact RTTI ShowUsersPane singleton. |
+| `ui_destroy_show_users_pane` | `0x004ADB50` | high | Deletes the registered ShowUsersPane. |
+| `ui_has_load_users_pane` | `0x004ADBA0` | high | Reports whether exact RTTI LoadUsersPane is registered. |
+| `ui_get_load_users_pane` | `0x004ADBC0` | high | Returns the exact RTTI LoadUsersPane singleton. |
+| `ui_destroy_load_users_pane` | `0x004ADBD0` | high | Deletes the registered LoadUsersPane. |
+| `ui_destroy_layout_manager` | `0x004ADC20` | high | Destroys and frees the registered UI layout manager. |
+| `ui_destroy_npc_illustration_file_manager_holder` | `0x004AE030` | high | Destroys and frees the holder that owns the NPC illustration file manager. |
 | `ui_has_town_map_pane` | `0x004AE090` | high | Reports whether the exact RTTI TownMapPane singleton is active. |
 | `ui_get_town_map_pane` | `0x004AE0B0` | high | Returns the current exact RTTI TownMapPane singleton pointer. |
+| `ui_destroy_desc_pane` | `0x004AE2C0` | high | Deletes the registered DescPane. |
+| `ui_layout_value_vector_dtor_with_seh` | `0x004AE310` | high | Compiler wrapper that destroys a layout VALUE vector under an exception frame. |
+| `ui_has_ime_candidate_pane` | `0x004AE490` | high | Reports whether the IME candidate pane pointer is non-null. |
+| `ui_get_ime_candidate_pane` | `0x004AE4B0` | high | Returns the IME candidate pane global pointer. |
+| `ui_has_equip_pane` | `0x004AE510` | high | Reports whether the equipment-pane singleton is registered. |
+| `ui_has_logo_pane` | `0x004AE530` | high | Reports whether exact RTTI LogoPane is registered. |
+| `ui_get_logo_pane` | `0x004AE550` | high | Returns the exact RTTI LogoPane singleton. |
+| `ui_has_intro_video_pane` | `0x004AE560` | high | Reports whether the intro-video pane pointer is non-null. |
+| `ui_has_layout_manager` | `0x004AE5C0` | high | Reports whether the UI layout-manager singleton pointer is non-null. |
+| `ui_has_npc_illustration_file_manager_holder` | `0x004AE7F0` | high | Reports whether the NPC illustration file-manager holder is registered. |
+| `ui_get_npc_illustration_file_manager_holder` | `0x004AE810` | high | Returns the holder that owns the NPC illustration file manager. |
+| `ui_logo_pane_register_adjusted` | `0x004B66E0` | high | Registers LogoPane from its Singleton secondary base. |
+| `ui_logo_pane_unregister_adjusted` | `0x004B6720` | high | Clears the LogoPane singleton from its adjusted secondary-base pointer. |
 | `ui_main_menu_activate_selected_action` | `0x004B7520` | high | Dispatches the selected MainMenuPane entry to login, character creation, password change, homepage, credits, or exit behavior. |
 | `ui_main_menu_handle_pointer_event` | `0x004B7BD0` | high | Rejects pointer input while MainMenuPane +0x500 is nonzero, then performs menu hit-testing and activation when the gate is clear. |
 | `ui_main_menu_handle_keyboard_event` | `0x004B7D00` | high | Rejects keyboard input while MainMenuPane +0x500 is nonzero, then handles menu selection and activation when the gate is clear. |
@@ -1990,6 +2068,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_illustration_handle_event` | `0x00532560` | high | Handles initialization and NPCIllust metadata availability events for NPCIllustFileMan. |
 | `ui_npc_illustration_subscribe_metadata` | `0x005325D0` | high | Subscribes NPCIllustFileMan to the server-managed NPCIllust metadata table, retrying after one second when required. |
 | `ui_npc_illustration_apply_metadata` | `0x00532620` | high | Applies exact NPC-name keys; repeated clearing means the final filename replaces earlier values in a multi-value metadata group. |
+| `ui_npc_illustration_file_manager_holder_register` | `0x005336D0` | high | Registers the holder that owns the NPC illustration file manager. |
+| `ui_npc_illustration_file_manager_holder_unregister` | `0x005336F0` | high | Clears the holder singleton when the supplied instance owns it. |
 | `ui_npc_merchant_message_dialog_ctor` | `0x00534990` | high | Constructs exact RTTI NPC_Merchant_MessageDialog, attaches its outer buttons, and dispatches the SScreenMenu subtype. |
 | `ui_npc_merchant_request_object_info` | `0x00534A90` | high | Top sends CRequestObjectInfo opcode 0x43 subtype 1 with the SScreenMenu target ID, then closes the active NPC session. |
 | `ui_npc_merchant_message_handle_action` | `0x00534B70` | high | Routes base actions 0 through 3 to content handling, action 4 to Top object-info request, and action 5 to local close. |
@@ -2100,6 +2180,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_show_users_pane_open` | `0x0055BFA0` | high | Opens or reveals ShowUsersPane after a response and schedules its 100 ms pane timer. |
 | `ui_show_users_rebuild_visible_list` | `0x0055C3E0` | high | Builds visible user-list rows and overrides the server palette index with 0x80 for Friendlist.cfg or 0x24 for Familylist.cfg matches. |
 | `ui_show_users_clear_lists` | `0x0055C760` | high | Clears the master and filtered ShowUsers row collections before a replacement list is applied. |
+| `ui_show_users_pane_register_adjusted` | `0x0055D5A0` | high | Registers exact RTTI ShowUsersPane from its Singleton secondary base. |
+| `ui_show_users_pane_unregister_adjusted` | `0x0055D5E0` | high | Clears the ShowUsersPane singleton from its adjusted secondary-base pointer. |
+| `ui_load_users_pane_register_adjusted` | `0x0055D620` | high | Registers exact RTTI LoadUsersPane from its Singleton secondary base. |
+| `ui_load_users_pane_unregister_adjusted` | `0x0055D660` | high | Clears the LoadUsersPane singleton from its adjusted secondary-base pointer. |
 | `ui_spelled_view_pane_ctor` | `0x0056A740` | high | Constructs SpelledViewPane_A with ten empty icon/stage slots and the frame-0 spelled.epf background. |
 | `ui_spelled_view_pane_handle_network_event` | `0x0056A8B0` | high | Routes exact RTTI SSpelled opcode 0x3A to the indicator update path. |
 | `ui_spelled_view_pane_handle_timer` | `0x0056A910` | high | Updates pane visibility state without changing any icon or duration stage. |
@@ -2116,6 +2200,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_extra_status_info_update_from_status_packet` | `0x00575FB0` | high | Copies the SStatus modifiers block into ExtraStatusInfoPane's compact combat-stat fields. |
 | `ui_extra_status_info_handle_network_event` | `0x00576040` | high | ExtraStatusInfoPane routes SStatus to its combat-stat updater. |
 | `ui_terminal_pane_handle_server_data` | `0x00579090` | high | TerminalPane2 primary-vtable slot +0x50 scans initial wire bytes, handles ESC C and ESC S plus Telnet terminal negotiation, and queues CHello and CVersion. |
+| `ui_terminal_pane_2_register_adjusted` | `0x0057A2A0` | high | Registers exact RTTI TerminalPane2 from its Singleton secondary base. |
+| `ui_terminal_pane_2_unregister_adjusted` | `0x0057A2E0` | high | Clears the TerminalPane2 singleton from its adjusted secondary-base pointer. |
 | `ui_text_insert_formatted` | `0x0057B300` | high | Forwards a NUL-terminated string to the rich text insertion and markup path. |
 | `ui_text_copy_bytes` | `0x0057B420` | high | Copies the smaller of the requested byte count and current text length, appends a null terminator, and returns the copied length. |
 | `ui_text_insert_color_markup` | `0x0057D310` | high | Recognizes lowercase three-byte {=a through {=x tokens and changes the following run's palette index. |
@@ -2137,6 +2223,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_town_map_handle_pointer_event` | `0x00590990` | high | Arms on pointer press and closes TownMapPane on the matching release. |
 | `ui_town_map_handle_keyboard_event` | `0x005909E0` | high | Handles TownMapPane close commands and the ordinary local screenshot keyboard command; packet receipt does not invoke the screenshot branch. |
 | `ui_town_map_timer_callback` | `0x00590AD0` | high | Advances the marker frame modulo seven, requeues timer 0 every 50 ms after the initial 100 ms delay, and closes on timer ID 0x4D2. |
+| `ui_transfer_server_progress_register_adjusted` | `0x00591F20` | high | Registers TransferServerProgress from its Singleton secondary base. |
+| `ui_transfer_server_progress_unregister_adjusted` | `0x00591F60` | high | Clears TransferServerProgress from its adjusted secondary-base pointer. |
 | `ui_user_confirm_pane_ctor` | `0x005921C0` | high | Constructs the 0x73C-byte exact RTTI UserConfirmPane and stores the SMessage reply context at +0x634 through +0x738. |
 | `ui_user_confirm_pane_send_ok` | `0x00592260` | high | UserConfirmPane's OK callback calls net_send_confirm with choice 1; the button label and reply were confirmed by project-owner runtime testing. |
 | `ui_user_confirm_pane_send_cancel` | `0x00592280` | high | UserConfirmPane's Cancel callback calls net_send_confirm with choice 0; the button label and reply were confirmed by project-owner runtime testing. |
@@ -3161,8 +3249,29 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_monster_image_library_unregister_global` | `0x0048D9F0` | high | Clears the process-global MonsterImageLib when this instance is registered. |
 | `render_icon_image_library_register_global` | `0x0048DA30` | high | Registers the containing IconImageLib as the process-global icon image library. |
 | `render_icon_image_library_unregister_global` | `0x0048DA70` | high | Clears the process-global IconImageLib when this instance is registered. |
+| `render_has_video_system` | `0x004AD540` | high | Reports whether the video-system singleton pointer is non-null. |
+| `render_destroy_video_system` | `0x004AD560` | high | Deletes the registered video system through its virtual deleting destructor. |
+| `render_destroy_map_tile_library` | `0x004AD750` | high | Deletes the registered map-tile image library. |
+| `render_destroy_font_image_library` | `0x004AD7A0` | high | Deletes the registered font image library. |
+| `render_destroy_palette_manager` | `0x004ADA30` | high | Deletes the registered palette manager. |
+| `render_destroy_image_cache_manager` | `0x004ADA80` | high | Deletes the registered image-cache manager. |
+| `render_destroy_effect_image_pool` | `0x004ADF90` | high | Deletes the registered effect-image pool. |
+| `render_destroy_human_tile_attr_list` | `0x004ADFE0` | high | Deletes the registered human tile-attribute list. |
+| `render_destroy_image_library` | `0x004AE130` | high | Deletes the registered general image library. |
+| `render_destroy_human_image_library` | `0x004AE180` | high | Deletes the registered human image library. |
+| `render_destroy_monster_image_library` | `0x004AE1D0` | high | Deletes the registered monster image library. |
+| `render_destroy_icon_image_library` | `0x004AE220` | high | Deletes the registered icon image library. |
+| `render_has_map_tile_library` | `0x004AE4C0` | high | Reports whether the map-tile image-library singleton pointer is non-null. |
 | `render_get_map_tile_library` | `0x004AE4E0` | high | Returns the MapTileImageLib singleton. |
+| `render_has_font_image_library` | `0x004AE4F0` | high | Reports whether the font image-library singleton pointer is non-null. |
+| `render_has_palette_manager` | `0x004AE580` | high | Reports whether the palette-manager singleton pointer is non-null. |
+| `render_has_image_cache_manager` | `0x004AE5A0` | high | Reports whether the image-cache manager pointer is non-null. |
+| `render_has_effect_image_pool` | `0x004AE7D0` | high | Reports whether the effect-image pool singleton pointer is non-null. |
+| `render_has_image_library` | `0x004AE820` | high | Reports whether the general image-library singleton pointer is non-null. |
+| `render_has_human_image_library` | `0x004AE840` | high | Reports whether the human image-library singleton pointer is non-null. |
+| `render_has_monster_image_library` | `0x004AE860` | high | Reports whether the monster image-library singleton pointer is non-null. |
 | `render_get_monster_image_library` | `0x004AE880` | high | Returns the RTTI-backed MonsterImageLib singleton. |
+| `render_has_icon_image_library` | `0x004AE890` | high | Reports whether the icon image-library singleton pointer is non-null. |
 | `render_map_background_images` | `0x004C5270` | high | Draws configured map background or bottom-layer images before world objects. |
 | `render_palette_manager_ctor` | `0x00544B70` | high | Constructs RTTI class PaletteMan, registers its palette families, loads the installed PAL series, and packs them for the active 16-bit display mode. |
 | `render_palette_resolve_table` | `0x00548510` | high | Decodes bits 24 through 30 as a family and the low 24 bits as a palette number, then returns its 256-entry packed-color table. |
@@ -3287,6 +3396,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `audio_is_miles_driver_open` | `0x0042E730` | high | Returns whether the Miles audio driver pointer is present. |
 | `audio_has_sound_manager` | `0x004316C0` | high | Reports whether the global sound-manager singleton exists. |
 | `audio_get_sound_manager` | `0x004316E0` | high | Returns the SoundManager singleton pointer. |
+| `audio_destroy_sound_manager` | `0x004AD600` | high | Deletes the registered sound-manager singleton through its virtual deleting destructor. |
 | `audio_midi_play_file` | `0x00508D80` | high | Dormant standard MIDI play entry point with no static caller in the matching client. |
 | `audio_midi_stop_or_restart` | `0x00508ED0` | high | Pauses, resets, or restarts the Windows MIDI stream according to its flags. |
 | `audio_midi_start_stream` | `0x00509010` | high | Opens a Windows MIDI stream, prepares two buffers, and begins queued playback. |
@@ -3483,6 +3593,29 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_write_jpeg_from_rgb16` | `0x004A1AF0` | high | Converts RGB555 or RGB565 source pixels to RGB triples and writes JFIF with IJG defaults: quality 75 and 4:2:0 sampling. |
 | `file_load_message_table` | `0x004A4AA0` | high | Loads the line-oriented msg.tbl data from an archive or loose file. |
 | `file_update_ahnlab_security_components` | `0x004AD040` | high | Uses FileUpdater with national.dat to verify or extract MFSVC.DLL, the AhnLab MFGS DLLs, and XUPDATE.EXE into their Windows destinations. |
+| `file_updater_dtor` | `0x004AD4E0` | high | Restores the exact FileUpdater vtable and destroys its LObject base. |
+| `file_destroy_hpf_compressor` | `0x004AD6B0` | high | Deletes the registered HPF compressor singleton through its virtual deleting destructor. |
+| `map_destroy_static_tile_remap_table` | `0x004ADC80` | high | Destroys and frees the static-tile remapping vector owner. |
+| `map_destroy_ground_tile_remap_table` | `0x004ADD30` | high | Destroys and frees the ground-tile remapping vector owner. |
+| `map_destroy_static_tile_flag_table` | `0x004ADDE0` | high | Destroys and frees the static-tile flag-vector owner. |
+| `map_destroy_ground_tile_flag_table` | `0x004ADE90` | high | Destroys and frees the ground-tile flag-vector owner. |
+| `map_destroy_tile_animation_manager` | `0x004ADF40` | high | Deletes the registered map tile-animation manager. |
+| `file_has_hpf_compressor` | `0x004AE460` | high | Reports whether the HPF compressor singleton pointer is non-null. |
+| `file_get_hpf_compressor` | `0x004AE480` | high | Returns the HPF compressor singleton pointer. |
+| `map_static_tile_remap_table_unregister_adjusted` | `0x004AE5E0` | high | Clears the static-tile remap singleton from its adjusted secondary-base pointer. |
+| `map_has_static_tile_remap_table` | `0x004AE620` | high | Reports whether the static-tile remapping table owner is registered. |
+| `map_get_static_tile_remap_table` | `0x004AE640` | high | Returns the static-tile remapping vector owner used by local animation. |
+| `map_ground_tile_remap_table_unregister_adjusted` | `0x004AE650` | high | Clears the ground-tile remap singleton from its adjusted secondary-base pointer. |
+| `map_has_ground_tile_remap_table` | `0x004AE690` | high | Reports whether the ground-tile remapping table owner is registered. |
+| `map_get_ground_tile_remap_table` | `0x004AE6B0` | high | Returns the ground-tile remapping vector owner used by tile loading and animation. |
+| `map_static_tile_flag_table_unregister_adjusted` | `0x004AE6C0` | high | Clears the static-tile flag-table singleton from its adjusted secondary-base pointer. |
+| `map_has_static_tile_flag_table` | `0x004AE700` | high | Reports whether the static-tile flag-vector owner is registered. |
+| `map_get_static_tile_flag_table` | `0x004AE720` | high | Returns the static-tile flag-vector owner updated by palette-table loading. |
+| `map_ground_tile_flag_table_unregister_adjusted` | `0x004AE730` | high | Clears the ground-tile flag-table singleton from its adjusted secondary-base pointer. |
+| `map_has_ground_tile_flag_table` | `0x004AE770` | high | Reports whether the ground-tile flag-vector owner is registered. |
+| `map_get_ground_tile_flag_table` | `0x004AE790` | high | Returns the ground-tile flag-vector owner updated by palette-table loading. |
+| `map_has_tile_animation_manager` | `0x004AE7A0` | high | Reports whether the map tile-animation manager is registered. |
+| `map_get_tile_animation_manager` | `0x004AE7C0` | high | Returns the map tile-animation manager singleton. |
 | `file_decode_ctf_map_tile` | `0x004C7000` | high | Palette-converts one alternate 784-byte indexed tile source to 16-bit pixels. |
 | `file_decode_dtf_map_tile` | `0x004C7180` | high | Reads one alternate 1568-byte 16-bit tile source and converts color format when needed. |
 | `file_tile_bank_storage_ctor` | `0x004C7280` | high | Opens one fixed-record raw tile bank and selects its palette path. |
@@ -3511,6 +3644,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_add_tile_animation_group` | `0x00587750` | high | Registers one tile-ID cycle and its delay from an animation-table line. |
 | `map_apply_tile_animation_step` | `0x00587C90` | high | Rotates the ground or static mapping and invalidates the affected cached images. |
 | `map_tile_animation_timer` | `0x00587D10` | high | Advances tile animation groups on a shared 100 ms timer. |
+| `map_static_tile_remap_table_register_adjusted` | `0x00589580` | high | Registers the static-tile remap table owner from its Singleton secondary base. |
+| `map_ground_tile_remap_table_register_adjusted` | `0x005895C0` | high | Registers the ground-tile remap table owner from its Singleton secondary base. |
+| `map_static_tile_flag_table_register_adjusted` | `0x00589600` | high | Registers the static-tile flag table owner from its Singleton secondary base. |
+| `map_ground_tile_flag_table_register_adjusted` | `0x00589640` | high | Registers the ground-tile flag table owner from its Singleton secondary base. |
+| `map_tile_animation_manager_register_adjusted` | `0x00589680` | high | Registers the map tile-animation manager from its Singleton secondary base. |
+| `map_tile_animation_manager_unregister_adjusted` | `0x005896C0` | high | Clears the tile-animation singleton from its adjusted secondary-base pointer. |
 | `file_load_ground_attribute_table` | `0x0058B8C0` | high | Loads structured ground attributes from gndattr.tbl in the active asset archive. |
 | `file_parse_ground_attribute_table` | `0x0058B930` | high | Parses the structured set_attr records and applies each attribute set to its listed tile IDs and inclusive ranges. |
 | `file_apply_ground_attribute_record` | `0x0058B9B0` | high | Interns one parsed attribute set and assigns it to each ground tile ID covered by the record's apply_to list. |
@@ -3572,6 +3711,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `maybe_command_dispatcher_return_argument` | `0x0042F420` | low | CommandDispatcher virtual method that returns its second argument unchanged; the exact interface role is not yet established. |
 | `maybe_net_load_endpoint_from_command_file` | `0x00433B50` | medium | Unreferenced parser that treats command-line tail text as a filename and loads a host or IPv4 address plus port into Config. |
 | `maybe_app_configure_distribution_mode_12` | `0x00436A10` | medium | Dormant mode 12 handler with no matching marker return; sets connection flags without installing an endpoint. |
+| `maybe_app_set_guard_flags` | `0x004A9F60` | medium | Sets opaque bytes at 0x006C9806 and 0x00740405; the wider guard meaning remains unresolved. |
 | `maybe_ui_manufacture_dialog_ctor_from_body` | `0x004C1AD0` | medium | Duplicates the lmanu.txt construction path and applies a decoded opcode-first body, but no live static caller was recovered. |
 | `maybe_ui_manufacture_dialog_apply_manual_body` | `0x004C2990` | medium | Applies RecipeCount or Recipe from a decoded opcode-first body for the duplicate raw-body pane path. |
 
@@ -4140,12 +4280,18 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `jpeg_set_memory_source` | `0x004A1760` | high | Allocates and initializes the client's IJG jpeg_source_mgr callback table around caller-owned bytes. |
 | `jpeg_error_exit_longjmp` | `0x004A1800` | high | Shared IJG fatal-error callback that invokes the configured message hook and longjmps through the client recovery buffer. |
 | `jpeg_build_generator_comment` | `0x004A1F90` | high | Builds the gen-%x- text written to JPEG COM marker 0xFE from the bitwise complement of the current CRT time value. |
+| `memory_destroy_manager` | `0x004AE270` | high | Deletes the registered exact RTTI MemoryMan singleton. |
+| `int_vector_dtor_with_seh` | `0x004AE360` | high | Compiler wrapper that destroys a 32-bit integer vector under an exception frame. |
+| `int_vector_dtor` | `0x004AE3B0` | high | Frees a 32-bit integer vector and clears its three storage pointers. |
+| `memory_has_manager` | `0x004AE8B0` | high | Reports whether the exact RTTI MemoryMan singleton pointer is non-null. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |
 | `lobject_ctor` | `0x004B4480` | high | Installs the LObject vtable and writes live-cookie bytes 62 6F 73 79 ("bosy") at +0x04. |
 | `lobject_dtor` | `0x004B44B0` | high | Restores the LObject vtable and clears the live cookie at +0x04 to zero. |
 | `lobject_is_live` | `0x004B4550` | high | Returns true only when LObject +0x04 equals 0x79736F62; event_dispatch_immediate uses it before dispatch. |
+| `memory_manager_singleton_register_adjusted` | `0x004C9D10` | high | Registers exact RTTI MemoryMan from its Singleton secondary base. |
+| `memory_manager_singleton_unregister_adjusted` | `0x004C9D50` | high | Clears the MemoryMan singleton from its adjusted secondary-base pointer. |
 | `metadata_item_info_list_exists` | `0x004D9330` | high | Returns whether the exact RTTI ItemInfoList singleton is currently bound. |
 | `metadata_item_info_list_get` | `0x004D9350` | high | Returns the exact RTTI ItemInfoList singleton pointer. |
 | `metadata_options_bind_singleton` | `0x004E25C0` | high | Binds the exact RTTI MetaOptions complete object after adjusting from its Singleton base subobject. |

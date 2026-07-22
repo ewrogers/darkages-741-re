@@ -2047,10 +2047,198 @@ functions:
     name: app_language_manager_unbind_singleton
     confidence: high
     evidence: "Clears the Language singleton only when it still references this adjusted complete object."
+  - address: "0x004AD540"
+    name: render_has_video_system
+    confidence: high
+    evidence: "Reports whether the video-system singleton pointer is non-null."
+  - address: "0x004AD560"
+    name: render_destroy_video_system
+    confidence: high
+    evidence: "Deletes the registered video system through its virtual deleting destructor."
+  - address: "0x004AD650"
+    name: app_get_language_manager
+    confidence: high
+    evidence: "Returns the registered exact RTTI Language singleton."
+  - address: "0x004AD660"
+    name: app_destroy_language_manager
+    confidence: high
+    evidence: "Deletes the registered exact RTTI Language singleton."
+  - address: "0x004AD750"
+    name: render_destroy_map_tile_library
+    confidence: high
+    evidence: "Deletes the registered map-tile image library."
+  - address: "0x004AD7A0"
+    name: render_destroy_font_image_library
+    confidence: high
+    evidence: "Deletes the registered font image library."
+  - address: "0x004ADA30"
+    name: render_destroy_palette_manager
+    confidence: high
+    evidence: "Deletes the registered palette manager."
+  - address: "0x004ADA80"
+    name: render_destroy_image_cache_manager
+    confidence: high
+    evidence: "Deletes the registered image-cache manager."
+  - address: "0x004ADC80"
+    name: map_destroy_static_tile_remap_table
+    confidence: high
+    evidence: "Destroys and frees the static-tile remapping vector owner."
+  - address: "0x004ADD30"
+    name: map_destroy_ground_tile_remap_table
+    confidence: high
+    evidence: "Destroys and frees the ground-tile remapping vector owner."
+  - address: "0x004ADDE0"
+    name: map_destroy_static_tile_flag_table
+    confidence: high
+    evidence: "Destroys and frees the static-tile flag-vector owner."
+  - address: "0x004ADE90"
+    name: map_destroy_ground_tile_flag_table
+    confidence: high
+    evidence: "Destroys and frees the ground-tile flag-vector owner."
+  - address: "0x004ADF40"
+    name: map_destroy_tile_animation_manager
+    confidence: high
+    evidence: "Deletes the registered map tile-animation manager."
+  - address: "0x004ADF90"
+    name: render_destroy_effect_image_pool
+    confidence: high
+    evidence: "Deletes the registered effect-image pool."
+  - address: "0x004ADFE0"
+    name: render_destroy_human_tile_attr_list
+    confidence: high
+    evidence: "Deletes the registered human tile-attribute list."
+  - address: "0x004AE130"
+    name: render_destroy_image_library
+    confidence: high
+    evidence: "Deletes the registered general image library."
+  - address: "0x004AE180"
+    name: render_destroy_human_image_library
+    confidence: high
+    evidence: "Deletes the registered human image library."
+  - address: "0x004AE1D0"
+    name: render_destroy_monster_image_library
+    confidence: high
+    evidence: "Deletes the registered monster image library."
+  - address: "0x004AE220"
+    name: render_destroy_icon_image_library
+    confidence: high
+    evidence: "Deletes the registered icon image library."
+  - address: "0x004AE270"
+    name: memory_destroy_manager
+    confidence: high
+    evidence: "Deletes the registered exact RTTI MemoryMan singleton."
+  - address: "0x004AE360"
+    name: int_vector_dtor_with_seh
+    confidence: high
+    evidence: "Compiler wrapper that destroys a 32-bit integer vector under an exception frame."
+  - address: "0x004AE3B0"
+    name: int_vector_dtor
+    confidence: high
+    evidence: "Frees a 32-bit integer vector and clears its three storage pointers."
+  - address: "0x004AE440"
+    name: app_has_language_manager
+    confidence: high
+    evidence: "Reports whether the exact RTTI Language singleton pointer is non-null."
+  - address: "0x004AE4C0"
+    name: render_has_map_tile_library
+    confidence: high
+    evidence: "Reports whether the map-tile image-library singleton pointer is non-null."
   - address: "0x004AE4E0"
     name: render_get_map_tile_library
     confidence: high
     evidence: Returns the MapTileImageLib singleton.
+  - address: "0x004AE4F0"
+    name: render_has_font_image_library
+    confidence: high
+    evidence: "Reports whether the font image-library singleton pointer is non-null."
+  - address: "0x004AE580"
+    name: render_has_palette_manager
+    confidence: high
+    evidence: "Reports whether the palette-manager singleton pointer is non-null."
+  - address: "0x004AE5A0"
+    name: render_has_image_cache_manager
+    confidence: high
+    evidence: "Reports whether the image-cache manager pointer is non-null."
+  - address: "0x004AE5E0"
+    name: map_static_tile_remap_table_unregister_adjusted
+    confidence: high
+    evidence: "Clears the static-tile remap singleton from its adjusted secondary-base pointer."
+  - address: "0x004AE620"
+    name: map_has_static_tile_remap_table
+    confidence: high
+    evidence: "Reports whether the static-tile remapping table owner is registered."
+  - address: "0x004AE640"
+    name: map_get_static_tile_remap_table
+    confidence: high
+    evidence: "Returns the static-tile remapping vector owner used by local animation."
+  - address: "0x004AE650"
+    name: map_ground_tile_remap_table_unregister_adjusted
+    confidence: high
+    evidence: "Clears the ground-tile remap singleton from its adjusted secondary-base pointer."
+  - address: "0x004AE690"
+    name: map_has_ground_tile_remap_table
+    confidence: high
+    evidence: "Reports whether the ground-tile remapping table owner is registered."
+  - address: "0x004AE6B0"
+    name: map_get_ground_tile_remap_table
+    confidence: high
+    evidence: "Returns the ground-tile remapping vector owner used by tile loading and animation."
+  - address: "0x004AE6C0"
+    name: map_static_tile_flag_table_unregister_adjusted
+    confidence: high
+    evidence: "Clears the static-tile flag-table singleton from its adjusted secondary-base pointer."
+  - address: "0x004AE700"
+    name: map_has_static_tile_flag_table
+    confidence: high
+    evidence: "Reports whether the static-tile flag-vector owner is registered."
+  - address: "0x004AE720"
+    name: map_get_static_tile_flag_table
+    confidence: high
+    evidence: "Returns the static-tile flag-vector owner updated by palette-table loading."
+  - address: "0x004AE730"
+    name: map_ground_tile_flag_table_unregister_adjusted
+    confidence: high
+    evidence: "Clears the ground-tile flag-table singleton from its adjusted secondary-base pointer."
+  - address: "0x004AE770"
+    name: map_has_ground_tile_flag_table
+    confidence: high
+    evidence: "Reports whether the ground-tile flag-vector owner is registered."
+  - address: "0x004AE790"
+    name: map_get_ground_tile_flag_table
+    confidence: high
+    evidence: "Returns the ground-tile flag-vector owner updated by palette-table loading."
+  - address: "0x004AE7A0"
+    name: map_has_tile_animation_manager
+    confidence: high
+    evidence: "Reports whether the map tile-animation manager is registered."
+  - address: "0x004AE7C0"
+    name: map_get_tile_animation_manager
+    confidence: high
+    evidence: "Returns the map tile-animation manager singleton."
+  - address: "0x004AE7D0"
+    name: render_has_effect_image_pool
+    confidence: high
+    evidence: "Reports whether the effect-image pool singleton pointer is non-null."
+  - address: "0x004AE820"
+    name: render_has_image_library
+    confidence: high
+    evidence: "Reports whether the general image-library singleton pointer is non-null."
+  - address: "0x004AE840"
+    name: render_has_human_image_library
+    confidence: high
+    evidence: "Reports whether the human image-library singleton pointer is non-null."
+  - address: "0x004AE860"
+    name: render_has_monster_image_library
+    confidence: high
+    evidence: "Reports whether the monster image-library singleton pointer is non-null."
+  - address: "0x004AE890"
+    name: render_has_icon_image_library
+    confidence: high
+    evidence: "Reports whether the icon image-library singleton pointer is non-null."
+  - address: "0x004AE8B0"
+    name: memory_has_manager
+    confidence: high
+    evidence: "Reports whether the exact RTTI MemoryMan singleton pointer is non-null."
   - address: "0x004AE8D0"
     name: light_list_ctor
     confidence: high
@@ -2091,6 +2279,14 @@ functions:
     name: map_load_tile_pixels
     confidence: high
     evidence: Applies ground animation, then loads the alternate bank with base-bank fallback when selected.
+  - address: "0x004C9D10"
+    name: memory_manager_singleton_register_adjusted
+    confidence: high
+    evidence: "Registers exact RTTI MemoryMan from its Singleton secondary base."
+  - address: "0x004C9D50"
+    name: memory_manager_singleton_unregister_adjusted
+    confidence: high
+    evidence: "Clears the MemoryMan singleton from its adjusted secondary-base pointer."
   - address: "0x00549F60"
     name: ui_pane_invalidate
     confidence: high
@@ -2143,6 +2339,30 @@ functions:
     name: map_tile_animation_timer
     confidence: high
     evidence: Advances tile animation groups on a shared 100 ms timer.
+  - address: "0x00589580"
+    name: map_static_tile_remap_table_register_adjusted
+    confidence: high
+    evidence: "Registers the static-tile remap table owner from its Singleton secondary base."
+  - address: "0x005895C0"
+    name: map_ground_tile_remap_table_register_adjusted
+    confidence: high
+    evidence: "Registers the ground-tile remap table owner from its Singleton secondary base."
+  - address: "0x00589600"
+    name: map_static_tile_flag_table_register_adjusted
+    confidence: high
+    evidence: "Registers the static-tile flag table owner from its Singleton secondary base."
+  - address: "0x00589640"
+    name: map_ground_tile_flag_table_register_adjusted
+    confidence: high
+    evidence: "Registers the ground-tile flag table owner from its Singleton secondary base."
+  - address: "0x00589680"
+    name: map_tile_animation_manager_register_adjusted
+    confidence: high
+    evidence: "Registers the map tile-animation manager from its Singleton secondary base."
+  - address: "0x005896C0"
+    name: map_tile_animation_manager_unregister_adjusted
+    confidence: high
+    evidence: "Clears the tile-animation singleton from its adjusted secondary-base pointer."
   - address: "0x005933C0"
     name: render_free_blend_tables
     confidence: high

@@ -197,6 +197,58 @@ functions:
     name: ui_unitel_pane_timer_scalar_deleting_dtor_thunk
     confidence: high
     evidence: "Adjusted-this TimerHandler scalar-deleting destructor thunk for UnitelPane."
+  - address: "0x004A9B40"
+    name: app_apply_process_priority_override
+    confidence: high
+    evidence: "Saves the current process priority once and applies the configured override."
+  - address: "0x004A9BE0"
+    name: app_restore_process_priority
+    confidence: high
+    evidence: "Restores the saved process-priority class and clears its saved-state flag."
+  - address: "0x004A9EA0"
+    name: app_state_ctor
+    confidence: high
+    evidence: "Registers and initializes the fixed 0x00740408 application-state object."
+  - address: "0x004A9F10"
+    name: app_state_dtor
+    confidence: high
+    evidence: "Unregisters the fixed application-state object during CRT shutdown."
+  - address: "0x004A9F30"
+    name: app_post_window_message
+    confidence: high
+    evidence: "Posts one Win32 message to the saved main-window handle."
+  - address: "0x004A9F60"
+    name: maybe_app_set_guard_flags
+    confidence: medium
+    evidence: "Sets opaque bytes at 0x006C9806 and 0x00740405; the wider guard meaning remains unresolved."
+  - address: "0x004A9F80"
+    name: app_initialize
+    confidence: high
+    evidence: "Starts Winsock, creates the window, opens required archives, and constructs core managers and panes."
+  - address: "0x004ABC9E"
+    name: app_initialize_failure_cleanup
+    confidence: high
+    evidence: "Unwinds partial startup in reverse order, destroys the window, unregisters its class, and returns -1."
+  - address: "0x004AC8C0"
+    name: app_acquire_main_window_dc
+    confidence: high
+    evidence: "Caches GetDC for the saved main-window handle."
+  - address: "0x004AC910"
+    name: app_release_main_window_dc
+    confidence: high
+    evidence: "Releases the cached main-window device context."
+  - address: "0x004AC950"
+    name: app_set_active
+    confidence: high
+    evidence: "Synchronizes process priority, video active state, and root-pane invalidation with Win32 activation."
+  - address: "0x004AC9D0"
+    name: app_deactivate_video
+    confidence: high
+    evidence: "Marks the initialized video system inactive for WM_CLOSE and WM_DESTROY."
+  - address: "0x004ACA00"
+    name: app_update_windowed_render_origin
+    confidence: high
+    evidence: "Updates the DirectDraw presentation origin after WM_MOVE or WM_SIZE in windowed mode."
   - address: "0x004ACA50"
     end_address: "0x004ACDF1"
     name: event_handle_intro_state
@@ -207,6 +259,58 @@ functions:
     name: app_set_post_exit_advertisement
     confidence: high
     evidence: "Copies the SAdvertisement string into a 65,536-byte application buffer, terminates it, and saves its length plus three numeric arguments for app_winmain."
+  - address: "0x004ACE70"
+    name: app_is_ahnlab_security_enabled
+    confidence: high
+    evidence: "Returns false in this build, leaving the optional AhnLab update path dormant."
+  - address: "0x004ACE98"
+    name: app_is_korean_distribution_mode
+    confidence: high
+    evidence: "Accepts only the default distribution after excluding English, Japanese, and Taiwan modes."
+  - address: "0x004ACF00"
+    name: app_is_english_distribution_mode
+    confidence: high
+    evidence: "Tests active distribution mode 1."
+  - address: "0x004ACF20"
+    name: app_is_taiwan_distribution_mode
+    confidence: high
+    evidence: "Tests distribution mode 14, which maps to Taiwan language behavior and code T."
+  - address: "0x004ACF40"
+    name: app_is_secondary_english_distribution_mode
+    confidence: high
+    evidence: "Tests distribution mode 15, which maps to English language behavior and code S."
+  - address: "0x004ACF60"
+    name: app_is_town_map_enabled
+    confidence: high
+    evidence: "Returns true in this build and gates both town-map opening paths."
+  - address: "0x004ACF70"
+    name: app_uses_asian_distribution_ui
+    confidence: high
+    evidence: "Returns false for the two English modes and true for Korean, Japanese, and Taiwan modes."
+  - address: "0x004ACFC0"
+    name: app_is_intro_video_active
+    confidence: high
+    evidence: "Returns the byte set while the intro-video state is active."
+  - address: "0x004ACFF0"
+    name: app_get_distribution_code_letter
+    confidence: high
+    evidence: "Maps the five distribution families to E, J, T, S, or default K."
+  - address: "0x004AD4E0"
+    name: file_updater_dtor
+    confidence: high
+    evidence: "Restores the exact FileUpdater vtable and destroys its LObject base."
+  - address: "0x004AD500"
+    name: app_state_singleton_register
+    confidence: high
+    evidence: "Registers the fixed application-state object."
+  - address: "0x004AD520"
+    name: app_state_singleton_unregister
+    confidence: high
+    evidence: "Clears the application-state singleton when the supplied instance owns it."
+  - address: "0x004AE0C0"
+    name: app_has_config
+    confidence: high
+    evidence: "Reports whether the Config singleton pointer is non-null."
   - address: "0x005283E0"
     end_address: "0x005285DE"
     name: ui_new_patch_pane_ctor

@@ -1603,6 +1603,126 @@ functions:
     name: app_run_message_loop
     confidence: high
     evidence: "Records the main thread, drains PeekMessageA, runs the EventDispatcher tick, performs an auxiliary clock check after more than 100 ms, and yields 1 ms after 402 tight passes."
+  - address: "0x004AD370"
+    name: ui_town_map_schedule_close
+    confidence: high
+    evidence: "Queues immediate TownMapPane timer 0x4D2, whose callback closes the pane."
+  - address: "0x004AD700"
+    name: ui_destroy_ime_candidate_pane
+    confidence: high
+    evidence: "Deletes the registered IME candidate pane."
+  - address: "0x004AD7F0"
+    name: ui_destroy_text_input_service
+    confidence: high
+    evidence: "Deletes the registered text-input service."
+  - address: "0x004AD840"
+    name: ui_destroy_equip_pane
+    confidence: high
+    evidence: "Deletes the registered equipment pane."
+  - address: "0x004AD890"
+    name: ui_has_terminal_pane_2
+    confidence: high
+    evidence: "Reports whether exact RTTI TerminalPane2 is registered."
+  - address: "0x004AD8B0"
+    name: ui_get_terminal_pane_2
+    confidence: high
+    evidence: "Returns the exact RTTI TerminalPane2 singleton."
+  - address: "0x004AD8C0"
+    name: ui_destroy_terminal_pane_2
+    confidence: high
+    evidence: "Deletes the registered TerminalPane2."
+  - address: "0x004AD910"
+    name: ui_destroy_logo_pane
+    confidence: high
+    evidence: "Deletes the registered exact RTTI LogoPane."
+  - address: "0x004AD960"
+    name: ui_has_transfer_server_progress_pane
+    confidence: high
+    evidence: "Reports whether exact RTTI TransferServerProgress is registered."
+  - address: "0x004AD980"
+    name: ui_get_transfer_server_progress_pane
+    confidence: high
+    evidence: "Returns the exact RTTI TransferServerProgress singleton."
+  - address: "0x004AD990"
+    name: ui_destroy_transfer_server_progress_pane
+    confidence: high
+    evidence: "Deletes the registered TransferServerProgress pane."
+  - address: "0x004AD9E0"
+    name: ui_destroy_intro_video_pane
+    confidence: high
+    evidence: "Deletes the registered intro-video pane."
+  - address: "0x004ADAD0"
+    name: ui_destroy_bottom_buttons
+    confidence: high
+    evidence: "Deletes the registered bottom-button pane."
+  - address: "0x004ADB20"
+    name: ui_has_show_users_pane
+    confidence: high
+    evidence: "Reports whether exact RTTI ShowUsersPane is registered."
+  - address: "0x004ADB40"
+    name: ui_get_show_users_pane
+    confidence: high
+    evidence: "Returns the exact RTTI ShowUsersPane singleton."
+  - address: "0x004ADB50"
+    name: ui_destroy_show_users_pane
+    confidence: high
+    evidence: "Deletes the registered ShowUsersPane."
+  - address: "0x004ADBA0"
+    name: ui_has_load_users_pane
+    confidence: high
+    evidence: "Reports whether exact RTTI LoadUsersPane is registered."
+  - address: "0x004ADBC0"
+    name: ui_get_load_users_pane
+    confidence: high
+    evidence: "Returns the exact RTTI LoadUsersPane singleton."
+  - address: "0x004ADBD0"
+    name: ui_destroy_load_users_pane
+    confidence: high
+    evidence: "Deletes the registered LoadUsersPane."
+  - address: "0x004AE030"
+    name: ui_destroy_npc_illustration_file_manager_holder
+    confidence: high
+    evidence: "Destroys and frees the holder that owns the NPC illustration file manager."
+  - address: "0x004AE0E0"
+    name: input_destroy_event_manager
+    confidence: high
+    evidence: "Deletes the registered input-event manager."
+  - address: "0x004AE2C0"
+    name: ui_destroy_desc_pane
+    confidence: high
+    evidence: "Deletes the registered DescPane."
+  - address: "0x004AE490"
+    name: ui_has_ime_candidate_pane
+    confidence: high
+    evidence: "Reports whether the IME candidate pane pointer is non-null."
+  - address: "0x004AE4B0"
+    name: ui_get_ime_candidate_pane
+    confidence: high
+    evidence: "Returns the IME candidate pane global pointer."
+  - address: "0x004AE510"
+    name: ui_has_equip_pane
+    confidence: high
+    evidence: "Reports whether the equipment-pane singleton is registered."
+  - address: "0x004AE530"
+    name: ui_has_logo_pane
+    confidence: high
+    evidence: "Reports whether exact RTTI LogoPane is registered."
+  - address: "0x004AE550"
+    name: ui_get_logo_pane
+    confidence: high
+    evidence: "Returns the exact RTTI LogoPane singleton."
+  - address: "0x004AE560"
+    name: ui_has_intro_video_pane
+    confidence: high
+    evidence: "Reports whether the intro-video pane pointer is non-null."
+  - address: "0x004AE7F0"
+    name: ui_has_npc_illustration_file_manager_holder
+    confidence: high
+    evidence: "Reports whether the NPC illustration file-manager holder is registered."
+  - address: "0x004AE810"
+    name: ui_get_npc_illustration_file_manager_holder
+    confidence: high
+    evidence: "Returns the holder that owns the NPC illustration file manager."
   - address: "0x004B4480"
     name: lobject_ctor
     confidence: high
@@ -1615,6 +1735,14 @@ functions:
     name: lobject_is_live
     confidence: high
     evidence: "Returns true only when LObject +0x04 equals 0x79736F62; event_dispatch_immediate uses it before dispatch."
+  - address: "0x004B66E0"
+    name: ui_logo_pane_register_adjusted
+    confidence: high
+    evidence: "Registers LogoPane from its Singleton secondary base."
+  - address: "0x004B6720"
+    name: ui_logo_pane_unregister_adjusted
+    confidence: high
+    evidence: "Clears the LogoPane singleton from its adjusted secondary-base pointer."
   - address: "0x0052C480"
     name: ui_npc_session_update_speaker_art
     confidence: high
@@ -1635,6 +1763,14 @@ functions:
     name: ui_npc_illustration_pane_draw
     confidence: high
     evidence: "Draws the selected illustration pixmap through the transparent software blitter."
+  - address: "0x005336D0"
+    name: ui_npc_illustration_file_manager_holder_register
+    confidence: high
+    evidence: "Registers the holder that owns the NPC illustration file manager."
+  - address: "0x005336F0"
+    name: ui_npc_illustration_file_manager_holder_unregister
+    confidence: high
+    evidence: "Clears the holder singleton when the supplied instance owns it."
   - address: "0x00549490"
     name: ui_pane_ctor
     confidence: high
@@ -1723,6 +1859,38 @@ functions:
     name: ui_screen_pane_set_cursor_mode
     confidence: high
     evidence: "Stores the cursor image and hotspot table selector at root ScreenPane +0x27C and redraws the cursor state."
+  - address: "0x0055D5A0"
+    name: ui_show_users_pane_register_adjusted
+    confidence: high
+    evidence: "Registers exact RTTI ShowUsersPane from its Singleton secondary base."
+  - address: "0x0055D5E0"
+    name: ui_show_users_pane_unregister_adjusted
+    confidence: high
+    evidence: "Clears the ShowUsersPane singleton from its adjusted secondary-base pointer."
+  - address: "0x0055D620"
+    name: ui_load_users_pane_register_adjusted
+    confidence: high
+    evidence: "Registers exact RTTI LoadUsersPane from its Singleton secondary base."
+  - address: "0x0055D660"
+    name: ui_load_users_pane_unregister_adjusted
+    confidence: high
+    evidence: "Clears the LoadUsersPane singleton from its adjusted secondary-base pointer."
+  - address: "0x0057A2A0"
+    name: ui_terminal_pane_2_register_adjusted
+    confidence: high
+    evidence: "Registers exact RTTI TerminalPane2 from its Singleton secondary base."
+  - address: "0x0057A2E0"
+    name: ui_terminal_pane_2_unregister_adjusted
+    confidence: high
+    evidence: "Clears the TerminalPane2 singleton from its adjusted secondary-base pointer."
+  - address: "0x00591F20"
+    name: ui_transfer_server_progress_register_adjusted
+    confidence: high
+    evidence: "Registers TransferServerProgress from its Singleton secondary base."
+  - address: "0x00591F60"
+    name: ui_transfer_server_progress_unregister_adjusted
+    confidence: high
+    evidence: "Clears TransferServerProgress from its adjusted secondary-base pointer."
   - address: "0x005A8FB0"
     name: ui_new_system_message_text_pane_ctor
     confidence: high

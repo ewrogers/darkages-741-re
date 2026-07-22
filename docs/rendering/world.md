@@ -36,6 +36,8 @@ The server can select the alternate ground and static art during map setup. See 
 
 Ground and static tile animation is local and table-driven. `gndani.tbl` rotates ground tile IDs, while `stcani.tbl` rotates static tile IDs. A shared 100 ms timer advances each group and clears the affected cache.
 
+The live mappings use separate fixed-capacity owners. Static tiles start with 0x2000 remap entries and ground tiles with 0x5000; an absent remap falls back to the requested tile ID. Matching 0x2000 and 0x5000 integer flag vectors begin at zero and are marked as the palette tables load. Animation rotates the appropriate remap vector, so the source tables remain unchanged while subsequent tile lookup sees the next frame.
+
 The server does not send every animation frame. See [tile animation tables](../file-formats/tile-animation-tables.md) for the text format.
 
 ## Background images
