@@ -44,6 +44,8 @@ The learned-name lookup contributes a learned/not-learned state, and the parsed 
 
 `DescPane` is a singleton shared by ordinary inventory items and merchant-style server item lists.
 
+The exact RTTI class `ItemMetaDescMan` supplies the local item-description index. It subscribes to the `SItemDes` metadata table with internal event tag `0x1234`. Each accepted row contributes a numeric ID and text value under the row's group name. The compiled client also contains an unreferenced helper that writes this index to `IDDump.txt`; no live static call reaches that debug export.
+
 ```text
 pointer enters a row
         |

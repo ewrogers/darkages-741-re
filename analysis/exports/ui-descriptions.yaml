@@ -31,10 +31,62 @@ functions:
     name: ui_spell_inventory_item_get_base_name
     confidence: high
     evidence: "Copies the retained spell name only through the suffix split position and appends a NUL terminator."
+  - address: "0x0049C010"
+    name: metadata_item_description_manager_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class ItemMetaDescMan, initializes its record map, and subscribes to SItemDes."
+  - address: "0x0049C0F0"
+    name: metadata_item_description_manager_dtor
+    confidence: high
+    evidence: "Destroys ItemMetaDescMan record allocations and its name-keyed description map."
+  - address: "0x0049C290"
+    name: metadata_item_description_manager_subscribe
+    confidence: high
+    evidence: "Subscribes ItemMetaDescMan to the supplied table with internal event tag 0x1234."
+  - address: "0x0049C2C0"
+    name: metadata_item_description_manager_apply_table
+    confidence: high
+    evidence: "Parses each two-value SItemDes row into a numeric ID plus text record and inserts it by group name."
+  - address: "0x0049C550"
+    name: metadata_item_description_manager_dump_debug_file
+    confidence: high
+    evidence: "Writes the current description map to IDDump.txt; no live static caller was recovered."
+  - address: "0x0049C670"
+    name: metadata_item_description_manager_handle_event
+    confidence: high
+    evidence: "Accepts internal metadata event tag 0x1234 and applies the selected table when status reports success."
   - address: "0x0049C6B0"
     name: ui_desc_pane_show
     confidence: high
     evidence: "Creates the DescPane singleton as needed, optionally reloads content by item name, lays it out at an anchor, marks it active, and retains the optional hover owner."
+  - address: "0x0049C9F0"
+    name: ui_desc_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class DescPane with its text canvas and singleton state."
+  - address: "0x0049CB10"
+    name: ui_desc_pane_dtor
+    confidence: high
+    evidence: "Closes DescPane, releases its text canvas, clears the singleton, and destroys the Pane base."
+  - address: "0x0049CBC0"
+    name: ui_desc_pane_close_on_input
+    confidence: high
+    evidence: "Closes the shared DescPane and returns false from this input-family callback."
+  - address: "0x0049CBE0"
+    name: ui_desc_pane_handle_pointer_event
+    confidence: high
+    evidence: "Closes DescPane for pointer-event types 1, 2, 4, and 5, then returns false."
+  - address: "0x0049CCB0"
+    name: ui_desc_pane_close_for_opcode_0x63
+    confidence: high
+    evidence: "Closes DescPane after its network-event handler recognizes leading byte 0x63."
+  - address: "0x0049CCD0"
+    name: ui_desc_pane_close_for_opcode_0x42
+    confidence: high
+    evidence: "Closes DescPane after its network-event handler recognizes leading byte 0x42."
+  - address: "0x0049CCF0"
+    name: ui_desc_pane_draw_frame
+    confidence: high
+    evidence: "Tiles the eight 16 by 16 border and corner pixmaps around the current DescPane bounds."
   - address: "0x004CACD0"
     name: ui_merchant_server_item_menu3_timer_callback
     confidence: high

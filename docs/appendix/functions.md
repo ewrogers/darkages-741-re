@@ -1644,17 +1644,29 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_spell_item_set_action_delay` | `0x0049AE40` | high | Sets SpellInvItemPane +0x297 to one and invalidates the item rectangle. |
 | `ui_dragged_spell_inventory_item_pane_ctor` | `0x0049AE70` | high | Constructs exact RTTI class DraggedSpellInvItemPane and retains its target-selection mode flag. |
 | `ui_dragged_spell_inventory_item_create_preview` | `0x0049AEC0` | high | Creates and attaches a SpellInvItemPane preview at the source spell's world-root-relative rectangle. |
+| `ui_dragged_spell_inventory_item_dispatch_drop` | `0x0049B0C0` | high | Dispatches a dragged-spell record, pointer position, and target-selection flag to the selected pane target. |
+| `ui_string_spell_input_pane_ctor` | `0x0049B140` | high | Constructs exact RTTI class StringSpellInputPane over LineInputPane and retains its owning SpellInvItemPane. |
 | `ui_spell_text_input_submit` | `0x0049B190` | high | Builds the CUseSpell text form as opcode, slot, and unprefixed raw text bytes after a nonempty input is submitted. |
+| `ui_number_args_spell_input_pane_ctor` | `0x0049B320` | high | Constructs exact RTTI class NumberArgsSpellInputPane and retains its owning spell plus argument count. |
 | `ui_spell_numeric_input_submit` | `0x0049B380` | high | Builds the numeric CUseSpell form as opcode, slot, and one through four big-endian u16 values selected by spell argument type. |
 | `ui_spell_delay_control_pane_ctor` | `0x0049B6F0` | high | Constructs the exact RTTI class SpellDelayControlPane, allocates its 0x8C98-byte object, and initializes cast_active at +0x8C94 to zero. |
+| `ui_spell_delay_control_pane_dtor` | `0x0049B790` | high | Unregisters SpellDelayControlPane, unbinds its singleton, and destroys the Pane base. |
 | `ui_spell_delay_control_pane_handle_network_event` | `0x0049B810` | high | Handles typed server opcode 0x48 for SpellDelayControlPane and dispatches it to ui_cancel_spell_delay. |
 | `ui_spell_delay_timer_callback` | `0x0049B870` | high | Advances current_cast_line at complete-object offset +0x191 on one-second ticks, then sends the spell name, submits the queued CUseSpell, and clears cast_active on the final tick. |
 | `ui_start_spell_cast` | `0x0049B900` | high | Copies CUseSpell to +0xB92, its length to +0x8C92, the spell name to +0x8B92, and cast counters to +0x190/+0x191 before beginning the delay sequence. |
 | `ui_cancel_spell_delay` | `0x0049BA50` | high | Clears SpellDelayControlPane::cast_active at +0x8C94 and cancels every timer owned by the pane with the 0x7FFFFFFF wildcard. |
+| `ui_cancel_spell_delay_duplicate` | `0x0049BA80` | high | Unreferenced duplicate that clears cast_active and cancels every timer owned by SpellDelayControlPane. |
 | `ui_load_spell_cast_lines` | `0x0049BD80` | high | Loads up to ten 256-byte per-spell cast strings from the current character's SpellBook.cfg data. |
 | `ui_desc_pane_show` | `0x0049C6B0` | high | Creates the DescPane singleton as needed, optionally reloads content by item name, lays it out at an anchor, marks it active, and retains the optional hover owner. |
 | `ui_close_desc_pane` | `0x0049C980` | high | Unregisters the current RTTI-backed DescPane from event and screen routing and clears its active state. |
+| `ui_desc_pane_ctor` | `0x0049C9F0` | high | Constructs exact RTTI class DescPane with its text canvas and singleton state. |
+| `ui_desc_pane_dtor` | `0x0049CB10` | high | Closes DescPane, releases its text canvas, clears the singleton, and destroys the Pane base. |
+| `ui_desc_pane_close_on_input` | `0x0049CBC0` | high | Closes the shared DescPane and returns false from this input-family callback. |
+| `ui_desc_pane_handle_pointer_event` | `0x0049CBE0` | high | Closes DescPane for pointer-event types 1, 2, 4, and 5, then returns false. |
 | `ui_desc_pane_handle_network_event` | `0x0049CC30` | high | Closes DescPane when a decoded raw body begins with SExchange opcode 0x42 or SGroup opcode 0x63; it reads no packet fields. |
+| `ui_desc_pane_close_for_opcode_0x63` | `0x0049CCB0` | high | Closes DescPane after its network-event handler recognizes leading byte 0x63. |
+| `ui_desc_pane_close_for_opcode_0x42` | `0x0049CCD0` | high | Closes DescPane after its network-event handler recognizes leading byte 0x42. |
+| `ui_desc_pane_draw_frame` | `0x0049CCF0` | high | Tiles the eight 16 by 16 border and corner pixmaps around the current DescPane bounds. |
 | `ui_item_shop_shopping_bag_ctor` | `0x0049F450` | high | Constructs exact RTTI ItemShop::ShoppingBagDialogPane from lshopba2.txt and sends CCashShop action 0. |
 | `ui_item_shop_shopping_bag_dtor` | `0x0049F7E0` | high | Unregisters and destroys ShoppingBagDialogPane and its attached item controls. |
 | `ui_item_shop_shopping_bag_handle_network_event` | `0x004A0550` | high | Consumes exact RTTI SItemShop in the shopping-bag pane. |
@@ -3236,6 +3248,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_skill_book_name_equals` | `0x004995D0` | high | Compares two SkillBook.cfg name byte strings for equal length and exact byte equality. |
 | `file_load_skill_book_cast_text` | `0x004998B0` | high | Finds a suffix-stripped skill name in the character's SkillBook.cfg and copies its configured cast text into SkillInvItemPane. |
 | `file_read_skill_book_line` | `0x00499AB0` | high | Reads one SkillBook.cfg line through LF, CRLF, EOF, or error and appends a NUL terminator. |
+| `file_spell_book_name_equals` | `0x0049BCF0` | high | Compares two SpellBook.cfg name byte strings for equal length and exact byte equality. |
+| `file_read_spell_book_line` | `0x0049BF80` | high | Reads one SpellBook.cfg line through LF, CRLF, EOF, or error and appends a NUL terminator. |
 | `file_decode_jpeg_to_rgb16` | `0x004A1840` | high | Uses bundled IJG version 62 to decode an in-memory JPEG to renderer-native 16-bit pixels and returns its width and height. |
 | `file_write_jpeg_from_rgb16` | `0x004A1AF0` | high | Converts RGB555 or RGB565 source pixels to RGB triples and writes JFIF with IJG defaults: quality 75 and 4:2:0 sampling. |
 | `file_load_message_table` | `0x004A4AA0` | high | Loads the line-oriented msg.tbl data from an archive or loose file. |
@@ -3844,6 +3858,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_item_info_map_allocate_node` | `0x00495AE0` | high | Allocates one 0xEC-byte ItemInfo map node and initializes its links and color and sentinel flags. |
 | `metadata_item_info_map_value_copy` | `0x00495B40` | high | Conditionally copy-constructs an ItemInfo string-plus-record value into node storage. |
 | `metadata_item_info_map_value_copy_ctor` | `0x00495BB0` | high | Copy-constructs an ItemInfo map value by copying its std::string key and 0xC0-byte record. |
+| `metadata_item_description_manager_ctor` | `0x0049C010` | high | Constructs exact RTTI class ItemMetaDescMan, initializes its record map, and subscribes to SItemDes. |
+| `metadata_item_description_manager_dtor` | `0x0049C0F0` | high | Destroys ItemMetaDescMan record allocations and its name-keyed description map. |
+| `metadata_item_description_manager_subscribe` | `0x0049C290` | high | Subscribes ItemMetaDescMan to the supplied table with internal event tag 0x1234. |
+| `metadata_item_description_manager_apply_table` | `0x0049C2C0` | high | Parses each two-value SItemDes row into a numeric ID plus text record and inserts it by group name. |
+| `metadata_item_description_manager_dump_debug_file` | `0x0049C550` | high | Writes the current description map to IDDump.txt; no live static caller was recovered. |
+| `metadata_item_description_manager_handle_event` | `0x0049C670` | high | Accepts internal metadata event tag 0x1234 and applies the selected table when status reports success. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

@@ -2007,10 +2007,22 @@ functions:
     name: ui_dragged_spell_inventory_item_create_preview
     confidence: high
     evidence: "Creates and attaches a SpellInvItemPane preview at the source spell's world-root-relative rectangle."
+  - address: "0x0049B0C0"
+    name: ui_dragged_spell_inventory_item_dispatch_drop
+    confidence: high
+    evidence: "Dispatches a dragged-spell record, pointer position, and target-selection flag to the selected pane target."
+  - address: "0x0049B140"
+    name: ui_string_spell_input_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class StringSpellInputPane over LineInputPane and retains its owning SpellInvItemPane."
   - address: "0x0049B190"
     name: ui_spell_text_input_submit
     confidence: high
     evidence: "Builds the CUseSpell text form as opcode, slot, and unprefixed raw text bytes after a nonempty input is submitted."
+  - address: "0x0049B320"
+    name: ui_number_args_spell_input_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class NumberArgsSpellInputPane and retains its owning spell plus argument count."
   - address: "0x0049B380"
     name: ui_spell_numeric_input_submit
     confidence: high
@@ -2019,6 +2031,10 @@ functions:
     name: ui_spell_delay_control_pane_ctor
     confidence: high
     evidence: "Constructs the exact RTTI class SpellDelayControlPane, allocates its 0x8C98-byte object, and initializes cast_active at +0x8C94 to zero."
+  - address: "0x0049B790"
+    name: ui_spell_delay_control_pane_dtor
+    confidence: high
+    evidence: "Unregisters SpellDelayControlPane, unbinds its singleton, and destroys the Pane base."
   - address: "0x0049B810"
     name: ui_spell_delay_control_pane_handle_network_event
     confidence: high
@@ -2035,6 +2051,10 @@ functions:
     name: ui_cancel_spell_delay
     confidence: high
     evidence: "Clears SpellDelayControlPane::cast_active at +0x8C94 and cancels every timer owned by the pane with the 0x7FFFFFFF wildcard."
+  - address: "0x0049BA80"
+    name: ui_cancel_spell_delay_duplicate
+    confidence: high
+    evidence: "Unreferenced duplicate that clears cast_active and cancels every timer owned by SpellDelayControlPane."
   - address: "0x0049BAB0"
     name: net_send_spell_delay_request
     confidence: high
@@ -2043,10 +2063,18 @@ functions:
     name: net_send_spell_delay_say
     confidence: high
     evidence: "Builds CSpellDelaySay as opcode 0x4E followed by a string8 configured cast line or the final spell name."
+  - address: "0x0049BCF0"
+    name: file_spell_book_name_equals
+    confidence: high
+    evidence: "Compares two SpellBook.cfg name byte strings for equal length and exact byte equality."
   - address: "0x0049BD80"
     name: ui_load_spell_cast_lines
     confidence: high
     evidence: "Loads up to ten 256-byte per-spell cast strings from the current character's SpellBook.cfg data."
+  - address: "0x0049BF80"
+    name: file_read_spell_book_line
+    confidence: high
+    evidence: "Reads one SpellBook.cfg line through LF, CRLF, EOF, or error and appends a NUL terminator."
   - address: "0x004AD250"
     name: ui_open_town_map_for_current_map
     confidence: high
