@@ -316,6 +316,11 @@ functions:
     name: ui_new_patch_pane_ctor
     confidence: high
     evidence: "Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff."
+  - address: "0x005285E0"
+    end_address: "0x00528609"
+    name: ui_new_patch_pane_dtor
+    confidence: high
+    evidence: "Restores the NewPatchPane primary and TimerHandler vtables, then destroys its inherited Pane state."
   - address: "0x00528610"
     end_address: "0x005287A8"
     name: app_write_patch_info_and_launch_patcher
@@ -326,6 +331,21 @@ functions:
     name: app_quit_after_patcher_launch
     confidence: high
     evidence: "Destroys NewPatchPane, posts WM_QUIT, and terminates after the patcher launch attempt."
+  - address: "0x005287F0"
+    end_address: "0x005287FB"
+    name: ui_new_patch_pane_before_exit
+    confidence: high
+    evidence: "Empty NewPatchPane hook called immediately before the pane is queued for destruction and the client exits."
+  - address: "0x00528800"
+    end_address: "0x0052882C"
+    name: ui_new_patch_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Implements the complete-object MSVC scalar-deleting destructor contract for NewPatchPane."
+  - address: "0x00528830"
+    end_address: "0x0052883B"
+    name: ui_new_patch_pane_timer_scalar_deleting_dtor
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C before tail-calling the complete-object deleting destructor."
   - address: "0x0057A330"
     end_address: "0x0057A453"
     name: startup_run_pending_patcher

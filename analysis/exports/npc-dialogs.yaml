@@ -93,6 +93,26 @@ layouts:
     controls: 10
     purpose: protected ID and masked password input
 functions:
+  - address: "0x0043FCC0"
+    name: nexonclub_auth_get_request
+    confidence: high
+    evidence: "Returns the process-wide active NexonClub authentication request pointer."
+  - address: "0x0043FCD0"
+    name: nexonclub_auth_destroy_request
+    confidence: high
+    evidence: "Destroys and frees the active NexonClub authentication request when one exists."
+  - address: "0x0043FD30"
+    name: ui_nexonclub_auth_alert_exists
+    confidence: high
+    evidence: "Reports whether exact RTTI NexonClubAuthAlertPane has an active Singleton instance."
+  - address: "0x0043FD50"
+    name: ui_nexonclub_auth_alert_get
+    confidence: high
+    evidence: "Returns the active NexonClubAuthAlertPane singleton pointer."
+  - address: "0x0043FD80"
+    name: nexonclub_auth_request_exists
+    confidence: high
+    evidence: "Reports whether a process-wide NexonClub authentication request is active."
   - address: "0x004457D0"
     name: ui_dialog_set_default_action
     confidence: high
@@ -1269,6 +1289,54 @@ functions:
     name: ui_simple_text_message_dialog_build_controls
     confidence: high
     evidence: "Builds the compact text-entry pane with navigation/submit buttons, prompt, bounded editor, and trailing label."
+  - address: "0x00528840"
+    name: nexonclub_auth_set_url_template
+    confidence: high
+    evidence: "Copies a startup- or server-supplied authentication URL template into a fixed 256-byte process buffer."
+  - address: "0x00528860"
+    name: nexonclub_auth_get_url_template
+    confidence: high
+    evidence: "Returns the fixed process buffer containing the active authentication URL template."
+  - address: "0x00528870"
+    name: nexonclub_auth_worker_thread
+    confidence: high
+    evidence: "Formats the configured URL with ID and password, performs one WinINet request, classifies its short response, and publishes completion state."
+  - address: "0x00528AE0"
+    name: nexonclub_auth_request_ctor
+    confidence: high
+    evidence: "Registers one request, copies bounded ID and password strings, clears state, and starts the worker thread."
+  - address: "0x00528B70"
+    name: nexonclub_auth_request_dtor
+    confidence: high
+    evidence: "Unregisters the active NexonClub authentication request object."
+  - address: "0x00528B90"
+    name: ui_nexonclub_auth_alert_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI NexonClubAuthAlertPane, registers its Singleton subobject, and retains its first control."
+  - address: "0x00528C40"
+    name: ui_nexonclub_auth_alert_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Unregisters the alert singleton, destroys inherited DialogPane state, and conditionally frees the complete object."
+  - address: "0x00528CC0"
+    name: nexonclub_auth_register_request
+    confidence: high
+    evidence: "Stores the process-wide active NexonClub authentication request pointer."
+  - address: "0x00528CE0"
+    name: nexonclub_auth_unregister_request
+    confidence: high
+    evidence: "Clears the process-wide request pointer when it still matches the supplied object."
+  - address: "0x00528D00"
+    name: ui_nexonclub_auth_alert_register_singleton
+    confidence: high
+    evidence: "Converts the Singleton subobject pointer to its complete alert pane and stores it as active."
+  - address: "0x00528D40"
+    name: ui_nexonclub_auth_alert_unregister_singleton
+    confidence: high
+    evidence: "Clears the active NexonClubAuthAlertPane pointer when it matches the supplied Singleton subobject."
+  - address: "0x00528D80"
+    name: ui_nexonclub_auth_alert_timer_scalar_deleting_dtor
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C before tail-calling the alert's complete-object deleting destructor."
   - address: "0x00528D90"
     name: ui_nexonclub_dialog_ctor
     confidence: high

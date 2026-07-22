@@ -66,7 +66,9 @@ These dialogs answer with `CPursuit` command `0x3A`. The common response identif
 
 `SimpleQuestionMessageDialog` also sends the displayed choice through `CSay` command `0x0E` before its pursuit response. This is a real extra packet, not merely local UI feedback.
 
-Variant `9` authenticates the entered NexonClub ID and password on a background worker. A one-second timer polls the result so the pane does not wait inside an input callback. A successful result sends the authenticated ID as the type-`2` pursuit text. Its fourth action opens the client's fixed Nexon account-registration URL through `ShellExecuteA`.
+Variant `9` authenticates the entered NexonClub ID and password on a background worker. The URL template is stored in a fixed 256-byte process buffer and can be supplied during startup or by a server browser message. The worker formats that template with the two credentials, makes one `InternetOpenUrlA` request, and reads at most 128 response bytes.
+
+A first response byte of ASCII `1` means success. ASCII `0` means a rejected credential; bytes 2 and 3 distinguish `ID`, `PW`, or a generic error for the local alert text. Other responses and WinINet failures use the worker's error state. A one-second UI timer polls completion, so the pane never waits inside an input callback. Success sends the authenticated ID as the type-`2` pursuit text. The fourth action opens the client's fixed Nexon account-registration URL through `ShellExecuteA`.
 
 ## Movement and closing
 

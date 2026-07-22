@@ -1037,6 +1037,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_create_user_accept_opcode_30` | `0x0043F8C0` | high | Returns handled for raw server opcode 0x30 without reading the body or changing CreateUserDialogPane state. |
 | `ui_create_user_dialog_scalar_deleting_dtor` | `0x0043FBE0` | high | Compiler scalar-deleting destructor for CreateUserDialogPane. |
 | `ui_dialog_pane_scalar_deleting_dtor` | `0x0043FC10` | high | Compiler scalar-deleting destructor for exact RTTI DialogPane. |
+| `ui_nexonclub_auth_alert_exists` | `0x0043FD30` | high | Reports whether exact RTTI NexonClubAuthAlertPane has an active Singleton instance. |
+| `ui_nexonclub_auth_alert_get` | `0x0043FD50` | high | Returns the active NexonClubAuthAlertPane singleton pointer. |
 | `ui_create_user_dialog_timer_scalar_deleting_dtor_thunk` | `0x0043FDA0` | high | Adjusted-this TimerHandler scalar-deleting destructor thunk for CreateUserDialogPane. |
 | `ui_dialog_pane_timer_scalar_deleting_dtor_thunk` | `0x0043FDB0` | high | Adjusted-this TimerHandler scalar-deleting destructor thunk for DialogPane. |
 | `ui_dialog_pane_ctor` | `0x00445260` | high | Constructs DialogPane over Pane; initializes default, cancel, focus, pressed, hover, and pointer-target control indexes to -1, with no-hit zones set to 7 where required. |
@@ -2398,6 +2400,15 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_album_view_export_portrait_jpeg` | `0x0051EA70` | high | Legacy Save composites one album portrait and always writes the extensionless character portrait through the shared JFIF writer. |
 | `ui_album_view_move_portrait` | `0x0051EEC0` | high | Moves a legacy album record, rewrites album.dat, and reloads the pane. |
 | `ui_new_patch_pane_ctor` | `0x005283E0` | high | Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff. |
+| `ui_new_patch_pane_dtor` | `0x005285E0` | high | Restores the NewPatchPane primary and TimerHandler vtables, then destroys its inherited Pane state. |
+| `ui_new_patch_pane_before_exit` | `0x005287F0` | high | Empty NewPatchPane hook called immediately before the pane is queued for destruction and the client exits. |
+| `ui_new_patch_pane_scalar_deleting_dtor` | `0x00528800` | high | Implements the complete-object MSVC scalar-deleting destructor contract for NewPatchPane. |
+| `ui_new_patch_pane_timer_scalar_deleting_dtor` | `0x00528830` | high | Adjusts TimerHandler this by -0x11C before tail-calling the complete-object deleting destructor. |
+| `ui_nexonclub_auth_alert_pane_ctor` | `0x00528B90` | high | Constructs exact RTTI NexonClubAuthAlertPane, registers its Singleton subobject, and retains its first control. |
+| `ui_nexonclub_auth_alert_pane_scalar_deleting_dtor` | `0x00528C40` | high | Unregisters the alert singleton, destroys inherited DialogPane state, and conditionally frees the complete object. |
+| `ui_nexonclub_auth_alert_register_singleton` | `0x00528D00` | high | Converts the Singleton subobject pointer to its complete alert pane and stores it as active. |
+| `ui_nexonclub_auth_alert_unregister_singleton` | `0x00528D40` | high | Clears the active NexonClubAuthAlertPane pointer when it matches the supplied Singleton subobject. |
+| `ui_nexonclub_auth_alert_timer_scalar_deleting_dtor` | `0x00528D80` | high | Adjusts TimerHandler this by -0x11C before tail-calling the alert's complete-object deleting destructor. |
 | `ui_nexonclub_dialog_ctor` | `0x00528D90` | high | Constructs exact RTTI NexonclubDialog for server message variant 9. |
 | `ui_nexonclub_dialog_dtor` | `0x00529070` | high | Restores the NexonclubDialog vtables and destroys its inherited DialogPane state. |
 | `ui_nexonclub_dialog_build_controls` | `0x005290A0` | high | Builds variant 9 with optional art, ID and masked password editors, navigation/submit controls, and account-registration button. |
@@ -4404,6 +4415,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `com_create_thrunet_service` | `0x00437860` | high | Creates and initializes the legacy Thrunet endpoint COM service. |
 | `exception_context_dumper_dtor` | `0x00437D20` | high | Destroys the StackWalker owned by exact RTTI ContextDumper. |
 | `exception_context_dumper_scalar_deleting_dtor` | `0x00437E30` | high | Compiler scalar-deleting destructor for exact RTTI ContextDumper. |
+| `nexonclub_auth_get_request` | `0x0043FCC0` | high | Returns the process-wide active NexonClub authentication request pointer. |
+| `nexonclub_auth_destroy_request` | `0x0043FCD0` | high | Destroys and frees the active NexonClub authentication request when one exists. |
+| `nexonclub_auth_request_exists` | `0x0043FD80` | high | Reports whether a process-wide NexonClub authentication request is active. |
 | `metadata_denied_lookup_dtor` | `0x0043FDC0` | high | Destroys one DeniedItemList category lookup by clearing all rule records and its outer container. |
 | `metadata_denied_lookup_contains` | `0x0043FE20` | high | Wraps the supplied text as a client string and queries one category lookup by rule key and numeric value. |
 | `metadata_denied_lookup_add_rule` | `0x0043FEE0` | high | Builds a denial-rule record from numeric and word token text and inserts it under the parsed rule key. |
@@ -4967,6 +4981,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_item_info_list_get` | `0x004D9350` | high | Returns the exact RTTI ItemInfoList singleton pointer. |
 | `metadata_options_bind_singleton` | `0x004E25C0` | high | Binds the exact RTTI MetaOptions complete object after adjusting from its Singleton base subobject. |
 | `metadata_options_unbind_singleton` | `0x004E2600` | high | Clears the MetaOptions singleton global only when it still references this adjusted complete object. |
+| `nexonclub_auth_set_url_template` | `0x00528840` | high | Copies a startup- or server-supplied authentication URL template into a fixed 256-byte process buffer. |
+| `nexonclub_auth_get_url_template` | `0x00528860` | high | Returns the fixed process buffer containing the active authentication URL template. |
+| `nexonclub_auth_worker_thread` | `0x00528870` | high | Formats the configured URL with ID and password, performs one WinINet request, classifies its short response, and publishes completion state. |
+| `nexonclub_auth_request_ctor` | `0x00528AE0` | high | Registers one request, copies bounded ID and password strings, clears state, and starts the worker thread. |
+| `nexonclub_auth_request_dtor` | `0x00528B70` | high | Unregisters the active NexonClub authentication request object. |
+| `nexonclub_auth_register_request` | `0x00528CC0` | high | Stores the process-wide active NexonClub authentication request pointer. |
+| `nexonclub_auth_unregister_request` | `0x00528CE0` | high | Clears the process-wide request pointer when it still matches the supplied object. |
 | `metadata_parse_event_record` | `0x0055D6E0` | high | Parses one sequential start-to-end SEvent record and its title, id, qual, sum, result, sub, and reward groups. |
 | `metadata_event_requirements_met` | `0x0055E370` | high | Checks an event progression mask, class mask, and every prerequisite legend key against local user state. |
 | `metadata_parse_spell_skill_constraint` | `0x0055F890` | high | Parses the first six values of one SClass ability record into display and requirement fields. |
