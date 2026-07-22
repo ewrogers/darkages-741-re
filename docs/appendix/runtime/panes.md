@@ -188,18 +188,26 @@ The dispatcher removes a due entry before calling the timer handler. It processe
 
 ```text
 struct DialogPaneFields {
-    ControlList *controls       // +0x594
-    s32 setup_index_a           // +0x598, exact purpose uncertain
-    s32 setup_index_b           // +0x59C, exact purpose uncertain
-    s32 focused_control         // +0x5AC
-    s32 hovered_control         // +0x5BC
-    s32 hover_zone              // +0x5C0
-    s32 pointer_control_2       // +0x5C4
-    s32 pointer_zone_2          // +0x5C8
+    ControlList *controls           // +0x594
+    s32 default_action_control_index // +0x598, -1 disables
+    s32 cancel_action_control_index  // +0x59C, -1 disables
+    u8  dialog_drag_active          // +0x5A0
+    s32 drag_anchor_x               // +0x5A4
+    s32 drag_anchor_y               // +0x5A8
+    s32 focused_control_index       // +0x5AC, -1 means none
+    u8  control_press_active        // +0x5B0
+    s32 pressed_control_index       // +0x5B4
+    u8  pressed_zone                // +0x5B8
+    s32 hovered_control_index       // +0x5BC, -1 means none
+    u8  hover_zone                  // +0x5C0, 7 means no hit
+    s32 pointer_target_control_index // +0x5C4, -1 means none
+    u8  pointer_target_zone         // +0x5C8, 7 means no hit
 }
 ```
 
-Control indexes follow attachment order. They are used for focus, hit testing, and the parent dialog action callback.
+Control indexes follow attachment order. Enter and Space invoke `default_action_control_index`; Escape invokes `cancel_action_control_index`. Both shortcuts require an enabled target and use action code `8`. A value of `-1` disables the corresponding shortcut.
+
+Pointer press state retains the original control and zone until release. A click reaches the parent dialog action callback only when release hits that same pair. The hover pair drives visual-zone changes, while the pointer-target pair drives secondary enter/leave-style transition hooks.
 
 ## User confirmation pane
 

@@ -30,12 +30,22 @@ A canvas may own memory or wrap a DirectDraw surface. Drawing code calls `render
 
 Memory canvases use 16-bit pixels and an aligned row pitch. The logical width and row pitch are therefore related, but they are not always the same value.
 
+## Redraw and presentation cadence
+
+The root `ScreenPane` starts timer ID `0` during application setup. `render_screen_timer_tick` calls `render_screen_tree_frame`, then requeues itself for 10 ms after the current `timeGetTime()` value.
+
+Each check walks the screen hierarchy, but drawing remains dirty-region based. A forced redraw or dirty pane-tree entry marks the root screen for presentation. If nothing changed, the client does not send an identical completed canvas to the output backend.
+
+This makes 100 Hz the maximum scheduled redraw-check rate, not a fixed visible frame rate. The timer is requeued after the callback rather than from its previous due time, so a delayed callback shifts the following check instead of producing catch-up redraws.
+
 ## Presenting a frame
 
 `render_present_frame` has two output paths:
 
-- The DirectDraw path copies to the primary surface or flips an attached backbuffer.
+- The DirectDraw path copies to the primary surface with `DDBLT_WAIT` or flips an attached backbuffer with `DDFLIP_WAIT`.
 - The window DC path converts the canvas for GDI and uses `BitBlt`.
+
+The wait flags allow DirectDraw to block until the operation can complete. The client does not compile a separate monitor refresh rate into this path. The output backend and display can therefore make the visible presentation rate lower than the 10 ms redraw-check cadence.
 
 The output path applies the selected 1x or 2x presentation scale before the frame reaches the window or display surface.
 

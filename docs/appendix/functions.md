@@ -25,11 +25,6 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_get_exception_code_name` | `0x004690A0` | high | Maps common Win32 exception codes to names or formats an NTDLL fallback; the active LCrash writer discards the returned name. |
 | `app_resolve_fault_module_section` | `0x00469390` | high | Uses VirtualQuery and PE section headers to resolve the fault address to module, section index, and offset; the active writer does not serialize the results. |
 | `app_get_exception_handler` | `0x00469550` | high | Returns the application-wide ExceptionHandler singleton used by the filter, uploader, and live diagnostic builder. |
-| `ui_inventory_item_show_desc` | `0x00495FF0` | high | Builds an InvItemPane tooltip anchor, keeps it within 640 by 480, resolves the item's description provider, and opens the shared DescPane with the item as owner. |
-| `ui_skill_inventory_item_get_base_name` | `0x00498B90` | high | Copies the retained skill name only through the suffix split position and appends a NUL terminator. |
-| `ui_parse_skill_spell_level_suffix` | `0x00499660` | high | Scans backward for a space plus parenthesized slash pair, parses the two sides with atoi, and returns the base-name split position; it does not test the literal Lev label. |
-| `ui_spell_inventory_item_get_base_name` | `0x00499F30` | high | Copies the retained spell name only through the suffix split position and appends a NUL terminator. |
-| `ui_desc_pane_show` | `0x0049C6B0` | high | Creates the DescPane singleton as needed, optionally reloads content by item name, lays it out at an anchor, marks it active, and retains the optional hover owner. |
 | `app_language_mode_from_distribution` | `0x004A49B0` | high | Maps distribution modes to Korean 0, English 1, Japanese 2, or Taiwan 3 language modes. |
 | `app_get_text_code_page` | `0x004A4A30` | high | Returns the code-page value selected with the current language mode. |
 | `app_get_language_message_label` | `0x004A4A60` | high | Maps language modes to msgkor.h, msgeng.h, msgjpn.h, or msgtai.h labels retained by the client. |
@@ -39,16 +34,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_set_post_exit_advertisement` | `0x004ACE00` | high | Copies the SAdvertisement string into a 65,536-byte application buffer, terminates it, and saves its length plus three numeric arguments for app_winmain. |
 | `app_is_japan_distribution_mode` | `0x004ACEE0` | high | Returns true when app_get_distribution_mode reports mode 13, selecting the create-user email and ISP-selector variant. |
 | `app_set_working_directory_from_executable` | `0x004AD3A0` | high | Derives the executable directory from GetCommandLineA and makes it the process working directory. |
-| `ui_merchant_server_item_menu3_timer_callback` | `0x004CACD0` | high | TimerHandler callback installed by exact RTTI ServerItemMenuDialog3; subtype 1 applies the scroll offset and updates a row tooltip, while subtype 2 closes DescPane. |
-| `ui_merchant_server_item_menu3_show_hover_desc` | `0x004CAD70` | high | Builds or repositions the older MerchantDialogPane server-item tooltip through the shared DescPane helper and retains the hovered row. |
 | `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client. |
 | `app_quit_after_patcher_launch` | `0x005287B0` | high | Destroys NewPatchPane, posts WM_QUIT, and terminates after the patcher launch attempt. |
-| `ui_npc_item_list_row_queue_hover` | `0x005308F0` | high | Resolves a valid row and schedules the owner TimerHandler with its timer ID, a zero-millisecond delay, subtype 2, and the row's u16 index. |
-| `ui_npc_item_list_row_queue_hover_close` | `0x00530960` | high | Schedules the owner TimerHandler with a zero-millisecond delay, subtype 3, and a zero payload when the row hover ends. |
-| `ui_npc_server_item_menu_timer_callback` | `0x00539340` | high | NPCServerItemMenuDialog TimerHandler callback; timer ID 1 routes subtype 2 to the row tooltip update and subtype 3 to tooltip close. |
-| `ui_npc_server_item_menu_handle_pointer_event` | `0x005393F0` | high | Stores pointer coordinates on move, closes the tooltip outside the visible client bounds, and then delegates to DialogPane pointer handling. |
-| `ui_npc_server_item_menu_show_hover_desc` | `0x00539600` | high | Resolves a changed server-item row by name, opens DescPane near the pointer, repositions existing content for the same row, and refreshes the dialog's detail controls. |
-| `ui_npc_server_item_menu_clear_hover_desc` | `0x00539A30` | high | Closes the shared DescPane and resets NPCServerItemMenuDialog's hovered-row field to -1. |
 | `app_stack_walker_ctor` | `0x0056D540` | high | Constructs exact RTTI StackWalker and copies the supplied 0x2CC-byte x86 CONTEXT. |
 | `app_stack_walker_format_next_frame` | `0x0056D660` | high | Calls DbgHelp StackWalk for IMAGE_FILE_MACHINE_I386 and formats flags-1 output as raw CS:EIP text. |
 | `app_handle_d_option_stub` | `0x0057A460` | high | Empty function called for the suffix of an uppercase -D command-line token. |
@@ -59,9 +46,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
-| `event_dispatcher_tick` | `0x00464180` | high | Main-thread tick that drains queued events and invokes at most 0x28 due TimerHandler callbacks. |
+| `event_dispatcher_tick` | `0x00464180` | high | Drains queued events, samples timeGetTime for ordered due timers, yields 5 ms when the next timer is more than 20 ms away, and invokes at most 0x28 due callbacks. |
 | `app_window_proc` | `0x004A9C30` | high | Window procedure that sends messages through the input translator before application-specific handling. |
-| `app_run_message_loop` | `0x004AC750` | high | Records the main thread, drains PeekMessageA, and runs the EventDispatcher tick each loop. |
+| `app_run_message_loop` | `0x004AC750` | high | Records the main thread, drains PeekMessageA, runs the EventDispatcher tick, performs an auxiliary clock check after more than 100 ms, and yields 1 ms after 402 tight passes. |
 
 ## Events
 
@@ -70,6 +57,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `event_get_dispatcher` | `0x0041AE80` | high | Returns event_dispatcher_singleton_ptr. |
 | `event_intro_video_frame_timer` | `0x0042E600` | high | Advances the two clips and posts intro state 2 when playback finishes. |
 | `event_dispatcher_ctor` | `0x00463820` | high | Constructs the 0x1BC-byte EventDispatcher, queue, timer list, packet factory, capture state, and EventHandlerList. |
+| `event_allocate_or_reuse` | `0x00463C40` | high | Returns a pooled Event pointer from EventDispatcher +0x28 when available, otherwise allocates 0xA8 bytes and calls event_ctor. |
+| `event_recycle` | `0x00463CF0` | high | Returns an Event pointer to the separate pool at EventDispatcher +0x28 without using an intrusive Event field. |
 | `event_queue_push_copy` | `0x00463D10` | high | Copies exactly 0xA8 event bytes into the synchronized pointer queue. |
 | `event_queue_pop_copy` | `0x00463D60` | high | Removes one queued event and copies exactly 0xA8 bytes to the caller. |
 | `event_register_pane` | `0x00463E40` | high | Sets Pane +0x188 bit 0x02 and inserts the pane through EventHandlerList. |
@@ -80,7 +69,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `event_dispatcher_tick_virtual` | `0x00464430` | high | Calls EventDispatcher primary-vtable +0x08, which resolves to event_dispatcher_tick. |
 | `event_register_pane_internal` | `0x00464450` | high | Calls EventHandlerList virtual insert and refreshes dispatcher state. |
 | `event_unregister_pane_internal` | `0x004644B0` | high | Calls EventHandlerList virtual subtree removal and refreshes dispatcher state. |
-| `event_schedule_timer` | `0x00464520` | high | Inserts a five-dword TimerHandler entry into the dispatcher list ordered by due time. |
+| `event_schedule_timer` | `0x00464520` | high | Inserts a five-dword TimerHandler entry ordered by due time, using the dispatcher sample, a fresh timeGetTime value, or the current callback's due time as its scheduling base. |
 | `event_cancel_timers` | `0x00464630` | high | Notifies TimerHandler virtual +0x0C, removes matching timer entries, and refreshes next-due time. |
 | `event_dispatch` | `0x004647C0` | high | Central dispatcher for capture, type 0x13 deserialization, pane-tree traversal, and type 0x14 special handling. |
 | `event_dispatch_pane_tree` | `0x00464CF0` | high | Begins a root EventHandlerList iterator and invokes recursive pane-tree dispatch. |
@@ -93,12 +82,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `event_handler_list_end_iterator` | `0x00466050` | high | Marks an EventHandlerList iterator slot unused. |
 | `event_handler_list_next` | `0x00466080` | high | Returns the current pane entry and advances the depth-aware iterator. |
 | `event_handler_list_advance_sibling` | `0x00466190` | high | Skips descendants and stops at the next valid entry with the iterator's target depth. |
-| `event_ctor` | `0x00466680` | high | Constructs Event and initializes its signed type byte at +0x0C to 0xFF. |
+| `event_ctor` | `0x00466680` | high | Calls lobject_ctor, installs the RTTI-backed Event vtable, and initializes the signed type byte at +0x0C to -1; +0x08 remains untouched. |
+| `event_dtor` | `0x004666B0` | high | Restores the Event vtable, resets signed type to -1, and calls lobject_dtor, which clears the live cookie. |
 | `event_is_pointer` | `0x004666E0` | high | Returns true for event types 0x00 through 0x07. |
 | `event_is_keyboard_or_text` | `0x00466720` | high | Returns true for event types 0x08 through 0x0C. |
 | `event_is_network` | `0x00466760` | high | Returns true only for event type 0x13. |
 | `event_is_application` | `0x004667A0` | high | Returns true for event types 0x0D through 0x12. |
 | `event_dispatch_or_queue` | `0x004670F0` | high | Dispatches on app_main_thread_id and copies the Event into the queue from any other thread. |
+| `event_scalar_deleting_dtor` | `0x004689D0` | high | Calls event_dtor and frees the Event when the MSVC deleting-destructor flag requests it. |
 | `event_handle_intro_state` | `0x004ACA50` | high | Dispatches intro states 0, 1, and 2 around Bink playback. |
 
 ## Input
@@ -107,7 +98,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | --- | --- | --- | --- |
 | `input_get_event_manager` | `0x00427380` | high | Returns input_event_manager_singleton_ptr. |
 | `input_set_capture_pane` | `0x00464780` | high | Stores EventDispatcher +0x40 and calls SetCapture or ReleaseCapture on the main window. |
-| `input_event_manager_ctor` | `0x004667E0` | high | Constructs RTTI EventMan state, key tables, pointer state, and the socket object. |
+| `input_event_manager_ctor` | `0x004667E0` | high | Constructs RTTI EventMan state, key tables, pointer state, a client-owned 1,000 ms double-click window, and the socket object. |
 | `input_repeat_pointer_move_timer` | `0x00466B40` | high | EventMan TimerHandler callback that emits stored pointer coordinates and reschedules after 20 ms. |
 | `input_get_pointer_position` | `0x00466C40` | high | Copies EventMan's current pointer coordinates from +0x10 and +0x14 into the caller's two-word position. |
 | `input_post_pointer_move` | `0x00466C80` | high | Public EventMan entry that honors input blocking before updating coordinates and emitting pointer type 0x00. |
@@ -129,9 +120,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_post_ime_candidate_list_close` | `0x00466F80` | high | Public EventMan entry that emits candidate-list-close event type 0x11. |
 | `input_post_alternate_key` | `0x00466FA0` | medium | Public EventMan entry for type 0x0C; the exact semantic distinction from normal key events remains unresolved. |
 | `input_emit_pointer_move` | `0x004672F0` | high | Builds pointer event type 0x00 from EventMan coordinates, flags, and message time. |
-| `input_emit_left_button_down` | `0x004673F0` | high | Builds type 0x01 or synthesized double-click type 0x02 and sets the left-held flag. |
+| `input_emit_left_button_down` | `0x004673F0` | high | Builds type 0x01 or synthesized double-click type 0x02; a match requires the same saved button, less than 1,000 ms, and Manhattan distance at most two logical pixels. |
 | `input_emit_left_button_up` | `0x00467680` | high | Builds pointer event type 0x03 and clears the left-held flag. |
-| `input_emit_right_button_down` | `0x00467790` | high | Builds type 0x04 or synthesized double-click type 0x05 and sets the right-held flag. |
+| `input_emit_right_button_down` | `0x00467790` | high | Builds type 0x04 or synthesized double-click type 0x05 using the same client-owned time and distance thresholds as the left path. |
 | `input_emit_right_button_up` | `0x00467A20` | high | Builds pointer event type 0x06 and clears the right-held flag. |
 | `input_emit_mouse_wheel` | `0x00467B30` | high | Builds pointer event type 0x07 and normalizes the Win32 wheel delta by 120. |
 | `input_emit_key_down` | `0x00467C10` | high | Updates scan-code and modifier state and builds keyboard event type 0x08. |
@@ -146,11 +137,6 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_emit_ime_candidate_list_data` | `0x004688A0` | high | Builds candidate-list event type 0x10 with pointer-bearing candidate data. |
 | `input_emit_ime_candidate_list_close` | `0x00468940` | high | Builds candidate-list-close event type 0x11. |
 | `input_translate_win32_message` | `0x0048E980` | high | Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events. |
-| `ui_skill_spell_book_find_current_level` | `0x005A4440` | high | Scans 89 live spell or skill slots by stripped base name and returns the parsed left suffix value for the first exact match. |
-| `ui_skill_spell_format_level_requirement` | `0x005ADFB0` | high | Formats the SkillSpellInfoDialogPane LEV text from definition requirement fields and localized message strings, independently of the live name-suffix values. |
-| `ui_skill_spell_info_dialog_ctor` | `0x005AE090` | high | Constructs exact RTTI SkillSpellInfoDialogPane from _nui_ske.txt, selects the skill or spell icon, retains definition fields, and joins at most 32 description lines. |
-| `ui_skill_spell_info_dialog_draw` | `0x005AE710` | high | Draws the icon, level requirement, five colored stat requirements, definition name, subtitles, and description into the layout rectangles. |
-| `ui_open_skill_spell_info_dialog` | `0x005AEA10` | high | Decodes the spell-or-skill inventory selection, resolves its definition, classifies learned and requirement state, constructs the detail pane, centers it, and opens it. |
 | `input_map_key_to_world_direction` | `0x005F0B50` | high | Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3. |
 
 ## UI
@@ -225,17 +211,22 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_create_user_handle_action` | `0x0043EAD0` | high | Collects name, password, confirmation, and distribution-dependent account text; checks matching passwords and schedules the create-user send timer. |
 | `ui_create_user_timer` | `0x0043F410` | high | CreateUserDialogPane TimerHandler callback; timer 3 sends CNewUser after the form action schedules a 200 ms delay. |
 | `ui_create_user_accept_opcode_30` | `0x0043F8C0` | high | Returns handled for raw server opcode 0x30 without reading the body or changing CreateUserDialogPane state. |
-| `ui_dialog_pane_ctor` | `0x00445260` | high | Constructs DialogPane over Pane and initializes its control collection and interaction fields. |
+| `ui_dialog_pane_ctor` | `0x00445260` | high | Constructs DialogPane over Pane; initializes default, cancel, focus, pressed, hover, and pointer-target control indexes to -1, with no-hit zones set to 7 where required. |
 | `ui_dialog_add_control` | `0x00445670` | high | Creates DialogPane +0x594 on first use and inserts the supplied control pointer. |
-| `ui_dialog_set_default_action` | `0x004457D0` | high | Stores a validated attachment-order control index at DialogPane +0x598; Enter and Space dispatch through this index. |
-| `ui_dialog_set_cancel_action` | `0x00445820` | high | Stores a validated attachment-order control index at DialogPane +0x59C; the inherited keyboard handler dispatches Escape through this index. |
-| `ui_dialog_handle_pointer_event` | `0x00445A20` | high | DialogPane primary-vtable +0x48 implementation for hit testing, child dispatch, hover, pressed state, and actions. |
-| `ui_dialog_handle_keyboard_event` | `0x00445FF0` | high | DialogPane primary-vtable +0x4C implementation for focus traversal and focused-control dispatch. |
+| `ui_dialog_get_control_count` | `0x004457A0` | high | Returns the number of attachment-order controls, or zero when the DialogPane has no control list. |
+| `ui_dialog_set_default_action` | `0x004457D0` | high | Stores an attachment-order control index at DialogPane +0x598. |
+| `ui_dialog_set_cancel_action` | `0x00445820` | high | Stores an attachment-order control index at DialogPane +0x59C. |
+| `ui_dialog_handle_pointer_event` | `0x00445A20` | high | DialogPane primary-vtable +0x48 implementation for pane dragging, hit testing, child dispatch, visual-hover and secondary pointer-transition state, and same-control/same-zone click activation. |
+| `ui_dialog_handle_keyboard_event` | `0x00445FF0` | high | DialogPane primary-vtable +0x4C implementation: Tab traverses focus, Enter and Space normally dispatch the default action, Escape dispatches cancel, and remaining input reaches the focused enabled control. |
 | `ui_dialog_handle_application_event` | `0x004462D0` | high | DialogPane primary-vtable +0x54 implementation that forwards application and IME events to the focused control. |
 | `ui_dialog_hit_test_control` | `0x004468C0` | high | Walks DialogPane controls, checks each rectangle, and calls control virtual +0x78 for a local hit-zone code. |
+| `ui_dialog_update_hover_state` | `0x00446A10` | high | Updates DialogPane +0x5BC/+0x5C0 and sends visual hit-zone changes to the old and new controls; index -1 and zone 7 mean no hit. |
+| `ui_dialog_update_pointer_target` | `0x00446AE0` | high | Updates the secondary pointer-transition target at +0x5C4/+0x5C8 and calls old-control or new-control transition hooks when the control or zone changes. |
 | `ui_dialog_set_focused_control` | `0x00446BC0` | high | Transitions DialogPane +0x5AC between control indexes and invokes old/new focus hooks. |
 | `ui_dialog_focus_previous_control` | `0x00446CD0` | high | Searches backward with wrapping for an enabled, focusable control. |
 | `ui_dialog_focus_next_control` | `0x00446DD0` | high | Searches forward with wrapping for an enabled, focusable control. |
+| `ui_dialog_dispatch_default_action` | `0x00446EE0` | high | Dispatches the enabled control selected by DialogPane +0x598 through the parent action handler with keyboard action code 8. |
+| `ui_dialog_dispatch_cancel_action` | `0x00446F60` | high | Dispatches the enabled control selected by DialogPane +0x59C through the parent action handler with keyboard action code 8. |
 | `ui_dialog_dispatch_pointer_to_control` | `0x00446FE0` | high | Converts pointer coordinates to control-local space, calls control virtual +0x48, and restores the event. |
 | `ui_alert_pane_ctor` | `0x00448000` | high | Constructs exact RTTI class AlertPane from counted display text, a parent pane, and one or two button assets. |
 | `ui_window_message_dialog_pane_ctor` | `0x004488C0` | high | Builds the standard scrollable or alternate woodbook-style SMessage popup from an explicit byte buffer. |
@@ -252,6 +243,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_employee_dialog_apply_request_response` | `0x0045D0A0` | high | Reads and displays the string8 response for SMercenary message code 4. |
 | `ui_employee_dialog_rebuild_visible_items` | `0x0045D5E0` | high | Rebuilds the employee pane's visible item controls from the current records. |
 | `ui_equip_pane_handle_network_event` | `0x0045D970` | high | Exact RTTI class EquipPane routes SAddEquip, SRemoveEquip, and SSelfLook from its primary-vtable network-event slot. |
+| `ui_equip_pane_ctor` | `0x0045DA10` | high | Constructs exact RTTI class EquipPane over a 0x630-byte DialogPane base, 18 contiguous 0x34-byte slot-view records, profile text, named layout rectangles, and the worn-equipment arrays. |
 | `ui_equip_pane_handle_action` | `0x0045F260` | high | EquipPane action 0x19 allocates the exact RTTI FamilyListDialogPane. |
 | `ui_equip_pane_apply_self_look` | `0x0045FDC0` | high | Copies SSelfLook identity, nation, group, class, and legend state into EquipPane and its dependent panes. |
 | `ui_equip_pane_add_equipment_from_packet` | `0x004601D0` | high | Converts the SAddEquip slot to an index and stores sprite, dye, name, current durability, and maximum durability in EquipPane's 18-entry arrays. |
@@ -261,7 +253,6 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_exchange_dialog_ctor` | `0x00469560` | high | Constructs the exact RTTI ExchangeDialog from _nexch.txt, attaches its offer controls, registers it under GUIBackPane, and stores the Started event ID at +0x630. |
 | `ui_exchange_dialog_dtor` | `0x00469E70` | high | Decrements the modal count, unregisters ExchangeDialog from event and screen routing, and runs the DialogPane destructor. |
 | `ui_exchange_dialog_handle_action` | `0x00469FF0` | high | Maps attachment-order action 0 to CExchange Accept 0x05 and action 1 to Cancel 0x04. |
-| `ui_equip_pane_ctor` | `0x0045DA10` | high | Constructs exact RTTI class EquipPane over a 0x630-byte DialogPane base, 18 contiguous 0x34-byte slot-view records, profile text, named layout rectangles, and the worn-equipment arrays. |
 | `ui_exchange_dialog_handle_inventory_drop` | `0x0046A030` | high | Reads the source InvItemPane one-based slot and sends CExchange AddItem 0x01. |
 | `ui_exchange_dialog_handle_network_event` | `0x0046A1E0` | high | Consumes decoded opcode 0x42 and forwards it to the ExchangeDialog server-event dispatcher. |
 | `ui_exchange_dialog_dispatch_server_event` | `0x0046A240` | high | Routes SExchange events 0x01 through 0x05 to quantity, item, gold, cancelled, and accepted handlers. |
@@ -342,6 +333,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_item_pane_ctor` | `0x00495C60` | high | Constructs exact RTTI class ItemPane and stores an item sprite, 128-byte display name, and dye color. |
 | `ui_inventory_item_set_display_name` | `0x00495DE0` | high | Replaces the InvItemPane display name through the same bounded 128-byte copy used by its ItemPane base. |
 | `ui_inventory_item_ctor` | `0x00495E10` | high | Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, maximum durability, and current durability. |
+| `ui_inventory_item_show_desc` | `0x00495FF0` | high | Builds an InvItemPane tooltip anchor, keeps it within 640 by 480, resolves the item's description provider, and opens the shared DescPane with the item as owner. |
 | `ui_inventory_item_handle_pointer_event` | `0x004963C0` | high | InvItemPane pointer-event handler starts a DraggedInvItemPane from the selected inventory item and its one-based source slot. |
 | `ui_inventory_item_submit_drop_quantity` | `0x00496820` | high | Numeric-input callback sends the saved CDrop target and source item only when the submitted u32 quantity is nonzero. |
 | `ui_inventory_item_submit_give_quantity` | `0x00496860` | high | Forwards a nonzero u32 quantity and saved living target object ID to CGive, but has no confirmed static reference in the live drag path. |
@@ -361,6 +353,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_skill_inventory_item_ctor` | `0x00498940` | high | Constructs exact RTTI class SkillInvItemPane and retains the SAddSkill icon, name, and one-based slot. |
 | `ui_skill_item_start_cooldown_visual` | `0x00498AD0` | high | Sets progress to zero, records timeGetTime start and end values, marks the visual active, redraws, and schedules timer ID 0x10204 after 100 ms. |
 | `ui_skill_item_set_cooldown_progress` | `0x00498B40` | high | Stores a changed 0 through 30 skill cooldown step and invalidates the item pane. |
+| `ui_skill_inventory_item_get_base_name` | `0x00498B90` | high | Copies the retained skill name only through the suffix split position and appends a NUL terminator. |
 | `ui_skill_item_cooldown_visual_timer` | `0x00498C10` | high | For timer ID 0x10204, maps elapsed time to 30 integer steps, redraws, and reschedules at 100 ms while the delay and visual-active flags remain set. |
 | `ui_skill_inventory_item_handle_pointer_event` | `0x00498D40` | high | Skill item pointer handler checks complete-object offset +0x322 and blocks drag start, activation, and information actions while action-delayed. |
 | `ui_skill_inventory_item_draw` | `0x004991D0` | high | Draws the skill icon, applies palette index 0x58 across a delayed icon, and palette index 0x18 below a vertical boundary derived from the 0 through 30 progress step. |
@@ -368,7 +361,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_skill_is_denied` | `0x004994C0` | high | Looks up the skill name in DeniedItemList mode 1 before CUseSkill construction; a match suppresses the packet. |
 | `ui_skill_item_clear_action_delay` | `0x00499570` | high | Clears SkillInvItemPane +0x322 and invalidates the item rectangle. |
 | `ui_skill_item_set_action_delay` | `0x004995A0` | high | Sets SkillInvItemPane +0x322 to one and invalidates the item rectangle. |
+| `ui_parse_skill_spell_level_suffix` | `0x00499660` | high | Scans backward for a space plus parenthesized slash pair, parses the two sides with atoi, and returns the base-name split position; it does not test the literal Lev label. |
 | `ui_spell_inventory_item_ctor` | `0x00499DE0` | high | Constructs exact RTTI class SpellInvItemPane and retains slot, icon, argument type, 128-byte name and prompt buffers, and cast_lines. |
+| `ui_spell_inventory_item_get_base_name` | `0x00499F30` | high | Copies the retained spell name only through the suffix split position and appends a NUL terminator. |
 | `ui_spell_inventory_item_handle_pointer_event` | `0x00499FB0` | high | Spell item pointer handler checks complete-object offset +0x297 and blocks drag start, activation, and information actions while action-delayed. |
 | `ui_spell_inventory_item_draw` | `0x0049A420` | high | Draws the spell icon and applies palette index 0x58 across the complete icon while action_delay_active is set. |
 | `ui_spell_begin_target_selection` | `0x0049A4E0` | high | Handles spell argument type 2 by creating a DraggedSpellInvItemPane for target selection. |
@@ -386,6 +381,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_start_spell_cast` | `0x0049B900` | high | Copies CUseSpell to +0xB92, its length to +0x8C92, the spell name to +0x8B92, and cast counters to +0x190/+0x191 before beginning the delay sequence. |
 | `ui_cancel_spell_delay` | `0x0049BA50` | high | Clears SpellDelayControlPane::cast_active at +0x8C94 and cancels every timer owned by the pane with the 0x7FFFFFFF wildcard. |
 | `ui_load_spell_cast_lines` | `0x0049BD80` | high | Loads up to ten 256-byte per-spell cast strings from the current character's SpellBook.cfg data. |
+| `ui_desc_pane_show` | `0x0049C6B0` | high | Creates the DescPane singleton as needed, optionally reloads content by item name, lays it out at an anchor, marks it active, and retains the optional hover owner. |
 | `ui_close_desc_pane` | `0x0049C980` | high | Unregisters the current RTTI-backed DescPane from event and screen routing and clears its active state. |
 | `ui_desc_pane_handle_network_event` | `0x0049CC30` | high | Closes DescPane when a decoded raw body begins with SExchange opcode 0x42 or SGroup opcode 0x63; it reads no packet fields. |
 | `ui_item_shop_shopping_bag_ctor` | `0x0049F450` | high | Constructs exact RTTI ItemShop::ShoppingBagDialogPane from lshopba2.txt and sends CCashShop action 0. |
@@ -425,6 +421,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_manufacture_dialog_set_additional_slot` | `0x004C3E00` | high | Stores the one-byte inventory slot sent by CManual CraftRecipe; zero clears the selection. |
 | `ui_server_item_menu_dialog_handle_network_event` | `0x004CAC20` | high | TaskListDialog::ServerItemMenuDialog3 network-event handler accepts SStatus updates containing progression and currency. |
 | `ui_server_item_menu_update_gold_from_status_packet` | `0x004CAC90` | high | Copies SStatus gold into the server-item menu dialog and redraws its currency display. |
+| `ui_merchant_server_item_menu3_timer_callback` | `0x004CACD0` | high | TimerHandler callback installed by exact RTTI ServerItemMenuDialog3; subtype 1 applies the scroll offset and updates a row tooltip, while subtype 2 closes DescPane. |
+| `ui_merchant_server_item_menu3_show_hover_desc` | `0x004CAD70` | high | Builds or repositions the older MerchantDialogPane server-item tooltip through the shared DescPane helper and retains the hovered row. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
@@ -469,6 +467,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_message_dialog_close` | `0x0052D950` | high | Closes the owning NPCSession when present, or destroys a standalone NPC message pane, without sending a merchant or pursuit response. |
 | `ui_npc_menu_dialog_ctor` | `0x0052DCB0` | high | Constructs the shared NPCMenuDialog base used by choice, input, item, skill, and spell subpanes. |
 | `ui_npc_menu_dialog_handle_keyboard_event` | `0x0052DDF0` | high | Returns false for Escape so the outer NPC message dialog can handle its cancel action; all other keyboard events use the inherited DialogPane handler. |
+| `ui_npc_item_list_row_queue_hover` | `0x005308F0` | high | Resolves a valid row and schedules the owner TimerHandler with its timer ID, a zero-millisecond delay, subtype 2, and the row's u16 index. |
+| `ui_npc_item_list_row_queue_hover_close` | `0x00530960` | high | Schedules the owner TimerHandler with a zero-millisecond delay, subtype 3, and a zero payload when the row hover ends. |
 | `ui_npc_illustration_load_pixmap` | `0x00531B30` | high | Resolves an NPC name and illustration index, then loads frame zero of the mapped image from npcbase.dat. |
 | `ui_npc_illustration_asset_at` | `0x00531C40` | high | Returns one illustration filename from an NPC name record by zero-based index. |
 | `ui_npc_illustration_file_manager_ctor` | `0x00531E10` | high | Opens npc/npcbase.dat, initializes the name map, and loads its npci.tbl fallback mapping. |
@@ -480,6 +480,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_merchant_request_object_info` | `0x00534A90` | high | Top sends CRequestObjectInfo opcode 0x43 subtype 1 with the SScreenMenu target ID, then closes the active NPC session. |
 | `ui_npc_merchant_message_handle_action` | `0x00534B70` | high | Routes base actions 0 through 3 to content handling, action 4 to Top object-info request, and action 5 to local close. |
 | `ui_npc_dispatch_screen_menu_type` | `0x00534C40` | high | Maps SScreenMenu values 0 through 11 to text, input, server item, local item, server skill-spell, and local skill-spell models. |
+| `ui_npc_server_item_menu_timer_callback` | `0x00539340` | high | NPCServerItemMenuDialog TimerHandler callback; timer ID 1 routes subtype 2 to the row tooltip update and subtype 3 to tooltip close. |
+| `ui_npc_server_item_menu_handle_pointer_event` | `0x005393F0` | high | Stores pointer coordinates on move, closes the tooltip outside the visible client bounds, and then delegates to DialogPane pointer handling. |
+| `ui_npc_server_item_menu_show_hover_desc` | `0x00539600` | high | Resolves a changed server-item row by name, opens DescPane near the pointer, repositions existing content for the same row, and refreshes the dialog's detail controls. |
+| `ui_npc_server_item_menu_clear_hover_desc` | `0x00539A30` | high | Closes the shared DescPane and resets NPCServerItemMenuDialog's hovered-row field to -1. |
 | `ui_npc_server_item_menu_handle_network_event` | `0x0053A270` | high | NPCMenuDialog::NPCServerItemMenuDialog routes SStatus progression blocks to its gold-display updater. |
 | `ui_npc_server_item_menu_update_gold_from_status_packet` | `0x0053A2D0` | high | Copies SStatus gold into the NPC server-item menu and redraws the dialog. |
 | `ui_npc_pursuit_message_dialog_ctor` | `0x0053CC10` | high | Constructs exact RTTI NPC_Pursuit_MessageDialog, attaches Previous, Next, and Close after the four base message controls, and registers Close action 6 as the Escape cancel action. |
@@ -559,6 +563,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_screen_hierarchy_get_absolute_origin` | `0x005528C0` | high | Accumulates pane origins through spatial parents until ui_screen_root_pane_ptr. |
 | `ui_screen_hierarchy_find` | `0x00553260` | high | Recursively finds the HierList&lt;Screen&gt; node for a pane and optionally returns its owner list and index. |
 | `ui_screen_pane_ctor` | `0x00553350` | high | Constructs the startup RTTI ScreenPane root with primary Pane and secondary TimerHandler vtables. |
+| `ui_screen_pane_handle_timer` | `0x005536A0` | high | Dispatches root ScreenPane timer IDs 0 through 4; ID 0 invokes the recurring render_screen_timer_tick service. |
 | `ui_screen_pane_set_cursor_mode` | `0x00554330` | high | Stores the cursor image and hotspot table selector at root ScreenPane +0x27C and redraws the cursor state. |
 | `ui_server_select_dialog_handle_server_event` | `0x00559DC0` | high | ServerSelectDialogPane primary-vtable slot 0x50 accepts an event packet only when its opcode is 0x56, then forwards the exact SMulti object to the dedicated handler. |
 | `ui_server_select_dialog_handle_multi` | `0x00559E80` | high | Applies the SMulti replacement list, auto-selects row zero when exactly one record exists, and refreshes the ServerSelectDialogPane controls. |
@@ -612,6 +617,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_gui_back_pane_update_vitals_from_status_packet` | `0x0059D6C0` | high | Copies current and maximum health and mana from SStatus into GUIBackPane bar targets. |
 | `ui_gui_back_layout_init_common` | `0x0059D830` | high | Reads common named controls from one loaded GUIBackPane layout, including BTN_HELP and the other bottom actions. |
 | `ui_gui_back_pane_ctor` | `0x0059FB60` | high | Constructs the RTTI-backed GUIBackPane and its two size-specific layout records and child panes. |
+| `ui_gui_back_toggle_layout` | `0x005A0B40` | high | Flips GUIBackPane between layout indexes 0 and 1 and passes the result to ui_gui_back_apply_layout. |
 | `ui_gui_back_activate_action` | `0x005A0B70` | high | Dispatches GUIBackPane bottom-action IDs; action 0 creates HotKeyPane, while the other IDs open their normal panes or local actions. |
 | `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Hit-tests six bottom-action rectangles on a left-button event; BTN_HELP is slot 0 and is passed to ui_gui_back_activate_action after click debounce. |
 | `ui_gui_back_pane_draw` | `0x005A2050` | high | Draws GUIBackPane state, including selection of the network indicator image from the latest movement round-trip value. |
@@ -620,7 +626,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_gui_back_get_page_expanded` | `0x005A2CC0` | high | Returns GUIBackPane's page_is_expanded flag at complete object offset +0x4FB0. |
 | `ui_game_interface_activate_number_key` | `0x005A2D90` | high | Routes number keys by the selected GUIBackPane mode; item mode maps keys 1 through 9 and 0 to inventory slots 1 through 10. |
 | `ui_gui_back_select_page_mode` | `0x005A2FB0` | high | Selects one GUIBackPane page, records its expanded flag, and applies normal or expanded geometry from the active small or large layout record. |
-| `ui_gui_back_apply_layout` | `0x005A3900` | high | Selects one GUIBackPane layout and copies its bottom control rectangles into the six live action slots; BTN_HELP becomes slot 0. |
+| `ui_gui_back_apply_layout` | `0x005A3900` | high | Reapplies the selected GUIBackPane and child-pane geometry, then sends the layout's MAP rectangle and view center through MapInterface to resize and invalidate WorldPane. |
+| `ui_skill_spell_book_find_current_level` | `0x005A4440` | high | Scans 89 live spell or skill slots by stripped base name and returns the parsed left suffix value for the first exact match. |
 | `ui_inventory_select_buttons_handle_action` | `0x005A5210` | high | Handles local lower-tray selection buttons through the same page-mode interface used by SWindowChange, with additional paired-page toggles and collapse. |
 | `ui_new_system_message_text_pane_ctor` | `0x005A8FB0` | high | Constructs the TextEditPane child that stores and renders persistent message history. |
 | `ui_new_system_message_pane_handle_packet_event` | `0x005A9000` | high | Recognizes SMessage packet events and forwards them to the history type router. |
@@ -631,6 +638,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_new_system_message_pane_append_history` | `0x005A9A20` | high | Accepts at most 70 bytes, prefixes a newline, normalizes carriage returns, and appends to persistent history. |
 | `ui_new_system_message_pane_handle_message_packet` | `0x005A9B40` | high | Routes SMessage types 0x00 through 0x06, 0x0B, and 0x0C into persistent history. |
 | `ui_report_movement_round_trip` | `0x005A9DA0` | high | Forwards one matching movement round-trip sample to the live GUIBackPane interface. |
+| `ui_user_info_pane_ctor` | `0x005ABA30` | high | Constructs UserInfoPane, initializes seven page-enable flags, and creates page children with action IDs 0x101 through 0x107 at offsets +0x584 through +0x59C. |
 | `ui_user_info_apply_portrait_body` | `0x005ACD10` | high | Decodes a portrait/profile body into UserInfoPane state and refreshes its portrait canvas and text. |
 | `ui_user_info_handle_server_packet` | `0x005AD160` | high | The UserInfoPane vtable event handler sends the local portrait response when the decoded opcode is 0x49. |
 | `ui_user_info_refresh_local_portrait` | `0x005AD5D0` | high | Builds the local portrait body and reapplies it to UserInfoPane without calling the network submitter. |
@@ -638,7 +646,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_user_info_apply_class_metadata` | `0x005ADB00` | high | Populates the local user profile skill or spell lists from parsed SClass records. |
 | `ui_spell_skill_row_state` | `0x005ADD00` | high | Returns learned, available, or locked state by combining live inventory lookup with SClass requirements. |
 | `ui_format_spell_skill_progress_requirement` | `0x005ADFB0` | high | Formats the SClass level, ability, and master progression requirement for the detail dialog. |
+| `ui_skill_spell_format_level_requirement` | `0x005ADFB0` | high | Formats the SkillSpellInfoDialogPane LEV text from definition requirement fields and localized message strings, independently of the live name-suffix values. |
 | `ui_skill_spell_info_dialog_ctor` | `0x005AE090` | high | Constructs exact RTTI SkillSpellInfoDialogPane from _nui_ske.txt, selects the skill or spell icon, retains definition fields, and joins at most 32 description lines. |
+| `ui_skill_spell_info_dialog_draw` | `0x005AE710` | high | Draws the icon, level requirement, five colored stat requirements, definition name, subtitles, and description into the layout rectangles. |
+| `ui_open_skill_spell_info_dialog` | `0x005AEA10` | high | Decodes the spell-or-skill inventory selection, resolves its definition, classifies learned and requirement state, constructs the detail pane, centers it, and opens it. |
 | `ui_user_info_apply_event_metadata` | `0x005AF090` | high | Maps SEvent1 through SEvent7 into the new local profile event categories, merging the last two into category six. |
 | `ui_event_row_state` | `0x005AF150` | high | Returns completed, available, or locked by checking the completion legend key before event requirements. |
 | `ui_format_event_progress_bucket` | `0x005AF390` | high | Formats an event progression requirement from its qualification bucket digits. |
@@ -649,7 +660,6 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_user_info_handle_album_action` | `0x005B0AB0` | high | Maps album tile action 0 to Save confirmation event 0x1242 and action 1 to Remove confirmation event 0x1243. |
 | `ui_user_info_update_status_from_packet` | `0x005B0C40` | high | Updates UserInfoPane's five attributes and signed armor class from present SStatus blocks. |
 | `ui_user_info_apply_self_look` | `0x005B0D10` | high | Copies SSelfLook identity and nation fields into UserInfoPane, rebuilds its legend list, and reloads SClass metadata when the class changes. |
-| `ui_user_info_apply_self_look` | `0x005B0D10` | high | Copies SSelfLook identity and nation fields into UserInfoPane, rebuilds its legend list, and reloads SClass metadata when the class changes. |
 | `ui_user_info_add_equipment_from_packet` | `0x005B1070` | high | Maps SAddEquip slots 1 through 18 to UserInfoPane child-view indices 0 through 17 and forwards the visible item fields. |
 | `ui_user_info_remove_equipment_from_packet` | `0x005B1100` | high | Maps a checked SRemoveEquip slot and asks the UserInfoPane child equipment view to clear that entry. |
 | `ui_portrait_text_dialog_ctor` | `0x005B11A0` | high | Constructs RTTI-backed PortraitTextInputDialogPane from _nui_pi.txt and loads profile.txt. |
@@ -658,6 +668,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_other_user_info_apply_object_info_body` | `0x005B1900` | high | Reads entity ID, 18 implicitly ordered equipment records, user_state in the shared UserState domain, name, nation, title, group-open state, guild identity, legends, and the optional portrait/biography tail. |
 | `ui_open_other_user_info_from_server_body` | `0x005B1DF0` | high | Creates or refreshes UserInfoPane_ForOthers and applies the decoded object-info body for its entity ID. |
 | `ui_open_user_info` | `0x005B1FA0` | high | Opens the singleton UserInfoPane and selects the requested local or other-user mode. |
+| `ui_user_info_visual_state_ctor` | `0x005B2110` | high | Constructs two arrays of seven 0x34-byte animation states inside the 0x3B8-byte UserInfoPane visual subobject at complete-object offset +0x1B4. |
 | `ui_album_picture_dialog_ctor` | `0x005B24E0` | high | Constructs exact RTTI AlbumPicDialogPane from _nui_alb.txt and attaches SAVE before REMOVE. |
 | `ui_album_picture_handle_action` | `0x005B2A00` | high | Forwards local action 0 or 1 with this tile's 0x1234-based event ID. |
 | `ui_nui_album_pane_ctor` | `0x005B2A70` | high | Constructs exact RTTI nui_AlbumPane from _nui_al.txt and creates 100 picture dialogs. |
@@ -716,28 +727,28 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_world_capture_self_portrait_to_album` | `0x005F9B00` | high | WorldPane_Impl wrapper that invokes the album capture with zero, selecting the normal cooldown path. |
 | `ui_world_pane_is_privileged` | `0x005F9D90` | high | MapUserInterface virtual getter returns whether WorldUserFunc privilege_level is nonzero; bulletin, line-input, and dormant screenshot branches consume it. |
 | `ui_world_pane_get_privilege_level` | `0x005F9DC0` | high | MapUserInterface virtual getter returns raw WorldUserFunc privilege_level 0 through 3; the event dispatcher compares it exactly with 1 in a dormant timeout path. |
+| `ui_world_pane_get_user_state` | `0x005F9DF0` | high | MapUserInterface virtual getter returns the low byte of the normalized UserState stored as a u32 at WorldUserFunc +0x1048. |
 | `ui_world_pane_change_user_state` | `0x005F9E20` | high | WorldPane_Impl interface method that forwards a requested UserState to CChangeUserState. |
 | `ui_world_pane_get_local_action_state` | `0x005F9E50` | high | WorldPane_Impl virtual getter returns the low-seven-bit SUserAppearance action state stored in WorldUserFunc; the item-inventory CChangeSlot category-0 sender is its only identified indirect consumer. |
 | `ui_world_pane_get_self_object_id` | `0x005F9EC0` | high | WorldPane_Impl virtual getter returns the SUserAppearance user ID stored in WorldUserFunc. |
 | `ui_world_pane_get_appearance_unknown_final` | `0x005FA040` | high | WorldPane_Impl virtual getter returns the final parsed SUserAppearance byte; no client decision based on it is identified. |
 | `ui_world_pane_get_guild_value` | `0x005FA0B0` | medium | WorldPane_Impl virtual getter returns the second post-ID SUserAppearance byte unchanged; project behavioral evidence associates it with guild state. |
 | `ui_world_pane_get_character_class` | `0x005FA0E0` | high | WorldPane_Impl virtual getter returns the third post-ID SUserAppearance byte; the Tab map-overlay path gives value 2 the Rogue-only zoom-enabled configuration. |
+| `ui_world_pane_get_self_look_show_ability_metadata` | `0x005FA100` | high | Returns the SSelfLook show_ability_metadata byte widened and cached at WorldUserFunc +0x15C78. |
+| `ui_world_pane_get_self_look_show_master_metadata` | `0x005FA130` | high | Returns the SSelfLook show_master_metadata byte widened and cached at WorldUserFunc +0x15C74. |
+| `ui_world_pane_set_group_members_text` | `0x005FA220` | high | Forwards formatted SSelfLook group_members text to the WorldUserFunc fixed-record parser. |
+| `ui_world_pane_get_group_member_entry` | `0x005FA250` | high | Returns WorldUserFunc +4 + index*0x41 without an internal bounds check; each entry holds a 64-byte name and one starred byte. |
+| `ui_world_pane_get_group_member_count` | `0x005FA280` | high | Returns the parsed group-member count at WorldUserFunc +0x1044. |
 
 ## Network
 
 | Function | Static address | Confidence | Role |
-| `ui_world_pane_get_user_state` | `0x005F9DF0` | high | MapUserInterface virtual getter returns the low byte of the normalized UserState stored as a u32 at WorldUserFunc +0x1048. |
 | --- | --- | --- | --- |
 | `net_send_web_board_dialog_request` | `0x004160A0` | high | Builds the exact two-byte CWebBoard action-0 body and starts BrowserDialogPane's 20-second response timer. |
 | `net_percent_encode_web_board_cookie_value` | `0x00416810` | high | Percent-encodes reserved, unsafe, control, and non-ASCII bytes before BrowserDialogPane stores the boardinfo cookie. |
 | `net_send_self_look` | `0x0041B840` | high | Builds the exact one-byte CSelfLook plaintext body as opcode 0x2D and submits length one. |
 | `net_send_group_toggle` | `0x0041B8E0` | high | Builds and submits the exact one-byte CGroupToggle plaintext body containing only opcode 0x2F. |
 | `net_send_bulletin_board_list_request` | `0x0041CBC0` | high | Writes derived CBulletin body 3B 01 when BulletinSession opens. |
-| `ui_world_pane_get_self_look_show_ability_metadata` | `0x005FA100` | high | Returns the SSelfLook show_ability_metadata byte widened and cached at WorldUserFunc +0x15C78. |
-| `ui_world_pane_get_self_look_show_master_metadata` | `0x005FA130` | high | Returns the SSelfLook show_master_metadata byte widened and cached at WorldUserFunc +0x15C74. |
-| `ui_world_pane_set_group_members_text` | `0x005FA220` | high | Forwards formatted SSelfLook group_members text to the WorldUserFunc fixed-record parser. |
-| `ui_world_pane_get_group_member_entry` | `0x005FA250` | high | Returns WorldUserFunc +4 + index*0x41 without an internal bounds check; each entry holds a 64-byte name and one starred byte. |
-| `ui_world_pane_get_group_member_count` | `0x005FA280` | high | Returns the parsed group-member count at WorldUserFunc +0x1044. |
 | `net_send_bulletin_initial_list_request` | `0x0041E350` | high | Writes CBulletin action 2 with selected section ID, cursor 0x7FFF, and direction 0xF0. |
 | `net_send_bulletin_article_list_request` | `0x00420D00` | high | Writes seven-byte CBulletin action 2 for article-list pagination. |
 | `net_send_bulletin_article_request` | `0x00420E40` | high | Writes CBulletin action 3 with board ID, article ID, and direct-selection navigation 0. |
@@ -1121,6 +1132,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode. |
 | `net_dispatch_server_packet` | `0x005ED9A0` | high | Checks decoded opcode 0x4F directly because SMercenary has no server-factory object, then calls the employee dialog opener. |
 | `net_handle_static_object_state_server_packet` | `0x005F1690` | high | Applies every record to the selected isometric static layer; state 0 targets pair column 1 and any nonzero state targets column 0. |
+| `net_handle_self_look_server_packet` | `0x005F1990` | high | Forwards SSelfLook to WorldUserFunc, then refreshes the live group-member matches immediately or after the existing one-second timer path. |
 | `net_handle_status_server_packet` | `0x005F1A10` | high | Applies global SStatus effects by updating WorldUserFunc and setting blinded only when the raw blind code equals 0x08. |
 | `net_handle_add_spell_server_packet` | `0x005F1AF0` | high | Forwards decoded SAddSpell fields to the WorldUserFunc session model stored by WorldPane. |
 | `net_handle_remove_spell_server_packet` | `0x005F1B30` | high | Forwards decoded SRemoveSpell to WorldUserFunc vtable slot +0x14. |
@@ -1131,7 +1143,6 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_exchange_started` | `0x005F2190` | high | Handles SExchange event 0x00 before a dialog exists. |
 | `net_handle_map_server_body` | `0x005F2840` | high | Consumes raw SMap opcode 0x06 as a u8 rectangle header followed by row-major ground and static tile triples, applying cells only while a cache-miss transfer is active. |
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes one raw SMapPart row into memory, creates MapLoadingPane on the first accepted row, updates row-index progress, and treats height minus one as completion without tracking earlier rows. |
-| `net_handle_self_look_server_packet` | `0x005F1990` | high | Forwards SSelfLook to WorldUserFunc, then refreshes the live group-member matches immediately or after the existing one-second timer path. |
 | `net_handle_request_crc_server_body` | `0x005F2CF0` | high | Reads the raw u16 SRequestCRC challenge, feeds low then high byte through crc16_update from zero, and sends the resulting byte swap as CReplyCRC opcode 0x45. |
 | `net_handle_user_appearance_server_packet` | `0x005F2E90` | high | Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage. |
 | `net_handle_user_position_server_packet` | `0x005F2F00` | high | Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view. |
@@ -1184,7 +1195,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_direct_draw_dtor` | `0x00449550` | high | Runs DirectDraw wrapper cleanup during deletion. |
 | `render_direct_draw_initialize` | `0x004495D0` | high | Creates DirectDraw, selects cooperative and display modes, and creates presentation surfaces. |
 | `render_direct_draw_shutdown` | `0x00449CB0` | high | Releases the clipper and surfaces, restores display mode, and releases DirectDraw. |
-| `render_direct_draw_flip` | `0x00449FA0` | high | Flips the attached DirectDraw backbuffer. |
+| `render_direct_draw_flip` | `0x00449FA0` | high | Flips the attached DirectDraw backbuffer with DDFLIP_WAIT so the call may block until the operation can complete. |
 | `render_direct_draw_present_canvas` | `0x00449FD0` | high | Copies a Canvas to the DirectDraw presentation surface and recovers a lost surface. |
 | `render_canvas_ctor` | `0x0044A490` | high | Constructs the RTTI-backed Canvas object. |
 | `render_canvas_attach_surface` | `0x0044AA30` | high | Attaches a Canvas to a DirectDraw surface. |
@@ -1238,7 +1249,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_palette_resolve_table` | `0x00548510` | high | Decodes bits 24 through 30 as a family and the low 24 bits as a palette number, then returns its 256-entry packed-color table. |
 | `render_palette_family_get_or_create` | `0x00548AB0` | high | Grows one palette-family vector in blocks of 16 and allocates a 0x200-byte packed table for a missing palette number. |
 | `render_write_screenshot_bmp` | `0x005537F0` | high | Writes the completed client canvas as the first missing uncompressed 16-bit lod001.bmp through lod999.bmp name. |
-| `render_screen_tree_frame` | `0x00554040` | high | Redraws the dirty root screen tree and presents the completed frame. |
+| `render_screen_tree_frame` | `0x00554040` | high | Walks the dirty root screen tree and presents only when a dirty entry or forced redraw marks the root for output. |
+| `render_screen_timer_tick` | `0x00554270` | high | Runs the root ScreenPane redraw check and requeues timer ID 0 from the current time using the compiled 10 ms interval. |
 | `render_screen_subtree` | `0x00555560` | high | Clips and draws one pane subtree through the vtable draw-to-target slot. |
 | `render_probe_display_capabilities` | `0x0057A640` | high | Accepts 16-bit or 32-bit desktop color and selects 2x presentation at 1280 by 960 or larger, otherwise 1x on a supported smaller desktop. |
 | `render_free_blend_tables` | `0x005933C0` | high | Frees both software component-blend lookup tables. |
@@ -1280,6 +1292,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_world_object` | `0x005D3190` | high | Calls the WorldObject virtual draw method at primary vtable slot 0x18. |
 | `render_world_layer_queue` | `0x005D31D0` | high | Walks one sorted queue of visible world objects. |
 | `render_collect_world_objects` | `0x005D3740` | high | Clips visible objects, assigns ordinary layers to 32 draw queues, retains layer-zero objects in a separate late queue, records the self entry, and draws the ordinary queues without clearing them afterward. |
+| `render_world_tile_marker` | `0x005D3DD0` | high | Draws a small symmetric diamond marker at one projected map coordinate before the world-object queues. |
 | `render_world_frame` | `0x005D3F70` | high | Draws ground, map backgrounds, and sorted world objects for one world frame. |
 | `render_replay_layer_zero_and_self` | `0x005D4360` | high | After the ordinary world frame, draws the separate layer-zero queue and replays the recorded self entry; the normal non-blinded state supplies the selector that makes living sprites use blend mode 3. |
 | `render_ground_layer` | `0x005D6A50` | high | Updates and draws the cached visible ground-tile layer. |
@@ -1297,15 +1310,30 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_monster_apply_appearance` | `0x005E0370` | high | Resolves the untagged monster sprite, creates MonsterObjectImageSession, applies Direction and up to four palette selectors, and refreshes motion. |
 | `render_static_object_ctor` | `0x005E42F0` | high | Stores the static tile ID, side, image cache, SOTP render flags, and draw state. |
 | `render_static_object` | `0x005E47E0` | high | Draws a fixed world object with its SOTP-selected software blend mode. |
-| `render_select_human_part_sprite` | `0x005FD8D0` | high | Selects the sprite ID for each of 21 human body and equipment categories; an overcoat suppresses ordinary pants, armor, and arms parts. |
+| `render_world_apply_view_layout` | `0x005EE950` | high | Applies a six-value GUI MAP rectangle and view center to WorldPane, resets view-dependent state, invalidates lighting, and schedules a redraw. |
+| `render_select_human_part_sprite` | `0x005FD8D0` | high | Selects the sprite ID for each of 21 human body and equipment categories; an overcoat suppresses ordinary pants, armor, and arms, but the body-form selector does not independently suppress equipment. |
 | `render_format_human_part_filename` | `0x005FDA90` | high | Builds gendered human-part EPF filenames; body resource 5 resolves through MM005 or WM005 motion files. |
+| `render_format_human_part_from_appearance` | `0x005FDC50` | high | Selects the current category's sprite ID from HumanAppearanceRecord and formats its motion-specific resource name. |
+| `render_load_human_part_frame` | `0x005FDC90` | high | Resolves one human part resource, selects its direction-group frame, and attaches the applicable asset or appearance palette. |
+| `render_build_human_frame_layers` | `0x005FE3A0` | high | Chooses the direction and body-dependent back-to-front category table and builds the current human-part frame descriptors. |
+| `render_draw_human_part` | `0x005FED60` | high | Draws one selected human-part frame into the temporary composite with direction-dependent horizontal mirroring. |
+| `render_draw_human_frame_layers` | `0x005FEE70` | high | Walks the selected 21-entry category order and draws every present part into the human composite. |
+| `render_human_part_apply_direction` | `0x005FEF70` | high | Applies the direction-group frame offset and mirror state to one human part. |
+| `render_human_direction_frame_group` | `0x005FF000` | high | Maps left and up to stored frame group 0 and down and right to stored frame group 1. |
+| `render_human_direction_is_mirrored` | `0x005FF020` | high | Returns true for right and up so those directions mirror the paired stored human view. |
+| `render_human_frame_apply_direction` | `0x005FF550` | high | Applies the current direction selection to a cached human-frame descriptor. |
 | `render_human_walk_sequence_ctor` | `0x005FFCD0` | high | Builds a four-step or eight-step human walk interpolation sequence from fixed pixel, frame, and per-step delay tables. |
 | `render_human_stand_motion_data_ctor` | `0x006000D0` | high | Constructs standing-motion data and resolves up to 21 body and equipment sprite parts from HumanAppearanceRecord. |
+| `render_human_stand_build_frame` | `0x00600150` | high | Builds one standing human frame from the initialized part resources and current direction. |
+| `render_human_stand_initialize_parts` | `0x006002F0` | high | Initializes categories 0 through 20 for every human body, including Ghost, Jester, Head, and Blank forms; zero selectors omit individual resources. |
 | `render_create_human_stand_motion_data` | `0x00600670` | high | Allocates the initial standing-motion data for a human image session. |
-| `render_monster_image_session_ctor` | `0x006017C0` | high | Constructs the 0xE4-byte RTTI MonsterObjectImageSession and resolves standing, attack, and movement resources for the selected monster sprite. |
+| `render_monster_image_session_ctor` | `0x006017C0` | high | Constructs the 0xE4-byte RTTI MonsterObjectImageSession, including resource pointers, frame and animation state, and four 0x10-byte palette mappings. |
 | `render_monster_apply_palette_selectors` | `0x00601A20` | high | Copies at most four resource-defined 16-byte palette mappings, replaces their selector fields from packet bytes, and enables mapped monster rendering. |
 | `render_monster_select_motion_sequence` | `0x00601DD0` | high | Accepts motion IDs 0x01, 0x83, 0x84, and 0x85, selects one of three cached monster motion resources, and leaves the caller's duration unchanged. |
-| `render_human_image_session_ctor` | `0x00602240` | high | Constructs the 0x918-byte RTTI-backed HumanObjectImageSession and retains HumanAppearanceRecord at object offset +0x0C. |
+| `render_human_image_session_ctor` | `0x00602240` | high | Constructs the 0x918-byte RTTI-backed HumanObjectImageSession with HumanAppearanceRecord, a 21-part frame cache, 21 0x50-byte render states, and animation state. |
+| `render_human_image_session_draw` | `0x006023E0` | high | Draws the image session's current cached human layers into the caller's composite canvas. |
+| `render_human_image_session_advance_frame` | `0x006026D0` | high | Advances the active human motion and rebuilds direction-dependent frame state when needed. |
+| `render_human_image_session_cache_frame_layers` | `0x00602940` | high | Caches the current motion's ordered human-part descriptors for the final draw. |
 | `render_human_select_motion_sequence` | `0x00602A40` | high | Selects fixed, table-driven, or appearance-dependent human body motions; normal table motions replace the caller duration with 500, 1000, or 1500 ms. |
 | `render_human_select_walk_sequence` | `0x00602CA0` | high | Selects the remote-human, local coarse, or local smooth walk sequence; ScrollLevel chooses four 114 ms steps or eight 57 ms steps for WorldObject_User. |
 | `render_merge_light_mask_max` | `0x006036B0` | high | Merges a rectangular 8-bit light image into the viewport mask by retaining the greater value at each pixel. |
@@ -1404,9 +1432,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_archive_get_entry_data` | `0x00472900` | high | Returns the mapped data pointer for an archive entry. |
 | `file_get_main_archive` | `0x00472C70` | high | Lazily constructs and returns the archive object opened as Legend.dat with DarkAges.dat fallback during startup. |
 | `file_load_variant_color_table` | `0x0047DEB0` | medium | Loads one numbered color table family used by renderable assets. |
-| `file_hea_build_row_views` | `0x00487380` | high | Builds one run pointer per clipped pixel scanline; client 7.41 scans horizontal band checkpoints but always uses band 0's table. |
+| `file_hea_build_row_views` | `0x00487380` | high | Clips a mask-canvas rectangle and builds one run pointer per pixel scanline; it scans horizontal band checkpoints but client 7.41 always uses band 0's row-offset table. |
 | `file_hea_open` | `0x004875B0` | high | Maps the HEA header, band array, row offsets, and packed run stream. |
-| `file_hea_project_map_position` | `0x004876D0` | high | Projects two map axes into the padded HEA mask canvas using the fixed logical screen width and height as margins. |
+| `file_hea_project_map_position` | `0x004876D0` | high | Projects two map axes into the padded HEA mask canvas with 28-pixel horizontal and 14-pixel vertical steps, using header screen width and height as margins. |
 | `file_read_image_metadata` | `0x0048B390` | high | Reads shared EPF metadata or dispatches SPF metadata parsing. |
 | `file_load_image_frame` | `0x0048B530` | high | Loads one EPF or SPF frame for the shared image library. |
 | `file_load_image_pixmap` | `0x0048BBC0` | high | Loads one image frame into a pixmap view and applies the EPF palette selector when required. |
@@ -1473,6 +1501,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_try_move_local_player` | `0x005F09E0` | high | Applies the special-state privilege-or-skill permission check, then the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before selecting the local walk sequence and sending CMove. |
 | `map_apply_weather_mode` | `0x005F26C0` | high | Creates Snow for mode 1, performs no local setup for project-named Rain mode 2, and enables black ambient plus object light masks for Darkness mode 3. |
 | `map_finish_transfer` | `0x005F2DE0` | high | Destroys MapLoadingPane, advances the WorldPane map generation, and either applies prepared map storage immediately or schedules the alternate completion path. |
+| `map_interface_apply_world_layout` | `0x005F9B20` | high | MapInterface virtual wrapper that adjusts the interface pointer to its containing WorldPane_Impl and calls render_world_apply_view_layout. |
 | `file_load_static_tile_pixmap` | `0x005FD500` | high | Opens and decodes one base or alternate static HPF resource into a pixmap view. |
 | `file_open_static_tile` | `0x005FD700` | high | Opens stsNNNNN.hpf in alternate mode and falls back to stcNNNNN.hpf when missing. |
 | `file_format_static_tile_path` | `0x005FD850` | high | Formats stcNNNNN.hpf for base art or stsNNNNN.hpf for alternate art. |
@@ -1504,6 +1533,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |
+| `lobject_ctor` | `0x004B4480` | high | Installs the LObject vtable and writes live-cookie bytes 62 6F 73 79 ("bosy") at +0x04. |
+| `lobject_dtor` | `0x004B44B0` | high | Restores the LObject vtable and clears the live cookie at +0x04 to zero. |
+| `lobject_is_live` | `0x004B4550` | high | Returns true only when LObject +0x04 equals 0x79736F62; event_dispatch_immediate uses it before dispatch. |
 | `metadata_parse_event_record` | `0x0055D6E0` | high | Parses one sequential start-to-end SEvent record and its title, id, qual, sum, result, sub, and reward groups. |
 | `metadata_event_requirements_met` | `0x0055E370` | high | Checks an event progression mask, class mask, and every prerequisite legend key against local user state. |
 | `metadata_parse_spell_skill_constraint` | `0x0055F890` | high | Parses the first six values of one SClass ability record into display and requirement fields. |
@@ -1513,6 +1545,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `crc16_update` | `0x005B8F30` | high | Updates the custom CRC16 with table[crc high byte] XOR crc shifted left XOR input byte. |
 | `world_direction_to_delta` | `0x005BE580` | high | Maps directions 0 through 3 to up, right, down, and left coordinate deltas; values above 3 have no defined result. |
 | `world_step_coordinates` | `0x005BE600` | high | Applies the direction delta to a coordinate pair used by local movement and collision checks. |
+| `world_object_list_create` | `0x005C7700` | high | Allocates the 0x68-byte WorldObjectList, constructs width times height 0x60-byte cells, and installs it at WorldPane +0x194. |
 | `world_apply_map_cells` | `0x005C7970` | high | Installs prepared map-cell storage into WorldPane and dependent world views, rebuilds a ready view at its current position, and invalidates world and lighting output. |
 | `world_rebuild_view_at_position` | `0x005C7DF0` | high | Stores WorldPane view Y and X, updates the world renderer, rebuilds visible static objects and lighting, and invalidates the view. |
 | `world_insert_object` | `0x005C8EA0` | high | Inserts one reference-counted WorldObject into WorldObjectList, coordinate, render, and observer state. |
@@ -1529,6 +1562,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_create_object_name_pane` | `0x005CC670` | high | Finds a world object by ID, constructs RTTI WorldObject_Name_Pane from bounded text and style bytes, and attaches it to the object. |
 | `world_show_damage_effect` | `0x005CCD40` | high | Resolves the target object, removes its existing type-7 overlay, constructs exact RTTI WorldObject_Damage, and starts the replacement at the requested stage for 2000 ms. |
 | `ground_attribute_table_get` | `0x005CFA70` | high | Returns the interned gndattr.tbl entry for one ground tile ID, extending the indexed table in 1024-entry blocks when needed. |
+| `world_object_ctor` | `0x005DB3F0` | high | Constructs the 0x7C-byte common WorldObject prefix, including identity, render offsets, tile coordinates, attached panes, object lighting, and ground-paint state. |
 | `world_object_set_ground_paint` | `0x005DB6D0` | high | Replaces the WorldObject ground-paint record and publishes a change only when its flag, color, alpha, or depth fields differ. |
 | `world_object_set_name_pane` | `0x005DBA80` | high | Replaces the reference-counted WorldObject_Name_Pane pointer at common WorldObject offset +0x58. |
 | `world_object_query_ground_attributes` | `0x005DBE80` | high | Broadcasts object query selector 5 so WorldControllerPane can return the gndattr.tbl entry for the object's current ground tile. |
@@ -1545,7 +1579,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_human_refresh_ground_tile_state` | `0x005DE1E0` | high | Queries current ground attributes, updates the Human height-1 state, and refreshes direction, motion, and ground paint after a position change. |
 | `world_item_object_ctor` | `0x005DE280` | high | Constructs the 0xB8-byte RTTI WorldObject_Item and retains entity ID, Y, X, untagged sprite, resource context, and dye color. |
 | `world_item_refresh_ground_paint` | `0x005DE820` | high | Applies ordinary gndattr paint, but substitutes bytes 39 AE EF 80 and depth 100 when the tile's height-1 marker is set. |
-| `world_living_object_ctor` | `0x005DF230` | high | Constructs the RTTI WorldObject_Living base, including clearing its +0xD4 nonblocking state. |
+| `world_item_handle_pointer_event` | `0x005DE8F0` | high | Arms WorldObject_Item +0xB5 on a pointer press inside its interaction rectangle, then consumes and clears that state on release or cancel. |
+| `world_living_object_ctor` | `0x005DF230` | high | Extends the 0x7C-byte WorldObject base with image sessions, a composite Canvas, name and direction state, and four 0x14-byte timed motion slots through +0x1E3. |
 | `world_human_get_active_image_session` | `0x005DFD80` | high | Returns the cloned ground-tile image session at Human +0x94 when present, otherwise the normal image session at +0x90. |
 | `world_human_set_ground_image_session` | `0x005DFE40` | high | Replaces the reference-counted ground-tile image session at WorldObject_Human +0x94. |
 | `world_human_clear_ground_image_session` | `0x005DFED0` | high | Clears and releases the cloned ground-tile image session at WorldObject_Human +0x94. |
@@ -1554,6 +1589,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_living_start_move_animation` | `0x005E0610` | high | Starts the current image session's movement sequence and passes the local ScrollLevel boolean to its class-specific selector. |
 | `world_living_start_motion` | `0x005E0750` | high | Stores the facing direction, asks the current image session to select a body motion, and schedules its timer using the selector's final duration in milliseconds. |
 | `world_living_object_set_direction` | `0x005E0880` | high | When facing changes, invokes the living-object transition hook, stores direction at +0x192, and refreshes the directional motion or image state. |
+| `world_living_update_motion_slot` | `0x005E10B0` | high | Creates or updates one of four 0x14-byte motion slots and stores zero or current tick plus duration as its expiry time. |
+| `world_living_adjust_render_offset_for_direction` | `0x005E16C0` | high | Applies direction-table deltas to the signed WorldObject render-displacement pair at +0x38 and +0x3C. |
+| `world_living_set_render_offset` | `0x005E1770` | high | Replaces the signed render-displacement pair at WorldObject +0x38 and +0x3C independently of tile Y and X. |
 | `world_living_handle_timer_event` | `0x005E1800` | high | For motion timer 0x02000001, advances the living animation only when the scheduled generation matches the current motion, so an older timer cannot interrupt a newer motion. |
 | `world_living_refresh_ground_paint` | `0x005E2340` | high | Queries current gndattr color and depth fields and updates the living object's ground-paint record. |
 | `world_monster_object_ctor` | `0x005E2630` | high | Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level. |
@@ -1565,6 +1603,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_static_transition_to_pair_column_0` | `0x005E4BD0` | high | Finds the live tile ID in the 66-row pair table and starts a transition toward column 0. |
 | `world_static_advance_state_transition` | `0x005E4C80` | high | Moves the pair column toward its requested endpoint, applies that tile ID, and reschedules after 150 ms only if another step remains. |
 | `world_user_start_move` | `0x005E4FC0` | high | Refreshes WorldObject_User appearance state, then starts the common living-object move with the supplied ScrollLevel flag. |
+| `world_object_list_ctor` | `0x005E5290` | high | Constructs the 0x68-byte object list, its ordered entity-ID tree and secondary indexes, and width times height spatial cells of 0x60 bytes each. |
 | `world_object_list_insert` | `0x005E5D40` | high | Inserts an object into its 0x60-byte coordinate cell and the ordered entity-ID index, then marks WorldObject +0x48 inserted. |
 | `world_object_list_find_by_id` | `0x005E73B0` | high | Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10. |
 | `world_set_view_position` | `0x005EEC70` | high | Publishes a Y, X world-view position and optionally rebuilds the visible world and camera state around it. |
@@ -1579,6 +1618,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `session_clear_spell_entry` | `0x005FCCD0` | high | Clears a spell record's present flag, argument type, name[0], and prompt[0] without overwriting the icon or remaining string bytes. |
 | `session_store_skill_entry` | `0x005FCD20` | high | Stores one 0x104-byte skill record at WorldUserFunc + 0x10210 + (slot - 1) * 0x104. |
 | `session_clear_skill_entry` | `0x005FCD80` | high | Clears a skill record's present flag and name[0] without overwriting its icon or remaining name bytes. |
+| `session_rebuild_group_member_cache` | `0x005FCDC0` | high | Parses SSelfLook group_members lines with DBCS-aware scanning into 0x41-byte records at WorldUserFunc +4 and stores the count at +0x1044. |
 | `session_update_from_status_packet` | `0x005FCFD0` | high | Copies present SStatus privilege, core stats, vitals, total experience, gold, weight, and retained unknown bytes into WorldUserFunc. |
 | `session_add_inventory_from_packet` | `0x005FD1C0` | high | Accepts SAddInventory slots 1 through 60 and stores sprite, dye color, and name in the compact WorldUserFunc record. |
 | `session_remove_inventory_from_packet` | `0x005FD220` | high | Accepts SRemoveInventory slots 1 through 60 and logically clears the matching WorldUserFunc record. |
@@ -1587,9 +1627,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `session_add_skill_from_packet` | `0x005FD320` | high | Accepts SAddSkill slots 1 through 89 before storing the icon and name in WorldUserFunc. |
 | `session_remove_skill_from_packet` | `0x005FD370` | high | Accepts SRemoveSkill slots 1 through 89 before clearing the matching WorldUserFunc skill record. |
 | `session_update_from_user_appearance_packet` | `0x005FD3B0` | high | Stores user ID, cached facing, raw guild value, character class, final unknown byte, and action state &amp; 0x7F; bit 0 locks movement and actions, while wire bit 0x80 suppresses the other field updates. |
+| `session_update_from_self_look_packet` | `0x005FD450` | high | Caches widened SSelfLook show_master_metadata, show_ability_metadata, and character_class at +0x15C74 through +0x15C7C, then rebuilds the fixed group-member records from group_members. |
 | `crc32_update` | `0x00604530` | high | Standard reflected IEEE CRC32 update with initial and final inversion. |
 | `crt_time` | `0x00622873` | high | Reads the current Windows FILETIME and converts it to Unix-epoch seconds; CLogin passes the result to crt_srand. |
 | `crt_srand` | `0x006275DE` | high | Stores the seed used by the client runtime random-number state. |
 | `crt_rand` | `0x006275F0` | high | Implements the Microsoft runtime linear-congruential update and returns a 15-bit value. |
-| `session_rebuild_group_member_cache` | `0x005FCDC0` | high | Parses SSelfLook group_members lines with DBCS-aware scanning into 0x41-byte records at WorldUserFunc +4 and stores the count at +0x1044. |
-| `session_update_from_self_look_packet` | `0x005FD450` | high | Caches widened SSelfLook show_master_metadata, show_ability_metadata, and character_class at +0x15C74 through +0x15C7C, then rebuilds the fixed group-member records from group_members. |

@@ -92,9 +92,29 @@ This keeps network code and gameplay code loosely joined. The socket only delive
 
 ## Timers
 
-Timers use the same main-thread tick but are stored separately from normal events. A due timer calls its `TimerHandler` callback. `event_dispatcher_tick` handles at most 40 due timers per pass.
+Timers use the same main-thread tick but are stored separately from normal events. Their due times are unsigned millisecond values based on `timeGetTime()`, and the dispatcher keeps the five-word timer entries ordered by due time.
+
+A scheduled entry is one-shot. When it becomes due, the dispatcher removes it before calling the owner's `TimerHandler` callback. Repeating behavior, including the 10 ms screen redraw check, requeues another entry from its callback.
+
+`event_schedule_timer` supports three timing bases:
+
+| Scheduling form | Due-time base |
+| --- | --- |
+| Normal | Dispatcher's latest sampled time plus the delay |
+| Current time | A new `timeGetTime()` value plus the delay |
+| Current callback | The due time of the timer being handled plus the delay |
+
+The callback-relative form falls back to the normal base when no timer callback is active. This distinction decides whether a repeating system preserves its earlier schedule or shifts after a late callback.
+
+`event_dispatcher_tick` invokes at most 40 due callbacks per pass. When the next timer is more than 20 ms away, it can yield for 5 ms. The limit prevents a timer backlog from taking over the main thread.
 
 A `Pane` contains a secondary `TimerHandler` base at offset `0x11C`. Because of that inheritance layout, a timer callback may receive a pointer adjusted to that base. This detail matters when naming callbacks or building hooks.
+
+## Pointer timing
+
+Win32 pointer messages carry `GetMessageTime()` timestamps into the event system. `EventMan` synthesizes a double-click only when the new press uses the same button, arrives less than 1,000 ms after the saved press, and has a Manhattan coordinate difference of at most 2 logical pixels. A match emits left type `0x02` or right type `0x05` and clears the saved timestamp. A normal press stores its button, position, and time for the next comparison.
+
+`input_repeat_pointer_move_timer` can emit the last stored pointer coordinates and requeue itself after 20 ms while its repeat state is enabled. The path that enables and disables that repeat state is not mapped well enough to describe yet.
 
 The complete event type table, pane handler slots, timer entry, and tree-entry layout are in [Pane and event layouts](../appendix/runtime/panes.md).
 

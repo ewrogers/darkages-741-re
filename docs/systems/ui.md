@@ -31,14 +31,36 @@ A `DialogPane` owns a local collection of controls. Controls are added with `ui_
 
 ```text
 struct DialogPaneFields {
-    ControlList *controls       // +0x594
-    s32 setup_index_a           // +0x598, purpose not fully known
-    s32 setup_index_b           // +0x59C, purpose not fully known
-    s32 focused_control         // +0x5AC
-    s32 hovered_control         // +0x5BC
-    s32 hover_zone              // +0x5C0
+    ControlList *controls           // +0x594
+    s32 default_action_control_index // +0x598, -1 disables
+    s32 cancel_action_control_index  // +0x59C, -1 disables
+    u8  dialog_drag_active          // +0x5A0
+    s32 drag_anchor_x               // +0x5A4
+    s32 drag_anchor_y               // +0x5A8
+    s32 focused_control_index       // +0x5AC, -1 means none
+    u8  control_press_active        // +0x5B0
+    s32 pressed_control_index       // +0x5B4
+    u8  pressed_zone                // +0x5B8
+    s32 hovered_control_index       // +0x5BC, -1 means none
+    u8  hover_zone                  // +0x5C0, 7 means no hit
+    s32 pointer_target_control_index // +0x5C4, -1 means none
+    u8  pointer_target_zone         // +0x5C8, 7 means no hit
 }
 ```
+
+The two former setup indexes are keyboard shortcuts. `ui_dialog_set_default_action` stores the control invoked by Enter or Space. `ui_dialog_set_cancel_action` stores the control invoked by Escape. The setters accept `-1` to disable the shortcut. Otherwise they resolve the index through the current control list, so these are attachment-order indexes rather than layout definition numbers.
+
+Shortcut dispatch checks that the selected control is still enabled, then calls the dialog action handler with the control index and action code `8`. A focused control can retain Enter or Space for its own editing behavior instead of allowing the default action. Escape takes the cancel path directly.
+
+| Dialog | Default | Cancel | Initial focus |
+| --- | ---: | ---: | ---: |
+| Login | `0` (OK) | `1` (Cancel) | `2` (Name) |
+| Create user | `7` | `8` | `9` (Name) |
+| Exchange | `0` (Accept) | `1` (Cancel) | None |
+| Drop gold | `0` (OK) | `1` (Cancel) | `3` (Amount) |
+| Message popup | `0` | `0` | None |
+
+The pointer fields preserve three related states. A press remembers the control and hit zone where the button went down, so release activates only the same pair. The hover pair updates the control's visual zone. The pointer-target pair drives secondary enter/leave-style transition hooks. `DialogPane` uses control index `-1` and hit zone `7` as the two no-target sentinels.
 
 Many callbacks use the control's attachment-order index as its action ID. For example, the login dialog's layout lists its edit areas before its buttons, but the constructor attaches `OK`, `Cancel`, `Name`, then `Password`. The action IDs follow the constructor order.
 
@@ -65,7 +87,7 @@ The pane tree also controls drawing. `render_screen_subtree` clips a visible pan
 
 Each pane can override a content hook. `ImagePane` draws an image there, while `WorldPane` draws the map and world objects. The common `ui_pane_draw_to_target` hook then copies the pane's canvas into its parent.
 
-This makes a pane similar to a small game-engine node with its own surface. Layout decides where it goes, visibility decides whether it participates, and the render hook decides what pixels it contributes. See [Rendering system](../rendering/README.md) for the full frame path.
+This makes a pane similar to a small game-engine node with its own surface. Layout decides where it goes, visibility decides whether it participates, and the render hook decides what pixels it contributes. See [Rendering system](../rendering/README.md) for the full frame path and [UI composition and compact layout](../rendering/ui-composition.md) for exact traversal order and the layout-dependent world viewport.
 
 ## Pane classes
 

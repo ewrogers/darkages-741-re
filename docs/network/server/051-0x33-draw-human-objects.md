@@ -77,34 +77,42 @@ The direction byte uses the shared [`Direction`](../protocol-types.md#direction)
 
 ## Packed body and pants color
 
-The high nibble selects a resource prefix and body sprite. The low nibble becomes `pants_color`. When the low nibble is nonzero, the client also creates pants part sprite `1`; a zero nibble removes that part.
+The client shifts the high nibble down by four to select the body form. The low nibble becomes `pants_color`. When it is nonzero, the client also creates pants part sprite `1`; zero removes that part.
 
-| High nibble | Gender and resource prefix | Body sprite | Additional effect |
-| ---: | --- | ---: | --- |
-| `0` | Male, M | `0` | None identified |
-| `1` | Male, M | `1` | Normal male form in the supplied login trace |
-| `2` | Female, W | `1` | Normal female form |
-| `3` | Male, M | `2` | Sets the nonblocking-human state |
-| `4` | Female, W | `2` | Sets the nonblocking-human state |
-| `5` | Male, M | `1` | Forces translucency on |
-| `6` | Female, W | `1` | Forces translucency on |
-| `7` | Male, M | `4` | Exact purpose unresolved |
-| `8` | Male, M | `5` | Swimming body |
-| `9` | Female, W | `5` | Swimming body |
+| Packed high bits | Project protocol name | Client prefix | Body sprite | Additional effect |
+| ---: | --- | --- | ---: | --- |
+| `0x00` | `None` | M | `0` | No base-body resource |
+| `0x10` | `Male` | M | `1` | Normal male form in the supplied login trace |
+| `0x20` | `Female` | W | `1` | Normal female form |
+| `0x30` | `MaleGhost` | M | `2` | Sets the nonblocking-human state |
+| `0x40` | `FemaleGhost` | W | `2` | Sets the nonblocking-human state |
+| `0x50` | `MaleInvisible` | M | `1` | Forces translucency on |
+| `0x60` | `FemaleInvisible` | W | `1` | Forces translucency on |
+| `0x70` | `MaleJester` | M | `4` | No additional state flag |
+| `0x80` | `MaleHead` | M | `5` | Head-only form used by the observed swimming appearance |
+| `0x90` | `FemaleHead` | W | `5` | Head-only form used by the observed swimming appearance |
+| `0xA0` | `MaleBlank` | M | `10` | Keeps the shifted selector as the body ID |
+| `0xB0` | `FemaleBlank` | M default | `11` | Keeps the shifted selector as the body ID |
 
-The M and W bytes are literal resource-name prefixes used by the renderer and consistently select the male and female forms. They most likely abbreviate “men” and “women,” although those expanded words are not stored beside the table in the executable. Packed variants `5` and `6` overwrite the later `is_translucent` field with `1` after the whole record has been read.
+The friendly names are project-owner protocol vocabulary. They are not compiler-recovered strings. The parser has explicit switch cases only for shifted selectors 0 through 9. Selectors `0xA` and `0xB` bypass that switch, retain raw body IDs 10 and 11, and leave the zero-filled prefix at its M value. `FemaleBlank` is therefore distinguished by body ID 11 rather than a W prefix in client 741.
+
+For the explicit cases, M and W are literal resource-name prefixes used by the renderer. Packed `MaleInvisible` and `FemaleInvisible` overwrite the later `is_translucent` field with `1` after the whole record has been read.
 
 Body sprite `2` sets `WorldObject_Human + 0xD4`. Local dynamic-object collision checks treat that human as nonblocking. This is separate from translucency at `+0xD5`.
 
+The project protocol calls the paired body-sprite-2 forms `MaleGhost` and `FemaleGhost`. This agrees with the client marking both nonblocking. `MaleJester` instead selects body sprite `4` and sets no additional collision or translucency state.
+
 `is_translucent` does not make the player invisible. It tells the living-object renderer to draw the supplied human sprite layers translucently. The server uses this viewer-facing form when the receiving player is allowed to see someone who would otherwise be invisible, commonly because the viewer has See Invisible. Packed variants `5` and `6` force the same translucent state even if the later wire byte was zero.
 
-Variants `8` and `9` load the small `MM005` and `WM005` motion families used for swimming. The client does not choose this form from a local skill check. The server must send the packed variant. See [Movement and swimming](../../systems/movement-and-swimming.md).
+`MaleHead` and `FemaleHead` load the small `MM005` and `WM005` motion families used for the observed swimming appearance. The client does not choose this form from a local skill check. The server must send the packed variant. See [Movement and swimming](../../systems/movement-and-swimming.md).
 
 ## Equipment and appearance layers
 
 The normal form is converted into a 0x30-byte `HumanAppearanceRecord`. The renderer selects body, head, arms, boots, armor, shield, weapon, three accessories, overcoat, and face layers from that record.
 
 An overcoat suppresses the ordinary pants, armor, and arms layers while it is present. Sprite ID zero suppresses the corresponding part filename. The packet also initializes two internal appearance slots to zero because this wire format does not supply them.
+
+Ghost body sprite `2` does not itself suppress equipment. The human image session still attempts all 21 categories, and the part selector reads armor independently of the body. An observed unarmored ghost is therefore most likely a record with zero equipment selectors. Private art availability could also affect whether a selected overlay has a usable frame, but there is no Ghost-dependent armor-clearing branch in this client.
 
 `rest_position` is retained at appearance offset `+0x2D` and changes the standing-motion setup. The exact value-to-pose enum is not yet established. `face_shape` is used as the sprite selector for human part `0x14`.
 
@@ -118,7 +126,7 @@ The client still creates or refreshes the player's `WorldObject_User` or `WorldO
 
 Later movement updates can change the invisible object's coordinates and direction normally. There are no visible sprite layers to animate, so the movement is represented in world and collision state without a visible walking animation. A later nonzero `SDrawHumanObjects` record for the same entity restores its visible appearance.
 
-When the receiving player can see invisible entities, the server instead sends the real nonzero appearance with `is_translucent` enabled. The same entity is then visible with its normal sprite layers in the translucent render mode. Invisibility and See Invisible are therefore represented by different `SDrawHumanObjects` bodies chosen for each receiving client, not by a persistent local visibility flag.
+When the receiving player can see invisible entities, the server instead sends the real nonzero appearance with `is_translucent` enabled. `MaleInvisible` and `FemaleInvisible` force exactly this translucent normal-body form. The entity is then visible with its normal sprite layers in the translucent render mode. A fully hidden all-zero record and the protocol-named Invisible form are therefore distinct receiving-client representations, not one persistent local visibility flag.
 
 ## Monster disguise form
 

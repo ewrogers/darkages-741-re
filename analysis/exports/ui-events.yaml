@@ -66,19 +66,23 @@ functions:
   - address: "0x00445260"
     name: ui_dialog_pane_ctor
     confidence: high
-    evidence: "Constructs DialogPane over Pane and initializes its control collection and interaction fields."
+    evidence: "Constructs DialogPane over Pane; initializes default, cancel, focus, pressed, hover, and pointer-target control indexes to -1, with no-hit zones set to 7 where required."
   - address: "0x00445670"
     name: ui_dialog_add_control
     confidence: high
     evidence: "Creates DialogPane +0x594 on first use and inserts the supplied control pointer."
+  - address: "0x004457A0"
+    name: ui_dialog_get_control_count
+    confidence: high
+    evidence: "Returns the number of attachment-order controls, or zero when the DialogPane has no control list."
   - address: "0x00445A20"
     name: ui_dialog_handle_pointer_event
     confidence: high
-    evidence: "DialogPane primary-vtable +0x48 implementation for hit testing, child dispatch, hover, pressed state, and actions."
+    evidence: "DialogPane primary-vtable +0x48 implementation for pane dragging, hit testing, child dispatch, visual-hover and secondary pointer-transition state, and same-control/same-zone click activation."
   - address: "0x00445FF0"
     name: ui_dialog_handle_keyboard_event
     confidence: high
-    evidence: "DialogPane primary-vtable +0x4C implementation for focus traversal and focused-control dispatch."
+    evidence: "DialogPane primary-vtable +0x4C implementation: Tab traverses focus, Enter and Space normally dispatch the default action, Escape dispatches cancel, and remaining input reaches the focused enabled control."
   - address: "0x004462D0"
     name: ui_dialog_handle_application_event
     confidence: high
@@ -87,6 +91,14 @@ functions:
     name: ui_dialog_hit_test_control
     confidence: high
     evidence: "Walks DialogPane controls, checks each rectangle, and calls control virtual +0x78 for a local hit-zone code."
+  - address: "0x00446A10"
+    name: ui_dialog_update_hover_state
+    confidence: high
+    evidence: "Updates DialogPane +0x5BC/+0x5C0 and sends visual hit-zone changes to the old and new controls; index -1 and zone 7 mean no hit."
+  - address: "0x00446AE0"
+    name: ui_dialog_update_pointer_target
+    confidence: high
+    evidence: "Updates the secondary pointer-transition target at +0x5C4/+0x5C8 and calls old-control or new-control transition hooks when the control or zone changes."
   - address: "0x00446BC0"
     name: ui_dialog_set_focused_control
     confidence: high
@@ -99,6 +111,14 @@ functions:
     name: ui_dialog_focus_next_control
     confidence: high
     evidence: "Searches forward with wrapping for an enabled, focusable control."
+  - address: "0x00446EE0"
+    name: ui_dialog_dispatch_default_action
+    confidence: high
+    evidence: "Dispatches the enabled control selected by DialogPane +0x598 through the parent action handler with keyboard action code 8."
+  - address: "0x00446F60"
+    name: ui_dialog_dispatch_cancel_action
+    confidence: high
+    evidence: "Dispatches the enabled control selected by DialogPane +0x59C through the parent action handler with keyboard action code 8."
   - address: "0x00446FE0"
     name: ui_dialog_dispatch_pointer_to_control
     confidence: high
@@ -154,7 +174,7 @@ functions:
   - address: "0x00464180"
     name: event_dispatcher_tick
     confidence: high
-    evidence: "Main-thread tick that drains queued events and invokes at most 0x28 due TimerHandler callbacks. An armed hidden-sequence timeout calls exit(-1) only for raw privilege level 1."
+    evidence: "Drains queued events, samples timeGetTime for ordered due timers, yields 5 ms when the next timer is more than 20 ms away, and invokes at most 0x28 due callbacks. An armed hidden-sequence timeout calls exit(-1) only for raw privilege level 1."
   - address: "0x00464430"
     name: event_dispatcher_tick_virtual
     confidence: high
@@ -170,7 +190,7 @@ functions:
   - address: "0x00464520"
     name: event_schedule_timer
     confidence: high
-    evidence: "Inserts a five-dword TimerHandler entry into the dispatcher list ordered by due time."
+    evidence: "Inserts a five-dword TimerHandler entry ordered by due time, using the dispatcher sample, a fresh timeGetTime value, or the current callback's due time as its scheduling base."
   - address: "0x00464630"
     name: event_cancel_timers
     confidence: high
@@ -254,7 +274,7 @@ functions:
   - address: "0x004667E0"
     name: input_event_manager_ctor
     confidence: high
-    evidence: "Constructs RTTI EventMan state, key tables, pointer state, and the socket object."
+    evidence: "Constructs RTTI EventMan state, key tables, pointer state, a client-owned 1,000 ms double-click window, and the socket object."
   - address: "0x00466B40"
     name: input_repeat_pointer_move_timer
     confidence: high
@@ -346,7 +366,7 @@ functions:
   - address: "0x004673F0"
     name: input_emit_left_button_down
     confidence: high
-    evidence: "Builds type 0x01 or synthesized double-click type 0x02 and sets the left-held flag."
+    evidence: "Builds type 0x01 or synthesized double-click type 0x02; a match requires the same saved button, less than 1,000 ms, and Manhattan distance at most two logical pixels."
   - address: "0x00467680"
     name: input_emit_left_button_up
     confidence: high
@@ -354,7 +374,7 @@ functions:
   - address: "0x00467790"
     name: input_emit_right_button_down
     confidence: high
-    evidence: "Builds type 0x04 or synthesized double-click type 0x05 and sets the right-held flag."
+    evidence: "Builds type 0x04 or synthesized double-click type 0x05 using the same client-owned time and distance thresholds as the left path."
   - address: "0x00467A20"
     name: input_emit_right_button_up
     confidence: high
@@ -466,7 +486,7 @@ functions:
   - address: "0x004AC750"
     name: app_run_message_loop
     confidence: high
-    evidence: "Records the main thread, drains PeekMessageA, and runs the EventDispatcher tick each loop."
+    evidence: "Records the main thread, drains PeekMessageA, runs the EventDispatcher tick, performs an auxiliary clock check after more than 100 ms, and yields 1 ms after 402 tight passes."
   - address: "0x004B4480"
     name: lobject_ctor
     confidence: high
@@ -575,6 +595,10 @@ functions:
     name: ui_screen_pane_ctor
     confidence: high
     evidence: "Constructs the startup RTTI ScreenPane root with primary Pane and secondary TimerHandler vtables."
+  - address: "0x005536A0"
+    name: ui_screen_pane_handle_timer
+    confidence: high
+    evidence: "Dispatches root ScreenPane timer IDs 0 through 4; ID 0 invokes the recurring render_screen_timer_tick service."
   - address: "0x00554330"
     name: ui_screen_pane_set_cursor_mode
     confidence: high
@@ -675,8 +699,38 @@ comments:
     text: "Store the drawn frame selector as signed 16-bit ClockPane current_frame at +0x198."
   - address: "0x0042EE16"
     text: "Publish the enclosing ClockPane complete-object pointer through clock_pane_singleton_ptr."
+  - address: "0x004452EF"
+    text: "Initialize default_action_control at DialogPane +0x598 to -1, meaning no default keyboard action."
+  - address: "0x004452FC"
+    text: "Initialize cancel_action_control at DialogPane +0x59C to -1, meaning no Escape action."
+  - address: "0x00445313"
+    text: "Initialize focused_control at DialogPane +0x5AC to -1."
+  - address: "0x00445320"
+    text: "Initialize control_press_active at DialogPane +0x5B0 to false and pressed_control +0x5B4 to -1."
+  - address: "0x00445337"
+    text: "Initialize hovered_control at DialogPane +0x5BC to -1."
+  - address: "0x00445344"
+    text: "Initialize pointer_target_control at DialogPane +0x5C4 to -1 and its hit zone +0x5C8 to no-hit value 7."
   - address: "0x004456FE"
     text: "DialogPane child-control collection pointer at object offset +0x594."
+  - address: "0x004457DD"
+    text: "Default action accepts -1 to disable it; any other value is resolved through the attachment-order control list before storage at DialogPane +0x598."
+  - address: "0x0044582D"
+    text: "Cancel action accepts -1 to disable it; any other value is resolved through the attachment-order control list before storage at DialogPane +0x59C."
+  - address: "0x00445B8B"
+    text: "Begin a control press by retaining its attachment-order index and local hit zone at DialogPane +0x5B4 and +0x5B8."
+  - address: "0x00445E9B"
+    text: "Release invokes the dialog action only when it hits the same control index and local zone as the original press."
+  - address: "0x004460B5"
+    text: "Enter normally dispatches the enabled default-action control. A focused control with its Enter-owning flag set receives the key instead."
+  - address: "0x00446157"
+    text: "Space normally dispatches the enabled default-action control. A focused control with key mode 3 receives the key instead."
+  - address: "0x00446190"
+    text: "Escape dispatches the enabled cancel-action control."
+  - address: "0x00446A7F"
+    text: "Store the current visual-hover control and one-byte hit zone at DialogPane +0x5BC and +0x5C0; index -1 and zone 7 mean no hit."
+  - address: "0x00446B9D"
+    text: "Store the current secondary pointer-transition target and zone at DialogPane +0x5C4 and +0x5C8."
   - address: "0x00446CB8"
     text: "Focused control index is stored at DialogPane +0x5AC."
   - address: "0x0044892C"
@@ -687,10 +741,22 @@ comments:
     text: "Reuse an Event pointer popped from EventDispatcher +0x28; the pool does not use Event +0x08 as an intrusive link."
   - address: "0x00463F7C"
     text: "Reject dispatch when the Event's inherited LObject live cookie is not 0x79736F62."
+  - address: "0x0046420F"
+    text: "Use timeGetTime as the shared unsigned millisecond clock for due-timer checks."
+  - address: "0x00464248"
+    text: "When the next timer is more than 20 ms away, yield with Sleep(5); nearer timers remain on the tighter main-loop polling path."
   - address: "0x004642B0"
     text: "Timer callback budget is 0x28 per main-thread tick."
+  - address: "0x0046433D"
+    text: "Remove the due timer entry before invoking its owner; repeating behavior must queue another entry from the callback or a helper."
   - address: "0x004643C2"
     text: "Invoke TimerHandler virtual +0x08 with timer id and two payload values."
+  - address: "0x00464559"
+    text: "Scheduling mode 1 bases the due time on a fresh timeGetTime sample plus the requested delay."
+  - address: "0x0046456D"
+    text: "Scheduling mode 2, while a callback is active, bases the new due time on the current timer's original due time and preserves cadence across a late callback."
+  - address: "0x0046457B"
+    text: "The normal scheduling form bases the due time on the dispatcher's latest sampled time plus the requested delay."
   - address: "0x00464A8C"
     text: "Captured pane receives pointer events in pane-local coordinates before normal tree routing."
   - address: "0x00464B5C"
@@ -709,6 +775,8 @@ comments:
     text: "Pane virtual +0x50: network event type 0x13."
   - address: "0x0046669B"
     text: "Initialize the one-byte signed Event type to -1. Event +0x08 and bytes +0x0D through +0x0F remain untouched."
+  - address: "0x00466871"
+    text: "Initialize the client-owned double-click window to 1,000 ms; the emitters do not call GetDoubleClickTime."
   - address: "0x004668AA"
     text: "Map left-Alt scan code 0x38 to modifier bit 0x01 in the EventMan constructor."
   - address: "0x004668B1"
@@ -719,6 +787,10 @@ comments:
     text: "Open ClockPane after held-button release events have cleared pointer state. This path does not write EventMan +0x454."
   - address: "0x00466D07"
     text: "End the server-controlled block by closing ClockPane; no EventMan or character-model flag is cleared here."
+  - address: "0x00467474"
+    text: "A left double-click requires the previous button to be left, elapsed message time below 1,000 ms, and Manhattan distance at most two logical pixels."
+  - address: "0x00467813"
+    text: "A right double-click uses the same client-owned time and distance thresholds as the left path."
   - address: "0x00467C10"
     text: "The validated launcher patch wraps raw key-down emission here. After the original function, scan code 0x38 or 0xB8 invalidates the last saved WorldPane so an Alt-held ground-item pass appears immediately."
   - address: "0x00467E30"
@@ -735,12 +807,16 @@ comments:
     text: "Raw SGroup opcode 0x63 only closes DescPane here. The factory-backed SGroup parser and world handler own the packet body."
   - address: "0x0049CC8C"
     text: "Raw SExchange opcode 0x42 only closes DescPane here. This handler does not consume exchange fields."
+  - address: "0x004AC816"
+    text: "After 402 tight main-loop passes, yield with Sleep(1) and reset the pass counter."
   - address: "0x004B4493"
     text: "Write the LObject live cookie at +0x04 as raw bytes 62 6F 73 79 (\"bosy\")."
   - address: "0x004B44C3"
     text: "Clear the LObject live cookie at +0x04 during base destruction."
   - address: "0x004B455C"
     text: "Validate object liveness by comparing LObject +0x04 with 0x79736F62."
+  - address: "0x005536E2"
+    text: "Root ScreenPane timer ID 0 invokes render_screen_timer_tick through the TimerHandler-adjusted this pointer."
   - address: "0x00554368"
     text: "Store the selected cursor mode at root ScreenPane +0x27C. ClockPane uses mode 3 while active and restores mode 0 on close."
   - address: "0x005A9030"
@@ -855,7 +931,22 @@ object_layouts:
     event_handler_registered_bit: "0x02"
   DialogPane:
     controls: "0x594"
+    default_action_control_index: "0x598"
+    cancel_action_control_index: "0x59C"
+    dialog_drag_active: "0x5A0"
+    drag_anchor_x: "0x5A4"
+    drag_anchor_y: "0x5A8"
     focused_control_index: "0x5AC"
+    control_press_active: "0x5B0"
+    pressed_control_index: "0x5B4"
+    pressed_hit_zone: "0x5B8"
+    hovered_control_index: "0x5BC"
+    hover_hit_zone: "0x5C0"
+    pointer_target_control_index: "0x5C4"
+    pointer_target_hit_zone: "0x5C8"
+    no_control_index: -1
+    no_hit_zone: 7
+    keyboard_action_code: 8
   HierList_Screen:
     root_pane_global: "0x0073D94C"
     hierarchy_global: "0x0073D948"

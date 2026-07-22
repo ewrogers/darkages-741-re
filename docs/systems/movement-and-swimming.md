@@ -77,7 +77,7 @@ The local `ScrollLevel` preference changes only how the accepted tile step is an
 
 ## Visible swimming form
 
-[`SDrawHumanObjects`](../network/server/051-0x33-draw-human-objects.md) carries a packed appearance byte. High-nibble variants `8` and `9` select body resource `5` with M and W resource prefixes.
+[`SDrawHumanObjects`](../network/server/051-0x33-draw-human-objects.md) carries a packed appearance byte. The project protocol calls high-nibble forms `0x80` and `0x90` `MaleHead` and `FemaleHead`. They select body resource `5` with M and W resource prefixes.
 
 Those variants resolve through the `MM005` and `WM005` EPF motion families. Their body frames are only head-sized, matching the observed swimming form where most of the character is below the water surface.
 
@@ -87,11 +87,11 @@ The normal human renderer still draws this form. Swimming changes the selected b
 
 The client derives the local state from the current ground tile's `gndattr.tbl` height-1 marker. The visible swimming appearance variants and the `SStatus` standalone `0x02` bit remain separate paths.
 
-The server still selects the visible body variant and can send the local action lock. The client does not infer a swimming body from the skill-name match.
+The server still selects the visible Head body form and can send the local action lock. The client does not infer that form from the skill-name match.
 
 [`SUserAppearance`](../network/server/005-0x05-user-appearance.md) supports a state-only update. Bit `0x80` marks that form, while persistent bit `0x01` locks movement and several actions. The likely water transition is `0x81` for a locked character and `0x80` for an unlocked one, but that exact pairing still needs a water-entry capture.
 
-The sprite half is firmer: variants `8` and `9`, body resource `5`, and the head-sized EPF families are confirmed locally and match the observed male and female swimming forms.
+The sprite half is firmer: `MaleHead` and `FemaleHead`, body resource `5`, and the head-sized EPF families are confirmed locally and match the observed male and female swimming forms.
 
 ## Why `SStatus 0x02` is not enough
 

@@ -62,7 +62,7 @@ functions:
   - address: "0x00449FA0"
     name: render_direct_draw_flip
     confidence: high
-    evidence: Flips the attached DirectDraw backbuffer.
+    evidence: Flips the attached DirectDraw backbuffer with DDFLIP_WAIT so the call may block until the operation can complete.
   - address: "0x00449FD0"
     name: render_direct_draw_present_canvas
     confidence: high
@@ -290,7 +290,11 @@ functions:
   - address: "0x00554040"
     name: render_screen_tree_frame
     confidence: high
-    evidence: Redraws the dirty root screen tree and presents the completed frame.
+    evidence: Walks the dirty root screen tree and presents only when a dirty entry or forced redraw marks the root for output.
+  - address: "0x00554270"
+    name: render_screen_timer_tick
+    confidence: high
+    evidence: Runs the root ScreenPane redraw check and requeues timer ID 0 from the current time using the compiled 10 ms interval.
   - address: "0x00555560"
     name: render_screen_subtree
     confidence: high
@@ -387,6 +391,10 @@ functions:
     name: ui_gui_back_pane_ctor
     confidence: high
     evidence: Constructs the RTTI-backed GUIBackPane and its two size-specific layout records and child panes.
+  - address: "0x005A0B40"
+    name: ui_gui_back_toggle_layout
+    confidence: high
+    evidence: Flips GUIBackPane between layout indexes 0 and 1 and passes the result to ui_gui_back_apply_layout.
   - address: "0x005A0B70"
     name: ui_gui_back_activate_action
     confidence: high
@@ -398,7 +406,7 @@ functions:
   - address: "0x005A3900"
     name: ui_gui_back_apply_layout
     confidence: high
-    evidence: Selects one GUIBackPane layout and copies its bottom control rectangles into the six live action slots; BTN_HELP becomes slot 0.
+    evidence: Reapplies the selected GUIBackPane and child-pane geometry, then sends the layout's MAP rectangle and view center through MapInterface to resize and invalidate WorldPane.
   - address: "0x005B8B50"
     name: render_fill_light_mask_rect
     confidence: high
@@ -587,6 +595,10 @@ functions:
     name: render_collect_world_objects
     confidence: high
     evidence: Clips visible objects, assigns ordinary layers to 32 draw queues, retains layer-zero objects in a separate late queue, records the self entry, and draws the ordinary queues without clearing them afterward.
+  - address: "0x005D3DD0"
+    name: render_world_tile_marker
+    confidence: high
+    evidence: Draws a small symmetric diamond marker at one projected map coordinate before the world-object queues.
   - address: "0x005D3F70"
     name: render_world_frame
     confidence: high
@@ -795,6 +807,10 @@ functions:
     name: world_object_list_find_by_id
     confidence: high
     evidence: Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10.
+  - address: "0x005EE950"
+    name: render_world_apply_view_layout
+    confidence: high
+    evidence: Applies a six-value GUI MAP rectangle and view center to WorldPane, resets view-dependent state, invalidates lighting, and schedules a redraw.
   - address: "0x005EF360"
     name: world_update_map_lighting
     confidence: high
@@ -819,6 +835,10 @@ functions:
     name: ui_world_pane_draw_content
     confidence: high
     evidence: WorldPane content hook that draws the world when ready or clears the pane.
+  - address: "0x005F9B20"
+    name: map_interface_apply_world_layout
+    confidence: high
+    evidence: MapInterface virtual wrapper that adjusts the interface pointer to its containing WorldPane_Impl and calls render_world_apply_view_layout.
   - address: "0x005FD500"
     name: file_load_static_tile_pixmap
     confidence: high
@@ -834,11 +854,47 @@ functions:
   - address: "0x005FD8D0"
     name: render_select_human_part_sprite
     confidence: high
-    evidence: Selects the sprite ID for each of 21 human body and equipment categories; an overcoat suppresses ordinary pants, armor, and arms parts.
+    evidence: Selects the sprite ID for each of 21 human body and equipment categories; an overcoat suppresses ordinary pants, armor, and arms, but the body-form selector does not independently suppress equipment.
   - address: "0x005FDA90"
     name: render_format_human_part_filename
     confidence: high
     evidence: Builds gendered human-part EPF filenames; body resource 5 resolves through MM005 or WM005 motion files.
+  - address: "0x005FDC50"
+    name: render_format_human_part_from_appearance
+    confidence: high
+    evidence: Selects the current category's sprite ID from HumanAppearanceRecord and formats its motion-specific resource name.
+  - address: "0x005FDC90"
+    name: render_load_human_part_frame
+    confidence: high
+    evidence: Resolves one human part resource, selects its direction-group frame, and attaches the applicable asset or appearance palette.
+  - address: "0x005FE3A0"
+    name: render_build_human_frame_layers
+    confidence: high
+    evidence: Chooses the direction and body-dependent back-to-front category table and builds the current human-part frame descriptors.
+  - address: "0x005FED60"
+    name: render_draw_human_part
+    confidence: high
+    evidence: Draws one selected human-part frame into the temporary composite with direction-dependent horizontal mirroring.
+  - address: "0x005FEE70"
+    name: render_draw_human_frame_layers
+    confidence: high
+    evidence: Walks the selected 21-entry category order and draws every present part into the human composite.
+  - address: "0x005FEF70"
+    name: render_human_part_apply_direction
+    confidence: high
+    evidence: Applies the direction-group frame offset and mirror state to one human part.
+  - address: "0x005FF000"
+    name: render_human_direction_frame_group
+    confidence: high
+    evidence: Maps left and up to stored frame group 0 and down and right to stored frame group 1.
+  - address: "0x005FF020"
+    name: render_human_direction_is_mirrored
+    confidence: high
+    evidence: Returns true for right and up so those directions mirror the paired stored human view.
+  - address: "0x005FF550"
+    name: render_human_frame_apply_direction
+    confidence: high
+    evidence: Applies the current direction selection to a cached human-frame descriptor.
   - address: "0x005FFCD0"
     name: render_human_walk_sequence_ctor
     confidence: high
@@ -847,6 +903,14 @@ functions:
     name: render_human_stand_motion_data_ctor
     confidence: high
     evidence: Constructs standing-motion data and resolves up to 21 body and equipment sprite parts from HumanAppearanceRecord.
+  - address: "0x00600150"
+    name: render_human_stand_build_frame
+    confidence: high
+    evidence: Builds one standing human frame from the initialized part resources and current direction.
+  - address: "0x006002F0"
+    name: render_human_stand_initialize_parts
+    confidence: high
+    evidence: Initializes categories 0 through 20 for every human body, including Ghost, Jester, Head, and Blank forms; zero selectors omit individual resources.
   - address: "0x00600670"
     name: render_create_human_stand_motion_data
     confidence: high
@@ -867,6 +931,18 @@ functions:
     name: render_human_image_session_ctor
     confidence: high
     evidence: Constructs the 0x918-byte RTTI-backed HumanObjectImageSession with HumanAppearanceRecord, a 21-part frame cache, 21 0x50-byte render states, and animation state.
+  - address: "0x006023E0"
+    name: render_human_image_session_draw
+    confidence: high
+    evidence: Draws the image session's current cached human layers into the caller's composite canvas.
+  - address: "0x006026D0"
+    name: render_human_image_session_advance_frame
+    confidence: high
+    evidence: Advances the active human motion and rebuilds direction-dependent frame state when needed.
+  - address: "0x00602940"
+    name: render_human_image_session_cache_frame_layers
+    confidence: high
+    evidence: Caches the current motion's ordered human-part descriptors for the final draw.
   - address: "0x00602A40"
     name: render_human_select_motion_sequence
     confidence: high
@@ -880,6 +956,34 @@ functions:
     confidence: high
     evidence: Merges a rectangular 8-bit light image into the viewport mask by retaining the greater value at each pixel.
 data_symbols:
+  - address: "0x0068C280"
+    name: render_human_resource_prefixes
+    confidence: high
+    evidence: Male and female prefix characters used when formatting human-part resource names.
+  - address: "0x0068C284"
+    name: render_human_part_letters
+    confidence: high
+    evidence: Normal part-letter table SBNLHUDAWCGCGCGPEFUAO indexed by the 21 human render categories.
+  - address: "0x0068C29C"
+    name: render_human_extended_part_letters
+    confidence: high
+    evidence: Extended-ID part-letter table SBNLHIDJWCGCGCGPEFIJO used after subtracting 1000 from the sprite ID.
+  - address: "0x0068C380"
+    name: render_human_part_order_default
+    confidence: high
+    evidence: Direction-dependent 21-category back-to-front order used by ordinary human bodies.
+  - address: "0x0068C3D8"
+    name: render_human_part_order_alternate
+    confidence: high
+    evidence: Separately selected order table whose bytes are identical to the default table in client 741.
+  - address: "0x0068C430"
+    name: render_human_part_order_body5
+    confidence: high
+    evidence: Body-5 order that moves the main weapon category behind the body for down and right.
+  - address: "0x006D1028"
+    name: render_screen_timer_interval_ms
+    confidence: high
+    evidence: Compiled 10 ms delay used when the root ScreenPane requeues its recurring redraw check.
   - address: "0x006D395C"
     name: map_move_direction_masks
     confidence: high
@@ -939,6 +1043,8 @@ data_symbols:
 comments:
   - address: "0x0040D4A0"
     text: Blend mode 0x6D uses a screen-style per-component software blend in RGB565 or RGB555.
+  - address: "0x00449FA7"
+    text: Pass DDFLIP_WAIT. DirectDraw may block until the backbuffer flip can complete; this does not establish a fixed monitor refresh rate.
   - address: "0x0044DE30"
     text: Software Image blitter. Numeric mode selects normal copy, blend-table paths, per-pixel alpha, color effects, or a second image plane.
   - address: "0x0044FB80"
@@ -963,8 +1069,18 @@ comments:
     text: Decode one fixed 0x5E8-byte raw tile record as a 56 by 27 indexed slot and pack its 784 diamond pixels into 16-bit color.
   - address: "0x004C78C0"
     text: Apply ground animation first. In alternate mode, try tileas.bmp and fall back to tilea.bmp when the requested alternate record is unavailable.
+  - address: "0x00554173"
+    text: Present the completed root canvas only when a dirty entry marked the root or a forced redraw is active.
+  - address: "0x005542C7"
+    text: Load the compiled 10 ms screen interval and use current-time scheduling, so a late callback shifts the next check instead of creating catch-up redraw callbacks.
   - address: "0x00555560"
     text: Recursive pane draw. Clip the pane, invoke primary vtable slot 0x5C, then walk its child subtree.
+  - address: "0x00555740"
+    text: A forced redraw or dirty pane-tree entry marks the root screen for presentation.
+  - address: "0x005558B7"
+    text: Draw the current pane through primary-vtable slot 0x5C before visiting its descendants.
+  - address: "0x00555A75"
+    text: Recurse into the current entry's child subtree after drawing the pane; later sibling entries can paint over earlier siblings.
   - address: "0x0057A6C0"
     text: Select 2x presentation only when desktop color depth is 16 or 32 bits and the current display is at least 1280 by 960; otherwise select 1x for a supported smaller display.
   - address: "0x0057A7E2"
@@ -987,6 +1103,8 @@ comments:
     text: Present the finished software canvas through DirectDraw or the window DC path.
   - address: "0x00598210"
     text: Deserialize the one-byte SChangeWeather payload. No 0x1F consumer exists in the main gameplay dispatcher.
+  - address: "0x0059DAC9"
+    text: Read the selected GUI layout's MAP rectangle and derive the view center stored in its six-value WorldPane layout record.
   - address: "0x0059DCD5"
     text: Read BTN_HELP from the current GUIBackPane layout; ui_gui_back_apply_layout later copies this rectangle into action slot 0.
   - address: "0x005A0B9E"
@@ -997,6 +1115,8 @@ comments:
     text: BTN_HELP also participates in the pointer-move tooltip path, separately from its action-slot-0 left-click path.
   - address: "0x005A3AEC"
     text: Copy the active layout's BTN_HELP rectangle into GUIBackPane bottom action slot 0.
+  - address: "0x005A3BED"
+    text: Send the selected layout's MAP rectangle and view center through MapInterface, so changing GUI layout also changes the world viewport.
   - address: "0x005B8D14"
     text: Build the object-centered light image name mask1%02d.epf from the server-supplied selector.
   - address: "0x005B9450"
@@ -1031,6 +1151,12 @@ comments:
     text: Remove any existing shared world object with the same entity ID before creating the replacement WorldObject_Item.
   - address: "0x005CE280"
     text: The validated launcher patch wraps the complete WorldPane draw here, clears a bounded item-entry buffer before the original call, then replays captured items in temporary blend mode 3 when native Alt modifier bit 0x01 is set.
+  - address: "0x005CE2DA"
+    text: "Draw the ordinary world frame first: ground, background images, tile markers, and ascending object queues."
+  - address: "0x005CE305"
+    text: Build the world light mask after the ordinary world frame and before the late replay pass.
+  - address: "0x005CE330"
+    text: Draw the separate layer-zero queue and replay the recorded local player after the light mask has been built.
   - address: "0x005CEFDA"
     text: After processing an object position-change message, call primary-vtable slot 0x28; Human and User implementations refresh their current ground-tile state.
   - address: "0x005CF03F"
@@ -1055,6 +1181,8 @@ comments:
     text: Render the ordinary world queues in ascending index order from 0 through 31; their entries remain available when the function returns.
   - address: "0x005D3F70"
     text: World frame order is ground cache, map background images, then sorted world objects.
+  - address: "0x005D41A2"
+    text: Draw two optional projected diamond tile markers after the map backgrounds and before collecting world objects.
   - address: "0x005D43D7"
     text: Replay the recorded self after the ordinary world layers. The normal non-blinded state supplies selector 1, making render_living_object choose blend mode 3; the blinded state supplies zero.
   - address: "0x005D8C36"
@@ -1133,6 +1261,12 @@ comments:
     text: Read WorldObjectList width from +0x5C; height is the adjacent s32 at +0x60.
   - address: "0x005E751B"
     text: A successful ID-tree lookup returns the reference-counted WorldObject pointer stored at tree node +0x10.
+  - address: "0x005EEA91"
+    text: Set the WorldPane rectangle around the layout MAP rectangle with 14-pixel vertical and 28-pixel horizontal isometric-tile margins.
+  - address: "0x005EEABF"
+    text: Apply the layout-derived view center, including the WorldPane content margins.
+  - address: "0x005EEAE7"
+    text: Viewport geometry changed, so invalidate the light mask and WorldPane before the next frame.
   - address: "0x005EF398"
     text: Scale the SChangeHour time step by two and clamp the Light metadata profile coordinate to 24.
   - address: "0x005EF3F6"
@@ -1172,13 +1306,27 @@ comments:
   - address: "0x005FD9DD"
     text: Suppress ordinary arms when an overcoat sprite is present.
   - address: "0x005FDB6E"
-    text: Body resource IDs 1 and 5 use the M filename family. Swimming variants therefore resolve through MM005 or WM005 motion files.
+    text: Body resource IDs 1 and 5 use the M part-letter family. MaleHead and FemaleHead therefore resolve through MM005 or WM005 motion files.
+  - address: "0x005FDFED"
+    text: Apply skin_color directly to category-1 body sprites 1 and 5 and to category-20 faces; other body IDs retain their resource palette.
+  - address: "0x005FE4A8"
+    text: Select a direction-dependent 21-category back-to-front order before resolving the current human frames.
+  - address: "0x005FE4B5"
+    text: Body sprite 5 selects its special down/right order, moving the main weapon behind the Head body.
+  - address: "0x005FEDBD"
+    text: Pass the direction mirror flag to the final part pixmap draw, which also adjusts horizontal bounds.
+  - address: "0x005FF013"
+    text: Direction values left and up use stored frame group 0; down and right use stored frame group 1.
+  - address: "0x005FF033"
+    text: Direction values right and up mirror their stored frame group horizontally; left and down do not.
   - address: "0x005FFD45"
     text: Store the human walk interpolation count. The compiled global sequences use four or eight ticks.
   - address: "0x005FFDCD"
     text: Select each tick delay from the fixed timing tables. Local coarse movement uses 114 ms; local smooth movement uses 57 ms.
   - address: "0x00600315"
     text: Retain rest_position from HumanAppearanceRecord and choose between the two standing-motion setups. Friendly value names remain unresolved.
+  - address: "0x006003DF"
+    text: Initialize every human render category from 0 through 20 regardless of body form; zero part selectors omit individual resources.
   - address: "0x00601A2D"
     text: Clamp packet palette selectors to four and then to the selected monster resource's available mapping count.
   - address: "0x00601AC4"

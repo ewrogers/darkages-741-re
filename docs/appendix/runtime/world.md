@@ -501,9 +501,11 @@ The normal handler keeps two copies of the record. The world-object copy is conv
 
 Overcoats suppress the ordinary pants, armor, and arms part selectors. `unknown_18` is a real internal part-sprite slot, but this packet always clears it. `rest_position` selects a standing-motion setup, although its value names remain unresolved.
 
-Packed [`SDrawHumanObjects`](../../network/server/051-0x33-draw-human-objects.md) variants `8` and `9` decode to body sprite `5` with M and W prefixes. `HumanObjectImageSession` then loads the small `MM005` or `WM005` motion family used for the swimming form.
+Packed [`SDrawHumanObjects`](../../network/server/051-0x33-draw-human-objects.md) forms `MaleHead` and `FemaleHead` decode to body sprite `5` with M and W prefixes. `HumanObjectImageSession` then loads the small `MM005` or `WM005` motion family used for the observed swimming appearance.
 
-Body sprite `2` sets `nonblocking_human`; swimming body sprite `5` does not. Packed variants `5` and `6`, or an explicit wire value of `1`, set `is_translucent`. The renderer uses that field to draw otherwise normal human layers translucently, including the server-selected See Invisible representation. These fields are separate from the [local action lock](session.md#local-user-action-state) and from static `SOTP.DAT` collision.
+Body sprite `2` sets `nonblocking_human`; Head body sprite `5` does not. Packed `MaleInvisible` and `FemaleInvisible`, or an explicit wire value of `1`, set `is_translucent`. The renderer uses that field to draw otherwise normal human layers translucently, including the server-selected See Invisible representation. These fields are separate from the [local action lock](session.md#local-user-action-state) and from static `SOTP.DAT` collision.
+
+Project-owner protocol vocabulary names the paired body-sprite-2 forms `MaleGhost` and `FemaleGhost`; both set `nonblocking_human`. `MaleJester` provides an M-prefix body-sprite-4 form without changing this field or translucency. The image session still initializes all 21 part categories for these bodies. Ghost armor absence is not a body flag in this structure and must come from the part selectors, overcoat suppression, or unavailable art.
 
 An invisible player still has a live object with `entity_id`, `tile_y`, and `tile_x`. For a viewer who cannot see that player, the server supplies an all-zero appearance record and empty display strings. Body sprite `0` remains blocking, but zero part selectors leave the image session with no visible human layers. For a viewer with See Invisible, the server supplies the real appearance with `is_translucent` enabled instead.
 

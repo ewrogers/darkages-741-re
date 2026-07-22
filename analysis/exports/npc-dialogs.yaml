@@ -96,11 +96,11 @@ functions:
   - address: "0x004457D0"
     name: ui_dialog_set_default_action
     confidence: high
-    evidence: "Stores a validated attachment-order control index at DialogPane +0x598; Enter and Space dispatch through this index."
+    evidence: "Stores an attachment-order control index at DialogPane +0x598. Enter and Space dispatch the enabled target with action code 8; -1 disables the shortcut."
   - address: "0x00445820"
     name: ui_dialog_set_cancel_action
     confidence: high
-    evidence: "Stores a validated attachment-order control index at DialogPane +0x59C; the inherited keyboard handler dispatches Escape through this index."
+    evidence: "Stores an attachment-order control index at DialogPane +0x59C. Escape dispatches the enabled target with action code 8; -1 disables the shortcut."
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high
