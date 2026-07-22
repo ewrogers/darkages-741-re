@@ -210,8 +210,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_browser_control_capture_window` | `0x004175B0` | high | Copies the visible browser child window into a supplied destination DC with BitBlt; screenshot capture calls this helper. |
 | `ui_browser_control_draw_content` | `0x00417710` | high | Draws centered browser status text into the pane canvas while the embedded child window is hidden. |
 | `ui_browser_control_set_visible` | `0x004177D0` | high | Shows or hides the browser child HWND and synchronizes cursor state and the browser message filter. |
-| `ui_browser_control_set_silent` | `0x004178C0` | high | Stores and forwards the requested silent-mode value to the embedded WebBrowser COM property setter. |
+| `ui_browser_control_set_3d_border_enabled` | `0x004178C0` | high | Controls whether IDocHostUIHandler adds DOCHOSTUIFLAG_NO3DBORDER, then refreshes IWebBrowser so the host flags are applied. |
 | `ui_browser_control_set_base_url` | `0x00417910` | high | Copies a bounded base URL into BrowserControlPane's browser state. |
+| `ui_browser_control_set_navigation_timeout_ms` | `0x00417960` | high | Sets BrowserControlPane's navigation-timeout interval in milliseconds and cancels the active timeout event when set to zero. |
 | `ui_browser_control_set_status_text` | `0x004179F0` | high | Copies or clears BrowserControlPane's bounded status text and invalidates the pane for redraw. |
 | `ui_browser_control_navigate` | `0x00417A40` | high | Converts the URL and optional header to BSTR values and calls the embedded IWebBrowser navigation method. |
 | `ui_browser_control_navigate_exception_cleanup` | `0x00417C03` | high | Releases navigation SAFEARRAY and BSTR temporaries, shuts down the embedded browser, and clears exception state. |
@@ -263,8 +264,101 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_browser_control_handle_window_message` | `0x00418860` | high | Validates the browser child window's WM_PAINT and suppresses minimize, maximize, move, size, and close system commands. |
 | `ui_browser_control_pre_translate_message` | `0x00418980` | high | Visible-browser message filter that gives the active browser object first chance at keyboard messages and handles client close and screenshot shortcuts. |
 | `ui_browser_window_ctor` | `0x00418B90` | high | Constructs exact RTTI BrowserWindow, creates its child HWND and WebBrowser ActiveX object, installs the COM client and event interfaces, and optionally navigates. |
+| `ui_browser_window_dtor` | `0x004190F0` | high | Destroys exact RTTI BrowserWindow, restores its five COM interface vtables, releases the browser object, and unregisters its singleton. |
+| `ui_browser_window_shutdown` | `0x00419160` | high | Hides BrowserWindow, removes its browser-event advisory connection, closes and releases IWebBrowser, destroys the child HWND, and restores focus. |
+| `ui_browser_window_capture_window` | `0x004192A0` | high | Copies the visible BrowserWindow child HWND into a Canvas DC at coordinates relative to the main client window. |
+| `ui_browser_window_set_bounds` | `0x00419400` | high | Moves BrowserWindow's child HWND and updates the embedded IOleInPlaceObject position and clipping rectangles. |
+| `ui_browser_window_set_visible` | `0x00419520` | high | Shows or hides BrowserWindow, synchronizes cursor modes, and installs or removes its message pre-translation callback. |
+| `ui_browser_window_set_3d_border_enabled` | `0x00419600` | high | Controls whether IDocHostUIHandler adds DOCHOSTUIFLAG_NO3DBORDER, then refreshes IWebBrowser so the host flags are applied. |
 | `ui_browser_window_set_base_url` | `0x00419650` | high | Copies a bounded base URL into BrowserWindow's browser state. |
+| `ui_browser_window_set_navigation_timeout_ms` | `0x004196A0` | medium | Stores the dormant BrowserWindow navigation-timeout field initialized by its constructor to 30,000 ms; no caller or active timer use is present. |
 | `ui_browser_window_navigate` | `0x00419700` | high | Navigates BrowserWindow's embedded IWebBrowser to the supplied URL and optional header. |
+| `ui_browser_window_navigate_exception_cleanup` | `0x004198BD` | high | Releases navigation SAFEARRAY and BSTR temporaries, shuts down BrowserWindow, and clears exception state. |
+| `ui_browser_window_get_document_cookie` | `0x00419920` | high | Queries BrowserWindow's document interface, reads its cookie BSTR, and returns converted thread-ANSI bytes. |
+| `ui_browser_window_set_document_cookie` | `0x00419AA0` | high | Queries BrowserWindow's document interface and assigns a formatted name=value cookie BSTR. |
+| `ui_browser_window_query_interface` | `0x00419BB0` | high | BrowserWindow COM QueryInterface implementation that returns the adjusted subobject for each supported IID. |
+| `ui_browser_window_ole_client_site_add_ref` | `0x00419D80` | high | IOleClientSite AddRef vtable entry; BrowserWindow uses a fixed reference count and returns 2. |
+| `ui_browser_window_ole_client_site_release` | `0x00419D90` | high | IOleClientSite Release vtable entry; BrowserWindow uses a fixed reference count and returns 1. |
+| `ui_browser_window_ole_client_site_save_object` | `0x00419DA0` | high | IOleClientSite SaveObject vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_client_site_get_moniker` | `0x00419DB0` | high | IOleClientSite GetMoniker vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_client_site_get_container` | `0x00419DC0` | high | IOleClientSite GetContainer vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_client_site_show_object` | `0x00419DD0` | high | IOleClientSite ShowObject vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_client_site_on_show_window` | `0x00419DE0` | high | IOleClientSite OnShowWindow vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_client_site_request_new_object_layout` | `0x00419DF0` | high | IOleClientSite RequestNewObjectLayout vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_in_place_site_get_window` | `0x00419E00` | high | IOleInPlaceSite GetWindow vtable entry that returns BrowserWindow's child HWND. |
+| `ui_browser_window_ole_in_place_site_context_sensitive_help` | `0x00419E20` | high | IOleInPlaceSite ContextSensitiveHelp vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_in_place_site_can_in_place_activate` | `0x00419E30` | high | IOleInPlaceSite CanInPlaceActivate vtable entry that returns S_OK. |
+| `ui_browser_window_ole_in_place_site_on_in_place_activate` | `0x00419E40` | high | IOleInPlaceSite OnInPlaceActivate vtable entry that returns S_OK. |
+| `ui_browser_window_ole_in_place_site_on_ui_activate` | `0x00419E50` | high | IOleInPlaceSite OnUIActivate vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_in_place_site_get_window_context` | `0x00419E60` | high | IOleInPlaceSite GetWindowContext entry that supplies the child-window client rectangle as position and clipping bounds. |
+| `ui_browser_window_ole_in_place_site_scroll` | `0x00419E90` | high | IOleInPlaceSite Scroll vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_in_place_site_on_ui_deactivate` | `0x00419EA0` | high | IOleInPlaceSite OnUIDeactivate vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_in_place_site_on_in_place_deactivate` | `0x00419EB0` | high | IOleInPlaceSite OnInPlaceDeactivate vtable entry that returns S_OK. |
+| `ui_browser_window_ole_in_place_site_discard_undo_state` | `0x00419EC0` | high | IOleInPlaceSite DiscardUndoState vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_in_place_site_deactivate_and_undo` | `0x00419ED0` | high | IOleInPlaceSite DeactivateAndUndo vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_ole_in_place_site_on_pos_rect_change` | `0x00419EE0` | high | IOleInPlaceSite OnPosRectChange vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_browser_events_get_ids_of_names` | `0x00419EF0` | high | DWebBrowserEvents2 IDispatch GetIDsOfNames vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_browser_events_get_type_info` | `0x00419F00` | high | DWebBrowserEvents2 IDispatch GetTypeInfo vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_browser_events_get_type_info_count` | `0x00419F10` | high | DWebBrowserEvents2 IDispatch GetTypeInfoCount vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_browser_events_invoke` | `0x00419F20` | high | DWebBrowserEvents2 Invoke sink that filters navigation, tracks document completion, reveals BrowserWindow, and handles related DISPIDs. |
+| `ui_browser_window_doc_host_enable_modeless` | `0x0041A200` | high | IDocHostUIHandler EnableModeless vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_filter_data_object` | `0x0041A210` | high | IDocHostUIHandler FilterDataObject vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_get_drop_target` | `0x0041A220` | high | IDocHostUIHandler GetDropTarget vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_get_external` | `0x0041A230` | high | IDocHostUIHandler GetExternal entry that clears the output pointer and returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_get_host_info` | `0x0041A250` | high | IDocHostUIHandler GetHostInfo entry that fills DOCHOSTUIINFO and conditionally adds DOCHOSTUIFLAG_NO3DBORDER. |
+| `ui_browser_window_doc_host_get_option_key_path` | `0x0041A290` | high | IDocHostUIHandler GetOptionKeyPath vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_hide_ui` | `0x0041A2A0` | high | IDocHostUIHandler HideUI vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_on_doc_window_activate` | `0x0041A2B0` | high | IDocHostUIHandler OnDocWindowActivate vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_on_frame_window_activate` | `0x0041A2C0` | high | IDocHostUIHandler OnFrameWindowActivate vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_resize_border` | `0x0041A2D0` | high | IDocHostUIHandler ResizeBorder vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_show_context_menu` | `0x0041A2E0` | high | IDocHostUIHandler ShowContextMenu entry that returns S_OK and suppresses the default browser context menu. |
+| `ui_browser_window_doc_host_show_ui` | `0x0041A2F0` | high | IDocHostUIHandler ShowUI vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_translate_accelerator` | `0x0041A300` | high | IDocHostUIHandler TranslateAccelerator vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_translate_url` | `0x0041A310` | high | IDocHostUIHandler TranslateUrl vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_update_ui` | `0x0041A320` | high | IDocHostUIHandler UpdateUI vtable entry that returns E_NOTIMPL. |
+| `ui_browser_window_doc_host_show_help` | `0x0041A330` | high | IDocHostShowUI ShowHelp vtable entry that returns S_OK. |
+| `ui_browser_window_doc_host_show_message` | `0x0041A340` | high | IDocHostShowUI ShowMessage entry that returns S_OK and suppresses the browser's default message UI. |
+| `ui_browser_window_window_proc` | `0x0041A350` | high | WNDPROC registered by BrowserWindow; retrieves the object from GWL_USERDATA and routes messages to its instance-aware handler. |
+| `ui_browser_window_handle_window_message` | `0x0041A3A0` | high | Validates BrowserWindow's WM_PAINT and suppresses minimize, maximize, move, size, and close system commands. |
+| `ui_browser_window_pre_translate_message` | `0x0041A4C0` | high | Visible-BrowserWindow message filter that gives IOleInPlaceActiveObject first chance at keys and handles close and screenshot shortcuts. |
+| `ui_browser_dialog_scalar_deleting_dtor` | `0x0041A6E0` | high | Runs BrowserDialogPane's destructor and conditionally frees the complete object. |
+| `ui_browser_control_scalar_deleting_dtor` | `0x0041A920` | high | Runs BrowserControlPane's destructor and conditionally frees the complete object. |
+| `ui_browser_dialog_singleton_register` | `0x0041ACA0` | high | Registers the complete BrowserDialogPane pointer from its Singleton secondary-base constructor. |
+| `ui_browser_dialog_singleton_unregister` | `0x0041ACE0` | high | Clears the BrowserDialogPane singleton when its secondary-base destructor still owns the registered object. |
+| `ui_browser_control_singleton_register` | `0x0041AD20` | high | Registers the complete BrowserControlPane pointer from its Singleton secondary-base constructor. |
+| `ui_browser_control_singleton_unregister` | `0x0041AD60` | high | Clears the BrowserControlPane singleton when its secondary-base destructor still owns the registered object. |
+| `ui_browser_control_singleton_exists` | `0x0041ADA0` | high | Returns whether the BrowserControlPane singleton currently contains an object. |
+| `ui_browser_control_singleton_get` | `0x0041ADC0` | high | Returns the current BrowserControlPane singleton pointer. |
+| `ui_browser_window_singleton_register` | `0x0041ADD0` | high | Registers the complete BrowserWindow pointer from its Singleton secondary-base constructor. |
+| `ui_browser_window_singleton_unregister` | `0x0041AE10` | high | Clears the BrowserWindow singleton when its secondary-base destructor still owns the registered object. |
+| `ui_browser_window_singleton_exists` | `0x0041AE50` | high | Returns whether the BrowserWindow singleton currently contains an object. |
+| `ui_browser_window_singleton_get` | `0x0041AE70` | high | Returns the current BrowserWindow singleton pointer. |
+| `ui_browser_window_ole_in_place_site_release_thunk` | `0x0041AE90` | high | Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserWindow's shared Release implementation. |
+| `ui_browser_control_ole_in_place_site_release_thunk` | `0x0041AEA0` | high | Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserControlPane's shared Release implementation. |
+| `ui_browser_window_browser_events_release_thunk` | `0x0041AEB0` | high | Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserWindow's shared Release implementation. |
+| `ui_browser_control_browser_events_release_thunk` | `0x0041AEC0` | high | Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserControlPane's shared Release implementation. |
+| `ui_browser_control_timer_deleting_dtor_thunk` | `0x0041AED0` | high | Adjusts TimerHandler this by -0x11C and tail-calls BrowserControlPane's scalar-deleting destructor. |
+| `ui_browser_window_doc_host_ui_release_thunk` | `0x0041AEE0` | high | Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserWindow's shared Release implementation. |
+| `ui_browser_window_ole_in_place_site_add_ref_thunk` | `0x0041AEF0` | high | Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserWindow's shared AddRef implementation. |
+| `ui_browser_control_doc_host_ui_release_thunk` | `0x0041AF00` | high | Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserControlPane's shared Release implementation. |
+| `ui_browser_control_ole_in_place_site_add_ref_thunk` | `0x0041AF10` | high | Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserControlPane's shared AddRef implementation. |
+| `ui_browser_window_doc_host_show_ui_release_thunk` | `0x0041AF20` | high | Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserWindow's shared Release implementation. |
+| `ui_browser_window_browser_events_add_ref_thunk` | `0x0041AF30` | high | Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserWindow's shared AddRef implementation. |
+| `ui_browser_control_doc_host_show_ui_release_thunk` | `0x0041AF40` | high | Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserControlPane's shared Release implementation. |
+| `ui_browser_control_browser_events_add_ref_thunk` | `0x0041AF50` | high | Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserControlPane's shared AddRef implementation. |
+| `ui_browser_window_ole_in_place_site_query_interface_thunk` | `0x0041AF60` | high | Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserWindow's shared QueryInterface implementation. |
+| `ui_browser_window_doc_host_ui_add_ref_thunk` | `0x0041AF70` | high | Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserWindow's shared AddRef implementation. |
+| `ui_browser_control_ole_in_place_site_query_interface_thunk` | `0x0041AF80` | high | Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserControlPane's shared QueryInterface implementation. |
+| `ui_browser_control_doc_host_ui_add_ref_thunk` | `0x0041AF90` | high | Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserControlPane's shared AddRef implementation. |
+| `ui_browser_window_browser_events_query_interface_thunk` | `0x0041AFA0` | high | Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserWindow's shared QueryInterface implementation. |
+| `ui_browser_window_doc_host_show_ui_add_ref_thunk` | `0x0041AFB0` | high | Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserWindow's shared AddRef implementation. |
+| `ui_browser_control_browser_events_query_interface_thunk` | `0x0041AFC0` | high | Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserControlPane's shared QueryInterface implementation. |
+| `ui_browser_control_doc_host_show_ui_add_ref_thunk` | `0x0041AFD0` | high | Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserControlPane's shared AddRef implementation. |
+| `ui_browser_window_doc_host_ui_query_interface_thunk` | `0x0041AFE0` | high | Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserWindow's shared QueryInterface implementation. |
+| `ui_browser_dialog_timer_deleting_dtor_thunk` | `0x0041AFF0` | high | Adjusts TimerHandler this by -0x11C and tail-calls BrowserDialogPane's scalar-deleting destructor. |
+| `ui_browser_control_doc_host_ui_query_interface_thunk` | `0x0041B000` | high | Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserControlPane's shared QueryInterface implementation. |
+| `ui_browser_window_doc_host_show_ui_query_interface_thunk` | `0x0041B010` | high | Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserWindow's shared QueryInterface implementation. |
+| `ui_browser_control_doc_host_show_ui_query_interface_thunk` | `0x0041B020` | high | Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserControlPane's shared QueryInterface implementation. |
 | `ui_bottom_buttons_pane_ctor` | `0x0041B040` | high | Constructs exact RTTI class BtmButtonsPane_A, initializes its state, and immediately sends the empty CSelfLook request. |
 | `ui_bottom_buttons_handle_network_event` | `0x0041B690` | high | BtmButtonsPane_A network-event handler routes SStatus to the parcel/mail updater and SSelfLook to the profile-response path. |
 | `ui_bottom_buttons_handle_timer` | `0x0041B710` | high | BtmButtonsPane_A TimerHandler callback retries CSelfLook for timer 0x03000000 while the initial profile request is pending. |
@@ -1819,6 +1913,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `black_hole_scalar_deleting_dtor` | `0x00415C40` | high | Runs the BlackHole destructor and conditionally frees the complete object. |
 | `com_auto_init_ctor` | `0x00415C70` | high | Constructs the compiler-generated AutoInit helper and calls OleInitialize for the current thread. |
 | `com_auto_init_dtor` | `0x00415C90` | high | Runs OleUninitialize from the compiler-generated AutoInit destructor. |
+| `com_advise_connection_point` | `0x0041A7A0` | high | Queries IConnectionPointContainer, finds the requested connection point, and advises the supplied event sink. |
+| `com_unadvise_connection_point` | `0x0041A860` | high | Queries IConnectionPointContainer, finds the requested connection point, and removes the supplied advisory cookie. |
+| `text_thread_acp_to_bstr` | `0x0041AA00` | high | Converts explicit-length or terminated CP_THREAD_ACP bytes into a newly allocated BSTR. |
+| `com_variant_clear` | `0x0041AB40` | high | Clears a VARIANT with VariantClear and returns the HRESULT. |
+| `com_variant_set_bstr` | `0x0041AB60` | high | Clears a VARIANT, assigns VT_BSTR, allocates the supplied wide string, and raises the client COM error on failure. |
+| `com_assign_iweb_browser2` | `0x0041AC10` | high | Queries a supplied COM object for IID_IWebBrowser2, replaces the retained interface pointer, and releases the previous value. |
 | `metadata_denied_item_list_ctor` | `0x004407C0` | high | Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription. |
 | `metadata_denied_item_list_subscribe` | `0x00440AA0` | high | Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable. |
 | `metadata_denied_item_list_apply_table` | `0x00440B20` | high | Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers. |

@@ -82,6 +82,8 @@ The delimiter searches use wrapping eight-bit indexes. If either `=` or `&` is a
 
 The client always appends `?`; it does not check whether `start_url` already has a query string. This path creates no timer, cookie, or persistent character state.
 
+`BrowserWindow` is a small local ActiveX host around Internet Explorer's `IWebBrowser2`. It keeps the child window hidden until the matching document-complete event, intercepts `javascript:close();`, rejects `res://` navigation, and can reject HTTP navigation outside the saved base URL. Its document-host interfaces suppress the browser's default context menu and message UI, while a temporary message filter forwards keyboard input to the active browser object.
+
 ## Plaintext action 3 example
 
 This example carries `http://127.0.0.1/` and `probe=1`:

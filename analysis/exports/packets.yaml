@@ -76,13 +76,17 @@ functions:
     confidence: high
     evidence: "Shows or hides the browser child HWND and synchronizes cursor state and the browser message filter."
   - address: "0x004178C0"
-    name: ui_browser_control_set_silent
+    name: ui_browser_control_set_3d_border_enabled
     confidence: high
-    evidence: "Stores and forwards the requested silent-mode value to the embedded WebBrowser COM property setter."
+    evidence: "Controls whether IDocHostUIHandler adds DOCHOSTUIFLAG_NO3DBORDER, then refreshes IWebBrowser so the host flags are applied."
   - address: "0x00417910"
     name: ui_browser_control_set_base_url
     confidence: high
     evidence: "Copies a bounded base URL into BrowserControlPane's browser state."
+  - address: "0x00417960"
+    name: ui_browser_control_set_navigation_timeout_ms
+    confidence: high
+    evidence: "Sets BrowserControlPane's navigation-timeout interval in milliseconds and cancels the active timeout event when set to zero."
   - address: "0x004179F0"
     name: ui_browser_control_set_status_text
     confidence: high
@@ -287,14 +291,410 @@ functions:
     name: ui_browser_window_ctor
     confidence: high
     evidence: "Constructs exact RTTI BrowserWindow, creates its child HWND and WebBrowser ActiveX object, installs the COM client and event interfaces, and optionally navigates."
+  - address: "0x004190F0"
+    name: ui_browser_window_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI BrowserWindow, restores its five COM interface vtables, releases the browser object, and unregisters its singleton."
+  - address: "0x00419160"
+    name: ui_browser_window_shutdown
+    confidence: high
+    evidence: "Hides BrowserWindow, removes its browser-event advisory connection, closes and releases IWebBrowser, destroys the child HWND, and restores focus."
+  - address: "0x004192A0"
+    name: ui_browser_window_capture_window
+    confidence: high
+    evidence: "Copies the visible BrowserWindow child HWND into a Canvas DC at coordinates relative to the main client window."
+  - address: "0x00419400"
+    name: ui_browser_window_set_bounds
+    confidence: high
+    evidence: "Moves BrowserWindow's child HWND and updates the embedded IOleInPlaceObject position and clipping rectangles."
+  - address: "0x00419520"
+    name: ui_browser_window_set_visible
+    confidence: high
+    evidence: "Shows or hides BrowserWindow, synchronizes cursor modes, and installs or removes its message pre-translation callback."
+  - address: "0x00419600"
+    name: ui_browser_window_set_3d_border_enabled
+    confidence: high
+    evidence: "Controls whether IDocHostUIHandler adds DOCHOSTUIFLAG_NO3DBORDER, then refreshes IWebBrowser so the host flags are applied."
   - address: "0x00419650"
     name: ui_browser_window_set_base_url
     confidence: high
     evidence: "Copies a bounded base URL into BrowserWindow's browser state."
+  - address: "0x004196A0"
+    name: ui_browser_window_set_navigation_timeout_ms
+    confidence: medium
+    evidence: "Stores the dormant BrowserWindow navigation-timeout field initialized by its constructor to 30,000 ms; no caller or active timer use is present."
   - address: "0x00419700"
     name: ui_browser_window_navigate
     confidence: high
     evidence: "Navigates BrowserWindow's embedded IWebBrowser to the supplied URL and optional header."
+  - address: "0x004198BD"
+    name: ui_browser_window_navigate_exception_cleanup
+    confidence: high
+    evidence: "Releases navigation SAFEARRAY and BSTR temporaries, shuts down BrowserWindow, and clears exception state."
+  - address: "0x00419920"
+    name: ui_browser_window_get_document_cookie
+    confidence: high
+    evidence: "Queries BrowserWindow's document interface, reads its cookie BSTR, and returns converted thread-ANSI bytes."
+  - address: "0x00419AA0"
+    name: ui_browser_window_set_document_cookie
+    confidence: high
+    evidence: "Queries BrowserWindow's document interface and assigns a formatted name=value cookie BSTR."
+  - address: "0x00419BB0"
+    name: ui_browser_window_query_interface
+    confidence: high
+    evidence: "BrowserWindow COM QueryInterface implementation that returns the adjusted subobject for each supported IID."
+  - address: "0x00419D80"
+    name: ui_browser_window_ole_client_site_add_ref
+    confidence: high
+    evidence: "IOleClientSite AddRef vtable entry; BrowserWindow uses a fixed reference count and returns 2."
+  - address: "0x00419D90"
+    name: ui_browser_window_ole_client_site_release
+    confidence: high
+    evidence: "IOleClientSite Release vtable entry; BrowserWindow uses a fixed reference count and returns 1."
+  - address: "0x00419DA0"
+    name: ui_browser_window_ole_client_site_save_object
+    confidence: high
+    evidence: "IOleClientSite SaveObject vtable entry that returns E_NOTIMPL."
+  - address: "0x00419DB0"
+    name: ui_browser_window_ole_client_site_get_moniker
+    confidence: high
+    evidence: "IOleClientSite GetMoniker vtable entry that returns E_NOTIMPL."
+  - address: "0x00419DC0"
+    name: ui_browser_window_ole_client_site_get_container
+    confidence: high
+    evidence: "IOleClientSite GetContainer vtable entry that returns E_NOTIMPL."
+  - address: "0x00419DD0"
+    name: ui_browser_window_ole_client_site_show_object
+    confidence: high
+    evidence: "IOleClientSite ShowObject vtable entry that returns E_NOTIMPL."
+  - address: "0x00419DE0"
+    name: ui_browser_window_ole_client_site_on_show_window
+    confidence: high
+    evidence: "IOleClientSite OnShowWindow vtable entry that returns E_NOTIMPL."
+  - address: "0x00419DF0"
+    name: ui_browser_window_ole_client_site_request_new_object_layout
+    confidence: high
+    evidence: "IOleClientSite RequestNewObjectLayout vtable entry that returns E_NOTIMPL."
+  - address: "0x00419E00"
+    name: ui_browser_window_ole_in_place_site_get_window
+    confidence: high
+    evidence: "IOleInPlaceSite GetWindow vtable entry that returns BrowserWindow's child HWND."
+  - address: "0x00419E20"
+    name: ui_browser_window_ole_in_place_site_context_sensitive_help
+    confidence: high
+    evidence: "IOleInPlaceSite ContextSensitiveHelp vtable entry that returns E_NOTIMPL."
+  - address: "0x00419E30"
+    name: ui_browser_window_ole_in_place_site_can_in_place_activate
+    confidence: high
+    evidence: "IOleInPlaceSite CanInPlaceActivate vtable entry that returns S_OK."
+  - address: "0x00419E40"
+    name: ui_browser_window_ole_in_place_site_on_in_place_activate
+    confidence: high
+    evidence: "IOleInPlaceSite OnInPlaceActivate vtable entry that returns S_OK."
+  - address: "0x00419E50"
+    name: ui_browser_window_ole_in_place_site_on_ui_activate
+    confidence: high
+    evidence: "IOleInPlaceSite OnUIActivate vtable entry that returns E_NOTIMPL."
+  - address: "0x00419E60"
+    name: ui_browser_window_ole_in_place_site_get_window_context
+    confidence: high
+    evidence: "IOleInPlaceSite GetWindowContext entry that supplies the child-window client rectangle as position and clipping bounds."
+  - address: "0x00419E90"
+    name: ui_browser_window_ole_in_place_site_scroll
+    confidence: high
+    evidence: "IOleInPlaceSite Scroll vtable entry that returns E_NOTIMPL."
+  - address: "0x00419EA0"
+    name: ui_browser_window_ole_in_place_site_on_ui_deactivate
+    confidence: high
+    evidence: "IOleInPlaceSite OnUIDeactivate vtable entry that returns E_NOTIMPL."
+  - address: "0x00419EB0"
+    name: ui_browser_window_ole_in_place_site_on_in_place_deactivate
+    confidence: high
+    evidence: "IOleInPlaceSite OnInPlaceDeactivate vtable entry that returns S_OK."
+  - address: "0x00419EC0"
+    name: ui_browser_window_ole_in_place_site_discard_undo_state
+    confidence: high
+    evidence: "IOleInPlaceSite DiscardUndoState vtable entry that returns E_NOTIMPL."
+  - address: "0x00419ED0"
+    name: ui_browser_window_ole_in_place_site_deactivate_and_undo
+    confidence: high
+    evidence: "IOleInPlaceSite DeactivateAndUndo vtable entry that returns E_NOTIMPL."
+  - address: "0x00419EE0"
+    name: ui_browser_window_ole_in_place_site_on_pos_rect_change
+    confidence: high
+    evidence: "IOleInPlaceSite OnPosRectChange vtable entry that returns E_NOTIMPL."
+  - address: "0x00419EF0"
+    name: ui_browser_window_browser_events_get_ids_of_names
+    confidence: high
+    evidence: "DWebBrowserEvents2 IDispatch GetIDsOfNames vtable entry that returns E_NOTIMPL."
+  - address: "0x00419F00"
+    name: ui_browser_window_browser_events_get_type_info
+    confidence: high
+    evidence: "DWebBrowserEvents2 IDispatch GetTypeInfo vtable entry that returns E_NOTIMPL."
+  - address: "0x00419F10"
+    name: ui_browser_window_browser_events_get_type_info_count
+    confidence: high
+    evidence: "DWebBrowserEvents2 IDispatch GetTypeInfoCount vtable entry that returns E_NOTIMPL."
+  - address: "0x00419F20"
+    name: ui_browser_window_browser_events_invoke
+    confidence: high
+    evidence: "DWebBrowserEvents2 Invoke sink that filters navigation, tracks document completion, reveals BrowserWindow, and handles related DISPIDs."
+  - address: "0x0041A200"
+    name: ui_browser_window_doc_host_enable_modeless
+    confidence: high
+    evidence: "IDocHostUIHandler EnableModeless vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A210"
+    name: ui_browser_window_doc_host_filter_data_object
+    confidence: high
+    evidence: "IDocHostUIHandler FilterDataObject vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A220"
+    name: ui_browser_window_doc_host_get_drop_target
+    confidence: high
+    evidence: "IDocHostUIHandler GetDropTarget vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A230"
+    name: ui_browser_window_doc_host_get_external
+    confidence: high
+    evidence: "IDocHostUIHandler GetExternal entry that clears the output pointer and returns E_NOTIMPL."
+  - address: "0x0041A250"
+    name: ui_browser_window_doc_host_get_host_info
+    confidence: high
+    evidence: "IDocHostUIHandler GetHostInfo entry that fills DOCHOSTUIINFO and conditionally adds DOCHOSTUIFLAG_NO3DBORDER."
+  - address: "0x0041A290"
+    name: ui_browser_window_doc_host_get_option_key_path
+    confidence: high
+    evidence: "IDocHostUIHandler GetOptionKeyPath vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A2A0"
+    name: ui_browser_window_doc_host_hide_ui
+    confidence: high
+    evidence: "IDocHostUIHandler HideUI vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A2B0"
+    name: ui_browser_window_doc_host_on_doc_window_activate
+    confidence: high
+    evidence: "IDocHostUIHandler OnDocWindowActivate vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A2C0"
+    name: ui_browser_window_doc_host_on_frame_window_activate
+    confidence: high
+    evidence: "IDocHostUIHandler OnFrameWindowActivate vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A2D0"
+    name: ui_browser_window_doc_host_resize_border
+    confidence: high
+    evidence: "IDocHostUIHandler ResizeBorder vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A2E0"
+    name: ui_browser_window_doc_host_show_context_menu
+    confidence: high
+    evidence: "IDocHostUIHandler ShowContextMenu entry that returns S_OK and suppresses the default browser context menu."
+  - address: "0x0041A2F0"
+    name: ui_browser_window_doc_host_show_ui
+    confidence: high
+    evidence: "IDocHostUIHandler ShowUI vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A300"
+    name: ui_browser_window_doc_host_translate_accelerator
+    confidence: high
+    evidence: "IDocHostUIHandler TranslateAccelerator vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A310"
+    name: ui_browser_window_doc_host_translate_url
+    confidence: high
+    evidence: "IDocHostUIHandler TranslateUrl vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A320"
+    name: ui_browser_window_doc_host_update_ui
+    confidence: high
+    evidence: "IDocHostUIHandler UpdateUI vtable entry that returns E_NOTIMPL."
+  - address: "0x0041A330"
+    name: ui_browser_window_doc_host_show_help
+    confidence: high
+    evidence: "IDocHostShowUI ShowHelp vtable entry that returns S_OK."
+  - address: "0x0041A340"
+    name: ui_browser_window_doc_host_show_message
+    confidence: high
+    evidence: "IDocHostShowUI ShowMessage entry that returns S_OK and suppresses the browser's default message UI."
+  - address: "0x0041A350"
+    name: ui_browser_window_window_proc
+    confidence: high
+    evidence: "WNDPROC registered by BrowserWindow; retrieves the object from GWL_USERDATA and routes messages to its instance-aware handler."
+  - address: "0x0041A3A0"
+    name: ui_browser_window_handle_window_message
+    confidence: high
+    evidence: "Validates BrowserWindow's WM_PAINT and suppresses minimize, maximize, move, size, and close system commands."
+  - address: "0x0041A4C0"
+    name: ui_browser_window_pre_translate_message
+    confidence: high
+    evidence: "Visible-BrowserWindow message filter that gives IOleInPlaceActiveObject first chance at keys and handles close and screenshot shortcuts."
+  - address: "0x0041A6E0"
+    name: ui_browser_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs BrowserDialogPane's destructor and conditionally frees the complete object."
+  - address: "0x0041A7A0"
+    name: com_advise_connection_point
+    confidence: high
+    evidence: "Queries IConnectionPointContainer, finds the requested connection point, and advises the supplied event sink."
+  - address: "0x0041A860"
+    name: com_unadvise_connection_point
+    confidence: high
+    evidence: "Queries IConnectionPointContainer, finds the requested connection point, and removes the supplied advisory cookie."
+  - address: "0x0041A920"
+    name: ui_browser_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs BrowserControlPane's destructor and conditionally frees the complete object."
+  - address: "0x0041AA00"
+    name: text_thread_acp_to_bstr
+    confidence: high
+    evidence: "Converts explicit-length or terminated CP_THREAD_ACP bytes into a newly allocated BSTR."
+  - address: "0x0041AB40"
+    name: com_variant_clear
+    confidence: high
+    evidence: "Clears a VARIANT with VariantClear and returns the HRESULT."
+  - address: "0x0041AB60"
+    name: com_variant_set_bstr
+    confidence: high
+    evidence: "Clears a VARIANT, assigns VT_BSTR, allocates the supplied wide string, and raises the client COM error on failure."
+  - address: "0x0041AC10"
+    name: com_assign_iweb_browser2
+    confidence: high
+    evidence: "Queries a supplied COM object for IID_IWebBrowser2, replaces the retained interface pointer, and releases the previous value."
+  - address: "0x0041ACA0"
+    name: ui_browser_dialog_singleton_register
+    confidence: high
+    evidence: "Registers the complete BrowserDialogPane pointer from its Singleton secondary-base constructor."
+  - address: "0x0041ACE0"
+    name: ui_browser_dialog_singleton_unregister
+    confidence: high
+    evidence: "Clears the BrowserDialogPane singleton when its secondary-base destructor still owns the registered object."
+  - address: "0x0041AD20"
+    name: ui_browser_control_singleton_register
+    confidence: high
+    evidence: "Registers the complete BrowserControlPane pointer from its Singleton secondary-base constructor."
+  - address: "0x0041AD60"
+    name: ui_browser_control_singleton_unregister
+    confidence: high
+    evidence: "Clears the BrowserControlPane singleton when its secondary-base destructor still owns the registered object."
+  - address: "0x0041ADA0"
+    name: ui_browser_control_singleton_exists
+    confidence: high
+    evidence: "Returns whether the BrowserControlPane singleton currently contains an object."
+  - address: "0x0041ADC0"
+    name: ui_browser_control_singleton_get
+    confidence: high
+    evidence: "Returns the current BrowserControlPane singleton pointer."
+  - address: "0x0041ADD0"
+    name: ui_browser_window_singleton_register
+    confidence: high
+    evidence: "Registers the complete BrowserWindow pointer from its Singleton secondary-base constructor."
+  - address: "0x0041AE10"
+    name: ui_browser_window_singleton_unregister
+    confidence: high
+    evidence: "Clears the BrowserWindow singleton when its secondary-base destructor still owns the registered object."
+  - address: "0x0041AE50"
+    name: ui_browser_window_singleton_exists
+    confidence: high
+    evidence: "Returns whether the BrowserWindow singleton currently contains an object."
+  - address: "0x0041AE70"
+    name: ui_browser_window_singleton_get
+    confidence: high
+    evidence: "Returns the current BrowserWindow singleton pointer."
+  - address: "0x0041AE90"
+    name: ui_browser_window_ole_in_place_site_release_thunk
+    confidence: high
+    evidence: "Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserWindow's shared Release implementation."
+  - address: "0x0041AEA0"
+    name: ui_browser_control_ole_in_place_site_release_thunk
+    confidence: high
+    evidence: "Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserControlPane's shared Release implementation."
+  - address: "0x0041AEB0"
+    name: ui_browser_window_browser_events_release_thunk
+    confidence: high
+    evidence: "Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserWindow's shared Release implementation."
+  - address: "0x0041AEC0"
+    name: ui_browser_control_browser_events_release_thunk
+    confidence: high
+    evidence: "Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserControlPane's shared Release implementation."
+  - address: "0x0041AED0"
+    name: ui_browser_control_timer_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C and tail-calls BrowserControlPane's scalar-deleting destructor."
+  - address: "0x0041AEE0"
+    name: ui_browser_window_doc_host_ui_release_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserWindow's shared Release implementation."
+  - address: "0x0041AEF0"
+    name: ui_browser_window_ole_in_place_site_add_ref_thunk
+    confidence: high
+    evidence: "Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserWindow's shared AddRef implementation."
+  - address: "0x0041AF00"
+    name: ui_browser_control_doc_host_ui_release_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserControlPane's shared Release implementation."
+  - address: "0x0041AF10"
+    name: ui_browser_control_ole_in_place_site_add_ref_thunk
+    confidence: high
+    evidence: "Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserControlPane's shared AddRef implementation."
+  - address: "0x0041AF20"
+    name: ui_browser_window_doc_host_show_ui_release_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserWindow's shared Release implementation."
+  - address: "0x0041AF30"
+    name: ui_browser_window_browser_events_add_ref_thunk
+    confidence: high
+    evidence: "Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserWindow's shared AddRef implementation."
+  - address: "0x0041AF40"
+    name: ui_browser_control_doc_host_show_ui_release_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserControlPane's shared Release implementation."
+  - address: "0x0041AF50"
+    name: ui_browser_control_browser_events_add_ref_thunk
+    confidence: high
+    evidence: "Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserControlPane's shared AddRef implementation."
+  - address: "0x0041AF60"
+    name: ui_browser_window_ole_in_place_site_query_interface_thunk
+    confidence: high
+    evidence: "Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserWindow's shared QueryInterface implementation."
+  - address: "0x0041AF70"
+    name: ui_browser_window_doc_host_ui_add_ref_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserWindow's shared AddRef implementation."
+  - address: "0x0041AF80"
+    name: ui_browser_control_ole_in_place_site_query_interface_thunk
+    confidence: high
+    evidence: "Adjusts IOleInPlaceSite this by -4 and tail-calls BrowserControlPane's shared QueryInterface implementation."
+  - address: "0x0041AF90"
+    name: ui_browser_control_doc_host_ui_add_ref_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserControlPane's shared AddRef implementation."
+  - address: "0x0041AFA0"
+    name: ui_browser_window_browser_events_query_interface_thunk
+    confidence: high
+    evidence: "Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserWindow's shared QueryInterface implementation."
+  - address: "0x0041AFB0"
+    name: ui_browser_window_doc_host_show_ui_add_ref_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserWindow's shared AddRef implementation."
+  - address: "0x0041AFC0"
+    name: ui_browser_control_browser_events_query_interface_thunk
+    confidence: high
+    evidence: "Adjusts DWebBrowserEvents2 this by -8 and tail-calls BrowserControlPane's shared QueryInterface implementation."
+  - address: "0x0041AFD0"
+    name: ui_browser_control_doc_host_show_ui_add_ref_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserControlPane's shared AddRef implementation."
+  - address: "0x0041AFE0"
+    name: ui_browser_window_doc_host_ui_query_interface_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserWindow's shared QueryInterface implementation."
+  - address: "0x0041AFF0"
+    name: ui_browser_dialog_timer_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C and tail-calls BrowserDialogPane's scalar-deleting destructor."
+  - address: "0x0041B000"
+    name: ui_browser_control_doc_host_ui_query_interface_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostUIHandler this by -0xC and tail-calls BrowserControlPane's shared QueryInterface implementation."
+  - address: "0x0041B010"
+    name: ui_browser_window_doc_host_show_ui_query_interface_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserWindow's shared QueryInterface implementation."
+  - address: "0x0041B020"
+    name: ui_browser_control_doc_host_show_ui_query_interface_thunk
+    confidence: high
+    evidence: "Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserControlPane's shared QueryInterface implementation."
   - address: "0x0041B040"
     name: ui_bottom_buttons_pane_ctor
     confidence: high
