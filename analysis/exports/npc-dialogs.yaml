@@ -829,6 +829,86 @@ functions:
     name: ui_server_item_menu_dialog2_scalar_deleting_dtor
     confidence: high
     evidence: "Compiler-generated scalar deleting destructor for exact RTTI ServerItemMenuDialog2."
+  - address: "0x004D91F0"
+    name: ui_item_category_vector_dtor_wrapper
+    confidence: high
+    evidence: "SEH-protected wrapper around destruction of the ServerItemMenuDialog3 category vector."
+  - address: "0x004D9240"
+    name: ui_item_category_vector_dtor
+    confidence: high
+    evidence: "Destroys every 0xA0-byte category record, frees the backing allocation, and zeros the vector pointers."
+  - address: "0x004D9300"
+    name: ui_status_info_pane_is_available
+    confidence: high
+    evidence: "Tests the global StatusInfoPane pointer before merchant item dialogs read the displayed gold value."
+  - address: "0x004D9320"
+    name: ui_get_status_info_pane
+    confidence: high
+    evidence: "Returns the global StatusInfoPane pointer registered by the live pane's secondary-base constructor."
+  - address: "0x004D9360"
+    name: ui_item_category_vector_insert
+    confidence: high
+    evidence: "Inserts one 0xA0-byte category record at an arbitrary vector position."
+  - address: "0x004D9440"
+    name: ui_layout_value_vector_insert
+    confidence: high
+    evidence: "Inserts one four-byte value into the shared layout/value vector at an arbitrary position."
+  - address: "0x004D9510"
+    name: ui_item_category_vector_append
+    confidence: high
+    evidence: "Appends a copy-constructed 0xA0-byte category record, growing storage when full."
+  - address: "0x004D9570"
+    name: ui_item_category_vector_rotate_for_insert
+    confidence: high
+    evidence: "Rotates a category-record range to place a newly appended record at an earlier insertion position."
+  - address: "0x004D9690"
+    name: ui_layout_value_vector_append
+    confidence: high
+    evidence: "Appends one four-byte value to the shared layout/value vector."
+  - address: "0x004D96E0"
+    name: ui_layout_value_vector_rotate_for_insert
+    confidence: high
+    evidence: "Rotates a four-byte value range to place a newly appended value at an earlier insertion position."
+  - address: "0x004D97C0"
+    name: ui_item_category_record_dtor
+    confidence: high
+    evidence: "Destroys the nested four-byte value vector owned by one 0xA0-byte category record."
+  - address: "0x004D9820"
+    name: ui_item_category_vector_ensure_additional_capacity
+    confidence: high
+    evidence: "Checks vector length and reserves geometric growth when another category record will exceed capacity."
+  - address: "0x004D98C0"
+    name: ui_item_category_vector_reserve
+    confidence: high
+    evidence: "Allocates larger category storage, copy-constructs live records, destroys old records, and updates all vector pointers."
+  - address: "0x004D9A90"
+    name: ui_item_category_vector_growth_capacity
+    confidence: high
+    evidence: "Chooses the larger of the requested category count and 1.5 times current capacity."
+  - address: "0x004D9B10"
+    name: ui_item_category_record_copy_ctor
+    confidence: high
+    evidence: "Deep-copies the nested value vector and copies the remaining 0x90 bytes of category metadata."
+  - address: "0x004D9BC0"
+    name: ui_item_category_vector_allocate_storage
+    confidence: high
+    evidence: "Allocates count times 0xA0 bytes and throws std::bad_alloc on overflow or allocation failure."
+  - address: "0x004D9C30"
+    name: ui_item_category_rotate_range
+    confidence: high
+    evidence: "Rotates a range of 0xA0-byte category records using the greatest-common-divisor cycle algorithm."
+  - address: "0x004D9D80"
+    name: ui_layout_value_vector_rotate_range
+    confidence: high
+    evidence: "Rotates a range of four-byte vector values using the greatest-common-divisor cycle algorithm."
+  - address: "0x004D9EA0"
+    name: ui_layout_value_vector_copy_ctor
+    confidence: high
+    evidence: "Allocates and copy-constructs a shared four-byte layout/value vector."
+  - address: "0x004D9FE0"
+    name: ui_item_category_range_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs a range of 0xA0-byte item-category records into uninitialized storage."
   - address: "0x0052C020"
     name: ui_npc_session_set_response_pending
     confidence: high

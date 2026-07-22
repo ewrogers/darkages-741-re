@@ -72,7 +72,7 @@ The spell and skill dialogs follow the same two-source split. Server variants re
 
 `FaceMenuDialog` is a separate merchant appearance editor. It clamps the current character's gender, hair, and color selectors to server-supplied minimum and maximum values, disables each direction button at its limit, and renders the result in `UserShapeControlPane`. The preview advances through four frames every 300 ms. Submission uses the compact nine-byte `CMerchant` form described in the function appendix rather than the normal pursuit-ID header.
 
-The executable also contains a complete `ServerItemMenuDialog2` with up to 15 page buttons and five items per page. Its constructor has no direct caller in this image. It is therefore documented as compiled but unreachable, separately from the active older dialog and the explicitly disabled `ServerItemMenuDialog3`.
+The executable also contains a complete `ServerItemMenuDialog2` with up to 15 page buttons and five items per page. Its constructor has no direct caller in this image. It is therefore documented as compiled but unreachable, separately from the active older dialog and the explicitly disabled `ServerItemMenuDialog3`. The disabled third dialog organizes items into 0xA0-byte category records with nested item-index vectors. Both newer item UIs obtain the displayed gold value from the live `StatusInfoPane`.
 
 ### Target identity
 

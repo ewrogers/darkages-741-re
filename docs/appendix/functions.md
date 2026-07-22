@@ -2276,6 +2276,26 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_client_skill_menu_dialog_scalar_deleting_dtor` | `0x004D9120` | high | Compiler-generated scalar deleting destructor for exact RTTI ClientSkillMenuDialog. |
 | `ui_user_shape_control_pane_scalar_deleting_dtor` | `0x004D9190` | high | Compiler-generated scalar deleting destructor for exact RTTI UserShapeControlPane. |
 | `ui_server_item_menu_dialog2_scalar_deleting_dtor` | `0x004D91C0` | high | Compiler-generated scalar deleting destructor for exact RTTI ServerItemMenuDialog2. |
+| `ui_item_category_vector_dtor_wrapper` | `0x004D91F0` | high | SEH-protected wrapper around destruction of the ServerItemMenuDialog3 category vector. |
+| `ui_item_category_vector_dtor` | `0x004D9240` | high | Destroys every 0xA0-byte category record, frees the backing allocation, and zeros the vector pointers. |
+| `ui_status_info_pane_is_available` | `0x004D9300` | high | Tests the global StatusInfoPane pointer before merchant item dialogs read the displayed gold value. |
+| `ui_get_status_info_pane` | `0x004D9320` | high | Returns the global StatusInfoPane pointer registered by the live pane's secondary-base constructor. |
+| `ui_item_category_vector_insert` | `0x004D9360` | high | Inserts one 0xA0-byte category record at an arbitrary vector position. |
+| `ui_layout_value_vector_insert` | `0x004D9440` | high | Inserts one four-byte value into the shared layout/value vector at an arbitrary position. |
+| `ui_item_category_vector_append` | `0x004D9510` | high | Appends a copy-constructed 0xA0-byte category record, growing storage when full. |
+| `ui_item_category_vector_rotate_for_insert` | `0x004D9570` | high | Rotates a category-record range to place a newly appended record at an earlier insertion position. |
+| `ui_layout_value_vector_append` | `0x004D9690` | high | Appends one four-byte value to the shared layout/value vector. |
+| `ui_layout_value_vector_rotate_for_insert` | `0x004D96E0` | high | Rotates a four-byte value range to place a newly appended value at an earlier insertion position. |
+| `ui_item_category_record_dtor` | `0x004D97C0` | high | Destroys the nested four-byte value vector owned by one 0xA0-byte category record. |
+| `ui_item_category_vector_ensure_additional_capacity` | `0x004D9820` | high | Checks vector length and reserves geometric growth when another category record will exceed capacity. |
+| `ui_item_category_vector_reserve` | `0x004D98C0` | high | Allocates larger category storage, copy-constructs live records, destroys old records, and updates all vector pointers. |
+| `ui_item_category_vector_growth_capacity` | `0x004D9A90` | high | Chooses the larger of the requested category count and 1.5 times current capacity. |
+| `ui_item_category_record_copy_ctor` | `0x004D9B10` | high | Deep-copies the nested value vector and copies the remaining 0x90 bytes of category metadata. |
+| `ui_item_category_vector_allocate_storage` | `0x004D9BC0` | high | Allocates count times 0xA0 bytes and throws std::bad_alloc on overflow or allocation failure. |
+| `ui_item_category_rotate_range` | `0x004D9C30` | high | Rotates a range of 0xA0-byte category records using the greatest-common-divisor cycle algorithm. |
+| `ui_layout_value_vector_rotate_range` | `0x004D9D80` | high | Rotates a range of four-byte vector values using the greatest-common-divisor cycle algorithm. |
+| `ui_layout_value_vector_copy_ctor` | `0x004D9EA0` | high | Allocates and copy-constructs a shared four-byte layout/value vector. |
+| `ui_item_category_range_copy_ctor` | `0x004D9FE0` | high | Copy-constructs a range of 0xA0-byte item-category records into uninitialized storage. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
 | `ui_find_farmpet_apply_mini_game_update` | `0x004EC3E0` | high | Consumes only SMiniGame action 7, matching its first u32 against two tracked IDs and storing the second u32 as the corresponding value. |
