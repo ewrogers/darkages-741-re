@@ -4321,6 +4321,57 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `light_map_alias_map_tree_init` | `0x004AFE30` | high | Allocates and initializes the numeric alias map's sentinel. |
 | `light_profile_map_erase_range` | `0x004AFEB0` | high | Erases a named profile-map iterator range. |
 | `light_profile_map_lower_bound` | `0x004AFF90` | high | Returns the first profile node whose name is not less than the request. |
+| `light_profile_map_lower_bound_mutable` | `0x004B0030` | high | Finds the first mutable profile-map node whose string key is not less than the requested key. |
+| `light_profile_map_tree_init` | `0x004B00D0` | high | Allocates and initializes the named-profile map's red-black-tree sentinel node. |
+| `light_time_entry_list_clear` | `0x004B0150` | high | Unlinks and frees every lighting time-entry list node, then resets the sentinel and size. |
+| `light_map_alias_iterator_assign` | `0x004B01E0` | high | Copies the current node pointer of a numeric map-alias iterator. |
+| `light_profile_iterator_assign` | `0x004B0200` | high | Copies the current node pointer of a named-profile map iterator. |
+| `light_map_alias_map_erase_one` | `0x004B0220` | high | Erases one numeric map-alias node and restores red-black-tree invariants. |
+| `light_profile_map_erase_one` | `0x004B0700` | high | Erases one named lighting-profile node and restores red-black-tree invariants. |
+| `light_map_alias_map_rotate_left` | `0x004B0BE0` | high | Performs a left rotation in the numeric map-alias red-black tree. |
+| `light_map_alias_map_rotate_right` | `0x004B0C90` | high | Performs a right rotation in the numeric map-alias red-black tree. |
+| `light_profile_map_rotate_left` | `0x004B0D40` | high | Performs a left rotation in the named lighting-profile red-black tree. |
+| `light_profile_map_rotate_right` | `0x004B0DF0` | high | Performs a right rotation in the named lighting-profile red-black tree. |
+| `light_map_alias_iterator_next` | `0x004B0EA0` | high | Advances a numeric map-alias iterator to its in-order successor. |
+| `light_profile_iterator_next` | `0x004B0F50` | high | Advances a named lighting-profile iterator to its in-order successor. |
+| `light_list_singleton_register` | `0x004B1000` | high | Registers the containing LightList object in its process-wide singleton slot. |
+| `light_list_singleton_unregister` | `0x004B1040` | high | Clears the LightList singleton slot when it still points at the containing object. |
+| `light_map_alias_value_dtor` | `0x004B1080` | high | Destroys the string member of one numeric map-ID to lighting-profile-name value. |
+| `light_profile_value_destroy` | `0x004B10F0` | high | Runs the destructor for one profile-name and time-entry-list map value. |
+| `light_time_entry_value_destroy_noop` | `0x004B1120` | high | No-op value destructor used because a lighting time entry contains only scalar fields. |
+| `light_time_entry_node_allocate` | `0x004B1130` | high | Allocates raw 0x18-byte linked-list nodes and throws on allocation failure. |
+| `light_map_alias_node_allocate` | `0x004B11A0` | high | Allocates raw 0x30-byte numeric map-alias tree nodes and throws on allocation failure. |
+| `light_profile_node_allocate` | `0x004B1210` | high | Allocates raw 0x38-byte named lighting-profile tree nodes and throws on allocation failure. |
+| `light_map_alias_map_insert_unique_node` | `0x004B1280` | high | Finds the insertion position for a numeric map alias, inserts a unique node, or rejects and destroys a duplicate. |
+| `light_profile_map_insert_unique_node` | `0x004B14D0` | high | Finds the insertion position for a named lighting profile, inserts a unique node, or rejects and destroys a duplicate. |
+| `light_map_alias_map_link_and_rebalance` | `0x004B1730` | high | Links a newly constructed numeric map-alias node and restores red-black-tree invariants. |
+| `light_profile_map_link_and_rebalance` | `0x004B1A10` | high | Links a newly constructed named-profile node and restores red-black-tree invariants. |
+| `light_map_alias_iterator_previous` | `0x004B1CF0` | high | Moves a numeric map-alias iterator to its in-order predecessor. |
+| `light_profile_iterator_previous` | `0x004B1DB0` | high | Moves a named lighting-profile iterator to its in-order predecessor. |
+| `light_profile_node_construct` | `0x004B1E70` | high | Allocates a named-profile tree node and copy-constructs its profile-name and time-entry-list value. |
+| `light_profile_node_construct_failure_cleanup` | `0x004B1ECD` | high | Frees a partially allocated named-profile tree node during exception cleanup. |
+| `light_map_alias_node_construct` | `0x004B1F10` | high | Allocates a numeric map-alias tree node and copy-constructs its map-ID and profile-name value. |
+| `light_map_alias_node_construct_failure_cleanup` | `0x004B1F6D` | high | Frees a partially allocated numeric map-alias tree node during exception cleanup. |
+| `light_profile_value_dtor` | `0x004B1FB0` | high | Destroys a named lighting-profile value, including its time-entry list and profile-name string. |
+| `light_map_alias_node_allocate_and_init` | `0x004B2040` | high | Allocates a numeric map-alias tree node, initializes sentinel links, and clears its flags. |
+| `light_profile_node_allocate_and_init` | `0x004B2090` | high | Allocates a named-profile tree node, initializes sentinel links, and clears its flags. |
+| `light_profile_value_copy_construct` | `0x004B20E0` | high | Placement copy-constructs a profile-name and time-entry-list value when the destination is non-null. |
+| `light_map_alias_value_copy_construct` | `0x004B2160` | high | Placement copy-constructs a map-ID and profile-name alias value when the destination is non-null. |
+| `light_time_entry_list_insert_before` | `0x004B21D0` | high | Allocates and links one lighting time entry immediately before the requested list position. |
+| `light_time_entry_list_make_node` | `0x004B2260` | high | Allocates a linked-list node and copy-constructs one lighting time entry into it. |
+| `light_time_entry_list_make_node_failure_cleanup` | `0x004B22D2` | high | Frees a partially constructed lighting time-entry node during exception cleanup. |
+| `light_map_alias_value_copy_members` | `0x004B2320` | high | Copies the numeric map ID and copy-constructs the associated lighting-profile-name string. |
+| `light_time_entry_copy_construct` | `0x004B23B0` | high | Copies the four scalar fields of one lighting time entry into a new list value. |
+| `light_profile_value_copy_members` | `0x004B2400` | high | Copy-constructs a lighting profile name and its ordered time-entry list. |
+| `light_time_entry_list_copy_construct` | `0x004B2490` | high | Initializes a new lighting time-entry list sentinel and copies every entry from a source list. |
+| `light_time_entry_list_copy_failure_cleanup` | `0x004B2589` | high | Clears a partially copied lighting time-entry list during exception cleanup. |
+| `light_time_entry_list_copy_range` | `0x004B25D0` | high | Copies a source iterator range into a destination lighting time-entry list. |
+| `light_time_entry_list_copy_range_failure_cleanup` | `0x004B2649` | high | Erases nodes already inserted by a failed lighting time-entry range copy. |
+| `light_time_entry_list_copy_insert_before` | `0x004B26D0` | high | Allocates and links one copied lighting time entry before the requested destination position. |
+| `light_time_entry_list_erase_one` | `0x004B2760` | high | Unlinks and frees one lighting time-entry node and returns the following iterator. |
+| `light_time_entry_list_copy_make_node` | `0x004B2800` | high | Allocates a destination node and copy-constructs one entry while copying a lighting time-entry list. |
+| `light_time_entry_list_copy_make_node_failure_cleanup` | `0x004B2872` | high | Frees a partially constructed destination node during lighting time-entry list copying. |
+| `light_time_entry_copy_construct_for_list_copy` | `0x004B28C0` | high | Copies the four scalar fields of one lighting time entry for the list-copy instantiation. |
 | `lobject_ctor` | `0x004B4480` | high | Installs the LObject vtable and writes live-cookie bytes 62 6F 73 79 ("bosy") at +0x04. |
 | `lobject_dtor` | `0x004B44B0` | high | Restores the LObject vtable and clears the live cookie at +0x04 to zero. |
 | `lobject_is_live` | `0x004B4550` | high | Returns true only when LObject +0x04 equals 0x79736F62; event_dispatch_immediate uses it before dispatch. |

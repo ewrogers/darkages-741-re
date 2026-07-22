@@ -2387,6 +2387,210 @@ functions:
     name: light_profile_map_lower_bound
     confidence: high
     evidence: "Returns the first profile node whose name is not less than the request."
+  - address: "0x004B0030"
+    name: light_profile_map_lower_bound_mutable
+    confidence: high
+    evidence: "Finds the first mutable profile-map node whose string key is not less than the requested key."
+  - address: "0x004B00D0"
+    name: light_profile_map_tree_init
+    confidence: high
+    evidence: "Allocates and initializes the named-profile map's red-black-tree sentinel node."
+  - address: "0x004B0150"
+    name: light_time_entry_list_clear
+    confidence: high
+    evidence: "Unlinks and frees every lighting time-entry list node, then resets the sentinel and size."
+  - address: "0x004B01E0"
+    name: light_map_alias_iterator_assign
+    confidence: high
+    evidence: "Copies the current node pointer of a numeric map-alias iterator."
+  - address: "0x004B0200"
+    name: light_profile_iterator_assign
+    confidence: high
+    evidence: "Copies the current node pointer of a named-profile map iterator."
+  - address: "0x004B0220"
+    name: light_map_alias_map_erase_one
+    confidence: high
+    evidence: "Erases one numeric map-alias node and restores red-black-tree invariants."
+  - address: "0x004B0700"
+    name: light_profile_map_erase_one
+    confidence: high
+    evidence: "Erases one named lighting-profile node and restores red-black-tree invariants."
+  - address: "0x004B0BE0"
+    name: light_map_alias_map_rotate_left
+    confidence: high
+    evidence: "Performs a left rotation in the numeric map-alias red-black tree."
+  - address: "0x004B0C90"
+    name: light_map_alias_map_rotate_right
+    confidence: high
+    evidence: "Performs a right rotation in the numeric map-alias red-black tree."
+  - address: "0x004B0D40"
+    name: light_profile_map_rotate_left
+    confidence: high
+    evidence: "Performs a left rotation in the named lighting-profile red-black tree."
+  - address: "0x004B0DF0"
+    name: light_profile_map_rotate_right
+    confidence: high
+    evidence: "Performs a right rotation in the named lighting-profile red-black tree."
+  - address: "0x004B0EA0"
+    name: light_map_alias_iterator_next
+    confidence: high
+    evidence: "Advances a numeric map-alias iterator to its in-order successor."
+  - address: "0x004B0F50"
+    name: light_profile_iterator_next
+    confidence: high
+    evidence: "Advances a named lighting-profile iterator to its in-order successor."
+  - address: "0x004B1000"
+    name: light_list_singleton_register
+    confidence: high
+    evidence: "Registers the containing LightList object in its process-wide singleton slot."
+  - address: "0x004B1040"
+    name: light_list_singleton_unregister
+    confidence: high
+    evidence: "Clears the LightList singleton slot when it still points at the containing object."
+  - address: "0x004B1080"
+    name: light_map_alias_value_dtor
+    confidence: high
+    evidence: "Destroys the string member of one numeric map-ID to lighting-profile-name value."
+  - address: "0x004B10F0"
+    name: light_profile_value_destroy
+    confidence: high
+    evidence: "Runs the destructor for one profile-name and time-entry-list map value."
+  - address: "0x004B1120"
+    name: light_time_entry_value_destroy_noop
+    confidence: high
+    evidence: "No-op value destructor used because a lighting time entry contains only scalar fields."
+  - address: "0x004B1130"
+    name: light_time_entry_node_allocate
+    confidence: high
+    evidence: "Allocates raw 0x18-byte linked-list nodes and throws on allocation failure."
+  - address: "0x004B11A0"
+    name: light_map_alias_node_allocate
+    confidence: high
+    evidence: "Allocates raw 0x30-byte numeric map-alias tree nodes and throws on allocation failure."
+  - address: "0x004B1210"
+    name: light_profile_node_allocate
+    confidence: high
+    evidence: "Allocates raw 0x38-byte named lighting-profile tree nodes and throws on allocation failure."
+  - address: "0x004B1280"
+    name: light_map_alias_map_insert_unique_node
+    confidence: high
+    evidence: "Finds the insertion position for a numeric map alias, inserts a unique node, or rejects and destroys a duplicate."
+  - address: "0x004B14D0"
+    name: light_profile_map_insert_unique_node
+    confidence: high
+    evidence: "Finds the insertion position for a named lighting profile, inserts a unique node, or rejects and destroys a duplicate."
+  - address: "0x004B1730"
+    name: light_map_alias_map_link_and_rebalance
+    confidence: high
+    evidence: "Links a newly constructed numeric map-alias node and restores red-black-tree invariants."
+  - address: "0x004B1A10"
+    name: light_profile_map_link_and_rebalance
+    confidence: high
+    evidence: "Links a newly constructed named-profile node and restores red-black-tree invariants."
+  - address: "0x004B1CF0"
+    name: light_map_alias_iterator_previous
+    confidence: high
+    evidence: "Moves a numeric map-alias iterator to its in-order predecessor."
+  - address: "0x004B1DB0"
+    name: light_profile_iterator_previous
+    confidence: high
+    evidence: "Moves a named lighting-profile iterator to its in-order predecessor."
+  - address: "0x004B1E70"
+    name: light_profile_node_construct
+    confidence: high
+    evidence: "Allocates a named-profile tree node and copy-constructs its profile-name and time-entry-list value."
+  - address: "0x004B1ECD"
+    name: light_profile_node_construct_failure_cleanup
+    confidence: high
+    evidence: "Frees a partially allocated named-profile tree node during exception cleanup."
+  - address: "0x004B1F10"
+    name: light_map_alias_node_construct
+    confidence: high
+    evidence: "Allocates a numeric map-alias tree node and copy-constructs its map-ID and profile-name value."
+  - address: "0x004B1F6D"
+    name: light_map_alias_node_construct_failure_cleanup
+    confidence: high
+    evidence: "Frees a partially allocated numeric map-alias tree node during exception cleanup."
+  - address: "0x004B1FB0"
+    name: light_profile_value_dtor
+    confidence: high
+    evidence: "Destroys a named lighting-profile value, including its time-entry list and profile-name string."
+  - address: "0x004B2040"
+    name: light_map_alias_node_allocate_and_init
+    confidence: high
+    evidence: "Allocates a numeric map-alias tree node, initializes sentinel links, and clears its flags."
+  - address: "0x004B2090"
+    name: light_profile_node_allocate_and_init
+    confidence: high
+    evidence: "Allocates a named-profile tree node, initializes sentinel links, and clears its flags."
+  - address: "0x004B20E0"
+    name: light_profile_value_copy_construct
+    confidence: high
+    evidence: "Placement copy-constructs a profile-name and time-entry-list value when the destination is non-null."
+  - address: "0x004B2160"
+    name: light_map_alias_value_copy_construct
+    confidence: high
+    evidence: "Placement copy-constructs a map-ID and profile-name alias value when the destination is non-null."
+  - address: "0x004B21D0"
+    name: light_time_entry_list_insert_before
+    confidence: high
+    evidence: "Allocates and links one lighting time entry immediately before the requested list position."
+  - address: "0x004B2260"
+    name: light_time_entry_list_make_node
+    confidence: high
+    evidence: "Allocates a linked-list node and copy-constructs one lighting time entry into it."
+  - address: "0x004B22D2"
+    name: light_time_entry_list_make_node_failure_cleanup
+    confidence: high
+    evidence: "Frees a partially constructed lighting time-entry node during exception cleanup."
+  - address: "0x004B2320"
+    name: light_map_alias_value_copy_members
+    confidence: high
+    evidence: "Copies the numeric map ID and copy-constructs the associated lighting-profile-name string."
+  - address: "0x004B23B0"
+    name: light_time_entry_copy_construct
+    confidence: high
+    evidence: "Copies the four scalar fields of one lighting time entry into a new list value."
+  - address: "0x004B2400"
+    name: light_profile_value_copy_members
+    confidence: high
+    evidence: "Copy-constructs a lighting profile name and its ordered time-entry list."
+  - address: "0x004B2490"
+    name: light_time_entry_list_copy_construct
+    confidence: high
+    evidence: "Initializes a new lighting time-entry list sentinel and copies every entry from a source list."
+  - address: "0x004B2589"
+    name: light_time_entry_list_copy_failure_cleanup
+    confidence: high
+    evidence: "Clears a partially copied lighting time-entry list during exception cleanup."
+  - address: "0x004B25D0"
+    name: light_time_entry_list_copy_range
+    confidence: high
+    evidence: "Copies a source iterator range into a destination lighting time-entry list."
+  - address: "0x004B2649"
+    name: light_time_entry_list_copy_range_failure_cleanup
+    confidence: high
+    evidence: "Erases nodes already inserted by a failed lighting time-entry range copy."
+  - address: "0x004B26D0"
+    name: light_time_entry_list_copy_insert_before
+    confidence: high
+    evidence: "Allocates and links one copied lighting time entry before the requested destination position."
+  - address: "0x004B2760"
+    name: light_time_entry_list_erase_one
+    confidence: high
+    evidence: "Unlinks and frees one lighting time-entry node and returns the following iterator."
+  - address: "0x004B2800"
+    name: light_time_entry_list_copy_make_node
+    confidence: high
+    evidence: "Allocates a destination node and copy-constructs one entry while copying a lighting time-entry list."
+  - address: "0x004B2872"
+    name: light_time_entry_list_copy_make_node_failure_cleanup
+    confidence: high
+    evidence: "Frees a partially constructed destination node during lighting time-entry list copying."
+  - address: "0x004B28C0"
+    name: light_time_entry_copy_construct_for_list_copy
+    confidence: high
+    evidence: "Copies the four scalar fields of one lighting time entry for the list-copy instantiation."
   - address: "0x004C5270"
     name: render_map_background_images
     confidence: high
