@@ -72,6 +72,7 @@
   - [SPF images](file-formats/spf.md)
   - [EFA effects](file-formats/efa.md)
   - [Effect.tbl](file-formats/effect-table.md)
+  - [Motion effect table](file-formats/motion-effect-table.md)
   - [Bulletin abuse warning list](file-formats/bulletin-bang-list.md)
 
 - [Network](network/README.md)

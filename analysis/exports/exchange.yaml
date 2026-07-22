@@ -171,6 +171,46 @@ functions:
     name: net_send_exchange_add_stackable_item
     confidence: high
     evidence: "Builds opcode 0x4A, action 0x02, exchange ID, staged slot, and u8 quantity."
+  - address: "0x0046C390"
+    name: ui_exchange_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for exact RTTI ExchangeDialog."
+  - address: "0x0046C3C0"
+    name: ui_exchange_item_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for exact RTTI ExchangeItemListPane."
+  - address: "0x0046C3F0"
+    name: ui_exchange_add_item_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for exact RTTI AddItemDialog; corrects a false Concurrency library match."
+  - address: "0x0046C420"
+    name: ui_exchange_my_item_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for exact RTTI MyItemListPane."
+  - address: "0x0046C450"
+    name: ui_exchange_count_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for exact RTTI AddItemWithCountDialog; corrects a false Concurrency library match."
+  - address: "0x0046C480"
+    name: ui_exchange_my_item_list_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the MyItemListPane TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor."
+  - address: "0x0046C490"
+    name: ui_exchange_count_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the AddItemWithCountDialog TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor."
+  - address: "0x0046C4A0"
+    name: ui_exchange_add_item_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the AddItemDialog TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor."
+  - address: "0x0046C4B0"
+    name: ui_exchange_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the ExchangeDialog TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor."
+  - address: "0x0046C4C0"
+    name: ui_exchange_item_list_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the ExchangeItemListPane TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor."
   - address: "0x00598F50"
     name: net_exchange_server_packet_ctor
     confidence: high

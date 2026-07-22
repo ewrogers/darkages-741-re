@@ -1108,6 +1108,16 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_exchange_count_dialog_refresh_confirm` | `0x0046C170` | high | Enables the confirmation control only while the quantity text field is nonempty. |
 | `ui_exchange_count_dialog_handle_network_event` | `0x0046C1F0` | high | Consumes decoded SExchange bodies and forwards them to the count-dialog handler. |
 | `ui_exchange_count_dialog_apply_server_event` | `0x0046C250` | high | Closes AddItemWithCountDialog when SExchange reports event 4 Cancelled. |
+| `ui_exchange_dialog_scalar_deleting_dtor` | `0x0046C390` | high | Compiler scalar-deleting destructor for exact RTTI ExchangeDialog. |
+| `ui_exchange_item_list_pane_scalar_deleting_dtor` | `0x0046C3C0` | high | Compiler scalar-deleting destructor for exact RTTI ExchangeItemListPane. |
+| `ui_exchange_add_item_dialog_scalar_deleting_dtor` | `0x0046C3F0` | high | Compiler scalar-deleting destructor for exact RTTI AddItemDialog; corrects a false Concurrency library match. |
+| `ui_exchange_my_item_list_pane_scalar_deleting_dtor` | `0x0046C420` | high | Compiler scalar-deleting destructor for exact RTTI MyItemListPane. |
+| `ui_exchange_count_dialog_scalar_deleting_dtor` | `0x0046C450` | high | Compiler scalar-deleting destructor for exact RTTI AddItemWithCountDialog; corrects a false Concurrency library match. |
+| `ui_exchange_my_item_list_pane_timer_scalar_deleting_dtor_thunk` | `0x0046C480` | high | Adjusts the MyItemListPane TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor. |
+| `ui_exchange_count_dialog_timer_scalar_deleting_dtor_thunk` | `0x0046C490` | high | Adjusts the AddItemWithCountDialog TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor. |
+| `ui_exchange_add_item_dialog_timer_scalar_deleting_dtor_thunk` | `0x0046C4A0` | high | Adjusts the AddItemDialog TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor. |
+| `ui_exchange_dialog_timer_scalar_deleting_dtor_thunk` | `0x0046C4B0` | high | Adjusts the ExchangeDialog TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor. |
+| `ui_exchange_item_list_pane_timer_scalar_deleting_dtor_thunk` | `0x0046C4C0` | high | Adjusts the ExchangeItemListPane TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor. |
 | `ui_family_list_dialog_ctor` | `0x00471320` | high | Constructs FamilyListDialogPane from lfamily.txt, populates local rows, registers the pane, and sends CRequestFamilyName. |
 | `ui_family_list_dialog_handle_network_event` | `0x00471A20` | high | Consumes exact RTTI SFamilyName while FamilyListDialogPane is open. |
 | `ui_family_list_dialog_apply_family_name` | `0x00471AF0` | high | Copies the SFamilyName string8 bytes verbatim into the pane's 256-byte display buffer. |
@@ -2956,6 +2966,97 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `pointer_stack_storage_ctor` | `0x00465900` | high | Allocates and zeroes the pointer stack's initial 0x400-entry storage. |
 | `pointer_stack_storage_dtor` | `0x00465990` | high | Deletes remaining owned values in reverse order and frees pointer-stack storage. |
 | `pointer_stack_storage_push` | `0x00465A00` | high | Grows pointer-stack storage in 0x400-entry steps and appends one pointer. |
+| `expression_context_clear` | `0x0046C4D0` | high | Destroys retained numeric and Boolean nodes, clears both retained lists and the variable lookup arrays, and resets the compiled-expression count. |
+| `expression_context_discard_pending_nodes` | `0x0046C690` | high | Destroys and clears the numeric and Boolean nodes left in the pending compile lists. |
+| `expression_context_begin_compile` | `0x0046C7F0` | high | Clears abandoned pending nodes and redirects the expression library's registration callbacks to the pending lists. |
+| `expression_context_commit_pending_nodes` | `0x0046C830` | high | Moves pending nodes into the retained ownership lists and restores the retained-node registration callbacks. |
+| `expression_context_track_numeric_node` | `0x0046CA10` | high | Appends a numeric expression node to the retained ownership list. |
+| `expression_context_track_pending_numeric_node` | `0x0046CA70` | high | Appends a numeric expression node to the pending compile list. |
+| `expression_context_track_boolean_node` | `0x0046CAD0` | high | Appends a Boolean expression node to the retained ownership list. |
+| `expression_context_track_pending_boolean_node` | `0x0046CB30` | high | Appends a Boolean expression node to the pending compile list. |
+| `expression_context_ctor` | `0x0046CB90` | high | Initializes compiled-expression storage, four node lists, and numeric or Boolean value nodes for the variable-name strings. |
+| `expression_context_dtor` | `0x0046CDD0` | high | Clears compiled expressions and owned nodes, then destroys all four node-list containers. |
+| `expression_context_set_numeric_variable` | `0x0046CEF0` | high | Updates a registered one-byte numeric variable node when that key exists. |
+| `expression_context_set_boolean_variable` | `0x0046CF40` | high | Updates a registered one-byte Boolean variable node when that key exists. |
+| `expression_find_operator` | `0x0046CF80` | high | Looks up one of 14 operator tokens and returns its parser metadata. |
+| `expression_context_compile` | `0x0046D020` | high | Consumes tokens from a callback, applies operator precedence with two stacks, stores the resulting numeric expression tree, and returns its handle. |
+| `expression_parse_number_token` | `0x0046D650` | high | Accepts digits with at most one decimal point and converts the token to a double. |
+| `expression_parse_numeric_variable_token` | `0x0046D710` | high | Accepts a one-byte token and returns it as a numeric-variable key. |
+| `expression_parse_boolean_variable_token` | `0x0046D740` | high | Accepts an underscore plus one byte and returns the second byte as a Boolean-variable key. |
+| `expression_parse_operator_token` | `0x0046D780` | high | Resolves an operator token into ID, precedence, arity, and associativity metadata. |
+| `expression_build_operator_node` | `0x0046D7C0` | high | Constructs typed arithmetic, comparison, Boolean, unary-not, or conditional expression nodes for an operator ID. |
+| `expression_context_evaluate` | `0x0046E4F0` | high | Evaluates a valid compiled-expression handle through its root node's virtual evaluate method. |
+| `expression_operator_stack_unwind_dtor` | `0x0046E540` | high | Compiler cleanup helper that destroys the parser's operator stack during unwinding. |
+| `expression_node_stack_unwind_dtor` | `0x0046E560` | high | Compiler cleanup helper that destroys the parser's expression-node stack during unwinding. |
+| `expression_numeric_node_list_ctor` | `0x0046E580` | high | Constructs a sentinel-based list used to own numeric expression nodes. |
+| `expression_numeric_node_list_dtor` | `0x0046E5E0` | high | Clears a numeric-node ownership list and frees its sentinel. |
+| `expression_numeric_node_list_clear` | `0x0046E650` | high | Unlinks and frees every list node in a numeric-node ownership list. |
+| `expression_boolean_node_list_ctor` | `0x0046E6E0` | high | Constructs a sentinel-based list used to own Boolean expression nodes. |
+| `expression_boolean_node_list_dtor` | `0x0046E740` | high | Clears a Boolean-node ownership list and frees its sentinel. |
+| `expression_boolean_node_list_clear` | `0x0046E7B0` | high | Unlinks and frees every list node in a Boolean-node ownership list. |
+| `expression_operator_stack_ctor` | `0x0046E840` | high | Constructs the deque-backed parser stack of 12-byte operator metadata records. |
+| `expression_operator_stack_dtor` | `0x0046E870` | high | Releases the parser operator stack's deque blocks and map. |
+| `expression_node_stack_ctor` | `0x0046E900` | high | Constructs the deque-backed parser stack of expression-node pointers. |
+| `expression_node_stack_dtor` | `0x0046E930` | high | Releases the parser expression-node stack's deque blocks and map. |
+| `expression_conditional_numeric_scalar_deleting_dtor` | `0x0046E9C0` | high | Compiler scalar-deleting destructor for conditionalOperator&lt;double, bool&gt;. |
+| `expression_base_scalar_deleting_dtor` | `0x0046E9F0` | high | Compiler scalar-deleting destructor for __baseExpression. |
+| `expression_conditional_boolean_scalar_deleting_dtor` | `0x0046EA20` | high | Compiler scalar-deleting destructor for conditionalOperator&lt;bool, bool&gt;. |
+| `expression_equal_numeric_scalar_deleting_dtor` | `0x0046EA50` | high | Compiler scalar-deleting destructor for equalOperator&lt;bool, double, double&gt;. |
+| `expression_equal_boolean_scalar_deleting_dtor` | `0x0046EA80` | high | Compiler scalar-deleting destructor for equalOperator&lt;bool, bool, bool&gt;. |
+| `expression_less_numeric_scalar_deleting_dtor` | `0x0046EAB0` | high | Compiler scalar-deleting destructor for lessOperator&lt;bool, double, double&gt;. |
+| `expression_greater_numeric_scalar_deleting_dtor` | `0x0046EAE0` | high | Compiler scalar-deleting destructor for greaterOperator&lt;bool, double, double&gt;. |
+| `expression_not_boolean_scalar_deleting_dtor` | `0x0046EB10` | high | Compiler scalar-deleting destructor for notOperator&lt;bool, bool&gt;. |
+| `expression_add_numeric_scalar_deleting_dtor` | `0x0046EB40` | high | Compiler scalar-deleting destructor for addOperator&lt;double, double, double&gt;. |
+| `expression_subtract_numeric_scalar_deleting_dtor` | `0x0046EB70` | high | Compiler scalar-deleting destructor for subtractOperator&lt;double, double, double&gt;. |
+| `expression_multiply_numeric_scalar_deleting_dtor` | `0x0046EBA0` | high | Compiler scalar-deleting destructor for multiplyOperator&lt;double, double, double&gt;. |
+| `expression_divide_numeric_scalar_deleting_dtor` | `0x0046EBD0` | high | Compiler scalar-deleting destructor for divideOperator&lt;double, double, double&gt;. |
+| `expression_and_boolean_scalar_deleting_dtor` | `0x0046EC00` | high | Compiler scalar-deleting destructor for andOperator&lt;bool, bool, bool&gt;. |
+| `expression_or_boolean_scalar_deleting_dtor` | `0x0046EC30` | high | Compiler scalar-deleting destructor for orOperator&lt;bool, bool, bool&gt;. |
+| `expression_operator_stack_top` | `0x0046ECC0` | high | Forms an end iterator, retreats one element, and returns the top 12-byte operator record. |
+| `expression_operator_stack_push` | `0x0046ED50` | high | Appends one 12-byte operator record to the deque-backed parser stack. |
+| `expression_operator_stack_pop` | `0x0046EE60` | high | Removes the final 12-byte operator record and resets the deque offset when the stack becomes empty. |
+| `expression_operator_deque_release_storage` | `0x0046EF10` | high | Pops all operator records and frees every allocated deque block and the block map. |
+| `expression_operator_deque_map_dtor` | `0x0046EFE0` | high | Frees the operator deque's block map and clears its pointer. |
+| `expression_node_stack_top` | `0x0046F060` | high | Forms an end iterator, retreats one element, and returns the top expression-node pointer. |
+| `expression_node_stack_push` | `0x0046F0F0` | high | Appends one expression-node pointer to the deque-backed parser stack. |
+| `expression_node_stack_pop` | `0x0046F210` | high | Removes the final expression-node pointer and resets the deque offset when the stack becomes empty. |
+| `expression_node_deque_release_storage` | `0x0046F2C0` | high | Pops all node pointers and frees every allocated deque block and the block map. |
+| `expression_node_deque_map_dtor` | `0x0046F390` | high | Frees the expression-node deque's block map and clears its pointer. |
+| `expression_operator_deque_end_iterator` | `0x0046F430` | high | Builds an iterator at the logical end of the operator deque. |
+| `expression_operator_deque_grow_map` | `0x0046F4E0` | high | Expands and recenters the operator deque's block-pointer map. |
+| `expression_operator_deque_ctor` | `0x0046F890` | high | Initializes an empty deque sized for 12-byte operator records. |
+| `expression_node_deque_end_iterator` | `0x0046F950` | high | Builds an iterator at the logical end of the expression-node deque. |
+| `expression_node_deque_grow_map` | `0x0046FA00` | high | Expands and recenters the expression-node deque's block-pointer map. |
+| `expression_node_deque_ctor` | `0x0046FDB0` | high | Initializes an empty deque sized for expression-node pointers. |
+| `expression_operator_deque_iterator_retreat` | `0x0046FE70` | high | Copies an operator-deque iterator and subtracts a requested element count. |
+| `expression_node_deque_iterator_retreat` | `0x0046FF20` | high | Copies an expression-node deque iterator and subtracts a requested element count. |
+| `expression_operator_deque_iterator_deref` | `0x0046FFD0` | high | Resolves an operator-deque iterator to its 12-byte record. |
+| `expression_node_deque_iterator_deref` | `0x00470050` | high | Resolves an expression-node deque iterator to its pointer element. |
+| `expression_numeric_value_node_ctor` | `0x004700D0` | high | Constructs valueOperator&lt;double&gt; with an initial numeric value. |
+| `expression_numeric_value_node_set` | `0x00470100` | high | Replaces a numeric value node's stored double and returns the previous value. |
+| `expression_numeric_value_node_evaluate` | `0x00470130` | high | Returns a numeric value node's stored double. |
+| `expression_boolean_value_node_set` | `0x00470180` | high | Replaces a Boolean value node's stored byte and returns the previous value. |
+| `expression_boolean_value_node_evaluate` | `0x004701B0` | high | Returns a Boolean value node's stored byte. |
+| `expression_numeric_conditional_base_ctor` | `0x004701D0` | high | Constructs the numeric ternary-expression base from condition, true, and false child nodes. |
+| `expression_numeric_conditional_evaluate` | `0x00470210` | high | Evaluates a Boolean condition and then only the selected numeric branch. |
+| `expression_boolean_conditional_base_ctor` | `0x00470260` | high | Constructs the Boolean ternary-expression base from condition, true, and false child nodes. |
+| `expression_boolean_conditional_evaluate` | `0x004702A0` | high | Evaluates a Boolean condition and then only the selected Boolean branch. |
+| `expression_numeric_comparison_base_ctor` | `0x004702F0` | high | Constructs a Boolean-result binary node with two numeric operands. |
+| `expression_numeric_equal_evaluate` | `0x00470330` | high | Evaluates two numeric operands and compares them for equality. |
+| `expression_boolean_binary_base_ctor` | `0x00470390` | high | Constructs a Boolean-result binary node with two Boolean operands. |
+| `expression_boolean_equal_evaluate` | `0x004703D0` | high | Evaluates two Boolean operands and compares them for equality. |
+| `expression_numeric_less_evaluate` | `0x00470420` | high | Evaluates two numeric operands and performs the less-than comparison. |
+| `expression_numeric_greater_evaluate` | `0x00470480` | high | Evaluates two numeric operands and performs the greater-than comparison. |
+| `expression_boolean_unary_base_ctor` | `0x004704E0` | high | Constructs a Boolean-result unary node with one Boolean operand. |
+| `expression_boolean_not_evaluate` | `0x00470510` | high | Evaluates one Boolean operand and negates it. |
+| `expression_numeric_binary_base_ctor` | `0x00470540` | high | Constructs a numeric-result binary node with two numeric operands. |
+| `expression_numeric_add_evaluate` | `0x00470580` | high | Evaluates and adds two numeric operands. |
+| `expression_numeric_subtract_evaluate` | `0x004705C0` | high | Evaluates and subtracts two numeric operands. |
+| `expression_numeric_multiply_evaluate` | `0x00470600` | high | Evaluates and multiplies two numeric operands. |
+| `expression_numeric_divide_evaluate` | `0x00470640` | high | Evaluates and divides two numeric operands. |
+| `expression_boolean_and_evaluate` | `0x004706E0` | high | Evaluates Boolean AND with short-circuit behavior. |
+| `expression_boolean_or_evaluate` | `0x00470740` | high | Evaluates Boolean OR with short-circuit behavior. |
+| `expression_operator_metadata_copy` | `0x004707C0` | high | Copies the parser's three-field operator metadata record. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

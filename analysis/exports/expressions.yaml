@@ -1,0 +1,374 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0046C4D0"
+    name: expression_context_clear
+    confidence: high
+    evidence: "Destroys retained numeric and Boolean nodes, clears both retained lists and the variable lookup arrays, and resets the compiled-expression count."
+  - address: "0x0046C690"
+    name: expression_context_discard_pending_nodes
+    confidence: high
+    evidence: "Destroys and clears the numeric and Boolean nodes left in the pending compile lists."
+  - address: "0x0046C7F0"
+    name: expression_context_begin_compile
+    confidence: high
+    evidence: "Clears abandoned pending nodes and redirects the expression library's registration callbacks to the pending lists."
+  - address: "0x0046C830"
+    name: expression_context_commit_pending_nodes
+    confidence: high
+    evidence: "Moves pending nodes into the retained ownership lists and restores the retained-node registration callbacks."
+  - address: "0x0046CA10"
+    name: expression_context_track_numeric_node
+    confidence: high
+    evidence: "Appends a numeric expression node to the retained ownership list."
+  - address: "0x0046CA70"
+    name: expression_context_track_pending_numeric_node
+    confidence: high
+    evidence: "Appends a numeric expression node to the pending compile list."
+  - address: "0x0046CAD0"
+    name: expression_context_track_boolean_node
+    confidence: high
+    evidence: "Appends a Boolean expression node to the retained ownership list."
+  - address: "0x0046CB30"
+    name: expression_context_track_pending_boolean_node
+    confidence: high
+    evidence: "Appends a Boolean expression node to the pending compile list."
+  - address: "0x0046CB90"
+    name: expression_context_ctor
+    confidence: high
+    evidence: "Initializes compiled-expression storage, four node lists, and numeric or Boolean value nodes for the variable-name strings."
+  - address: "0x0046CDD0"
+    name: expression_context_dtor
+    confidence: high
+    evidence: "Clears compiled expressions and owned nodes, then destroys all four node-list containers."
+  - address: "0x0046CEF0"
+    name: expression_context_set_numeric_variable
+    confidence: high
+    evidence: "Updates a registered one-byte numeric variable node when that key exists."
+  - address: "0x0046CF40"
+    name: expression_context_set_boolean_variable
+    confidence: high
+    evidence: "Updates a registered one-byte Boolean variable node when that key exists."
+  - address: "0x0046CF80"
+    name: expression_find_operator
+    confidence: high
+    evidence: "Looks up one of 14 operator tokens and returns its parser metadata."
+  - address: "0x0046D020"
+    name: expression_context_compile
+    confidence: high
+    evidence: "Consumes tokens from a callback, applies operator precedence with two stacks, stores the resulting numeric expression tree, and returns its handle."
+  - address: "0x0046D650"
+    name: expression_parse_number_token
+    confidence: high
+    evidence: "Accepts digits with at most one decimal point and converts the token to a double."
+  - address: "0x0046D710"
+    name: expression_parse_numeric_variable_token
+    confidence: high
+    evidence: "Accepts a one-byte token and returns it as a numeric-variable key."
+  - address: "0x0046D740"
+    name: expression_parse_boolean_variable_token
+    confidence: high
+    evidence: "Accepts an underscore plus one byte and returns the second byte as a Boolean-variable key."
+  - address: "0x0046D780"
+    name: expression_parse_operator_token
+    confidence: high
+    evidence: "Resolves an operator token into ID, precedence, arity, and associativity metadata."
+  - address: "0x0046D7C0"
+    name: expression_build_operator_node
+    confidence: high
+    evidence: "Constructs typed arithmetic, comparison, Boolean, unary-not, or conditional expression nodes for an operator ID."
+  - address: "0x0046E4F0"
+    name: expression_context_evaluate
+    confidence: high
+    evidence: "Evaluates a valid compiled-expression handle through its root node's virtual evaluate method."
+  - address: "0x0046E540"
+    name: expression_operator_stack_unwind_dtor
+    confidence: high
+    evidence: "Compiler cleanup helper that destroys the parser's operator stack during unwinding."
+  - address: "0x0046E560"
+    name: expression_node_stack_unwind_dtor
+    confidence: high
+    evidence: "Compiler cleanup helper that destroys the parser's expression-node stack during unwinding."
+  - address: "0x0046E580"
+    name: expression_numeric_node_list_ctor
+    confidence: high
+    evidence: "Constructs a sentinel-based list used to own numeric expression nodes."
+  - address: "0x0046E5E0"
+    name: expression_numeric_node_list_dtor
+    confidence: high
+    evidence: "Clears a numeric-node ownership list and frees its sentinel."
+  - address: "0x0046E650"
+    name: expression_numeric_node_list_clear
+    confidence: high
+    evidence: "Unlinks and frees every list node in a numeric-node ownership list."
+  - address: "0x0046E6E0"
+    name: expression_boolean_node_list_ctor
+    confidence: high
+    evidence: "Constructs a sentinel-based list used to own Boolean expression nodes."
+  - address: "0x0046E740"
+    name: expression_boolean_node_list_dtor
+    confidence: high
+    evidence: "Clears a Boolean-node ownership list and frees its sentinel."
+  - address: "0x0046E7B0"
+    name: expression_boolean_node_list_clear
+    confidence: high
+    evidence: "Unlinks and frees every list node in a Boolean-node ownership list."
+  - address: "0x0046E840"
+    name: expression_operator_stack_ctor
+    confidence: high
+    evidence: "Constructs the deque-backed parser stack of 12-byte operator metadata records."
+  - address: "0x0046E870"
+    name: expression_operator_stack_dtor
+    confidence: high
+    evidence: "Releases the parser operator stack's deque blocks and map."
+  - address: "0x0046E900"
+    name: expression_node_stack_ctor
+    confidence: high
+    evidence: "Constructs the deque-backed parser stack of expression-node pointers."
+  - address: "0x0046E930"
+    name: expression_node_stack_dtor
+    confidence: high
+    evidence: "Releases the parser expression-node stack's deque blocks and map."
+  - address: "0x0046E9C0"
+    name: expression_conditional_numeric_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for conditionalOperator<double, bool>."
+  - address: "0x0046E9F0"
+    name: expression_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for __baseExpression."
+  - address: "0x0046EA20"
+    name: expression_conditional_boolean_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for conditionalOperator<bool, bool>."
+  - address: "0x0046EA50"
+    name: expression_equal_numeric_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for equalOperator<bool, double, double>."
+  - address: "0x0046EA80"
+    name: expression_equal_boolean_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for equalOperator<bool, bool, bool>."
+  - address: "0x0046EAB0"
+    name: expression_less_numeric_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for lessOperator<bool, double, double>."
+  - address: "0x0046EAE0"
+    name: expression_greater_numeric_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for greaterOperator<bool, double, double>."
+  - address: "0x0046EB10"
+    name: expression_not_boolean_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for notOperator<bool, bool>."
+  - address: "0x0046EB40"
+    name: expression_add_numeric_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for addOperator<double, double, double>."
+  - address: "0x0046EB70"
+    name: expression_subtract_numeric_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for subtractOperator<double, double, double>."
+  - address: "0x0046EBA0"
+    name: expression_multiply_numeric_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for multiplyOperator<double, double, double>."
+  - address: "0x0046EBD0"
+    name: expression_divide_numeric_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for divideOperator<double, double, double>."
+  - address: "0x0046EC00"
+    name: expression_and_boolean_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for andOperator<bool, bool, bool>."
+  - address: "0x0046EC30"
+    name: expression_or_boolean_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for orOperator<bool, bool, bool>."
+  - address: "0x0046ECC0"
+    name: expression_operator_stack_top
+    confidence: high
+    evidence: "Forms an end iterator, retreats one element, and returns the top 12-byte operator record."
+  - address: "0x0046ED50"
+    name: expression_operator_stack_push
+    confidence: high
+    evidence: "Appends one 12-byte operator record to the deque-backed parser stack."
+  - address: "0x0046EE60"
+    name: expression_operator_stack_pop
+    confidence: high
+    evidence: "Removes the final 12-byte operator record and resets the deque offset when the stack becomes empty."
+  - address: "0x0046EF10"
+    name: expression_operator_deque_release_storage
+    confidence: high
+    evidence: "Pops all operator records and frees every allocated deque block and the block map."
+  - address: "0x0046EFE0"
+    name: expression_operator_deque_map_dtor
+    confidence: high
+    evidence: "Frees the operator deque's block map and clears its pointer."
+  - address: "0x0046F060"
+    name: expression_node_stack_top
+    confidence: high
+    evidence: "Forms an end iterator, retreats one element, and returns the top expression-node pointer."
+  - address: "0x0046F0F0"
+    name: expression_node_stack_push
+    confidence: high
+    evidence: "Appends one expression-node pointer to the deque-backed parser stack."
+  - address: "0x0046F210"
+    name: expression_node_stack_pop
+    confidence: high
+    evidence: "Removes the final expression-node pointer and resets the deque offset when the stack becomes empty."
+  - address: "0x0046F2C0"
+    name: expression_node_deque_release_storage
+    confidence: high
+    evidence: "Pops all node pointers and frees every allocated deque block and the block map."
+  - address: "0x0046F390"
+    name: expression_node_deque_map_dtor
+    confidence: high
+    evidence: "Frees the expression-node deque's block map and clears its pointer."
+  - address: "0x0046F430"
+    name: expression_operator_deque_end_iterator
+    confidence: high
+    evidence: "Builds an iterator at the logical end of the operator deque."
+  - address: "0x0046F4E0"
+    name: expression_operator_deque_grow_map
+    confidence: high
+    evidence: "Expands and recenters the operator deque's block-pointer map."
+  - address: "0x0046F890"
+    name: expression_operator_deque_ctor
+    confidence: high
+    evidence: "Initializes an empty deque sized for 12-byte operator records."
+  - address: "0x0046F950"
+    name: expression_node_deque_end_iterator
+    confidence: high
+    evidence: "Builds an iterator at the logical end of the expression-node deque."
+  - address: "0x0046FA00"
+    name: expression_node_deque_grow_map
+    confidence: high
+    evidence: "Expands and recenters the expression-node deque's block-pointer map."
+  - address: "0x0046FDB0"
+    name: expression_node_deque_ctor
+    confidence: high
+    evidence: "Initializes an empty deque sized for expression-node pointers."
+  - address: "0x0046FE70"
+    name: expression_operator_deque_iterator_retreat
+    confidence: high
+    evidence: "Copies an operator-deque iterator and subtracts a requested element count."
+  - address: "0x0046FF20"
+    name: expression_node_deque_iterator_retreat
+    confidence: high
+    evidence: "Copies an expression-node deque iterator and subtracts a requested element count."
+  - address: "0x0046FFD0"
+    name: expression_operator_deque_iterator_deref
+    confidence: high
+    evidence: "Resolves an operator-deque iterator to its 12-byte record."
+  - address: "0x00470050"
+    name: expression_node_deque_iterator_deref
+    confidence: high
+    evidence: "Resolves an expression-node deque iterator to its pointer element."
+  - address: "0x004700D0"
+    name: expression_numeric_value_node_ctor
+    confidence: high
+    evidence: "Constructs valueOperator<double> with an initial numeric value."
+  - address: "0x00470100"
+    name: expression_numeric_value_node_set
+    confidence: high
+    evidence: "Replaces a numeric value node's stored double and returns the previous value."
+  - address: "0x00470130"
+    name: expression_numeric_value_node_evaluate
+    confidence: high
+    evidence: "Returns a numeric value node's stored double."
+  - address: "0x00470180"
+    name: expression_boolean_value_node_set
+    confidence: high
+    evidence: "Replaces a Boolean value node's stored byte and returns the previous value."
+  - address: "0x004701B0"
+    name: expression_boolean_value_node_evaluate
+    confidence: high
+    evidence: "Returns a Boolean value node's stored byte."
+  - address: "0x004701D0"
+    name: expression_numeric_conditional_base_ctor
+    confidence: high
+    evidence: "Constructs the numeric ternary-expression base from condition, true, and false child nodes."
+  - address: "0x00470210"
+    name: expression_numeric_conditional_evaluate
+    confidence: high
+    evidence: "Evaluates a Boolean condition and then only the selected numeric branch."
+  - address: "0x00470260"
+    name: expression_boolean_conditional_base_ctor
+    confidence: high
+    evidence: "Constructs the Boolean ternary-expression base from condition, true, and false child nodes."
+  - address: "0x004702A0"
+    name: expression_boolean_conditional_evaluate
+    confidence: high
+    evidence: "Evaluates a Boolean condition and then only the selected Boolean branch."
+  - address: "0x004702F0"
+    name: expression_numeric_comparison_base_ctor
+    confidence: high
+    evidence: "Constructs a Boolean-result binary node with two numeric operands."
+  - address: "0x00470330"
+    name: expression_numeric_equal_evaluate
+    confidence: high
+    evidence: "Evaluates two numeric operands and compares them for equality."
+  - address: "0x00470390"
+    name: expression_boolean_binary_base_ctor
+    confidence: high
+    evidence: "Constructs a Boolean-result binary node with two Boolean operands."
+  - address: "0x004703D0"
+    name: expression_boolean_equal_evaluate
+    confidence: high
+    evidence: "Evaluates two Boolean operands and compares them for equality."
+  - address: "0x00470420"
+    name: expression_numeric_less_evaluate
+    confidence: high
+    evidence: "Evaluates two numeric operands and performs the less-than comparison."
+  - address: "0x00470480"
+    name: expression_numeric_greater_evaluate
+    confidence: high
+    evidence: "Evaluates two numeric operands and performs the greater-than comparison."
+  - address: "0x004704E0"
+    name: expression_boolean_unary_base_ctor
+    confidence: high
+    evidence: "Constructs a Boolean-result unary node with one Boolean operand."
+  - address: "0x00470510"
+    name: expression_boolean_not_evaluate
+    confidence: high
+    evidence: "Evaluates one Boolean operand and negates it."
+  - address: "0x00470540"
+    name: expression_numeric_binary_base_ctor
+    confidence: high
+    evidence: "Constructs a numeric-result binary node with two numeric operands."
+  - address: "0x00470580"
+    name: expression_numeric_add_evaluate
+    confidence: high
+    evidence: "Evaluates and adds two numeric operands."
+  - address: "0x004705C0"
+    name: expression_numeric_subtract_evaluate
+    confidence: high
+    evidence: "Evaluates and subtracts two numeric operands."
+  - address: "0x00470600"
+    name: expression_numeric_multiply_evaluate
+    confidence: high
+    evidence: "Evaluates and multiplies two numeric operands."
+  - address: "0x00470640"
+    name: expression_numeric_divide_evaluate
+    confidence: high
+    evidence: "Evaluates and divides two numeric operands."
+  - address: "0x004706E0"
+    name: expression_boolean_and_evaluate
+    confidence: high
+    evidence: "Evaluates Boolean AND with short-circuit behavior."
+  - address: "0x00470740"
+    name: expression_boolean_or_evaluate
+    confidence: high
+    evidence: "Evaluates Boolean OR with short-circuit behavior."
+  - address: "0x004707C0"
+    name: expression_operator_metadata_copy
+    confidence: high
+    evidence: "Copies the parser's three-field operator metadata record."
+comments: []

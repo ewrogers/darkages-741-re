@@ -38,7 +38,7 @@ parse_palette_line(tokens):
 | `gndattr.tbl` | Ground paint and special tile states | Structured `set_attr` records applied to tile IDs and inclusive ranges |
 | `color.tbl` | Named color sets | Record ID followed by six RGB triples |
 | `color*.tbl` | Variant color sets | Related RGB text records |
-| `meffect.tbl` | Motion effect definitions | Structured text with several numeric fields |
+| [`meffect.tbl`](motion-effect-table.md) | Motion effect definitions | Structured text with numeric or compiled expression fields |
 | `Skill_e.tbl`, `Skill_i.tbl` | Skill animation and behavior rows | Numeric text, semicolon comments |
 | `msg.tbl` | Language messages | Line-oriented byte strings |
 | `npci.tbl` | NPC information | Hierarchical text, full grammar not yet mapped |
@@ -71,6 +71,8 @@ Keep comments, ordering, numeric bases, and unknown columns from a compatible so
 - `file_load_ground_attribute_table` at `0x0058B8C0`
 - `file_load_color_table` at `0x0044CD50`
 - `file_load_motion_effect_table` at `0x0050E840`
+- `expression_context_compile` at `0x0046D020`
+- `expression_context_evaluate` at `0x0046E4F0`
 - `file_parse_skill_table` at `0x00561840`
 - `file_load_message_table` at `0x004A4AA0`
 - `file_load_npc_info_table` at `0x005322A0`
