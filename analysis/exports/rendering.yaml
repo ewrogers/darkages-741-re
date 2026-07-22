@@ -2591,6 +2591,54 @@ functions:
     name: light_time_entry_copy_construct_for_list_copy
     confidence: high
     evidence: "Copies the four scalar fields of one lighting time entry for the list-copy instantiation."
+  - address: "0x004C3FF0"
+    name: map_bottom_image_library_ctor
+    confidence: high
+    evidence: "Constructs RTTI class MapBtmImageLib with empty capacity, count, image-ID array, and pixmap array."
+  - address: "0x004C4030"
+    name: map_bottom_image_library_dtor
+    confidence: high
+    evidence: "Destroys MapBtmImageLib after releasing its cached records and allocation arrays."
+  - address: "0x004C4050"
+    name: map_bottom_image_library_clear
+    confidence: high
+    evidence: "Releases every cached bottom-image pixmap plus the ID and record arrays, then resets the counts."
+  - address: "0x004C4100"
+    name: map_bottom_image_library_allocate
+    confidence: high
+    evidence: "Allocates a u16 image-ID table and parallel 0x34-byte pixmap-record array for a requested capacity."
+  - address: "0x004C4220"
+    name: map_bottom_image_library_load_loose_pcx
+    confidence: high
+    evidence: "Caches a bottom image loaded from dormant loose path .\\bottom\\btmNNNNN.pcx; no local caller is present."
+  - address: "0x004C4440"
+    name: map_bottom_image_library_load_archive_pcx
+    confidence: high
+    evidence: "Caches btmNNNNN.pcx from the SEO archive and returns its zero-based library index."
+  - address: "0x004C4650"
+    name: map_bottom_layer_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI MapBtmLayer, its image library, and two owned placement-record lists."
+  - address: "0x004C4710"
+    name: map_bottom_layer_dtor
+    confidence: high
+    evidence: "Destroys MapBtmLayer's placement lists, image library, and base timer-handler state."
+  - address: "0x004C4910"
+    name: map_bottom_layer_set_dimensions
+    confidence: high
+    evidence: "Stores the bottom layer's map width and height as u16 values."
+  - address: "0x004C4940"
+    name: map_bottom_layer_load_legacy_lod_file
+    confidence: high
+    evidence: "Parses dormant loose .\\maps\\lodN.mbl placement text and resolves its PCX images through the SEO archive."
+  - address: "0x004C4CB0"
+    name: map_request_bottom_layer_metadata
+    confidence: high
+    evidence: "Formats a six-digit map ID as NNNNNN.mbl and asks the resource manager to fill a fixed 0x1394-byte buffer."
+  - address: "0x004C4D20"
+    name: map_bottom_layer_load_from_resource_entry
+    confidence: high
+    evidence: "Parses a resource-manager bottom-layer entry, resolves its cached PCX images, computes placement bounds, and marks the layer active."
   - address: "0x004C5270"
     name: render_map_background_images
     confidence: high

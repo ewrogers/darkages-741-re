@@ -883,6 +883,30 @@ functions:
     name: ui_has_layout_manager
     confidence: high
     evidence: "Reports whether the UI layout-manager singleton pointer is non-null."
+  - address: "0x004BE990"
+    name: ui_destroy_global_status_layout_assets
+    confidence: high
+    evidence: "Application shutdown wrapper that invokes the global status-layout asset set's no-op destructor."
+  - address: "0x004BE9A0"
+    name: ui_status_layout_assets_load
+    confidence: high
+    evidence: "Loads _nstatus.txt or a supplied replacement into one status-layout asset set, including panel, statistic, modifier, and LevelUp geometry."
+  - address: "0x004C0850"
+    name: ui_load_status_layout_globals
+    confidence: high
+    evidence: "Loads _nstatus.txt into the legacy global status-panel rectangles and pixmaps."
+  - address: "0x004C1980"
+    name: ui_status_layout_assets_dtor_noop
+    confidence: high
+    evidence: "No-op destructor reached by the global status-layout shutdown wrapper."
+  - address: "0x004C1990"
+    name: ui_status_layout_assets_ctor
+    confidence: high
+    evidence: "Constructs the pixmap records embedded in one status-layout asset set."
+  - address: "0x004C1A00"
+    name: ui_command_button_assets_ctor
+    confidence: high
+    evidence: "Constructs four pairs of pixmap records used by the gameplay command-button asset set."
   - address: "0x005ABA30"
     name: ui_user_info_pane_ctor
     confidence: high

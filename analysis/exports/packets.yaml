@@ -2363,6 +2363,10 @@ functions:
     name: net_send_manual_craft
     confidence: high
     evidence: "Builds CManual action 1 with the echoed manufacture ID, string8 recipe name, and additional inventory slot."
+  - address: "0x004C2DC0"
+    name: net_handle_input_server_block_raw
+    confidence: high
+    evidence: "Reads the raw input-block state byte, ending the event manager's server block when nonzero or beginning it after consuming the zero-state's extra byte."
   - address: "0x004CAC20"
     name: ui_server_item_menu_dialog_handle_network_event
     confidence: high

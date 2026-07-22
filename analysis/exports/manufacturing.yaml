@@ -15,6 +15,14 @@ functions:
     name: maybe_ui_manufacture_dialog_ctor_from_body
     confidence: medium
     evidence: "Duplicates the lmanu.txt construction path and applies a decoded opcode-first body, but no live static caller was recovered."
+  - address: "0x004C1FE0"
+    name: ui_manufacture_dialog_add_image_button
+    confidence: high
+    evidence: "Creates a named lmanu.txt image button and appends it to ManufactureDialogPane's control collection."
+  - address: "0x004C2010"
+    name: ui_manufacture_dialog_add_static_text
+    confidence: high
+    evidence: "Creates a static-text control from a named lmanu.txt rectangle and colors, then appends it to ManufactureDialogPane."
   - address: "0x004C20D0"
     name: ui_manufacture_dialog_ctor
     confidence: high
@@ -23,6 +31,10 @@ functions:
     name: ui_manufacture_dialog_dtor
     confidence: high
     evidence: "Clears the singleton, unregisters the pane from event routing, and runs the DialogPane destructor."
+  - address: "0x004C26C0"
+    name: ui_manufacture_dialog_slot_state_hook_noop
+    confidence: high
+    evidence: "Empty hook called around both inventory-slot state changes and during ManufactureDialogPane destruction."
   - address: "0x004C26D0"
     name: net_send_manual_recipe_request
     confidence: high
@@ -47,6 +59,14 @@ functions:
     name: ui_manufacture_dialog_handle_remove_inventory
     confidence: high
     evidence: "Clears a removed additional slot and closes the pane when SRemoveInventory removes the source manual slot."
+  - address: "0x004C2F60"
+    name: ui_manufacture_dialog_handle_add_inventory_raw
+    confidence: high
+    evidence: "Raw-buffer counterpart of the SAddInventory handler for selected manufacture inventory slots."
+  - address: "0x004C3010"
+    name: ui_manufacture_dialog_handle_remove_inventory_raw
+    confidence: high
+    evidence: "Raw-buffer counterpart of the SRemoveInventory handler for selected manufacture inventory slots."
   - address: "0x004C30A0"
     name: ui_manufacture_dialog_handle_keyboard_event
     confidence: high
@@ -71,6 +91,14 @@ functions:
     name: ui_manufacture_dialog_clear_recipe
     confidence: high
     evidence: "Clears index, sprite, all three recipe strings, additional-item mode, and the selected additional slot."
+  - address: "0x004C3530"
+    name: ui_manufacture_dialog_clear_display
+    confidence: high
+    evidence: "Resets navigation, count, item canvases, and all displayed recipe text controls."
+  - address: "0x004C36F0"
+    name: ui_manufacture_dialog_clear_item_canvas
+    confidence: high
+    evidence: "Clears the full bounds of a ManufactureDialogPane item-preview canvas inside a begin/end drawing pass."
   - address: "0x004C3750"
     name: ui_manufacture_dialog_refresh
     confidence: high
@@ -79,6 +107,10 @@ functions:
     name: ui_manufacture_dialog_handle_additional_item_drop
     confidence: high
     evidence: "When additional-item mode equals 1, copies a dropped inventory item's image and records its one-based slot."
+  - address: "0x004C3DB0"
+    name: ui_manufacture_dialog_set_primary_slot
+    confidence: high
+    evidence: "Updates the one-byte primary inventory slot while invoking the slot-state hook around the assignment."
   - address: "0x004C3E00"
     name: ui_manufacture_dialog_set_additional_slot
     confidence: high
@@ -87,6 +119,26 @@ functions:
     name: net_read_manual_length_prefixed_text
     confidence: high
     evidence: "Reads 1-, 2-, 3-, or 4-byte big-endian lengths, copies a bounded prefix, terminates it, and advances over the full declared value."
+  - address: "0x004C3F20"
+    name: ui_manufacture_dialog_handle_timer_noop
+    confidence: high
+    evidence: "ManufactureDialogPane TimerHandler callback that performs no work and returns false."
+  - address: "0x004C3F30"
+    name: ui_manufacture_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for the RTTI-backed ManufactureDialogPane class."
+  - address: "0x004C3F60"
+    name: ui_manufacture_dialog_register_singleton
+    confidence: high
+    evidence: "Registers the owning ManufactureDialogPane from its embedded singleton helper at offset 0x630."
+  - address: "0x004C3FA0"
+    name: ui_manufacture_dialog_unregister_singleton
+    confidence: high
+    evidence: "Clears the global singleton when it still points to the ManufactureDialogPane that owns the embedded helper."
+  - address: "0x004C3FE0"
+    name: ui_manufacture_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the ManufactureDialogPane scalar deleting destructor."
   - address: "0x00599A60"
     name: net_create_manual_server_packet
     confidence: high

@@ -44,6 +44,10 @@ The server does not send every animation frame. See [tile animation tables](../f
 
 `render_map_background_images` draws map background or bottom-layer images before world objects. These images use the same pixmap blitter used by normal UI and sprite art.
 
+`MapBtmLayer` supplies that optional bottom layer. When `SMapSize` selects a map, the client asks its resource manager for a six-digit `NNNNNN.mbl` entry using a fixed 0x1394-byte destination buffer. The active loader reads a placement count followed by records containing three decimal integers: a bottom-image ID, x, and y. It resolves each image as `btmNNNNN.pcx` from the SEO archive, caches repeated IDs in `MapBtmImageLib`, and expands each placement to a rectangle using the decoded image width and height.
+
+A separate loader understands loose `.\\maps\\lodN.mbl` text and `.\\bottom\\btmNNNNN.pcx` files, but it has no local caller in this build. The resource-manager and SEO-archive path is the one connected to map changes.
+
 ## Sprites and objects
 
 `render_collect_world_objects` gathers objects that overlap the visible cells. It clips their screen bounds and places them into one of 32 draw queues.

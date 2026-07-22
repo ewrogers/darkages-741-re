@@ -2082,20 +2082,39 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_input_birthdate_dialog_timer_scalar_deleting_dtor_thunk` | `0x004BCC90` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the InputBirthdateDialogPane scalar deleting destructor. |
 | `ui_login_dialog_timer_scalar_deleting_dtor_thunk` | `0x004BCCA0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the LoginDialogPane scalar deleting destructor. |
 | `ui_load_gameplay_layout` | `0x004BCCB0` | high | Loads lback.txt and caches the gameplay HUD rectangles and pixmaps, including inventory variants, HP/MP, portrait, ping, and command buttons. |
+| `ui_destroy_global_status_layout_assets` | `0x004BE990` | high | Application shutdown wrapper that invokes the global status-layout asset set's no-op destructor. |
+| `ui_status_layout_assets_load` | `0x004BE9A0` | high | Loads _nstatus.txt or a supplied replacement into one status-layout asset set, including panel, statistic, modifier, and LevelUp geometry. |
+| `ui_load_status_layout_globals` | `0x004C0850` | high | Loads _nstatus.txt into the legacy global status-panel rectangles and pixmaps. |
+| `ui_status_layout_assets_dtor_noop` | `0x004C1980` | high | No-op destructor reached by the global status-layout shutdown wrapper. |
+| `ui_status_layout_assets_ctor` | `0x004C1990` | high | Constructs the pixmap records embedded in one status-layout asset set. |
+| `ui_command_button_assets_ctor` | `0x004C1A00` | high | Constructs four pairs of pixmap records used by the gameplay command-button asset set. |
+| `ui_manufacture_dialog_add_image_button` | `0x004C1FE0` | high | Creates a named lmanu.txt image button and appends it to ManufactureDialogPane's control collection. |
+| `ui_manufacture_dialog_add_static_text` | `0x004C2010` | high | Creates a static-text control from a named lmanu.txt rectangle and colors, then appends it to ManufactureDialogPane. |
 | `ui_manufacture_dialog_ctor` | `0x004C20D0` | high | Constructs exact RTTI ManufactureDialogPane from lmanu.txt, attaches ten controls, applies the opening typed SManual, and registers the modal pane. |
 | `ui_manufacture_dialog_dtor` | `0x004C25E0` | high | Clears the singleton, unregisters the pane from event routing, and runs the DialogPane destructor. |
+| `ui_manufacture_dialog_slot_state_hook_noop` | `0x004C26C0` | high | Empty hook called around both inventory-slot state changes and during ManufactureDialogPane destruction. |
 | `ui_manufacture_dialog_apply_manual_packet` | `0x004C2BC0` | high | Applies typed SManual fields, validates the source inventory slot, requests recipe zero after a nonzero count, and stores recipe display state. |
 | `ui_manufacture_dialog_handle_add_inventory` | `0x004C2E50` | high | Clears the optional selected slot when SAddInventory replaces that inventory entry. |
 | `ui_manufacture_dialog_handle_remove_inventory` | `0x004C2EE0` | high | Clears a removed additional slot and closes the pane when SRemoveInventory removes the source manual slot. |
+| `ui_manufacture_dialog_handle_add_inventory_raw` | `0x004C2F60` | high | Raw-buffer counterpart of the SAddInventory handler for selected manufacture inventory slots. |
+| `ui_manufacture_dialog_handle_remove_inventory_raw` | `0x004C3010` | high | Raw-buffer counterpart of the SRemoveInventory handler for selected manufacture inventory slots. |
 | `ui_manufacture_dialog_handle_keyboard_event` | `0x004C30A0` | high | Maps internal key values 0x80, 0x82, 0x93, and 0x94 to recipe request deltas -1, +1, -10, and +10 with bounds checks. |
 | `ui_manufacture_dialog_handle_action` | `0x004C3230` | high | Maps attachment-order actions 0 through 3 to craft, close, next recipe, and previous recipe. |
 | `ui_manufacture_dialog_handle_network_event` | `0x004C32F0` | high | Routes typed SManual 0x50, SAddInventory 0x0F, and SRemoveInventory 0x10 to the manufacture pane handlers. |
 | `ui_manufacture_dialog_handle_pointer_event` | `0x004C3390` | high | Clears the optional additional inventory slot when the user clicks inside its canvas. |
 | `ui_manufacture_dialog_reset_session` | `0x004C3490` | high | Resets manufacture ID, recipe count, and current recipe before applying a RecipeCount message. |
 | `ui_manufacture_dialog_clear_recipe` | `0x004C34D0` | high | Clears index, sprite, all three recipe strings, additional-item mode, and the selected additional slot. |
+| `ui_manufacture_dialog_clear_display` | `0x004C3530` | high | Resets navigation, count, item canvases, and all displayed recipe text controls. |
+| `ui_manufacture_dialog_clear_item_canvas` | `0x004C36F0` | high | Clears the full bounds of a ManufactureDialogPane item-preview canvas inside a begin/end drawing pass. |
 | `ui_manufacture_dialog_refresh` | `0x004C3750` | high | Updates navigation controls, count text, recipe icon and strings, and the additional inventory-item preview. |
 | `ui_manufacture_dialog_handle_additional_item_drop` | `0x004C3CA0` | high | When additional-item mode equals 1, copies a dropped inventory item's image and records its one-based slot. |
+| `ui_manufacture_dialog_set_primary_slot` | `0x004C3DB0` | high | Updates the one-byte primary inventory slot while invoking the slot-state hook around the assignment. |
 | `ui_manufacture_dialog_set_additional_slot` | `0x004C3E00` | high | Stores the one-byte inventory slot sent by CManual CraftRecipe; zero clears the selection. |
+| `ui_manufacture_dialog_handle_timer_noop` | `0x004C3F20` | high | ManufactureDialogPane TimerHandler callback that performs no work and returns false. |
+| `ui_manufacture_dialog_scalar_deleting_dtor` | `0x004C3F30` | high | MSVC scalar deleting destructor for the RTTI-backed ManufactureDialogPane class. |
+| `ui_manufacture_dialog_register_singleton` | `0x004C3F60` | high | Registers the owning ManufactureDialogPane from its embedded singleton helper at offset 0x630. |
+| `ui_manufacture_dialog_unregister_singleton` | `0x004C3FA0` | high | Clears the global singleton when it still points to the ManufactureDialogPane that owns the embedded helper. |
+| `ui_manufacture_dialog_timer_scalar_deleting_dtor_thunk` | `0x004C3FE0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the ManufactureDialogPane scalar deleting destructor. |
 | `ui_server_item_menu_dialog_handle_network_event` | `0x004CAC20` | high | TaskListDialog::ServerItemMenuDialog3 network-event handler accepts SStatus updates containing progression and currency. |
 | `ui_server_item_menu_update_gold_from_status_packet` | `0x004CAC90` | high | Copies SStatus gold into the server-item menu dialog and redraws its currency display. |
 | `ui_merchant_server_item_menu3_timer_callback` | `0x004CACD0` | high | TimerHandler callback installed by exact RTTI ServerItemMenuDialog3; subtype 1 applies the scroll offset and updates a row tooltip, while subtype 2 closes DescPane. |
@@ -2560,6 +2579,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_calculate_login_block_integrity` | `0x004BCAD0` | high | Applies the custom 0x1021-table recurrence over the first 12 CLogin installation-block bytes. |
 | `net_send_manual_recipe_request` | `0x004C26D0` | high | Builds CManual action 0 with the echoed manufacture ID and a zero-based u8 recipe index. |
 | `net_send_manual_craft` | `0x004C27C0` | high | Builds CManual action 1 with the echoed manufacture ID, string8 recipe name, and additional inventory slot. |
+| `net_handle_input_server_block_raw` | `0x004C2DC0` | high | Reads the raw input-block state byte, ending the event manager's server block when nonzero or beginning it after consuming the zero-state's extra byte. |
 | `net_read_manual_length_prefixed_text` | `0x004C3E50` | high | Reads 1-, 2-, 3-, or 4-byte big-endian lengths, copies a bounded prefix, terminates it, and advances over the full declared value. |
 | `net_request_object_info` | `0x004CD350` | high | Merchant menu paths call this opcode 0x43 object information request. |
 | `net_send_merchant_selection` | `0x004CFE60` | high | MerchantDialogPane::TextMenuDialogEx virtual method that builds and sends CMerchant opcode 0x39. |
@@ -3711,6 +3731,18 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_get_ground_tile_flag_table` | `0x004AE790` | high | Returns the ground-tile flag-vector owner updated by palette-table loading. |
 | `map_has_tile_animation_manager` | `0x004AE7A0` | high | Reports whether the map tile-animation manager is registered. |
 | `map_get_tile_animation_manager` | `0x004AE7C0` | high | Returns the map tile-animation manager singleton. |
+| `map_bottom_image_library_ctor` | `0x004C3FF0` | high | Constructs RTTI class MapBtmImageLib with empty capacity, count, image-ID array, and pixmap array. |
+| `map_bottom_image_library_dtor` | `0x004C4030` | high | Destroys MapBtmImageLib after releasing its cached records and allocation arrays. |
+| `map_bottom_image_library_clear` | `0x004C4050` | high | Releases every cached bottom-image pixmap plus the ID and record arrays, then resets the counts. |
+| `map_bottom_image_library_allocate` | `0x004C4100` | high | Allocates a u16 image-ID table and parallel 0x34-byte pixmap-record array for a requested capacity. |
+| `map_bottom_image_library_load_loose_pcx` | `0x004C4220` | high | Caches a bottom image loaded from dormant loose path .\bottom\btmNNNNN.pcx; no local caller is present. |
+| `map_bottom_image_library_load_archive_pcx` | `0x004C4440` | high | Caches btmNNNNN.pcx from the SEO archive and returns its zero-based library index. |
+| `map_bottom_layer_ctor` | `0x004C4650` | high | Constructs exact RTTI MapBtmLayer, its image library, and two owned placement-record lists. |
+| `map_bottom_layer_dtor` | `0x004C4710` | high | Destroys MapBtmLayer's placement lists, image library, and base timer-handler state. |
+| `map_bottom_layer_set_dimensions` | `0x004C4910` | high | Stores the bottom layer's map width and height as u16 values. |
+| `map_bottom_layer_load_legacy_lod_file` | `0x004C4940` | high | Parses dormant loose .\maps\lodN.mbl placement text and resolves its PCX images through the SEO archive. |
+| `map_request_bottom_layer_metadata` | `0x004C4CB0` | high | Formats a six-digit map ID as NNNNNN.mbl and asks the resource manager to fill a fixed 0x1394-byte buffer. |
+| `map_bottom_layer_load_from_resource_entry` | `0x004C4D20` | high | Parses a resource-manager bottom-layer entry, resolves its cached PCX images, computes placement bounds, and marks the layer active. |
 | `file_decode_ctf_map_tile` | `0x004C7000` | high | Palette-converts one alternate 784-byte indexed tile source to 16-bit pixels. |
 | `file_decode_dtf_map_tile` | `0x004C7180` | high | Reads one alternate 1568-byte 16-bit tile source and converts color format when needed. |
 | `file_tile_bank_storage_ctor` | `0x004C7280` | high | Opens one fixed-record raw tile bank and selects its palette path. |
