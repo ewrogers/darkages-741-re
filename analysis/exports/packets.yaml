@@ -2267,10 +2267,18 @@ functions:
     name: net_send_alive
     confidence: high
     evidence: "MainMenuPane timer paths send opcode 0x71 and schedule another callback after 30 seconds."
+  - address: "0x004BA150"
+    name: ui_login_dialog_handle_network_event_noop
+    confidence: high
+    evidence: "LoginDialogPane's network-event vtable slot inspects the raw and packet pointers, makes no state change, and returns false."
   - address: "0x004BA180"
     name: ui_login_dialog_ctor
     confidence: high
     evidence: "Constructs RTTI class LoginDialogPane from _nlogin.txt and attaches OK, Cancel, Name, and Password controls."
+  - address: "0x004BA790"
+    name: ui_login_dialog_dtor
+    confidence: high
+    evidence: "Restores the LoginDialogPane vtables, unregisters its screen and event handler, and destroys the DialogPane base."
   - address: "0x004BA810"
     name: ui_login_dialog_handle_key_event
     confidence: high
@@ -2279,10 +2287,22 @@ functions:
     name: ui_login_dialog_handle_action
     confidence: high
     evidence: "Action 0 reads LoginDialogPane controls 2 and 3 and sends CLogin; action 1 closes the dialog."
+  - address: "0x004BA9B0"
+    name: ui_login_dialog_update_submit_enabled
+    confidence: high
+    evidence: "Enables LoginDialogPane action 0 only while both the account-name and password controls are nonempty."
+  - address: "0x004BB060"
+    name: net_handle_login_transfer_raw
+    confidence: high
+    evidence: "Reads the transfer IPv4 endpoint, big-endian port, and string8 token, queues the endpoint and seed barrier, sends CTransfer, and enters the game session."
   - address: "0x004BB2A0"
     name: ui_change_password_dialog_ctor
     confidence: high
     evidence: "Constructs RTTI class ChangePasswordDialogPane from _npw.txt and attaches OK, Cancel, Name, existing-password, new-password, and confirmation controls."
+  - address: "0x004BB810"
+    name: ui_change_password_dialog_dtor
+    confidence: high
+    evidence: "Restores the ChangePasswordDialogPane vtables, unregisters its screen and event state, and destroys the DialogPane base."
   - address: "0x004BB840"
     name: ui_change_password_handle_action
     confidence: high
@@ -2291,6 +2311,10 @@ functions:
     name: net_dispatch_change_password_events
     confidence: high
     evidence: "Routes raw lobby opcode 0x02 to the password-change result handler while ChangePasswordDialogPane is active."
+  - address: "0x004BB900"
+    name: ui_change_password_dialog_update_submit_enabled
+    confidence: high
+    evidence: "Enables the Change Password submit action only while name, existing password, new password, and confirmation are all nonempty."
   - address: "0x004BBA50"
     name: ui_change_password_submit
     confidence: high
@@ -2307,6 +2331,26 @@ functions:
     name: ui_input_birthdate_dialog_ctor
     confidence: high
     evidence: "Constructs RTTI class InputBirthdateDialogPane from _npw2.txt for the regional password-change verification branch."
+  - address: "0x004BC550"
+    name: ui_input_birthdate_dialog_handle_action
+    confidence: high
+    evidence: "Action 0 submits the birthdate value; action 1 unregisters and queues both this dialog and its owning password dialog for closing."
+  - address: "0x004BC5F0"
+    name: ui_input_birthdate_dialog_handle_network_event
+    confidence: high
+    evidence: "Forwards raw lobby opcode 0x02 to the owning password dialog and leaves other events unconsumed."
+  - address: "0x004BC660"
+    name: ui_input_birthdate_dialog_update_submit_enabled
+    confidence: high
+    evidence: "Enables the birthdate submit action only while the input control is nonempty."
+  - address: "0x004BC6E0"
+    name: ui_input_birthdate_dialog_submit
+    confidence: high
+    evidence: "Copies at most 15 bytes from the birthdate control into the dialog buffer and invokes the birthdate-bearing CChangePassword builder."
+  - address: "0x004BC730"
+    name: net_send_change_password_with_birthdate
+    confidence: high
+    evidence: "Builds CChangePassword 0x26 with string8 name and passwords plus a big-endian u32 parsed from the entered birthdate."
   - address: "0x004BCAD0"
     name: net_calculate_login_block_integrity
     confidence: high

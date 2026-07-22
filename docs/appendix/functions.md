@@ -2050,13 +2050,38 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_main_menu_set_credentials` | `0x004B9F30` | high | Copies the submitted account name and password into two fixed 16-byte MainMenuPane fields. |
 | `ui_main_menu_handle_timer` | `0x004B9F70` | high | On timer ID 0 in Asian UI modes, sends the client alive packet from the adjusted MainMenuPane. |
 | `ui_main_menu_note_activity_and_send_alive` | `0x004B9FB0` | high | Marks the menu active and sends an alive packet after more than 30 seconds without a saved activity update. |
+| `ui_login_dialog_handle_network_event_noop` | `0x004BA150` | high | LoginDialogPane's network-event vtable slot inspects the raw and packet pointers, makes no state change, and returns false. |
 | `ui_login_dialog_ctor` | `0x004BA180` | high | Constructs RTTI class LoginDialogPane from _nlogin.txt and attaches OK, Cancel, Name, and Password controls. |
+| `ui_login_dialog_dtor` | `0x004BA790` | high | Restores the LoginDialogPane vtables, unregisters its screen and event handler, and destroys the DialogPane base. |
 | `ui_login_dialog_handle_key_event` | `0x004BA810` | high | Moves focus from Name to Password when Enter is pressed and otherwise delegates supported keyboard events to DialogPane. |
 | `ui_login_dialog_handle_action` | `0x004BA8C0` | high | Action 0 reads LoginDialogPane controls 2 and 3 and sends CLogin; action 1 closes the dialog. |
+| `ui_login_dialog_update_submit_enabled` | `0x004BA9B0` | high | Enables LoginDialogPane action 0 only while both the account-name and password controls are nonempty. |
 | `ui_change_password_dialog_ctor` | `0x004BB2A0` | high | Constructs RTTI class ChangePasswordDialogPane from _npw.txt and attaches OK, Cancel, Name, existing-password, new-password, and confirmation controls. |
+| `ui_change_password_dialog_dtor` | `0x004BB810` | high | Restores the ChangePasswordDialogPane vtables, unregisters its screen and event state, and destroys the DialogPane base. |
 | `ui_change_password_handle_action` | `0x004BB840` | high | Handles ChangePasswordDialogPane action 0 as submit and action 1 as cancel. |
+| `ui_change_password_dialog_update_submit_enabled` | `0x004BB900` | high | Enables the Change Password submit action only while name, existing password, new password, and confirmation are all nonempty. |
 | `ui_change_password_submit` | `0x004BBA50` | high | Checks new-password confirmation locally, then sends directly in distribution modes 1 and 15 or opens the regional birthdate step. |
 | `ui_input_birthdate_dialog_ctor` | `0x004BC220` | high | Constructs RTTI class InputBirthdateDialogPane from _npw2.txt for the regional password-change verification branch. |
+| `ui_input_birthdate_dialog_handle_action` | `0x004BC550` | high | Action 0 submits the birthdate value; action 1 unregisters and queues both this dialog and its owning password dialog for closing. |
+| `ui_input_birthdate_dialog_handle_network_event` | `0x004BC5F0` | high | Forwards raw lobby opcode 0x02 to the owning password dialog and leaves other events unconsumed. |
+| `ui_input_birthdate_dialog_update_submit_enabled` | `0x004BC660` | high | Enables the birthdate submit action only while the input control is nonempty. |
+| `ui_input_birthdate_dialog_submit` | `0x004BC6E0` | high | Copies at most 15 bytes from the birthdate control into the dialog buffer and invokes the birthdate-bearing CChangePassword builder. |
+| `ui_main_menu_pane_send_quit` | `0x004BC9B0` | high | Sends the quit request through the MainMenuPane lobby connection. |
+| `ui_main_menu_open_background_story` | `0x004BC9D0` | high | Allocates and constructs BackgroundStoryPane for the corresponding main-menu action. |
+| `ui_main_menu_open_staff_credits` | `0x004BCA50` | high | Allocates and constructs StaffPane for main-menu action 3, labeled Credit. |
+| `ui_logo_show_pane_scalar_deleting_dtor` | `0x004BCB30` | high | MSVC scalar deleting destructor for the RTTI-backed LogoShowPane class. |
+| `ui_main_menu_model_scalar_deleting_dtor` | `0x004BCB60` | high | MSVC scalar deleting destructor for the MainMenu LObject model created at 0x004B6C40. |
+| `ui_main_menu_pane_scalar_deleting_dtor` | `0x004BCB90` | high | MSVC scalar deleting destructor for the RTTI-backed MainMenuPane class. |
+| `ui_login_dialog_scalar_deleting_dtor` | `0x004BCBC0` | high | MSVC scalar deleting destructor for LoginDialogPane; the compiler-derived Concurrency template symbol was a false match. |
+| `ui_change_password_dialog_scalar_deleting_dtor` | `0x004BCBF0` | high | MSVC scalar deleting destructor for the RTTI-backed ChangePasswordDialogPane class. |
+| `ui_input_birthdate_dialog_scalar_deleting_dtor` | `0x004BCC20` | high | MSVC scalar deleting destructor for the RTTI-backed InputBirthdateDialogPane class. |
+| `ui_agreement_dialog_get_singleton` | `0x004BCC50` | high | Returns the same AgreementDialogPane singleton pointer maintained by the named register and unregister helpers. |
+| `ui_logo_show_pane_timer_scalar_deleting_dtor_thunk` | `0x004BCC60` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the LogoShowPane scalar deleting destructor. |
+| `ui_change_password_dialog_timer_scalar_deleting_dtor_thunk` | `0x004BCC70` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the ChangePasswordDialogPane scalar deleting destructor. |
+| `ui_main_menu_pane_timer_scalar_deleting_dtor_thunk` | `0x004BCC80` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the MainMenuPane scalar deleting destructor. |
+| `ui_input_birthdate_dialog_timer_scalar_deleting_dtor_thunk` | `0x004BCC90` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the InputBirthdateDialogPane scalar deleting destructor. |
+| `ui_login_dialog_timer_scalar_deleting_dtor_thunk` | `0x004BCCA0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the LoginDialogPane scalar deleting destructor. |
+| `ui_load_gameplay_layout` | `0x004BCCB0` | high | Loads lback.txt and caches the gameplay HUD rectangles and pixmaps, including inventory variants, HP/MP, portrait, ping, and command buttons. |
 | `ui_manufacture_dialog_ctor` | `0x004C20D0` | high | Constructs exact RTTI ManufactureDialogPane from lmanu.txt, attaches ten controls, applies the opening typed SManual, and registers the modal pane. |
 | `ui_manufacture_dialog_dtor` | `0x004C25E0` | high | Clears the singleton, unregisters the pane from event routing, and runs the DialogPane destructor. |
 | `ui_manufacture_dialog_apply_manual_packet` | `0x004C2BC0` | high | Applies typed SManual fields, validates the source inventory slot, requests recipe zero after a nonzero count, and stores recipe display state. |
@@ -2527,9 +2552,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_alive` | `0x004BA010` | high | MainMenuPane timer paths send opcode 0x71 and schedule another callback after 30 seconds. |
 | `net_send_request_homepage` | `0x004BA0C0` | high | Builds CRequestHomepage fields 68 01; the common submission layer appends the transmitted zero byte. |
 | `net_send_login_request` | `0x004BAA80` | high | Builds CLogin opcode 0x03 with two u8-length credential strings and a 16-byte masked installation block, submits it through the static-key path, then persists the submitted character name. |
+| `net_handle_login_transfer_raw` | `0x004BB060` | high | Reads the transfer IPv4 endpoint, big-endian port, and string8 token, queues the endpoint and seed barrier, sends CTransfer, and enters the game session. |
 | `net_dispatch_change_password_events` | `0x004BB8A0` | high | Routes raw lobby opcode 0x02 to the password-change result handler while ChangePasswordDialogPane is active. |
 | `net_handle_change_password_result` | `0x004BBCB0` | high | Handles state-dependent lobby opcode 0x02; status 0 closes successfully, 0x0F resets the existing password, and other failures reset the new-password controls. |
 | `net_send_change_password` | `0x004BC050` | high | Builds CChangePassword opcode 0x26 with u8-length name, existing password, and new password. |
+| `net_send_change_password_with_birthdate` | `0x004BC730` | high | Builds CChangePassword 0x26 with string8 name and passwords plus a big-endian u32 parsed from the entered birthdate. |
 | `net_calculate_login_block_integrity` | `0x004BCAD0` | high | Applies the custom 0x1021-table recurrence over the first 12 CLogin installation-block bytes. |
 | `net_send_manual_recipe_request` | `0x004C26D0` | high | Builds CManual action 0 with the echoed manufacture ID and a zero-based u8 recipe index. |
 | `net_send_manual_craft` | `0x004C27C0` | high | Builds CManual action 1 with the echoed manufacture ID, string8 recipe name, and additional inventory slot. |

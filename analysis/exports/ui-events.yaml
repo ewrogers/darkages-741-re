@@ -2019,6 +2019,70 @@ functions:
     name: ui_main_menu_note_activity_and_send_alive
     confidence: high
     evidence: "Marks the menu active and sends an alive packet after more than 30 seconds without a saved activity update."
+  - address: "0x004BC9B0"
+    name: ui_main_menu_pane_send_quit
+    confidence: high
+    evidence: "Sends the quit request through the MainMenuPane lobby connection."
+  - address: "0x004BC9D0"
+    name: ui_main_menu_open_background_story
+    confidence: high
+    evidence: "Allocates and constructs BackgroundStoryPane for the corresponding main-menu action."
+  - address: "0x004BCA50"
+    name: ui_main_menu_open_staff_credits
+    confidence: high
+    evidence: "Allocates and constructs StaffPane for main-menu action 3, labeled Credit."
+  - address: "0x004BCB30"
+    name: ui_logo_show_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for the RTTI-backed LogoShowPane class."
+  - address: "0x004BCB60"
+    name: ui_main_menu_model_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for the MainMenu LObject model created at 0x004B6C40."
+  - address: "0x004BCB90"
+    name: ui_main_menu_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for the RTTI-backed MainMenuPane class."
+  - address: "0x004BCBC0"
+    name: ui_login_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for LoginDialogPane; the compiler-derived Concurrency template symbol was a false match."
+  - address: "0x004BCBF0"
+    name: ui_change_password_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for the RTTI-backed ChangePasswordDialogPane class."
+  - address: "0x004BCC20"
+    name: ui_input_birthdate_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for the RTTI-backed InputBirthdateDialogPane class."
+  - address: "0x004BCC50"
+    name: ui_agreement_dialog_get_singleton
+    confidence: high
+    evidence: "Returns the same AgreementDialogPane singleton pointer maintained by the named register and unregister helpers."
+  - address: "0x004BCC60"
+    name: ui_logo_show_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the LogoShowPane scalar deleting destructor."
+  - address: "0x004BCC70"
+    name: ui_change_password_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the ChangePasswordDialogPane scalar deleting destructor."
+  - address: "0x004BCC80"
+    name: ui_main_menu_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the MainMenuPane scalar deleting destructor."
+  - address: "0x004BCC90"
+    name: ui_input_birthdate_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the InputBirthdateDialogPane scalar deleting destructor."
+  - address: "0x004BCCA0"
+    name: ui_login_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the LoginDialogPane scalar deleting destructor."
+  - address: "0x004BCCB0"
+    name: ui_load_gameplay_layout
+    confidence: high
+    evidence: "Loads lback.txt and caches the gameplay HUD rectangles and pixmaps, including inventory variants, HP/MP, portrait, ping, and command buttons."
   - address: "0x0052C480"
     name: ui_npc_session_update_speaker_art
     confidence: high

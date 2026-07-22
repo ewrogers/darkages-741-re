@@ -31,7 +31,7 @@ new password
 
 The confirmation value never leaves the client.
 
-Distribution modes `1` and `15` send this request directly. Other distribution modes open `InputBirthdateDialogPane` from `_npw2.txt` before continuing. The direct three-string form is the variant confirmed by the supplied live captures.
+Distribution modes `1` and `15` send this three-string request directly. Other distribution modes open `InputBirthdateDialogPane` from `_npw2.txt`. Its OK action copies at most 15 input bytes, parses the text as a decimal number, and appends that value as a big-endian `u32` after the three strings. The direct form is the variant confirmed by the supplied live captures; the birthdate form is confirmed from the local client builder.
 
 ## Handling the result
 
