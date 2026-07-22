@@ -2326,6 +2326,18 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_server_item_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA530` | high | Adjusts TimerHandler this by -0x11C and tail-calls ServerItemMenuDialog's scalar deleting destructor. |
 | `ui_client_spell_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA540` | high | Adjusts TimerHandler this by -0x11C and tail-calls ClientSpellMenuDialog's scalar deleting destructor. |
 | `ui_argumented_text_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA550` | high | Adjusts TimerHandler this by -0x11C and tail-calls ArgumentedTextMenuDialog's scalar deleting destructor. |
+| `ui_message_dialog_virtual_return_false` | `0x004DA560` | high | Shared virtual stub used by the MessageDialogBase-derived vtables; always returns false. |
+| `ui_message_dialog_base_ctor` | `0x004DA570` | high | Constructs exact RTTI MessageDialogBase over DialogPane and records its message variant or owner selector. |
+| `ui_message_dialog_base_has_graphic` | `0x004DA5C0` | high | Tests whether either the retained target/object ID or graphic ID is nonzero. |
+| `ui_message_dialog_base_measure_graphic` | `0x004DA5F0` | high | Loads monster or item art to return its visible width and height for message layout. |
+| `ui_message_dialog_base_measure_text` | `0x004DA720` | high | Measures byte-string text in 12-pixel cells using 40 columns with art or 48 columns without. |
+| `ui_message_dialog_base_get_simple_size` | `0x004DA790` | high | Returns the fixed 240 by 52 pixel size used by simple message variants. |
+| `ui_message_dialog_base_close` | `0x004DA7C0` | high | Runs close and detach virtuals, then queues the pane for deferred destruction. |
+| `ui_message_dialog_base_handle_pointer_event` | `0x004DA800` | high | Tracks message dragging, applies the delta to class-specific shared offsets, and delegates normal pointer handling. |
+| `ui_load_message_dialog_layout` | `0x004DA970` | high | Loads lmsg.txt once and caches segmented frame art plus normal and simple-message control rectangles. |
+| `ui_message_dialog_ctor` | `0x004DAD50` | high | Constructs exact RTTI MessageDialog, parses its server payload, and invokes its control builder. |
+| `ui_message_dialog_ctor_for_derived` | `0x004DADD0` | high | Protected constructor used by derived message classes; installs MessageDialog vtables without parsing a payload. |
+| `ui_message_dialog_build_controls` | `0x004DAFD0` | high | Builds wrapped text, enabled action buttons, optional monster or item art, and the variable-height lmsg frame. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
 | `ui_find_farmpet_apply_mini_game_update` | `0x004EC3E0` | high | Consumes only SMiniGame action 7, matching its first u32 against two tracked IDs and storing the second u32 as the corresponding value. |
@@ -2811,6 +2823,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
 | `net_parse_server_item_menu_dialog2_items` | `0x004D7FD0` | high | Parses ordinary or subtype-0x4B server items directly into a counted 0x224-byte record array. |
 | `net_parse_screen_menu_common_fields` | `0x004D8C60` | high | Parses the fixed SScreenMenu header into a temporary view and retains the string16 content pointer and length. |
+| `net_parse_message_dialog_payload` | `0x004DAE10` | high | Parses common target and graphic fields, two navigation-enable bytes, and a string16 message. |
 | `net_send_pursuit_selection` | `0x004DBC90` | high | MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method. |
 | `net_dispatch_metadata_events` | `0x004E4D80` | high | MetaTableManager recognizes decoded SMetaData opcode 0x6F outside the packet factory. |
 | `net_handle_metadata` | `0x004E4EA0` | high | Parses SMetaData table entries and validates or applies named metadata blobs. |

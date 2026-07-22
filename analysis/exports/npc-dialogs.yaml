@@ -1029,6 +1029,58 @@ functions:
     name: ui_argumented_text_menu_dialog_timer_scalar_deleting_dtor_thunk
     confidence: high
     evidence: "Adjusts TimerHandler this by -0x11C and tail-calls ArgumentedTextMenuDialog's scalar deleting destructor."
+  - address: "0x004DA560"
+    name: ui_message_dialog_virtual_return_false
+    confidence: high
+    evidence: "Shared virtual stub used by the MessageDialogBase-derived vtables; always returns false."
+  - address: "0x004DA570"
+    name: ui_message_dialog_base_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI MessageDialogBase over DialogPane and records its message variant or owner selector."
+  - address: "0x004DA5C0"
+    name: ui_message_dialog_base_has_graphic
+    confidence: high
+    evidence: "Tests whether either the retained target/object ID or graphic ID is nonzero."
+  - address: "0x004DA5F0"
+    name: ui_message_dialog_base_measure_graphic
+    confidence: high
+    evidence: "Loads monster or item art to return its visible width and height for message layout."
+  - address: "0x004DA720"
+    name: ui_message_dialog_base_measure_text
+    confidence: high
+    evidence: "Measures byte-string text in 12-pixel cells using 40 columns with art or 48 columns without."
+  - address: "0x004DA790"
+    name: ui_message_dialog_base_get_simple_size
+    confidence: high
+    evidence: "Returns the fixed 240 by 52 pixel size used by simple message variants."
+  - address: "0x004DA7C0"
+    name: ui_message_dialog_base_close
+    confidence: high
+    evidence: "Runs close and detach virtuals, then queues the pane for deferred destruction."
+  - address: "0x004DA800"
+    name: ui_message_dialog_base_handle_pointer_event
+    confidence: high
+    evidence: "Tracks message dragging, applies the delta to class-specific shared offsets, and delegates normal pointer handling."
+  - address: "0x004DA970"
+    name: ui_load_message_dialog_layout
+    confidence: high
+    evidence: "Loads lmsg.txt once and caches segmented frame art plus normal and simple-message control rectangles."
+  - address: "0x004DAD50"
+    name: ui_message_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI MessageDialog, parses its server payload, and invokes its control builder."
+  - address: "0x004DADD0"
+    name: ui_message_dialog_ctor_for_derived
+    confidence: high
+    evidence: "Protected constructor used by derived message classes; installs MessageDialog vtables without parsing a payload."
+  - address: "0x004DAE10"
+    name: net_parse_message_dialog_payload
+    confidence: high
+    evidence: "Parses common target and graphic fields, two navigation-enable bytes, and a string16 message."
+  - address: "0x004DAFD0"
+    name: ui_message_dialog_build_controls
+    confidence: high
+    evidence: "Builds wrapped text, enabled action buttons, optional monster or item art, and the variable-height lmsg frame."
   - address: "0x0052C020"
     name: ui_npc_session_set_response_pending
     confidence: high

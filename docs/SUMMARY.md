@@ -32,6 +32,7 @@
   - [Screenshots and the photo album](systems/screenshots-and-photo-album.md)
   - [Portraits and profiles](systems/portraits-and-profiles.md)
   - [NPC dialogs](systems/npc-dialogs.md)
+  - [Server message dialogs](systems/message-dialogs.md)
   - [NPC dialog illustrations](systems/npc-dialog-illustrations.md)
   - [Korean text input](systems/korean-text-input.md)
   - [Text color markup](systems/text-color-markup.md)
