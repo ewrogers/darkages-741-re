@@ -975,6 +975,50 @@ functions:
     name: ui_bulletin_bang_user_date_map_erase
     confidence: high
     evidence: "Erases and rebalances one user warning-date map node."
+  - address: "0x004292B0"
+    name: ui_bulletin_bang_user_date_map_find
+    confidence: high
+    evidence: "Finds an exact string key and returns the map head sentinel when absent."
+  - address: "0x00429390"
+    name: ui_bulletin_bang_user_date_map_rotate_left
+    confidence: high
+    evidence: "Performs a red-black tree left rotation."
+  - address: "0x00429440"
+    name: ui_bulletin_bang_user_date_map_rotate_right
+    confidence: high
+    evidence: "Performs a red-black tree right rotation."
+  - address: "0x004294F0"
+    name: ui_bulletin_bang_user_date_map_free_node
+    confidence: high
+    evidence: "Frees one allocated user-date map node."
+  - address: "0x00429520"
+    name: ui_bulletin_bang_user_date_map_erase_range
+    confidence: high
+    evidence: "Erases a half-open iterator range, with a complete-tree clear fast path."
+  - address: "0x00429600"
+    name: ui_bulletin_bang_user_date_map_lower_bound
+    confidence: high
+    evidence: "Returns the first node whose key is not less than the requested string."
+  - address: "0x004296A0"
+    name: ui_bulletin_bang_user_date_map_initialize_tree
+    confidence: high
+    evidence: "Allocates and initializes the tree head sentinel and resets its size."
+  - address: "0x00429720"
+    name: ui_bulletin_bang_user_date_map_iterator_next
+    confidence: high
+    evidence: "Advances one in-order map iterator."
+  - address: "0x004297D0"
+    name: ui_bulletin_bang_user_date_map_clear
+    confidence: high
+    evidence: "Destroys all user-date nodes and resets the head sentinel."
+  - address: "0x00429830"
+    name: ui_bulletin_bang_user_date_map_iterator_ctor
+    confidence: high
+    evidence: "Constructs a map iterator from a node pointer."
+  - address: "0x00429850"
+    name: ui_bulletin_bang_user_date_map_erase_subtree
+    confidence: high
+    evidence: "Recursively destroys a user-date map subtree."
   - address: "0x004298C0"
     name: ui_bulletin_bang_user_batch_session_singleton_register
     confidence: high
@@ -983,6 +1027,170 @@ functions:
     name: ui_bulletin_bang_user_batch_session_singleton_unregister
     confidence: high
     evidence: "Clears the batch-session singleton when it matches the containing object."
+  - address: "0x00429940"
+    name: ui_bulletin_bang_user_date_map_destroy_key
+    confidence: high
+    evidence: "Destroys the string key stored in one map node."
+  - address: "0x004299B0"
+    name: ui_bulletin_bang_user_date_map_allocate_nodes
+    confidence: high
+    evidence: "Allocates fixed 0x30-byte map nodes and throws std::bad_alloc on failure."
+  - address: "0x00429A20"
+    name: ui_bulletin_bang_user_date_map_insert_unique
+    confidence: high
+    evidence: "Finds or inserts a unique user string key."
+  - address: "0x00429C80"
+    name: ui_bulletin_bang_user_date_map_link_and_rebalance
+    confidence: high
+    evidence: "Links a prepared node and restores red-black tree invariants."
+  - address: "0x00429F60"
+    name: ui_bulletin_bang_user_date_map_iterator_prev
+    confidence: high
+    evidence: "Moves one in-order map iterator backward."
+  - address: "0x0042A020"
+    name: ui_bulletin_bang_user_date_map_create_node
+    confidence: high
+    evidence: "Allocates a map node and constructs its string-key and integer-date pair."
+  - address: "0x0042A0C0"
+    name: std_string_vector_insert_copy
+    confidence: high
+    evidence: "Appends a string copy and rotates it into the requested insertion position."
+  - address: "0x0042A1A0"
+    name: ui_bulletin_bang_user_date_map_allocate_node
+    confidence: high
+    evidence: "Allocates one map node and initializes its links and color flags."
+  - address: "0x0042A1F0"
+    name: ui_bulletin_bang_user_date_map_construct_value
+    confidence: high
+    evidence: "Constructs the string-key and integer-date value in a new map node."
+  - address: "0x0042A260"
+    name: std_string_vector_push_back
+    confidence: high
+    evidence: "Grows a string vector when full and copy-constructs one element at its end."
+  - address: "0x0042A2B0"
+    name: std_string_vector_rotate_inserted_range
+    confidence: high
+    evidence: "Rotates a string-vector range after insertion and returns its iterator."
+  - address: "0x0042A3A0"
+    name: std_string_vector_allocator_dtor_noop
+    confidence: high
+    evidence: "No-op destructor for the string vector's stateless allocator."
+  - address: "0x0042A3B0"
+    name: std_string_vector_grow_by
+    confidence: high
+    evidence: "Checks vector length and reserves geometrically grown capacity."
+  - address: "0x0042A450"
+    name: std_string_vector_reserve
+    confidence: high
+    evidence: "Moves strings into larger storage and releases the old buffer."
+  - address: "0x0042A620"
+    name: std_string_vector_destroy_element
+    confidence: high
+    evidence: "Destroys one std::string element during vector cleanup."
+  - address: "0x0042A690"
+    name: std_string_vector_calculate_growth
+    confidence: high
+    evidence: "Returns the larger of requested capacity and 1.5 times old capacity."
+  - address: "0x0042A710"
+    name: std_string_vector_construct_element_copy
+    confidence: high
+    evidence: "Uses the vector allocator to copy-construct one string element."
+  - address: "0x0042A730"
+    name: std_string_vector_allocate_storage
+    confidence: high
+    evidence: "Allocates 0x1C-byte string vector slots and throws on failure."
+  - address: "0x0042A7A0"
+    name: ui_bulletin_bang_user_date_pair_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs a user-name string and copies its integer date."
+  - address: "0x0042A820"
+    name: std_string_placement_copy_ctor
+    confidence: high
+    evidence: "Default-constructs then copy-assigns a string in caller storage."
+  - address: "0x0042A8C0"
+    name: std_string_vector_rotate_range
+    confidence: high
+    evidence: "Rotates a vector range using cycle decomposition and string swaps."
+  - address: "0x0042AA00"
+    name: std_string_vector_uninitialized_copy
+    confidence: high
+    evidence: "Copy-constructs a range of strings into uninitialized vector storage."
+  - address: "0x0042AAD0"
+    name: std_string_vector_construct_element_move
+    confidence: high
+    evidence: "Default-constructs a vector element and move-assigns its source string."
+  - address: "0x0042AB60"
+    name: std_string_swap
+    confidence: high
+    evidence: "Swaps two MSVC std::string small-buffer or heap representations."
+  - address: "0x0042AD10"
+    name: ui_bulletin_bang_notify_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters BulletinBangNotifyDialog's deleting destructor."
+  - address: "0x0042AD20"
+    name: ui_bulletin_bang_user_batch_job_lobject_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts LObject this and enters BulletinBangUserBatchJob's deleting destructor."
+  - address: "0x0042AD30"
+    name: ui_bulletin_string_list_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters StringListPane's deleting destructor."
+  - address: "0x0042AD40"
+    name: std_string_default_ctor
+    confidence: high
+    evidence: "Constructs an empty MSVC std::string."
+  - address: "0x0042ADA0"
+    name: std_string_cstr_ctor
+    confidence: high
+    evidence: "Constructs an MSVC std::string from a null-terminated byte string."
+  - address: "0x0042AE30"
+    name: std_string_dtor
+    confidence: high
+    evidence: "Destroys an MSVC std::string and releases heap storage when present."
+  - address: "0x0042AE90"
+    name: std_string_compare
+    confidence: high
+    evidence: "Compares two complete MSVC std::string values lexicographically."
+  - address: "0x0042AEE0"
+    name: std_string_move_assign
+    confidence: high
+    evidence: "Move-assigns an MSVC std::string and transfers heap storage when possible."
+  - address: "0x0042AFA0"
+    name: std_string_compare_ranges
+    confidence: high
+    evidence: "Compares selected byte ranges from a string and another buffer."
+  - address: "0x0042B060"
+    name: std_string_reset
+    confidence: high
+    evidence: "Releases heap storage, restores the small buffer, and terminates the string."
+  - address: "0x0042B110"
+    name: std_string_assign_bytes
+    confidence: high
+    evidence: "Assigns a byte buffer while handling overlap and capacity growth."
+  - address: "0x0042B230"
+    name: std_string_assign_substring
+    confidence: high
+    evidence: "Assigns a bounded substring, including the self-assignment case."
+  - address: "0x0042B340"
+    name: std_string_ensure_capacity
+    confidence: high
+    evidence: "Checks length, shrinks to the small buffer, or grows heap capacity."
+  - address: "0x0042B440"
+    name: std_string_erase
+    confidence: high
+    evidence: "Erases a bounded byte range and restores the null terminator."
+  - address: "0x0042B530"
+    name: std_string_reallocate
+    confidence: high
+    evidence: "Chooses grown capacity, preserves a prefix, and releases old storage."
+  - address: "0x0042B7C0"
+    name: std_string_allocate_buffer
+    confidence: high
+    evidence: "Allocates a string byte buffer and throws std::bad_alloc on failure."
+  - address: "0x0042B830"
+    name: std_string_vector_dtor
+    confidence: high
+    evidence: "Destroys string elements, releases vector storage, and clears its pointers."
   - address: "0x005F6CB0"
     name: net_handle_bulletin_server_body
     confidence: high

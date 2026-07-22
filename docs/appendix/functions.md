@@ -602,15 +602,91 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_bulletin_bang_user_date_map_ctor` | `0x00428D00` | high | Constructs the red-black tree map for user warning dates. |
 | `ui_bulletin_bang_user_date_map_dtor` | `0x00428D30` | high | Destroys the user warning-date map's nodes and sentinel. |
 | `ui_bulletin_bang_user_date_map_erase` | `0x00428DD0` | high | Erases and rebalances one user warning-date map node. |
+| `ui_bulletin_bang_user_date_map_find` | `0x004292B0` | high | Finds an exact string key and returns the map head sentinel when absent. |
+| `ui_bulletin_bang_user_date_map_rotate_left` | `0x00429390` | high | Performs a red-black tree left rotation. |
+| `ui_bulletin_bang_user_date_map_rotate_right` | `0x00429440` | high | Performs a red-black tree right rotation. |
+| `ui_bulletin_bang_user_date_map_free_node` | `0x004294F0` | high | Frees one allocated user-date map node. |
+| `ui_bulletin_bang_user_date_map_erase_range` | `0x00429520` | high | Erases a half-open iterator range, with a complete-tree clear fast path. |
+| `ui_bulletin_bang_user_date_map_lower_bound` | `0x00429600` | high | Returns the first node whose key is not less than the requested string. |
+| `ui_bulletin_bang_user_date_map_initialize_tree` | `0x004296A0` | high | Allocates and initializes the tree head sentinel and resets its size. |
+| `ui_bulletin_bang_user_date_map_iterator_next` | `0x00429720` | high | Advances one in-order map iterator. |
+| `ui_bulletin_bang_user_date_map_clear` | `0x004297D0` | high | Destroys all user-date nodes and resets the head sentinel. |
+| `ui_bulletin_bang_user_date_map_iterator_ctor` | `0x00429830` | high | Constructs a map iterator from a node pointer. |
+| `ui_bulletin_bang_user_date_map_erase_subtree` | `0x00429850` | high | Recursively destroys a user-date map subtree. |
 | `ui_bulletin_bang_user_batch_session_singleton_register` | `0x004298C0` | high | Registers the containing BulletinBangUserBatchSession singleton. |
 | `ui_bulletin_bang_user_batch_session_singleton_unregister` | `0x00429900` | high | Clears the batch-session singleton when it matches the containing object. |
+| `ui_bulletin_bang_user_date_map_destroy_key` | `0x00429940` | high | Destroys the string key stored in one map node. |
+| `ui_bulletin_bang_user_date_map_allocate_nodes` | `0x004299B0` | high | Allocates fixed 0x30-byte map nodes and throws std::bad_alloc on failure. |
+| `ui_bulletin_bang_user_date_map_insert_unique` | `0x00429A20` | high | Finds or inserts a unique user string key. |
+| `ui_bulletin_bang_user_date_map_link_and_rebalance` | `0x00429C80` | high | Links a prepared node and restores red-black tree invariants. |
+| `ui_bulletin_bang_user_date_map_iterator_prev` | `0x00429F60` | high | Moves one in-order map iterator backward. |
+| `ui_bulletin_bang_user_date_map_create_node` | `0x0042A020` | high | Allocates a map node and constructs its string-key and integer-date pair. |
+| `ui_bulletin_bang_user_date_map_allocate_node` | `0x0042A1A0` | high | Allocates one map node and initializes its links and color flags. |
+| `ui_bulletin_bang_user_date_map_construct_value` | `0x0042A1F0` | high | Constructs the string-key and integer-date value in a new map node. |
+| `ui_bulletin_bang_user_date_pair_copy_ctor` | `0x0042A7A0` | high | Copy-constructs a user-name string and copies its integer date. |
+| `ui_bulletin_bang_notify_dialog_timer_scalar_deleting_dtor_thunk` | `0x0042AD10` | high | Adjusts TimerHandler this and enters BulletinBangNotifyDialog's deleting destructor. |
+| `ui_bulletin_bang_user_batch_job_lobject_scalar_deleting_dtor_thunk` | `0x0042AD20` | high | Adjusts LObject this and enters BulletinBangUserBatchJob's deleting destructor. |
+| `ui_bulletin_string_list_pane_timer_scalar_deleting_dtor_thunk` | `0x0042AD30` | high | Adjusts TimerHandler this and enters StringListPane's deleting destructor. |
+| `ui_legend_list_pane_ctor` | `0x0042B8F0` | high | Constructs exact RTTI LegendListPane and loads its eight legend images. |
+| `ui_legend_list_pane_dtor` | `0x0042B9F0` | high | Restores LegendListPane vtables and destroys its ListPane base. |
 | `ui_legend_list_draw_item` | `0x0042BA20` | high | Draws one Self Look legend record by icon, resolves its color through palette slot 0, and renders its text. |
 | `ui_legend_list_contains_key` | `0x0042BB70` | high | Searches the current self-look legend records for an exact, case-sensitive hidden key match. |
+| `ui_legend_dialog_ctor` | `0x0042BC00` | high | Constructs exact RTTI LegendDialogPane from llegends.txt. |
+| `ui_legend_dialog_dtor` | `0x0042BFD0` | high | Unregisters LegendDialogPane and destroys its DialogPane base. |
+| `ui_legend_dialog_handle_action` | `0x0042C050` | high | Closes the legacy legend dialog for action ID 2. |
+| `ui_legend_dialog_handle_pointer_event` | `0x0042C080` | high | Tracks legend pointer coordinates and delegates in-bounds events. |
+| `ui_legend_dialog_apply_list_body` | `0x0042C120` | high | Parses a counted legend-mark body into the legacy list. |
+| `ui_portrait_control_pane_ctor` | `0x0042C300` | high | Constructs exact RTTI PortraitControlPane with no image. |
+| `ui_portrait_control_set_pixmap` | `0x0042C340` | high | Renders a supplied pixmap into the portrait control or clears on null. |
+| `ui_portrait_control_clear` | `0x0042C3F0` | high | Marks the portrait control blank and invalidates it. |
+| `ui_portrait_control_draw` | `0x0042C420` | high | Draws the blank base appearance only when no image is present. |
+| `ui_new_legend_dialog_ctor` | `0x0042C450` | high | Constructs exact RTTI NewLegendDialogPane from llegend2.txt in editable or read-only mode. |
+| `ui_new_legend_dialog_dtor` | `0x0042C9C0` | high | Releases portrait state and destroys NewLegendDialogPane's DialogPane base. |
 | `ui_new_legend_dialog_action` | `0x0042CA50` | high | The RTTI-backed NewLegendDialogPane action normalizes line breaks, ends profile text at the fifth break, and saves profile.txt. |
+| `ui_new_legend_dialog_apply_list_body` | `0x0042CBA0` | high | Parses a counted legend-mark body into NewLegendDialogPane. |
 | `ui_legend_dialog_apply_self_look` | `0x0042CD80` | high | Clears and rebuilds the older LegendDialogPane list from SSelfLook's fixed-size legend records. |
+| `ui_new_legend_dialog_reload_profile_text` | `0x0042CE20` | high | Temporarily unlocks the profile editor and reloads its text buffer. |
+| `ui_new_legend_dialog_apply_portrait_profile_body` | `0x0042CE70` | high | Decodes portrait/profile bytes and refreshes the dialog controls. |
+| `ui_new_legend_dialog_draw` | `0x0042CF50` | high | Draws NewLegendDialogPane and overlays its portrait frame when a portrait exists. |
+| `ui_new_legend_dialog_timer_callback` | `0x0042D010` | high | Handles timer ID 1 through the Change control callback. |
+| `ui_new_legend_dialog_handle_pointer_event` | `0x0042D050` | high | Delegates only pointer events whose coordinates lie inside the dialog. |
+| `ui_new_legend_dialog_handle_keyboard_event` | `0x0042D0D0` | high | Delegates keyboard input to the base dialog handler. |
+| `ui_new_legend_dialog_contains_legend_key` | `0x0042D0F0` | high | Forwards a LegendInterface key lookup to LegendListPane. |
+| `ui_legend_list_pane_scalar_deleting_dtor` | `0x0042D110` | high | Destroys LegendListPane and optionally frees its complete object. |
+| `ui_legend_dialog_scalar_deleting_dtor` | `0x0042D170` | high | Destroys LegendDialogPane and optionally frees its complete object. |
+| `ui_portrait_control_pane_scalar_deleting_dtor` | `0x0042D1A0` | high | Destroys PortraitControlPane and optionally frees its complete object. |
+| `ui_new_legend_dialog_scalar_deleting_dtor` | `0x0042D1D0` | high | Destroys NewLegendDialogPane and optionally frees its complete object. |
+| `ui_portrait_control_pane_timer_scalar_deleting_dtor_thunk` | `0x0042D200` | high | Adjusts TimerHandler this and enters PortraitControlPane's deleting destructor. |
+| `ui_legend_list_pane_timer_scalar_deleting_dtor_thunk` | `0x0042D210` | high | Adjusts TimerHandler this and enters LegendListPane's deleting destructor. |
+| `ui_legend_dialog_timer_scalar_deleting_dtor_thunk` | `0x0042D220` | high | Adjusts TimerHandler this and enters LegendDialogPane's deleting destructor. |
+| `ui_new_legend_dialog_timer_scalar_deleting_dtor_thunk` | `0x0042D230` | high | Adjusts TimerHandler this and enters NewLegendDialogPane's deleting destructor. |
+| `ui_chatting_pane_handle_network_event` | `0x0042D240` | high | Routes exact server opcodes 0x0D SSay and 0x0A SMessage to ChattingPane handlers. |
+| `ui_chatting_pane_ctor` | `0x0042D2D0` | high | Constructs exact RTTI ChattingPane and seeds seven blank display lines. |
+| `ui_chatting_pane_dtor` | `0x0042D3C0` | high | Stops transcript recording and destroys the TextEditPane base. |
+| `ui_chatting_pane_handle_keyboard_event` | `0x0042D440` | high | Handles chat scrolling and toggles transcript recording on modified J. |
+| `ui_chatting_pane_append_formatted_text` | `0x0042D670` | high | Parses DBCS text and inline color tokens, appends styled runs, and mirrors them to an active transcript. |
+| `ui_chatting_pane_handle_say_packet` | `0x0042D830` | high | Copies an SSay text body and appends it with the say color. |
+| `ui_chatting_pane_handle_message_packet` | `0x0042D940` | high | Maps accepted SMessage subtypes to chat colors and appends their bounded bodies. |
+| `ui_chatting_pane_append_text_run` | `0x0042DA90` | high | Appends and colors one text run, preserves scrolling selection, and writes it to the transcript. |
+| `ui_chatting_pane_start_recording` | `0x0042DBC0` | high | Creates a character-and-local-time transcript file and appends the recording-start marker. |
+| `ui_chatting_pane_stop_recording` | `0x0042DCA0` | high | Appends the recording-end marker, closes the transcript file, and clears recording state. |
+| `ui_chatting_pane2_forward_message_packet` | `0x0042DD00` | high | Maps ChattingPane2 message subtypes to colors and forwards their bodies to the global chat pane. |
+| `ui_chatting_append_global_message` | `0x0042DDE0` | high | Forwards a null-terminated message to the global ChattingPane with a selected color. |
+| `ui_chatting_append_global_message_bytes` | `0x0042DE20` | high | Bounds and normalizes message bytes before appending them to the global ChattingPane. |
+| `ui_chatting_pane_scalar_deleting_dtor` | `0x0042DF00` | high | Destroys ChattingPane and optionally frees its complete object. |
+| `ui_chatting_pane_timer_scalar_deleting_dtor_thunk` | `0x0042DF30` | high | Adjusts TimerHandler this and enters ChattingPane's scalar deleting destructor. |
+| `ui_intro_video_start_if_available` | `0x0042DF50` | high | Creates CIPane when needed and begins the requested intro-video sequence. |
 | `ui_intro_video_pane_ctor` | `0x0042DFF0` | high | Initializes the CIPane vtable and Bink-backed video state. |
+| `ui_intro_video_pane_dtor` | `0x0042E170` | high | Unregisters exact RTTI CIPane, clears its singleton, and destroys Pane. |
 | `ui_intro_video_begin_sequence` | `0x0042E1F0` | high | Stores two clip resources and starts the first clip. |
+| `ui_intro_video_close_assets` | `0x0042E290` | high | Releases both intro-video archive handles through the main archive manager. |
+| `ui_intro_video_handle_keyboard_event` | `0x0042E580` | high | Makes an active intro-video sequence advance immediately on keyboard input. |
+| `ui_intro_video_handle_pointer_event` | `0x0042E5C0` | high | Makes an active intro-video sequence advance immediately on pointer input. |
+| `ui_intro_video_pane_scalar_deleting_dtor` | `0x0042E700` | high | Destroys CIPane and optionally frees its complete object. |
+| `ui_intro_video_pane_singleton_register` | `0x0042E750` | high | Registers the containing CIPane in the intro-video singleton slot. |
+| `ui_intro_video_pane_singleton_unregister` | `0x0042E790` | high | Clears the intro-video singleton when it matches the containing CIPane. |
 | `ui_get_intro_video_pane` | `0x0042E7D0` | high | Returns the global CIPane instance at 0x006DA3A0. |
+| `ui_intro_video_pane_timer_scalar_deleting_dtor_thunk` | `0x0042E7F0` | high | Adjusts TimerHandler this and enters CIPane's scalar deleting destructor. |
 | `ui_show_input_block_clock` | `0x0042E800` | high | Creates the exact RTTI ClockPane singleton when absent and activates its 50 ms animated wait-cursor path. |
 | `ui_hide_input_block_clock` | `0x0042E890` | high | Closes and destroys the active ClockPane singleton when present. |
 | `ui_clock_pane_ctor` | `0x0042E8C0` | high | Constructs the 0x1A0-byte exact RTTI ClockPane, loads lodclk.epf metadata, centers it on the current pointer, and registers it in the screen and event trees. |
@@ -1896,6 +1972,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `audio_bgm_register_singleton` | `0x00405E90` | high | Registers the complete BGMPlayer pointer from its Singleton secondary-base subobject. |
 | `audio_bgm_unregister_singleton` | `0x00405ED0` | high | Clears the BGMPlayer singleton pointer when the registered instance is destroyed. |
 | `audio_get_miles_driver` | `0x00405F10` | high | Returns the shared Miles digital driver handle used by BGM, sound effects, and video audio. |
+| `audio_is_miles_driver_open` | `0x0042E730` | high | Returns whether the Miles audio driver pointer is present. |
 | `audio_get_sound_manager` | `0x004316E0` | high | Returns the SoundManager singleton pointer. |
 | `audio_midi_play_file` | `0x00508D80` | high | Dormant standard MIDI play entry point with no static caller in the matching client. |
 | `audio_midi_stop_or_restart` | `0x00508ED0` | high | Pauses, resets, or restarts the Windows MIDI stream according to its flags. |
@@ -2135,6 +2212,35 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `com_assign_iweb_browser2` | `0x0041AC10` | high | Queries a supplied COM object for IID_IWebBrowser2, replaces the retained interface pointer, and releases the previous value. |
 | `text_remove_ascii_spaces_dbcs_safe` | `0x004274B0` | high | Removes ASCII spaces while preserving DBCS trail bytes. |
 | `time_get_utc_date_yyyymmdd` | `0x00427BD0` | high | Returns the current UTC date as year*10000 + month*100 + day. |
+| `std_string_vector_insert_copy` | `0x0042A0C0` | high | Appends a string copy and rotates it into the requested insertion position. |
+| `std_string_vector_push_back` | `0x0042A260` | high | Grows a string vector when full and copy-constructs one element at its end. |
+| `std_string_vector_rotate_inserted_range` | `0x0042A2B0` | high | Rotates a string-vector range after insertion and returns its iterator. |
+| `std_string_vector_allocator_dtor_noop` | `0x0042A3A0` | high | No-op destructor for the string vector's stateless allocator. |
+| `std_string_vector_grow_by` | `0x0042A3B0` | high | Checks vector length and reserves geometrically grown capacity. |
+| `std_string_vector_reserve` | `0x0042A450` | high | Moves strings into larger storage and releases the old buffer. |
+| `std_string_vector_destroy_element` | `0x0042A620` | high | Destroys one std::string element during vector cleanup. |
+| `std_string_vector_calculate_growth` | `0x0042A690` | high | Returns the larger of requested capacity and 1.5 times old capacity. |
+| `std_string_vector_construct_element_copy` | `0x0042A710` | high | Uses the vector allocator to copy-construct one string element. |
+| `std_string_vector_allocate_storage` | `0x0042A730` | high | Allocates 0x1C-byte string vector slots and throws on failure. |
+| `std_string_placement_copy_ctor` | `0x0042A820` | high | Default-constructs then copy-assigns a string in caller storage. |
+| `std_string_vector_rotate_range` | `0x0042A8C0` | high | Rotates a vector range using cycle decomposition and string swaps. |
+| `std_string_vector_uninitialized_copy` | `0x0042AA00` | high | Copy-constructs a range of strings into uninitialized vector storage. |
+| `std_string_vector_construct_element_move` | `0x0042AAD0` | high | Default-constructs a vector element and move-assigns its source string. |
+| `std_string_swap` | `0x0042AB60` | high | Swaps two MSVC std::string small-buffer or heap representations. |
+| `std_string_default_ctor` | `0x0042AD40` | high | Constructs an empty MSVC std::string. |
+| `std_string_cstr_ctor` | `0x0042ADA0` | high | Constructs an MSVC std::string from a null-terminated byte string. |
+| `std_string_dtor` | `0x0042AE30` | high | Destroys an MSVC std::string and releases heap storage when present. |
+| `std_string_compare` | `0x0042AE90` | high | Compares two complete MSVC std::string values lexicographically. |
+| `std_string_move_assign` | `0x0042AEE0` | high | Move-assigns an MSVC std::string and transfers heap storage when possible. |
+| `std_string_compare_ranges` | `0x0042AFA0` | high | Compares selected byte ranges from a string and another buffer. |
+| `std_string_reset` | `0x0042B060` | high | Releases heap storage, restores the small buffer, and terminates the string. |
+| `std_string_assign_bytes` | `0x0042B110` | high | Assigns a byte buffer while handling overlap and capacity growth. |
+| `std_string_assign_substring` | `0x0042B230` | high | Assigns a bounded substring, including the self-assignment case. |
+| `std_string_ensure_capacity` | `0x0042B340` | high | Checks length, shrinks to the small buffer, or grows heap capacity. |
+| `std_string_erase` | `0x0042B440` | high | Erases a bounded byte range and restores the null terminator. |
+| `std_string_reallocate` | `0x0042B530` | high | Chooses grown capacity, preserves a prefix, and releases old storage. |
+| `std_string_allocate_buffer` | `0x0042B7C0` | high | Allocates a string byte buffer and throws std::bad_alloc on failure. |
+| `std_string_vector_dtor` | `0x0042B830` | high | Destroys string elements, releases vector storage, and clears its pointers. |
 | `metadata_denied_item_list_ctor` | `0x004407C0` | high | Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription. |
 | `metadata_denied_item_list_subscribe` | `0x00440AA0` | high | Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable. |
 | `metadata_denied_item_list_apply_table` | `0x00440B20` | high | Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers. |

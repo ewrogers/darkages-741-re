@@ -1,0 +1,69 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0042D240"
+    name: ui_chatting_pane_handle_network_event
+    confidence: high
+    evidence: "Routes exact server opcodes 0x0D SSay and 0x0A SMessage to ChattingPane handlers."
+  - address: "0x0042D2D0"
+    name: ui_chatting_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ChattingPane and seeds seven blank display lines."
+  - address: "0x0042D3C0"
+    name: ui_chatting_pane_dtor
+    confidence: high
+    evidence: "Stops transcript recording and destroys the TextEditPane base."
+  - address: "0x0042D440"
+    name: ui_chatting_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Handles chat scrolling and toggles transcript recording on modified J."
+  - address: "0x0042D670"
+    name: ui_chatting_pane_append_formatted_text
+    confidence: high
+    evidence: "Parses DBCS text and inline color tokens, appends styled runs, and mirrors them to an active transcript."
+  - address: "0x0042D830"
+    name: ui_chatting_pane_handle_say_packet
+    confidence: high
+    evidence: "Copies an SSay text body and appends it with the say color."
+  - address: "0x0042D940"
+    name: ui_chatting_pane_handle_message_packet
+    confidence: high
+    evidence: "Maps accepted SMessage subtypes to chat colors and appends their bounded bodies."
+  - address: "0x0042DA90"
+    name: ui_chatting_pane_append_text_run
+    confidence: high
+    evidence: "Appends and colors one text run, preserves scrolling selection, and writes it to the transcript."
+  - address: "0x0042DBC0"
+    name: ui_chatting_pane_start_recording
+    confidence: high
+    evidence: "Creates a character-and-local-time transcript file and appends the recording-start marker."
+  - address: "0x0042DCA0"
+    name: ui_chatting_pane_stop_recording
+    confidence: high
+    evidence: "Appends the recording-end marker, closes the transcript file, and clears recording state."
+  - address: "0x0042DD00"
+    name: ui_chatting_pane2_forward_message_packet
+    confidence: high
+    evidence: "Maps ChattingPane2 message subtypes to colors and forwards their bodies to the global chat pane."
+  - address: "0x0042DDE0"
+    name: ui_chatting_append_global_message
+    confidence: high
+    evidence: "Forwards a null-terminated message to the global ChattingPane with a selected color."
+  - address: "0x0042DE20"
+    name: ui_chatting_append_global_message_bytes
+    confidence: high
+    evidence: "Bounds and normalizes message bytes before appending them to the global ChattingPane."
+  - address: "0x0042DF00"
+    name: ui_chatting_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys ChattingPane and optionally frees its complete object."
+  - address: "0x0042DF30"
+    name: ui_chatting_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters ChattingPane's scalar deleting destructor."

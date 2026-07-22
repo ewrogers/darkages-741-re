@@ -7,10 +7,126 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x0042B8F0"
+    name: ui_legend_list_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI LegendListPane and loads its eight legend images."
+  - address: "0x0042B9F0"
+    name: ui_legend_list_pane_dtor
+    confidence: high
+    evidence: "Restores LegendListPane vtables and destroys its ListPane base."
+  - address: "0x0042BC00"
+    name: ui_legend_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI LegendDialogPane from llegends.txt."
+  - address: "0x0042BFD0"
+    name: ui_legend_dialog_dtor
+    confidence: high
+    evidence: "Unregisters LegendDialogPane and destroys its DialogPane base."
+  - address: "0x0042C050"
+    name: ui_legend_dialog_handle_action
+    confidence: high
+    evidence: "Closes the legacy legend dialog for action ID 2."
+  - address: "0x0042C080"
+    name: ui_legend_dialog_handle_pointer_event
+    confidence: high
+    evidence: "Tracks legend pointer coordinates and delegates in-bounds events."
+  - address: "0x0042C120"
+    name: ui_legend_dialog_apply_list_body
+    confidence: high
+    evidence: "Parses a counted legend-mark body into the legacy list."
+  - address: "0x0042C300"
+    name: ui_portrait_control_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI PortraitControlPane with no image."
+  - address: "0x0042C340"
+    name: ui_portrait_control_set_pixmap
+    confidence: high
+    evidence: "Renders a supplied pixmap into the portrait control or clears on null."
+  - address: "0x0042C3F0"
+    name: ui_portrait_control_clear
+    confidence: high
+    evidence: "Marks the portrait control blank and invalidates it."
+  - address: "0x0042C420"
+    name: ui_portrait_control_draw
+    confidence: high
+    evidence: "Draws the blank base appearance only when no image is present."
+  - address: "0x0042C450"
+    name: ui_new_legend_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI NewLegendDialogPane from llegend2.txt in editable or read-only mode."
+  - address: "0x0042C9C0"
+    name: ui_new_legend_dialog_dtor
+    confidence: high
+    evidence: "Releases portrait state and destroys NewLegendDialogPane's DialogPane base."
   - address: "0x0042CA50"
     name: ui_new_legend_dialog_action
     confidence: high
     evidence: "The RTTI-backed NewLegendDialogPane action normalizes line breaks, ends profile text at the fifth break, and saves profile.txt."
+  - address: "0x0042CBA0"
+    name: ui_new_legend_dialog_apply_list_body
+    confidence: high
+    evidence: "Parses a counted legend-mark body into NewLegendDialogPane."
+  - address: "0x0042CE20"
+    name: ui_new_legend_dialog_reload_profile_text
+    confidence: high
+    evidence: "Temporarily unlocks the profile editor and reloads its text buffer."
+  - address: "0x0042CE70"
+    name: ui_new_legend_dialog_apply_portrait_profile_body
+    confidence: high
+    evidence: "Decodes portrait/profile bytes and refreshes the dialog controls."
+  - address: "0x0042CF50"
+    name: ui_new_legend_dialog_draw
+    confidence: high
+    evidence: "Draws NewLegendDialogPane and overlays its portrait frame when a portrait exists."
+  - address: "0x0042D010"
+    name: ui_new_legend_dialog_timer_callback
+    confidence: high
+    evidence: "Handles timer ID 1 through the Change control callback."
+  - address: "0x0042D050"
+    name: ui_new_legend_dialog_handle_pointer_event
+    confidence: high
+    evidence: "Delegates only pointer events whose coordinates lie inside the dialog."
+  - address: "0x0042D0D0"
+    name: ui_new_legend_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Delegates keyboard input to the base dialog handler."
+  - address: "0x0042D0F0"
+    name: ui_new_legend_dialog_contains_legend_key
+    confidence: high
+    evidence: "Forwards a LegendInterface key lookup to LegendListPane."
+  - address: "0x0042D110"
+    name: ui_legend_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys LegendListPane and optionally frees its complete object."
+  - address: "0x0042D170"
+    name: ui_legend_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys LegendDialogPane and optionally frees its complete object."
+  - address: "0x0042D1A0"
+    name: ui_portrait_control_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys PortraitControlPane and optionally frees its complete object."
+  - address: "0x0042D1D0"
+    name: ui_new_legend_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys NewLegendDialogPane and optionally frees its complete object."
+  - address: "0x0042D200"
+    name: ui_portrait_control_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters PortraitControlPane's deleting destructor."
+  - address: "0x0042D210"
+    name: ui_legend_list_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters LegendListPane's deleting destructor."
+  - address: "0x0042D220"
+    name: ui_legend_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters LegendDialogPane's deleting destructor."
+  - address: "0x0042D230"
+    name: ui_new_legend_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters NewLegendDialogPane's deleting destructor."
   - address: "0x0047D670"
     name: ui_text_truncate_dbcs_safe
     confidence: high

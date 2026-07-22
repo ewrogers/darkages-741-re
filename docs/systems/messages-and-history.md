@@ -5,6 +5,7 @@ The client has three different places that can show server text. A short notice 
 | UI path | Owner | Retention |
 | --- | --- | --- |
 | Floating notices | `GameMessagePane` | Four rendered rows, then automatic fading |
+| Chat window text | `NewChattingPane` or `NewChatting2Pane`, with embedded `ChattingPane` | Scrollable styled text plus an optional local transcript |
 | Message history | `NewSystemMessagePane` and `NewSystemMessageTextPane` | Up to 30,000 text bytes |
 | World speech | `World::BalloonPane` | Three-second balloon attached to one object |
 
@@ -39,18 +40,29 @@ The orange control belongs to `NewSystemMessagePane`. Its drag handler changes h
 
 The embedded `NewSystemMessageTextPane` supplies the scrollable text behavior. Expanding the orange control reveals more rows at once, while the underlying text buffer can retain much more than ten lines.
 
+## Chat window and transcript
+
+`NewChattingPane` and `NewChatting2Pane` each construct an embedded RTTI-backed `ChattingPane`. The second host switches that control to the closely related `ChattingPane2` behavior.
+
+The chat pane consumes both [`SSay`](../network/server/013-0x0d-say.md) and [`SMessage`](../network/server/010-0x0a-message.md). It retains Say and Shout speech but ignores Chant. For `SMessage`, it accepts types `0x00`, `0x0B`, and `0x0C` with palette indexes `0x58`, `0x77`, and `0x54` respectively.
+
+Text passes through the client's formatted-text parser, which preserves inline palette changes. The pane begins with seven blank rows and scrolls as new lines arrive.
+
+Alt+J toggles a local plain-text transcript. The filename is `<character><month><day><hour><minute>.txt`, using two digits for every time field and no year. The client uses local time, writes start and end markers, and closes an open transcript when the pane is destroyed.
+
 ## Saved and unsaved speech
 
-[`SSay`](../network/server/013-0x0d-say.md) contains a speech mode, a world-object ID, and a `string8`. Its handler creates a balloon for 3,000 milliseconds. It does not call the persistent-history append path.
+[`SSay`](../network/server/013-0x0d-say.md) contains a speech mode, a world-object ID, and a `string8`. The world handler creates a display over that object for 3,000 milliseconds. A separate chat-pane consumer retains Say and Shout text but ignores Chant.
 
-Say and Shout use the framed `World::BalloonPane` with palette indexes `0xFF` and `0x45`. Chant uses palette `0x58` and draws text directly over the speaker without the frame. These are temporary world displays; none of the three modes is retained here.
+Say and Shout use the framed `World::BalloonPane` with palette indexes `0xFF` and `0x45`. Chant uses palette `0x58` and draws text directly over the speaker without the frame. This world rendering is independent of the optional chat-window copy.
 
 `SMessage` has no independent history flag either. Its type byte is the selector. This gives the server a simple way to choose the result:
 
 ```text
-SSay only                 -> temporary object balloon
+SSay Say or Shout only    -> temporary object balloon plus chat-window text
+SSay Chant only           -> temporary text over the object
 history SMessage only     -> saved message
-SSay plus SMessage        -> balloon plus saved copy
+SSay plus SMessage        -> world display, chat text, and saved history when accepted
 ```
 
 The client code supports this explanation for NPC text that is saved only sometimes. A paired runtime capture is still needed to prove whether the live server sends both packets for the logged case.

@@ -15,16 +15,28 @@ functions:
     name: com_auto_init_dtor
     confidence: high
     evidence: "Runs OleUninitialize from the compiler-generated AutoInit destructor."
+  - address: "0x0042DF50"
+    name: ui_intro_video_start_if_available
+    confidence: high
+    evidence: "Creates CIPane when needed and begins the requested intro-video sequence."
   - address: "0x0042DFF0"
     end_address: "0x0042E16C"
     name: ui_intro_video_pane_ctor
     confidence: high
     evidence: Initializes the CIPane vtable and Bink-backed video state.
+  - address: "0x0042E170"
+    name: ui_intro_video_pane_dtor
+    confidence: high
+    evidence: "Unregisters exact RTTI CIPane, clears its singleton, and destroys Pane."
   - address: "0x0042E1F0"
     end_address: "0x0042E28E"
     name: ui_intro_video_begin_sequence
     confidence: high
     evidence: Stores two clip resources and starts the first clip.
+  - address: "0x0042E290"
+    name: ui_intro_video_close_assets
+    confidence: high
+    evidence: "Releases both intro-video archive handles through the main archive manager."
   - address: "0x0042E2D0"
     end_address: "0x0042E43B"
     name: render_bink_open_clip
@@ -35,16 +47,40 @@ functions:
     name: render_bink_present_frame
     confidence: high
     evidence: Uses BinkWait, BinkDoFrame, BinkCopyToBuffer, and BinkNextFrame.
+  - address: "0x0042E580"
+    name: ui_intro_video_handle_keyboard_event
+    confidence: high
+    evidence: "Makes an active intro-video sequence advance immediately on keyboard input."
+  - address: "0x0042E5C0"
+    name: ui_intro_video_handle_pointer_event
+    confidence: high
+    evidence: "Makes an active intro-video sequence advance immediately on pointer input."
   - address: "0x0042E600"
     end_address: "0x0042E6F2"
     name: event_intro_video_frame_timer
     confidence: high
     evidence: Advances the two clips and posts intro state 2 when playback finishes.
+  - address: "0x0042E700"
+    name: ui_intro_video_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys CIPane and optionally frees its complete object."
+  - address: "0x0042E750"
+    name: ui_intro_video_pane_singleton_register
+    confidence: high
+    evidence: "Registers the containing CIPane in the intro-video singleton slot."
+  - address: "0x0042E790"
+    name: ui_intro_video_pane_singleton_unregister
+    confidence: high
+    evidence: "Clears the intro-video singleton when it matches the containing CIPane."
   - address: "0x0042E7D0"
     end_address: "0x0042E7DA"
     name: ui_get_intro_video_pane
     confidence: high
     evidence: Returns the global CIPane instance at 0x006DA3A0.
+  - address: "0x0042E7F0"
+    name: ui_intro_video_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters CIPane's scalar deleting destructor."
   - address: "0x004ACA50"
     end_address: "0x004ACDF1"
     name: event_handle_intro_state

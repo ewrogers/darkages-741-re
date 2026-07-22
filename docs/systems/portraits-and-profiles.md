@@ -70,6 +70,14 @@ The legacy portrait EPF stores palette indexes. `file_decode_portrait_image` mar
 
 JPEG portraits do not use a `.pal` file. The JPEG decoder produces display pixels directly.
 
+## Legend and profile dialogs
+
+The legacy RTTI class `LegendDialogPane` loads `llegends.txt`. It combines a title with an eight-image list control and parses the server's counted legend entries.
+
+`NewLegendDialogPane` loads `llegend2.txt`. It adds a `PortraitControlPane`, profile text, and an optional Change action. The constructor supports read-only and editable forms. Its packet handler decodes the nested portrait/profile body, reloads the profile text, enables Change when editing is allowed, and either renders or clears the portrait control.
+
+Both dialogs parse the counted legend list independently of the portrait and profile fields.
+
 ## Profile text
 
 The client reads at most 370 bytes from `profile.txt`. `ui_text_truncate_dbcs_safe` makes sure the byte limit does not split a Windows double-byte character. There is no Unicode conversion in the packet builder. The stored local text bytes are copied to the packet.

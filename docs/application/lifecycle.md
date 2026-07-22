@@ -47,6 +47,8 @@ state 2 -> continue into the normal client
 
 `event_handle_intro_state` owns the state change. `ui_intro_video_begin_sequence` opens the clips, while `event_intro_video_frame_timer` advances and closes them.
 
+Keyboard or pointer input moves the next-frame deadline to the current time, so the sequence advances immediately on the next timer pass. Destroying the RTTI-backed `CIPane` unregisters it from the pane tree, clears its singleton slot, and releases both archive resources.
+
 This is useful because a launcher can skip the video cleanly by starting at state 2. It avoids changing the shared video player or leaving the intro pane half-open. The exact runtime patch is in [Skip the intro](../appendix/runtime-patches/skip-intro.md).
 
 ## Shutdown

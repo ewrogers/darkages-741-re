@@ -44,8 +44,11 @@ SMessage
   |     |-- WindowMessageDialogPane popup
   |     `-- ScorePane
   |
-  `-- NewSystemMessagePane
+  |-- NewSystemMessagePane
   |     `-- persistent message history
+  |
+  |-- NewChattingPane / NewChatting2Pane
+  |     `-- embedded ChattingPane styled text buffer
   |
   `-- GameSettingDialog
         `-- type 0x07 setting-row updates
@@ -119,15 +122,16 @@ For types `0x00`, `0x03`, `0x0B`, and `0x0C`, a message from 71 through 130 byte
 
 ## Message history and NPC speech
 
-`SMessage` has no separate save-to-history flag. The type itself determines whether `NewSystemMessagePane` accepts the text.
+`SMessage` has no separate save-to-history flag. The type itself determines whether `NewSystemMessagePane` accepts the text. The embedded `ChattingPane` is a separate consumer: it accepts types `0x00`, `0x0B`, and `0x0C` and assigns palette indexes `0x58`, `0x77`, and `0x54` respectively.
 
-[`SSay`](013-0x0d-say.md) is a different packet. It attaches a speech balloon to a world object for three seconds and does not append that text to persistent history. The client therefore supports these server choices:
+[`SSay`](013-0x0d-say.md) is a different packet. Its world handler displays speech over a world object for three seconds. A separate `ChattingPane` consumer also retains Say and Shout text, while Chant remains world-only. None of these chat copies enters `NewSystemMessagePane` persistent history. The client therefore supports these server choices:
 
 | Server traffic | Client result |
 | --- | --- |
-| `SSay` only | Temporary balloon, not saved |
+| Say or Shout `SSay` only | Temporary balloon plus chat-window text, not persistent history |
+| Chant `SSay` only | Temporary world text, not saved |
 | History-eligible `SMessage` only | Saved message; some types also enter the floating overlay |
-| Both packets | World balloon and a saved copy |
+| Both packets | World display, chat-window text when accepted, and a saved copy |
 
 This split explains how NPC speech can sometimes be logged without an `SSay` flag changing. A capture of the same NPC interaction in both modes would confirm whether the live server sends both packets or substitutes one for the other.
 
