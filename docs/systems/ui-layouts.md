@@ -26,7 +26,9 @@ This is closer to a game UI skin than a complete scene file. The layout controls
 
 The parser reads through the small `LayoutFileIO` interface. `LayoutFromMem` supplies bytes from the bounded expanded DAT entry used by the normal load path. `LayoutFromFile` supplies the same byte-at-a-time interface over a file stream. End of input is reported as `-1` in both cases.
 
-The manager cache has two levels: archive pointer, then layout filename. This keeps identically named entries from different archives separate. A successful load inserts the parsed layout at that pair and makes it the current layout for later named-control queries. `ui_layout_has_named_control` checks the current layout without selecting or constructing a control.
+The manager cache has two levels: archive pointer, then layout filename. This keeps identically named entries from different archives separate. Both levels are ordered maps. The outer nodes own the complete filename map for one archive, while each inner value keeps its filename string and parsed-layout pointer. Copying an inner map clones its tree and strings; clearing or replacing an outer value destroys the nested map.
+
+A successful load inserts the parsed layout at that pair and makes it the current layout for later named-control queries. `ui_layout_has_named_control` checks the current layout without selecting or constructing a control.
 
 The pane then uses helpers such as:
 

@@ -100,6 +100,8 @@ skip = requested_left_x - band_start_x[band]
 
 Client 7.41 scans the checkpoint array and computes that band index, but does not use it. `file_hea_build_row_views` always reads row pointers from band 0 and measures the horizontal skip from `band_start_x[0]`. It is the only caller-backed row-view path in this binary. Later band tables are valid seek data in the files, but this client does not use their acceleration.
 
+`HEASession` keeps the opened header pointer and a separately allocated table of row pointers. Building the view also caches the clipped screen rectangle, row-table capacity, and horizontal offset bias used by the mask decoder. Resetting the session clears the mapped-data pointer and frees the row-pointer table. The underlying packed-run edit routines are shared renderer helpers, not HEA-specific storage code.
+
 ## Decode a row
 
 The decoder starts at one scanline pointer, consumes runs until it reaches the requested horizontal position, then emits the requested number of pixels. There is no row terminator.

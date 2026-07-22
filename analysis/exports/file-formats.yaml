@@ -619,6 +619,18 @@ functions:
     name: file_text_token_append_byte
     confidence: high
     evidence: "Appends one byte to the token destination and advances its length."
+  - address: "0x00487310"
+    name: file_hea_session_ctor
+    confidence: high
+    evidence: "Constructs the RTTI-backed HEASession and initializes its mapped-data and row-view state."
+  - address: "0x00487340"
+    name: file_hea_session_dtor
+    confidence: high
+    evidence: "Resets and destroys an HEASession."
+  - address: "0x00487360"
+    name: file_hea_session_get_clip_rect
+    confidence: high
+    evidence: "Returns the screen-space clipping rectangle cached by row-view construction."
   - address: "0x00487380"
     name: file_hea_build_row_views
     confidence: high
@@ -627,10 +639,38 @@ functions:
     name: file_hea_open
     confidence: high
     evidence: Maps the HEA header, band array, row offsets, and packed run stream.
+  - address: "0x00487690"
+    name: file_hea_session_reset
+    confidence: high
+    evidence: "Clears the HEA data pointer and frees the cached row-view pointer array."
   - address: "0x004876D0"
     name: file_hea_project_map_position
     confidence: high
     evidence: Projects two map axes into the padded HEA mask canvas with 28-pixel horizontal and 14-pixel vertical steps, using header screen width and height as margins.
+  - address: "0x00487750"
+    name: file_hea_session_get_row_views
+    confidence: high
+    evidence: "Returns the cached per-scanline packed-run pointer table."
+  - address: "0x00487770"
+    name: file_hea_session_get_row_view_capacity
+    confidence: high
+    evidence: "Returns the allocated row-view pointer capacity."
+  - address: "0x00487790"
+    name: file_hea_session_get_row_offset_bias
+    confidence: high
+    evidence: "Returns the horizontal run-stream offset bias consumed by the HEA mask decoder."
+  - address: "0x004877B0"
+    name: file_hea_session_get_header
+    confidence: high
+    evidence: "Returns the opened HEA header and mapped-data pointer."
+  - address: "0x004877D0"
+    name: file_hea_session_is_open
+    confidence: high
+    evidence: "Tests whether the session currently has an opened HEA data pointer."
+  - address: "0x004878E0"
+    name: file_hea_session_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an HEASession and optionally releases its allocation."
   - address: "0x0048B530"
     name: file_load_image_frame
     confidence: high

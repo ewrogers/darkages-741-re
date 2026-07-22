@@ -307,6 +307,142 @@ functions:
     name: ui_layout_filename_cache_map_rotate_right
     confidence: high
     evidence: "Performs a right rotation while rebalancing an inner filename cache."
+  - address: "0x00485070"
+    name: ui_layout_manager_register_global
+    confidence: high
+    evidence: "Registers this instance as the process-global layout manager."
+  - address: "0x00485090"
+    name: ui_layout_manager_unregister_global
+    confidence: high
+    evidence: "Clears the process-global layout-manager pointer."
+  - address: "0x004850B0"
+    name: ui_layout_archive_cache_value_dtor
+    confidence: high
+    evidence: "Destroys one outer-cache value and its nested filename cache."
+  - address: "0x004850E0"
+    name: ui_layout_filename_cache_value_dtor
+    confidence: high
+    evidence: "Destroys one filename-cache value, including its string key."
+  - address: "0x00485150"
+    name: ui_layout_archive_cache_map_allocate_nodes
+    confidence: high
+    evidence: "Allocates storage for 0x24-byte outer archive-cache nodes."
+  - address: "0x004851C0"
+    name: ui_layout_filename_cache_map_allocate_nodes
+    confidence: high
+    evidence: "Allocates storage for 0x30-byte inner filename-cache nodes."
+  - address: "0x00485230"
+    name: ui_layout_archive_cache_map_insert_unique
+    confidence: high
+    evidence: "Finds or uniquely inserts an outer cache entry keyed by archive pointer."
+  - address: "0x00485470"
+    name: ui_layout_filename_cache_map_insert_unique
+    confidence: high
+    evidence: "Finds or uniquely inserts an inner cache entry keyed by layout filename."
+  - address: "0x004856D0"
+    name: ui_layout_archive_cache_map_insert_node
+    confidence: high
+    evidence: "Links and rebalances one newly allocated outer-cache node."
+  - address: "0x004859B0"
+    name: ui_layout_filename_cache_map_insert_node
+    confidence: high
+    evidence: "Links and rebalances one newly allocated inner-cache node."
+  - address: "0x00485C90"
+    name: ui_layout_archive_cache_map_iterator_decrement
+    confidence: high
+    evidence: "Moves an outer-cache iterator to its in-order predecessor."
+  - address: "0x00485D50"
+    name: ui_layout_filename_cache_map_iterator_decrement
+    confidence: high
+    evidence: "Moves an inner-cache iterator to its in-order predecessor."
+  - address: "0x00485E10"
+    name: ui_layout_archive_cache_map_create_node
+    confidence: high
+    evidence: "Allocates and constructs one archive-pointer cache node."
+  - address: "0x00485E6D"
+    name: ui_layout_archive_cache_map_create_node_exception_cleanup
+    confidence: high
+    evidence: "Frees a partially constructed outer-cache node and resumes exception propagation."
+  - address: "0x00485EB0"
+    name: ui_layout_filename_cache_map_create_node
+    confidence: high
+    evidence: "Allocates and constructs one filename-keyed cache node."
+  - address: "0x00485F0D"
+    name: ui_layout_filename_cache_map_create_node_exception_cleanup
+    confidence: high
+    evidence: "Frees a partially constructed inner-cache node and resumes exception propagation."
+  - address: "0x00485F50"
+    name: ui_layout_archive_cache_map_allocate_node
+    confidence: high
+    evidence: "Allocates one 0x24-byte outer-cache node."
+  - address: "0x00485FA0"
+    name: ui_layout_filename_cache_map_copy_ctor_thunk
+    confidence: high
+    evidence: "Adjusts the destination and forwards to the filename-cache copy constructor."
+  - address: "0x00485FC0"
+    name: ui_layout_filename_cache_map_allocate_node
+    confidence: high
+    evidence: "Allocates one 0x30-byte inner-cache node."
+  - address: "0x00486010"
+    name: ui_layout_filename_cache_map_copy_ctor
+    confidence: high
+    evidence: "Deep-copies the filename cache tree and its string-keyed values."
+  - address: "0x0048607F"
+    name: ui_layout_filename_cache_map_copy_ctor_exception_cleanup
+    confidence: high
+    evidence: "Destroys a partially copied filename cache before propagating the exception."
+  - address: "0x00486110"
+    name: ui_layout_filename_cache_map_copy_tree
+    confidence: high
+    evidence: "Copies the source filename-cache tree below its sentinel root."
+  - address: "0x00486220"
+    name: ui_layout_filename_cache_map_clone_subtree
+    confidence: high
+    evidence: "Recursively clones one filename-cache subtree."
+  - address: "0x004862E4"
+    name: ui_layout_filename_cache_map_clone_subtree_exception_cleanup
+    confidence: high
+    evidence: "Destroys a partially cloned filename-cache subtree during exception propagation."
+  - address: "0x00486330"
+    name: ui_layout_archive_cache_map_construct_value
+    confidence: high
+    evidence: "Constructs an outer-cache value from an archive pointer and nested filename cache."
+  - address: "0x004863C0"
+    name: ui_layout_filename_cache_map_construct_value
+    confidence: high
+    evidence: "Constructs an inner-cache value from a filename and parsed-layout pointer."
+  - address: "0x00486430"
+    name: ui_layout_image_name_dtor_duplicate
+    confidence: high
+    evidence: "Destroys the string held by one parsed layout image-name record."
+  - address: "0x004864A0"
+    name: ui_layout_filename_cache_map_clone_node
+    confidence: high
+    evidence: "Allocates and copies one filename-cache tree node."
+  - address: "0x004864FD"
+    name: ui_layout_filename_cache_map_clone_node_exception_cleanup
+    confidence: high
+    evidence: "Frees a partially cloned filename-cache node during exception propagation."
+  - address: "0x00486540"
+    name: ui_layout_filename_cache_map_clone_value
+    confidence: high
+    evidence: "Copies one filename-cache mapped value into a new node."
+  - address: "0x004865B0"
+    name: ui_layout_filename_cache_value_copy_ctor
+    confidence: high
+    evidence: "Copies a filename string and its associated parsed-layout pointer."
+  - address: "0x00486630"
+    name: ui_layout_filename_cache_map_move_ctor
+    confidence: high
+    evidence: "Move-constructs a filename cache by taking its source tree state."
+  - address: "0x004866A0"
+    name: ui_layout_filename_cache_map_move_assign
+    confidence: high
+    evidence: "Clears the destination and takes the source filename-cache tree state."
+  - address: "0x00486740"
+    name: ui_layout_filename_cache_value_copy_ctor_duplicate
+    confidence: high
+    evidence: "Duplicate code path that copies a filename and parsed-layout pointer."
   - address: "0x004A81F0"
     name: ui_layout_parse_control
     confidence: high

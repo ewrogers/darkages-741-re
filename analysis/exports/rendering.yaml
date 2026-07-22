@@ -1451,6 +1451,54 @@ functions:
     name: render_map_rgb555_luminance_palette
     confidence: high
     evidence: "Computes five-bit luminance from RGB555 and resolves it through one of four 32-entry packed-color ramps."
+  - address: "0x004867C0"
+    name: render_alpha_runs_fill
+    confidence: high
+    evidence: "Encodes a constant six-bit intensity as packed runs, splitting lengths above 255 pixels."
+  - address: "0x00486830"
+    name: render_alpha_runs_split_at
+    confidence: high
+    evidence: "Splits a packed alpha-run stream at a requested pixel offset."
+  - address: "0x004869C0"
+    name: render_alpha_runs_locate_range
+    confidence: high
+    evidence: "Locates and splits the token boundaries for a pixel range."
+  - address: "0x00486A40"
+    name: render_alpha_runs_extract_range
+    confidence: high
+    evidence: "Copies a pixel interval from a packed run stream with split edge tokens."
+  - address: "0x00486B60"
+    name: render_alpha_runs_max_combine_address
+    confidence: high
+    evidence: "Returns the address of the packed-run maximum-combine routine."
+  - address: "0x00486B70"
+    name: render_alpha_runs_max_combine
+    confidence: high
+    evidence: "Combines two run streams pixelwise with the larger intensity and coalesces equal output runs."
+  - address: "0x00486E60"
+    name: render_alpha_runs_overlay_max_range
+    confidence: high
+    evidence: "Overlays one pixel interval by taking the maximum of the existing and supplied run streams."
+  - address: "0x00486F40"
+    name: render_alpha_runs_replace_range
+    confidence: high
+    evidence: "Replaces one pixel interval and coalesces compatible runs at its boundaries."
+  - address: "0x00487230"
+    name: render_alpha_runs_replace_range_constant
+    confidence: high
+    evidence: "Builds a constant run stream and replaces the requested pixel interval with it."
+  - address: "0x004872A0"
+    name: render_alpha_runs_overlay_range_constant
+    confidence: high
+    evidence: "Builds a constant run stream and maximum-overlays it across the requested interval."
+  - address: "0x004877F0"
+    name: render_alpha_run_subtract_length
+    confidence: high
+    evidence: "Subtracts a pixel count from one run while preserving its low-six-bit intensity."
+  - address: "0x00487850"
+    name: render_alpha_runs_merge_adjacent
+    confidence: high
+    evidence: "Merges adjacent equal-intensity runs when their combined length fits in one byte."
   - address: "0x00488320"
     name: ui_hot_key_pane_ctor
     confidence: high

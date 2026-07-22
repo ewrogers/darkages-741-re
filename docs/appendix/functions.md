@@ -1359,6 +1359,40 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_layout_archive_cache_map_rotate_right` | `0x00484E60` | high | Performs a right rotation while rebalancing the outer archive cache. |
 | `ui_layout_filename_cache_map_rotate_left` | `0x00484F10` | high | Performs a left rotation while rebalancing an inner filename cache. |
 | `ui_layout_filename_cache_map_rotate_right` | `0x00484FC0` | high | Performs a right rotation while rebalancing an inner filename cache. |
+| `ui_layout_manager_register_global` | `0x00485070` | high | Registers this instance as the process-global layout manager. |
+| `ui_layout_manager_unregister_global` | `0x00485090` | high | Clears the process-global layout-manager pointer. |
+| `ui_layout_archive_cache_value_dtor` | `0x004850B0` | high | Destroys one outer-cache value and its nested filename cache. |
+| `ui_layout_filename_cache_value_dtor` | `0x004850E0` | high | Destroys one filename-cache value, including its string key. |
+| `ui_layout_archive_cache_map_allocate_nodes` | `0x00485150` | high | Allocates storage for 0x24-byte outer archive-cache nodes. |
+| `ui_layout_filename_cache_map_allocate_nodes` | `0x004851C0` | high | Allocates storage for 0x30-byte inner filename-cache nodes. |
+| `ui_layout_archive_cache_map_insert_unique` | `0x00485230` | high | Finds or uniquely inserts an outer cache entry keyed by archive pointer. |
+| `ui_layout_filename_cache_map_insert_unique` | `0x00485470` | high | Finds or uniquely inserts an inner cache entry keyed by layout filename. |
+| `ui_layout_archive_cache_map_insert_node` | `0x004856D0` | high | Links and rebalances one newly allocated outer-cache node. |
+| `ui_layout_filename_cache_map_insert_node` | `0x004859B0` | high | Links and rebalances one newly allocated inner-cache node. |
+| `ui_layout_archive_cache_map_iterator_decrement` | `0x00485C90` | high | Moves an outer-cache iterator to its in-order predecessor. |
+| `ui_layout_filename_cache_map_iterator_decrement` | `0x00485D50` | high | Moves an inner-cache iterator to its in-order predecessor. |
+| `ui_layout_archive_cache_map_create_node` | `0x00485E10` | high | Allocates and constructs one archive-pointer cache node. |
+| `ui_layout_archive_cache_map_create_node_exception_cleanup` | `0x00485E6D` | high | Frees a partially constructed outer-cache node and resumes exception propagation. |
+| `ui_layout_filename_cache_map_create_node` | `0x00485EB0` | high | Allocates and constructs one filename-keyed cache node. |
+| `ui_layout_filename_cache_map_create_node_exception_cleanup` | `0x00485F0D` | high | Frees a partially constructed inner-cache node and resumes exception propagation. |
+| `ui_layout_archive_cache_map_allocate_node` | `0x00485F50` | high | Allocates one 0x24-byte outer-cache node. |
+| `ui_layout_filename_cache_map_copy_ctor_thunk` | `0x00485FA0` | high | Adjusts the destination and forwards to the filename-cache copy constructor. |
+| `ui_layout_filename_cache_map_allocate_node` | `0x00485FC0` | high | Allocates one 0x30-byte inner-cache node. |
+| `ui_layout_filename_cache_map_copy_ctor` | `0x00486010` | high | Deep-copies the filename cache tree and its string-keyed values. |
+| `ui_layout_filename_cache_map_copy_ctor_exception_cleanup` | `0x0048607F` | high | Destroys a partially copied filename cache before propagating the exception. |
+| `ui_layout_filename_cache_map_copy_tree` | `0x00486110` | high | Copies the source filename-cache tree below its sentinel root. |
+| `ui_layout_filename_cache_map_clone_subtree` | `0x00486220` | high | Recursively clones one filename-cache subtree. |
+| `ui_layout_filename_cache_map_clone_subtree_exception_cleanup` | `0x004862E4` | high | Destroys a partially cloned filename-cache subtree during exception propagation. |
+| `ui_layout_archive_cache_map_construct_value` | `0x00486330` | high | Constructs an outer-cache value from an archive pointer and nested filename cache. |
+| `ui_layout_filename_cache_map_construct_value` | `0x004863C0` | high | Constructs an inner-cache value from a filename and parsed-layout pointer. |
+| `ui_layout_image_name_dtor_duplicate` | `0x00486430` | high | Destroys the string held by one parsed layout image-name record. |
+| `ui_layout_filename_cache_map_clone_node` | `0x004864A0` | high | Allocates and copies one filename-cache tree node. |
+| `ui_layout_filename_cache_map_clone_node_exception_cleanup` | `0x004864FD` | high | Frees a partially cloned filename-cache node during exception propagation. |
+| `ui_layout_filename_cache_map_clone_value` | `0x00486540` | high | Copies one filename-cache mapped value into a new node. |
+| `ui_layout_filename_cache_value_copy_ctor` | `0x004865B0` | high | Copies a filename string and its associated parsed-layout pointer. |
+| `ui_layout_filename_cache_map_move_ctor` | `0x00486630` | high | Move-constructs a filename cache by taking its source tree state. |
+| `ui_layout_filename_cache_map_move_assign` | `0x004866A0` | high | Clears the destination and takes the source filename-cache tree state. |
+| `ui_layout_filename_cache_value_copy_ctor_duplicate` | `0x00486740` | high | Duplicate code path that copies a filename and parsed-layout pointer. |
 | `ui_hot_key_pane_ctor` | `0x00488320` | high | Constructs the RTTI-backed HotKeyPane, loads _nhotkem.txt and _nhotkey.txt, and registers it with the screen and event trees. |
 | `ui_create_hot_key_pane` | `0x00488D00` | high | Allocates a 0x919C-byte HotKeyPane and calls ui_hot_key_pane_ctor; its only direct caller is GUIBackPane action 0. |
 | `ui_image_pane_draw_content` | `0x0048DD30` | high | Draws an ImagePane image into the pane's own canvas. |
@@ -2592,6 +2626,18 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_map_current_rgb16_luminance_palette` | `0x00481850` | high | Computes five-bit luminance in the selected source format and resolves one of four packed-color ramps. |
 | `render_map_rgb565_luminance_palette` | `0x00481980` | high | Computes five-bit luminance from RGB565 and resolves it through one of four 32-entry packed-color ramps. |
 | `render_map_rgb555_luminance_palette` | `0x00481A10` | high | Computes five-bit luminance from RGB555 and resolves it through one of four 32-entry packed-color ramps. |
+| `render_alpha_runs_fill` | `0x004867C0` | high | Encodes a constant six-bit intensity as packed runs, splitting lengths above 255 pixels. |
+| `render_alpha_runs_split_at` | `0x00486830` | high | Splits a packed alpha-run stream at a requested pixel offset. |
+| `render_alpha_runs_locate_range` | `0x004869C0` | high | Locates and splits the token boundaries for a pixel range. |
+| `render_alpha_runs_extract_range` | `0x00486A40` | high | Copies a pixel interval from a packed run stream with split edge tokens. |
+| `render_alpha_runs_max_combine_address` | `0x00486B60` | high | Returns the address of the packed-run maximum-combine routine. |
+| `render_alpha_runs_max_combine` | `0x00486B70` | high | Combines two run streams pixelwise with the larger intensity and coalesces equal output runs. |
+| `render_alpha_runs_overlay_max_range` | `0x00486E60` | high | Overlays one pixel interval by taking the maximum of the existing and supplied run streams. |
+| `render_alpha_runs_replace_range` | `0x00486F40` | high | Replaces one pixel interval and coalesces compatible runs at its boundaries. |
+| `render_alpha_runs_replace_range_constant` | `0x00487230` | high | Builds a constant run stream and replaces the requested pixel interval with it. |
+| `render_alpha_runs_overlay_range_constant` | `0x004872A0` | high | Builds a constant run stream and maximum-overlays it across the requested interval. |
+| `render_alpha_run_subtract_length` | `0x004877F0` | high | Subtracts a pixel count from one run while preserving its low-six-bit intensity. |
+| `render_alpha_runs_merge_adjacent` | `0x00487850` | high | Merges adjacent equal-intensity runs when their combined length fits in one byte. |
 | `render_image_library_ctor` | `0x0048B2C0` | high | Constructs RTTI class ImageLib and registers its singleton; the object has no filename or decoded-frame cache fields. |
 | `render_image_library_dtor` | `0x0048B330` | high | Unregisters and destroys the ImageLib singleton without releasing a shared image cache. |
 | `render_load_main_archive_pixmap` | `0x0048BB90` | high | Resolves one requested frame synchronously through file_load_image_frame using the main archive. |
@@ -2899,9 +2945,19 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_text_reader_read_token` | `0x004800F0` | high | Reads one bounded token with the default tokenizer behavior. |
 | `file_text_reader_read_token_ex` | `0x00480110` | high | Reads one token with DBCS handling, whitespace and newline status, hash comments, and optional mode behavior. |
 | `file_text_token_append_byte` | `0x00480380` | high | Appends one byte to the token destination and advances its length. |
+| `file_hea_session_ctor` | `0x00487310` | high | Constructs the RTTI-backed HEASession and initializes its mapped-data and row-view state. |
+| `file_hea_session_dtor` | `0x00487340` | high | Resets and destroys an HEASession. |
+| `file_hea_session_get_clip_rect` | `0x00487360` | high | Returns the screen-space clipping rectangle cached by row-view construction. |
 | `file_hea_build_row_views` | `0x00487380` | high | Clips a mask-canvas rectangle and builds one run pointer per pixel scanline; it scans horizontal band checkpoints but client 7.41 always uses band 0's row-offset table. |
 | `file_hea_open` | `0x004875B0` | high | Maps the HEA header, band array, row offsets, and packed run stream. |
+| `file_hea_session_reset` | `0x00487690` | high | Clears the HEA data pointer and frees the cached row-view pointer array. |
 | `file_hea_project_map_position` | `0x004876D0` | high | Projects two map axes into the padded HEA mask canvas with 28-pixel horizontal and 14-pixel vertical steps, using header screen width and height as margins. |
+| `file_hea_session_get_row_views` | `0x00487750` | high | Returns the cached per-scanline packed-run pointer table. |
+| `file_hea_session_get_row_view_capacity` | `0x00487770` | high | Returns the allocated row-view pointer capacity. |
+| `file_hea_session_get_row_offset_bias` | `0x00487790` | high | Returns the horizontal run-stream offset bias consumed by the HEA mask decoder. |
+| `file_hea_session_get_header` | `0x004877B0` | high | Returns the opened HEA header and mapped-data pointer. |
+| `file_hea_session_is_open` | `0x004877D0` | high | Tests whether the session currently has an opened HEA data pointer. |
+| `file_hea_session_scalar_deleting_dtor` | `0x004878E0` | high | Destroys an HEASession and optionally releases its allocation. |
 | `file_read_image_metadata` | `0x0048B390` | high | Reads shared EPF metadata or dispatches SPF metadata parsing. |
 | `file_load_image_frame` | `0x0048B530` | high | Loads one EPF or SPF frame for the shared image library. |
 | `file_load_image_pixmap` | `0x0048BBC0` | high | Loads one image frame into a pixmap view and applies the EPF palette selector when required. |

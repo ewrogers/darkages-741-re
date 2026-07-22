@@ -63,7 +63,11 @@ The 16-bit dispatch supports three alpha sources:
 - a second pixel plane containing per-pixel weights
 - row-based run-length alpha streams
 
-An RLE alpha token stores its repeat count in the high byte and its alpha value in the low byte. One image representation locates each row by an offset relative to the packed alpha blob; another stores absolute row pointers. Variants can also apply a source color key, a global opacity, or two alpha streams.
+An RLE alpha token stores its repeat count in the high byte and its intensity in the low six bits. A run is therefore at most 255 pixels long. The shared editor splits longer constant spans, cuts runs at range boundaries, replaces or extracts intervals, and merges adjacent equal-intensity runs when their combined length still fits in one token.
+
+The maximum-overlay operation walks two streams pixel by pixel, keeps the larger intensity, and coalesces the result. Alpha-screen gradients and HEA light masks both use these generic helpers. The helpers belong to the renderer rather than either source format.
+
+One image representation locates each row by an offset relative to the packed alpha blob; another stores absolute row pointers. Variants can also apply a source color key, a global opacity, or two alpha streams.
 
 Separate entry points implement luminance-ramp recoloring, screen-style per-component composition, and saturating additive blending. The dispatcher selects paired RGB565 or RGB555 scalar loops, or an MMX implementation when the optimized path is active.
 
