@@ -11,6 +11,58 @@ functions:
     name: ui_bulletin_session_ctor
     confidence: high
     evidence: "Constructs exact RTTI BulletinSession and applies the initial decoded SBulletin body."
+  - address: "0x0041C410"
+    name: ui_bulletin_session_dtor
+    confidence: high
+    evidence: "Destroys BulletinSession, closes and queues retained history dialogs, unregisters the pane, releases session state, and runs the Pane destructor."
+  - address: "0x0041C530"
+    name: ui_bulletin_session_close
+    confidence: high
+    evidence: "Closes BulletinSession auxiliary UI, hides and unregisters the pane, and queues the session for deferred deletion."
+  - address: "0x0041C570"
+    name: ui_bulletin_session_go_back
+    confidence: high
+    evidence: "Closes the current dialog and activates the previous history entry, or closes the session at the first entry."
+  - address: "0x0041C610"
+    name: ui_bulletin_session_go_forward
+    confidence: high
+    evidence: "Closes the current dialog and activates the next history entry, or closes the session when no current entry exists."
+  - address: "0x0041C6A0"
+    name: ui_bulletin_session_get_previous_dialog
+    confidence: high
+    evidence: "Finds a retained dialog in BulletinSession's ten-entry history and returns its predecessor."
+  - address: "0x0041C720"
+    name: ui_bulletin_get_dialog_bounds
+    confidence: medium
+    evidence: "Copies the client-global bulletin dialog rectangle; an earlier global-rectangle copy is immediately overwritten."
+  - address: "0x0041C780"
+    name: ui_bulletin_session_open_new_article_dialog
+    confidence: high
+    evidence: "Constructs NewArticleDialog at the shared bounds and pushes it onto BulletinSession history."
+  - address: "0x0041C840"
+    name: ui_bulletin_session_open_new_mail_dialog
+    confidence: high
+    evidence: "Constructs NewMailDialog at the shared bounds with the supplied recipient and pushes it onto BulletinSession history."
+  - address: "0x0041C900"
+    name: ui_bulletin_session_create_screen_dimmer
+    confidence: high
+    evidence: "Allocates a mode-5 ScreenDimmer and stores it on BulletinSession."
+  - address: "0x0041C990"
+    name: ui_bulletin_session_create_active_screen_dimmer
+    confidence: high
+    evidence: "Marks BulletinSession's dimmer state active, then allocates and stores a mode-5 ScreenDimmer."
+  - address: "0x0041C9B0"
+    name: ui_bulletin_session_handle_network_event
+    confidence: high
+    evidence: "Routes server opcode 0x31 decoded bulletin bodies to BulletinSession's server-body dispatcher."
+  - address: "0x0041CA10"
+    name: ui_bulletin_session_get_dialog
+    confidence: high
+    evidence: "Returns one of BulletinSession's ten retained dialog pointers for an index from 0 through 9."
+  - address: "0x0041CA50"
+    name: ui_bulletin_session_push_dialog
+    confidence: high
+    evidence: "Prunes forward history, attaches a dialog, advances the active index and count, and activates the new dialog."
   - address: "0x0041CBC0"
     name: net_send_bulletin_board_list_request
     confidence: high
@@ -19,6 +71,46 @@ functions:
     name: ui_bulletin_session_apply_server_body
     confidence: high
     evidence: "Routes SBulletin response types 1 through 5 to board-list, article-list, article, mail-list, and mail UI."
+  - address: "0x0041CD70"
+    name: ui_bulletin_dialog_ctor
+    confidence: high
+    evidence: "Constructs BulletinDialogPane and initializes its session owner, dialog type, close state, and retained payload pointer."
+  - address: "0x0041CDE0"
+    name: ui_bulletin_dialog_request_close
+    confidence: high
+    evidence: "Detaches the dialog from its external owner field and schedules immediate close timer 0x10011."
+  - address: "0x0041CE30"
+    name: ui_bulletin_dialog_handle_timer
+    confidence: high
+    evidence: "Handles timer 0x10011 by closing the complete BulletinDialogPane."
+  - address: "0x0041CE60"
+    name: ui_bulletin_dialog_close
+    confidence: high
+    evidence: "Closes the owning BulletinSession, or hides, unregisters, and queues a standalone BulletinDialogPane."
+  - address: "0x0041CEB0"
+    name: ui_bulletin_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Handles bulletin close and navigation keys, focused-control text input, and DialogPane fallback."
+  - address: "0x0041D090"
+    name: ui_bulletin_dialog_activate
+    confidence: high
+    evidence: "Registers BulletinDialogPane screen and event state, applies shared bounds, and invokes its final activation hook."
+  - address: "0x0041D1A0"
+    name: ui_bulletin_dialog_go_back
+    confidence: high
+    evidence: "Asks the owning BulletinSession to return to the previous retained dialog."
+  - address: "0x0041D1D0"
+    name: ui_bulletin_dialog_create_screen_dimmer
+    confidence: high
+    evidence: "Lazily allocates and stores a mode-5 ScreenDimmer for BulletinDialogPane."
+  - address: "0x0041D270"
+    name: ui_bulletin_dialog_handle_network_event
+    confidence: high
+    evidence: "Routes server opcode 0x31 bodies to the concrete dialog's bulletin-body handler."
+  - address: "0x0041D2D0"
+    name: ui_bulletin_dialog_handle_pointer_event
+    confidence: high
+    evidence: "Records last pointer positions for event families 1 and 3, then delegates to DialogPane."
   - address: "0x0041D350"
     name: ui_bulletin_open_board_list
     confidence: high
@@ -43,6 +135,50 @@ functions:
     name: ui_board_list_dialog_ctor
     confidence: high
     evidence: "Loads _nbdlist.txt and parses a heading plus repeated u16 board ID and string8 name records."
+  - address: "0x0041DCF0"
+    name: ui_board_list_dialog_open_selected_board
+    confidence: high
+    evidence: "Sends the initial list request for BoardListPane's selected board and activates BulletinSession's ScreenDimmer."
+  - address: "0x0041DD50"
+    name: ui_board_list_dialog_handle_action
+    confidence: high
+    evidence: "Handles BoardListDialog action 0 by opening the selection and action 1 by starting close animation."
+  - address: "0x0041DD90"
+    name: ui_board_list_dialog_update_open_button
+    confidence: high
+    evidence: "Enables or disables the open button according to whether BoardListPane has a valid selection."
+  - address: "0x0041DE20"
+    name: ui_board_list_dialog_handle_timer
+    confidence: high
+    evidence: "Advances the three-step 100 ms vertical open or close animation and reschedules timer 0x10111."
+  - address: "0x0041DFE0"
+    name: ui_board_list_dialog_start_open_animation
+    confidence: high
+    evidence: "Initializes BoardListDialog's three-step opening animation and schedules timer 0x10111 for 100 ms."
+  - address: "0x0041E0B0"
+    name: ui_board_list_dialog_start_close_animation
+    confidence: high
+    evidence: "Initializes BoardListDialog's three-step closing animation and schedules timer 0x10111 for 100 ms."
+  - address: "0x0041E180"
+    name: ui_board_list_pane_ctor
+    confidence: high
+    evidence: "Constructs BoardListPane over ListPane with 18-pixel rows and board-list style flags."
+  - address: "0x0041E1D0"
+    name: ui_board_list_pane_add_entry
+    confidence: high
+    evidence: "Builds a row from a signed 16-bit board ID and bounded title, then appends it to BoardListPane."
+  - address: "0x0041E230"
+    name: ui_board_list_pane_request_selected_board
+    confidence: high
+    evidence: "Looks up the selected row and sends the initial bulletin list request for its board ID."
+  - address: "0x0041E270"
+    name: ui_board_list_pane_activate_selected_board
+    confidence: high
+    evidence: "Resolves the owning BoardListDialog and invokes its selected-board open path."
+  - address: "0x0041E2B0"
+    name: ui_board_list_pane_draw_entry
+    confidence: high
+    evidence: "Draws one board row with selection-specific padding and the title stored after its two-byte board ID."
   - address: "0x0041E350"
     name: net_send_bulletin_initial_list_request
     confidence: high
@@ -51,10 +187,46 @@ functions:
     name: ui_article_list_dialog_ctor
     confidence: high
     evidence: "Loads _narlist.txt, parses the article-list response body, and adds its optional Hilight control for any nonzero SStatus privilege."
+  - address: "0x0041EC40"
+    name: ui_article_list_dialog_open_selected_article
+    confidence: high
+    evidence: "Sends the selected article-detail request and activates the owning BulletinSession's ScreenDimmer."
+  - address: "0x0041ECB0"
+    name: ui_article_list_dialog_highlight_selected_article
+    confidence: high
+    evidence: "Requests a highlight-state change and creates the dialog ScreenDimmer when accepted."
+  - address: "0x0041ED10"
+    name: ui_article_list_dialog_delete_selected_article
+    confidence: high
+    evidence: "Starts selected-article deletion and creates the dialog ScreenDimmer when accepted."
+  - address: "0x0041ED70"
+    name: ui_article_list_dialog_select_article
+    confidence: high
+    evidence: "Finds the ArticleListPane row matching an article identifier and selects it."
+  - address: "0x0041EDC0"
+    name: ui_article_list_dialog_remove_selected_rows
+    confidence: high
+    evidence: "Removes selected ArticleListPane rows and refreshes action controls."
+  - address: "0x0041EE10"
+    name: ui_article_list_dialog_request_latest_page
+    confidence: high
+    evidence: "Requests the newest article page with start ID 0x7FFF and page marker 0xFFF0."
+  - address: "0x0041EE60"
+    name: ui_article_list_dialog_open_new_article
+    confidence: high
+    evidence: "Asks the owning BulletinSession to construct and push NewArticleDialog."
+  - address: "0x0041EE80"
+    name: ui_article_list_dialog_request_older_page
+    confidence: high
+    evidence: "Uses the final article ID minus one for an older-page request, with 0x7FFF as the empty-list fallback."
   - address: "0x0041EED0"
     name: ui_article_list_dialog_handle_keyboard_event
     confidence: high
     evidence: "Handles ArticleListDialog keyboard commands and enables modifier-based multi-selection only for a nonzero privilege."
+  - address: "0x0041F1F0"
+    name: ui_article_list_dialog_handle_action
+    confidence: high
+    evidence: "Dispatches ArticleListDialog actions for open, compose, delete, back, close, and highlight."
   - address: "0x0041F2E0"
     name: ui_article_list_update_action_controls
     confidence: high
@@ -63,6 +235,10 @@ functions:
     name: ui_article_list_apply_server_body
     confidence: high
     evidence: "Routes active-list SBulletin response types 2, 7, and 8."
+  - address: "0x0041F4E0"
+    name: ui_article_list_apply_list_reply
+    confidence: high
+    evidence: "Parses bulletin subtype-2 article-list rows and appends them to ArticleListPane."
   - address: "0x0041F840"
     name: ui_article_list_apply_post_reply
     confidence: high
@@ -75,6 +251,26 @@ functions:
     name: ui_article_list_confirm_delete
     confidence: high
     evidence: "Builds the article delete confirmation and preserves the privileged modifier-based multi-selection."
+  - address: "0x0041FC90"
+    name: ui_index_selection_clear
+    confidence: high
+    evidence: "Clears the fixed-capacity integer selection set used by ArticleListPane."
+  - address: "0x0041FCB0"
+    name: ui_index_selection_remove
+    confidence: high
+    evidence: "Removes a selected integer by replacing it with the final entry and decrementing the count."
+  - address: "0x0041FD00"
+    name: ui_index_selection_add
+    confidence: high
+    evidence: "Adds an absent integer when selection capacity remains; an existing value is already successful."
+  - address: "0x0041FD60"
+    name: ui_index_selection_find
+    confidence: high
+    evidence: "Returns an integer's selection-set index, or -1 when absent."
+  - address: "0x0041FDB0"
+    name: ui_index_selection_get_items
+    confidence: high
+    evidence: "Writes the selection count and returns its contiguous integer array."
   - address: "0x0041FDD0"
     name: ui_article_list_handle_selection_change
     confidence: high
@@ -83,6 +279,18 @@ functions:
     name: ui_article_list_pane_ctor
     confidence: high
     evidence: "Constructs exact RTTI ArticleListPane and allocates its multi-selection storage only for a nonzero privilege."
+  - address: "0x00420160"
+    name: ui_article_list_pane_dtor
+    confidence: high
+    evidence: "Destroys ArticleListPane, frees auxiliary selection storage, and runs the ListPane destructor."
+  - address: "0x004201E0"
+    name: ui_article_list_upsert_row
+    confidence: high
+    evidence: "Builds a row, finds its descending article-ID position, replaces an existing match or inserts a new row, and refreshes list state."
+  - address: "0x00420310"
+    name: ui_article_list_request_selected_article
+    confidence: high
+    evidence: "Sends the article-detail request for the selected row and caller-supplied board ID."
   - address: "0x00420360"
     name: ui_article_list_delete_selected
     confidence: high
@@ -91,10 +299,42 @@ functions:
     name: ui_article_list_highlight_selected
     confidence: high
     evidence: "Highlights the current article when unprivileged or sends one request for every selected article when privileged."
+  - address: "0x00420550"
+    name: ui_article_list_select_article
+    confidence: high
+    evidence: "Finds a row by signed article ID and selects it when present."
   - address: "0x00420590"
     name: ui_article_list_remove_selected_rows
     confidence: high
     evidence: "Removes the current row when unprivileged or sorts and removes every selected row when privileged."
+  - address: "0x00420700"
+    name: ui_article_list_request_latest_page
+    confidence: high
+    evidence: "Requests the newest article page with start ID 0x7FFF and page marker 0xFFF0."
+  - address: "0x00420730"
+    name: ui_article_list_request_older_page
+    confidence: high
+    evidence: "Uses the final row ID minus one as the older-page start, falling back to 0x7FFF for an empty list."
+  - address: "0x004207A0"
+    name: ui_article_list_find_article
+    confidence: high
+    evidence: "Returns the row index matching a signed article ID, or -1."
+  - address: "0x00420800"
+    name: ui_article_list_find_insert_position
+    confidence: high
+    evidence: "Finds the descending article-ID insertion point; an existing match returns its index with bit 31 set."
+  - address: "0x00420880"
+    name: ui_article_list_handle_keyboard_event
+    confidence: high
+    evidence: "Delegates keyboard handling and requests an older page when navigation reaches the loaded end."
+  - address: "0x00420910"
+    name: ui_article_list_handle_pointer_event
+    confidence: high
+    evidence: "Delegates pointer handling and requests an older page when the visible range reaches the loaded end."
+  - address: "0x00420970"
+    name: ui_article_list_activate_selected_article
+    confidence: high
+    evidence: "Resolves the owning ArticleListDialog and invokes its open-selected action."
   - address: "0x004209B0"
     name: ui_article_list_draw_row
     confidence: high
@@ -119,10 +359,42 @@ functions:
     name: ui_article_dialog_ctor
     confidence: high
     evidence: "Loads _narti.txt and parses article navigation, author, date, title, and string16 content."
+  - address: "0x00421AC0"
+    name: ui_article_dialog_delete_article
+    confidence: high
+    evidence: "Sends the delete request for the current board and article, then creates a ScreenDimmer."
+  - address: "0x00421B10"
+    name: ui_article_dialog_restore_list_selection
+    confidence: high
+    evidence: "Finds the previous ArticleListDialog and reselects the current article ID there."
+  - address: "0x00421B50"
+    name: ui_article_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Handles back, navigation, compose, and delete keys with BulletinDialogPane fallback."
+  - address: "0x00421CB0"
+    name: ui_article_dialog_handle_action
+    confidence: high
+    evidence: "Dispatches controls for previous or next article, compose, delete confirmation, back, and close."
+  - address: "0x00421D40"
+    name: ui_article_dialog_navigate
+    confidence: high
+    evidence: "Clamps the adjacent article ID, sends a direction-tagged navigation request, and activates ScreenDimmer."
+  - address: "0x00421E20"
+    name: ui_article_dialog_open_new_article
+    confidence: high
+    evidence: "Returns to the previous bulletin dialog and opens NewArticleDialog."
+  - address: "0x00421E50"
+    name: ui_article_dialog_confirm_delete
+    confidence: high
+    evidence: "Allocates ConfirmDeleteAlert bound to ArticleDialog."
   - address: "0x00421EE0"
     name: ui_article_apply_server_body
     confidence: high
     evidence: "Routes active-article SBulletin response type 7 to the operation reply UI."
+  - address: "0x00421F40"
+    name: ui_article_dialog_apply_delete_reply
+    confidence: high
+    evidence: "Removes ScreenDimmer, parses the delete-reply message, and creates DeleteReplyAlert."
   - address: "0x004220D0"
     name: net_send_bulletin_article_navigation_request
     confidence: high
@@ -131,14 +403,86 @@ functions:
     name: net_send_bulletin_article_delete_from_detail
     confidence: high
     evidence: "Writes six-byte CBulletin action 5 for the open article."
+  - address: "0x004222E0"
+    name: ui_delete_reply_alert_ctor
+    confidence: high
+    evidence: "Constructs DeleteReplyAlert with the server message, owning bulletin dialog, and success flag."
+  - address: "0x00422370"
+    name: ui_delete_reply_alert_handle_action
+    confidence: high
+    evidence: "Dismisses DeleteReplyAlert and updates the owning article or mail list after successful deletion."
+  - address: "0x00422420"
+    name: ui_new_article_dialog_ctor
+    confidence: high
+    evidence: "Constructs NewArticleDialog from _nartin.txt and attaches Send, Cancel, Author, Title, and Content controls."
+  - address: "0x00422780"
+    name: ui_new_article_dialog_refresh_article_list
+    confidence: high
+    evidence: "Finds the previous ArticleListDialog and requests its newest page."
+  - address: "0x004227B0"
+    name: ui_new_article_dialog_submit
+    confidence: high
+    evidence: "Sends the article-post request, creates ScreenDimmer, and returns to the previous dialog on immediate success."
+  - address: "0x00422850"
+    name: ui_new_article_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Handles tab focus, default Enter, cancel Escape, and focused text-control input."
+  - address: "0x00422A10"
+    name: ui_new_article_dialog_apply_server_body
+    confidence: high
+    evidence: "Accepts bulletin subtype-6 post replies and dispatches their body."
+  - address: "0x00422A70"
+    name: ui_new_article_dialog_apply_post_reply
+    confidence: high
+    evidence: "Removes ScreenDimmer, parses the post reply, and creates TransferReplyAlert."
   - address: "0x00422C00"
     name: net_send_bulletin_article_post
     confidence: high
     evidence: "Writes CBulletin action 4 as board ID, string8 title, and string16 content."
+  - address: "0x00422E50"
+    name: ui_transfer_reply_alert_ctor
+    confidence: high
+    evidence: "Constructs TransferReplyAlert with the server message, owning dialog, and success flag."
+  - address: "0x00422EA0"
+    name: ui_transfer_reply_alert_handle_action
+    confidence: high
+    evidence: "Dismisses TransferReplyAlert, refreshes the prior article list, and returns through history on success."
   - address: "0x00422EE0"
     name: ui_mail_list_dialog_ctor
     confidence: high
     evidence: "Loads _nmaill.txt and parses the mail-list response body."
+  - address: "0x00423650"
+    name: ui_mail_list_dialog_open_selected_mail
+    confidence: high
+    evidence: "Sends the selected mail-detail request and activates BulletinSession's ScreenDimmer."
+  - address: "0x004236C0"
+    name: ui_mail_list_dialog_delete_selected_mail
+    confidence: high
+    evidence: "Starts deletion of selected mail and creates the dialog ScreenDimmer."
+  - address: "0x00423720"
+    name: ui_mail_list_dialog_select_mail
+    confidence: high
+    evidence: "Finds the MailListPane row matching a mail identifier and selects it."
+  - address: "0x00423770"
+    name: ui_mail_list_dialog_remove_selected_rows
+    confidence: high
+    evidence: "Removes selected MailListPane rows and refreshes action controls."
+  - address: "0x004237C0"
+    name: ui_mail_list_dialog_request_latest_page
+    confidence: high
+    evidence: "Requests the newest mail-list page for the dialog's mailbox selector."
+  - address: "0x00423810"
+    name: ui_mail_list_dialog_open_new_mail
+    confidence: high
+    evidence: "Opens NewMailDialog with an empty recipient."
+  - address: "0x00423830"
+    name: ui_mail_list_dialog_reply_to_selected_mail
+    confidence: high
+    evidence: "Copies the selected sender into a bounded buffer and opens NewMailDialog with that recipient."
+  - address: "0x004238D0"
+    name: ui_mail_list_dialog_confirm_delete
+    confidence: high
+    evidence: "Allocates ConfirmDeleteAlert bound to MailListDialog in mail-deletion mode."
   - address: "0x00423D50"
     name: ui_mail_list_apply_server_body
     confidence: high

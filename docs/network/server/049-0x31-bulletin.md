@@ -113,6 +113,10 @@ The decoded body bypasses the server packet factory. The world dispatcher create
 
 Responses `7` and `8` do not create another child dialog. They are delivered to the active article or mail dialog. Response `7` opens a reply alert from the supplied message. Response `8` refreshes the current article list by sending another [`CBulletin`](../client/059-0x3b-bulletin.md) action `2` request.
 
+`BulletinSession` keeps a bounded history of ten dialog pointers. Opening a board, article, mail, or compose view prunes any forward history, attaches the new dialog, and activates it. Back and forward actions close the current view before activating the adjacent entry. Network-backed actions place a mode-5 `ScreenDimmer` over the UI until the matching response removes it.
+
+The board chooser opens and closes through three vertical steps at 100 ms per step. Article and mail list panes keep their rows ordered by signed identifier and request older pages from the final loaded identifier minus one. Article lists also maintain a fixed-capacity integer selection set for privileged multi-select delete and highlight operations.
+
 When no bulletin session exists, the outer handler also requires bit 0 of the first payload byte to be clear before constructing one. The purpose of that admission check remains unresolved.
 
 ## Privileged article controls

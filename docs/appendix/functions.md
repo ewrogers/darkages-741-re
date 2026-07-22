@@ -360,35 +360,135 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_browser_window_doc_host_show_ui_query_interface_thunk` | `0x0041B010` | high | Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserWindow's shared QueryInterface implementation. |
 | `ui_browser_control_doc_host_show_ui_query_interface_thunk` | `0x0041B020` | high | Adjusts IDocHostShowUI this by -0x10 and tail-calls BrowserControlPane's shared QueryInterface implementation. |
 | `ui_bottom_buttons_pane_ctor` | `0x0041B040` | high | Constructs exact RTTI class BtmButtonsPane_A, initializes its state, and immediately sends the empty CSelfLook request. |
+| `ui_bottom_buttons_pane_dtor` | `0x0041B1F0` | high | Destroys BtmButtonsPane_A, cancels timers, unregisters screen and event handling, and runs the Pane destructor. |
+| `ui_bottom_buttons_apply_layout` | `0x0041B280` | high | Applies GUI-back geometry, unions the pane and three button rectangles, stores local button bounds, and invalidates BtmButtonsPane_A. |
+| `ui_bottom_buttons_handle_mouse_event` | `0x0041B490` | high | Hit-tests three bottom buttons, updates hover and tooltip state, and dispatches the clicked action. |
+| `ui_bottom_buttons_handle_keyboard_event` | `0x0041B5F0` | high | Honors input suppression and maps client key events 0x8B and 0x8C to bottom-button actions. |
 | `ui_bottom_buttons_handle_network_event` | `0x0041B690` | high | BtmButtonsPane_A network-event handler routes SStatus to the parcel/mail updater and SSelfLook to the profile-response path. |
 | `ui_bottom_buttons_handle_timer` | `0x0041B710` | high | BtmButtonsPane_A TimerHandler callback retries CSelfLook for timer 0x03000000 while the initial profile request is pending. |
 | `ui_bottom_buttons_set_group_invitation_state` | `0x0041B810` | high | Applies the server-authoritative SSelfLook group-open value to the bottom-button state, clears the group-button pending action, and invalidates the pane. |
+| `ui_bottom_buttons_update_parcel_mail_from_status_packet` | `0x0041B950` | high | Finds the parcel or mail indicator in variable-length SStatus fields, starts or stops its 500 ms flash timer, and invalidates the pane. |
 | `ui_bottom_buttons_apply_self_look` | `0x0041BC10` | high | Consumes SSelfLook in BtmButtonsPane_A and applies is_group_open before redrawing; this is the only group-icon state update after CGroupToggle. |
+| `ui_bottom_buttons_draw_content` | `0x0041BC80` | high | Draws the bottom-buttons background, three normal or pressed buttons, optional flashing parcel indicator, and remaining overlay state. |
 | `ui_bottom_buttons_handle_action` | `0x0041BE30` | high | Handles the three bottom-button actions; the group action marks itself pending, sends CGroupToggle, and then requests SSelfLook without changing the icon optimistically. |
+| `ui_bottom_buttons_clear_pending_action` | `0x0041BF50` | high | Clears one of three pending-action bytes and invalidates the bottom-buttons pane. |
+| `ui_bottom_buttons_hit_test` | `0x0041BF80` | high | Returns the button index whose stored rectangle contains a point, or -1. |
+| `ui_bottom_buttons_get_button_rect` | `0x0041C010` | high | Copies the stored local rectangle for bottom-button index 0, 1, or 2. |
+| `ui_bottom_buttons_scalar_deleting_dtor` | `0x0041C0B0` | high | Runs the BtmButtonsPane_A destructor and conditionally frees the complete object. |
+| `ui_bottom_buttons_singleton_exists` | `0x0041C0E0` | high | Returns whether the BtmButtonsPane_A singleton contains an object. |
+| `ui_bottom_buttons_singleton_get` | `0x0041C100` | high | Returns the current BtmButtonsPane_A singleton pointer. |
+| `ui_bottom_buttons_timer_deleting_dtor_thunk` | `0x0041C110` | high | Adjusts TimerHandler this by -0x11C and tail-calls the BtmButtonsPane_A scalar-deleting destructor. |
+| `ui_rect_union` | `0x0041C120` | high | Writes the bounding union of two rectangles, treating an empty rectangle as absent. |
 | `ui_bulletin_session_ctor` | `0x0041C280` | high | Constructs exact RTTI BulletinSession and applies the initial decoded SBulletin body. |
+| `ui_bulletin_session_dtor` | `0x0041C410` | high | Destroys BulletinSession, closes and queues retained history dialogs, unregisters the pane, releases session state, and runs the Pane destructor. |
+| `ui_bulletin_session_close` | `0x0041C530` | high | Closes BulletinSession auxiliary UI, hides and unregisters the pane, and queues the session for deferred deletion. |
+| `ui_bulletin_session_go_back` | `0x0041C570` | high | Closes the current dialog and activates the previous history entry, or closes the session at the first entry. |
+| `ui_bulletin_session_go_forward` | `0x0041C610` | high | Closes the current dialog and activates the next history entry, or closes the session when no current entry exists. |
+| `ui_bulletin_session_get_previous_dialog` | `0x0041C6A0` | high | Finds a retained dialog in BulletinSession's ten-entry history and returns its predecessor. |
+| `ui_bulletin_get_dialog_bounds` | `0x0041C720` | medium | Copies the client-global bulletin dialog rectangle; an earlier global-rectangle copy is immediately overwritten. |
+| `ui_bulletin_session_open_new_article_dialog` | `0x0041C780` | high | Constructs NewArticleDialog at the shared bounds and pushes it onto BulletinSession history. |
+| `ui_bulletin_session_open_new_mail_dialog` | `0x0041C840` | high | Constructs NewMailDialog at the shared bounds with the supplied recipient and pushes it onto BulletinSession history. |
+| `ui_bulletin_session_create_screen_dimmer` | `0x0041C900` | high | Allocates a mode-5 ScreenDimmer and stores it on BulletinSession. |
+| `ui_bulletin_session_create_active_screen_dimmer` | `0x0041C990` | high | Marks BulletinSession's dimmer state active, then allocates and stores a mode-5 ScreenDimmer. |
+| `ui_bulletin_session_handle_network_event` | `0x0041C9B0` | high | Routes server opcode 0x31 decoded bulletin bodies to BulletinSession's server-body dispatcher. |
+| `ui_bulletin_session_get_dialog` | `0x0041CA10` | high | Returns one of BulletinSession's ten retained dialog pointers for an index from 0 through 9. |
+| `ui_bulletin_session_push_dialog` | `0x0041CA50` | high | Prunes forward history, attaches a dialog, advances the active index and count, and activates the new dialog. |
 | `ui_bulletin_session_apply_server_body` | `0x0041CC40` | high | Routes SBulletin response types 1 through 5 to board-list, article-list, article, mail-list, and mail UI. |
+| `ui_bulletin_dialog_ctor` | `0x0041CD70` | high | Constructs BulletinDialogPane and initializes its session owner, dialog type, close state, and retained payload pointer. |
+| `ui_bulletin_dialog_request_close` | `0x0041CDE0` | high | Detaches the dialog from its external owner field and schedules immediate close timer 0x10011. |
+| `ui_bulletin_dialog_handle_timer` | `0x0041CE30` | high | Handles timer 0x10011 by closing the complete BulletinDialogPane. |
+| `ui_bulletin_dialog_close` | `0x0041CE60` | high | Closes the owning BulletinSession, or hides, unregisters, and queues a standalone BulletinDialogPane. |
+| `ui_bulletin_dialog_handle_keyboard_event` | `0x0041CEB0` | high | Handles bulletin close and navigation keys, focused-control text input, and DialogPane fallback. |
+| `ui_bulletin_dialog_activate` | `0x0041D090` | high | Registers BulletinDialogPane screen and event state, applies shared bounds, and invokes its final activation hook. |
+| `ui_bulletin_dialog_go_back` | `0x0041D1A0` | high | Asks the owning BulletinSession to return to the previous retained dialog. |
+| `ui_bulletin_dialog_create_screen_dimmer` | `0x0041D1D0` | high | Lazily allocates and stores a mode-5 ScreenDimmer for BulletinDialogPane. |
+| `ui_bulletin_dialog_handle_network_event` | `0x0041D270` | high | Routes server opcode 0x31 bodies to the concrete dialog's bulletin-body handler. |
+| `ui_bulletin_dialog_handle_pointer_event` | `0x0041D2D0` | high | Records last pointer positions for event families 1 and 3, then delegates to DialogPane. |
 | `ui_bulletin_open_board_list` | `0x0041D350` | high | Creates exact RTTI BoardListDialog for SBulletin response type 1. |
 | `ui_bulletin_open_article_list` | `0x0041D410` | high | Creates exact RTTI ArticleListDialog for SBulletin response type 2. |
 | `ui_bulletin_open_article` | `0x0041D4F0` | high | Creates exact RTTI ArticleDialog for SBulletin response type 3, or an alert when its board ID is zero. |
 | `ui_bulletin_open_mail_list` | `0x0041D660` | high | Creates exact RTTI MailListDialog for SBulletin response type 4. |
 | `ui_bulletin_open_mail` | `0x0041D740` | high | Creates exact RTTI MailDialog for SBulletin response type 5, or an alert when its mailbox ID is zero. |
 | `ui_board_list_dialog_ctor` | `0x0041D8B0` | high | Loads _nbdlist.txt and parses a heading plus repeated u16 board ID and string8 name records. |
+| `ui_board_list_dialog_open_selected_board` | `0x0041DCF0` | high | Sends the initial list request for BoardListPane's selected board and activates BulletinSession's ScreenDimmer. |
+| `ui_board_list_dialog_handle_action` | `0x0041DD50` | high | Handles BoardListDialog action 0 by opening the selection and action 1 by starting close animation. |
+| `ui_board_list_dialog_update_open_button` | `0x0041DD90` | high | Enables or disables the open button according to whether BoardListPane has a valid selection. |
+| `ui_board_list_dialog_handle_timer` | `0x0041DE20` | high | Advances the three-step 100 ms vertical open or close animation and reschedules timer 0x10111. |
+| `ui_board_list_dialog_start_open_animation` | `0x0041DFE0` | high | Initializes BoardListDialog's three-step opening animation and schedules timer 0x10111 for 100 ms. |
+| `ui_board_list_dialog_start_close_animation` | `0x0041E0B0` | high | Initializes BoardListDialog's three-step closing animation and schedules timer 0x10111 for 100 ms. |
+| `ui_board_list_pane_ctor` | `0x0041E180` | high | Constructs BoardListPane over ListPane with 18-pixel rows and board-list style flags. |
+| `ui_board_list_pane_add_entry` | `0x0041E1D0` | high | Builds a row from a signed 16-bit board ID and bounded title, then appends it to BoardListPane. |
+| `ui_board_list_pane_request_selected_board` | `0x0041E230` | high | Looks up the selected row and sends the initial bulletin list request for its board ID. |
+| `ui_board_list_pane_activate_selected_board` | `0x0041E270` | high | Resolves the owning BoardListDialog and invokes its selected-board open path. |
+| `ui_board_list_pane_draw_entry` | `0x0041E2B0` | high | Draws one board row with selection-specific padding and the title stored after its two-byte board ID. |
 | `ui_article_list_dialog_ctor` | `0x0041E490` | high | Loads _narlist.txt, parses the article-list response body, and adds its optional Hilight control for any nonzero SStatus privilege. |
+| `ui_article_list_dialog_open_selected_article` | `0x0041EC40` | high | Sends the selected article-detail request and activates the owning BulletinSession's ScreenDimmer. |
+| `ui_article_list_dialog_highlight_selected_article` | `0x0041ECB0` | high | Requests a highlight-state change and creates the dialog ScreenDimmer when accepted. |
+| `ui_article_list_dialog_delete_selected_article` | `0x0041ED10` | high | Starts selected-article deletion and creates the dialog ScreenDimmer when accepted. |
+| `ui_article_list_dialog_select_article` | `0x0041ED70` | high | Finds the ArticleListPane row matching an article identifier and selects it. |
+| `ui_article_list_dialog_remove_selected_rows` | `0x0041EDC0` | high | Removes selected ArticleListPane rows and refreshes action controls. |
+| `ui_article_list_dialog_request_latest_page` | `0x0041EE10` | high | Requests the newest article page with start ID 0x7FFF and page marker 0xFFF0. |
+| `ui_article_list_dialog_open_new_article` | `0x0041EE60` | high | Asks the owning BulletinSession to construct and push NewArticleDialog. |
+| `ui_article_list_dialog_request_older_page` | `0x0041EE80` | high | Uses the final article ID minus one for an older-page request, with 0x7FFF as the empty-list fallback. |
 | `ui_article_list_dialog_handle_keyboard_event` | `0x0041EED0` | high | Handles ArticleListDialog keyboard commands and enables modifier-based multi-selection only for a nonzero privilege. |
+| `ui_article_list_dialog_handle_action` | `0x0041F1F0` | high | Dispatches ArticleListDialog actions for open, compose, delete, back, close, and highlight. |
 | `ui_article_list_update_action_controls` | `0x0041F2E0` | high | Enables or disables article-list actions from current selection state, including the privileged Hilight control. |
 | `ui_article_list_apply_server_body` | `0x0041F450` | high | Routes active-list SBulletin response types 2, 7, and 8. |
+| `ui_article_list_apply_list_reply` | `0x0041F4E0` | high | Parses bulletin subtype-2 article-list rows and appends them to ArticleListPane. |
 | `ui_article_list_apply_post_reply` | `0x0041F840` | high | Consumes SBulletin response 8 status, optionally shows an alert, and refreshes the article list. |
 | `ui_article_list_show_operation_reply` | `0x0041F940` | high | Consumes SBulletin response 7 status plus string8 message and creates DeleteReplyAlert. |
 | `ui_article_list_confirm_delete` | `0x0041FAE0` | high | Builds the article delete confirmation and preserves the privileged modifier-based multi-selection. |
+| `ui_index_selection_clear` | `0x0041FC90` | high | Clears the fixed-capacity integer selection set used by ArticleListPane. |
+| `ui_index_selection_remove` | `0x0041FCB0` | high | Removes a selected integer by replacing it with the final entry and decrementing the count. |
+| `ui_index_selection_add` | `0x0041FD00` | high | Adds an absent integer when selection capacity remains; an existing value is already successful. |
+| `ui_index_selection_find` | `0x0041FD60` | high | Returns an integer's selection-set index, or -1 when absent. |
+| `ui_index_selection_get_items` | `0x0041FDB0` | high | Writes the selection count and returns its contiguous integer array. |
 | `ui_article_list_handle_selection_change` | `0x0041FDD0` | high | Maintains privileged toggle and range selection from the live keyboard modifiers and invalidates changed rows. |
 | `ui_article_list_pane_ctor` | `0x00420040` | high | Constructs exact RTTI ArticleListPane and allocates its multi-selection storage only for a nonzero privilege. |
+| `ui_article_list_pane_dtor` | `0x00420160` | high | Destroys ArticleListPane, frees auxiliary selection storage, and runs the ListPane destructor. |
+| `ui_article_list_upsert_row` | `0x004201E0` | high | Builds a row, finds its descending article-ID position, replaces an existing match or inserts a new row, and refreshes list state. |
+| `ui_article_list_request_selected_article` | `0x00420310` | high | Sends the article-detail request for the selected row and caller-supplied board ID. |
 | `ui_article_list_delete_selected` | `0x00420360` | high | Deletes the current article when unprivileged or sends one request for every selected article when privileged. |
 | `ui_article_list_highlight_selected` | `0x00420450` | high | Highlights the current article when unprivileged or sends one request for every selected article when privileged. |
+| `ui_article_list_select_article` | `0x00420550` | high | Finds a row by signed article ID and selects it when present. |
 | `ui_article_list_remove_selected_rows` | `0x00420590` | high | Removes the current row when unprivileged or sorts and removes every selected row when privileged. |
+| `ui_article_list_request_latest_page` | `0x00420700` | high | Requests the newest article page with start ID 0x7FFF and page marker 0xFFF0. |
+| `ui_article_list_request_older_page` | `0x00420730` | high | Uses the final row ID minus one as the older-page start, falling back to 0x7FFF for an empty list. |
+| `ui_article_list_find_article` | `0x004207A0` | high | Returns the row index matching a signed article ID, or -1. |
+| `ui_article_list_find_insert_position` | `0x00420800` | high | Finds the descending article-ID insertion point; an existing match returns its index with bit 31 set. |
+| `ui_article_list_handle_keyboard_event` | `0x00420880` | high | Delegates keyboard handling and requests an older page when navigation reaches the loaded end. |
+| `ui_article_list_handle_pointer_event` | `0x00420910` | high | Delegates pointer handling and requests an older page when the visible range reaches the loaded end. |
+| `ui_article_list_activate_selected_article` | `0x00420970` | high | Resolves the owning ArticleListDialog and invokes its open-selected action. |
 | `ui_article_list_draw_row` | `0x004209B0` | high | Draws article rows and uses palette index 0x58 for privileged multi-selected rows. |
 | `ui_article_dialog_ctor` | `0x004211A0` | high | Loads _narti.txt and parses article navigation, author, date, title, and string16 content. |
+| `ui_article_dialog_delete_article` | `0x00421AC0` | high | Sends the delete request for the current board and article, then creates a ScreenDimmer. |
+| `ui_article_dialog_restore_list_selection` | `0x00421B10` | high | Finds the previous ArticleListDialog and reselects the current article ID there. |
+| `ui_article_dialog_handle_keyboard_event` | `0x00421B50` | high | Handles back, navigation, compose, and delete keys with BulletinDialogPane fallback. |
+| `ui_article_dialog_handle_action` | `0x00421CB0` | high | Dispatches controls for previous or next article, compose, delete confirmation, back, and close. |
+| `ui_article_dialog_navigate` | `0x00421D40` | high | Clamps the adjacent article ID, sends a direction-tagged navigation request, and activates ScreenDimmer. |
+| `ui_article_dialog_open_new_article` | `0x00421E20` | high | Returns to the previous bulletin dialog and opens NewArticleDialog. |
+| `ui_article_dialog_confirm_delete` | `0x00421E50` | high | Allocates ConfirmDeleteAlert bound to ArticleDialog. |
 | `ui_article_apply_server_body` | `0x00421EE0` | high | Routes active-article SBulletin response type 7 to the operation reply UI. |
+| `ui_article_dialog_apply_delete_reply` | `0x00421F40` | high | Removes ScreenDimmer, parses the delete-reply message, and creates DeleteReplyAlert. |
+| `ui_delete_reply_alert_ctor` | `0x004222E0` | high | Constructs DeleteReplyAlert with the server message, owning bulletin dialog, and success flag. |
+| `ui_delete_reply_alert_handle_action` | `0x00422370` | high | Dismisses DeleteReplyAlert and updates the owning article or mail list after successful deletion. |
+| `ui_new_article_dialog_ctor` | `0x00422420` | high | Constructs NewArticleDialog from _nartin.txt and attaches Send, Cancel, Author, Title, and Content controls. |
+| `ui_new_article_dialog_refresh_article_list` | `0x00422780` | high | Finds the previous ArticleListDialog and requests its newest page. |
+| `ui_new_article_dialog_submit` | `0x004227B0` | high | Sends the article-post request, creates ScreenDimmer, and returns to the previous dialog on immediate success. |
+| `ui_new_article_dialog_handle_keyboard_event` | `0x00422850` | high | Handles tab focus, default Enter, cancel Escape, and focused text-control input. |
+| `ui_new_article_dialog_apply_server_body` | `0x00422A10` | high | Accepts bulletin subtype-6 post replies and dispatches their body. |
+| `ui_new_article_dialog_apply_post_reply` | `0x00422A70` | high | Removes ScreenDimmer, parses the post reply, and creates TransferReplyAlert. |
+| `ui_transfer_reply_alert_ctor` | `0x00422E50` | high | Constructs TransferReplyAlert with the server message, owning dialog, and success flag. |
+| `ui_transfer_reply_alert_handle_action` | `0x00422EA0` | high | Dismisses TransferReplyAlert, refreshes the prior article list, and returns through history on success. |
 | `ui_mail_list_dialog_ctor` | `0x00422EE0` | high | Loads _nmaill.txt and parses the mail-list response body. |
+| `ui_mail_list_dialog_open_selected_mail` | `0x00423650` | high | Sends the selected mail-detail request and activates BulletinSession's ScreenDimmer. |
+| `ui_mail_list_dialog_delete_selected_mail` | `0x004236C0` | high | Starts deletion of selected mail and creates the dialog ScreenDimmer. |
+| `ui_mail_list_dialog_select_mail` | `0x00423720` | high | Finds the MailListPane row matching a mail identifier and selects it. |
+| `ui_mail_list_dialog_remove_selected_rows` | `0x00423770` | high | Removes selected MailListPane rows and refreshes action controls. |
+| `ui_mail_list_dialog_request_latest_page` | `0x004237C0` | high | Requests the newest mail-list page for the dialog's mailbox selector. |
+| `ui_mail_list_dialog_open_new_mail` | `0x00423810` | high | Opens NewMailDialog with an empty recipient. |
+| `ui_mail_list_dialog_reply_to_selected_mail` | `0x00423830` | high | Copies the selected sender into a bounded buffer and opens NewMailDialog with that recipient. |
+| `ui_mail_list_dialog_confirm_delete` | `0x004238D0` | high | Allocates ConfirmDeleteAlert bound to MailListDialog in mail-deletion mode. |
 | `ui_mail_list_apply_server_body` | `0x00423D50` | high | Routes active-mail-list SBulletin response types 4 and 7. |
 | `ui_mail_dialog_ctor` | `0x00424E00` | high | Loads _nmailr.txt and parses mail navigation, author, date, title, and string16 content. |
 | `ui_mail_apply_server_body` | `0x00425C00` | high | Routes active-mail SBulletin response type 7 to the operation reply UI. |

@@ -699,6 +699,22 @@ functions:
     name: ui_bottom_buttons_pane_ctor
     confidence: high
     evidence: "Constructs exact RTTI class BtmButtonsPane_A, initializes its state, and immediately sends the empty CSelfLook request."
+  - address: "0x0041B1F0"
+    name: ui_bottom_buttons_pane_dtor
+    confidence: high
+    evidence: "Destroys BtmButtonsPane_A, cancels timers, unregisters screen and event handling, and runs the Pane destructor."
+  - address: "0x0041B280"
+    name: ui_bottom_buttons_apply_layout
+    confidence: high
+    evidence: "Applies GUI-back geometry, unions the pane and three button rectangles, stores local button bounds, and invalidates BtmButtonsPane_A."
+  - address: "0x0041B490"
+    name: ui_bottom_buttons_handle_mouse_event
+    confidence: high
+    evidence: "Hit-tests three bottom buttons, updates hover and tooltip state, and dispatches the clicked action."
+  - address: "0x0041B5F0"
+    name: ui_bottom_buttons_handle_keyboard_event
+    confidence: high
+    evidence: "Honors input suppression and maps client key events 0x8B and 0x8C to bottom-button actions."
   - address: "0x0041B690"
     name: ui_bottom_buttons_handle_network_event
     confidence: high
@@ -719,14 +735,54 @@ functions:
     name: net_send_group_toggle
     confidence: high
     evidence: "Builds and submits the exact one-byte CGroupToggle plaintext body containing only opcode 0x2F."
+  - address: "0x0041B950"
+    name: ui_bottom_buttons_update_parcel_mail_from_status_packet
+    confidence: high
+    evidence: "Finds the parcel or mail indicator in variable-length SStatus fields, starts or stops its 500 ms flash timer, and invalidates the pane."
   - address: "0x0041BC10"
     name: ui_bottom_buttons_apply_self_look
     confidence: high
     evidence: "Consumes SSelfLook in BtmButtonsPane_A and applies is_group_open before redrawing; this is the only group-icon state update after CGroupToggle."
+  - address: "0x0041BC80"
+    name: ui_bottom_buttons_draw_content
+    confidence: high
+    evidence: "Draws the bottom-buttons background, three normal or pressed buttons, optional flashing parcel indicator, and remaining overlay state."
   - address: "0x0041BE30"
     name: ui_bottom_buttons_handle_action
     confidence: high
     evidence: "Handles the three bottom-button actions; the group action marks itself pending, sends CGroupToggle, and then requests SSelfLook without changing the icon optimistically."
+  - address: "0x0041BF50"
+    name: ui_bottom_buttons_clear_pending_action
+    confidence: high
+    evidence: "Clears one of three pending-action bytes and invalidates the bottom-buttons pane."
+  - address: "0x0041BF80"
+    name: ui_bottom_buttons_hit_test
+    confidence: high
+    evidence: "Returns the button index whose stored rectangle contains a point, or -1."
+  - address: "0x0041C010"
+    name: ui_bottom_buttons_get_button_rect
+    confidence: high
+    evidence: "Copies the stored local rectangle for bottom-button index 0, 1, or 2."
+  - address: "0x0041C0B0"
+    name: ui_bottom_buttons_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the BtmButtonsPane_A destructor and conditionally frees the complete object."
+  - address: "0x0041C0E0"
+    name: ui_bottom_buttons_singleton_exists
+    confidence: high
+    evidence: "Returns whether the BtmButtonsPane_A singleton contains an object."
+  - address: "0x0041C100"
+    name: ui_bottom_buttons_singleton_get
+    confidence: high
+    evidence: "Returns the current BtmButtonsPane_A singleton pointer."
+  - address: "0x0041C110"
+    name: ui_bottom_buttons_timer_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C and tail-calls the BtmButtonsPane_A scalar-deleting destructor."
+  - address: "0x0041C120"
+    name: ui_rect_union
+    confidence: high
+    evidence: "Writes the bounding union of two rectangles, treating an empty rectangle as absent."
   - address: "0x0042BA20"
     name: ui_legend_list_draw_item
     confidence: high
