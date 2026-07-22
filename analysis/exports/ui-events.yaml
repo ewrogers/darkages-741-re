@@ -1723,6 +1723,134 @@ functions:
     name: ui_get_npc_illustration_file_manager_holder
     confidence: high
     evidence: "Returns the holder that owns the NPC illustration file manager."
+  - address: "0x004B32E0"
+    name: ui_list_pane_ctor
+    confidence: high
+    evidence: "Constructs the RTTI ListPane, its ScrollablePane base, and an owned fixed-stride List model."
+  - address: "0x004B3400"
+    name: ui_list_pane_dtor
+    confidence: high
+    evidence: "Destroys the owned List model, then destroys the ListPane ScrollablePane base."
+  - address: "0x004B34B0"
+    name: ui_list_pane_get_item_size
+    confidence: high
+    evidence: "Returns the configured width and height of one ListPane item cell."
+  - address: "0x004B34E0"
+    name: ui_list_pane_get_item_count
+    confidence: high
+    evidence: "Returns the owned List model's current item count or zero when no model exists."
+  - address: "0x004B3510"
+    name: ui_list_pane_get_column_count
+    confidence: high
+    evidence: "Computes the number of item columns from the item count and configured items per column."
+  - address: "0x004B3560"
+    name: ui_list_pane_insert_item
+    confidence: high
+    evidence: "Inserts one item, adjusts selection, refreshes scrolling, and invalidates the pane."
+  - address: "0x004B35F0"
+    name: ui_list_pane_append_item
+    confidence: high
+    evidence: "Appends one item at the ListPane model's current item count."
+  - address: "0x004B3620"
+    name: ui_list_pane_erase_range
+    confidence: high
+    evidence: "Erases an item range, repairs selection, refreshes scrolling, and invalidates the pane."
+  - address: "0x004B3710"
+    name: ui_list_pane_item_at
+    confidence: high
+    evidence: "Returns an indexed item through the owned List model's virtual access slot."
+  - address: "0x004B3740"
+    name: ui_list_pane_update_content_bounds
+    confidence: high
+    evidence: "Recomputes scrollable content bounds from column count, item dimensions, and pane bounds."
+  - address: "0x004B37E0"
+    name: ui_list_pane_get_page_step
+    confidence: high
+    evidence: "Computes the ListPane item-page step for one scroll axis."
+  - address: "0x004B3840"
+    name: ui_list_pane_scroll_steps_to_pixels
+    confidence: high
+    evidence: "Converts signed ListPane scroll steps to pixels using the selected axis's item dimension."
+  - address: "0x004B3880"
+    name: ui_list_pane_get_content_extent
+    confidence: high
+    evidence: "Returns the full ListPane content width and height from its grid dimensions."
+  - address: "0x004B38D0"
+    name: ui_list_pane_get_forward_scroll_limit
+    confidence: high
+    evidence: "Computes how many forward scroll steps remain on the selected axis."
+  - address: "0x004B3960"
+    name: ui_list_pane_get_backward_scroll_limit
+    confidence: high
+    evidence: "Computes how many backward scroll steps remain on the selected axis."
+  - address: "0x004B3987"
+    name: maybe_ui_list_pane_scroll_limit_fragment
+    confidence: medium
+    evidence: "Compiler-recovered overlapping return fragment inside the backward-scroll-limit routine; no independent callers are known."
+  - address: "0x004B3A10"
+    name: ui_list_pane_compute_scroll_delta
+    confidence: high
+    evidence: "Converts a change in scroll position to a two-dimensional ListPane pixel displacement."
+  - address: "0x004B3A80"
+    name: ui_list_pane_handle_pointer_event
+    confidence: high
+    evidence: "Handles pointer press, move, release, and double-click with hit-testing, selection, repeat tracking, and activation callbacks."
+  - address: "0x004B3BB1"
+    name: maybe_ui_list_pane_pointer_event_fallback
+    confidence: medium
+    evidence: "Compiler-recovered overlapping false-return fragment inside the pointer-event handler; no independent callers are known."
+  - address: "0x004B3D60"
+    name: ui_list_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Handles internal navigation keys 0x80 through 0x83 by moving selection backward or forward."
+  - address: "0x004B3E00"
+    name: ui_list_pane_draw
+    confidence: high
+    evidence: "Clears the pane and draws each visible item through item-rectangle and item-render virtual slots."
+  - address: "0x004B3ED0"
+    name: ui_list_pane_hit_test_item
+    confidence: high
+    evidence: "Clamps a point to pane bounds, scans item rectangles, and returns the containing item index or -1."
+  - address: "0x004B3FD0"
+    name: ui_list_pane_get_item_rect
+    confidence: high
+    evidence: "Computes an item's screen rectangle from its column-major grid position, cell size, and content origin."
+  - address: "0x004B40F0"
+    name: ui_list_pane_set_selected_index
+    confidence: high
+    evidence: "Changes the selected item and invalidates the visible parts of both old and new item rectangles."
+  - address: "0x004B41E0"
+    name: ui_list_pane_select_previous
+    confidence: high
+    evidence: "Moves selection to the previous item, clamps at the first item, and ensures it is visible."
+  - address: "0x004B4250"
+    name: ui_list_pane_select_previous_horizontal
+    confidence: high
+    evidence: "Routes horizontal backward navigation to the previous-item selection path."
+  - address: "0x004B4270"
+    name: ui_list_pane_select_next
+    confidence: high
+    evidence: "Moves selection to the next item, clamps at the last item, and ensures it is visible."
+  - address: "0x004B4320"
+    name: ui_list_pane_select_next_horizontal
+    confidence: high
+    evidence: "Routes horizontal forward navigation to the next-item selection path."
+  - address: "0x004B4340"
+    name: ui_list_pane_ensure_item_visible
+    confidence: high
+    evidence: "Adjusts horizontal scrolling until the requested item rectangle lies within the visible pane bounds."
+  - address: "0x004B4430"
+    name: ui_list_pane_draw_item_noop
+    confidence: high
+    evidence: "Default ListPane item-render virtual implementation; intentionally draws nothing."
+  - address: "0x004B4440"
+    name: ui_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a ListPane and optionally frees the complete object."
+  - address: "0x004B4470"
+    name: ui_list_pane_timer_handler_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts a TimerHandler secondary-base pointer back to its ListPane and tail-calls the deleting destructor."
   - address: "0x004B4480"
     name: lobject_ctor
     confidence: high
@@ -1735,6 +1863,18 @@ functions:
     name: lobject_is_live
     confidence: high
     evidence: "Returns true only when LObject +0x04 equals 0x79736F62; event_dispatch_immediate uses it before dispatch."
+  - address: "0x004B4590"
+    name: lobject_get_class_info
+    confidence: high
+    evidence: "Returns the process-initialized root LObject class-information record."
+  - address: "0x004B45A0"
+    name: lobject_is_instance_of
+    confidence: high
+    evidence: "Walks an object's custom class-information parent chain to test whether it belongs to a requested class."
+  - address: "0x004B45E0"
+    name: lobject_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an LObject and optionally frees the complete object."
   - address: "0x004B66E0"
     name: ui_logo_pane_register_adjusted
     confidence: high

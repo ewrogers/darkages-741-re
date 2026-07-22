@@ -85,6 +85,16 @@ The layout files supply names, rectangles, art, and palette values. They do not 
 
 The shared `ControlPane` hierarchy supplies the native button, progress, radio, scroll, and text-edit behavior. Its exact classes and state transitions are described in [Native UI controls](ui-controls.md).
 
+## List panes
+
+`ListPane` is the reusable base behind friends, mail, boards, legends, exchange rows, and several other scrolling lists. It owns a `List` model that stores fixed-size records in one contiguous byte buffer. The model tracks an element stride, an allocation-block size, the current count, and the buffer pointer. Insert and erase operations move the trailing bytes and grow or shrink storage in whole allocation blocks.
+
+`SortedList` adds a comparison callback. It inserts a record before the first greater record and can find the first record in a run of equal values.
+
+The pane arranges records in a column-major grid from an item width, item height, and items-per-column value. It keeps the selected index separately, using `-1` for no selection. Adding or removing records repairs that index, refreshes scroll limits, and invalidates the visible pane. Pointer hit testing scans item rectangles. Internal keyboard values `0x80` through `0x83` move to the previous or next record and scroll it into view.
+
+Drawing clears the pane, intersects each item rectangle with the visible region, and calls a virtual item renderer. The base renderer is empty, so each concrete list class supplies its own row or cell appearance while reusing the same storage, selection, input, and scrolling behavior.
+
 ## Pane state
 
 Several states that look similar are independent:

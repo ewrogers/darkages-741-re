@@ -1982,6 +1982,36 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_has_layout_manager` | `0x004AE5C0` | high | Reports whether the UI layout-manager singleton pointer is non-null. |
 | `ui_has_npc_illustration_file_manager_holder` | `0x004AE7F0` | high | Reports whether the NPC illustration file-manager holder is registered. |
 | `ui_get_npc_illustration_file_manager_holder` | `0x004AE810` | high | Returns the holder that owns the NPC illustration file manager. |
+| `ui_list_pane_ctor` | `0x004B32E0` | high | Constructs the RTTI ListPane, its ScrollablePane base, and an owned fixed-stride List model. |
+| `ui_list_pane_dtor` | `0x004B3400` | high | Destroys the owned List model, then destroys the ListPane ScrollablePane base. |
+| `ui_list_pane_get_item_size` | `0x004B34B0` | high | Returns the configured width and height of one ListPane item cell. |
+| `ui_list_pane_get_item_count` | `0x004B34E0` | high | Returns the owned List model's current item count or zero when no model exists. |
+| `ui_list_pane_get_column_count` | `0x004B3510` | high | Computes the number of item columns from the item count and configured items per column. |
+| `ui_list_pane_insert_item` | `0x004B3560` | high | Inserts one item, adjusts selection, refreshes scrolling, and invalidates the pane. |
+| `ui_list_pane_append_item` | `0x004B35F0` | high | Appends one item at the ListPane model's current item count. |
+| `ui_list_pane_erase_range` | `0x004B3620` | high | Erases an item range, repairs selection, refreshes scrolling, and invalidates the pane. |
+| `ui_list_pane_item_at` | `0x004B3710` | high | Returns an indexed item through the owned List model's virtual access slot. |
+| `ui_list_pane_update_content_bounds` | `0x004B3740` | high | Recomputes scrollable content bounds from column count, item dimensions, and pane bounds. |
+| `ui_list_pane_get_page_step` | `0x004B37E0` | high | Computes the ListPane item-page step for one scroll axis. |
+| `ui_list_pane_scroll_steps_to_pixels` | `0x004B3840` | high | Converts signed ListPane scroll steps to pixels using the selected axis's item dimension. |
+| `ui_list_pane_get_content_extent` | `0x004B3880` | high | Returns the full ListPane content width and height from its grid dimensions. |
+| `ui_list_pane_get_forward_scroll_limit` | `0x004B38D0` | high | Computes how many forward scroll steps remain on the selected axis. |
+| `ui_list_pane_get_backward_scroll_limit` | `0x004B3960` | high | Computes how many backward scroll steps remain on the selected axis. |
+| `ui_list_pane_compute_scroll_delta` | `0x004B3A10` | high | Converts a change in scroll position to a two-dimensional ListPane pixel displacement. |
+| `ui_list_pane_handle_pointer_event` | `0x004B3A80` | high | Handles pointer press, move, release, and double-click with hit-testing, selection, repeat tracking, and activation callbacks. |
+| `ui_list_pane_handle_keyboard_event` | `0x004B3D60` | high | Handles internal navigation keys 0x80 through 0x83 by moving selection backward or forward. |
+| `ui_list_pane_draw` | `0x004B3E00` | high | Clears the pane and draws each visible item through item-rectangle and item-render virtual slots. |
+| `ui_list_pane_hit_test_item` | `0x004B3ED0` | high | Clamps a point to pane bounds, scans item rectangles, and returns the containing item index or -1. |
+| `ui_list_pane_get_item_rect` | `0x004B3FD0` | high | Computes an item's screen rectangle from its column-major grid position, cell size, and content origin. |
+| `ui_list_pane_set_selected_index` | `0x004B40F0` | high | Changes the selected item and invalidates the visible parts of both old and new item rectangles. |
+| `ui_list_pane_select_previous` | `0x004B41E0` | high | Moves selection to the previous item, clamps at the first item, and ensures it is visible. |
+| `ui_list_pane_select_previous_horizontal` | `0x004B4250` | high | Routes horizontal backward navigation to the previous-item selection path. |
+| `ui_list_pane_select_next` | `0x004B4270` | high | Moves selection to the next item, clamps at the last item, and ensures it is visible. |
+| `ui_list_pane_select_next_horizontal` | `0x004B4320` | high | Routes horizontal forward navigation to the next-item selection path. |
+| `ui_list_pane_ensure_item_visible` | `0x004B4340` | high | Adjusts horizontal scrolling until the requested item rectangle lies within the visible pane bounds. |
+| `ui_list_pane_draw_item_noop` | `0x004B4430` | high | Default ListPane item-render virtual implementation; intentionally draws nothing. |
+| `ui_list_pane_scalar_deleting_dtor` | `0x004B4440` | high | Destroys a ListPane and optionally frees the complete object. |
+| `ui_list_pane_timer_handler_scalar_deleting_dtor_thunk` | `0x004B4470` | high | Adjusts a TimerHandler secondary-base pointer back to its ListPane and tail-calls the deleting destructor. |
 | `ui_logo_pane_register_adjusted` | `0x004B66E0` | high | Registers LogoPane from its Singleton secondary base. |
 | `ui_logo_pane_unregister_adjusted` | `0x004B6720` | high | Clears the LogoPane singleton from its adjusted secondary-base pointer. |
 | `ui_main_menu_activate_selected_action` | `0x004B7520` | high | Dispatches the selected MainMenuPane entry to login, character creation, password change, homepage, credits, or exit behavior. |
@@ -3712,6 +3742,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `maybe_net_load_endpoint_from_command_file` | `0x00433B50` | medium | Unreferenced parser that treats command-line tail text as a filename and loads a host or IPv4 address plus port into Config. |
 | `maybe_app_configure_distribution_mode_12` | `0x00436A10` | medium | Dormant mode 12 handler with no matching marker return; sets connection flags without installing an endpoint. |
 | `maybe_app_set_guard_flags` | `0x004A9F60` | medium | Sets opaque bytes at 0x006C9806 and 0x00740405; the wider guard meaning remains unresolved. |
+| `maybe_ui_list_pane_scroll_limit_fragment` | `0x004B3987` | medium | Compiler-recovered overlapping return fragment inside the backward-scroll-limit routine; no independent callers are known. |
+| `maybe_ui_list_pane_pointer_event_fallback` | `0x004B3BB1` | medium | Compiler-recovered overlapping false-return fragment inside the pointer-event handler; no independent callers are known. |
 | `maybe_ui_manufacture_dialog_ctor_from_body` | `0x004C1AD0` | medium | Duplicates the lmanu.txt construction path and applies a decoded opcode-first body, but no live static caller was recovered. |
 | `maybe_ui_manufacture_dialog_apply_manual_body` | `0x004C2990` | medium | Applies RecipeCount or Recipe from a decoded opcode-first body for the duplicate raw-body pane path. |
 
@@ -4372,9 +4404,37 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `light_time_entry_list_copy_make_node` | `0x004B2800` | high | Allocates a destination node and copy-constructs one entry while copying a lighting time-entry list. |
 | `light_time_entry_list_copy_make_node_failure_cleanup` | `0x004B2872` | high | Frees a partially constructed destination node during lighting time-entry list copying. |
 | `light_time_entry_copy_construct_for_list_copy` | `0x004B28C0` | high | Copies the four scalar fields of one lighting time entry for the list-copy instantiation. |
+| `list_ctor` | `0x004B2910` | high | Constructs the RTTI List base with an element stride, allocation block size, zero count, and raw byte storage. |
+| `list_dtor` | `0x004B29B0` | high | Frees a List object's raw byte storage and destroys its LObject base. |
+| `list_copy_assign` | `0x004B2A30` | high | Replaces a List object's dimensions and raw byte storage with a copy of another List. |
+| `list_resize_storage_for_count` | `0x004B2AE0` | high | Rounds a requested element count to allocation blocks and grows or shrinks the List backing storage as needed. |
+| `list_grow_storage` | `0x004B2BA0` | high | Allocates or enlarges List backing storage and zero-fills newly added bytes. |
+| `list_shrink_storage` | `0x004B2C40` | high | Shrinks List backing storage to a requested element capacity or frees it when the capacity reaches zero. |
+| `list_data` | `0x004B2CB0` | high | Returns the List object's raw backing-storage pointer. |
+| `list_item_at` | `0x004B2CD0` | high | Returns a pointer to an indexed fixed-stride List item when storage and bounds permit it. |
+| `list_insert_range` | `0x004B2D20` | high | Makes room for a raw fixed-stride item range, increases the count, and copies supplied bytes into the List. |
+| `list_append_range` | `0x004B2E30` | high | Appends a raw item range by dispatching the List insertion slot at the current count. |
+| `list_erase_range` | `0x004B2E60` | high | Removes a raw fixed-stride item range, compacts following bytes, and releases unused allocation blocks. |
+| `list_clear` | `0x004B2F40` | high | Clears a List by dispatching its erase-range slot over the complete current count. |
+| `list_move_item` | `0x004B2F70` | high | Moves one fixed-stride List item to another index while preserving the intervening item order. |
+| `sorted_list_ctor` | `0x004B3090` | high | Constructs the RTTI SortedList over List storage and records the element comparison callback. |
+| `sorted_list_insert` | `0x004B30D0` | high | Finds the ordered insertion index with the comparison callback and inserts one fixed-stride item. |
+| `sorted_list_find_first_equal` | `0x004B3160` | high | Uses the comparison callback to find an equal item, then walks backward to the first duplicate. |
+| `list_scalar_deleting_dtor` | `0x004B3220` | high | Destroys an RTTI List and optionally frees the complete object. |
+| `sorted_list_scalar_deleting_dtor` | `0x004B3250` | high | Destroys an RTTI SortedList through its List base and optionally frees the complete object. |
+| `sorted_list_item_at` | `0x004B3280` | high | Returns an indexed SortedList item through the base List bounds check. |
+| `sorted_list_erase_range` | `0x004B32A0` | high | Erases a fixed-stride range from a SortedList through the base List implementation. |
+| `sorted_list_clear` | `0x004B32C0` | high | Clears every item from a SortedList through the base List implementation. |
 | `lobject_ctor` | `0x004B4480` | high | Installs the LObject vtable and writes live-cookie bytes 62 6F 73 79 ("bosy") at +0x04. |
 | `lobject_dtor` | `0x004B44B0` | high | Restores the LObject vtable and clears the live cookie at +0x04 to zero. |
+| `memory_allocate_zeroed` | `0x004B44D0` | high | Allocates a raw block through the client memory manager and zero-fills every requested byte. |
+| `lobject_free_instance` | `0x004B4510` | high | Frees storage for a complete LObject-derived instance after its deleting destructor runs. |
+| `memory_free_block` | `0x004B4530` | high | Releases a raw allocation through the client memory manager. |
 | `lobject_is_live` | `0x004B4550` | high | Returns true only when LObject +0x04 equals 0x79736F62; event_dispatch_immediate uses it before dispatch. |
+| `lobject_get_class_info` | `0x004B4590` | high | Returns the process-initialized root LObject class-information record. |
+| `lobject_is_instance_of` | `0x004B45A0` | high | Walks an object's custom class-information parent chain to test whether it belongs to a requested class. |
+| `memory_allocation_failed` | `0x004B45D0` | high | Returns the client memory manager's current allocation-failure flag. |
+| `lobject_scalar_deleting_dtor` | `0x004B45E0` | high | Destroys an LObject and optionally frees the complete object. |
 | `memory_manager_singleton_register_adjusted` | `0x004C9D10` | high | Registers exact RTTI MemoryMan from its Singleton secondary base. |
 | `memory_manager_singleton_unregister_adjusted` | `0x004C9D50` | high | Clears the MemoryMan singleton from its adjusted secondary-base pointer. |
 | `metadata_item_info_list_exists` | `0x004D9330` | high | Returns whether the exact RTTI ItemInfoList singleton is currently bound. |

@@ -219,6 +219,106 @@ functions:
     name: pointer_stack_storage_push
     confidence: high
     evidence: "Grows pointer-stack storage in 0x400-entry steps and appends one pointer."
+  - address: "0x004B2910"
+    name: list_ctor
+    confidence: high
+    evidence: "Constructs the RTTI List base with an element stride, allocation block size, zero count, and raw byte storage."
+  - address: "0x004B29B0"
+    name: list_dtor
+    confidence: high
+    evidence: "Frees a List object's raw byte storage and destroys its LObject base."
+  - address: "0x004B2A30"
+    name: list_copy_assign
+    confidence: high
+    evidence: "Replaces a List object's dimensions and raw byte storage with a copy of another List."
+  - address: "0x004B2AE0"
+    name: list_resize_storage_for_count
+    confidence: high
+    evidence: "Rounds a requested element count to allocation blocks and grows or shrinks the List backing storage as needed."
+  - address: "0x004B2BA0"
+    name: list_grow_storage
+    confidence: high
+    evidence: "Allocates or enlarges List backing storage and zero-fills newly added bytes."
+  - address: "0x004B2C40"
+    name: list_shrink_storage
+    confidence: high
+    evidence: "Shrinks List backing storage to a requested element capacity or frees it when the capacity reaches zero."
+  - address: "0x004B2CB0"
+    name: list_data
+    confidence: high
+    evidence: "Returns the List object's raw backing-storage pointer."
+  - address: "0x004B2CD0"
+    name: list_item_at
+    confidence: high
+    evidence: "Returns a pointer to an indexed fixed-stride List item when storage and bounds permit it."
+  - address: "0x004B2D20"
+    name: list_insert_range
+    confidence: high
+    evidence: "Makes room for a raw fixed-stride item range, increases the count, and copies supplied bytes into the List."
+  - address: "0x004B2E30"
+    name: list_append_range
+    confidence: high
+    evidence: "Appends a raw item range by dispatching the List insertion slot at the current count."
+  - address: "0x004B2E60"
+    name: list_erase_range
+    confidence: high
+    evidence: "Removes a raw fixed-stride item range, compacts following bytes, and releases unused allocation blocks."
+  - address: "0x004B2F40"
+    name: list_clear
+    confidence: high
+    evidence: "Clears a List by dispatching its erase-range slot over the complete current count."
+  - address: "0x004B2F70"
+    name: list_move_item
+    confidence: high
+    evidence: "Moves one fixed-stride List item to another index while preserving the intervening item order."
+  - address: "0x004B3090"
+    name: sorted_list_ctor
+    confidence: high
+    evidence: "Constructs the RTTI SortedList over List storage and records the element comparison callback."
+  - address: "0x004B30D0"
+    name: sorted_list_insert
+    confidence: high
+    evidence: "Finds the ordered insertion index with the comparison callback and inserts one fixed-stride item."
+  - address: "0x004B3160"
+    name: sorted_list_find_first_equal
+    confidence: high
+    evidence: "Uses the comparison callback to find an equal item, then walks backward to the first duplicate."
+  - address: "0x004B3220"
+    name: list_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an RTTI List and optionally frees the complete object."
+  - address: "0x004B3250"
+    name: sorted_list_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an RTTI SortedList through its List base and optionally frees the complete object."
+  - address: "0x004B3280"
+    name: sorted_list_item_at
+    confidence: high
+    evidence: "Returns an indexed SortedList item through the base List bounds check."
+  - address: "0x004B32A0"
+    name: sorted_list_erase_range
+    confidence: high
+    evidence: "Erases a fixed-stride range from a SortedList through the base List implementation."
+  - address: "0x004B32C0"
+    name: sorted_list_clear
+    confidence: high
+    evidence: "Clears every item from a SortedList through the base List implementation."
+  - address: "0x004B44D0"
+    name: memory_allocate_zeroed
+    confidence: high
+    evidence: "Allocates a raw block through the client memory manager and zero-fills every requested byte."
+  - address: "0x004B4510"
+    name: lobject_free_instance
+    confidence: high
+    evidence: "Frees storage for a complete LObject-derived instance after its deleting destructor runs."
+  - address: "0x004B4530"
+    name: memory_free_block
+    confidence: high
+    evidence: "Releases a raw allocation through the client memory manager."
+  - address: "0x004B45D0"
+    name: memory_allocation_failed
+    confidence: high
+    evidence: "Returns the client memory manager's current allocation-failure flag."
 data_symbols: []
 comments:
   - address: "0x00404B06"
