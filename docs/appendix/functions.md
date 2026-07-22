@@ -881,11 +881,19 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_create_user_dialog_timer_scalar_deleting_dtor_thunk` | `0x0043FDA0` | high | Adjusted-this TimerHandler scalar-deleting destructor thunk for CreateUserDialogPane. |
 | `ui_dialog_pane_timer_scalar_deleting_dtor_thunk` | `0x0043FDB0` | high | Adjusted-this TimerHandler scalar-deleting destructor thunk for DialogPane. |
 | `ui_dialog_pane_ctor` | `0x00445260` | high | Constructs DialogPane over Pane; initializes default, cancel, focus, pressed, hover, and pointer-target control indexes to -1, with no-hit zones set to 7 where required. |
-| `ui_dialog_pane_dtor` | `0x004453A0` | high | Destroys attached controls in reverse order, destroys the local control list, and then destroys Pane. |
+| `ui_dialog_pane_dtor` | `0x004453A0` | high | Destroys attached dialog controls in reverse attachment order, destroys the control collection, and then destroys the Pane base. |
+| `ui_dialog_set_drag_bounds` | `0x004454F0` | high | Enables bounded dialog dragging and copies the minimum and maximum x/y coordinates used by the pointer handler. |
+| `ui_dialog_clear_drag_bounds` | `0x00445550` | high | Disables the optional bounds that clamp dialog movement while dragging. |
+| `ui_dialog_set_title_text` | `0x00445570` | high | Copies up to 0x400 bytes of dialog text into the pane and invalidates the dialog for redraw. |
+| `ui_dialog_set_archive_background` | `0x004455B0` | high | Stores a background image name and either copies a supplied pixmap or loads it from the main image archive. |
+| `ui_dialog_load_background_file` | `0x00445620` | high | Stores a background image path and loads the dialog pixmap through the general image-file loader. |
 | `ui_dialog_add_control` | `0x00445670` | high | Creates DialogPane +0x594 on first use and inserts the supplied control pointer. |
+| `ui_dialog_remove_control` | `0x00445770` | high | Removes the control at the selected attachment index from the dialog's local control collection. |
 | `ui_dialog_get_control_count` | `0x004457A0` | high | Returns the number of attachment-order controls, or zero when the DialogPane has no control list. |
 | `ui_dialog_set_default_action` | `0x004457D0` | high | Stores an attachment-order control index at DialogPane +0x598. |
 | `ui_dialog_set_cancel_action` | `0x00445820` | high | Stores an attachment-order control index at DialogPane +0x59C. |
+| `ui_dialog_register_screen` | `0x00445870` | high | Registers the dialog as a screen and attaches each local control to the dialog. |
+| `ui_dialog_unregister_screen` | `0x00445970` | high | Detaches each local control, then unregisters the dialog screen. |
 | `ui_dialog_handle_pointer_event` | `0x00445A20` | high | DialogPane primary-vtable +0x48 implementation for pane dragging, hit testing, child dispatch, visual-hover and secondary pointer-transition state, and same-control/same-zone click activation. |
 | `ui_dialog_handle_keyboard_event` | `0x00445FF0` | high | DialogPane primary-vtable +0x4C implementation: Tab traverses focus, Enter and Space normally dispatch the default action, Escape dispatches cancel, and remaining input reaches the focused enabled control. |
 | `ui_dialog_handle_application_event` | `0x004462D0` | high | DialogPane primary-vtable +0x54 implementation that forwards application and IME events to the focused control. |
@@ -2517,10 +2525,97 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `com_create_thrunet_service` | `0x00437860` | high | Creates and initializes the legacy Thrunet endpoint COM service. |
 | `exception_context_dumper_dtor` | `0x00437D20` | high | Destroys the StackWalker owned by exact RTTI ContextDumper. |
 | `exception_context_dumper_scalar_deleting_dtor` | `0x00437E30` | high | Compiler scalar-deleting destructor for exact RTTI ContextDumper. |
+| `metadata_denied_lookup_dtor` | `0x0043FDC0` | high | Destroys one DeniedItemList category lookup by clearing all rule records and its outer container. |
+| `metadata_denied_lookup_contains` | `0x0043FE20` | high | Wraps the supplied text as a client string and queries one category lookup by rule key and numeric value. |
+| `metadata_denied_lookup_add_rule` | `0x0043FEE0` | high | Builds a denial-rule record from numeric and word token text and inserts it under the parsed rule key. |
+| `metadata_denied_rule_parse_numeric_tokens` | `0x0043FFB0` | high | Extracts consecutive decimal sequences from text and inserts each parsed number into the rule's numeric container. |
+| `metadata_denied_rule_parse_word_tokens` | `0x00440100` | high | Splits space-delimited text, strips a trailing carriage return, and inserts each word into the rule's string container. |
+| `metadata_denied_rule_record_list_dtor` | `0x00440300` | high | Destroys every owned denial-rule record in a list and then destroys the list storage. |
+| `metadata_denied_lookup_clear` | `0x004403C0` | high | Destroys every rule-record list in a category lookup. |
+| `metadata_denied_lookup_insert_record` | `0x00440440` | high | Finds or creates a rule-key bucket, inserts the supplied rule record, and reports whether the key remains present. |
+| `metadata_denied_rule_record_list_contains` | `0x004405F0` | high | Scans a rule-record list and reports whether any record's numeric container contains the requested value. |
+| `metadata_denied_lookup_contains_record` | `0x00440700` | high | Finds the requested rule-key bucket and queries its rule records for the supplied numeric value. |
 | `metadata_denied_item_list_ctor` | `0x004407C0` | high | Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription. |
+| `metadata_denied_item_list_dtor` | `0x00440900` | high | Destroys the Item, Skill, and Spell denial lookups and the DeniedItemList TimerHandler base. |
+| `metadata_denied_item_list_contains` | `0x00440A30` | high | Selects Item, Skill, or Spell lookup index 0..2 and queries it with the supplied rule fields. |
 | `metadata_denied_item_list_subscribe` | `0x00440AA0` | high | Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable. |
 | `metadata_denied_item_list_apply_table` | `0x00440B20` | high | Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers. |
 | `metadata_denied_item_list_handle_event` | `0x00440E70` | high | Applies an available denial metadata table or retries the table subscriptions. |
+| `metadata_denied_rule_record_dtor` | `0x00440F20` | high | Destroys both containers owned by one parsed denial-rule record. |
+| `metadata_denied_item_list_scalar_deleting_dtor` | `0x00440FF0` | high | Compiler scalar-deleting destructor for exact RTTI DeniedItemList. |
+| `metadata_denied_numeric_set_ctor` | `0x00441020` | high | Constructs the numeric-token red-black set and initializes its header sentinel. |
+| `metadata_denied_numeric_set_dtor` | `0x00441050` | high | Erases the numeric-token set, then frees its header sentinel. |
+| `metadata_denied_numeric_set_find` | `0x004410F0` | high | Finds an exact signed numeric token by lower-bound search and equality check. |
+| `metadata_denied_word_set_ctor` | `0x00441190` | high | Constructs the word-token red-black set and initializes its header sentinel. |
+| `metadata_denied_word_set_dtor` | `0x004411C0` | high | Erases the word-token set, then frees its header sentinel. |
+| `metadata_denied_word_set_find` | `0x00441260` | high | Finds an exact word token using the client string-range comparator. |
+| `metadata_denied_rule_map_ctor` | `0x00441340` | high | Constructs the denied-rule key map and initializes its header sentinel. |
+| `metadata_denied_rule_map_dtor` | `0x00441370` | high | Erases the denied-rule key map, then frees its header sentinel. |
+| `metadata_denied_rule_map_find` | `0x00441410` | high | Finds an exact signed rule key by lower-bound search and equality check. |
+| `metadata_denied_rule_record_list_storage_dtor` | `0x004414B0` | high | Destroys the owned doubly-linked rule-record list nodes and header storage. |
+| `metadata_denied_numeric_set_erase_range` | `0x00441600` | high | Erases a numeric-set iterator range, using a whole-tree fast path when the complete range is selected. |
+| `metadata_denied_numeric_set_lower_bound` | `0x004416E0` | high | Returns the first numeric-token set node whose signed key is not less than the requested value. |
+| `metadata_denied_numeric_set_initialize` | `0x00441750` | high | Allocates and initializes the numeric-set red-black tree header sentinel. |
+| `metadata_denied_word_set_erase_range` | `0x004417D0` | high | Erases a word-set iterator range, using a whole-tree fast path when the complete range is selected. |
+| `metadata_denied_word_set_lower_bound` | `0x004418B0` | high | Returns the first word-token set node not ordered before the requested string. |
+| `metadata_denied_word_set_initialize` | `0x00441950` | high | Allocates and initializes the word-set red-black tree header sentinel. |
+| `metadata_denied_rule_map_erase_range` | `0x004419D0` | high | Erases a denied-rule map iterator range, using a whole-tree fast path for the complete map. |
+| `metadata_denied_rule_map_lower_bound` | `0x00441AB0` | high | Returns the first denied-rule map node whose signed key is not less than the requested key. |
+| `metadata_denied_rule_map_initialize` | `0x00441B20` | high | Allocates and initializes the denied-rule map red-black tree header sentinel. |
+| `metadata_denied_rule_record_list_ctor` | `0x00441BA0` | high | Constructs the denied-rule record list and initializes its sentinel node. |
+| `metadata_denied_numeric_set_iterator_ctor` | `0x00441C00` | high | Initializes a numeric-token set iterator wrapper from a tree node pointer. |
+| `metadata_denied_word_set_iterator_ctor` | `0x00441C20` | high | Initializes a word-token set iterator wrapper from a tree node pointer. |
+| `metadata_denied_rule_map_iterator_ctor` | `0x00441C40` | high | Initializes a denied-rule map iterator wrapper from a tree node pointer. |
+| `metadata_denied_rule_map_iterator_next` | `0x00441C60` | high | Advances a denied-rule map iterator to its in-order successor. |
+| `metadata_denied_numeric_set_erase` | `0x00441D10` | high | Erases one numeric-token set node and restores red-black tree invariants; rejects an invalid iterator. |
+| `metadata_denied_numeric_set_clear` | `0x004421F0` | high | Destroys every numeric-token tree node, resets the header links, and sets the element count to zero. |
+| `metadata_denied_word_set_erase` | `0x00442250` | high | Erases one word-token set node and restores red-black tree invariants; rejects an invalid iterator. |
+| `metadata_denied_word_set_clear` | `0x00442730` | high | Destroys every word-token tree node, resets the header links, and sets the element count to zero. |
+| `metadata_denied_rule_map_erase` | `0x00442790` | high | Erases one denied-rule map node and restores red-black tree invariants; rejects an invalid iterator. |
+| `metadata_denied_rule_map_clear` | `0x00442C70` | high | Destroys every denied-rule map node, resets the header links, and sets the element count to zero. |
+| `metadata_denied_numeric_set_destroy_subtree` | `0x00442CD0` | high | Recursively destroys a numeric-token set subtree and frees each 0x14-byte tree node. |
+| `metadata_denied_numeric_set_rotate_left` | `0x00442D40` | high | Performs a left rotation around one numeric-token red-black tree node. |
+| `metadata_denied_numeric_set_rotate_right` | `0x00442DF0` | high | Performs a right rotation around one numeric-token red-black tree node. |
+| `metadata_denied_word_set_destroy_subtree` | `0x00442EA0` | high | Recursively destroys a word-token set subtree, destroys each stored string, and frees each tree node. |
+| `metadata_denied_word_set_rotate_left` | `0x00442F10` | high | Performs a left rotation around one word-token red-black tree node. |
+| `metadata_denied_word_set_rotate_right` | `0x00442FC0` | high | Performs a right rotation around one word-token red-black tree node. |
+| `metadata_denied_rule_map_destroy_subtree` | `0x00443070` | high | Recursively destroys a denied-rule map subtree, destroys each mapped value, and frees each tree node. |
+| `metadata_denied_rule_map_rotate_left` | `0x004430E0` | high | Performs a left rotation around one denied-rule red-black tree node. |
+| `metadata_denied_rule_map_rotate_right` | `0x00443190` | high | Performs a right rotation around one denied-rule red-black tree node. |
+| `metadata_denied_numeric_set_iterator_next` | `0x00443240` | high | Advances a numeric-token set iterator to its in-order successor. |
+| `metadata_denied_word_set_iterator_next` | `0x004432F0` | high | Advances a word-token set iterator to its in-order successor. |
+| `metadata_denied_numeric_set_allocate_nodes` | `0x00443470` | high | Allocates one or more 0x14-byte numeric-token tree nodes and throws std::bad_alloc on overflow or failure. |
+| `metadata_denied_word_set_allocate_nodes` | `0x004434E0` | high | Allocates one or more 0x2c-byte word-token tree nodes and throws std::bad_alloc on overflow or failure. |
+| `metadata_denied_rule_map_value_destroy` | `0x00443550` | high | Template destruction wrapper used when a denied-rule map value must be discarded; delegates to the value destructor. |
+| `metadata_denied_rule_map_allocate_nodes` | `0x00443570` | high | Allocates one or more 0x20-byte denied-rule map nodes and throws std::bad_alloc on overflow or failure. |
+| `metadata_denied_rule_record_list_allocate_nodes` | `0x004435E0` | high | Allocates one or more 0x0c-byte denied-rule record list nodes and throws std::bad_alloc on overflow or failure. |
+| `metadata_denied_numeric_set_insert_unique` | `0x00443650` | high | Searches for a numeric token and inserts it only when an equivalent signed value is absent. |
+| `metadata_denied_word_set_insert_unique` | `0x004438A0` | high | Searches for a word token and inserts it only when an equivalent string is absent. |
+| `metadata_denied_rule_map_insert_unique` | `0x00443B00` | high | Searches for a denied-rule key and inserts the key/value record only when the key is absent. |
+| `metadata_denied_numeric_set_insert_node` | `0x00443D50` | high | Allocates, links, and rebalances a numeric-token set node at the selected insertion position. |
+| `metadata_denied_word_set_insert_node` | `0x00444030` | high | Links a prepared word-token node at the selected position and restores red-black tree invariants. |
+| `metadata_denied_rule_map_insert_node` | `0x00444310` | high | Links a prepared denied-rule map node at the selected position and restores red-black tree invariants. |
+| `metadata_denied_numeric_set_iterator_prev` | `0x004445F0` | high | Moves a numeric-token set iterator to its in-order predecessor. |
+| `metadata_denied_word_set_iterator_prev` | `0x004446B0` | high | Moves a word-token set iterator to its in-order predecessor. |
+| `metadata_denied_rule_map_iterator_prev` | `0x00444770` | high | Moves a denied-rule map iterator to its in-order predecessor. |
+| `metadata_denied_numeric_set_create_node` | `0x00444830` | high | Allocates a numeric-token tree node and copy-constructs its stored integer value. |
+| `metadata_denied_word_set_create_node` | `0x004448D0` | high | Allocates a word-token tree node and copy-constructs its stored string value. |
+| `metadata_denied_rule_map_create_node` | `0x00444970` | high | Allocates a denied-rule map node and copy-constructs its key and record list value. |
+| `metadata_denied_rule_map_value_dtor` | `0x00444A10` | high | Destroys the record list stored in one denied-rule map value and releases its list header. |
+| `metadata_denied_numeric_set_allocate_node` | `0x00444A90` | high | Allocates one numeric-token tree node and initializes its links and red-black tree flags. |
+| `metadata_denied_word_set_allocate_node` | `0x00444AE0` | high | Allocates one word-token tree node and initializes its links and red-black tree flags. |
+| `metadata_denied_rule_map_allocate_node` | `0x00444B30` | high | Allocates one denied-rule map node and initializes its links and red-black tree flags. |
+| `metadata_denied_numeric_value_copy` | `0x00444BA0` | high | Copy-constructs the signed integer stored in a numeric-token tree node. |
+| `metadata_denied_rule_map_value_copy` | `0x00444BE0` | high | Copy-constructs a denied-rule map key together with its owned rule-record list. |
+| `metadata_denied_rule_record_list_insert_before` | `0x00444C60` | high | Creates and links one rule-record pointer node before the selected list position. |
+| `metadata_denied_rule_record_list_create_node` | `0x00444CF0` | high | Allocates one rule-record list node, sets its neighboring links, and copy-constructs the stored record pointer. |
+| `metadata_denied_rule_record_pointer_copy` | `0x00444DB0` | high | Copy-constructs the rule-record pointer stored in a list node. |
+| `metadata_denied_rule_record_list_copy_ctor` | `0x00444DF0` | high | Constructs a rule-record list and appends a copy of each source pointer node. |
+| `metadata_denied_rule_record_list_copy_range` | `0x00444F30` | high | Copies a source iterator range into a denied-rule record list before the selected position. |
+| `metadata_denied_rule_record_list_insert_copy_before` | `0x00445030` | high | Creates and links a copied rule-record pointer node before the selected position during list copy construction. |
+| `metadata_denied_rule_record_list_erase` | `0x004450C0` | high | Unlinks and frees one rule-record pointer list node, decrements the count, and returns the following iterator. |
+| `metadata_denied_rule_record_list_create_copy_node` | `0x00445160` | high | Allocates a rule-record pointer list node, sets its neighboring links, and copy-constructs the stored pointer. |
+| `metadata_denied_rule_record_pointer_copy_ctor` | `0x00445220` | high | Copy-constructs the rule-record pointer stored in a copied list node. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

@@ -45,6 +45,11 @@ struct DialogPaneFields {
     u8  hover_zone                  // +0x5C0, 7 means no hit
     s32 pointer_target_control_index // +0x5C4, -1 means none
     u8  pointer_target_zone         // +0x5C8, 7 means no hit
+    u8  drag_bounds_enabled         // +0x5CA
+    s32 minimum_drag_x              // +0x5CC
+    s32 minimum_drag_y              // +0x5D0
+    s32 maximum_drag_x              // +0x5D4
+    s32 maximum_drag_y              // +0x5D8
 }
 ```
 
@@ -61,6 +66,10 @@ Shortcut dispatch checks that the selected control is still enabled, then calls 
 | Message popup | `0` | `0` | None |
 
 The pointer fields preserve three related states. A press remembers the control and hit zone where the button went down, so release activates only the same pair. The hover pair updates the control's visual zone. The pointer-target pair drives secondary enter/leave-style transition hooks. `DialogPane` uses control index `-1` and hit zone `7` as the two no-target sentinels.
+
+Dialogs can optionally clamp movement to a caller-supplied rectangle. `ui_dialog_set_drag_bounds` enables the four limits, and `ui_dialog_clear_drag_bounds` disables them. The base pointer handler applies the limits after updating the pane position during a drag.
+
+The base class also owns a title-text buffer and a background pixmap. One background helper loads a named image from the main archive or accepts an already decoded pixmap. A second helper loads a loose or archive-backed image through the general image-file path. Registering a dialog attaches every local control after the outer screen; unregistering reverses that relationship before removing the outer screen.
 
 Many callbacks use the control's attachment-order index as its action ID. For example, the login dialog's layout lists its edit areas before its buttons, but the constructor attaches `OK`, `Cancel`, `Name`, then `Password`. The action IDs follow the constructor order.
 

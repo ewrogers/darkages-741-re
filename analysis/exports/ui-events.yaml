@@ -274,15 +274,47 @@ functions:
   - address: "0x004453A0"
     name: ui_dialog_pane_dtor
     confidence: high
-    evidence: "Destroys attached controls in reverse order, destroys the local control list, and then destroys Pane."
+    evidence: "Destroys attached dialog controls in reverse attachment order, destroys the control collection, and then destroys the Pane base."
+  - address: "0x004454F0"
+    name: ui_dialog_set_drag_bounds
+    confidence: high
+    evidence: "Enables bounded dialog dragging and copies the minimum and maximum x/y coordinates used by the pointer handler."
+  - address: "0x00445550"
+    name: ui_dialog_clear_drag_bounds
+    confidence: high
+    evidence: "Disables the optional bounds that clamp dialog movement while dragging."
+  - address: "0x00445570"
+    name: ui_dialog_set_title_text
+    confidence: high
+    evidence: "Copies up to 0x400 bytes of dialog text into the pane and invalidates the dialog for redraw."
+  - address: "0x004455B0"
+    name: ui_dialog_set_archive_background
+    confidence: high
+    evidence: "Stores a background image name and either copies a supplied pixmap or loads it from the main image archive."
+  - address: "0x00445620"
+    name: ui_dialog_load_background_file
+    confidence: high
+    evidence: "Stores a background image path and loads the dialog pixmap through the general image-file loader."
   - address: "0x00445670"
     name: ui_dialog_add_control
     confidence: high
     evidence: "Creates DialogPane +0x594 on first use and inserts the supplied control pointer."
+  - address: "0x00445770"
+    name: ui_dialog_remove_control
+    confidence: high
+    evidence: "Removes the control at the selected attachment index from the dialog's local control collection."
   - address: "0x004457A0"
     name: ui_dialog_get_control_count
     confidence: high
     evidence: "Returns the number of attachment-order controls, or zero when the DialogPane has no control list."
+  - address: "0x00445870"
+    name: ui_dialog_register_screen
+    confidence: high
+    evidence: "Registers the dialog as a screen and attaches each local control to the dialog."
+  - address: "0x00445970"
+    name: ui_dialog_unregister_screen
+    confidence: high
+    evidence: "Detaches each local control, then unregisters the dialog screen."
   - address: "0x00445A20"
     name: ui_dialog_handle_pointer_event
     confidence: high

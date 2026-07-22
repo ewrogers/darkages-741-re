@@ -194,6 +194,13 @@ If `MetaTableManager` is not ready when the list is constructed, the client retr
 
 Applying a table replaces the current in-memory lists and routes rows tagged `Item`, `Skill`, or `Spell` into the matching lookup. Item activation, skill activation, and spell activation consult their respective list before sending the normal action packet.
 
+Each category is a signed-integer keyed map. A key owns a list of rule records, and each record has two ordered sets:
+
+- the numeric text is scanned for decimal runs and each parsed value enters a numeric set;
+- the word text is split on spaces, a trailing carriage return is removed, and each byte string enters a word set.
+
+A lookup selects category `0` for items, `1` for skills, or `2` for spells. It then finds the requested rule key and accepts only a record containing both the requested numeric value and the exact word token. Several records may share one key, so any matching record denies the action. The word comparison is byte-for-byte through the client's normal string comparator.
+
 The executable hardcodes the three metadata names and the parser, but not the individual denial entries. The server can replace the entries by advertising a new CRC and supplying a new table payload.
 
 The inspected installation has 19 cached metadata files but no `BItems`, `BSkills`, or `BSpells` file. No supplied capture contains one of these table names. In that state the three runtime lists begin empty and do not block an action.

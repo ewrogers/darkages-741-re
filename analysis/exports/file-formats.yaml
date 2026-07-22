@@ -63,10 +63,58 @@ functions:
     name: file_hpf_compressor_singleton_unregister
     confidence: high
     evidence: "Clears the Compressor singleton when the supplied instance owns it."
+  - address: "0x0043FDC0"
+    name: metadata_denied_lookup_dtor
+    confidence: high
+    evidence: "Destroys one DeniedItemList category lookup by clearing all rule records and its outer container."
+  - address: "0x0043FE20"
+    name: metadata_denied_lookup_contains
+    confidence: high
+    evidence: "Wraps the supplied text as a client string and queries one category lookup by rule key and numeric value."
+  - address: "0x0043FEE0"
+    name: metadata_denied_lookup_add_rule
+    confidence: high
+    evidence: "Builds a denial-rule record from numeric and word token text and inserts it under the parsed rule key."
+  - address: "0x0043FFB0"
+    name: metadata_denied_rule_parse_numeric_tokens
+    confidence: high
+    evidence: "Extracts consecutive decimal sequences from text and inserts each parsed number into the rule's numeric container."
+  - address: "0x00440100"
+    name: metadata_denied_rule_parse_word_tokens
+    confidence: high
+    evidence: "Splits space-delimited text, strips a trailing carriage return, and inserts each word into the rule's string container."
+  - address: "0x00440300"
+    name: metadata_denied_rule_record_list_dtor
+    confidence: high
+    evidence: "Destroys every owned denial-rule record in a list and then destroys the list storage."
+  - address: "0x004403C0"
+    name: metadata_denied_lookup_clear
+    confidence: high
+    evidence: "Destroys every rule-record list in a category lookup."
+  - address: "0x00440440"
+    name: metadata_denied_lookup_insert_record
+    confidence: high
+    evidence: "Finds or creates a rule-key bucket, inserts the supplied rule record, and reports whether the key remains present."
+  - address: "0x004405F0"
+    name: metadata_denied_rule_record_list_contains
+    confidence: high
+    evidence: "Scans a rule-record list and reports whether any record's numeric container contains the requested value."
+  - address: "0x00440700"
+    name: metadata_denied_lookup_contains_record
+    confidence: high
+    evidence: "Finds the requested rule-key bucket and queries its rule records for the supplied numeric value."
   - address: "0x004407C0"
     name: metadata_denied_item_list_ctor
     confidence: high
     evidence: "Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription."
+  - address: "0x00440900"
+    name: metadata_denied_item_list_dtor
+    confidence: high
+    evidence: "Destroys the Item, Skill, and Spell denial lookups and the DeniedItemList TimerHandler base."
+  - address: "0x00440A30"
+    name: metadata_denied_item_list_contains
+    confidence: high
+    evidence: "Selects Item, Skill, or Spell lookup index 0..2 and queries it with the supplied rule fields."
   - address: "0x00440AA0"
     name: metadata_denied_item_list_subscribe
     confidence: high
@@ -79,6 +127,306 @@ functions:
     name: metadata_denied_item_list_handle_event
     confidence: high
     evidence: "Applies an available denial metadata table or retries the table subscriptions."
+  - address: "0x00440F20"
+    name: metadata_denied_rule_record_dtor
+    confidence: high
+    evidence: "Destroys both containers owned by one parsed denial-rule record."
+  - address: "0x00440FF0"
+    name: metadata_denied_item_list_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for exact RTTI DeniedItemList."
+  - address: "0x00441020"
+    name: metadata_denied_numeric_set_ctor
+    confidence: high
+    evidence: "Constructs the numeric-token red-black set and initializes its header sentinel."
+  - address: "0x00441050"
+    name: metadata_denied_numeric_set_dtor
+    confidence: high
+    evidence: "Erases the numeric-token set, then frees its header sentinel."
+  - address: "0x004410F0"
+    name: metadata_denied_numeric_set_find
+    confidence: high
+    evidence: "Finds an exact signed numeric token by lower-bound search and equality check."
+  - address: "0x00441190"
+    name: metadata_denied_word_set_ctor
+    confidence: high
+    evidence: "Constructs the word-token red-black set and initializes its header sentinel."
+  - address: "0x004411C0"
+    name: metadata_denied_word_set_dtor
+    confidence: high
+    evidence: "Erases the word-token set, then frees its header sentinel."
+  - address: "0x00441260"
+    name: metadata_denied_word_set_find
+    confidence: high
+    evidence: "Finds an exact word token using the client string-range comparator."
+  - address: "0x00441340"
+    name: metadata_denied_rule_map_ctor
+    confidence: high
+    evidence: "Constructs the denied-rule key map and initializes its header sentinel."
+  - address: "0x00441370"
+    name: metadata_denied_rule_map_dtor
+    confidence: high
+    evidence: "Erases the denied-rule key map, then frees its header sentinel."
+  - address: "0x00441410"
+    name: metadata_denied_rule_map_find
+    confidence: high
+    evidence: "Finds an exact signed rule key by lower-bound search and equality check."
+  - address: "0x004414B0"
+    name: metadata_denied_rule_record_list_storage_dtor
+    confidence: high
+    evidence: "Destroys the owned doubly-linked rule-record list nodes and header storage."
+  - address: "0x00441600"
+    name: metadata_denied_numeric_set_erase_range
+    confidence: high
+    evidence: "Erases a numeric-set iterator range, using a whole-tree fast path when the complete range is selected."
+  - address: "0x004416E0"
+    name: metadata_denied_numeric_set_lower_bound
+    confidence: high
+    evidence: "Returns the first numeric-token set node whose signed key is not less than the requested value."
+  - address: "0x00441750"
+    name: metadata_denied_numeric_set_initialize
+    confidence: high
+    evidence: "Allocates and initializes the numeric-set red-black tree header sentinel."
+  - address: "0x004417D0"
+    name: metadata_denied_word_set_erase_range
+    confidence: high
+    evidence: "Erases a word-set iterator range, using a whole-tree fast path when the complete range is selected."
+  - address: "0x004418B0"
+    name: metadata_denied_word_set_lower_bound
+    confidence: high
+    evidence: "Returns the first word-token set node not ordered before the requested string."
+  - address: "0x00441950"
+    name: metadata_denied_word_set_initialize
+    confidence: high
+    evidence: "Allocates and initializes the word-set red-black tree header sentinel."
+  - address: "0x004419D0"
+    name: metadata_denied_rule_map_erase_range
+    confidence: high
+    evidence: "Erases a denied-rule map iterator range, using a whole-tree fast path for the complete map."
+  - address: "0x00441AB0"
+    name: metadata_denied_rule_map_lower_bound
+    confidence: high
+    evidence: "Returns the first denied-rule map node whose signed key is not less than the requested key."
+  - address: "0x00441B20"
+    name: metadata_denied_rule_map_initialize
+    confidence: high
+    evidence: "Allocates and initializes the denied-rule map red-black tree header sentinel."
+  - address: "0x00441BA0"
+    name: metadata_denied_rule_record_list_ctor
+    confidence: high
+    evidence: "Constructs the denied-rule record list and initializes its sentinel node."
+  - address: "0x00441C00"
+    name: metadata_denied_numeric_set_iterator_ctor
+    confidence: high
+    evidence: "Initializes a numeric-token set iterator wrapper from a tree node pointer."
+  - address: "0x00441C20"
+    name: metadata_denied_word_set_iterator_ctor
+    confidence: high
+    evidence: "Initializes a word-token set iterator wrapper from a tree node pointer."
+  - address: "0x00441C40"
+    name: metadata_denied_rule_map_iterator_ctor
+    confidence: high
+    evidence: "Initializes a denied-rule map iterator wrapper from a tree node pointer."
+  - address: "0x00441C60"
+    name: metadata_denied_rule_map_iterator_next
+    confidence: high
+    evidence: "Advances a denied-rule map iterator to its in-order successor."
+  - address: "0x00441D10"
+    name: metadata_denied_numeric_set_erase
+    confidence: high
+    evidence: "Erases one numeric-token set node and restores red-black tree invariants; rejects an invalid iterator."
+  - address: "0x004421F0"
+    name: metadata_denied_numeric_set_clear
+    confidence: high
+    evidence: "Destroys every numeric-token tree node, resets the header links, and sets the element count to zero."
+  - address: "0x00442250"
+    name: metadata_denied_word_set_erase
+    confidence: high
+    evidence: "Erases one word-token set node and restores red-black tree invariants; rejects an invalid iterator."
+  - address: "0x00442730"
+    name: metadata_denied_word_set_clear
+    confidence: high
+    evidence: "Destroys every word-token tree node, resets the header links, and sets the element count to zero."
+  - address: "0x00442790"
+    name: metadata_denied_rule_map_erase
+    confidence: high
+    evidence: "Erases one denied-rule map node and restores red-black tree invariants; rejects an invalid iterator."
+  - address: "0x00442C70"
+    name: metadata_denied_rule_map_clear
+    confidence: high
+    evidence: "Destroys every denied-rule map node, resets the header links, and sets the element count to zero."
+  - address: "0x00442CD0"
+    name: metadata_denied_numeric_set_destroy_subtree
+    confidence: high
+    evidence: "Recursively destroys a numeric-token set subtree and frees each 0x14-byte tree node."
+  - address: "0x00442D40"
+    name: metadata_denied_numeric_set_rotate_left
+    confidence: high
+    evidence: "Performs a left rotation around one numeric-token red-black tree node."
+  - address: "0x00442DF0"
+    name: metadata_denied_numeric_set_rotate_right
+    confidence: high
+    evidence: "Performs a right rotation around one numeric-token red-black tree node."
+  - address: "0x00442EA0"
+    name: metadata_denied_word_set_destroy_subtree
+    confidence: high
+    evidence: "Recursively destroys a word-token set subtree, destroys each stored string, and frees each tree node."
+  - address: "0x00442F10"
+    name: metadata_denied_word_set_rotate_left
+    confidence: high
+    evidence: "Performs a left rotation around one word-token red-black tree node."
+  - address: "0x00442FC0"
+    name: metadata_denied_word_set_rotate_right
+    confidence: high
+    evidence: "Performs a right rotation around one word-token red-black tree node."
+  - address: "0x00443070"
+    name: metadata_denied_rule_map_destroy_subtree
+    confidence: high
+    evidence: "Recursively destroys a denied-rule map subtree, destroys each mapped value, and frees each tree node."
+  - address: "0x004430E0"
+    name: metadata_denied_rule_map_rotate_left
+    confidence: high
+    evidence: "Performs a left rotation around one denied-rule red-black tree node."
+  - address: "0x00443190"
+    name: metadata_denied_rule_map_rotate_right
+    confidence: high
+    evidence: "Performs a right rotation around one denied-rule red-black tree node."
+  - address: "0x00443240"
+    name: metadata_denied_numeric_set_iterator_next
+    confidence: high
+    evidence: "Advances a numeric-token set iterator to its in-order successor."
+  - address: "0x004432F0"
+    name: metadata_denied_word_set_iterator_next
+    confidence: high
+    evidence: "Advances a word-token set iterator to its in-order successor."
+  - address: "0x00443470"
+    name: metadata_denied_numeric_set_allocate_nodes
+    confidence: high
+    evidence: "Allocates one or more 0x14-byte numeric-token tree nodes and throws std::bad_alloc on overflow or failure."
+  - address: "0x004434E0"
+    name: metadata_denied_word_set_allocate_nodes
+    confidence: high
+    evidence: "Allocates one or more 0x2c-byte word-token tree nodes and throws std::bad_alloc on overflow or failure."
+  - address: "0x00443550"
+    name: metadata_denied_rule_map_value_destroy
+    confidence: high
+    evidence: "Template destruction wrapper used when a denied-rule map value must be discarded; delegates to the value destructor."
+  - address: "0x00443570"
+    name: metadata_denied_rule_map_allocate_nodes
+    confidence: high
+    evidence: "Allocates one or more 0x20-byte denied-rule map nodes and throws std::bad_alloc on overflow or failure."
+  - address: "0x004435E0"
+    name: metadata_denied_rule_record_list_allocate_nodes
+    confidence: high
+    evidence: "Allocates one or more 0x0c-byte denied-rule record list nodes and throws std::bad_alloc on overflow or failure."
+  - address: "0x00443650"
+    name: metadata_denied_numeric_set_insert_unique
+    confidence: high
+    evidence: "Searches for a numeric token and inserts it only when an equivalent signed value is absent."
+  - address: "0x004438A0"
+    name: metadata_denied_word_set_insert_unique
+    confidence: high
+    evidence: "Searches for a word token and inserts it only when an equivalent string is absent."
+  - address: "0x00443B00"
+    name: metadata_denied_rule_map_insert_unique
+    confidence: high
+    evidence: "Searches for a denied-rule key and inserts the key/value record only when the key is absent."
+  - address: "0x00443D50"
+    name: metadata_denied_numeric_set_insert_node
+    confidence: high
+    evidence: "Allocates, links, and rebalances a numeric-token set node at the selected insertion position."
+  - address: "0x00444030"
+    name: metadata_denied_word_set_insert_node
+    confidence: high
+    evidence: "Links a prepared word-token node at the selected position and restores red-black tree invariants."
+  - address: "0x00444310"
+    name: metadata_denied_rule_map_insert_node
+    confidence: high
+    evidence: "Links a prepared denied-rule map node at the selected position and restores red-black tree invariants."
+  - address: "0x004445F0"
+    name: metadata_denied_numeric_set_iterator_prev
+    confidence: high
+    evidence: "Moves a numeric-token set iterator to its in-order predecessor."
+  - address: "0x004446B0"
+    name: metadata_denied_word_set_iterator_prev
+    confidence: high
+    evidence: "Moves a word-token set iterator to its in-order predecessor."
+  - address: "0x00444770"
+    name: metadata_denied_rule_map_iterator_prev
+    confidence: high
+    evidence: "Moves a denied-rule map iterator to its in-order predecessor."
+  - address: "0x00444830"
+    name: metadata_denied_numeric_set_create_node
+    confidence: high
+    evidence: "Allocates a numeric-token tree node and copy-constructs its stored integer value."
+  - address: "0x004448D0"
+    name: metadata_denied_word_set_create_node
+    confidence: high
+    evidence: "Allocates a word-token tree node and copy-constructs its stored string value."
+  - address: "0x00444970"
+    name: metadata_denied_rule_map_create_node
+    confidence: high
+    evidence: "Allocates a denied-rule map node and copy-constructs its key and record list value."
+  - address: "0x00444A10"
+    name: metadata_denied_rule_map_value_dtor
+    confidence: high
+    evidence: "Destroys the record list stored in one denied-rule map value and releases its list header."
+  - address: "0x00444A90"
+    name: metadata_denied_numeric_set_allocate_node
+    confidence: high
+    evidence: "Allocates one numeric-token tree node and initializes its links and red-black tree flags."
+  - address: "0x00444AE0"
+    name: metadata_denied_word_set_allocate_node
+    confidence: high
+    evidence: "Allocates one word-token tree node and initializes its links and red-black tree flags."
+  - address: "0x00444B30"
+    name: metadata_denied_rule_map_allocate_node
+    confidence: high
+    evidence: "Allocates one denied-rule map node and initializes its links and red-black tree flags."
+  - address: "0x00444BA0"
+    name: metadata_denied_numeric_value_copy
+    confidence: high
+    evidence: "Copy-constructs the signed integer stored in a numeric-token tree node."
+  - address: "0x00444BE0"
+    name: metadata_denied_rule_map_value_copy
+    confidence: high
+    evidence: "Copy-constructs a denied-rule map key together with its owned rule-record list."
+  - address: "0x00444C60"
+    name: metadata_denied_rule_record_list_insert_before
+    confidence: high
+    evidence: "Creates and links one rule-record pointer node before the selected list position."
+  - address: "0x00444CF0"
+    name: metadata_denied_rule_record_list_create_node
+    confidence: high
+    evidence: "Allocates one rule-record list node, sets its neighboring links, and copy-constructs the stored record pointer."
+  - address: "0x00444DB0"
+    name: metadata_denied_rule_record_pointer_copy
+    confidence: high
+    evidence: "Copy-constructs the rule-record pointer stored in a list node."
+  - address: "0x00444DF0"
+    name: metadata_denied_rule_record_list_copy_ctor
+    confidence: high
+    evidence: "Constructs a rule-record list and appends a copy of each source pointer node."
+  - address: "0x00444F30"
+    name: metadata_denied_rule_record_list_copy_range
+    confidence: high
+    evidence: "Copies a source iterator range into a denied-rule record list before the selected position."
+  - address: "0x00445030"
+    name: metadata_denied_rule_record_list_insert_copy_before
+    confidence: high
+    evidence: "Creates and links a copied rule-record pointer node before the selected position during list copy construction."
+  - address: "0x004450C0"
+    name: metadata_denied_rule_record_list_erase
+    confidence: high
+    evidence: "Unlinks and frees one rule-record pointer list node, decrements the count, and returns the following iterator."
+  - address: "0x00445160"
+    name: metadata_denied_rule_record_list_create_copy_node
+    confidence: high
+    evidence: "Allocates a rule-record pointer list node, sets its neighboring links, and copy-constructs the stored pointer."
+  - address: "0x00445220"
+    name: metadata_denied_rule_record_pointer_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs the rule-record pointer stored in a copied list node."
   - address: "0x0044CD50"
     name: file_load_color_table
     confidence: medium
