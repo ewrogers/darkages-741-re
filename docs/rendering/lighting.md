@@ -25,6 +25,8 @@ Light metadata entry for map and time
 
 The server value behaves like a coarse half-day clock position rather than a literal 24-hour value. For example, value `7` selects profile coordinate `14`.
 
+`LightList` builds two indexes from the metadata table. Numeric group names map a map ID to an owned profile-name string. Nonnumeric group names are cut at the first underscore and collect the profile's ordered time entries. Lookup therefore resolves the current map ID to a profile name first, then walks that profile's entries for an inclusive time-range match. An absent alias or profile uses an embedded empty list.
+
 ## Light metadata entry
 
 The selected entry supplies:
@@ -33,6 +35,8 @@ The selected entry supplies:
 - ambient intensity
 - red, green, and blue bytes, packed into the renderer's 16-bit color
 - flags, where bit `0` prevents the HEA path when set
+
+The parser accepts at most six integer fields for each time entry. A seventh field equal to `D` sets the flag bit that disables HEA for that entry.
 
 If no matching metadata is available, the client uses black color, intensity `0x20`, disables the HEA mask, and retries the lookup one second later. Map setup also creates `LightList` when needed and reapplies the stored time after the map changes.
 

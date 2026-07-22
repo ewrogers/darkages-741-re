@@ -4285,8 +4285,42 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `int_vector_dtor` | `0x004AE3B0` | high | Frees a 32-bit integer vector and clears its three storage pointers. |
 | `memory_has_manager` | `0x004AE8B0` | high | Reports whether the exact RTTI MemoryMan singleton pointer is non-null. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
+| `light_list_dtor` | `0x004AE980` | high | Destroys LightList profile maps and time-entry lists, unregisters it, and destroys TimerHandler. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |
+| `light_list_is_metadata_loaded` | `0x004AEC30` | high | Returns the byte set after Light metadata has completed loading. |
+| `light_list_find_profile_entries` | `0x004AEC50` | high | Returns a named profile's time-entry list or the embedded empty fallback. |
+| `light_list_find_or_create_profile_entries` | `0x004AED80` | high | Finds a named profile or inserts one with an empty time-entry list. |
+| `light_list_parse_metadata_table` | `0x004AEF40` | high | Rebuilds numeric map aliases and named time profiles from the Light metadata table. |
+| `light_list_handle_metadata_event` | `0x004AF370` | high | Parses a completed Light table, marks it loaded, or retries on timer event 1. |
+| `light_list_scalar_deleting_dtor` | `0x004AF400` | high | Runs the LightList destructor and conditionally frees the complete object. |
+| `light_map_alias_map_dtor_thunk` | `0x004AF430` | high | Compiler cleanup thunk for the numeric map-ID alias map. |
+| `light_profile_map_dtor_thunk` | `0x004AF450` | high | Compiler cleanup thunk for the named light-profile map. |
+| `light_profile_record_dtor_thunk` | `0x004AF470` | high | Compiler cleanup thunk for one named light-profile record. |
+| `light_profile_record_dtor` | `0x004AF490` | high | Destroys a profile's time-entry list and owned name string. |
+| `light_map_alias_entry_dtor` | `0x004AF520` | high | Destroys the profile-name string stored beside a numeric map ID. |
+| `light_map_alias_map_ctor` | `0x004AF580` | high | Constructs the ordered map from numeric map IDs to profile-name strings. |
+| `light_map_alias_map_dtor` | `0x004AF5B0` | high | Clears the numeric alias tree and frees its sentinel. |
+| `light_map_alias_map_clear` | `0x004AF650` | high | Destroys every numeric alias node and resets the tree. |
+| `light_map_alias_map_find` | `0x004AF6B0` | high | Finds an exact numeric map ID or returns the end sentinel. |
+| `light_profile_map_ctor` | `0x004AF750` | high | Constructs the ordered map from profile names to time-entry lists. |
+| `light_profile_map_dtor` | `0x004AF780` | high | Clears the named profile tree and frees its sentinel. |
+| `light_profile_map_clear` | `0x004AF820` | high | Destroys every named profile node and resets the tree. |
+| `light_profile_map_find` | `0x004AF880` | high | Finds an exact profile name in the mutable named-profile map. |
+| `light_profile_map_find_const` | `0x004AF960` | high | Finds an exact profile name in the const-style named-profile map. |
+| `light_time_entry_list_ctor` | `0x004AFA40` | high | Allocates and links an empty sentinel for a profile's time-entry list. |
+| `light_time_entry_list_dtor` | `0x004AFAA0` | high | Clears a profile time-entry list and frees its sentinel. |
+| `light_map_alias_map_destroy_subtree` | `0x004AFB10` | high | Recursively destroys numeric alias nodes and their owned strings. |
+| `light_map_alias_map_deallocate_sentinel` | `0x004AFB80` | high | Frees the numeric alias map's sentinel node. |
+| `light_profile_map_destroy_subtree` | `0x004AFBB0` | high | Recursively destroys named profile nodes and their entry lists. |
+| `light_profile_map_clear_range` | `0x004AFC20` | high | Erases the complete named-profile tree range. |
+| `light_profile_map_deallocate_sentinel` | `0x004AFC80` | high | Frees the named profile map's sentinel node. |
+| `light_metadata_container_deallocate` | `0x004AFCB0` | high | Frees a raw storage block used by LightList containers. |
+| `light_map_alias_map_erase_range` | `0x004AFCE0` | high | Erases a numeric alias-map iterator range. |
+| `light_map_alias_map_lower_bound` | `0x004AFDC0` | high | Returns the first numeric alias node not less than the requested map ID. |
+| `light_map_alias_map_tree_init` | `0x004AFE30` | high | Allocates and initializes the numeric alias map's sentinel. |
+| `light_profile_map_erase_range` | `0x004AFEB0` | high | Erases a named profile-map iterator range. |
+| `light_profile_map_lower_bound` | `0x004AFF90` | high | Returns the first profile node whose name is not less than the request. |
 | `lobject_ctor` | `0x004B4480` | high | Installs the LObject vtable and writes live-cookie bytes 62 6F 73 79 ("bosy") at +0x04. |
 | `lobject_dtor` | `0x004B44B0` | high | Restores the LObject vtable and clears the live cookie at +0x04 to zero. |
 | `lobject_is_live` | `0x004B4550` | high | Returns true only when LObject +0x04 equals 0x79736F62; event_dispatch_immediate uses it before dispatch. |

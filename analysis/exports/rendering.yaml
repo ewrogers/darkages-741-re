@@ -2243,6 +2243,10 @@ functions:
     name: light_list_ctor
     confidence: high
     evidence: Constructs the RTTI LightList singleton and starts loading its cached Light metadata.
+  - address: "0x004AE980"
+    name: light_list_dtor
+    confidence: high
+    evidence: "Destroys LightList profile maps and time-entry lists, unregisters it, and destroys TimerHandler."
   - address: "0x004AEA80"
     name: light_list_load_metadata
     confidence: high
@@ -2251,6 +2255,138 @@ functions:
     name: light_list_find_map_time_entry
     confidence: high
     evidence: Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted.
+  - address: "0x004AEC30"
+    name: light_list_is_metadata_loaded
+    confidence: high
+    evidence: "Returns the byte set after Light metadata has completed loading."
+  - address: "0x004AEC50"
+    name: light_list_find_profile_entries
+    confidence: high
+    evidence: "Returns a named profile's time-entry list or the embedded empty fallback."
+  - address: "0x004AED80"
+    name: light_list_find_or_create_profile_entries
+    confidence: high
+    evidence: "Finds a named profile or inserts one with an empty time-entry list."
+  - address: "0x004AEF40"
+    name: light_list_parse_metadata_table
+    confidence: high
+    evidence: "Rebuilds numeric map aliases and named time profiles from the Light metadata table."
+  - address: "0x004AF370"
+    name: light_list_handle_metadata_event
+    confidence: high
+    evidence: "Parses a completed Light table, marks it loaded, or retries on timer event 1."
+  - address: "0x004AF400"
+    name: light_list_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the LightList destructor and conditionally frees the complete object."
+  - address: "0x004AF430"
+    name: light_map_alias_map_dtor_thunk
+    confidence: high
+    evidence: "Compiler cleanup thunk for the numeric map-ID alias map."
+  - address: "0x004AF450"
+    name: light_profile_map_dtor_thunk
+    confidence: high
+    evidence: "Compiler cleanup thunk for the named light-profile map."
+  - address: "0x004AF470"
+    name: light_profile_record_dtor_thunk
+    confidence: high
+    evidence: "Compiler cleanup thunk for one named light-profile record."
+  - address: "0x004AF490"
+    name: light_profile_record_dtor
+    confidence: high
+    evidence: "Destroys a profile's time-entry list and owned name string."
+  - address: "0x004AF520"
+    name: light_map_alias_entry_dtor
+    confidence: high
+    evidence: "Destroys the profile-name string stored beside a numeric map ID."
+  - address: "0x004AF580"
+    name: light_map_alias_map_ctor
+    confidence: high
+    evidence: "Constructs the ordered map from numeric map IDs to profile-name strings."
+  - address: "0x004AF5B0"
+    name: light_map_alias_map_dtor
+    confidence: high
+    evidence: "Clears the numeric alias tree and frees its sentinel."
+  - address: "0x004AF650"
+    name: light_map_alias_map_clear
+    confidence: high
+    evidence: "Destroys every numeric alias node and resets the tree."
+  - address: "0x004AF6B0"
+    name: light_map_alias_map_find
+    confidence: high
+    evidence: "Finds an exact numeric map ID or returns the end sentinel."
+  - address: "0x004AF750"
+    name: light_profile_map_ctor
+    confidence: high
+    evidence: "Constructs the ordered map from profile names to time-entry lists."
+  - address: "0x004AF780"
+    name: light_profile_map_dtor
+    confidence: high
+    evidence: "Clears the named profile tree and frees its sentinel."
+  - address: "0x004AF820"
+    name: light_profile_map_clear
+    confidence: high
+    evidence: "Destroys every named profile node and resets the tree."
+  - address: "0x004AF880"
+    name: light_profile_map_find
+    confidence: high
+    evidence: "Finds an exact profile name in the mutable named-profile map."
+  - address: "0x004AF960"
+    name: light_profile_map_find_const
+    confidence: high
+    evidence: "Finds an exact profile name in the const-style named-profile map."
+  - address: "0x004AFA40"
+    name: light_time_entry_list_ctor
+    confidence: high
+    evidence: "Allocates and links an empty sentinel for a profile's time-entry list."
+  - address: "0x004AFAA0"
+    name: light_time_entry_list_dtor
+    confidence: high
+    evidence: "Clears a profile time-entry list and frees its sentinel."
+  - address: "0x004AFB10"
+    name: light_map_alias_map_destroy_subtree
+    confidence: high
+    evidence: "Recursively destroys numeric alias nodes and their owned strings."
+  - address: "0x004AFB80"
+    name: light_map_alias_map_deallocate_sentinel
+    confidence: high
+    evidence: "Frees the numeric alias map's sentinel node."
+  - address: "0x004AFBB0"
+    name: light_profile_map_destroy_subtree
+    confidence: high
+    evidence: "Recursively destroys named profile nodes and their entry lists."
+  - address: "0x004AFC20"
+    name: light_profile_map_clear_range
+    confidence: high
+    evidence: "Erases the complete named-profile tree range."
+  - address: "0x004AFC80"
+    name: light_profile_map_deallocate_sentinel
+    confidence: high
+    evidence: "Frees the named profile map's sentinel node."
+  - address: "0x004AFCB0"
+    name: light_metadata_container_deallocate
+    confidence: high
+    evidence: "Frees a raw storage block used by LightList containers."
+  - address: "0x004AFCE0"
+    name: light_map_alias_map_erase_range
+    confidence: high
+    evidence: "Erases a numeric alias-map iterator range."
+  - address: "0x004AFDC0"
+    name: light_map_alias_map_lower_bound
+    confidence: high
+    evidence: "Returns the first numeric alias node not less than the requested map ID."
+  - address: "0x004AFE30"
+    name: light_map_alias_map_tree_init
+    confidence: high
+    evidence: "Allocates and initializes the numeric alias map's sentinel."
+  - address: "0x004AFEB0"
+    name: light_profile_map_erase_range
+    confidence: high
+    evidence: "Erases a named profile-map iterator range."
+  - address: "0x004AFF90"
+    name: light_profile_map_lower_bound
+    confidence: high
+    evidence: "Returns the first profile node whose name is not less than the request."
   - address: "0x004C5270"
     name: render_map_background_images
     confidence: high
