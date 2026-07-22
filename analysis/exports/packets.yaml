@@ -803,10 +803,26 @@ functions:
     name: ui_create_user_dialog_ctor
     confidence: high
     evidence: "Constructs RTTI class CreateUserDialogPane from _ncreate.txt, attaches appearance controls and account fields, and registers the pane for events and timers."
+  - address: "0x0043D080"
+    name: ui_create_user_dialog_dtor
+    confidence: high
+    evidence: "Destroys CreateUserDialogPane preview resources, bottom-button state, local appearance storage, and DialogPane."
   - address: "0x0043D190"
     name: ui_create_user_draw
     confidence: high
     evidence: "Draws the creation preview using gender at +0x674, hair style at +0x676, and hair-color palette index at +0x678."
+  - address: "0x0043D5E0"
+    name: ui_create_user_find_palette_option_index
+    confidence: high
+    evidence: "Finds the current appearance palette value in the 14-entry swatch table used by the selection marker."
+  - address: "0x0043D620"
+    name: ui_create_user_update_submit_enabled
+    confidence: high
+    evidence: "Enables submit only when required fields are nonempty and the optional paired fields are both empty or both populated."
+  - address: "0x0043D7B0"
+    name: ui_create_user_advance_preview_frame
+    confidence: high
+    evidence: "Advances the character preview through five frames and invalidates its rectangle."
   - address: "0x0043D820"
     name: net_send_new_user_request
     confidence: high
@@ -819,6 +835,18 @@ functions:
     name: net_send_new_user_appearance
     confidence: high
     evidence: "Accepted SNewUserCheck flow sends opcode 0x04 with hair style, one-based gender, and hair-color palette index."
+  - address: "0x0043E9D0"
+    name: ui_no_nexon_club_id_warning_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI NoNexonClubIDWarningPane and stores its owner plus confirm and cancel timer IDs."
+  - address: "0x0043EA30"
+    name: ui_no_nexon_club_id_warning_confirm
+    confidence: high
+    evidence: "Schedules the stored confirmation timer on the owning create-user pane after 200 ms."
+  - address: "0x0043EA80"
+    name: ui_no_nexon_club_id_warning_cancel
+    confidence: high
+    evidence: "Schedules the stored cancellation timer on the owning create-user pane after 200 ms when configured."
   - address: "0x0043EAD0"
     name: ui_create_user_handle_action
     confidence: high
@@ -827,6 +855,14 @@ functions:
     name: ui_create_user_timer
     confidence: high
     evidence: "CreateUserDialogPane TimerHandler callback; timer 3 sends CNewUser after the form action schedules a 200 ms delay."
+  - address: "0x0043FBE0"
+    name: ui_create_user_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for CreateUserDialogPane."
+  - address: "0x0043FDA0"
+    name: ui_create_user_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler scalar-deleting destructor thunk for CreateUserDialogPane."
   - address: "0x00448000"
     name: ui_alert_pane_ctor
     confidence: high

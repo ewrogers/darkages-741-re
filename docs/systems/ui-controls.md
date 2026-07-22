@@ -10,6 +10,7 @@ Exact RTTI confirms this first reconstructed hierarchy:
 Pane
   +-- ControlPane
         +-- ProgressBarControlPane
+        +-- ProgressBarControlPaneEx
         +-- ButtonControlPane
         |     +-- TextButtonControlPane
         |     +-- TextButtonExControlPane
@@ -18,6 +19,9 @@ Pane
         +-- RadioGroupControlPane
         +-- ScrollableControlPane
         +-- TextEditControlPane
+        |     +-- StaticTextControlPane
+        |     +-- StaticTextControlPane2
+        +-- ImageControlPane
 ```
 
 `ControlPane` keeps these common states separate:
@@ -50,6 +54,16 @@ The extended text button selects `buttonex.epf` or `btn220.epf` from its width a
 
 `ScrollableControlPane` owns another pane. Rectangle changes are converted to local coordinates and forwarded to that child. Screen registration attaches the child, unregistration detaches it, and destruction queues the child through the normal deferred-deletion owner.
 
-`TextEditControlPane` builds a child text canvas, applies optional scrollbar margins and text flags, inserts initial text, and connects to the shared text-input service when it exists.
+Its scroll API selects one of the child pane's two scrollbars. Maximum values are clamped to `0..30000`, positions remain within that maximum, and absent scrollbars read as zero. Pointer, keyboard, network, and timer events are forwarded to the owned child.
+
+## Text and image controls
+
+`TextEditControlPane` builds a child text canvas, applies optional scrollbar margins and text flags, inserts initial text, and connects to the shared text-input service when it exists. It exposes separate byte and line limits. Applying a byte limit immediately uses the canvas's DBCS-safe truncation path.
+
+Focus enters editing mode, resets caret state, and can select all text. Unfocus leaves editing mode and collapses the selection to the caret. Masked-input mode is enabled explicitly for sensitive form fields.
+
+The two static-text variants reuse the text canvas without normal editing. `StaticTextControlPane` can optionally forward input events, while `StaticTextControlPane2` keeps editing disabled.
+
+`ProgressBarControlPaneEx` draws a bordered proportional vertical fill from current and maximum values. `ImageControlPane` retains one pixmap, invalidates itself when that image changes, and blits it during the content draw.
 
 The durable symbols and evidence are in [`ui-controls.yaml`](../../analysis/exports/ui-controls.yaml).

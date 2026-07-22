@@ -259,10 +259,22 @@ functions:
     name: ui_clock_pane_timer_scalar_deleting_dtor_thunk
     confidence: high
     evidence: "Adjusts a TimerHandler this pointer back to ClockPane and enters its scalar deleting destructor."
+  - address: "0x0043FC10"
+    name: ui_dialog_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for exact RTTI DialogPane."
+  - address: "0x0043FDB0"
+    name: ui_dialog_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler scalar-deleting destructor thunk for DialogPane."
   - address: "0x00445260"
     name: ui_dialog_pane_ctor
     confidence: high
     evidence: "Constructs DialogPane over Pane; initializes default, cancel, focus, pressed, hover, and pointer-target control indexes to -1, with no-hit zones set to 7 where required."
+  - address: "0x004453A0"
+    name: ui_dialog_pane_dtor
+    confidence: high
+    evidence: "Destroys attached controls in reverse order, destroys the local control list, and then destroys Pane."
   - address: "0x00445670"
     name: ui_dialog_add_control
     confidence: high
@@ -719,6 +731,10 @@ functions:
     name: ui_pane_ctor
     confidence: high
     evidence: "Constructs Pane over Canvas and a secondary TimerHandler at +0x11C; initializes visible true at +0x130."
+  - address: "0x00549600"
+    name: ui_pane_dtor
+    confidence: high
+    evidence: "Destroys Pane-owned helper objects, its TimerHandler secondary base, and the Canvas base."
   - address: "0x00549BC0"
     name: ui_pane_accepts_input
     confidence: high

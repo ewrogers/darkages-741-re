@@ -247,10 +247,42 @@ functions:
     name: ui_scrollable_control_dtor
     confidence: high
     evidence: "Queues the owned child pane for destruction and destroys ControlPane."
+  - address: "0x0043A8D0"
+    name: ui_scrollable_control_set_scroll_max
+    confidence: high
+    evidence: "Selects a child scrollbar and clamps its maximum value to 0..30000."
+  - address: "0x0043A900"
+    name: ui_scrollable_control_set_scroll_position
+    confidence: high
+    evidence: "Selects a child scrollbar and updates its position within the configured maximum."
+  - address: "0x0043A930"
+    name: ui_scrollable_control_get_scroll_max
+    confidence: high
+    evidence: "Returns the selected child scrollbar maximum or zero when absent."
+  - address: "0x0043A950"
+    name: ui_scrollable_control_get_scroll_position
+    confidence: high
+    evidence: "Returns the selected child scrollbar position or zero when absent."
   - address: "0x0043A970"
     name: ui_scrollable_control_set_rect
     confidence: high
     evidence: "Updates the control rectangle and forwards the local rectangle to the child."
+  - address: "0x0043A9B0"
+    name: ui_scrollable_control_handle_pointer_event
+    confidence: high
+    evidence: "Forwards the primary-vtable +0x48 pointer event to the owned child pane."
+  - address: "0x0043A9E0"
+    name: ui_scrollable_control_handle_keyboard_event
+    confidence: high
+    evidence: "Forwards the primary-vtable +0x4C keyboard event to the owned child pane."
+  - address: "0x0043AA10"
+    name: ui_scrollable_control_handle_network_event
+    confidence: high
+    evidence: "Forwards the primary-vtable +0x50 network event and normalizes its consumed result."
+  - address: "0x0043AA50"
+    name: ui_scrollable_control_timer_callback
+    confidence: high
+    evidence: "Forwards TimerHandler callbacks to the owned child pane's TimerHandler subobject."
   - address: "0x0043AA90"
     name: ui_scrollable_control_enable
     confidence: high
@@ -259,6 +291,14 @@ functions:
     name: ui_scrollable_control_disable
     confidence: high
     evidence: "Disables ScrollableControlPane through ControlPane."
+  - address: "0x0043AAD0"
+    name: ui_scrollable_control_focus
+    confidence: high
+    evidence: "Sets the scrollable control focus state and invalidates its rectangle."
+  - address: "0x0043AB10"
+    name: ui_scrollable_control_unfocus
+    confidence: high
+    evidence: "Clears the scrollable control focus state and invalidates its rectangle."
   - address: "0x0043AB50"
     name: ui_scrollable_control_register_screen
     confidence: high
@@ -279,3 +319,251 @@ functions:
     name: ui_text_edit_control_ctor
     confidence: high
     evidence: "Constructs TextEditControlPane, its text canvas, margins, initial text, and edit state."
+  - address: "0x0043B0E0"
+    name: ui_text_edit_control_dtor
+    confidence: high
+    evidence: "Destroys the child text canvas and ControlPane base."
+  - address: "0x0043B190"
+    name: ui_text_edit_control_enable_masked_input
+    confidence: high
+    evidence: "Enables masked input used by password, birth-date, and other sensitive fields."
+  - address: "0x0043B1C0"
+    name: ui_text_edit_control_set_text_flag
+    confidence: high
+    evidence: "Sets, clears, or queries one child text-canvas option bit."
+  - address: "0x0043B1F0"
+    name: ui_text_edit_control_copy_text
+    confidence: high
+    evidence: "Copies child text with DBCS-aware length clamping and a local terminator."
+  - address: "0x0043B270"
+    name: ui_text_edit_control_is_empty
+    confidence: high
+    evidence: "Reports whether the child text canvas contains zero bytes."
+  - address: "0x0043B2A0"
+    name: ui_text_edit_control_clear_text
+    confidence: high
+    evidence: "Removes the child canvas's full current text range."
+  - address: "0x0043B2D0"
+    name: ui_text_edit_control_set_text
+    confidence: high
+    evidence: "Clears the child canvas and inserts supplied formatted text."
+  - address: "0x0043B300"
+    name: ui_text_edit_control_register_screen
+    confidence: high
+    evidence: "Registers TextEditControlPane and attaches its child text canvas."
+  - address: "0x0043B3C0"
+    name: ui_text_edit_control_unregister_screen
+    confidence: high
+    evidence: "Detaches the child text canvas and unregisters TextEditControlPane."
+  - address: "0x0043B430"
+    name: ui_text_edit_control_handle_pointer_event
+    confidence: high
+    evidence: "Forwards primary-vtable +0x48 pointer input to the child text canvas."
+  - address: "0x0043B460"
+    name: ui_text_edit_control_handle_keyboard_event
+    confidence: high
+    evidence: "Forwards primary-vtable +0x4C keyboard input to the child text canvas."
+  - address: "0x0043B490"
+    name: ui_text_edit_control_handle_application_event
+    confidence: high
+    evidence: "Forwards primary-vtable +0x54 application or IME input to the child text canvas."
+  - address: "0x0043B4C0"
+    name: ui_text_edit_control_unfocus
+    confidence: high
+    evidence: "Leaves editing mode and collapses the child selection to the caret."
+  - address: "0x0043B550"
+    name: ui_text_edit_control_focus
+    confidence: high
+    evidence: "Enters editing mode, resets caret state, and optionally selects all text."
+  - address: "0x0043B610"
+    name: ui_text_edit_control_set_max_bytes
+    confidence: high
+    evidence: "Sets and immediately enforces the child text byte limit."
+  - address: "0x0043B640"
+    name: ui_text_edit_control_set_max_lines
+    confidence: high
+    evidence: "Sets and immediately enforces the child text line limit."
+  - address: "0x0043B670"
+    name: ui_text_edit_control_draw_content
+    confidence: high
+    evidence: "Draws the text-edit border and composites the child text canvas."
+  - address: "0x0043B750"
+    name: ui_static_text_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI StaticTextControlPane and its noneditable child canvas."
+  - address: "0x0043B9E0"
+    name: ui_static_text_control_dtor
+    confidence: high
+    evidence: "Destroys StaticTextControlPane and its child canvas."
+  - address: "0x0043BA90"
+    name: ui_static_text_control_draw_content
+    confidence: high
+    evidence: "Composites the StaticText child canvas into the control."
+  - address: "0x0043BB00"
+    name: ui_static_text_control_handle_pointer_event
+    confidence: high
+    evidence: "Forwards pointer input only when the interaction flag is enabled."
+  - address: "0x0043BB30"
+    name: ui_static_text_control_handle_keyboard_event
+    confidence: high
+    evidence: "Forwards keyboard input only when the interaction flag is enabled."
+  - address: "0x0043BB60"
+    name: ui_static_text_control_handle_application_event
+    confidence: high
+    evidence: "Forwards application or IME input only when the interaction flag is enabled."
+  - address: "0x0043BB90"
+    name: ui_static_text_control2_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI StaticTextControlPane2 as a noneditable text control."
+  - address: "0x0043BC40"
+    name: ui_static_text_control2_dtor
+    confidence: high
+    evidence: "Destroys StaticTextControlPane2 through TextEditControlPane."
+  - address: "0x0043BC90"
+    name: ui_progress_bar_ex_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ProgressBarControlPaneEx with fill and palette fields."
+  - address: "0x0043BD00"
+    name: ui_progress_bar_ex_control_dtor
+    confidence: high
+    evidence: "Destroys ProgressBarControlPaneEx through ControlPane."
+  - address: "0x0043BD30"
+    name: ui_progress_bar_ex_control_draw_content
+    confidence: high
+    evidence: "Draws a bordered proportional vertical fill from current and maximum values."
+  - address: "0x0043BE20"
+    name: ui_image_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ImageControlPane and copies its initial pixmap."
+  - address: "0x0043BEB0"
+    name: ui_image_control_dtor
+    confidence: high
+    evidence: "Destroys ImageControlPane through ControlPane."
+  - address: "0x0043BEE0"
+    name: ui_image_control_set_image
+    confidence: high
+    evidence: "Copies or clears the retained pixmap and invalidates the control."
+  - address: "0x0043BF30"
+    name: ui_image_control_draw_content
+    confidence: high
+    evidence: "Draws the ImageControlPane surface and retained pixmap."
+  - address: "0x0043BF80"
+    name: ui_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for ControlPane."
+  - address: "0x0043BFB0"
+    name: ui_progress_bar_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for ProgressBarControlPane."
+  - address: "0x0043BFE0"
+    name: ui_button_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for ButtonControlPane."
+  - address: "0x0043C010"
+    name: ui_text_button_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for TextButtonControlPane."
+  - address: "0x0043C040"
+    name: ui_text_button_ex_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for TextButtonExControlPane."
+  - address: "0x0043C070"
+    name: ui_image_button_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for ImageButtonControlPane."
+  - address: "0x0043C0A0"
+    name: ui_image_button_ex_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for ImageButtonExControlPane."
+  - address: "0x0043C0D0"
+    name: ui_radio_group_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for RadioGroupControlPane."
+  - address: "0x0043C100"
+    name: ui_scrollable_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for ScrollableControlPane."
+  - address: "0x0043C130"
+    name: ui_text_edit_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for TextEditControlPane."
+  - address: "0x0043C160"
+    name: ui_static_text_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for StaticTextControlPane."
+  - address: "0x0043C190"
+    name: ui_static_text_control2_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for StaticTextControlPane2."
+  - address: "0x0043C1C0"
+    name: ui_progress_bar_ex_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for ProgressBarControlPaneEx."
+  - address: "0x0043C1F0"
+    name: ui_image_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for ImageControlPane."
+  - address: "0x0043C220"
+    name: ui_has_text_input_service
+    confidence: high
+    evidence: "Reports whether the shared text-input service exists."
+  - address: "0x0043C240"
+    name: ui_get_text_input_service
+    confidence: high
+    evidence: "Returns the shared text-input service pointer."
+  - address: "0x0043C250"
+    name: ui_image_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for ImageControlPane."
+  - address: "0x0043C260"
+    name: ui_progress_bar_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for ProgressBarControlPane."
+  - address: "0x0043C270"
+    name: ui_scrollable_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for ScrollableControlPane."
+  - address: "0x0043C280"
+    name: ui_text_button_ex_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for TextButtonExControlPane."
+  - address: "0x0043C290"
+    name: ui_progress_bar_ex_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for ProgressBarControlPaneEx."
+  - address: "0x0043C2A0"
+    name: ui_button_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for ButtonControlPane."
+  - address: "0x0043C2B0"
+    name: ui_static_text_control2_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for StaticTextControlPane2."
+  - address: "0x0043C2C0"
+    name: ui_static_text_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for StaticTextControlPane."
+  - address: "0x0043C2D0"
+    name: ui_text_edit_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for TextEditControlPane."
+  - address: "0x0043C2E0"
+    name: ui_image_button_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for ImageButtonControlPane."
+  - address: "0x0043C2F0"
+    name: ui_image_button_ex_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for ImageButtonExControlPane."
+  - address: "0x0043C300"
+    name: ui_radio_group_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for RadioGroupControlPane."
+  - address: "0x0043C310"
+    name: ui_text_button_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for TextButtonControlPane."
+  - address: "0x0043C320"
+    name: ui_control_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler deleting-destructor thunk for ControlPane."

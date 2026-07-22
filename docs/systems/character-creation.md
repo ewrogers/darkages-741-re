@@ -23,6 +23,8 @@ Opcode `0x02` is state-dependent on this connection. `MainMenuPane` reads it as 
 
 The form contains separate name, password, and password-confirmation controls. The confirmation is checked locally and is not sent. A mismatch clears both password controls, focuses the first password control, and displays a localized client message.
 
+The submit button is enabled only when the required name and password fields are nonempty. Distribution-specific paired account fields must either both be empty or both contain text. Password and other sensitive fields explicitly enable the text control's masked-input mode.
+
 The active USA distribution does not show an email field. It sends the literal text `none` in the third length-prefixed field. Dormant [distribution branches](../application/distribution-markers.md) can use this field for an email address or NexonClub account text. Japan mode 13 also appends a two-byte ISP selector to the request.
 
 After local validation, the pane waits 200 milliseconds and sends [`CNewUser`](../network/client/002-0x02-new-user.md):
@@ -74,6 +76,8 @@ packet CNewUserAppearance {
 
 Male styles range from `1` through `18`; female styles range from `1` through `17`. The preview starts with a time-based random gender and style, so the visible initial selection is not necessarily style `1`.
 
+While the pane is open, its preview timer advances a five-frame animation and invalidates only the preview rectangle.
+
 The observed body `04 09 01 01` therefore means hair style `9`, male, hair color `1`. The client passes the first value directly to its character renderer as the hair-style ID.
 
 Hair color is a palette index from `0` through `13`. The 2-by-7 swatch grid presents those indexes in this order:
@@ -84,6 +88,8 @@ Hair color is a palette index from `0` through `13`. The 2-by-7 swatch grid pres
 ```
 
 This confirms that the wire field is a palette index rather than the swatch position. The creation code alone does not yet prove that every item-dye interface uses the same table.
+
+One dormant NexonClub branch displays exact RTTI `NoNexonClubIDWarningPane` when the optional account identifier is missing. Its confirm and cancel hooks schedule configured owner timers after 200 ms. In the observed construction, confirm selects the normal delayed creation path and cancel has no timer.
 
 ## Completion result
 

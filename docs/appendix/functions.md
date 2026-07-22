@@ -783,21 +783,105 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_radio_group_control_draw_option` | `0x0043A3C0` | high | Draws one indicator and label using enabled, hover, and selected palette states. |
 | `ui_scrollable_control_ctor` | `0x0043A790` | high | Constructs exact RTTI ScrollableControlPane around an owned child pane. |
 | `ui_scrollable_control_dtor` | `0x0043A840` | high | Queues the owned child pane for destruction and destroys ControlPane. |
+| `ui_scrollable_control_set_scroll_max` | `0x0043A8D0` | high | Selects a child scrollbar and clamps its maximum value to 0..30000. |
+| `ui_scrollable_control_set_scroll_position` | `0x0043A900` | high | Selects a child scrollbar and updates its position within the configured maximum. |
+| `ui_scrollable_control_get_scroll_max` | `0x0043A930` | high | Returns the selected child scrollbar maximum or zero when absent. |
+| `ui_scrollable_control_get_scroll_position` | `0x0043A950` | high | Returns the selected child scrollbar position or zero when absent. |
 | `ui_scrollable_control_set_rect` | `0x0043A970` | high | Updates the control rectangle and forwards the local rectangle to the child. |
+| `ui_scrollable_control_handle_pointer_event` | `0x0043A9B0` | high | Forwards the primary-vtable +0x48 pointer event to the owned child pane. |
+| `ui_scrollable_control_handle_keyboard_event` | `0x0043A9E0` | high | Forwards the primary-vtable +0x4C keyboard event to the owned child pane. |
+| `ui_scrollable_control_handle_network_event` | `0x0043AA10` | high | Forwards the primary-vtable +0x50 network event and normalizes its consumed result. |
+| `ui_scrollable_control_timer_callback` | `0x0043AA50` | high | Forwards TimerHandler callbacks to the owned child pane's TimerHandler subobject. |
 | `ui_scrollable_control_enable` | `0x0043AA90` | high | Enables ScrollableControlPane through ControlPane. |
 | `ui_scrollable_control_disable` | `0x0043AAB0` | high | Disables ScrollableControlPane through ControlPane. |
+| `ui_scrollable_control_focus` | `0x0043AAD0` | high | Sets the scrollable control focus state and invalidates its rectangle. |
+| `ui_scrollable_control_unfocus` | `0x0043AB10` | high | Clears the scrollable control focus state and invalidates its rectangle. |
 | `ui_scrollable_control_register_screen` | `0x0043AB50` | high | Registers the control, updates the child's local rectangle, and attaches the child. |
 | `ui_scrollable_control_unregister_screen` | `0x0043ACB0` | high | Detaches the owned child pane and unregisters ScrollableControlPane. |
 | `ui_scrollable_control_draw` | `0x0043ACE0` | high | Draws the scrollable surface and uses palette index 31 for its active state. |
 | `ui_text_edit_control_default_ctor` | `0x0043AD10` | high | Constructs an empty exact RTTI TextEditControlPane and captures the shared text-input service. |
 | `ui_text_edit_control_ctor` | `0x0043ADE0` | high | Constructs TextEditControlPane, its text canvas, margins, initial text, and edit state. |
+| `ui_text_edit_control_dtor` | `0x0043B0E0` | high | Destroys the child text canvas and ControlPane base. |
+| `ui_text_edit_control_enable_masked_input` | `0x0043B190` | high | Enables masked input used by password, birth-date, and other sensitive fields. |
+| `ui_text_edit_control_set_text_flag` | `0x0043B1C0` | high | Sets, clears, or queries one child text-canvas option bit. |
+| `ui_text_edit_control_copy_text` | `0x0043B1F0` | high | Copies child text with DBCS-aware length clamping and a local terminator. |
+| `ui_text_edit_control_is_empty` | `0x0043B270` | high | Reports whether the child text canvas contains zero bytes. |
+| `ui_text_edit_control_clear_text` | `0x0043B2A0` | high | Removes the child canvas's full current text range. |
+| `ui_text_edit_control_set_text` | `0x0043B2D0` | high | Clears the child canvas and inserts supplied formatted text. |
+| `ui_text_edit_control_register_screen` | `0x0043B300` | high | Registers TextEditControlPane and attaches its child text canvas. |
+| `ui_text_edit_control_unregister_screen` | `0x0043B3C0` | high | Detaches the child text canvas and unregisters TextEditControlPane. |
+| `ui_text_edit_control_handle_pointer_event` | `0x0043B430` | high | Forwards primary-vtable +0x48 pointer input to the child text canvas. |
+| `ui_text_edit_control_handle_keyboard_event` | `0x0043B460` | high | Forwards primary-vtable +0x4C keyboard input to the child text canvas. |
+| `ui_text_edit_control_handle_application_event` | `0x0043B490` | high | Forwards primary-vtable +0x54 application or IME input to the child text canvas. |
+| `ui_text_edit_control_unfocus` | `0x0043B4C0` | high | Leaves editing mode and collapses the child selection to the caret. |
+| `ui_text_edit_control_focus` | `0x0043B550` | high | Enters editing mode, resets caret state, and optionally selects all text. |
+| `ui_text_edit_control_set_max_bytes` | `0x0043B610` | high | Sets and immediately enforces the child text byte limit. |
+| `ui_text_edit_control_set_max_lines` | `0x0043B640` | high | Sets and immediately enforces the child text line limit. |
+| `ui_text_edit_control_draw_content` | `0x0043B670` | high | Draws the text-edit border and composites the child text canvas. |
+| `ui_static_text_control_ctor` | `0x0043B750` | high | Constructs exact RTTI StaticTextControlPane and its noneditable child canvas. |
+| `ui_static_text_control_dtor` | `0x0043B9E0` | high | Destroys StaticTextControlPane and its child canvas. |
+| `ui_static_text_control_draw_content` | `0x0043BA90` | high | Composites the StaticText child canvas into the control. |
+| `ui_static_text_control_handle_pointer_event` | `0x0043BB00` | high | Forwards pointer input only when the interaction flag is enabled. |
+| `ui_static_text_control_handle_keyboard_event` | `0x0043BB30` | high | Forwards keyboard input only when the interaction flag is enabled. |
+| `ui_static_text_control_handle_application_event` | `0x0043BB60` | high | Forwards application or IME input only when the interaction flag is enabled. |
+| `ui_static_text_control2_ctor` | `0x0043BB90` | high | Constructs exact RTTI StaticTextControlPane2 as a noneditable text control. |
+| `ui_static_text_control2_dtor` | `0x0043BC40` | high | Destroys StaticTextControlPane2 through TextEditControlPane. |
+| `ui_progress_bar_ex_control_ctor` | `0x0043BC90` | high | Constructs exact RTTI ProgressBarControlPaneEx with fill and palette fields. |
+| `ui_progress_bar_ex_control_dtor` | `0x0043BD00` | high | Destroys ProgressBarControlPaneEx through ControlPane. |
+| `ui_progress_bar_ex_control_draw_content` | `0x0043BD30` | high | Draws a bordered proportional vertical fill from current and maximum values. |
+| `ui_image_control_ctor` | `0x0043BE20` | high | Constructs exact RTTI ImageControlPane and copies its initial pixmap. |
+| `ui_image_control_dtor` | `0x0043BEB0` | high | Destroys ImageControlPane through ControlPane. |
+| `ui_image_control_set_image` | `0x0043BEE0` | high | Copies or clears the retained pixmap and invalidates the control. |
+| `ui_image_control_draw_content` | `0x0043BF30` | high | Draws the ImageControlPane surface and retained pixmap. |
+| `ui_control_scalar_deleting_dtor` | `0x0043BF80` | high | Compiler scalar-deleting destructor for ControlPane. |
+| `ui_progress_bar_control_scalar_deleting_dtor` | `0x0043BFB0` | high | Compiler scalar-deleting destructor for ProgressBarControlPane. |
+| `ui_button_control_scalar_deleting_dtor` | `0x0043BFE0` | high | Compiler scalar-deleting destructor for ButtonControlPane. |
+| `ui_text_button_control_scalar_deleting_dtor` | `0x0043C010` | high | Compiler scalar-deleting destructor for TextButtonControlPane. |
+| `ui_text_button_ex_control_scalar_deleting_dtor` | `0x0043C040` | high | Compiler scalar-deleting destructor for TextButtonExControlPane. |
+| `ui_image_button_control_scalar_deleting_dtor` | `0x0043C070` | high | Compiler scalar-deleting destructor for ImageButtonControlPane. |
+| `ui_image_button_ex_control_scalar_deleting_dtor` | `0x0043C0A0` | high | Compiler scalar-deleting destructor for ImageButtonExControlPane. |
+| `ui_radio_group_control_scalar_deleting_dtor` | `0x0043C0D0` | high | Compiler scalar-deleting destructor for RadioGroupControlPane. |
+| `ui_scrollable_control_scalar_deleting_dtor` | `0x0043C100` | high | Compiler scalar-deleting destructor for ScrollableControlPane. |
+| `ui_text_edit_control_scalar_deleting_dtor` | `0x0043C130` | high | Compiler scalar-deleting destructor for TextEditControlPane. |
+| `ui_static_text_control_scalar_deleting_dtor` | `0x0043C160` | high | Compiler scalar-deleting destructor for StaticTextControlPane. |
+| `ui_static_text_control2_scalar_deleting_dtor` | `0x0043C190` | high | Compiler scalar-deleting destructor for StaticTextControlPane2. |
+| `ui_progress_bar_ex_control_scalar_deleting_dtor` | `0x0043C1C0` | high | Compiler scalar-deleting destructor for ProgressBarControlPaneEx. |
+| `ui_image_control_scalar_deleting_dtor` | `0x0043C1F0` | high | Compiler scalar-deleting destructor for ImageControlPane. |
+| `ui_has_text_input_service` | `0x0043C220` | high | Reports whether the shared text-input service exists. |
+| `ui_get_text_input_service` | `0x0043C240` | high | Returns the shared text-input service pointer. |
+| `ui_image_control_timer_scalar_deleting_dtor_thunk` | `0x0043C250` | high | Adjusted-this TimerHandler deleting-destructor thunk for ImageControlPane. |
+| `ui_progress_bar_control_timer_scalar_deleting_dtor_thunk` | `0x0043C260` | high | Adjusted-this TimerHandler deleting-destructor thunk for ProgressBarControlPane. |
+| `ui_scrollable_control_timer_scalar_deleting_dtor_thunk` | `0x0043C270` | high | Adjusted-this TimerHandler deleting-destructor thunk for ScrollableControlPane. |
+| `ui_text_button_ex_control_timer_scalar_deleting_dtor_thunk` | `0x0043C280` | high | Adjusted-this TimerHandler deleting-destructor thunk for TextButtonExControlPane. |
+| `ui_progress_bar_ex_control_timer_scalar_deleting_dtor_thunk` | `0x0043C290` | high | Adjusted-this TimerHandler deleting-destructor thunk for ProgressBarControlPaneEx. |
+| `ui_button_control_timer_scalar_deleting_dtor_thunk` | `0x0043C2A0` | high | Adjusted-this TimerHandler deleting-destructor thunk for ButtonControlPane. |
+| `ui_static_text_control2_timer_scalar_deleting_dtor_thunk` | `0x0043C2B0` | high | Adjusted-this TimerHandler deleting-destructor thunk for StaticTextControlPane2. |
+| `ui_static_text_control_timer_scalar_deleting_dtor_thunk` | `0x0043C2C0` | high | Adjusted-this TimerHandler deleting-destructor thunk for StaticTextControlPane. |
+| `ui_text_edit_control_timer_scalar_deleting_dtor_thunk` | `0x0043C2D0` | high | Adjusted-this TimerHandler deleting-destructor thunk for TextEditControlPane. |
+| `ui_image_button_control_timer_scalar_deleting_dtor_thunk` | `0x0043C2E0` | high | Adjusted-this TimerHandler deleting-destructor thunk for ImageButtonControlPane. |
+| `ui_image_button_ex_control_timer_scalar_deleting_dtor_thunk` | `0x0043C2F0` | high | Adjusted-this TimerHandler deleting-destructor thunk for ImageButtonExControlPane. |
+| `ui_radio_group_control_timer_scalar_deleting_dtor_thunk` | `0x0043C300` | high | Adjusted-this TimerHandler deleting-destructor thunk for RadioGroupControlPane. |
+| `ui_text_button_control_timer_scalar_deleting_dtor_thunk` | `0x0043C310` | high | Adjusted-this TimerHandler deleting-destructor thunk for TextButtonControlPane. |
+| `ui_control_timer_scalar_deleting_dtor_thunk` | `0x0043C320` | high | Adjusted-this TimerHandler deleting-destructor thunk for ControlPane. |
 | `ui_create_user_dialog_ctor` | `0x0043C370` | high | Constructs RTTI class CreateUserDialogPane from _ncreate.txt, attaches appearance controls and account fields, and registers the pane for events and timers. |
+| `ui_create_user_dialog_dtor` | `0x0043D080` | high | Destroys CreateUserDialogPane preview resources, bottom-button state, local appearance storage, and DialogPane. |
 | `ui_create_user_draw` | `0x0043D190` | high | Draws the creation preview using gender at +0x674, hair style at +0x676, and hair-color palette index at +0x678. |
+| `ui_create_user_find_palette_option_index` | `0x0043D5E0` | high | Finds the current appearance palette value in the 14-entry swatch table used by the selection marker. |
+| `ui_create_user_update_submit_enabled` | `0x0043D620` | high | Enables submit only when required fields are nonempty and the optional paired fields are both empty or both populated. |
+| `ui_create_user_advance_preview_frame` | `0x0043D7B0` | high | Advances the character preview through five frames and invalidates its rectangle. |
 | `ui_create_user_handle_pointer_event` | `0x0043DC80` | high | Handles CreateUserDialogPane appearance clicks, including gender selection and conversion of the 2-by-7 hair-color swatch grid into palette indexes. |
+| `ui_no_nexon_club_id_warning_pane_ctor` | `0x0043E9D0` | high | Constructs exact RTTI NoNexonClubIDWarningPane and stores its owner plus confirm and cancel timer IDs. |
+| `ui_no_nexon_club_id_warning_confirm` | `0x0043EA30` | high | Schedules the stored confirmation timer on the owning create-user pane after 200 ms. |
+| `ui_no_nexon_club_id_warning_cancel` | `0x0043EA80` | high | Schedules the stored cancellation timer on the owning create-user pane after 200 ms when configured. |
 | `ui_create_user_handle_action` | `0x0043EAD0` | high | Collects name, password, confirmation, and distribution-dependent account text; checks matching passwords and schedules the create-user send timer. |
 | `ui_create_user_timer` | `0x0043F410` | high | CreateUserDialogPane TimerHandler callback; timer 3 sends CNewUser after the form action schedules a 200 ms delay. |
 | `ui_create_user_accept_opcode_30` | `0x0043F8C0` | high | Returns handled for raw server opcode 0x30 without reading the body or changing CreateUserDialogPane state. |
+| `ui_create_user_dialog_scalar_deleting_dtor` | `0x0043FBE0` | high | Compiler scalar-deleting destructor for CreateUserDialogPane. |
+| `ui_dialog_pane_scalar_deleting_dtor` | `0x0043FC10` | high | Compiler scalar-deleting destructor for exact RTTI DialogPane. |
+| `ui_create_user_dialog_timer_scalar_deleting_dtor_thunk` | `0x0043FDA0` | high | Adjusted-this TimerHandler scalar-deleting destructor thunk for CreateUserDialogPane. |
+| `ui_dialog_pane_timer_scalar_deleting_dtor_thunk` | `0x0043FDB0` | high | Adjusted-this TimerHandler scalar-deleting destructor thunk for DialogPane. |
 | `ui_dialog_pane_ctor` | `0x00445260` | high | Constructs DialogPane over Pane; initializes default, cancel, focus, pressed, hover, and pointer-target control indexes to -1, with no-hit zones set to 7 where required. |
+| `ui_dialog_pane_dtor` | `0x004453A0` | high | Destroys attached controls in reverse order, destroys the local control list, and then destroys Pane. |
 | `ui_dialog_add_control` | `0x00445670` | high | Creates DialogPane +0x594 on first use and inserts the supplied control pointer. |
 | `ui_dialog_get_control_count` | `0x004457A0` | high | Returns the number of attachment-order controls, or zero when the DialogPane has no control list. |
 | `ui_dialog_set_default_action` | `0x004457D0` | high | Stores an attachment-order control index at DialogPane +0x598. |
@@ -1109,6 +1193,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_option_pane_handle_keyboard_event` | `0x005444B0` | high | OptionPane keyboard-event handler maps both X and x to construction of exact RTTI SafeQuitAlert. |
 | `ui_open_user_confirm_from_message` | `0x005449D0` | high | Opens exact RTTI UserConfirmPane for SMessage type 0x11 with its main prompt, two bytes, and string8 reply context. |
 | `ui_pane_ctor` | `0x00549490` | high | Constructs Pane over Canvas and a secondary TimerHandler at +0x11C; initializes visible true at +0x130. |
+| `ui_pane_dtor` | `0x00549600` | high | Destroys Pane-owned helper objects, its TimerHandler secondary base, and the Canvas base. |
 | `ui_pane_accepts_input` | `0x00549BC0` | high | Returns true when Pane +0x130 is visible and its active region is non-empty. |
 | `ui_pane_show` | `0x00549C00` | high | Sets Pane +0x130 visible and invalidates its region when required. |
 | `ui_pane_hide` | `0x00549C40` | high | Clears Pane +0x130 visible, invalidates affected content, and releases owned mouse capture. |
