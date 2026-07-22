@@ -1355,6 +1355,10 @@ functions:
     name: input_translate_win32_message
     confidence: high
     evidence: "Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events."
+  - address: "0x0048ECA4"
+    name: input_translate_win32_message_return_true_fragment
+    confidence: high
+    evidence: "Compiler-split branch that enters the shared success epilogue of input_translate_win32_message and returns true."
   - address: "0x0048F480"
     name: input_manager_set_focused_pane
     confidence: high

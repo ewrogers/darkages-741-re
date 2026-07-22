@@ -245,6 +245,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_manager_post_text_input_enabled` | `0x0048E940` | high | Posts private window message 0x5E2 with wParam 1 and lParam 2. |
 | `input_manager_post_text_input_disabled` | `0x0048E960` | high | Posts private window message 0x5E2 with wParam 0 and lParam 2. |
 | `input_translate_win32_message` | `0x0048E980` | high | Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events. |
+| `input_translate_win32_message_return_true_fragment` | `0x0048ECA4` | high | Compiler-split branch that enters the shared success epilogue of input_translate_win32_message and returns true. |
 | `input_manager_set_focused_pane` | `0x0048F480` | high | Changes the focused input pane and notifies the old and new live panes. |
 | `input_manager_get_focused_pane` | `0x0048F500` | high | Returns the pane currently retained as InputMan's focused input owner. |
 | `input_manager_read_composition_string` | `0x0048F520` | high | Reads one ANSI IME composition string and writes two trailing zero bytes. |
