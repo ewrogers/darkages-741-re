@@ -2208,6 +2208,19 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_text_input_menu_dialog_handle_action` | `0x004D1EA0` | high | Routes submit, target-info, and cancel actions and closes after submission. |
 | `ui_text_input_menu_dialog_submit` | `0x004D1F00` | high | Copies up to 255 bytes from the text input control and invokes the derived response sender. |
 | `ui_text_input_menu_dialog_update_submit_enabled` | `0x004D1F90` | high | Enables the submit control only when the text input contains at least one byte. |
+| `ui_argumented_text_input_menu_dialog_ctor` | `0x004D2210` | high | Constructs exact RTTI ArgumentedTextInputMenuDialog, parses its retained argument and pursuit ID, and builds prompt, edit, and action controls. |
+| `ui_server_item_menu_dialog_ctor` | `0x004D2D50` | high | Constructs the active exact RTTI ServerItemMenuDialog, parses 0x224-byte item records, builds its list, and attaches lmerd controls. |
+| `ui_server_item_menu_dialog_dtor` | `0x004D2FF0` | high | Frees ServerItemMenuDialog's allocated item array and destroys its DialogPane base. |
+| `ui_item_buy_alert_pane_ctor` | `0x004D3510` | high | Constructs exact RTTI ItemBuyAlertPane over AlertPane and retains an owner timer request. |
+| `ui_item_buy_alert_pane_schedule_owner_timer` | `0x004D3580` | high | Schedules the retained timer ID and callback arguments on the retained owner's TimerHandler when an owner is present. |
+| `ui_item_list_pane_ctor_with_style` | `0x004D35D0` | high | Constructs ItemListPane with 0x224-byte rows and a caller-selected row style. |
+| `ui_item_list_pane_ctor` | `0x004D3670` | high | Constructs standard ItemListPane with 0x224-byte rows, style 0x20, and retained merchant target and activation modes. |
+| `ui_item_list_pane_append_item_entry` | `0x004D3700` | high | Builds and appends a complete 0x224-byte item row with icon, palette, value, text, item key, and quantity fields. |
+| `ui_item_list_pane_append_simple_entry` | `0x004D37C0` | high | Builds and appends the simpler 0x224-byte named row used by merchant spell and skill menus. |
+| `ui_item_list_pane_append_raw_record` | `0x004D3880` | high | Appends an existing 0x224-byte record to the shared item pane for paged server-item views. |
+| `ui_item_list_pane_clear_items` | `0x004D38A0` | high | Erases the complete current item range before a paged server-item view is repopulated. |
+| `ui_item_list_pane_handle_timer_event` | `0x004D38C0` | high | Handles quantity-result timer 0x463 and retained-row activation timer 0x464 through the adjusted TimerHandler subobject. |
+| `ui_item_list_pane_activate_selected_entry` | `0x004D39A0` | high | Activates the selected merchant row by sending its name, prompting for quantity, or sending its spell or skill variant. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
@@ -2680,6 +2693,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_merchant_task_selection` | `0x004D0C30` | high | Sends the eight-byte CMerchant response with target type, target ID, and selected u16 task value. |
 | `net_parse_text_menu_dialog` | `0x004D0F10` | high | Parses the common header plus a u8 row count and repeated string8 text with u16 selection values. |
 | `net_send_argumented_merchant_task_selection` | `0x004D12A0` | high | Sends CMerchant with target type, target ID, selected u16 task value, and the retained server argument. |
+| `net_send_merchant_session_text_input` | `0x004D2060` | high | Sends CMerchant with target type, target ID, pursuit ID, and entered string8 text for MerchantSession. |
+| `net_send_merchant_session_argumented_text_input` | `0x004D2B20` | high | Sends CMerchant with target type, target ID, pursuit ID, retained argument string8, and entered text string8. |
+| `net_parse_server_item_menu_dialog_items` | `0x004D3040` | high | Parses the active server-item payload into fixed 0x224-byte records; subtype 0x4B selects the extended wire form. |
+| `net_send_merchant_item_name_selection` | `0x004D3B80` | high | Sends CMerchant opcode 0x39 with the target, selected menu ID, and row name as string8. |
+| `net_send_merchant_item_quantity_selection` | `0x004D3D30` | high | Sends CMerchant opcode 0x39 with selector 1, a u32 item key, and a u8 quantity. |
+| `net_send_merchant_item_variant_selection` | `0x004D3EE0` | high | Sends CMerchant opcode 0x39 with a row variant byte; mode 3 wraps it between literal selector bytes. |
 | `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
 | `net_send_pursuit_selection` | `0x004DBC90` | high | MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method. |
 | `net_dispatch_metadata_events` | `0x004E4D80` | high | MetaTableManager recognizes decoded SMetaData opcode 0x6F outside the packet factory. |

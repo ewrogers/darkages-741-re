@@ -62,6 +62,10 @@ The ordinary text-menu variants use `TaskListDialog` and `TaskListPane`. Each pa
 
 `TextInputMenuDialog` builds a single-line edit control between the prompt and three actions: submit, target information, and cancel. Submit remains disabled while the input is empty. On submission the client copies at most 255 text bytes, invokes the derived response builder, and closes the dialog. The argumented input variant uses the same controls and adds its retained server string to the response.
 
+The active older `ServerItemMenuDialog` allocates fixed 0x224-byte item records and reuses the `lmerd` task-list controls. Ordinary records carry an icon, palette, value, name, and detail string. Menu subtype `0x4B` selects an extended wire form with an item key, icon, palette, value, variant byte, and one name string. Both forms become the same fixed-size local row before display. The next-level `ServerItemMenuDialog3` category UI remains disabled as described above.
+
+Activating a row selects one of three `CMerchant` opcode `0x39` response shapes. Name mode returns the row name as `string8`. Quantity mode returns selector `1`, a `u32` item key, and a `u8` quantity; quantities above one first open `ItemBuyAlertPane`. Spell and skill modes return the row's variant byte, with merchant mode 3 adding a literal selector byte on each side. The shared item pane also supplies the clear-and-append operations used by the paged `ServerItemMenuDialog2` and dormant `ServerItemMenuDialog3` views.
+
 ### Target identity
 
 Both protocols carry `target_type` and `target_id`, and both client responses echo them. The local dialog builders do not decode that byte, and the screen-menu code contains a separate `target_type > 0x0C` behavior. A complete 7.41 target-type enum remains unresolved.

@@ -497,6 +497,82 @@ functions:
     name: ui_text_input_menu_dialog_update_submit_enabled
     confidence: high
     evidence: "Enables the submit control only when the text input contains at least one byte."
+  - address: "0x004D2060"
+    name: net_send_merchant_session_text_input
+    confidence: high
+    evidence: "Sends CMerchant with target type, target ID, pursuit ID, and entered string8 text for MerchantSession."
+  - address: "0x004D2210"
+    name: ui_argumented_text_input_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ArgumentedTextInputMenuDialog, parses its retained argument and pursuit ID, and builds prompt, edit, and action controls."
+  - address: "0x004D2B20"
+    name: net_send_merchant_session_argumented_text_input
+    confidence: high
+    evidence: "Sends CMerchant with target type, target ID, pursuit ID, retained argument string8, and entered text string8."
+  - address: "0x004D2D50"
+    name: ui_server_item_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs the active exact RTTI ServerItemMenuDialog, parses 0x224-byte item records, builds its list, and attaches lmerd controls."
+  - address: "0x004D2FF0"
+    name: ui_server_item_menu_dialog_dtor
+    confidence: high
+    evidence: "Frees ServerItemMenuDialog's allocated item array and destroys its DialogPane base."
+  - address: "0x004D3040"
+    name: net_parse_server_item_menu_dialog_items
+    confidence: high
+    evidence: "Parses the active server-item payload into fixed 0x224-byte records; subtype 0x4B selects the extended wire form."
+  - address: "0x004D3510"
+    name: ui_item_buy_alert_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ItemBuyAlertPane over AlertPane and retains an owner timer request."
+  - address: "0x004D3580"
+    name: ui_item_buy_alert_pane_schedule_owner_timer
+    confidence: high
+    evidence: "Schedules the retained timer ID and callback arguments on the retained owner's TimerHandler when an owner is present."
+  - address: "0x004D35D0"
+    name: ui_item_list_pane_ctor_with_style
+    confidence: high
+    evidence: "Constructs ItemListPane with 0x224-byte rows and a caller-selected row style."
+  - address: "0x004D3670"
+    name: ui_item_list_pane_ctor
+    confidence: high
+    evidence: "Constructs standard ItemListPane with 0x224-byte rows, style 0x20, and retained merchant target and activation modes."
+  - address: "0x004D3700"
+    name: ui_item_list_pane_append_item_entry
+    confidence: high
+    evidence: "Builds and appends a complete 0x224-byte item row with icon, palette, value, text, item key, and quantity fields."
+  - address: "0x004D37C0"
+    name: ui_item_list_pane_append_simple_entry
+    confidence: high
+    evidence: "Builds and appends the simpler 0x224-byte named row used by merchant spell and skill menus."
+  - address: "0x004D3880"
+    name: ui_item_list_pane_append_raw_record
+    confidence: high
+    evidence: "Appends an existing 0x224-byte record to the shared item pane for paged server-item views."
+  - address: "0x004D38A0"
+    name: ui_item_list_pane_clear_items
+    confidence: high
+    evidence: "Erases the complete current item range before a paged server-item view is repopulated."
+  - address: "0x004D38C0"
+    name: ui_item_list_pane_handle_timer_event
+    confidence: high
+    evidence: "Handles quantity-result timer 0x463 and retained-row activation timer 0x464 through the adjusted TimerHandler subobject."
+  - address: "0x004D39A0"
+    name: ui_item_list_pane_activate_selected_entry
+    confidence: high
+    evidence: "Activates the selected merchant row by sending its name, prompting for quantity, or sending its spell or skill variant."
+  - address: "0x004D3B80"
+    name: net_send_merchant_item_name_selection
+    confidence: high
+    evidence: "Sends CMerchant opcode 0x39 with the target, selected menu ID, and row name as string8."
+  - address: "0x004D3D30"
+    name: net_send_merchant_item_quantity_selection
+    confidence: high
+    evidence: "Sends CMerchant opcode 0x39 with selector 1, a u32 item key, and a u8 quantity."
+  - address: "0x004D3EE0"
+    name: net_send_merchant_item_variant_selection
+    confidence: high
+    evidence: "Sends CMerchant opcode 0x39 with a row variant byte; mode 3 wraps it between literal selector bytes."
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high
