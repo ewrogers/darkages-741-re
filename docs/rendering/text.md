@@ -55,6 +55,14 @@ The stored code-page value does not change the process locale. Its getter has no
 
 This exact executable always selects the USA distribution, so `da.lft` is the active font. The matching `national.dat` contains `da.lft` and `lod.lft`; those two entries are byte-for-byte identical. It does not contain `yami.lft` or `taiwan.lft`. Japanese and Taiwan support therefore remains compiled code in this installation, not a usable local configuration.
 
+### Localized message table
+
+The exact RTTI `Language` singleton loads `msg.tbl` from `national.dat`, falling back to a loose file. It retains one owned byte buffer and parses at most 129 message pointers from that buffer whenever the language mode changes.
+
+The parser accepts LF and CRLF records and replaces their terminators with NUL bytes in place. It uses `IsDBCSLeadByte` while scanning, so a trail byte is not mistaken for a separator. Outside a detected DBCS pair, a caret byte (`^`) becomes an embedded newline. Empty rows remain addressable entries. A lookup index of 129 or greater returns a shared empty string.
+
+Changing the language mode reparses the same `msg.tbl` bytes. The retained labels `msgkor.h`, `msgeng.h`, `msgjpn.h`, and `msgtai.h` identify the selected message family in code, but the loader itself opens only `msg.tbl`.
+
 ## Character sets
 
 The game text path is byte-oriented, not Unicode-oriented.

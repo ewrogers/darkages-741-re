@@ -1987,6 +1987,22 @@ functions:
     name: ui_image_pane_adjusted_deleting_dtor
     confidence: high
     evidence: "Adjusts the TimerHandler subobject pointer before ImagePane destruction."
+  - address: "0x004A46C0"
+    name: app_language_message_buffer_ctor
+    confidence: high
+    evidence: "Initializes the owned msg.tbl byte buffer pointer and byte count to zero."
+  - address: "0x004A46F0"
+    name: app_language_message_buffer_dtor
+    confidence: high
+    evidence: "Releases the owned msg.tbl byte buffer when both its pointer and byte count are nonzero."
+  - address: "0x004A4730"
+    name: app_language_message_buffer_assign_copy
+    confidence: high
+    evidence: "Allocates an exact-size buffer and copies msg.tbl bytes from an archive entry or loose file."
+  - address: "0x004A47A0"
+    name: app_language_parse_message_table
+    confidence: high
+    evidence: "Splits msg.tbl into at most 129 DBCS-aware lines and changes unescaped caret bytes to embedded newlines."
   - address: "0x004A49B0"
     name: app_language_mode_from_distribution
     confidence: high
@@ -1995,14 +2011,42 @@ functions:
     name: app_get_text_code_page
     confidence: high
     evidence: Returns the code-page value selected with the current language mode.
+  - address: "0x004A4A40"
+    name: app_get_active_ansi_code_page_cached
+    confidence: high
+    evidence: "Returns GetACP and caches the active Windows ANSI code page after the first call."
   - address: "0x004A4A60"
     name: app_get_language_message_label
     confidence: high
     evidence: Maps language modes to msgkor.h, msgeng.h, msgjpn.h, or msgtai.h labels retained by the client.
+  - address: "0x004A4C40"
+    name: app_language_manager_dtor
+    confidence: high
+    evidence: "Releases loose-file msg.tbl storage, unbinds exact RTTI Language, and destroys its LObject base."
+  - address: "0x004A4CC0"
+    name: app_get_message
+    confidence: high
+    evidence: "Returns one localized msg.tbl entry for the current application language mode."
   - address: "0x004A4CE0"
     name: app_set_language_mode
     confidence: high
     evidence: Stores the language mode, selects the retained message label, and records code page 949 or 932 for Korean or Japanese.
+  - address: "0x004A4D50"
+    name: app_get_message_for_language
+    confidence: high
+    evidence: "Switches mode when needed and returns one of 129 parsed msg.tbl pointers, or the shared empty string when out of range."
+  - address: "0x004A4D90"
+    name: app_language_manager_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs exact RTTI Language's destructor and conditionally frees the complete object."
+  - address: "0x004A4DC0"
+    name: app_language_manager_bind_singleton
+    confidence: high
+    evidence: "Binds exact RTTI Language after adjusting from its Singleton base subobject."
+  - address: "0x004A4E00"
+    name: app_language_manager_unbind_singleton
+    confidence: high
+    evidence: "Clears the Language singleton only when it still references this adjusted complete object."
   - address: "0x004AE4E0"
     name: render_get_map_tile_library
     confidence: high

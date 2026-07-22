@@ -34,10 +34,21 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_exception_handler_singleton_register` | `0x004694D0` | high | Registers the complete ExceptionHandler object from its Singleton base at +0x04. |
 | `app_exception_handler_singleton_unregister` | `0x00469510` | high | Clears the ExceptionHandler singleton when the registered complete object matches. |
 | `app_get_exception_handler` | `0x00469550` | high | Returns the application-wide ExceptionHandler singleton used by the filter, uploader, and live diagnostic builder. |
+| `app_language_message_buffer_ctor` | `0x004A46C0` | high | Initializes the owned msg.tbl byte buffer pointer and byte count to zero. |
+| `app_language_message_buffer_dtor` | `0x004A46F0` | high | Releases the owned msg.tbl byte buffer when both its pointer and byte count are nonzero. |
+| `app_language_message_buffer_assign_copy` | `0x004A4730` | high | Allocates an exact-size buffer and copies msg.tbl bytes from an archive entry or loose file. |
+| `app_language_parse_message_table` | `0x004A47A0` | high | Splits msg.tbl into at most 129 DBCS-aware lines and changes unescaped caret bytes to embedded newlines. |
 | `app_language_mode_from_distribution` | `0x004A49B0` | high | Maps distribution modes to Korean 0, English 1, Japanese 2, or Taiwan 3 language modes. |
 | `app_get_text_code_page` | `0x004A4A30` | high | Returns the code-page value selected with the current language mode. |
+| `app_get_active_ansi_code_page_cached` | `0x004A4A40` | high | Returns GetACP and caches the active Windows ANSI code page after the first call. |
 | `app_get_language_message_label` | `0x004A4A60` | high | Maps language modes to msgkor.h, msgeng.h, msgjpn.h, or msgtai.h labels retained by the client. |
+| `app_language_manager_dtor` | `0x004A4C40` | high | Releases loose-file msg.tbl storage, unbinds exact RTTI Language, and destroys its LObject base. |
+| `app_get_message` | `0x004A4CC0` | high | Returns one localized msg.tbl entry for the current application language mode. |
 | `app_set_language_mode` | `0x004A4CE0` | high | Stores the language mode, selects the retained message label, and records code page 949 or 932 for Korean or Japanese. |
+| `app_get_message_for_language` | `0x004A4D50` | high | Switches mode when needed and returns one of 129 parsed msg.tbl pointers, or the shared empty string when out of range. |
+| `app_language_manager_scalar_deleting_dtor` | `0x004A4D90` | high | Runs exact RTTI Language's destructor and conditionally frees the complete object. |
+| `app_language_manager_bind_singleton` | `0x004A4DC0` | high | Binds exact RTTI Language after adjusting from its Singleton base subobject. |
+| `app_language_manager_unbind_singleton` | `0x004A4E00` | high | Clears the Language singleton only when it still references this adjusted complete object. |
 | `app_check_speedhack_clocks` | `0x004A98A0` | high | Compares several local time sources, counts differences greater than five seconds, and sends one SpeedHack CException report per process after repeated mismatches. |
 | `app_shutdown` | `0x004AC060` | high | Tears down runtime managers and panes, then closes and destroys the DAT archive singletons before window cleanup. |
 | `app_set_post_exit_advertisement` | `0x004ACE00` | high | Copies the SAdvertisement string into a 65,536-byte application buffer, terminates it, and saves its length plus three numeric arguments for app_winmain. |
