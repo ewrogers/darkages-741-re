@@ -1039,34 +1039,90 @@ functions:
     name: ui_field_map_balloon_pane_ctor
     confidence: high
     evidence: "Constructs exact RTTI FieldMapBalloonPane, loads its EPF and optional palette, and retains its parent FieldMapPane for animation completion."
+  - address: "0x00474630"
+    name: ui_field_map_balloon_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI FieldMapBalloonPane and its Pane base."
   - address: "0x00474660"
     name: ui_field_map_balloon_handle_timer
     confidence: high
     evidence: "FieldMapBalloonPane TimerHandler callback advances the marker every 50 ms and schedules FieldMapPane completion event 1 when movement ends."
+  - address: "0x004746F0"
+    name: ui_field_map_balloon_advance_marker
+    confidence: high
+    evidence: "Interpolates the marker toward its target, advances its EPF frame, and refreshes its position on each timer tick."
+  - address: "0x00474810"
+    name: ui_field_map_balloon_refresh_frame
+    confidence: high
+    evidence: "Loads the marker's current EPF frame, updates its screen position, and invalidates the pane."
+  - address: "0x004749F0"
+    name: ui_field_map_balloon_set_position
+    confidence: high
+    evidence: "Sets current and target marker coordinates to one position and clears pending movement."
   - address: "0x00474A50"
     name: ui_field_map_balloon_set_target
     confidence: high
     evidence: "Stores the marker target, movement-step count, correlation time, and parent completion-event selector; equal current and target coordinates collapse the step count to zero."
+  - address: "0x00474AE0"
+    name: ui_field_map_balloon_refresh_and_schedule
+    confidence: high
+    evidence: "Refreshes and redraws the marker, then schedules its next 50 ms animation timer."
+  - address: "0x00474B50"
+    name: ui_field_map_balloon_draw
+    confidence: high
+    evidence: "Draws the current marker pixmap or a palette-color placeholder when no frame is available."
   - address: "0x00474BC0"
     name: ui_field_map_pane_ctor
     confidence: high
     evidence: "Constructs exact RTTI FieldMapPane over Pane and its TimerHandler secondary base before initializing the field assets and server nodes."
+  - address: "0x00474C80"
+    name: ui_field_map_pane_display_only_ctor
+    confidence: high
+    evidence: "Constructs FieldMapPane with point selection disabled before initializing its supplied nodes."
   - address: "0x00474D40"
     name: ui_field_map_pane_initialize
     confidence: high
     evidence: "Loads the selected field asset family, builds one image or text point pane per server node, and positions the initial marker from the zero-based current-node index."
+  - address: "0x00475220"
+    name: ui_field_map_pane_dtor
+    confidence: high
+    evidence: "Destroys point panes, the optional marker, the point-pointer list, and the Pane base."
   - address: "0x00475370"
     name: ui_field_map_pane_register_screen
     confidence: high
     evidence: "Registers FieldMapPane and its point children, attaches optional local point animations, and creates the animated FieldMapBalloonPane marker at the current node."
+  - address: "0x004758B0"
+    name: ui_field_map_pane_unregister_screen
+    confidence: high
+    evidence: "Unregisters and queues owned marker, point, and animation panes, restores legend.pal, and unregisters FieldMapPane."
+  - address: "0x00475A00"
+    name: ui_field_map_pane_register_event_handler
+    confidence: high
+    evidence: "Registers FieldMapPane's event handler and then registers each point child."
+  - address: "0x00475AD0"
+    name: ui_field_map_pane_unregister_event_handler
+    confidence: high
+    evidence: "Unregisters every point child before unregistering FieldMapPane's event handler."
   - address: "0x00475B40"
     name: ui_field_map_pane_draw
     confidence: high
     evidence: "Draws the field-map background loaded from frame 0 of the field-name EPF."
+  - address: "0x00475B70"
+    name: ui_field_map_pane_get_point_count
+    confidence: high
+    evidence: "Returns the number of point panes retained in the pane's pointer list."
+  - address: "0x00475BA0"
+    name: ui_field_map_pane_get_point
+    confidence: high
+    evidence: "Returns the point pane at a zero-based pointer-list index."
   - address: "0x00475BD0"
     name: ui_field_map_pane_handle_timer
     confidence: high
     evidence: "FieldMapPane TimerHandler event 0 selects a server node and starts marker movement; correlated event 1 sends CFieldMap for the selected node and restores legend.pal."
+  - address: "0x00475F60"
+    name: ui_field_map_pane_handle_event
+    confidence: high
+    evidence: "Handles pane state events that cancel an in-progress selection and return the marker to its current-node position."
   - address: "0x00476050"
     name: ui_field_map_point_pane_ctor
     confidence: high
@@ -1083,10 +1139,130 @@ functions:
     name: ui_text_field_map_point_pane_ctor
     confidence: high
     evidence: "Constructs exact RTTI TextFieldMapPointPane for a server node that has no matching local presentation record."
+  - address: "0x004764F0"
+    name: ui_text_field_map_point_pane_draw
+    confidence: high
+    evidence: "Draws a framed waypoint label and switches its palette colors with the shared point hover state."
+  - address: "0x004766A0"
+    name: ui_text_field_map_point_pane_get_content_bounds
+    confidence: high
+    evidence: "Returns the text waypoint's fixed local content bounds used when composing the field-map extent."
+  - address: "0x004766E0"
+    name: ui_text_field_map_point_pane_get_display_rect
+    confidence: high
+    evidence: "Returns the text waypoint's display rectangle from its pane position and fixed label geometry."
   - address: "0x00476740"
     name: ui_image_field_map_point_pane_ctor
     confidence: high
     evidence: "Constructs exact RTTI ImageFieldMapPointPane with icon and position metadata matched locally by the server node name."
+  - address: "0x00476840"
+    name: ui_image_field_map_point_pane_draw
+    confidence: high
+    evidence: "Draws the locally styled waypoint icon while the shared point hover state is active."
+  - address: "0x004768A0"
+    name: ui_image_field_map_point_pane_get_content_bounds
+    confidence: high
+    evidence: "Returns content bounds derived from the loaded waypoint icon frame and source rectangle."
+  - address: "0x00476920"
+    name: ui_image_field_map_point_pane_get_display_rect
+    confidence: high
+    evidence: "Returns the image waypoint's pane rectangle."
+  - address: "0x00476980"
+    name: ui_field_map_balloon_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the FieldMapBalloonPane destructor and conditionally frees the complete object."
+  - address: "0x004769B0"
+    name: ui_field_map_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the FieldMapPane destructor and conditionally frees the complete object."
+  - address: "0x004769E0"
+    name: ui_field_map_point_pane_get_display_rect
+    confidence: high
+    evidence: "Base FieldMapPointPane display-rectangle virtual; the base implementation leaves the output unchanged."
+  - address: "0x004769F0"
+    name: ui_field_map_point_pane_get_content_bounds
+    confidence: high
+    evidence: "Base FieldMapPointPane content-bounds virtual; the base implementation leaves the output unchanged."
+  - address: "0x00476A20"
+    name: ui_field_map_point_pane_handle_timer
+    confidence: high
+    evidence: "Shared FieldMapPointPane TimerHandler callback returns false without scheduling further work."
+  - address: "0x00476A40"
+    name: ui_field_map_point_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys the exact RTTI FieldMapPointPane and conditionally frees the complete object."
+  - address: "0x00476A70"
+    name: ui_text_field_map_point_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys the exact RTTI TextFieldMapPointPane through its Pane base and conditionally frees the complete object."
+  - address: "0x00476AA0"
+    name: ui_field_map_point_pane_dtor
+    confidence: high
+    evidence: "Destroys the FieldMapPointPane Pane base during constructor cleanup."
+  - address: "0x00476AC0"
+    name: ui_image_field_map_point_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys the exact RTTI ImageFieldMapPointPane through its Pane base and conditionally frees the complete object."
+  - address: "0x00476AF0"
+    name: ui_field_map_point_list_ctor
+    confidence: high
+    evidence: "Constructs the sentinel-based list that owns FieldMapPointPane pointers."
+  - address: "0x00476B50"
+    name: ui_field_map_point_list_dtor
+    confidence: high
+    evidence: "Clears every point-pointer node and frees the list sentinel."
+  - address: "0x00476BC0"
+    name: ui_field_map_point_list_clear
+    confidence: high
+    evidence: "Unlinks and frees every point-pointer node while preserving the sentinel."
+  - address: "0x00476C50"
+    name: ui_field_map_point_list_destroy_sentinel
+    confidence: high
+    evidence: "Frees the point-pointer list sentinel node."
+  - address: "0x00476C80"
+    name: ui_field_map_point_pointer_dtor
+    confidence: high
+    evidence: "Trivial destructor for a FieldMapPointPane pointer stored in a list node."
+  - address: "0x00476C90"
+    name: ui_field_map_point_list_allocate_nodes
+    confidence: high
+    evidence: "Performs checked allocation of 12-byte point-pointer list nodes."
+  - address: "0x00476D00"
+    name: ui_field_map_point_list_insert_before
+    confidence: high
+    evidence: "Creates and links a point-pointer node before the selected list position."
+  - address: "0x00476D90"
+    name: ui_field_map_point_list_create_node
+    confidence: high
+    evidence: "Allocates a point-pointer node and initializes its links and stored pointer."
+  - address: "0x00476E02"
+    name: ui_field_map_point_list_create_node_cleanup
+    confidence: high
+    evidence: "Frees a partially constructed point-pointer node and rethrows after node construction fails."
+  - address: "0x00476E50"
+    name: ui_field_map_point_pointer_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs the FieldMapPointPane pointer stored in a new list node."
+  - address: "0x00476E90"
+    name: ui_field_map_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer before FieldMapPane scalar deletion."
+  - address: "0x00476EA0"
+    name: ui_field_map_balloon_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer before FieldMapBalloonPane scalar deletion."
+  - address: "0x00476EB0"
+    name: ui_field_map_point_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer before FieldMapPointPane scalar deletion."
+  - address: "0x00476EC0"
+    name: ui_text_field_map_point_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer before TextFieldMapPointPane scalar deletion."
+  - address: "0x00476ED0"
+    name: ui_image_field_map_point_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer before ImageFieldMapPointPane scalar deletion."
   - address: "0x00476EE0"
     name: ui_load_field_map_assets
     confidence: high

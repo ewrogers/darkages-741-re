@@ -527,6 +527,18 @@ functions:
     name: file_archive_pointer_vector_insert_n_cleanup
     confidence: high
     evidence: "Exception cleanup for a partially constructed replacement allocation during pointer-vector insertion."
+  - address: "0x0047409E"
+    name: file_archive_pointer_vector_insert_n_rethrow_cleanup
+    confidence: high
+    evidence: "Restores pointer-vector construction state and rethrows after insertion fails."
+  - address: "0x00474260"
+    name: file_archive_pointer_vector_allocate
+    confidence: high
+    evidence: "Performs checked allocation for an array of four-byte expanded-entry pointers."
+  - address: "0x004742D0"
+    name: file_archive_pointer_vector_copy_range
+    confidence: high
+    evidence: "Copies a contiguous pointer range into replacement vector storage and returns its new end."
   - address: "0x0047DEB0"
     name: file_load_variant_color_table
     confidence: medium

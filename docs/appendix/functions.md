@@ -1132,17 +1132,61 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_family_list_dialog_scalar_deleting_dtor` | `0x00471C50` | high | Runs the FamilyListDialogPane destructor and conditionally frees the complete object. |
 | `ui_family_list_dialog_timer_scalar_deleting_dtor_thunk` | `0x00471C80` | high | Adjusts the TimerHandler secondary-base pointer to the complete FamilyListDialogPane before scalar deletion. |
 | `ui_field_map_balloon_pane_ctor` | `0x00474310` | high | Constructs exact RTTI FieldMapBalloonPane, loads its EPF and optional palette, and retains its parent FieldMapPane for animation completion. |
+| `ui_field_map_balloon_pane_dtor` | `0x00474630` | high | Destroys exact RTTI FieldMapBalloonPane and its Pane base. |
 | `ui_field_map_balloon_handle_timer` | `0x00474660` | high | FieldMapBalloonPane TimerHandler callback advances the marker every 50 ms and schedules FieldMapPane completion event 1 when movement ends. |
+| `ui_field_map_balloon_advance_marker` | `0x004746F0` | high | Interpolates the marker toward its target, advances its EPF frame, and refreshes its position on each timer tick. |
+| `ui_field_map_balloon_refresh_frame` | `0x00474810` | high | Loads the marker's current EPF frame, updates its screen position, and invalidates the pane. |
+| `ui_field_map_balloon_set_position` | `0x004749F0` | high | Sets current and target marker coordinates to one position and clears pending movement. |
 | `ui_field_map_balloon_set_target` | `0x00474A50` | high | Stores the marker target, movement-step count, correlation time, and parent completion-event selector; equal current and target coordinates collapse the step count to zero. |
+| `ui_field_map_balloon_refresh_and_schedule` | `0x00474AE0` | high | Refreshes and redraws the marker, then schedules its next 50 ms animation timer. |
+| `ui_field_map_balloon_draw` | `0x00474B50` | high | Draws the current marker pixmap or a palette-color placeholder when no frame is available. |
 | `ui_field_map_pane_ctor` | `0x00474BC0` | high | Constructs exact RTTI FieldMapPane over Pane and its TimerHandler secondary base before initializing the field assets and server nodes. |
+| `ui_field_map_pane_display_only_ctor` | `0x00474C80` | high | Constructs FieldMapPane with point selection disabled before initializing its supplied nodes. |
 | `ui_field_map_pane_initialize` | `0x00474D40` | high | Loads the selected field asset family, builds one image or text point pane per server node, and positions the initial marker from the zero-based current-node index. |
+| `ui_field_map_pane_dtor` | `0x00475220` | high | Destroys point panes, the optional marker, the point-pointer list, and the Pane base. |
 | `ui_field_map_pane_register_screen` | `0x00475370` | high | Registers FieldMapPane and its point children, attaches optional local point animations, and creates the animated FieldMapBalloonPane marker at the current node. |
+| `ui_field_map_pane_unregister_screen` | `0x004758B0` | high | Unregisters and queues owned marker, point, and animation panes, restores legend.pal, and unregisters FieldMapPane. |
+| `ui_field_map_pane_register_event_handler` | `0x00475A00` | high | Registers FieldMapPane's event handler and then registers each point child. |
+| `ui_field_map_pane_unregister_event_handler` | `0x00475AD0` | high | Unregisters every point child before unregistering FieldMapPane's event handler. |
 | `ui_field_map_pane_draw` | `0x00475B40` | high | Draws the field-map background loaded from frame 0 of the field-name EPF. |
+| `ui_field_map_pane_get_point_count` | `0x00475B70` | high | Returns the number of point panes retained in the pane's pointer list. |
+| `ui_field_map_pane_get_point` | `0x00475BA0` | high | Returns the point pane at a zero-based pointer-list index. |
 | `ui_field_map_pane_handle_timer` | `0x00475BD0` | high | FieldMapPane TimerHandler event 0 selects a server node and starts marker movement; correlated event 1 sends CFieldMap for the selected node and restores legend.pal. |
+| `ui_field_map_pane_handle_event` | `0x00475F60` | high | Handles pane state events that cancel an in-progress selection and return the marker to its current-node position. |
 | `ui_field_map_point_pane_ctor` | `0x00476050` | high | Constructs exact RTTI FieldMapPointPane and retains node index, checksum, map ID, destination coordinates, screen coordinates, name, and parent pane. |
 | `ui_field_map_point_handle_pointer` | `0x00476120` | high | FieldMapPointPane primary-vtable pointer handler updates hover state and sends a left-button release to the parent's timer path as the selected node index. |
 | `ui_text_field_map_point_pane_ctor` | `0x00476490` | high | Constructs exact RTTI TextFieldMapPointPane for a server node that has no matching local presentation record. |
+| `ui_text_field_map_point_pane_draw` | `0x004764F0` | high | Draws a framed waypoint label and switches its palette colors with the shared point hover state. |
+| `ui_text_field_map_point_pane_get_content_bounds` | `0x004766A0` | high | Returns the text waypoint's fixed local content bounds used when composing the field-map extent. |
+| `ui_text_field_map_point_pane_get_display_rect` | `0x004766E0` | high | Returns the text waypoint's display rectangle from its pane position and fixed label geometry. |
 | `ui_image_field_map_point_pane_ctor` | `0x00476740` | high | Constructs exact RTTI ImageFieldMapPointPane with icon and position metadata matched locally by the server node name. |
+| `ui_image_field_map_point_pane_draw` | `0x00476840` | high | Draws the locally styled waypoint icon while the shared point hover state is active. |
+| `ui_image_field_map_point_pane_get_content_bounds` | `0x004768A0` | high | Returns content bounds derived from the loaded waypoint icon frame and source rectangle. |
+| `ui_image_field_map_point_pane_get_display_rect` | `0x00476920` | high | Returns the image waypoint's pane rectangle. |
+| `ui_field_map_balloon_pane_scalar_deleting_dtor` | `0x00476980` | high | Runs the FieldMapBalloonPane destructor and conditionally frees the complete object. |
+| `ui_field_map_pane_scalar_deleting_dtor` | `0x004769B0` | high | Runs the FieldMapPane destructor and conditionally frees the complete object. |
+| `ui_field_map_point_pane_get_display_rect` | `0x004769E0` | high | Base FieldMapPointPane display-rectangle virtual; the base implementation leaves the output unchanged. |
+| `ui_field_map_point_pane_get_content_bounds` | `0x004769F0` | high | Base FieldMapPointPane content-bounds virtual; the base implementation leaves the output unchanged. |
+| `ui_field_map_point_pane_handle_timer` | `0x00476A20` | high | Shared FieldMapPointPane TimerHandler callback returns false without scheduling further work. |
+| `ui_field_map_point_pane_scalar_deleting_dtor` | `0x00476A40` | high | Destroys the exact RTTI FieldMapPointPane and conditionally frees the complete object. |
+| `ui_text_field_map_point_pane_scalar_deleting_dtor` | `0x00476A70` | high | Destroys the exact RTTI TextFieldMapPointPane through its Pane base and conditionally frees the complete object. |
+| `ui_field_map_point_pane_dtor` | `0x00476AA0` | high | Destroys the FieldMapPointPane Pane base during constructor cleanup. |
+| `ui_image_field_map_point_pane_scalar_deleting_dtor` | `0x00476AC0` | high | Destroys the exact RTTI ImageFieldMapPointPane through its Pane base and conditionally frees the complete object. |
+| `ui_field_map_point_list_ctor` | `0x00476AF0` | high | Constructs the sentinel-based list that owns FieldMapPointPane pointers. |
+| `ui_field_map_point_list_dtor` | `0x00476B50` | high | Clears every point-pointer node and frees the list sentinel. |
+| `ui_field_map_point_list_clear` | `0x00476BC0` | high | Unlinks and frees every point-pointer node while preserving the sentinel. |
+| `ui_field_map_point_list_destroy_sentinel` | `0x00476C50` | high | Frees the point-pointer list sentinel node. |
+| `ui_field_map_point_pointer_dtor` | `0x00476C80` | high | Trivial destructor for a FieldMapPointPane pointer stored in a list node. |
+| `ui_field_map_point_list_allocate_nodes` | `0x00476C90` | high | Performs checked allocation of 12-byte point-pointer list nodes. |
+| `ui_field_map_point_list_insert_before` | `0x00476D00` | high | Creates and links a point-pointer node before the selected list position. |
+| `ui_field_map_point_list_create_node` | `0x00476D90` | high | Allocates a point-pointer node and initializes its links and stored pointer. |
+| `ui_field_map_point_list_create_node_cleanup` | `0x00476E02` | high | Frees a partially constructed point-pointer node and rethrows after node construction fails. |
+| `ui_field_map_point_pointer_copy_ctor` | `0x00476E50` | high | Copy-constructs the FieldMapPointPane pointer stored in a new list node. |
+| `ui_field_map_pane_timer_scalar_deleting_dtor_thunk` | `0x00476E90` | high | Adjusts the TimerHandler secondary-base pointer before FieldMapPane scalar deletion. |
+| `ui_field_map_balloon_timer_scalar_deleting_dtor_thunk` | `0x00476EA0` | high | Adjusts the TimerHandler secondary-base pointer before FieldMapBalloonPane scalar deletion. |
+| `ui_field_map_point_timer_scalar_deleting_dtor_thunk` | `0x00476EB0` | high | Adjusts the TimerHandler secondary-base pointer before FieldMapPointPane scalar deletion. |
+| `ui_text_field_map_point_timer_scalar_deleting_dtor_thunk` | `0x00476EC0` | high | Adjusts the TimerHandler secondary-base pointer before TextFieldMapPointPane scalar deletion. |
+| `ui_image_field_map_point_timer_scalar_deleting_dtor_thunk` | `0x00476ED0` | high | Adjusts the TimerHandler secondary-base pointer before ImageFieldMapPointPane scalar deletion. |
 | `ui_load_field_map_assets` | `0x00476EE0` | high | Loads the field-name EPF background, optional PAL, required TXT metadata, palette list, and locally styled waypoint records. |
 | `ui_game_message_pane_ctor` | `0x0047C2A0` | high | Constructs the RTTI-backed four-row floating GameMessagePane used for short colored notices. |
 | `ui_game_message_pane_append_formatted_rgb` | `0x0047C5C0` | high | Parses inline color markup and appends colored byte cells to the fading GameMessagePane overlay. |
@@ -2616,6 +2660,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_archive_pointer_vector_dtor` | `0x00473C20` | high | Frees the pointer vector allocation and clears its begin, end, and capacity pointers. |
 | `file_archive_pointer_vector_insert_n` | `0x00473C80` | high | Inserts repeated pointer values into the archive-owned vector, growing its allocation when required. |
 | `file_archive_pointer_vector_insert_n_cleanup` | `0x00473EE9` | high | Exception cleanup for a partially constructed replacement allocation during pointer-vector insertion. |
+| `file_archive_pointer_vector_insert_n_rethrow_cleanup` | `0x0047409E` | high | Restores pointer-vector construction state and rethrows after insertion fails. |
+| `file_archive_pointer_vector_allocate` | `0x00474260` | high | Performs checked allocation for an array of four-byte expanded-entry pointers. |
+| `file_archive_pointer_vector_copy_range` | `0x004742D0` | high | Copies a contiguous pointer range into replacement vector storage and returns its new end. |
 | `file_load_variant_color_table` | `0x0047DEB0` | medium | Loads one numbered color table family used by renderable assets. |
 | `file_hea_build_row_views` | `0x00487380` | high | Clips a mask-canvas rectangle and builds one run pointer per pixel scanline; it scans horizontal band checkpoints but client 7.41 always uses band 0's row-offset table. |
 | `file_hea_open` | `0x004875B0` | high | Maps the HEA header, band array, row offsets, and packed run stream. |

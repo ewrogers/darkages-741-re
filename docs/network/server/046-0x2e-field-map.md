@@ -58,6 +58,8 @@ The text metadata is keyed by an exact server node-name match. When a name match
 
 This split is important for server authors. The server controls every destination, but an installed client can control the icon and visible position of a recognized waypoint. A new or unmatched name still appears as text at the server coordinates.
 
+When `FieldMapPane` joins the live screen, it registers every point child, attaches any locally configured point animations, and creates the `FieldMapBalloonPane` marker. Its unregister path removes those children in the reverse lifetime, queues owned panes for deletion, and restores `legend.pal`. The point-pointer list owns only the child pointers; pane deletion remains part of the UI lifetime path.
+
 ## Pointer and timing flow
 
 Moving over a point updates its hover state and redraws it. Releasing the left button over the point schedules the selection through `FieldMapPane`'s timer handler; the pointer handler does not send a packet directly.
