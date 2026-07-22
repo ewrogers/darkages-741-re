@@ -198,6 +198,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_manager_post_text_input_enabled` | `0x0048E940` | high | Posts private window message 0x5E2 with wParam 1 and lParam 2. |
 | `input_manager_post_text_input_disabled` | `0x0048E960` | high | Posts private window message 0x5E2 with wParam 0 and lParam 2. |
 | `input_translate_win32_message` | `0x0048E980` | high | Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events. |
+| `input_manager_set_focused_pane` | `0x0048F480` | high | Changes the focused input pane and notifies the old and new live panes. |
+| `input_manager_get_focused_pane` | `0x0048F500` | high | Returns the pane currently retained as InputMan's focused input owner. |
+| `input_manager_read_composition_string` | `0x0048F520` | high | Reads one ANSI IME composition string and writes two trailing zero bytes. |
+| `input_ime_get_default_window` | `0x0048F580` | high | Thin wrapper over ImmGetDefaultIMEWnd. |
+| `input_ime_create_context` | `0x0048F5A0` | high | Thin wrapper over ImmCreateContext. |
+| `input_ime_acquire_main_window_context` | `0x0048F5B0` | high | Acquires the IME context associated with the main client window. |
+| `input_ime_release_main_window_context` | `0x0048F5D0` | high | Releases an IME context acquired from the main client window. |
+| `input_ime_associate_context` | `0x0048F5F0` | high | Thin wrapper over ImmAssociateContext. |
+| `input_ime_set_open_status` | `0x0048F610` | high | Thin wrapper over ImmSetOpenStatus. |
+| `input_ime_get_property` | `0x0048F630` | high | Thin wrapper over ImmGetProperty. |
+| `input_ime_destroy_context` | `0x0048F650` | high | Thin wrapper over ImmDestroyContext. |
+| `input_ime_get_conversion_status` | `0x0048F670` | high | Thin wrapper over ImmGetConversionStatus. |
+| `input_ime_get_open_status` | `0x0048F690` | high | Thin wrapper over ImmGetOpenStatus. |
+| `input_ime_get_candidate_list` | `0x0048F6B0` | high | Thin wrapper over the ANSI ImmGetCandidateListA API. |
+| `input_ime_get_composition_string` | `0x0048F6E0` | high | Thin wrapper over the ANSI ImmGetCompositionStringA API. |
+| `input_manager_scalar_deleting_dtor` | `0x0048F710` | high | Destroys an InputMan and optionally releases its allocation. |
+| `input_manager_register_global` | `0x0048F740` | high | Registers the containing InputMan as the process-global text-input service. |
+| `input_manager_unregister_global` | `0x0048F780` | high | Clears the process-global InputMan when this instance is registered. |
+| `input_event_manager_is_registered` | `0x0048F7C0` | high | Reports whether the separate InputEventManager singleton exists. |
 | `input_map_key_to_world_direction` | `0x005F0B50` | high | Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3. |
 
 ## UI
@@ -1438,15 +1457,40 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_ime_candidate_pane_unregister_global` | `0x0048E600` | high | Clears the process-global IMECandidatePane when this instance is registered. |
 | `ui_ime_candidate_pane_adjusted_deleting_dtor` | `0x0048E640` | high | Adjusts the TimerHandler subobject pointer before candidate-pane destruction. |
 | `ui_inventory_pane_ctor` | `0x0048F7E0` | high | Constructs exact RTTI class InventoryPane_A, clears its 60 direct InvItemPane pointers, and initializes its selection state. |
+| `ui_inventory_pane_dtor` | `0x0048F8B0` | high | Destroys all 60 item child panes before releasing the InventoryPane_A base. |
+| `ui_inventory_pane_set_layout_owner` | `0x0048F980` | high | Retains the inventory layout owner and copies its active grid dimensions. |
+| `ui_inventory_pane_reattach` | `0x0048F9E0` | high | Detaches the pane, changes its layout owner, applies placement, and registers it again. |
+| `ui_inventory_pane_handle_item_event` | `0x0048FA50` | high | Handles item-child pointer activity, selection, slot changes, and delayed completion. |
+| `ui_inventory_pane_handle_item_event_epilogue` | `0x0048FC2D` | high | Shared compiler epilogue entered by the InventoryPane_A item-event handler. |
+| `ui_inventory_pane_register_items` | `0x0048FE00` | high | Registers every populated InvItemPane child against its computed slot rectangle. |
+| `ui_inventory_pane_register_screen` | `0x0048FEB0` | high | Registers InventoryPane_A in the screen hierarchy, then attaches its populated item children. |
+| `ui_inventory_pane_unregister_items` | `0x0048FEF0` | high | Detaches every populated InvItemPane child from screen and event ownership. |
+| `ui_inventory_pane_unregister_screen` | `0x0048FF60` | high | Detaches item children before removing InventoryPane_A from the screen hierarchy. |
+| `ui_inventory_pane_handle_pointer_event` | `0x0048FF90` | high | Updates the item-description UI for the slot under the pointer and consumes presses inside the pane. |
 | `ui_inventory_pane_handle_network_event` | `0x004900C0` | high | InventoryPane_A and derived ItemInventoryPane route SAddInventory, SRemoveInventory, and SStatus to their local update paths. |
+| `ui_inventory_pane_draw_content` | `0x00490160` | high | Draws the inventory background and a three-line outline around the selected slot. |
+| `ui_inventory_pane_close` | `0x00490270` | high | Hides InventoryPane_A and notifies its owning inventory manager. |
+| `ui_inventory_pane_get_slot_rect` | `0x004902B0` | high | Maps a zero-based slot to the active grid rectangle, with slot 59 forced to the final cell. |
+| `ui_inventory_pane_hit_test_slot` | `0x004903E0` | high | Maps pane coordinates to one of 60 inventory slots and confirms the point lies inside its rectangle. |
 | `ui_inventory_create_item` | `0x00490540` | high | Allocates a 0x248-byte RTTI InvItemPane, inserts it into one of 60 inventory slots, and passes all SAddInventory item fields to its constructor. |
 | `ui_inventory_remove_slot` | `0x004907A0` | high | Releases the live InvItemPane for a one-based inventory slot and clears its direct pointer entry. |
+| `ui_inventory_pane_update_gold` | `0x00490820` | high | Creates or updates the synthetic slot-60 Gold item pane and invalidates its rectangle. |
 | `ui_inventory_activate_slot` | `0x00490960` | high | Converts a one-based slot to InventoryPane_A's direct InvItemPane pointer entry and activates the item when that entry is live. |
+| `ui_inventory_pane_get_item` | `0x004909A0` | high | Returns the InvItemPane pointer for a validated one-based slot. |
 | `ui_inventory_add_item_from_packet` | `0x004909E0` | high | Accepts SAddInventory slots 1 through 60, replaces an occupied UI slot, and creates a new InvItemPane from the decoded fields. |
+| `ui_inventory_add_item_from_raw_body` | `0x00490AA0` | high | Dormant raw-body SAddInventory parser that uses the same item field order as the active object path. |
 | `ui_inventory_remove_item_from_packet` | `0x00490D30` | high | Accepts SRemoveInventory slots 1 through 60 and removes the matching live InvItemPane when present. |
+| `ui_inventory_remove_item_from_raw_body` | `0x00490D90` | high | Dormant raw-body SRemoveInventory parser that validates and removes one slot. |
+| `ui_inventory_update_gold_from_raw_status_body` | `0x00490E10` | high | Dormant raw-body SStatus parser that locates gold after the flag-selected optional fields. |
 | `ui_inventory_update_gold_from_status_packet` | `0x00490F10` | high | Copies SStatus gold into the inventory pane and redraws its currency display. |
 | `ui_new_skill_inventory_pane_ctor` | `0x00491050` | high | Constructs exact RTTI class NewSkillInventoryPane with a 90-entry NewInventoryPane&lt;SkillInvItemPane&gt; base. |
+| `ui_new_skill_inventory_pane_dtor` | `0x00491130` | high | Restores NewSkillInventoryPane vtables and destroys its templated inventory base. |
+| `ui_new_skill_inventory_pane_select_page` | `0x00491160` | high | Selects one of two 12-column skill pages and clears compact mode. |
+| `ui_new_skill_inventory_pane_select_compact_mode` | `0x00491240` | high | Selects the six-column compact skill layout. |
+| `ui_new_skill_inventory_pane_handle_item_event` | `0x004912C0` | high | Handles SkillInvItemPane pointer activity, selection, and slot-change requests. |
+| `ui_new_skill_inventory_pane_handle_pointer_event` | `0x004913D0` | high | Updates the skill-description UI for the visible slot under the pointer. |
 | `ui_skill_inventory_action_delay_timer` | `0x004914B0` | high | NewSkillInventoryPane TimerHandler callback for ID 0; resolves the one-based slot payload and clears action_delay_active on the item currently occupying that slot. |
+| `ui_new_skill_inventory_pane_activate_at_point` | `0x00491500` | high | Resolves the visible skill item at one coordinate and invokes normal activation. |
 | `ui_skill_inventory_create_skill_item` | `0x004915B0` | high | Allocates a 0x348-byte SkillInvItemPane from the SAddSkill slot, icon, and name, then inserts it at slot - 1. |
 | `ui_skill_inventory_remove_slot` | `0x00491670` | high | Converts a one-based skill slot to the skill inventory's zero-based removal index. |
 | `ui_skill_inventory_handle_network_event` | `0x00491690` | high | NewSkillInventoryPane network-event handler routes SAddSkill, SRemoveSkill, and SActionDelay selector 1 to their UI paths. |
@@ -1455,7 +1499,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_skill_inventory_apply_action_delay` | `0x00491850` | high | Accepts SActionDelay selector 1 and slots 1 through 90, sets the live item delay flag, starts the skill progress visual, and schedules the inventory expiry timer. |
 | `ui_skill_inventory_change_slot` | `0x00491920` | high | Validates a NewSkillInventoryPane drag destination, rejects slots divisible by 36 and entries under SActionDelay, then requests CChangeSlot category 2. |
 | `ui_new_spell_inventory_pane_ctor` | `0x004919E0` | high | Constructs exact RTTI class NewSpellInventoryPane and initializes its 90-entry spell-item pointer array. |
+| `ui_new_spell_inventory_pane_dtor` | `0x00491AC0` | high | Destroys the shared SpellDelayControlPane before releasing the templated spell inventory base. |
+| `ui_new_spell_inventory_pane_register_event_handler` | `0x00491B60` | high | Registers the spell inventory and lazily creates the shared SpellDelayControlPane. |
+| `ui_new_spell_inventory_pane_select_page` | `0x00491C00` | high | Selects one of two 12-column spell pages and clears compact mode. |
+| `ui_new_spell_inventory_pane_select_compact_mode` | `0x00491CE0` | high | Selects the six-column compact spell layout. |
+| `ui_new_spell_inventory_pane_handle_item_event` | `0x00491D60` | high | Handles SpellInvItemPane pointer activity, selection, and slot-change requests. |
+| `ui_new_spell_inventory_pane_handle_pointer_event` | `0x00491E90` | high | Updates the spell-description UI for the visible slot under the pointer. |
 | `ui_spell_inventory_action_delay_timer` | `0x00491F70` | high | NewSpellInventoryPane TimerHandler callback for ID 0; resolves the one-based slot payload and clears action_delay_active on the current spell item. |
+| `ui_new_spell_inventory_pane_activate_at_point` | `0x00491FC0` | high | Resolves the visible spell item at one coordinate and invokes normal activation. |
 | `ui_spell_inventory_create_spell_item` | `0x00492070` | high | Allocates SpellInvItemPane and passes the SAddSpell slot, icon, argument type, name, prompt, and cast-line count to its constructor. |
 | `ui_spell_inventory_remove_slot` | `0x00492140` | high | Converts a one-based spell slot to the inventory container's zero-based index and removes the corresponding UI item. |
 | `ui_spell_inventory_handle_network_event` | `0x00492160` | high | NewSpellInventoryPane network-event handler routes SAddSpell, SRemoveSpell, and SActionDelay selector 0 to the matching UI paths. |

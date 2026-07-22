@@ -39,6 +39,8 @@ Both consumers accept slots `1` through `60` and use `slot - 1` as the array ind
 
 `InventoryPane_A` owns 60 `InvItemPane` pointers. `ItemInventoryPane` inherits this implementation. If the selected slot already contains an item, the client releases the old pane and clears its pointer before creating the replacement.
 
+The pane computes item rectangles from the active row and column counts. Zero-based slot `59`, the sixtieth slot, is forced to the final grid cell and is also where the client creates its synthetic `Gold( amount )` item from `SStatus`. Pointer movement uses the same rectangle helper for item descriptions, selection outlines, and slot-change targets.
+
 The new `InvItemPane` retains every wire field. When `can_stack` is nonzero, it changes the visible label to `name[ quantity ]`. This is presentation behavior. The client does not merge inventory stacks locally.
 
 See [Inventory state](../../appendix/runtime/session.md#inventory-state) for the compact gameplay copy and [Item inventory panes](../../appendix/runtime/inventory-ui.md#item-inventory-panes) for the UI layouts.

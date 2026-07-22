@@ -53,6 +53,8 @@ The visual timer stops rescheduling after progress reaches 30 or after the inven
 
 Spell items do not keep a start time, end time, progress value, or repeating visual timer for this feature. Their draw method applies palette index `0x58` to the full icon whenever the delay flag is set. The appearance changes back when the inventory expiry timer clears the flag.
 
+Both newer inventory panes can display two 12-column pages or one six-column compact view. Changing page leaves compact mode, while selecting the compact view rebuilds the visible slot range. Pointer activation first resolves the child item in the active view, so hidden-page entries are not activated by stale coordinates.
+
 ## Expiry ownership
 
 Both inventory handlers convert seconds to milliseconds and schedule timer ID zero on their own `NewSkillInventoryPane` or `NewSpellInventoryPane`. The timer payload is the one-based slot. At expiry, the callback resolves the current item pointer in that slot and clears its delay flag.

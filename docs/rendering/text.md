@@ -71,6 +71,8 @@ The LFT index has a slot for nearly every 16-bit byte value. That does not mean 
 
 Text input follows the same model. The client uses the ANSI IME functions, including `ImmGetCompositionStringA` and `ImmGetCandidateListA`, then posts composition, candidate, and committed-text events to the focused control. Composition and committed-text event buffers retain at most 127 bytes.
 
+Exact RTTI `InputMan` owns a hidden default IME window and a context associated with the main client window. Its composition reader reserves two bytes, calls the ANSI API, releases the temporary context, and writes two zero terminators. Focus changes notify the old and new live panes rather than transferring raw IME pointers between controls.
+
 Exact RTTI `IMECandidatePane` stays registered in the event tree but joins the screen hierarchy only while visible. Candidate event `0x10` copies one page of strings and its selected row; event `0x11` hides the pane. The pane numbers the rows, sizes itself from the longest byte string, and shifts the box as needed to remain inside the fixed 640-by-480 client canvas.
 
 ## Older fixed fonts

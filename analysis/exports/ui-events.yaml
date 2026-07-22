@@ -1339,6 +1339,82 @@ functions:
     name: input_translate_win32_message
     confidence: high
     evidence: "Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events."
+  - address: "0x0048F480"
+    name: input_manager_set_focused_pane
+    confidence: high
+    evidence: "Changes the focused input pane and notifies the old and new live panes."
+  - address: "0x0048F500"
+    name: input_manager_get_focused_pane
+    confidence: high
+    evidence: "Returns the pane currently retained as InputMan's focused input owner."
+  - address: "0x0048F520"
+    name: input_manager_read_composition_string
+    confidence: high
+    evidence: "Reads one ANSI IME composition string and writes two trailing zero bytes."
+  - address: "0x0048F580"
+    name: input_ime_get_default_window
+    confidence: high
+    evidence: "Thin wrapper over ImmGetDefaultIMEWnd."
+  - address: "0x0048F5A0"
+    name: input_ime_create_context
+    confidence: high
+    evidence: "Thin wrapper over ImmCreateContext."
+  - address: "0x0048F5B0"
+    name: input_ime_acquire_main_window_context
+    confidence: high
+    evidence: "Acquires the IME context associated with the main client window."
+  - address: "0x0048F5D0"
+    name: input_ime_release_main_window_context
+    confidence: high
+    evidence: "Releases an IME context acquired from the main client window."
+  - address: "0x0048F5F0"
+    name: input_ime_associate_context
+    confidence: high
+    evidence: "Thin wrapper over ImmAssociateContext."
+  - address: "0x0048F610"
+    name: input_ime_set_open_status
+    confidence: high
+    evidence: "Thin wrapper over ImmSetOpenStatus."
+  - address: "0x0048F630"
+    name: input_ime_get_property
+    confidence: high
+    evidence: "Thin wrapper over ImmGetProperty."
+  - address: "0x0048F650"
+    name: input_ime_destroy_context
+    confidence: high
+    evidence: "Thin wrapper over ImmDestroyContext."
+  - address: "0x0048F670"
+    name: input_ime_get_conversion_status
+    confidence: high
+    evidence: "Thin wrapper over ImmGetConversionStatus."
+  - address: "0x0048F690"
+    name: input_ime_get_open_status
+    confidence: high
+    evidence: "Thin wrapper over ImmGetOpenStatus."
+  - address: "0x0048F6B0"
+    name: input_ime_get_candidate_list
+    confidence: high
+    evidence: "Thin wrapper over the ANSI ImmGetCandidateListA API."
+  - address: "0x0048F6E0"
+    name: input_ime_get_composition_string
+    confidence: high
+    evidence: "Thin wrapper over the ANSI ImmGetCompositionStringA API."
+  - address: "0x0048F710"
+    name: input_manager_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an InputMan and optionally releases its allocation."
+  - address: "0x0048F740"
+    name: input_manager_register_global
+    confidence: high
+    evidence: "Registers the containing InputMan as the process-global text-input service."
+  - address: "0x0048F780"
+    name: input_manager_unregister_global
+    confidence: high
+    evidence: "Clears the process-global InputMan when this instance is registered."
+  - address: "0x0048F7C0"
+    name: input_event_manager_is_registered
+    confidence: high
+    evidence: "Reports whether the separate InputEventManager singleton exists."
   - address: "0x0049C980"
     name: ui_close_desc_pane
     confidence: high
