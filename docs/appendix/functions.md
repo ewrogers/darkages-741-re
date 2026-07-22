@@ -121,6 +121,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `event_recycle` | `0x00463CF0` | high | Returns an Event pointer to the separate pool at EventDispatcher +0x28 without using an intrusive Event field. |
 | `event_queue_push_copy` | `0x00463D10` | high | Copies exactly 0xA8 event bytes into the synchronized pointer queue. |
 | `event_queue_pop_copy` | `0x00463D60` | high | Removes one queued event and copies exactly 0xA8 bytes to the caller. |
+| `event_dispatcher_schedule_focus_state_check` | `0x00463E10` | high | Marks the EventDispatcher focus-state check pending and schedules it from the current timeGetTime value. |
 | `event_register_pane` | `0x00463E40` | high | Sets Pane +0x188 bit 0x02 and inserts the pane through EventHandlerList. |
 | `event_unregister_pane` | `0x00463E80` | high | Clears Pane +0x188 bit 0x02 and removes the pane subtree from EventHandlerList. |
 | `event_post_intro_state` | `0x00463EB0` | high | Queues event type 0x14 with three dword fields for direct intro-state dispatch. |
@@ -171,7 +172,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `event_is_keyboard_or_text` | `0x00466720` | high | Returns true for event types 0x08 through 0x0C. |
 | `event_is_network` | `0x00466760` | high | Returns true only for event type 0x13. |
 | `event_is_application` | `0x004667A0` | high | Returns true for event types 0x0D through 0x12. |
+| `event_dispatch_or_queue_passthrough_wrapper` | `0x004670D0` | high | Thin wrapper that forwards an Event pointer to the local dispatch-or-queue passthrough. |
 | `event_dispatch_or_queue` | `0x004670F0` | high | Dispatches on app_main_thread_id and copies the Event into the queue from any other thread. |
+| `event_dispatch_or_queue_passthrough` | `0x004682E0` | high | Thin passthrough to the shared EventDispatcher dispatch-or-queue entry point. |
 | `event_scalar_deleting_dtor` | `0x004689D0` | high | Calls event_dtor and frees the Event when the MSVC deleting-destructor flag requests it. |
 | `event_dispatcher_is_available` | `0x00468AB0` | high | Returns whether the application-wide EventDispatcher singleton currently exists. |
 | `event_handle_intro_state` | `0x004ACA50` | high | Dispatches intro states 0, 1, and 2 around Bink playback. |
@@ -211,6 +214,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_post_alternate_key` | `0x00466FA0` | medium | Public EventMan entry for type 0x0C; the exact semantic distinction from normal key events remains unresolved. |
 | `input_set_pointer_position_and_emit` | `0x00467130` | high | Clamps a logical 640x480 pointer position, calls SetCursorPos, updates EventMan state, and emits pointer-move event type 0. |
 | `input_get_pointer_position` | `0x004672B0` | high | Copies EventMan's current logical pointer coordinates to the caller. |
+| `input_copy_modifier_flags` | `0x004672D0` | high | Copies the InputEventManager modifier-state word to caller storage. |
 | `input_emit_pointer_move` | `0x004672F0` | high | Builds pointer event type 0x00 from EventMan coordinates, flags, and message time. |
 | `input_emit_left_button_down` | `0x004673F0` | high | Builds type 0x01 or synthesized double-click type 0x02; a match requires the same saved button, less than 1,000 ms, and Manhattan distance at most two logical pixels. |
 | `input_emit_left_button_up` | `0x00467680` | high | Builds pointer event type 0x03 and clears the left-held flag. |
@@ -1156,6 +1160,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_equip_pane_handle_action` | `0x0045F260` | high | EquipPane action 0x19 allocates the exact RTTI FamilyListDialogPane. |
 | `ui_equip_pane_draw` | `0x0045F3B0` | high | Draws EquipPane identity, equipment slots, profile state, controls, and optional character preview. |
 | `ui_equip_pane_draw_emoticon` | `0x0045FBD0` | high | Draws the selected HumanState image and right-hand emoticon option label in EquipPane. |
+| `ui_equip_pane_set_character_preview_state` | `0x0045FD50` | high | Marks the EquipPane character preview ready, copies the 0x30-byte human appearance state, and invalidates the visible pane. |
 | `ui_equip_pane_request_remove_slots_1_and_3` | `0x0045FDA0` | high | Sends CRemoveEquipment for equipment slots 1 and 3 through the common builder. |
 | `ui_equip_pane_apply_self_look` | `0x0045FDC0` | high | Copies SSelfLook identity, nation, group, class, and legend state into EquipPane and its dependent panes. |
 | `ui_equip_pane_apply_equipment_detail_body` | `0x0045FFA0` | high | Parses one equipment-detail body into the selected EquipPane slot and invalidates the pane. |
@@ -1164,6 +1169,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_equip_pane_remove_equipment_from_packet` | `0x004602B0` | high | Clears the selected EquipPane sprite, name, and durability fields without clearing the retained dye byte. |
 | `ui_equip_pane_refresh_group_toggle_button` | `0x004603C0` | high | Refreshes the EquipPane group-toggle button from the current local group state. |
 | `ui_equip_pane_toggle_group` | `0x004604A0` | high | Sends the empty CGroupToggle body, flips local group state, and refreshes the button. |
+| `ui_equip_pane_timer_callback_noop` | `0x004605B0` | high | EquipPane TimerHandler callback; intentionally returns false without changing pane state. |
 | `ui_equip_pane_forward_portrait_profile_body` | `0x004605C0` | high | Forwards the remaining portrait and profile body to EquipPane's attached legend view. |
 | `ui_group_view_pane_ctor` | `0x00460600` | high | Constructs exact RTTI GroupViewPane and initializes its owner-relative collapsed presentation. |
 | `ui_group_view_pane_dtor` | `0x00460760` | high | Destroys exact RTTI GroupViewPane and its Pane base state. |
@@ -1181,6 +1187,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_user_look_pane_draw_emoticon` | `0x00462850` | high | Draws the selected HumanState image and right-hand emoticon option label in UserLookPane. |
 | `ui_user_look_pane_apply_body` | `0x004629D0` | high | Parses viewed character ID, 18 equipment entries, display fields, legends, portrait, and profile into UserLookPane. |
 | `ui_user_look_pane_send_exchange_start` | `0x00462EB0` | high | Builds CExchange action 0 with the viewed character ID stored at UserLookPane +0x1954. |
+| `ui_user_look_pane_set_character_preview_state` | `0x00462F60` | high | Marks the UserLookPane character preview ready, copies the 0x30-byte human appearance state, and invalidates the visible pane. |
 | `ui_equip_pane_scalar_deleting_dtor` | `0x00462FB0` | high | Scalar deleting destructor for exact RTTI EquipPane. |
 | `ui_group_view_pane_scalar_deleting_dtor` | `0x00462FE0` | high | Scalar deleting destructor for exact RTTI GroupViewPane. |
 | `ui_user_look_pane_scalar_deleting_dtor` | `0x00463010` | high | Scalar deleting destructor for exact RTTI UserLookPane. |
@@ -3507,6 +3514,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_canvas_blend_rect` | `0x00454730` | high | Blends a clipped rectangle toward a color using a uniform weight from 0 through 32. |
 | `render_average_pixels` | `0x004548B0` | high | Combines two 16-bit pixels with the fixed component-average lookup path. |
 | `render_clip_blit_rects` | `0x004548F0` | high | Clips source and destination rectangles together and adjusts their origins for horizontal or vertical flips. |
+| `render_get_image_cache_manager` | `0x00454B90` | high | Returns the process-wide ImageCacheMan singleton used by fixed-image blit resolution. |
 | `render_canvas_set_pixel_draw_color` | `0x00454BA0` | high | Writes the Canvas primary draw color to one clipped pixel. |
 | `render_canvas_set_pixel_color` | `0x00454BD0` | high | Writes an explicit 16-bit color to one clipped Canvas pixel. |
 | `render_canvas_set_pixel_rgb` | `0x00454C80` | high | Packs an RGB triplet and writes it to one clipped Canvas pixel. |
@@ -4699,6 +4707,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `expression_divide_numeric_scalar_deleting_dtor` | `0x0046EBD0` | high | Compiler scalar-deleting destructor for divideOperator&lt;double, double, double&gt;. |
 | `expression_and_boolean_scalar_deleting_dtor` | `0x0046EC00` | high | Compiler scalar-deleting destructor for andOperator&lt;bool, bool, bool&gt;. |
 | `expression_or_boolean_scalar_deleting_dtor` | `0x0046EC30` | high | Compiler scalar-deleting destructor for orOperator&lt;bool, bool, bool&gt;. |
+| `expression_operator_deque_map_free_cleanup` | `0x0046EC60` | high | Compiler cleanup helper that frees the operator deque's allocated map pointer. |
+| `expression_node_deque_map_free_cleanup` | `0x0046EC90` | high | Compiler cleanup helper that frees the expression-node deque's allocated map pointer. |
 | `expression_operator_stack_top` | `0x0046ECC0` | high | Forms an end iterator, retreats one element, and returns the top 12-byte operator record. |
 | `expression_operator_stack_push` | `0x0046ED50` | high | Appends one 12-byte operator record to the deque-backed parser stack. |
 | `expression_operator_stack_pop` | `0x0046EE60` | high | Removes the final 12-byte operator record and resets the deque offset when the stack becomes empty. |
@@ -4709,6 +4719,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `expression_node_stack_pop` | `0x0046F210` | high | Removes the final expression-node pointer and resets the deque offset when the stack becomes empty. |
 | `expression_node_deque_release_storage` | `0x0046F2C0` | high | Pops all node pointers and frees every allocated deque block and the block map. |
 | `expression_node_deque_map_dtor` | `0x0046F390` | high | Frees the expression-node deque's block map and clears its pointer. |
+| `expression_operator_pointer_noop_dtor` | `0x0046F410` | high | Trivial destructor hook for an operator pointer stored in the expression deque. |
+| `expression_node_pointer_noop_dtor` | `0x0046F420` | high | Trivial destructor hook for an expression-node pointer stored in the expression deque. |
 | `expression_operator_deque_end_iterator` | `0x0046F430` | high | Builds an iterator at the logical end of the operator deque. |
 | `expression_operator_deque_grow_map` | `0x0046F4E0` | high | Expands and recenters the operator deque's block-pointer map. |
 | `expression_operator_deque_ctor` | `0x0046F890` | high | Initializes an empty deque sized for 12-byte operator records. |

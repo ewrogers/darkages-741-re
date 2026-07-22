@@ -939,6 +939,10 @@ functions:
     name: rect_intersect_or_empty
     confidence: high
     evidence: "Computes a nonempty rectangle intersection or writes the shared empty rectangle and returns false."
+  - address: "0x00454B90"
+    name: render_get_image_cache_manager
+    confidence: high
+    evidence: "Returns the process-wide ImageCacheMan singleton used by fixed-image blit resolution."
   - address: "0x00454BA0"
     name: render_canvas_set_pixel_draw_color
     confidence: high

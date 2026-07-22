@@ -43,6 +43,8 @@ Most producers construct an `Event` on the stack, set its signed type byte, fill
 
 Main-thread events are dispatched immediately. Events from another thread are copied into a synchronized queue. The dispatcher keeps a separate pool of reusable `Event` objects for that queue, but the pool stores pointers outside the objects. Neither allocation nor recycling uses `Event +0x08` as a link.
 
+Changing a dialog's focused control also schedules a small dispatcher-owned focus-state check from the current `timeGetTime()` value. The main tick consumes that pending timestamp separately from normal queued events and pane timers.
+
 `EventQueue` and the timer-side `EventStack` both own their stored event pointers. Their deletion callbacks invoke the event's virtual deleting destructor. Queue push and pop operations use the `EventDispatcher` critical section and copy the complete fixed-size event value across the thread boundary.
 
 The underlying `PointerQueue<Event>` uses linked blocks of 1,024 pointers. A fully consumed block rotates to the reusable tail, while a partially filled block resets its read and write indexes in place. `PointerStack<Event>` begins with 1,024 pointers and grows in 1,024-entry steps. These are internal storage choices, not limits on the number of queued events or timers.

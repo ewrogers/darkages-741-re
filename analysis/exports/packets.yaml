@@ -907,6 +907,10 @@ functions:
     name: ui_equip_pane_draw_emoticon
     confidence: high
     evidence: "Draws the selected HumanState image and right-hand emoticon option label in EquipPane."
+  - address: "0x0045FD50"
+    name: ui_equip_pane_set_character_preview_state
+    confidence: high
+    evidence: "Marks the EquipPane character preview ready, copies the 0x30-byte human appearance state, and invalidates the visible pane."
   - address: "0x0045FDA0"
     name: ui_equip_pane_request_remove_slots_1_and_3
     confidence: high
@@ -943,6 +947,10 @@ functions:
     name: ui_equip_pane_toggle_group
     confidence: high
     evidence: "Sends the empty CGroupToggle body, flips local group state, and refreshes the button."
+  - address: "0x004605B0"
+    name: ui_equip_pane_timer_callback_noop
+    confidence: high
+    evidence: "EquipPane TimerHandler callback; intentionally returns false without changing pane state."
   - address: "0x004605C0"
     name: ui_equip_pane_forward_portrait_profile_body
     confidence: high
@@ -1011,6 +1019,10 @@ functions:
     name: net_send_group
     confidence: high
     evidence: "UserLookPane calls this opcode 0x2E builder with a length-prefixed user name."
+  - address: "0x00462F60"
+    name: ui_user_look_pane_set_character_preview_state
+    confidence: high
+    evidence: "Marks the UserLookPane character preview ready, copies the 0x30-byte human appearance state, and invalidates the visible pane."
   - address: "0x00462FB0"
     name: ui_equip_pane_scalar_deleting_dtor
     confidence: high

@@ -45,6 +45,8 @@ The RTTI-backed `Image` type is a lightweight rectangle plus three pixel-plane d
 
 `ImageCacheMan` owns two specialized caches. `DamageEffectImageCache` prepaints one fixed 1-by-26 atlas of 27-by-5 cells. `HumanImageCache` keeps up to 40 active `HumanState` buckets, each with 40 keyed composed sprites. A hit returns a subcanvas of the retained sprite; a miss renders the human once and stores its canvas while the cache remains below its 24 MiB pixel budget.
 
+The manager is process-wide. `render_get_image_cache_manager` supplies the same instance to the image and canvas blitters when they need to resolve a fixed image before software drawing.
+
 ## Read next
 
 - [Renderer lifecycle](lifecycle.md) covers setup, presentation, and cleanup.

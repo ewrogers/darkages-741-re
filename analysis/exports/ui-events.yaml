@@ -603,6 +603,10 @@ functions:
     name: event_queue_pop_copy
     confidence: high
     evidence: "Removes one queued event and copies exactly 0xA8 bytes to the caller."
+  - address: "0x00463E10"
+    name: event_dispatcher_schedule_focus_state_check
+    confidence: high
+    evidence: "Marks the EventDispatcher focus-state check pending and schedules it from the current timeGetTime value."
   - address: "0x00463E40"
     name: event_register_pane
     confidence: high
@@ -927,6 +931,10 @@ functions:
     name: input_post_alternate_key
     confidence: medium
     evidence: "Public EventMan entry for type 0x0C; the exact semantic distinction from normal key events remains unresolved."
+  - address: "0x004670D0"
+    name: event_dispatch_or_queue_passthrough_wrapper
+    confidence: high
+    evidence: "Thin wrapper that forwards an Event pointer to the local dispatch-or-queue passthrough."
   - address: "0x004670F0"
     name: event_dispatch_or_queue
     confidence: high
@@ -939,6 +947,10 @@ functions:
     name: input_get_pointer_position
     confidence: high
     evidence: "Copies EventMan's current logical pointer coordinates to the caller."
+  - address: "0x004672D0"
+    name: input_copy_modifier_flags
+    confidence: high
+    evidence: "Copies the InputEventManager modifier-state word to caller storage."
   - address: "0x004672F0"
     name: input_emit_pointer_move
     confidence: high
@@ -975,6 +987,10 @@ functions:
     name: input_emit_character
     confidence: high
     evidence: "Builds text event type 0x0B with the character, message time, and current modifiers."
+  - address: "0x004682E0"
+    name: event_dispatch_or_queue_passthrough
+    confidence: high
+    evidence: "Thin passthrough to the shared EventDispatcher dispatch-or-queue entry point."
   - address: "0x00468300"
     name: input_compute_modifier_flags
     confidence: high

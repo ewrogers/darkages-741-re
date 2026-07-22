@@ -191,6 +191,14 @@ functions:
     name: expression_or_boolean_scalar_deleting_dtor
     confidence: high
     evidence: "Compiler scalar-deleting destructor for orOperator<bool, bool, bool>."
+  - address: "0x0046EC60"
+    name: expression_operator_deque_map_free_cleanup
+    confidence: high
+    evidence: "Compiler cleanup helper that frees the operator deque's allocated map pointer."
+  - address: "0x0046EC90"
+    name: expression_node_deque_map_free_cleanup
+    confidence: high
+    evidence: "Compiler cleanup helper that frees the expression-node deque's allocated map pointer."
   - address: "0x0046ECC0"
     name: expression_operator_stack_top
     confidence: high
@@ -231,6 +239,14 @@ functions:
     name: expression_node_deque_map_dtor
     confidence: high
     evidence: "Frees the expression-node deque's block map and clears its pointer."
+  - address: "0x0046F410"
+    name: expression_operator_pointer_noop_dtor
+    confidence: high
+    evidence: "Trivial destructor hook for an operator pointer stored in the expression deque."
+  - address: "0x0046F420"
+    name: expression_node_pointer_noop_dtor
+    confidence: high
+    evidence: "Trivial destructor hook for an expression-node pointer stored in the expression deque."
   - address: "0x0046F430"
     name: expression_operator_deque_end_iterator
     confidence: high
