@@ -483,10 +483,94 @@ functions:
     name: ui_mail_list_dialog_confirm_delete
     confidence: high
     evidence: "Allocates ConfirmDeleteAlert bound to MailListDialog in mail-deletion mode."
+  - address: "0x00423960"
+    name: ui_mail_list_dialog_request_older_page
+    confidence: high
+    evidence: "Requests the mail page preceding the final loaded row ID."
+  - address: "0x004239B0"
+    name: ui_mail_list_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Maps mail-list keyboard shortcuts to paging, compose, reply, open, delete, back, and base handling."
+  - address: "0x00423B90"
+    name: ui_mail_list_dialog_handle_action
+    confidence: high
+    evidence: "Dispatches mail-list control actions for paging, compose, reply, open, delete, and close."
+  - address: "0x00423C50"
+    name: ui_mail_list_update_action_controls
+    confidence: high
+    evidence: "Enables or disables Open, Reply, and Delete controls from the current mail-list selection."
   - address: "0x00423D50"
     name: ui_mail_list_apply_server_body
     confidence: high
     evidence: "Routes active-mail-list SBulletin response types 4 and 7."
+  - address: "0x00423DD0"
+    name: ui_mail_list_apply_list_reply
+    confidence: high
+    evidence: "Parses a mailbox list reply and appends its rows to MailListPane."
+  - address: "0x00424130"
+    name: ui_mail_list_apply_delete_reply
+    confidence: high
+    evidence: "Parses a mail-delete reply, removes the dimmer, and opens the result alert."
+  - address: "0x004242C0"
+    name: ui_mail_list_pane_ctor
+    confidence: high
+    evidence: "Constructs the RTTI-backed MailListPane with its mailbox context."
+  - address: "0x00424330"
+    name: ui_mail_list_insert_row
+    confidence: high
+    evidence: "Builds and inserts one mail row in descending ID order unless it is a duplicate."
+  - address: "0x004243F0"
+    name: ui_mail_list_request_selected_mail
+    confidence: high
+    evidence: "Sends a mail-body request for the selected row."
+  - address: "0x00424440"
+    name: ui_mail_list_delete_selected
+    confidence: high
+    evidence: "Sends a mail-delete request for the selected row."
+  - address: "0x00424490"
+    name: ui_mail_list_select_mail
+    confidence: high
+    evidence: "Finds and selects a loaded mail row by ID."
+  - address: "0x004244D0"
+    name: ui_mail_list_reselect_current
+    confidence: high
+    evidence: "Reapplies the pane's current list selection."
+  - address: "0x00424500"
+    name: ui_mail_list_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Delegates keyboard input and requests an older page when the loaded row count is below capacity."
+  - address: "0x00424560"
+    name: ui_mail_list_pane_handle_pointer_event
+    confidence: high
+    evidence: "Delegates pointer input and requests an older page when scrolling reaches the loaded end."
+  - address: "0x004245C0"
+    name: ui_mail_list_request_latest_page
+    confidence: high
+    evidence: "Requests the newest mailbox page with the initial 0x7FFF cursor."
+  - address: "0x004245F0"
+    name: ui_mail_list_request_older_page
+    confidence: high
+    evidence: "Requests the page before the final loaded mail ID."
+  - address: "0x00424660"
+    name: ui_mail_list_copy_selected_sender
+    confidence: high
+    evidence: "Copies the selected row's sender into a caller buffer."
+  - address: "0x004246A0"
+    name: ui_mail_list_find_mail
+    confidence: high
+    evidence: "Linearly finds a loaded row by signed mail ID."
+  - address: "0x00424700"
+    name: ui_mail_list_find_insert_position
+    confidence: high
+    evidence: "Finds the descending-ID insertion point and rejects duplicate IDs."
+  - address: "0x00424780"
+    name: ui_mail_list_activate_selected_mail
+    confidence: high
+    evidence: "Resolves the owning MailListDialog and opens the selected mail."
+  - address: "0x004247C0"
+    name: ui_mail_list_draw_row
+    confidence: high
+    evidence: "Draws one mail row with read state, sender, date, reply count, and title."
   - address: "0x00424A40"
     name: net_send_bulletin_mail_list_request
     confidence: high
@@ -503,10 +587,46 @@ functions:
     name: ui_mail_dialog_ctor
     confidence: high
     evidence: "Loads _nmailr.txt and parses mail navigation, author, date, title, and string16 content."
+  - address: "0x00425770"
+    name: ui_mail_dialog_delete_current
+    confidence: high
+    evidence: "Requests deletion of the displayed mail and returns to the previous bulletin dialog."
+  - address: "0x004257D0"
+    name: ui_mail_dialog_return_to_list
+    confidence: high
+    evidence: "Returns to the mail list and reselects the displayed mail ID."
+  - address: "0x00425810"
+    name: ui_mail_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Maps keyboard shortcuts to mail navigation, compose, reply, delete, back, and base handling."
+  - address: "0x00425980"
+    name: ui_mail_dialog_handle_action
+    confidence: high
+    evidence: "Dispatches mail-dialog control actions for navigation, compose, reply, delete, back, and close."
+  - address: "0x00425A20"
+    name: ui_mail_dialog_request_adjacent_mail
+    confidence: high
+    evidence: "Sends a previous-or-next mail request and creates a screen dimmer."
+  - address: "0x00425B00"
+    name: ui_mail_dialog_compose_new
+    confidence: high
+    evidence: "Returns from the current mail and opens a blank new-mail dialog."
+  - address: "0x00425B30"
+    name: ui_mail_dialog_reply_to_sender
+    confidence: high
+    evidence: "Returns from the current mail and opens a reply addressed to its sender."
+  - address: "0x00425B70"
+    name: ui_mail_dialog_confirm_delete
+    confidence: high
+    evidence: "Allocates and opens the confirmation alert for the displayed mail."
   - address: "0x00425C00"
     name: ui_mail_apply_server_body
     confidence: high
     evidence: "Routes active-mail SBulletin response type 7 to the operation reply UI."
+  - address: "0x00425C60"
+    name: ui_mail_dialog_apply_delete_reply
+    confidence: high
+    evidence: "Removes the dimmer, parses a mail-delete result message, and displays it."
   - address: "0x00425DF0"
     name: net_send_bulletin_mail_navigation_request
     confidence: high
@@ -515,10 +635,354 @@ functions:
     name: net_send_bulletin_mail_delete_from_detail
     confidence: high
     evidence: "Writes six-byte CBulletin action 5 for the open mail entry."
+  - address: "0x00426000"
+    name: ui_mail_delete_reply_alert_ctor
+    confidence: high
+    evidence: "Constructs RTTI-backed MailDeleteReplyAlert and stores the server result byte."
+  - address: "0x00426050"
+    name: ui_mail_delete_reply_alert_accept
+    confidence: high
+    evidence: "Returns through the mail dialog to its list and reselects the displayed mail."
+  - address: "0x00426080"
+    name: ui_new_mail_dialog_ctor
+    confidence: high
+    evidence: "Constructs NewMailDialog from _nmails.txt with recipient, title, content, Send, and Cancel controls."
+  - address: "0x00426490"
+    name: ui_new_mail_dialog_refresh_mail_list
+    confidence: high
+    evidence: "Asks the previous MailListDialog to reload its newest page."
+  - address: "0x004264C0"
+    name: ui_new_mail_dialog_send
+    confidence: high
+    evidence: "Sends the composed mail, creates a dimmer, and closes on immediate success."
+  - address: "0x00426560"
+    name: ui_new_mail_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Handles tab focus traversal, default action, cancellation, and focused-control keyboard input."
+  - address: "0x00426700"
+    name: ui_new_mail_dialog_apply_server_body
+    confidence: high
+    evidence: "Routes bulletin new-mail server subcommand 6 to the transfer-reply parser."
+  - address: "0x00426760"
+    name: ui_new_mail_dialog_apply_transfer_reply
+    confidence: high
+    evidence: "Removes the dimmer, parses transfer result text, and opens MailTransferReplyAlert."
   - address: "0x004268F0"
     name: net_send_bulletin_mail
     confidence: high
     evidence: "Writes CBulletin action 6 as mailbox ID, receiver, title, and string16 content."
+  - address: "0x00426C00"
+    name: ui_mail_transfer_reply_alert_ctor
+    confidence: high
+    evidence: "Constructs RTTI-backed MailTransferReplyAlert and stores the transfer result byte."
+  - address: "0x00426C50"
+    name: ui_mail_transfer_reply_alert_accept
+    confidence: high
+    evidence: "Refreshes the prior mail list and returns to it when transfer succeeds."
+  - address: "0x00426C90"
+    name: ui_mail_confirm_delete_alert_ctor
+    confidence: high
+    evidence: "Constructs ConfirmDeleteAlert for the displayed mail and stores its mode."
+  - address: "0x00426DA0"
+    name: ui_bulletin_session_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys BulletinSession and optionally frees its complete object."
+  - address: "0x00426DE0"
+    name: ui_bulletin_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys BulletinDialogPane and optionally frees its complete object."
+  - address: "0x00426E30"
+    name: ui_board_list_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys BoardListDialog and optionally frees its complete object."
+  - address: "0x00426E90"
+    name: ui_board_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys BoardListPane and optionally frees its complete object."
+  - address: "0x00426EC0"
+    name: ui_article_list_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys ArticleListDialog and optionally frees its complete object."
+  - address: "0x00426EF0"
+    name: ui_article_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys ArticleListPane and optionally frees its complete object."
+  - address: "0x00426F20"
+    name: ui_article_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys ArticleDialog and optionally frees its complete object."
+  - address: "0x00426F50"
+    name: ui_delete_reply_alert_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys DeleteReplyAlert and optionally frees its complete object."
+  - address: "0x00426FF0"
+    name: ui_new_article_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys NewArticleDialog and optionally frees its complete object."
+  - address: "0x00427020"
+    name: ui_transfer_reply_alert_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys TransferReplyAlert and optionally frees its complete object."
+  - address: "0x00427050"
+    name: ui_mail_list_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys MailListDialog and optionally frees its complete object."
+  - address: "0x00427080"
+    name: ui_mail_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys MailListPane and optionally frees its complete object."
+  - address: "0x004270B0"
+    name: ui_mail_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys MailDialog and optionally frees its complete object."
+  - address: "0x004270E0"
+    name: ui_mail_delete_reply_alert_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys MailDeleteReplyAlert and optionally frees its complete object."
+  - address: "0x00427110"
+    name: ui_new_mail_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys NewMailDialog and optionally frees its complete object."
+  - address: "0x00427170"
+    name: ui_mail_transfer_reply_alert_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys MailTransferReplyAlert and optionally frees its complete object."
+  - address: "0x004271B0"
+    name: ui_mail_confirm_delete_alert_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys ConfirmDeleteAlert and optionally frees its complete object."
+  - address: "0x004271E0"
+    name: ui_bulletin_session_singleton_register
+    confidence: high
+    evidence: "Registers the containing BulletinSession singleton."
+  - address: "0x00427220"
+    name: ui_bulletin_session_singleton_unregister
+    confidence: high
+    evidence: "Clears the BulletinSession singleton when it matches the containing object."
+  - address: "0x00427260"
+    name: ui_delete_reply_alert_singleton_register
+    confidence: high
+    evidence: "Registers the containing DeleteReplyAlert singleton."
+  - address: "0x004272A0"
+    name: ui_delete_reply_alert_singleton_unregister
+    confidence: high
+    evidence: "Clears the DeleteReplyAlert singleton when it matches the containing object."
+  - address: "0x004272E0"
+    name: ui_delete_reply_alert_is_open
+    confidence: high
+    evidence: "Returns whether a DeleteReplyAlert is registered."
+  - address: "0x00427300"
+    name: ui_bulletin_bang_user_batch_session_is_active
+    confidence: high
+    evidence: "Returns whether a BulletinBangUserBatchSession singleton is active."
+  - address: "0x00427320"
+    name: ui_bulletin_bang_user_batch_session_get
+    confidence: high
+    evidence: "Returns the active BulletinBangUserBatchSession singleton."
+  - address: "0x00427330"
+    name: ui_bulletin_bang_user_batch_session_destroy_active
+    confidence: high
+    evidence: "Destroys the active BulletinBangUserBatchSession when present."
+  - address: "0x004273A0"
+    name: ui_mail_confirm_delete_alert_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters ConfirmDeleteAlert's scalar deleting destructor."
+  - address: "0x004273B0"
+    name: ui_mail_list_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters MailListPane's scalar deleting destructor."
+  - address: "0x004273C0"
+    name: ui_mail_list_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters MailListDialog's scalar deleting destructor."
+  - address: "0x004273D0"
+    name: ui_transfer_reply_alert_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters TransferReplyAlert's scalar deleting destructor."
+  - address: "0x004273E0"
+    name: ui_mail_transfer_reply_alert_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters MailTransferReplyAlert's scalar deleting destructor."
+  - address: "0x004273F0"
+    name: ui_article_list_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters ArticleListPane's scalar deleting destructor."
+  - address: "0x00427400"
+    name: ui_bulletin_session_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters BulletinSession's scalar deleting destructor."
+  - address: "0x00427410"
+    name: ui_board_list_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters BoardListPane's scalar deleting destructor."
+  - address: "0x00427420"
+    name: ui_bulletin_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters BulletinDialogPane's scalar deleting destructor."
+  - address: "0x00427430"
+    name: ui_new_article_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters NewArticleDialog's scalar deleting destructor."
+  - address: "0x00427440"
+    name: ui_article_list_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters ArticleListDialog's scalar deleting destructor."
+  - address: "0x00427450"
+    name: ui_mail_delete_reply_alert_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters MailDeleteReplyAlert's scalar deleting destructor."
+  - address: "0x00427460"
+    name: ui_article_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters ArticleDialog's scalar deleting destructor."
+  - address: "0x00427470"
+    name: ui_mail_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters MailDialog's scalar deleting destructor."
+  - address: "0x00427480"
+    name: ui_delete_reply_alert_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters DeleteReplyAlert's scalar deleting destructor."
+  - address: "0x00427490"
+    name: ui_new_mail_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters NewMailDialog's scalar deleting destructor."
+  - address: "0x004274A0"
+    name: ui_board_list_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this and enters BoardListDialog's scalar deleting destructor."
+  - address: "0x004274B0"
+    name: text_remove_ascii_spaces_dbcs_safe
+    confidence: high
+    evidence: "Removes ASCII spaces while preserving DBCS trail bytes."
+  - address: "0x00427530"
+    name: ui_bulletin_string_list_pane_ctor
+    confidence: high
+    evidence: "Constructs StringListPane with a fixed line limit and reusable text buffer."
+  - address: "0x004275E0"
+    name: ui_bulletin_string_list_pane_dtor
+    confidence: high
+    evidence: "Releases StringListPane's text buffer and destroys its list-pane base."
+  - address: "0x00427630"
+    name: ui_bulletin_string_list_set_lines
+    confidence: high
+    evidence: "Replaces pane rows with DBCS-safe truncated strings."
+  - address: "0x00427750"
+    name: ui_bulletin_string_list_draw_row
+    confidence: high
+    evidence: "Draws one StringListPane row with its configured byte limit and color."
+  - address: "0x004277E0"
+    name: ui_bulletin_bang_notify_dialog_ctor
+    confidence: high
+    evidence: "Constructs BulletinBangNotifyDialog from lbang.txt."
+  - address: "0x00427AF0"
+    name: ui_bulletin_bang_notify_dialog_dtor
+    confidence: high
+    evidence: "Destroys BulletinBangNotifyDialog through its DialogPane base."
+  - address: "0x00427B20"
+    name: ui_bulletin_bang_notify_dialog_handle_action
+    confidence: high
+    evidence: "Reports OK or Cancel to the active bang session and queues dialog closure."
+  - address: "0x00427BD0"
+    name: time_get_utc_date_yyyymmdd
+    confidence: high
+    evidence: "Returns the current UTC date as year*10000 + month*100 + day."
+  - address: "0x00427C20"
+    name: ui_bulletin_bang_user_date_cache_initialize
+    confidence: high
+    evidence: "Allocates the process-local user warning-date map."
+  - address: "0x00427CB0"
+    name: ui_bulletin_bang_user_date_cache_shutdown
+    confidence: high
+    evidence: "Destroys and frees the process-local user warning-date map."
+  - address: "0x00427D10"
+    name: ui_bulletin_bang_user_date_cache_lookup
+    confidence: high
+    evidence: "Looks up a user name and returns its cached warning date."
+  - address: "0x00427E20"
+    name: ui_bulletin_bang_user_date_cache_insert
+    confidence: high
+    evidence: "Inserts a user name and warning date when absent."
+  - address: "0x00427F90"
+    name: ui_bulletin_bang_user_batch_session_ctor
+    confidence: high
+    evidence: "Constructs and registers BulletinBangUserBatchSession and initializes its user-date cache."
+  - address: "0x00428000"
+    name: ui_bulletin_bang_user_batch_session_dtor
+    confidence: high
+    evidence: "Shuts down the cache, unregisters the singleton, and destroys BatchSession."
+  - address: "0x00428070"
+    name: file_bulletin_bang_find_or_append_user_record
+    confidence: high
+    evidence: "Finds a fixed-width user record or appends a zeroed record in the open bang-list file."
+  - address: "0x00428220"
+    name: ui_bulletin_bang_user_batch_session_timer_callback
+    confidence: high
+    evidence: "Starts or cancels the batch on timer 0x1000 and delegates lower timer IDs."
+  - address: "0x00428290"
+    name: ui_bulletin_bang_user_batch_session_enqueue_user
+    confidence: high
+    evidence: "Queues a selected user warning job when its persisted date permits one."
+  - address: "0x004285E0"
+    name: file_bulletin_bang_open_list
+    confidence: high
+    evidence: "Opens banglist<character>.txt for update, creating it when absent."
+  - address: "0x00428690"
+    name: ui_bulletin_bang_process_user_warning
+    confidence: high
+    evidence: "Updates a user's warning record and sends bulletin-abuse warning commands."
+  - address: "0x004289D0"
+    name: ui_bulletin_bang_user_batch_job_ctor
+    confidence: high
+    evidence: "Constructs BulletinBangUserBatchJob with its user, timing, text, severity, and date."
+  - address: "0x00428AC0"
+    name: ui_bulletin_bang_user_batch_job_dtor
+    confidence: high
+    evidence: "Destroys BulletinBangUserBatchJob and its embedded bases."
+  - address: "0x00428B30"
+    name: ui_bulletin_bang_user_batch_job_execute
+    confidence: high
+    evidence: "Processes the queued user warning and completes the batch job."
+  - address: "0x00428B90"
+    name: ui_bulletin_bang_user_batch_job_queue_delete
+    confidence: high
+    evidence: "Queues the batch job's embedded LObject for deferred deletion."
+  - address: "0x00428BE0"
+    name: ui_bulletin_string_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys StringListPane and optionally frees its complete object."
+  - address: "0x00428C10"
+    name: ui_bulletin_bang_notify_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys BulletinBangNotifyDialog and optionally frees its complete object."
+  - address: "0x00428CA0"
+    name: ui_bulletin_bang_user_batch_session_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys BulletinBangUserBatchSession and optionally frees its complete object."
+  - address: "0x00428CD0"
+    name: ui_bulletin_bang_user_batch_job_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys BulletinBangUserBatchJob and optionally frees its complete object."
+  - address: "0x00428D00"
+    name: ui_bulletin_bang_user_date_map_ctor
+    confidence: high
+    evidence: "Constructs the red-black tree map for user warning dates."
+  - address: "0x00428D30"
+    name: ui_bulletin_bang_user_date_map_dtor
+    confidence: high
+    evidence: "Destroys the user warning-date map's nodes and sentinel."
+  - address: "0x00428DD0"
+    name: ui_bulletin_bang_user_date_map_erase
+    confidence: high
+    evidence: "Erases and rebalances one user warning-date map node."
+  - address: "0x004298C0"
+    name: ui_bulletin_bang_user_batch_session_singleton_register
+    confidence: high
+    evidence: "Registers the containing BulletinBangUserBatchSession singleton."
+  - address: "0x00429900"
+    name: ui_bulletin_bang_user_batch_session_singleton_unregister
+    confidence: high
+    evidence: "Clears the batch-session singleton when it matches the containing object."
   - address: "0x005F6CB0"
     name: net_handle_bulletin_server_body
     confidence: high

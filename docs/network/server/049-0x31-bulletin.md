@@ -124,3 +124,11 @@ When no bulletin session exists, the outer handler also requires bit 0 of the fi
 Any nonzero [`SStatus`](008-0x08-status.md#privilege-behavior) privilege changes `ArticleListDialog`. The constructor adds the optional control spelled `Hilight` in `_narlist.txt`. The list pane also allocates multi-selection state, honors modifier-based range and toggle selection, colors selected rows differently, and applies delete or highlight to every selected article. Without privilege, delete and highlight operate only on the current row.
 
 This is a simple nonzero test. Privilege values `1`, `2`, and `3` receive the same bulletin behavior.
+
+### Batched abuse warnings
+
+The privileged multi-selection path can create exact RTTI `BulletinBangUserBatchSession` and queue one `BulletinBangUserBatchJob` per selected article author. Each job updates that user's local warning count and UTC date, then sends the warning commands selected for the resulting level. The count is capped at eight.
+
+The session uses a process-local user-to-date map to suppress duplicate work within the batch. Its persistent history is the fixed-width [bulletin abuse warning list](../../file-formats/bulletin-bang-list.md), named `banglist<character>.txt`.
+
+`BulletinBangNotifyDialog` loads `lbang.txt`, presents a title and scrollable list of text lines, and reports OK or Cancel back to the active batch session. The list renderer truncates each line to a configured byte limit without splitting a DBCS character.

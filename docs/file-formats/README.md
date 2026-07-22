@@ -21,6 +21,7 @@ The client mixes simple archives, text lookup tables, indexed images, and a few 
 | [SPF](spf.md) | Indexed image frames | Container mapped | Generated inverse not yet tested |
 | [EFA](efa.md) | Compressed effect frames | Main decode path mapped | Generated inverse incomplete |
 | [Effect.tbl](effect-table.md) | Effect frame sequences | Confirmed | Straightforward text output |
+| [Bulletin abuse warning list](bulletin-bang-list.md) | Per-character privileged warning history | Fixed 45-byte text records confirmed | Confirmed in client |
 
 See [compression and checks](compression.md) for the algorithm used by each family and [exporting images](image-export.md) for PNG conversion.
 

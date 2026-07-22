@@ -489,9 +489,121 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_mail_list_dialog_open_new_mail` | `0x00423810` | high | Opens NewMailDialog with an empty recipient. |
 | `ui_mail_list_dialog_reply_to_selected_mail` | `0x00423830` | high | Copies the selected sender into a bounded buffer and opens NewMailDialog with that recipient. |
 | `ui_mail_list_dialog_confirm_delete` | `0x004238D0` | high | Allocates ConfirmDeleteAlert bound to MailListDialog in mail-deletion mode. |
+| `ui_mail_list_dialog_request_older_page` | `0x00423960` | high | Requests the mail page preceding the final loaded row ID. |
+| `ui_mail_list_dialog_handle_keyboard_event` | `0x004239B0` | high | Maps mail-list keyboard shortcuts to paging, compose, reply, open, delete, back, and base handling. |
+| `ui_mail_list_dialog_handle_action` | `0x00423B90` | high | Dispatches mail-list control actions for paging, compose, reply, open, delete, and close. |
+| `ui_mail_list_update_action_controls` | `0x00423C50` | high | Enables or disables Open, Reply, and Delete controls from the current mail-list selection. |
 | `ui_mail_list_apply_server_body` | `0x00423D50` | high | Routes active-mail-list SBulletin response types 4 and 7. |
+| `ui_mail_list_apply_list_reply` | `0x00423DD0` | high | Parses a mailbox list reply and appends its rows to MailListPane. |
+| `ui_mail_list_apply_delete_reply` | `0x00424130` | high | Parses a mail-delete reply, removes the dimmer, and opens the result alert. |
+| `ui_mail_list_pane_ctor` | `0x004242C0` | high | Constructs the RTTI-backed MailListPane with its mailbox context. |
+| `ui_mail_list_insert_row` | `0x00424330` | high | Builds and inserts one mail row in descending ID order unless it is a duplicate. |
+| `ui_mail_list_request_selected_mail` | `0x004243F0` | high | Sends a mail-body request for the selected row. |
+| `ui_mail_list_delete_selected` | `0x00424440` | high | Sends a mail-delete request for the selected row. |
+| `ui_mail_list_select_mail` | `0x00424490` | high | Finds and selects a loaded mail row by ID. |
+| `ui_mail_list_reselect_current` | `0x004244D0` | high | Reapplies the pane's current list selection. |
+| `ui_mail_list_pane_handle_keyboard_event` | `0x00424500` | high | Delegates keyboard input and requests an older page when the loaded row count is below capacity. |
+| `ui_mail_list_pane_handle_pointer_event` | `0x00424560` | high | Delegates pointer input and requests an older page when scrolling reaches the loaded end. |
+| `ui_mail_list_request_latest_page` | `0x004245C0` | high | Requests the newest mailbox page with the initial 0x7FFF cursor. |
+| `ui_mail_list_request_older_page` | `0x004245F0` | high | Requests the page before the final loaded mail ID. |
+| `ui_mail_list_copy_selected_sender` | `0x00424660` | high | Copies the selected row's sender into a caller buffer. |
+| `ui_mail_list_find_mail` | `0x004246A0` | high | Linearly finds a loaded row by signed mail ID. |
+| `ui_mail_list_find_insert_position` | `0x00424700` | high | Finds the descending-ID insertion point and rejects duplicate IDs. |
+| `ui_mail_list_activate_selected_mail` | `0x00424780` | high | Resolves the owning MailListDialog and opens the selected mail. |
+| `ui_mail_list_draw_row` | `0x004247C0` | high | Draws one mail row with read state, sender, date, reply count, and title. |
 | `ui_mail_dialog_ctor` | `0x00424E00` | high | Loads _nmailr.txt and parses mail navigation, author, date, title, and string16 content. |
+| `ui_mail_dialog_delete_current` | `0x00425770` | high | Requests deletion of the displayed mail and returns to the previous bulletin dialog. |
+| `ui_mail_dialog_return_to_list` | `0x004257D0` | high | Returns to the mail list and reselects the displayed mail ID. |
+| `ui_mail_dialog_handle_keyboard_event` | `0x00425810` | high | Maps keyboard shortcuts to mail navigation, compose, reply, delete, back, and base handling. |
+| `ui_mail_dialog_handle_action` | `0x00425980` | high | Dispatches mail-dialog control actions for navigation, compose, reply, delete, back, and close. |
+| `ui_mail_dialog_request_adjacent_mail` | `0x00425A20` | high | Sends a previous-or-next mail request and creates a screen dimmer. |
+| `ui_mail_dialog_compose_new` | `0x00425B00` | high | Returns from the current mail and opens a blank new-mail dialog. |
+| `ui_mail_dialog_reply_to_sender` | `0x00425B30` | high | Returns from the current mail and opens a reply addressed to its sender. |
+| `ui_mail_dialog_confirm_delete` | `0x00425B70` | high | Allocates and opens the confirmation alert for the displayed mail. |
 | `ui_mail_apply_server_body` | `0x00425C00` | high | Routes active-mail SBulletin response type 7 to the operation reply UI. |
+| `ui_mail_dialog_apply_delete_reply` | `0x00425C60` | high | Removes the dimmer, parses a mail-delete result message, and displays it. |
+| `ui_mail_delete_reply_alert_ctor` | `0x00426000` | high | Constructs RTTI-backed MailDeleteReplyAlert and stores the server result byte. |
+| `ui_mail_delete_reply_alert_accept` | `0x00426050` | high | Returns through the mail dialog to its list and reselects the displayed mail. |
+| `ui_new_mail_dialog_ctor` | `0x00426080` | high | Constructs NewMailDialog from _nmails.txt with recipient, title, content, Send, and Cancel controls. |
+| `ui_new_mail_dialog_refresh_mail_list` | `0x00426490` | high | Asks the previous MailListDialog to reload its newest page. |
+| `ui_new_mail_dialog_send` | `0x004264C0` | high | Sends the composed mail, creates a dimmer, and closes on immediate success. |
+| `ui_new_mail_dialog_handle_keyboard_event` | `0x00426560` | high | Handles tab focus traversal, default action, cancellation, and focused-control keyboard input. |
+| `ui_new_mail_dialog_apply_server_body` | `0x00426700` | high | Routes bulletin new-mail server subcommand 6 to the transfer-reply parser. |
+| `ui_new_mail_dialog_apply_transfer_reply` | `0x00426760` | high | Removes the dimmer, parses transfer result text, and opens MailTransferReplyAlert. |
+| `ui_mail_transfer_reply_alert_ctor` | `0x00426C00` | high | Constructs RTTI-backed MailTransferReplyAlert and stores the transfer result byte. |
+| `ui_mail_transfer_reply_alert_accept` | `0x00426C50` | high | Refreshes the prior mail list and returns to it when transfer succeeds. |
+| `ui_mail_confirm_delete_alert_ctor` | `0x00426C90` | high | Constructs ConfirmDeleteAlert for the displayed mail and stores its mode. |
+| `ui_bulletin_session_scalar_deleting_dtor` | `0x00426DA0` | high | Destroys BulletinSession and optionally frees its complete object. |
+| `ui_bulletin_dialog_scalar_deleting_dtor` | `0x00426DE0` | high | Destroys BulletinDialogPane and optionally frees its complete object. |
+| `ui_board_list_dialog_scalar_deleting_dtor` | `0x00426E30` | high | Destroys BoardListDialog and optionally frees its complete object. |
+| `ui_board_list_pane_scalar_deleting_dtor` | `0x00426E90` | high | Destroys BoardListPane and optionally frees its complete object. |
+| `ui_article_list_dialog_scalar_deleting_dtor` | `0x00426EC0` | high | Destroys ArticleListDialog and optionally frees its complete object. |
+| `ui_article_list_pane_scalar_deleting_dtor` | `0x00426EF0` | high | Destroys ArticleListPane and optionally frees its complete object. |
+| `ui_article_dialog_scalar_deleting_dtor` | `0x00426F20` | high | Destroys ArticleDialog and optionally frees its complete object. |
+| `ui_delete_reply_alert_scalar_deleting_dtor` | `0x00426F50` | high | Destroys DeleteReplyAlert and optionally frees its complete object. |
+| `ui_new_article_dialog_scalar_deleting_dtor` | `0x00426FF0` | high | Destroys NewArticleDialog and optionally frees its complete object. |
+| `ui_transfer_reply_alert_scalar_deleting_dtor` | `0x00427020` | high | Destroys TransferReplyAlert and optionally frees its complete object. |
+| `ui_mail_list_dialog_scalar_deleting_dtor` | `0x00427050` | high | Destroys MailListDialog and optionally frees its complete object. |
+| `ui_mail_list_pane_scalar_deleting_dtor` | `0x00427080` | high | Destroys MailListPane and optionally frees its complete object. |
+| `ui_mail_dialog_scalar_deleting_dtor` | `0x004270B0` | high | Destroys MailDialog and optionally frees its complete object. |
+| `ui_mail_delete_reply_alert_scalar_deleting_dtor` | `0x004270E0` | high | Destroys MailDeleteReplyAlert and optionally frees its complete object. |
+| `ui_new_mail_dialog_scalar_deleting_dtor` | `0x00427110` | high | Destroys NewMailDialog and optionally frees its complete object. |
+| `ui_mail_transfer_reply_alert_scalar_deleting_dtor` | `0x00427170` | high | Destroys MailTransferReplyAlert and optionally frees its complete object. |
+| `ui_mail_confirm_delete_alert_scalar_deleting_dtor` | `0x004271B0` | high | Destroys ConfirmDeleteAlert and optionally frees its complete object. |
+| `ui_bulletin_session_singleton_register` | `0x004271E0` | high | Registers the containing BulletinSession singleton. |
+| `ui_bulletin_session_singleton_unregister` | `0x00427220` | high | Clears the BulletinSession singleton when it matches the containing object. |
+| `ui_delete_reply_alert_singleton_register` | `0x00427260` | high | Registers the containing DeleteReplyAlert singleton. |
+| `ui_delete_reply_alert_singleton_unregister` | `0x004272A0` | high | Clears the DeleteReplyAlert singleton when it matches the containing object. |
+| `ui_delete_reply_alert_is_open` | `0x004272E0` | high | Returns whether a DeleteReplyAlert is registered. |
+| `ui_bulletin_bang_user_batch_session_is_active` | `0x00427300` | high | Returns whether a BulletinBangUserBatchSession singleton is active. |
+| `ui_bulletin_bang_user_batch_session_get` | `0x00427320` | high | Returns the active BulletinBangUserBatchSession singleton. |
+| `ui_bulletin_bang_user_batch_session_destroy_active` | `0x00427330` | high | Destroys the active BulletinBangUserBatchSession when present. |
+| `ui_mail_confirm_delete_alert_timer_scalar_deleting_dtor_thunk` | `0x004273A0` | high | Adjusts TimerHandler this and enters ConfirmDeleteAlert's scalar deleting destructor. |
+| `ui_mail_list_pane_timer_scalar_deleting_dtor_thunk` | `0x004273B0` | high | Adjusts TimerHandler this and enters MailListPane's scalar deleting destructor. |
+| `ui_mail_list_dialog_timer_scalar_deleting_dtor_thunk` | `0x004273C0` | high | Adjusts TimerHandler this and enters MailListDialog's scalar deleting destructor. |
+| `ui_transfer_reply_alert_timer_scalar_deleting_dtor_thunk` | `0x004273D0` | high | Adjusts TimerHandler this and enters TransferReplyAlert's scalar deleting destructor. |
+| `ui_mail_transfer_reply_alert_timer_scalar_deleting_dtor_thunk` | `0x004273E0` | high | Adjusts TimerHandler this and enters MailTransferReplyAlert's scalar deleting destructor. |
+| `ui_article_list_pane_timer_scalar_deleting_dtor_thunk` | `0x004273F0` | high | Adjusts TimerHandler this and enters ArticleListPane's scalar deleting destructor. |
+| `ui_bulletin_session_timer_scalar_deleting_dtor_thunk` | `0x00427400` | high | Adjusts TimerHandler this and enters BulletinSession's scalar deleting destructor. |
+| `ui_board_list_pane_timer_scalar_deleting_dtor_thunk` | `0x00427410` | high | Adjusts TimerHandler this and enters BoardListPane's scalar deleting destructor. |
+| `ui_bulletin_dialog_timer_scalar_deleting_dtor_thunk` | `0x00427420` | high | Adjusts TimerHandler this and enters BulletinDialogPane's scalar deleting destructor. |
+| `ui_new_article_dialog_timer_scalar_deleting_dtor_thunk` | `0x00427430` | high | Adjusts TimerHandler this and enters NewArticleDialog's scalar deleting destructor. |
+| `ui_article_list_dialog_timer_scalar_deleting_dtor_thunk` | `0x00427440` | high | Adjusts TimerHandler this and enters ArticleListDialog's scalar deleting destructor. |
+| `ui_mail_delete_reply_alert_timer_scalar_deleting_dtor_thunk` | `0x00427450` | high | Adjusts TimerHandler this and enters MailDeleteReplyAlert's scalar deleting destructor. |
+| `ui_article_dialog_timer_scalar_deleting_dtor_thunk` | `0x00427460` | high | Adjusts TimerHandler this and enters ArticleDialog's scalar deleting destructor. |
+| `ui_mail_dialog_timer_scalar_deleting_dtor_thunk` | `0x00427470` | high | Adjusts TimerHandler this and enters MailDialog's scalar deleting destructor. |
+| `ui_delete_reply_alert_timer_scalar_deleting_dtor_thunk` | `0x00427480` | high | Adjusts TimerHandler this and enters DeleteReplyAlert's scalar deleting destructor. |
+| `ui_new_mail_dialog_timer_scalar_deleting_dtor_thunk` | `0x00427490` | high | Adjusts TimerHandler this and enters NewMailDialog's scalar deleting destructor. |
+| `ui_board_list_dialog_timer_scalar_deleting_dtor_thunk` | `0x004274A0` | high | Adjusts TimerHandler this and enters BoardListDialog's scalar deleting destructor. |
+| `ui_bulletin_string_list_pane_ctor` | `0x00427530` | high | Constructs StringListPane with a fixed line limit and reusable text buffer. |
+| `ui_bulletin_string_list_pane_dtor` | `0x004275E0` | high | Releases StringListPane's text buffer and destroys its list-pane base. |
+| `ui_bulletin_string_list_set_lines` | `0x00427630` | high | Replaces pane rows with DBCS-safe truncated strings. |
+| `ui_bulletin_string_list_draw_row` | `0x00427750` | high | Draws one StringListPane row with its configured byte limit and color. |
+| `ui_bulletin_bang_notify_dialog_ctor` | `0x004277E0` | high | Constructs BulletinBangNotifyDialog from lbang.txt. |
+| `ui_bulletin_bang_notify_dialog_dtor` | `0x00427AF0` | high | Destroys BulletinBangNotifyDialog through its DialogPane base. |
+| `ui_bulletin_bang_notify_dialog_handle_action` | `0x00427B20` | high | Reports OK or Cancel to the active bang session and queues dialog closure. |
+| `ui_bulletin_bang_user_date_cache_initialize` | `0x00427C20` | high | Allocates the process-local user warning-date map. |
+| `ui_bulletin_bang_user_date_cache_shutdown` | `0x00427CB0` | high | Destroys and frees the process-local user warning-date map. |
+| `ui_bulletin_bang_user_date_cache_lookup` | `0x00427D10` | high | Looks up a user name and returns its cached warning date. |
+| `ui_bulletin_bang_user_date_cache_insert` | `0x00427E20` | high | Inserts a user name and warning date when absent. |
+| `ui_bulletin_bang_user_batch_session_ctor` | `0x00427F90` | high | Constructs and registers BulletinBangUserBatchSession and initializes its user-date cache. |
+| `ui_bulletin_bang_user_batch_session_dtor` | `0x00428000` | high | Shuts down the cache, unregisters the singleton, and destroys BatchSession. |
+| `ui_bulletin_bang_user_batch_session_timer_callback` | `0x00428220` | high | Starts or cancels the batch on timer 0x1000 and delegates lower timer IDs. |
+| `ui_bulletin_bang_user_batch_session_enqueue_user` | `0x00428290` | high | Queues a selected user warning job when its persisted date permits one. |
+| `ui_bulletin_bang_process_user_warning` | `0x00428690` | high | Updates a user's warning record and sends bulletin-abuse warning commands. |
+| `ui_bulletin_bang_user_batch_job_ctor` | `0x004289D0` | high | Constructs BulletinBangUserBatchJob with its user, timing, text, severity, and date. |
+| `ui_bulletin_bang_user_batch_job_dtor` | `0x00428AC0` | high | Destroys BulletinBangUserBatchJob and its embedded bases. |
+| `ui_bulletin_bang_user_batch_job_execute` | `0x00428B30` | high | Processes the queued user warning and completes the batch job. |
+| `ui_bulletin_bang_user_batch_job_queue_delete` | `0x00428B90` | high | Queues the batch job's embedded LObject for deferred deletion. |
+| `ui_bulletin_string_list_pane_scalar_deleting_dtor` | `0x00428BE0` | high | Destroys StringListPane and optionally frees its complete object. |
+| `ui_bulletin_bang_notify_dialog_scalar_deleting_dtor` | `0x00428C10` | high | Destroys BulletinBangNotifyDialog and optionally frees its complete object. |
+| `ui_bulletin_bang_user_batch_session_scalar_deleting_dtor` | `0x00428CA0` | high | Destroys BulletinBangUserBatchSession and optionally frees its complete object. |
+| `ui_bulletin_bang_user_batch_job_scalar_deleting_dtor` | `0x00428CD0` | high | Destroys BulletinBangUserBatchJob and optionally frees its complete object. |
+| `ui_bulletin_bang_user_date_map_ctor` | `0x00428D00` | high | Constructs the red-black tree map for user warning dates. |
+| `ui_bulletin_bang_user_date_map_dtor` | `0x00428D30` | high | Destroys the user warning-date map's nodes and sentinel. |
+| `ui_bulletin_bang_user_date_map_erase` | `0x00428DD0` | high | Erases and rebalances one user warning-date map node. |
+| `ui_bulletin_bang_user_batch_session_singleton_register` | `0x004298C0` | high | Registers the containing BulletinBangUserBatchSession singleton. |
+| `ui_bulletin_bang_user_batch_session_singleton_unregister` | `0x00429900` | high | Clears the batch-session singleton when it matches the containing object. |
 | `ui_legend_list_draw_item` | `0x0042BA20` | high | Draws one Self Look legend record by icon, resolves its color through palette slot 0, and renders its text. |
 | `ui_legend_list_contains_key` | `0x0042BB70` | high | Searches the current self-look legend records for an exact, case-sensitive hidden key match. |
 | `ui_new_legend_dialog_action` | `0x0042CA50` | high | The RTTI-backed NewLegendDialogPane action normalizes line breaks, ends profile text at the fifth break, and saves profile.txt. |
@@ -1849,6 +1961,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_album_set_last_capture_time` | `0x00403DB0` | high | Updates the time_t value serialized at album header offset 0x04. |
 | `file_album_is_dirty` | `0x00403DD0` | high | Returns the AlbumFile rewrite-needed flag. |
 | `file_album_record_vector_deleting_dtor` | `0x00403E20` | high | Implements the MSVC scalar/vector deleting-destructor wrapper for one record or a count-prefixed array of 0x68-byte album records. |
+| `file_bulletin_bang_find_or_append_user_record` | `0x00428070` | high | Finds a fixed-width user record or appends a zeroed record in the open bang-list file. |
+| `file_bulletin_bang_open_list` | `0x004285E0` | high | Opens banglist&lt;character&gt;.txt for update, creating it when absent. |
 | `file_hpf_decode` | `0x004319B0` | high | Checks magic 0xFF02AA55, decodes symbols through an adaptive tree, and accepts raw input when magic is absent. |
 | `file_hpf_tree_initialize` | `0x00431B80` | high | Builds the complete initial tree for byte symbols and the 256 terminator. |
 | `file_hpf_decode_symbol` | `0x00431C40` | high | Reads bits least-significant bit first and walks the active HPF tree to a symbol leaf. |
@@ -2019,6 +2133,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `com_variant_clear` | `0x0041AB40` | high | Clears a VARIANT with VariantClear and returns the HRESULT. |
 | `com_variant_set_bstr` | `0x0041AB60` | high | Clears a VARIANT, assigns VT_BSTR, allocates the supplied wide string, and raises the client COM error on failure. |
 | `com_assign_iweb_browser2` | `0x0041AC10` | high | Queries a supplied COM object for IID_IWebBrowser2, replaces the retained interface pointer, and releases the previous value. |
+| `text_remove_ascii_spaces_dbcs_safe` | `0x004274B0` | high | Removes ASCII spaces while preserving DBCS trail bytes. |
+| `time_get_utc_date_yyyymmdd` | `0x00427BD0` | high | Returns the current UTC date as year*10000 + month*100 + day. |
 | `metadata_denied_item_list_ctor` | `0x004407C0` | high | Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription. |
 | `metadata_denied_item_list_subscribe` | `0x00440AA0` | high | Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable. |
 | `metadata_denied_item_list_apply_table` | `0x00440B20` | high | Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers. |
