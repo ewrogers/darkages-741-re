@@ -2154,6 +2154,21 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_merchant_session_push_dialog` | `0x004CD8A0` | high | Closes or defers the previous dialog, assigns one of two slots, records ownership, and activates the new merchant dialog. |
 | `ui_merchant_session_handle_close` | `0x004CD990` | high | Queues MerchantSession for deferred deletion in response to merchant close opcode 0x30. |
 | `ui_merchant_session_dispatch_screen_menu` | `0x004CD9B0` | high | Dispatches SScreenMenu types 0 through 11 to the compiled text, input, item, skill, and spell merchant dialog builders. |
+| `ui_merchant_dialog_pane_ctor` | `0x004CDB30` | high | Constructs exact RTTI MerchantDialogPane, installs its TimerHandler secondary vtable, and initializes session, dimmer, and style state. |
+| `ui_merchant_dialog_pane_close` | `0x004CDBB0` | high | Closes the owning MerchantSession or deactivates and defers deletion of a standalone merchant dialog. |
+| `ui_merchant_dialog_pane_activate` | `0x004CDC00` | high | Centers the dialog, registers it under MerchantSession or the root pane, and registers its event handler. |
+| `ui_merchant_dialog_pane_draw_background` | `0x004CDD50` | high | Draws the lmerd background for detail style or delegates to the generic DialogPane background. |
+| `ui_merchant_dialog_pane_draw_tiled_frame` | `0x004CDE00` | high | Builds a scalable merchant frame from four tiled 16-pixel edges and four corner pixmaps. |
+| `ui_merchant_dialog_request_target_info` | `0x004CE220` | high | Sends a client object-information request when the dialog retains a target object. |
+| `ui_merchant_dialog_has_optional_header_text` | `0x004CE3B0` | high | Base parser predicate for one trailing string8 field; MerchantDialogPane returns false. |
+| `ui_merchant_dialog_add_monster_image_control` | `0x004CE3C0` | high | Centers and attaches a MonsterImageControlPane for a supplied monster image ID. |
+| `ui_merchant_dialog_has_target_identity` | `0x004CE740` | high | Reports whether the common merchant header has a nonzero target ID or pursuit ID. |
+| `ui_merchant_dialog_measure_monster_image` | `0x004CE770` | high | Measures one monster frame when target identity is present and otherwise returns zero dimensions. |
+| `ui_merchant_dialog_measure_wrapped_text` | `0x004CE820` | high | Measures 12-pixel text rows using 32 columns with target identity or 40 columns without it. |
+| `ui_merchant_dialog_get_default_text_area_size` | `0x004CE890` | high | Returns the fixed merchant text area size of 240 by 52 pixels. |
+| `ui_merchant_dialog_ensure_screen_dimmer` | `0x004CE8C0` | high | Lazily allocates and retains a full-screen exact RTTI ScreenDimmer in mode 5. |
+| `ui_merchant_dialog_handle_pointer_event` | `0x004CE960` | high | Delegates merchant pointer input and updates the shared merchant screen origin from drag movement. |
+| `ui_merchant_dialog_handle_network_event` | `0x004CEA20` | high | Accepts decoded SScreenMenu opcode 0x2F bodies and forwards them to the derived dialog's virtual parser. |
 | `ui_open_server_item_menu_dialog` | `0x004CEEF0` | high | Chooses and constructs a merchant server-item dialog; the always-false build selector leaves ServerItemMenuDialog3 dormant and selects the older dialog. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
@@ -2620,6 +2635,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_read_manual_length_prefixed_text` | `0x004C3E50` | high | Reads 1-, 2-, 3-, or 4-byte big-endian lengths, copies a bounded prefix, terminates it, and advances over the full declared value. |
 | `net_parse_server_item_menu_dialog3_items` | `0x004CC270` | high | Parses the newer merchant payload into fixed 0x224-byte item records; menu type 0x4B uses the extended record form. |
 | `net_request_object_info` | `0x004CD350` | high | Merchant menu paths call this opcode 0x43 object information request. |
+| `net_parse_merchant_dialog_common_header` | `0x004CE250` | high | Parses merchant target type, target ID, pursuit ID, content, seller text, and an optional derived-dialog string. |
 | `net_send_merchant_selection` | `0x004CFE60` | high | MerchantDialogPane::TextMenuDialogEx virtual method that builds and sends CMerchant opcode 0x39. |
 | `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
 | `net_send_pursuit_selection` | `0x004DBC90` | high | MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method. |
@@ -3960,6 +3976,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `maybe_map_tile_library_noop_two_arg_method` | `0x004C7960` | low | Unreferenced thiscall method beside MapTileImageLib code; accepts two stack arguments and intentionally does nothing. |
 | `maybe_map_tile_library_noop_three_arg_method` | `0x004C7970` | low | Unreferenced thiscall method beside MapTileImageLib code; accepts three stack arguments and intentionally does nothing. |
 | `maybe_memory_manager_return_null_noop` | `0x004C9550` | low | Unreferenced MemoryMan-adjacent method that performs no work and returns null. |
+| `maybe_ui_merchant_dialog_false_predicate` | `0x004CDBA0` | low | Shared no-argument virtual in MerchantDialogPane and derived vtables; always returns false, but its framework role is unresolved. |
+| `maybe_ui_merchant_dialog_add_static_text_control_slot_88` | `0x004CE520` | medium | Constructs and attaches a StaticTextControlPane; its distinction from the adjacent equivalent virtual slot is unresolved. |
+| `maybe_ui_merchant_dialog_add_static_text_control_slot_8c` | `0x004CE630` | medium | Constructs and attaches a StaticTextControlPane; its distinction from the adjacent equivalent virtual slot is unresolved. |
 
 ## Other
 

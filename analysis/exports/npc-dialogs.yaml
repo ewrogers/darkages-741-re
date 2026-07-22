@@ -245,6 +245,82 @@ functions:
     name: ui_merchant_session_dispatch_screen_menu
     confidence: high
     evidence: "Dispatches SScreenMenu types 0 through 11 to the compiled text, input, item, skill, and spell merchant dialog builders."
+  - address: "0x004CDB30"
+    name: ui_merchant_dialog_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI MerchantDialogPane, installs its TimerHandler secondary vtable, and initializes session, dimmer, and style state."
+  - address: "0x004CDBA0"
+    name: maybe_ui_merchant_dialog_false_predicate
+    confidence: low
+    evidence: "Shared no-argument virtual in MerchantDialogPane and derived vtables; always returns false, but its framework role is unresolved."
+  - address: "0x004CDBB0"
+    name: ui_merchant_dialog_pane_close
+    confidence: high
+    evidence: "Closes the owning MerchantSession or deactivates and defers deletion of a standalone merchant dialog."
+  - address: "0x004CDC00"
+    name: ui_merchant_dialog_pane_activate
+    confidence: high
+    evidence: "Centers the dialog, registers it under MerchantSession or the root pane, and registers its event handler."
+  - address: "0x004CDD50"
+    name: ui_merchant_dialog_pane_draw_background
+    confidence: high
+    evidence: "Draws the lmerd background for detail style or delegates to the generic DialogPane background."
+  - address: "0x004CDE00"
+    name: ui_merchant_dialog_pane_draw_tiled_frame
+    confidence: high
+    evidence: "Builds a scalable merchant frame from four tiled 16-pixel edges and four corner pixmaps."
+  - address: "0x004CE220"
+    name: ui_merchant_dialog_request_target_info
+    confidence: high
+    evidence: "Sends a client object-information request when the dialog retains a target object."
+  - address: "0x004CE250"
+    name: net_parse_merchant_dialog_common_header
+    confidence: high
+    evidence: "Parses merchant target type, target ID, pursuit ID, content, seller text, and an optional derived-dialog string."
+  - address: "0x004CE3B0"
+    name: ui_merchant_dialog_has_optional_header_text
+    confidence: high
+    evidence: "Base parser predicate for one trailing string8 field; MerchantDialogPane returns false."
+  - address: "0x004CE3C0"
+    name: ui_merchant_dialog_add_monster_image_control
+    confidence: high
+    evidence: "Centers and attaches a MonsterImageControlPane for a supplied monster image ID."
+  - address: "0x004CE520"
+    name: maybe_ui_merchant_dialog_add_static_text_control_slot_88
+    confidence: medium
+    evidence: "Constructs and attaches a StaticTextControlPane; its distinction from the adjacent equivalent virtual slot is unresolved."
+  - address: "0x004CE630"
+    name: maybe_ui_merchant_dialog_add_static_text_control_slot_8c
+    confidence: medium
+    evidence: "Constructs and attaches a StaticTextControlPane; its distinction from the adjacent equivalent virtual slot is unresolved."
+  - address: "0x004CE740"
+    name: ui_merchant_dialog_has_target_identity
+    confidence: high
+    evidence: "Reports whether the common merchant header has a nonzero target ID or pursuit ID."
+  - address: "0x004CE770"
+    name: ui_merchant_dialog_measure_monster_image
+    confidence: high
+    evidence: "Measures one monster frame when target identity is present and otherwise returns zero dimensions."
+  - address: "0x004CE820"
+    name: ui_merchant_dialog_measure_wrapped_text
+    confidence: high
+    evidence: "Measures 12-pixel text rows using 32 columns with target identity or 40 columns without it."
+  - address: "0x004CE890"
+    name: ui_merchant_dialog_get_default_text_area_size
+    confidence: high
+    evidence: "Returns the fixed merchant text area size of 240 by 52 pixels."
+  - address: "0x004CE8C0"
+    name: ui_merchant_dialog_ensure_screen_dimmer
+    confidence: high
+    evidence: "Lazily allocates and retains a full-screen exact RTTI ScreenDimmer in mode 5."
+  - address: "0x004CE960"
+    name: ui_merchant_dialog_handle_pointer_event
+    confidence: high
+    evidence: "Delegates merchant pointer input and updates the shared merchant screen origin from drag movement."
+  - address: "0x004CEA20"
+    name: ui_merchant_dialog_handle_network_event
+    confidence: high
+    evidence: "Accepts decoded SScreenMenu opcode 0x2F bodies and forwards them to the derived dialog's virtual parser."
   - address: "0x004CEEF0"
     name: ui_open_server_item_menu_dialog
     confidence: high
