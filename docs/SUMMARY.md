@@ -237,6 +237,7 @@
     - [Fast server transfer](appendix/runtime-patches/fast-server-transfer.md)
     - [Hide walls](appendix/runtime-patches/hide-walls.md)
     - [Ground item hints](appendix/runtime-patches/ground-item-hints.md)
+    - [Extended friend highlights](appendix/runtime-patches/extended-friend-highlights.md)
     - [No blind](appendix/runtime-patches/no-blind.md)
     - [No darkness](appendix/runtime-patches/no-darkness.md)
     - [Allow map](appendix/runtime-patches/allow-map.md)

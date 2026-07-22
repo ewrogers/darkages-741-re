@@ -515,6 +515,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_game_setting_dialog_handle_keyboard_event` | `0x00542D50` | high | Maps number keys 1 through 9 and 0 to setting IDs 1 through 10. |
 | `ui_game_setting_dialog_handle_action` | `0x00542DC0` | high | Dispatches the 13 row actions and calls app_save_config on normal dialog close. |
 | `ui_game_setting_dialog_apply_message_text` | `0x005430D0` | high | Parses SMessage type 0x07 text as an ASCII-discriminated full setting list or single-row replacement. |
+| `ui_friend_list_dialog_ctor` | `0x005435F0` | high | Constructs the exact RTTI FriendListDialog, loads _nfriend.txt, and creates twenty text-edit controls backed by the UserInfo friend slots. |
+| `ui_friend_list_dialog_handle_action` | `0x00543C70` | high | Handles OK and Cancel; OK copies controls 2 through 21 into the twenty UserInfo friend slots and saves Friendlist.cfg. |
 | `ui_safe_quit_alert_ctor` | `0x00544100` | high | Constructs exact RTTI SafeQuitAlert and immediately submits CQuit as bytes 0B 01. |
 | `ui_safe_quit_alert_handle_network_event` | `0x00544220` | high | SafeQuitAlert primary-vtable network-event handler routes typed SQuit opcode 0x4C to its response helper. |
 | `ui_safe_quit_alert_apply_quit_response` | `0x00544280` | high | When SQuit's consumed byte is 1, marks the alert approved, submits CQuit bytes 0B 00, replaces the alert text, and refreshes its control. |
@@ -1487,6 +1489,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_parse_ground_attribute_table` | `0x0058B930` | high | Parses the structured set_attr records and applies each attribute set to its listed tile IDs and inclusive ranges. |
 | `file_apply_ground_attribute_record` | `0x0058B9B0` | high | Interns one parsed attribute set and assigns it to each ground tile ID covered by the record's apply_to list. |
 | `file_intern_ground_attribute_set` | `0x0058BA80` | high | Converts ATTR_gnd_paint height 1 and 2 into separate flags while retaining larger heights as color-and-depth paint records. |
+| `file_read_dbcs_line` | `0x00592680` | high | Reads until LF, EOF, or the caller-supplied byte count, tracks DBCS lead-byte state so an LF-valued trail byte does not end the line, then appends NUL. |
 | `file_build_character_path` | `0x00592DE0` | high | Builds .\&lt;character&gt;\.\&lt;filename&gt; from the active character name and supplied local filename. |
 | `file_load_character_profile` | `0x005B13E0` | high | Reads at most 0x172 bytes from the current character's profile.txt into the editor buffer. |
 | `file_save_portrait_dialog_profile` | `0x005B15C0` | high | Writes the dialog profile buffer to profile.txt after the 0x172-byte DBCS-safe cap. |
@@ -1556,6 +1559,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_spell_skill_requirements_met` | `0x005600B0` | high | Checks character level, ability and master flags, ability level, attributes, and two named learned-ability prerequisites. |
 | `crc16_buffer` | `0x00568870` | high | Applies the custom CRC16 update to a byte buffer starting from zero. |
 | `startup_run_pending_patcher` | `0x0057A330` | high | Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe; otherwise deletes both markers and continues. |
+| `user_info_load_family_list` | `0x00592560` | high | Clears twenty 40-byte UserInfo family slots, then loads up to twenty lines from the per-character Familylist.cfg file. |
+| `user_info_save_family_list` | `0x00592730` | high | Writes all twenty 40-byte UserInfo family slots as lines in the per-character Familylist.cfg file. |
+| `user_info_load_friend_list` | `0x00592800` | high | Clears twenty 40-byte UserInfo friend slots, then loads up to twenty lines from the per-character Friendlist.cfg file. |
+| `user_info_save_friend_list` | `0x00592920` | high | Writes all twenty 40-byte UserInfo friend slots as lines in the per-character Friendlist.cfg file. |
 | `crc16_update` | `0x005B8F30` | high | Updates the custom CRC16 with table[crc high byte] XOR crc shifted left XOR input byte. |
 | `world_direction_to_delta` | `0x005BE580` | high | Maps directions 0 through 3 to up, right, down, and left coordinate deltas; values above 3 have no defined result. |
 | `world_step_coordinates` | `0x005BE600` | high | Applies the direction delta to a coordinate pair used by local movement and collision checks. |

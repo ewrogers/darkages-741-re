@@ -1,0 +1,54 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x005435F0"
+    name: ui_friend_list_dialog_ctor
+    confidence: high
+    evidence: "Constructs the exact RTTI FriendListDialog, loads _nfriend.txt, and creates twenty text-edit controls backed by the UserInfo friend slots."
+  - address: "0x00543C70"
+    name: ui_friend_list_dialog_handle_action
+    confidence: high
+    evidence: "Handles OK and Cancel; OK copies controls 2 through 21 into the twenty UserInfo friend slots and saves Friendlist.cfg."
+  - address: "0x00592560"
+    name: user_info_load_family_list
+    confidence: high
+    evidence: "Clears twenty 40-byte UserInfo family slots, then loads up to twenty lines from the per-character Familylist.cfg file."
+  - address: "0x00592680"
+    name: file_read_dbcs_line
+    confidence: high
+    evidence: "Reads until LF, EOF, or the caller-supplied byte count, tracks DBCS lead-byte state so an LF-valued trail byte does not end the line, then appends NUL."
+  - address: "0x00592730"
+    name: user_info_save_family_list
+    confidence: high
+    evidence: "Writes all twenty 40-byte UserInfo family slots as lines in the per-character Familylist.cfg file."
+  - address: "0x00592800"
+    name: user_info_load_friend_list
+    confidence: high
+    evidence: "Clears twenty 40-byte UserInfo friend slots, then loads up to twenty lines from the per-character Friendlist.cfg file."
+  - address: "0x00592920"
+    name: user_info_save_friend_list
+    confidence: high
+    evidence: "Writes all twenty 40-byte UserInfo friend slots as lines in the per-character Friendlist.cfg file."
+data_symbols: []
+comments:
+  - address: "0x0054388C"
+    text: "Build friend edit controls 2 through 11 from UserInfo friend slots 0 through 9. A second loop builds controls 12 through 21 for slots 10 through 19."
+  - address: "0x00543CB8"
+    text: "Action 0 copies dialog controls 2 through 21 into all twenty UserInfo friend slots, then saves Friendlist.cfg."
+  - address: "0x00592616"
+    text: "Familylist.cfg loading is capped at twenty fixed 40-byte UserInfo slots."
+  - address: "0x005926FA"
+    text: "Track DBCS lead-byte state so a trail byte equal to LF does not terminate the line."
+  - address: "0x005927B2"
+    text: "Familylist.cfg serialization always writes exactly twenty lines."
+  - address: "0x005928B6"
+    text: "Friendlist.cfg loading is capped at twenty fixed 40-byte UserInfo slots."
+  - address: "0x005929A2"
+    text: "Friendlist.cfg serialization always writes exactly twenty lines."
+runtime_patches: []

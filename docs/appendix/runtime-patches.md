@@ -16,6 +16,7 @@ Patch pages use short names based on the visible behavior. In-place changes use 
 - [Fast server transfer](runtime-patches/fast-server-transfer.md)
 - [Hide walls](runtime-patches/hide-walls.md)
 - [Ground item hints](runtime-patches/ground-item-hints.md)
+- [Extended friend highlights](runtime-patches/extended-friend-highlights.md)
 - [No blind](runtime-patches/no-blind.md)
 - [No darkness](runtime-patches/no-darkness.md)
 - [Allow map](runtime-patches/allow-map.md)

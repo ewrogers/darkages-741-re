@@ -140,7 +140,15 @@ When a skill passes its local activation checks, `SkillInvItemPane` loads the ma
 
 `Familylist.cfg` and `Friendlist.cfg` each contain exactly twenty lines. Each line is one character name, and unused entries are blank. The client keeps each entry in a 40-byte runtime slot, so a compatible file should keep a name within 39 bytes plus its terminating zero.
 
+The stock reader does not split a line on commas and does not recognize a color suffix. A line such as `CharacterA,CharacterB` or `CharacterA#4` is one literal name and therefore will not match either character. The stock friend dialog also exposes exactly twenty text fields. Its commit path requests as many as 64 bytes from each field while writing into one of the 40-byte slots, so manually edited or pasted values must still remain within the 39-byte payload limit.
+
+The project owner reports that playable character names are effectively limited to 13 characters. Separately, the Show Users packet path accepts a name of at most 24 bytes before discarding the row. These are different limits, and configuration storage is byte-oriented rather than Unicode-character-oriented.
+
 These lists change how matching names appear in the online-user pane. A friend match uses palette index `0x80`; a family or guild match uses `0x24`. See [Show Users (`SShowUsers`)](../network/server/054-0x36-show-users.md) for the row-building behavior.
+
+The fixed arrays cannot be enlarged by changing the loop bound. The family array begins immediately after the friend array, and the family array ends at the end of the containing `UserInfo` storage. The safe extension design keeps the stock files and dialog intact and adds a separate launcher-owned table. See [Extended friend highlights](../appendix/runtime-patches/extended-friend-highlights.md).
+
+That runtime extension uses `Friendlist.ini` beside the stock per-character `Friendlist.cfg`. The client never reads or writes the INI file. A launcher parses its group, color, and member records and supplies the resulting lookup table.
 
 ### Text macros
 
