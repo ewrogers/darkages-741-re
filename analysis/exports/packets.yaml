@@ -2135,6 +2135,110 @@ functions:
     name: ui_spell_delay_control_pane_scalar_deleting_dtor
     confidence: high
     evidence: "MSVC scalar deleting destructor for exact RTTI class SpellDelayControlPane."
+  - address: "0x0049ECA0"
+    name: ui_dragged_map_item_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DraggedMapItemPane's scalar deleting destructor."
+  - address: "0x0049ECB0"
+    name: ui_dragged_skill_inventory_item_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DraggedSkillInvItemPane's scalar deleting destructor."
+  - address: "0x0049ECC0"
+    name: ui_spell_inventory_item_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls SpellInvItemPane's scalar deleting destructor."
+  - address: "0x0049ECD0"
+    name: ui_string_spell_input_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls StringSpellInputPane's scalar deleting destructor."
+  - address: "0x0049ECE0"
+    name: ui_dragged_spell_inventory_item_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DraggedSpellInvItemPane's scalar deleting destructor."
+  - address: "0x0049ED00"
+    name: ui_skill_inventory_item_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls SkillInvItemPane's scalar deleting destructor."
+  - address: "0x0049ED10"
+    name: ui_dragged_inventory_item_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DraggedInvItemPane's scalar deleting destructor."
+  - address: "0x0049ED20"
+    name: ui_number_args_spell_input_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls NumberArgsSpellInputPane's scalar deleting destructor."
+  - address: "0x0049ED30"
+    name: ui_item_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls ItemPane's scalar deleting destructor."
+  - address: "0x0049ED40"
+    name: ui_give_gold_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls GiveGoldDialogPane's scalar deleting destructor."
+  - address: "0x0049ED50"
+    name: ui_drop_gold_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DropGoldDialogPane's scalar deleting destructor."
+  - address: "0x0049ED60"
+    name: ui_inventory_item_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls InvItemPane's scalar deleting destructor."
+  - address: "0x0049ED70"
+    name: ui_map_item_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls MapItem_Pane's scalar deleting destructor."
+  - address: "0x0049ED90"
+    name: ui_item_pane_handle_pointer_event
+    confidence: high
+    evidence: "ItemPane primary-vtable pointer-event handler returns false without consuming the event."
+  - address: "0x0049EDA0"
+    name: ui_item_pane_handle_network_event
+    confidence: high
+    evidence: "ItemPane primary-vtable network-event handler returns false without consuming the event."
+  - address: "0x0049EDB0"
+    name: ui_item_pane_handle_timer
+    confidence: high
+    evidence: "ItemPane TimerHandler callback returns false without scheduling or consuming work."
+  - address: "0x0049EDC0"
+    name: ui_inventory_item_handle_network_event
+    confidence: high
+    evidence: "InvItemPane primary-vtable network-event handler returns false without consuming the event."
+  - address: "0x0049EDD0"
+    name: ui_map_item_pane_handle_network_event
+    confidence: high
+    evidence: "MapItem_Pane primary-vtable network-event handler returns false without consuming the event."
+  - address: "0x0049EDE0"
+    name: ui_skill_inventory_item_handle_network_event
+    confidence: high
+    evidence: "SkillInvItemPane primary-vtable network-event handler returns false without consuming the event."
+  - address: "0x0049EDF0"
+    name: ui_spell_inventory_item_handle_network_event
+    confidence: high
+    evidence: "SpellInvItemPane primary-vtable network-event handler returns false without consuming the event."
+  - address: "0x0049EE30"
+    name: ui_item_shop_icon_inventory_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ItemShop::IconInvControlPane and initializes its item source, grid span, selection, and visible range."
+  - address: "0x0049EEB0"
+    name: ui_item_shop_icon_inventory_control_dtor
+    confidence: high
+    evidence: "Restores the ItemShop::IconInvControlPane vtables and destroys its Pane base."
+  - address: "0x0049EEE0"
+    name: ui_item_shop_icon_inventory_control_hit_test
+    confidence: high
+    evidence: "Maps a control-relative point through 33 by 36 pixel cells, rejects the four-pixel gaps, and returns the visible item index."
+  - address: "0x0049EF50"
+    name: ui_item_shop_icon_inventory_control_set_items
+    confidence: high
+    evidence: "Stores the visible item-record pointer and count, then invalidates ItemShop::IconInvControlPane."
+  - address: "0x0049EF80"
+    name: ui_item_shop_icon_inventory_control_select_cell
+    confidence: high
+    evidence: "Invalidates the old and new cells and stores the selected grid index, or -1 when outside the visible range."
+  - address: "0x004A1470"
+    name: ui_item_shop_icon_inventory_control_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs ItemShop::IconInvControlPane's destructor and conditionally frees the complete object."
   - address: "0x004AD250"
     name: ui_open_town_map_for_current_map
     confidence: high

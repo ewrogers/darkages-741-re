@@ -83,6 +83,18 @@ functions:
     name: ui_spell_item_set_action_delay
     confidence: high
     evidence: "Sets SpellInvItemPane +0x297 to one and invalidates the item rectangle."
+  - address: "0x0049E360"
+    name: ui_spell_delay_control_pane_bind_singleton
+    confidence: high
+    evidence: "Binds the exact RTTI SpellDelayControlPane complete object after adjusting from its Singleton base subobject."
+  - address: "0x0049E3A0"
+    name: ui_spell_delay_control_pane_unbind_singleton
+    confidence: high
+    evidence: "Clears the SpellDelayControlPane singleton global only when it still references this adjusted complete object."
+  - address: "0x0049ECF0"
+    name: ui_spell_delay_control_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls SpellDelayControlPane's scalar deleting destructor."
   - address: "0x00597160"
     name: net_action_delay_server_packet_ctor
     confidence: high

@@ -159,6 +159,94 @@ functions:
     name: metadata_item_description_map_iterator_next
     confidence: high
     evidence: "Advances an ItemMetaDescMan map iterator to its in-order successor."
+  - address: "0x0049E030"
+    name: metadata_item_description_map_destroy_subtree
+    confidence: high
+    evidence: "Recursively destroys both subtrees, destroys each string-keyed value, and frees every ItemMetaDescMan map node."
+  - address: "0x0049E0A0"
+    name: metadata_item_description_map_rotate_left
+    confidence: high
+    evidence: "Performs the red-black-tree left rotation used by ItemMetaDescMan map insertion and erasure."
+  - address: "0x0049E150"
+    name: metadata_item_description_map_rotate_right
+    confidence: high
+    evidence: "Performs the red-black-tree right rotation used by ItemMetaDescMan map insertion and erasure."
+  - address: "0x0049E230"
+    name: metadata_item_description_manager_bind_singleton
+    confidence: high
+    evidence: "Binds the exact RTTI ItemMetaDescMan complete object after adjusting from its Singleton base subobject."
+  - address: "0x0049E270"
+    name: metadata_item_description_manager_unbind_singleton
+    confidence: high
+    evidence: "Clears the ItemMetaDescMan singleton global only when it still references this adjusted complete object."
+  - address: "0x0049E2B0"
+    name: metadata_item_description_manager_exists
+    confidence: high
+    evidence: "Reports whether the exact RTTI ItemMetaDescMan singleton has been constructed."
+  - address: "0x0049E2D0"
+    name: metadata_item_description_manager_get
+    confidence: high
+    evidence: "Returns the exact RTTI ItemMetaDescMan singleton pointer."
+  - address: "0x0049E2E0"
+    name: ui_desc_pane_bind_singleton
+    confidence: high
+    evidence: "Binds the exact RTTI DescPane complete object after adjusting from its Singleton base subobject at +0x190."
+  - address: "0x0049E320"
+    name: ui_desc_pane_unbind_singleton
+    confidence: high
+    evidence: "Clears the DescPane singleton global only when it still references this adjusted complete object."
+  - address: "0x0049E3E0"
+    name: metadata_item_description_map_value_destroy
+    confidence: high
+    evidence: "Destroys the std::string held in an ItemMetaDescMan map value during erase, clear, or insertion cleanup."
+  - address: "0x0049E450"
+    name: metadata_item_description_map_node_allocator_allocate
+    confidence: high
+    evidence: "Allocates count times 0x30 bytes for map nodes and throws std::bad_alloc on overflow or failure."
+  - address: "0x0049E4C0"
+    name: metadata_item_description_map_insert_unique_node
+    confidence: high
+    evidence: "Searches for a string key, inserts a prepared node only when unique, and returns the iterator plus insertion flag."
+  - address: "0x0049E720"
+    name: metadata_item_description_map_link_node_and_rebalance
+    confidence: high
+    evidence: "Links a prepared map node, updates the sentinel extrema and count, then restores red-black-tree invariants."
+  - address: "0x0049EA00"
+    name: metadata_item_description_map_iterator_prev
+    confidence: high
+    evidence: "Moves an ItemMetaDescMan map iterator to its in-order predecessor, including the sentinel end case."
+  - address: "0x0049EAC0"
+    name: metadata_item_description_map_create_node_from_value
+    confidence: high
+    evidence: "Allocates and initializes an ItemMetaDescMan map node, then copies the supplied key and mapped value into it."
+  - address: "0x0049EB1D"
+    name: metadata_item_description_map_node_copy_cleanup
+    confidence: high
+    evidence: "MSVC exception-cleanup funclet that releases a partially copied map node and resumes exception propagation."
+  - address: "0x0049EB60"
+    name: metadata_item_description_map_allocate_node
+    confidence: high
+    evidence: "Allocates one 0x30-byte map node and initializes its parent, child, color, and sentinel fields."
+  - address: "0x0049EBB0"
+    name: metadata_item_description_map_copy_value_if_present
+    confidence: high
+    evidence: "Conditionally invokes the ItemMetaDescMan map value copy constructor when destination storage is non-null."
+  - address: "0x0049EC20"
+    name: metadata_item_description_map_value_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs the map value's std::string key and trailing mapped pointer field."
+  - address: "0x0049ED80"
+    name: ui_desc_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DescPane's scalar deleting destructor."
+  - address: "0x0049EE00"
+    name: ui_desc_pane_exists
+    confidence: high
+    evidence: "Reports whether the exact RTTI DescPane singleton has been constructed."
+  - address: "0x0049EE20"
+    name: ui_desc_pane_get
+    confidence: high
+    evidence: "Returns the exact RTTI DescPane singleton pointer."
   - address: "0x004CACD0"
     name: ui_merchant_server_item_menu3_timer_callback
     confidence: high

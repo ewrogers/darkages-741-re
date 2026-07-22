@@ -1683,11 +1683,45 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_number_args_spell_input_pane_scalar_deleting_dtor` | `0x0049D360` | high | MSVC scalar deleting destructor for exact RTTI class NumberArgsSpellInputPane. |
 | `ui_spell_delay_control_pane_scalar_deleting_dtor` | `0x0049D390` | high | MSVC scalar deleting destructor for exact RTTI class SpellDelayControlPane. |
 | `ui_desc_pane_scalar_deleting_dtor` | `0x0049D5B0` | high | MSVC scalar deleting destructor for exact RTTI class DescPane. |
+| `ui_desc_pane_bind_singleton` | `0x0049E2E0` | high | Binds the exact RTTI DescPane complete object after adjusting from its Singleton base subobject at +0x190. |
+| `ui_desc_pane_unbind_singleton` | `0x0049E320` | high | Clears the DescPane singleton global only when it still references this adjusted complete object. |
+| `ui_spell_delay_control_pane_bind_singleton` | `0x0049E360` | high | Binds the exact RTTI SpellDelayControlPane complete object after adjusting from its Singleton base subobject. |
+| `ui_spell_delay_control_pane_unbind_singleton` | `0x0049E3A0` | high | Clears the SpellDelayControlPane singleton global only when it still references this adjusted complete object. |
+| `ui_dragged_map_item_timer_scalar_deleting_dtor_thunk` | `0x0049ECA0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DraggedMapItemPane's scalar deleting destructor. |
+| `ui_dragged_skill_inventory_item_timer_scalar_deleting_dtor_thunk` | `0x0049ECB0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DraggedSkillInvItemPane's scalar deleting destructor. |
+| `ui_spell_inventory_item_timer_scalar_deleting_dtor_thunk` | `0x0049ECC0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls SpellInvItemPane's scalar deleting destructor. |
+| `ui_string_spell_input_pane_timer_scalar_deleting_dtor_thunk` | `0x0049ECD0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls StringSpellInputPane's scalar deleting destructor. |
+| `ui_dragged_spell_inventory_item_timer_scalar_deleting_dtor_thunk` | `0x0049ECE0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DraggedSpellInvItemPane's scalar deleting destructor. |
+| `ui_spell_delay_control_pane_timer_scalar_deleting_dtor_thunk` | `0x0049ECF0` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls SpellDelayControlPane's scalar deleting destructor. |
+| `ui_skill_inventory_item_timer_scalar_deleting_dtor_thunk` | `0x0049ED00` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls SkillInvItemPane's scalar deleting destructor. |
+| `ui_dragged_inventory_item_timer_scalar_deleting_dtor_thunk` | `0x0049ED10` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DraggedInvItemPane's scalar deleting destructor. |
+| `ui_number_args_spell_input_pane_timer_scalar_deleting_dtor_thunk` | `0x0049ED20` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls NumberArgsSpellInputPane's scalar deleting destructor. |
+| `ui_item_pane_timer_scalar_deleting_dtor_thunk` | `0x0049ED30` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls ItemPane's scalar deleting destructor. |
+| `ui_give_gold_dialog_timer_scalar_deleting_dtor_thunk` | `0x0049ED40` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls GiveGoldDialogPane's scalar deleting destructor. |
+| `ui_drop_gold_dialog_timer_scalar_deleting_dtor_thunk` | `0x0049ED50` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DropGoldDialogPane's scalar deleting destructor. |
+| `ui_inventory_item_timer_scalar_deleting_dtor_thunk` | `0x0049ED60` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls InvItemPane's scalar deleting destructor. |
+| `ui_map_item_pane_timer_scalar_deleting_dtor_thunk` | `0x0049ED70` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls MapItem_Pane's scalar deleting destructor. |
+| `ui_desc_pane_timer_scalar_deleting_dtor_thunk` | `0x0049ED80` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls DescPane's scalar deleting destructor. |
+| `ui_item_pane_handle_pointer_event` | `0x0049ED90` | high | ItemPane primary-vtable pointer-event handler returns false without consuming the event. |
+| `ui_item_pane_handle_network_event` | `0x0049EDA0` | high | ItemPane primary-vtable network-event handler returns false without consuming the event. |
+| `ui_item_pane_handle_timer` | `0x0049EDB0` | high | ItemPane TimerHandler callback returns false without scheduling or consuming work. |
+| `ui_inventory_item_handle_network_event` | `0x0049EDC0` | high | InvItemPane primary-vtable network-event handler returns false without consuming the event. |
+| `ui_map_item_pane_handle_network_event` | `0x0049EDD0` | high | MapItem_Pane primary-vtable network-event handler returns false without consuming the event. |
+| `ui_skill_inventory_item_handle_network_event` | `0x0049EDE0` | high | SkillInvItemPane primary-vtable network-event handler returns false without consuming the event. |
+| `ui_spell_inventory_item_handle_network_event` | `0x0049EDF0` | high | SpellInvItemPane primary-vtable network-event handler returns false without consuming the event. |
+| `ui_desc_pane_exists` | `0x0049EE00` | high | Reports whether the exact RTTI DescPane singleton has been constructed. |
+| `ui_desc_pane_get` | `0x0049EE20` | high | Returns the exact RTTI DescPane singleton pointer. |
+| `ui_item_shop_icon_inventory_control_ctor` | `0x0049EE30` | high | Constructs exact RTTI ItemShop::IconInvControlPane and initializes its item source, grid span, selection, and visible range. |
+| `ui_item_shop_icon_inventory_control_dtor` | `0x0049EEB0` | high | Restores the ItemShop::IconInvControlPane vtables and destroys its Pane base. |
+| `ui_item_shop_icon_inventory_control_hit_test` | `0x0049EEE0` | high | Maps a control-relative point through 33 by 36 pixel cells, rejects the four-pixel gaps, and returns the visible item index. |
+| `ui_item_shop_icon_inventory_control_set_items` | `0x0049EF50` | high | Stores the visible item-record pointer and count, then invalidates ItemShop::IconInvControlPane. |
+| `ui_item_shop_icon_inventory_control_select_cell` | `0x0049EF80` | high | Invalidates the old and new cells and stores the selected grid index, or -1 when outside the visible range. |
 | `ui_item_shop_shopping_bag_ctor` | `0x0049F450` | high | Constructs exact RTTI ItemShop::ShoppingBagDialogPane from lshopba2.txt and sends CCashShop action 0. |
 | `ui_item_shop_shopping_bag_dtor` | `0x0049F7E0` | high | Unregisters and destroys ShoppingBagDialogPane and its attached item controls. |
 | `ui_item_shop_shopping_bag_handle_network_event` | `0x004A0550` | high | Consumes exact RTTI SItemShop in the shopping-bag pane. |
 | `ui_item_shop_shopping_bag_apply_packet` | `0x004A05B0` | high | Replaces records for SItemShop variant 0 and clears the pane's busy state for variants 0 and 1. |
 | `ui_item_shop_browser_dialog_ctor` | `0x004A09F0` | high | Constructs the separate exact RTTI ItemShop::ShopDialogPane around BrowserControlPane; no static constructor caller is present. |
+| `ui_item_shop_icon_inventory_control_scalar_deleting_dtor` | `0x004A1470` | high | Runs ItemShop::IconInvControlPane's destructor and conditionally frees the complete object. |
 | `ui_layout_parse_control` | `0x004A81F0` | high | Parses CONTROL, NAME, TYPE, RECT, IMAGE, VALUE, COLOR, and ENDCONTROL tokens. |
 | `ui_layout_serialize_control` | `0x004A8820` | high | Writes one parsed control back to the same line-oriented layout grammar. |
 | `ui_open_town_map_for_current_map` | `0x004AD250` | high | Opens exact RTTI TownMapPane in the built-in button mode, which selects _tcoord.txt from the active client map number. |
@@ -3598,6 +3632,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_denied_rule_map_rotate_right` | `0x00443190` | high | Performs a right rotation around one denied-rule red-black tree node. |
 | `metadata_denied_numeric_set_iterator_next` | `0x00443240` | high | Advances a numeric-token set iterator to its in-order successor. |
 | `metadata_denied_word_set_iterator_next` | `0x004432F0` | high | Advances a word-token set iterator to its in-order successor. |
+| `metadata_denied_item_list_bind_singleton` | `0x004433A0` | high | Binds the exact RTTI DeniedItemList complete object after adjusting from its Singleton base subobject. |
+| `metadata_denied_item_list_unbind_singleton` | `0x004433E0` | high | Clears the DeniedItemList singleton global only when it still references this adjusted complete object. |
 | `metadata_denied_numeric_set_allocate_nodes` | `0x00443470` | high | Allocates one or more 0x14-byte numeric-token tree nodes and throws std::bad_alloc on overflow or failure. |
 | `metadata_denied_word_set_allocate_nodes` | `0x004434E0` | high | Allocates one or more 0x2c-byte word-token tree nodes and throws std::bad_alloc on overflow or failure. |
 | `metadata_denied_rule_map_value_destroy` | `0x00443550` | high | Template destruction wrapper used when a denied-rule map value must be discarded; delegates to the value destructor. |
@@ -3897,6 +3933,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_item_description_map_clear` | `0x0049DF00` | high | Destroys the map tree and resets sentinel links and element count. |
 | `metadata_item_description_map_iterator_ctor` | `0x0049DF60` | high | Constructs an ItemMetaDescMan map iterator from a node pointer. |
 | `metadata_item_description_map_iterator_next` | `0x0049DF80` | high | Advances an ItemMetaDescMan map iterator to its in-order successor. |
+| `metadata_item_description_map_destroy_subtree` | `0x0049E030` | high | Recursively destroys both subtrees, destroys each string-keyed value, and frees every ItemMetaDescMan map node. |
+| `metadata_item_description_map_rotate_left` | `0x0049E0A0` | high | Performs the red-black-tree left rotation used by ItemMetaDescMan map insertion and erasure. |
+| `metadata_item_description_map_rotate_right` | `0x0049E150` | high | Performs the red-black-tree right rotation used by ItemMetaDescMan map insertion and erasure. |
+| `metadata_denied_item_list_exists` | `0x0049E200` | high | Reports whether the exact RTTI DeniedItemList singleton has been constructed. |
+| `metadata_denied_item_list_get` | `0x0049E220` | high | Returns the exact RTTI DeniedItemList singleton pointer. |
+| `metadata_item_description_manager_bind_singleton` | `0x0049E230` | high | Binds the exact RTTI ItemMetaDescMan complete object after adjusting from its Singleton base subobject. |
+| `metadata_item_description_manager_unbind_singleton` | `0x0049E270` | high | Clears the ItemMetaDescMan singleton global only when it still references this adjusted complete object. |
+| `metadata_item_description_manager_exists` | `0x0049E2B0` | high | Reports whether the exact RTTI ItemMetaDescMan singleton has been constructed. |
+| `metadata_item_description_manager_get` | `0x0049E2D0` | high | Returns the exact RTTI ItemMetaDescMan singleton pointer. |
+| `metadata_item_description_map_value_destroy` | `0x0049E3E0` | high | Destroys the std::string held in an ItemMetaDescMan map value during erase, clear, or insertion cleanup. |
+| `metadata_item_description_map_node_allocator_allocate` | `0x0049E450` | high | Allocates count times 0x30 bytes for map nodes and throws std::bad_alloc on overflow or failure. |
+| `metadata_item_description_map_insert_unique_node` | `0x0049E4C0` | high | Searches for a string key, inserts a prepared node only when unique, and returns the iterator plus insertion flag. |
+| `metadata_item_description_map_link_node_and_rebalance` | `0x0049E720` | high | Links a prepared map node, updates the sentinel extrema and count, then restores red-black-tree invariants. |
+| `metadata_item_description_map_iterator_prev` | `0x0049EA00` | high | Moves an ItemMetaDescMan map iterator to its in-order predecessor, including the sentinel end case. |
+| `metadata_item_description_map_create_node_from_value` | `0x0049EAC0` | high | Allocates and initializes an ItemMetaDescMan map node, then copies the supplied key and mapped value into it. |
+| `metadata_item_description_map_node_copy_cleanup` | `0x0049EB1D` | high | MSVC exception-cleanup funclet that releases a partially copied map node and resumes exception propagation. |
+| `metadata_item_description_map_allocate_node` | `0x0049EB60` | high | Allocates one 0x30-byte map node and initializes its parent, child, color, and sentinel fields. |
+| `metadata_item_description_map_copy_value_if_present` | `0x0049EBB0` | high | Conditionally invokes the ItemMetaDescMan map value copy constructor when destination storage is non-null. |
+| `metadata_item_description_map_value_copy_ctor` | `0x0049EC20` | high | Copy-constructs the map value's std::string key and trailing mapped pointer field. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

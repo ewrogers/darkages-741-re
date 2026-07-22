@@ -299,6 +299,14 @@ functions:
     name: metadata_denied_word_set_iterator_next
     confidence: high
     evidence: "Advances a word-token set iterator to its in-order successor."
+  - address: "0x004433A0"
+    name: metadata_denied_item_list_bind_singleton
+    confidence: high
+    evidence: "Binds the exact RTTI DeniedItemList complete object after adjusting from its Singleton base subobject."
+  - address: "0x004433E0"
+    name: metadata_denied_item_list_unbind_singleton
+    confidence: high
+    evidence: "Clears the DeniedItemList singleton global only when it still references this adjusted complete object."
   - address: "0x00443470"
     name: metadata_denied_numeric_set_allocate_nodes
     confidence: high
@@ -831,6 +839,14 @@ functions:
     name: metadata_item_info_map_value_copy_ctor
     confidence: high
     evidence: "Copy-constructs an ItemInfo map value by copying its std::string key and 0xC0-byte record."
+  - address: "0x0049E200"
+    name: metadata_denied_item_list_exists
+    confidence: high
+    evidence: "Reports whether the exact RTTI DeniedItemList singleton has been constructed."
+  - address: "0x0049E220"
+    name: metadata_denied_item_list_get
+    confidence: high
+    evidence: "Returns the exact RTTI DeniedItemList singleton pointer."
   - address: "0x004A4AA0"
     name: file_load_message_table
     confidence: high

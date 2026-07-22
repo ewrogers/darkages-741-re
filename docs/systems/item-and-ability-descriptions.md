@@ -46,6 +46,8 @@ The learned-name lookup contributes a learned/not-learned state, and the parsed 
 
 The exact RTTI class `ItemMetaDescMan` supplies the local item-description index. It subscribes to the `SItemDes` metadata table with internal event tag `0x1234`. Each accepted row contributes a numeric ID and text value under the row's group name. The compiled client also contains an unreferenced helper that writes this index to `IDDump.txt`; no live static call reaches that debug export.
 
+The description index is a string-keyed red-black tree with unique keys. Loading a duplicate name does not replace the existing entry. `ItemMetaDescMan` and `DescPane` use separate singleton globals: each constructor binds its adjusted complete-object pointer, each destructor clears only its own live pointer, and callers check existence before retrieving the object. The tooltip can therefore be created or destroyed independently of the metadata index.
+
 ```text
 pointer enters a row
         |
