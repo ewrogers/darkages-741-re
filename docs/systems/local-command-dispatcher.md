@@ -49,6 +49,8 @@ The literal names below are compiled into version 741. Types describe what the l
 
 The no-op result is confirmed for the default `CommandExecutor` constructed by `CommandDispatcher`. The dispatcher can also receive an external executor pointer, so another owner could provide different behavior. No such owner has been confirmed yet.
 
+The default executor registers timer 1 at 500 ms and timer 2 at 2,000 ms. Its `auto_use_spell` handler schedules timer 3 at the supplied selector multiplied by 1,000 ms, while selector zero removes that timer. The timer callback confirms the scheduling paths, but the final timer-3 action remains absent in this default implementation.
+
 ## Command history
 
 The line-input pane keeps up to 256 command strings in a process-global history. Adding an existing string moves the old entry to the end instead of creating a duplicate. Keyboard events cycle through this list and copy the selected command back into the input field with a trailing space.

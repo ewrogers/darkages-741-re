@@ -127,3 +127,171 @@ functions:
     name: command_dispatcher_handle_show
     confidence: high
     evidence: "Pops a string and integer selector and forwards them to the configured command target."
+  - address: "0x00430600"
+    name: command_dispatcher_push_integer
+    confidence: high
+    evidence: "Pushes a tagged integer onto the fixed 1024-entry command argument stack."
+  - address: "0x00430630"
+    name: command_dispatcher_push_string
+    confidence: high
+    evidence: "Copies a string into the dispatcher arena and pushes a tagged string argument."
+  - address: "0x00430680"
+    name: command_dispatcher_copy_string_to_arena
+    confidence: high
+    evidence: "Grows the command string arena when needed and copies one terminated string into it."
+  - address: "0x004307A0"
+    name: command_dispatcher_push_argument
+    confidence: high
+    evidence: "Pushes one already-tagged command argument when the 1024-entry stack has capacity."
+  - address: "0x004307F0"
+    name: command_argument_copy
+    confidence: high
+    evidence: "Copies a tagged command argument value."
+  - address: "0x00430830"
+    name: command_dispatcher_pop_argument
+    confidence: high
+    evidence: "Pops the newest command argument or reports an empty argument stack."
+  - address: "0x00430880"
+    name: command_dispatcher_clear_arguments
+    confidence: high
+    evidence: "Clears the argument stack and rewinds the temporary string arena."
+  - address: "0x004308B0"
+    name: command_executor_ctor
+    confidence: high
+    evidence: "Constructs CommandExecutor and registers its 500 ms and 2000 ms timers."
+  - address: "0x00430940"
+    name: command_executor_dtor
+    confidence: high
+    evidence: "Unregisters CommandExecutor timers and destroys its TimerHandler base."
+  - address: "0x004309C0"
+    name: command_executor_timer1_tick_noop
+    confidence: high
+    evidence: "Receives the repeating 500 ms executor timer without changing command state."
+  - address: "0x004309D0"
+    name: command_executor_timer_callback
+    confidence: high
+    evidence: "Routes executor timers, requeues timers 1 and 4, accepts timer 2, and rejects timer 3."
+  - address: "0x00430A50"
+    name: command_executor_message
+    confidence: high
+    evidence: "Displays a local command message through the active UI message path."
+  - address: "0x00430B40"
+    name: command_executor_schedule_auto_use_spell
+    confidence: high
+    evidence: "Schedules or clears timer 3 using the selector multiplied by 1000 ms."
+  - address: "0x00430C20"
+    name: command_executor_set_tile_noop
+    confidence: high
+    evidence: "Default CommandExecutor set_tile target; intentionally does nothing."
+  - address: "0x00430C30"
+    name: command_executor_set_color_noop
+    confidence: high
+    evidence: "Default CommandExecutor set_color target; intentionally does nothing."
+  - address: "0x00430C40"
+    name: command_executor_effect_noop
+    confidence: high
+    evidence: "Default CommandExecutor effect target; intentionally does nothing."
+  - address: "0x00430C50"
+    name: command_executor_motion_noop
+    confidence: high
+    evidence: "Default CommandExecutor motion target; intentionally does nothing."
+  - address: "0x00430C60"
+    name: command_executor_move_noop
+    confidence: high
+    evidence: "Default CommandExecutor move target; intentionally does nothing."
+  - address: "0x00430C70"
+    name: command_executor_put_item_noop
+    confidence: high
+    evidence: "Default CommandExecutor put_item target; intentionally does nothing."
+  - address: "0x00430C80"
+    name: command_executor_put_monster_noop
+    confidence: high
+    evidence: "Default CommandExecutor put_monster target; intentionally does nothing."
+  - address: "0x00430C90"
+    name: command_executor_put_human_noop
+    confidence: high
+    evidence: "Default CommandExecutor put_human target; intentionally does nothing."
+  - address: "0x00430CA0"
+    name: command_executor_human_to_monster_noop
+    confidence: high
+    evidence: "Default CommandExecutor human_to_monster target; intentionally does nothing."
+  - address: "0x00430CB0"
+    name: command_executor_play_sound
+    confidence: high
+    evidence: "Plays a local sound through the active sound manager."
+  - address: "0x00430CE0"
+    name: command_executor_set_ground_tile_noop
+    confidence: high
+    evidence: "Default CommandExecutor set_gnd_tile target; intentionally does nothing."
+  - address: "0x00430CF0"
+    name: command_executor_set_static_tile_noop
+    confidence: high
+    evidence: "Default CommandExecutor set_stc_tile target; intentionally does nothing."
+  - address: "0x00430D00"
+    name: command_executor_play_minigame
+    confidence: high
+    evidence: "Launches the selected minigame through the active root pane."
+  - address: "0x00430D30"
+    name: command_executor_send_fieldmap
+    confidence: high
+    evidence: "Builds and sends the field-map client command from three integer fields."
+  - address: "0x00430E20"
+    name: command_executor_show_noop
+    confidence: high
+    evidence: "Default CommandExecutor show target; intentionally does nothing."
+  - address: "0x00430E30"
+    name: ui_command_history_add
+    confidence: high
+    evidence: "Adds a command to a 256-entry history, moving duplicates to the newest position."
+  - address: "0x00430F50"
+    name: ui_command_line_input_pane_ctor
+    confidence: high
+    evidence: "Constructs the command-line input pane and initializes its local history state."
+  - address: "0x00430FB0"
+    name: ui_command_line_input_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Handles command-line editing, history traversal, submission, and cancellation keys."
+  - address: "0x00431170"
+    name: ui_command_line_input_pane_submit
+    confidence: high
+    evidence: "Submits the current line for parsing and records nonempty input in command history."
+  - address: "0x004311E0"
+    name: command_parse_and_execute_line
+    confidence: high
+    evidence: "Tokenizes one bounded command line, pushes arguments in reverse order, dispatches by name, and clears temporaries."
+  - address: "0x00431540"
+    name: command_is_bare_token_character
+    confidence: high
+    evidence: "Accepts ASCII letters, digits, and underscore in an unquoted command token."
+  - address: "0x004315A0"
+    name: command_dispatcher_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for CommandDispatcher."
+  - address: "0x004315D0"
+    name: command_executor_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for CommandExecutor."
+  - address: "0x00431600"
+    name: ui_command_line_input_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for the command-line input pane."
+  - address: "0x00431630"
+    name: command_dispatcher_singleton_register
+    confidence: high
+    evidence: "Registers the CommandDispatcher singleton."
+  - address: "0x00431670"
+    name: command_dispatcher_singleton_unregister
+    confidence: high
+    evidence: "Clears the CommandDispatcher singleton when the supplied instance owns it."
+  - address: "0x004316B0"
+    name: command_get_dispatcher
+    confidence: high
+    evidence: "Returns the current CommandDispatcher singleton."
+  - address: "0x004316C0"
+    name: audio_has_sound_manager
+    confidence: high
+    evidence: "Reports whether the global sound-manager singleton exists."
+  - address: "0x004316F0"
+    name: ui_command_line_input_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler scalar-deleting destructor thunk for the command-line input pane."

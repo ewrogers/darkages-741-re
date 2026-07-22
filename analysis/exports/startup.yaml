@@ -81,6 +81,122 @@ functions:
     name: ui_intro_video_pane_timer_scalar_deleting_dtor_thunk
     confidence: high
     evidence: "Adjusts TimerHandler this and enters CIPane's scalar deleting destructor."
+  - address: "0x00431FB0"
+    name: text_format_wide_buffer
+    confidence: high
+    evidence: "Formats a bounded wide-character string into the caller buffer using the client's shared varargs helper."
+  - address: "0x00432660"
+    name: app_load_config_file
+    confidence: high
+    evidence: "Loads the versioned Darkages.cfg text fields, endpoint table, input mode, animation flag, and gated audio/game options."
+  - address: "0x00432D60"
+    name: app_set_default_config
+    confidence: high
+    evidence: "Installs distribution-specific endpoint defaults, input settings, fonts, animation, and level-3 audio defaults."
+  - address: "0x00433B50"
+    name: maybe_net_load_endpoint_from_command_file
+    confidence: medium
+    evidence: "Unreferenced parser that treats command-line tail text as a filename and loads a host or IPv4 address plus port into Config."
+  - address: "0x00436A50"
+    name: text_copy_nth_space_token_wide
+    confidence: high
+    evidence: "Copies one zero-based, space-delimited token from wide text into a bounded caller buffer."
+  - address: "0x00436B20"
+    name: ui_unitel_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI UnitelPane and initializes its legacy endpoint-integration state."
+  - address: "0x00436BA0"
+    name: ui_unitel_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI UnitelPane and its Pane base."
+  - address: "0x00436C10"
+    name: ui_unitel_pane_apply_endpoint_message
+    confidence: high
+    evidence: "Parses an ampersand-delimited Unitel host, port, and identifier message and updates the Config endpoint."
+  - address: "0x00436EF0"
+    name: app_config_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for Config."
+  - address: "0x00436F80"
+    name: com_get_bstr_result
+    confidence: high
+    evidence: "Retrieves a BSTR result from a legacy endpoint COM service and wraps it in client storage."
+  - address: "0x004370A0"
+    name: com_bstr_ref_create_from_ansi
+    confidence: high
+    evidence: "Converts ANSI text into an owned BSTR reference wrapper."
+  - address: "0x00437150"
+    name: com_bstr_ref_release_and_clear
+    confidence: high
+    evidence: "Releases an owned BSTR reference and clears the wrapper."
+  - address: "0x00437180"
+    name: com_bstr_ref_get_ansi
+    confidence: high
+    evidence: "Converts the wrapped BSTR to the client's cached ANSI representation."
+  - address: "0x004371E0"
+    name: com_bstr_storage_ctor
+    confidence: high
+    evidence: "Constructs the client's reference-counted BSTR storage object."
+  - address: "0x00437250"
+    name: com_bstr_storage_release
+    confidence: high
+    evidence: "Releases one reference to the BSTR storage object."
+  - address: "0x004372A0"
+    name: com_bstr_storage_destroy
+    confidence: high
+    evidence: "Destroys BSTR storage and frees the underlying COM string."
+  - address: "0x00437300"
+    name: com_invoke_bstr_input_method
+    confidence: high
+    evidence: "Invokes a legacy COM method with one BSTR input argument."
+  - address: "0x004373A0"
+    name: com_invoke_bstr_output_method
+    confidence: high
+    evidence: "Invokes a legacy COM method that returns a BSTR."
+  - address: "0x00437490"
+    name: com_invoke_int_output_method
+    confidence: high
+    evidence: "Invokes a legacy COM method that returns an integer."
+  - address: "0x004374E0"
+    name: ui_unitel_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for UnitelPane."
+  - address: "0x00437510"
+    name: com_release_interface
+    confidence: high
+    evidence: "Calls Release on a non-null COM interface pointer and clears the caller slot."
+  - address: "0x00437540"
+    name: com_create_thrunet_service_by_progid
+    confidence: high
+    evidence: "Creates the legacy Thrunet endpoint service from its registered ProgID."
+  - address: "0x00437790"
+    name: com_create_excitegame_service
+    confidence: high
+    evidence: "Creates and initializes the legacy ExciteGame endpoint COM service."
+  - address: "0x00437860"
+    name: com_create_thrunet_service
+    confidence: high
+    evidence: "Creates and initializes the legacy Thrunet endpoint COM service."
+  - address: "0x00437930"
+    name: app_config_singleton_register
+    confidence: high
+    evidence: "Registers the Config singleton."
+  - address: "0x00437970"
+    name: app_config_singleton_unregister
+    confidence: high
+    evidence: "Clears the Config singleton when the supplied instance owns it."
+  - address: "0x004379B0"
+    name: ui_unitel_pane_singleton_register
+    confidence: high
+    evidence: "Registers the UnitelPane singleton."
+  - address: "0x004379F0"
+    name: ui_unitel_pane_singleton_unregister
+    confidence: high
+    evidence: "Clears the UnitelPane singleton when the supplied instance owns it."
+  - address: "0x00437A30"
+    name: ui_unitel_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusted-this TimerHandler scalar-deleting destructor thunk for UnitelPane."
   - address: "0x004ACA50"
     end_address: "0x004ACDF1"
     name: event_handle_intro_state

@@ -1,0 +1,281 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x00437E60"
+    name: ui_control_set_focus_outline_enabled
+    confidence: high
+    evidence: "Copies the dialog-wide focus-outline policy into ControlPane offset 0x19B."
+  - address: "0x00437E80"
+    name: ui_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ControlPane and initializes its control kind, rectangle, enabled state, palette index, and focus-outline flag."
+  - address: "0x00437F60"
+    name: ui_control_set_color_index
+    confidence: high
+    evidence: "Changes the ControlPane palette index and invalidates its rectangle."
+  - address: "0x00437FA0"
+    name: ui_control_enable
+    confidence: high
+    evidence: "Sets the common ControlPane enabled flag and invalidates the control."
+  - address: "0x00437FE0"
+    name: ui_control_disable
+    confidence: high
+    evidence: "Clears the common ControlPane enabled flag and invalidates the control."
+  - address: "0x00438020"
+    name: ui_progress_bar_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ProgressBarControlPane and loads its two bar pixmaps."
+  - address: "0x00438170"
+    name: ui_progress_bar_control_dtor
+    confidence: high
+    evidence: "Destroys ProgressBarControlPane through the ControlPane base."
+  - address: "0x004381A0"
+    name: ui_progress_bar_control_draw
+    confidence: high
+    evidence: "Draws the progress background and foreground segments using the current progress value."
+  - address: "0x00438290"
+    name: ui_button_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ButtonControlPane and initializes state, toggle lock, and focus."
+  - address: "0x00438310"
+    name: ui_button_control_dtor
+    confidence: high
+    evidence: "Destroys ButtonControlPane through the ControlPane base."
+  - address: "0x00438340"
+    name: ui_button_control_set_state
+    confidence: high
+    evidence: "Changes the button state unless toggle locking suppresses the transition."
+  - address: "0x004383A0"
+    name: ui_button_control_invalidate
+    confidence: high
+    evidence: "Invalidates the button rectangle."
+  - address: "0x004383C0"
+    name: ui_button_control_set_toggle_lock
+    confidence: high
+    evidence: "Sets the ButtonControlPane toggle-lock flag."
+  - address: "0x00438440"
+    name: ui_button_control_set_color_index
+    confidence: high
+    evidence: "Forwards palette-index changes to ControlPane."
+  - address: "0x00438490"
+    name: ui_button_control_enable
+    confidence: high
+    evidence: "Enables ButtonControlPane through ControlPane."
+  - address: "0x004384D0"
+    name: ui_button_control_disable
+    confidence: high
+    evidence: "Disables ButtonControlPane through ControlPane."
+  - address: "0x00438510"
+    name: ui_button_control_focus
+    confidence: high
+    evidence: "Sets the button focus flag and invalidates its rectangle."
+  - address: "0x00438550"
+    name: ui_button_control_unfocus
+    confidence: high
+    evidence: "Clears the button focus flag and invalidates its rectangle."
+  - address: "0x00438590"
+    name: ui_button_control_handle_keyboard_event
+    confidence: high
+    evidence: "Consumes Enter or Space and sends dialog action 8 with the control ID."
+  - address: "0x00438600"
+    name: ui_text_button_control_refresh_label
+    confidence: high
+    evidence: "Rebuilds the centered child label pane for TextButtonControlPane."
+  - address: "0x004386D0"
+    name: ui_text_button_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TextButtonControlPane and creates its child label pane."
+  - address: "0x00438810"
+    name: ui_text_button_control_dtor
+    confidence: high
+    evidence: "Destroys the owned label pane and ButtonControlPane base."
+  - address: "0x004388C0"
+    name: ui_text_button_control_copy_label
+    confidence: high
+    evidence: "Copies the child label into a bounded caller buffer."
+  - address: "0x00438940"
+    name: ui_text_button_control_register_screen
+    confidence: high
+    evidence: "Registers TextButtonControlPane and attaches its child label pane."
+  - address: "0x00438A00"
+    name: ui_text_button_control_unregister_screen
+    confidence: high
+    evidence: "Detaches the child label pane and unregisters TextButtonControlPane."
+  - address: "0x00438A70"
+    name: ui_text_button_control_draw
+    confidence: high
+    evidence: "Draws the text-button frame, focus feedback, and child label."
+  - address: "0x00438CC0"
+    name: ui_text_button_control_get_label_rect
+    confidence: high
+    evidence: "Computes the centered label rectangle inside TextButtonControlPane."
+  - address: "0x00438DC0"
+    name: ui_text_button_ex_control_refresh_label
+    confidence: high
+    evidence: "Rebuilds the centered child label pane for TextButtonExControlPane."
+  - address: "0x00438E90"
+    name: ui_text_button_ex_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TextButtonExControlPane and creates its child label pane."
+  - address: "0x00438FD0"
+    name: ui_text_button_ex_control_dtor
+    confidence: high
+    evidence: "Destroys the owned label pane and ButtonControlPane base."
+  - address: "0x00439080"
+    name: ui_text_button_ex_control_copy_label
+    confidence: high
+    evidence: "Copies the TextButtonEx label with DBCS-aware length clamping and a local terminator."
+  - address: "0x00439100"
+    name: ui_text_button_ex_control_register_screen
+    confidence: high
+    evidence: "Registers TextButtonEx and attaches its owned child text pane."
+  - address: "0x004391C0"
+    name: ui_text_button_ex_control_unregister_screen
+    confidence: high
+    evidence: "Detaches the owned child text pane and unregisters TextButtonEx."
+  - address: "0x00439230"
+    name: ui_text_button_ex_control_draw
+    confidence: high
+    evidence: "Draws an extended button frame from buttonex.epf or btn220.epf and then focus feedback."
+  - address: "0x004393C0"
+    name: ui_text_button_ex_control_get_label_rect
+    confidence: high
+    evidence: "Centers a 6-pixel-per-byte, 12-pixel-high label and clips it to the control bounds."
+  - address: "0x004394C0"
+    name: ui_get_default_button_skin_rect
+    confidence: high
+    evidence: "Loads and caches the first butt001.epf image bounds."
+  - address: "0x00439560"
+    name: ui_offset_default_button_skin_rect
+    confidence: high
+    evidence: "Returns the cached butt001.epf bounds offset by a caller-supplied origin."
+  - address: "0x00439640"
+    name: ui_image_button_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ImageButtonControlPane with three pixmap slots."
+  - address: "0x00439700"
+    name: ui_image_button_control_load_images
+    confidence: high
+    evidence: "Loads three consecutive butt001.epf frames or copies three caller-supplied pixmaps."
+  - address: "0x00439830"
+    name: ui_image_button_control_dtor
+    confidence: high
+    evidence: "Destroys ImageButtonControlPane through ButtonControlPane."
+  - address: "0x00439860"
+    name: ui_image_button_control_draw
+    confidence: high
+    evidence: "Draws the pixmap selected by button state and optional enabled focus feedback."
+  - address: "0x004399B0"
+    name: ui_image_button_ex_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ImageButtonExControlPane and its optional child label."
+  - address: "0x00439AD0"
+    name: ui_image_button_ex_control_dtor
+    confidence: high
+    evidence: "Destroys the owned ImageButtonEx label pane and ImageButtonControlPane base."
+  - address: "0x00439B50"
+    name: ui_image_button_ex_control_set_label
+    confidence: high
+    evidence: "Creates or refreshes the centered ImageButtonEx child text pane."
+  - address: "0x00439DC0"
+    name: ui_image_button_ex_control_register_screen
+    confidence: high
+    evidence: "Registers ImageButtonEx and attaches its child label pane."
+  - address: "0x00439E70"
+    name: ui_image_button_ex_control_unregister_screen
+    confidence: high
+    evidence: "Detaches the child label pane and unregisters ImageButtonEx."
+  - address: "0x00439EB0"
+    name: ui_radio_group_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI RadioGroupControlPane with an empty option list."
+  - address: "0x00439F00"
+    name: ui_radio_group_control_dtor
+    confidence: high
+    evidence: "Destroys the owned radio-option list and ControlPane base."
+  - address: "0x00439FB0"
+    name: ui_radio_group_control_add_option
+    confidence: high
+    evidence: "Lazily creates the option collection and appends a bounded label plus rectangle."
+  - address: "0x0043A0E0"
+    name: ui_radio_group_control_remove_option
+    confidence: high
+    evidence: "Removes a radio option through the owned collection."
+  - address: "0x0043A110"
+    name: ui_radio_group_control_set_selected
+    confidence: high
+    evidence: "Invalidates the old and new option rectangles and stores the selected index."
+  - address: "0x0043A190"
+    name: ui_radio_group_control_handle_mouse_event
+    confidence: high
+    evidence: "Selects the hit radio option on a primary-button mouse event."
+  - address: "0x0043A220"
+    name: ui_radio_group_control_hit_test
+    confidence: high
+    evidence: "Returns a hit option index with bit 0x40 set or sentinel 7."
+  - address: "0x0043A2C0"
+    name: ui_radio_group_control_draw
+    confidence: high
+    evidence: "Draws every radio option in collection order."
+  - address: "0x0043A320"
+    name: ui_radio_group_control_get_option_count
+    confidence: high
+    evidence: "Returns the radio-option count or zero before allocation."
+  - address: "0x0043A350"
+    name: ui_radio_group_control_get_option
+    confidence: high
+    evidence: "Returns one radio-option record from the owned collection."
+  - address: "0x0043A380"
+    name: ui_radio_group_control_get_option_rect
+    confidence: high
+    evidence: "Copies one radio option's four-coordinate rectangle."
+  - address: "0x0043A3C0"
+    name: ui_radio_group_control_draw_option
+    confidence: high
+    evidence: "Draws one indicator and label using enabled, hover, and selected palette states."
+  - address: "0x0043A790"
+    name: ui_scrollable_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ScrollableControlPane around an owned child pane."
+  - address: "0x0043A840"
+    name: ui_scrollable_control_dtor
+    confidence: high
+    evidence: "Queues the owned child pane for destruction and destroys ControlPane."
+  - address: "0x0043A970"
+    name: ui_scrollable_control_set_rect
+    confidence: high
+    evidence: "Updates the control rectangle and forwards the local rectangle to the child."
+  - address: "0x0043AA90"
+    name: ui_scrollable_control_enable
+    confidence: high
+    evidence: "Enables ScrollableControlPane through ControlPane."
+  - address: "0x0043AAB0"
+    name: ui_scrollable_control_disable
+    confidence: high
+    evidence: "Disables ScrollableControlPane through ControlPane."
+  - address: "0x0043AB50"
+    name: ui_scrollable_control_register_screen
+    confidence: high
+    evidence: "Registers the control, updates the child's local rectangle, and attaches the child."
+  - address: "0x0043ACB0"
+    name: ui_scrollable_control_unregister_screen
+    confidence: high
+    evidence: "Detaches the owned child pane and unregisters ScrollableControlPane."
+  - address: "0x0043ACE0"
+    name: ui_scrollable_control_draw
+    confidence: high
+    evidence: "Draws the scrollable surface and uses palette index 31 for its active state."
+  - address: "0x0043AD10"
+    name: ui_text_edit_control_default_ctor
+    confidence: high
+    evidence: "Constructs an empty exact RTTI TextEditControlPane and captures the shared text-input service."
+  - address: "0x0043ADE0"
+    name: ui_text_edit_control_ctor
+    confidence: high
+    evidence: "Constructs TextEditControlPane, its text canvas, margins, initial text, and edit state."

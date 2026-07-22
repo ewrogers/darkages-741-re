@@ -66,6 +66,8 @@ Many callbacks use the control's attachment-order index as its action ID. For ex
 
 The layout files supply names, rectangles, art, and palette values. They do not create control classes on their own. See [UI layout files](ui-layouts.md) and the [UI layout registry](../appendix/ui-layout-registry.md).
 
+The shared `ControlPane` hierarchy supplies the native button, progress, radio, scroll, and text-edit behavior. Its exact classes and state transitions are described in [Native UI controls](ui-controls.md).
+
 ## Pane state
 
 Several states that look similar are independent:

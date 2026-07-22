@@ -11,12 +11,18 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_detect_bad_guy_marker` | `0x00431ED0` | high | Reconstructs %SystemRoot%\System32\Mscfg.dll and sets config +0x668 from file existence alone. |
 | `app_config_ctor` | `0x00431FF0` | high | Constructs Config, loads Darkages.cfg, selects a distribution mode, and dispatches endpoint initialization. |
 | `app_save_config` | `0x00432340` | high | Writes Darkages.cfg in text mode. |
+| `app_load_config_file` | `0x00432660` | high | Loads the versioned Darkages.cfg text fields, endpoint table, input mode, animation flag, and gated audio/game options. |
+| `app_set_default_config` | `0x00432D60` | high | Installs distribution-specific endpoint defaults, input settings, fonts, animation, and level-3 audio defaults. |
 | `app_configure_unitel_distribution` | `0x00433B40` | high | Empty dormant mode 2 initializer selected by Unitel.nfo in the unreferenced marker scanner. |
 | `app_get_distribution_mode` | `0x00434EB0` | high | Caches and returns the distribution mode selected by app_select_distribution_mode. |
 | `app_select_distribution_mode` | `0x00434EF0` | high | Returns the constant distribution mode 1 in this target. |
 | `app_detect_distribution_mode_from_markers` | `0x00434F00` | high | Dormant unreferenced scanner that maps country and Korean ISP .nfo markers to distribution modes 1 through 15. |
 | `app_derive_installation_id16` | `0x00436E10` | high | Applies the client's custom 0x1021-table recurrence to the four little-endian bytes of the persistent 32-bit installation ID. |
-| `app_context_dumper_ctor` | `0x00437BB0` | high | Constructs exact RTTI ContextDumper and an x86 StackWalker over the supplied crashing CONTEXT. |
+| `app_config_scalar_deleting_dtor` | `0x00436EF0` | high | Compiler scalar-deleting destructor for Config. |
+| `app_config_singleton_register` | `0x00437930` | high | Registers the Config singleton. |
+| `app_config_singleton_unregister` | `0x00437970` | high | Clears the Config singleton when the supplied instance owns it. |
+| `app_context_dumper_from_thread_ctor` | `0x00437A40` | high | Constructs exact RTTI ContextDumper by capturing a thread CONTEXT and immediately collects bounded trace text. |
+| `app_context_dumper_from_context_ctor` | `0x00437BB0` | high | Constructs exact RTTI ContextDumper from a supplied x86 CONTEXT and immediately collects bounded trace text. |
 | `app_collect_stack_trace_text` | `0x00437D70` | high | Collects StackWalker frames into the bounded 8192-byte LCrash.nfo trace buffer with newline separators. |
 | `app_exception_handler_ctor` | `0x00468AD0` | high | Constructs exact RTTI ExceptionHandler, installs app_unhandled_exception_filter, and retains the previous top-level filter. |
 | `app_exception_handler_dtor` | `0x00468B10` | high | Restores the previous Win32 unhandled exception filter and clears the ExceptionHandler singleton. |
@@ -36,7 +42,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_set_working_directory_from_executable` | `0x004AD3A0` | high | Derives the executable directory from GetCommandLineA and makes it the process working directory. |
 | `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client. |
 | `app_quit_after_patcher_launch` | `0x005287B0` | high | Destroys NewPatchPane, posts WM_QUIT, and terminates after the patcher launch attempt. |
-| `app_stack_walker_ctor` | `0x0056D540` | high | Constructs exact RTTI StackWalker and copies the supplied 0x2CC-byte x86 CONTEXT. |
+| `app_stack_walker_from_thread_ctor` | `0x0056D4E0` | high | Constructs exact RTTI StackWalker and captures the supplied thread or current thread into an x86 CONTEXT. |
+| `app_stack_walker_from_context_ctor` | `0x0056D540` | high | Constructs exact RTTI StackWalker and copies the supplied 0x2CC-byte x86 CONTEXT. |
 | `app_stack_walker_format_next_frame` | `0x0056D660` | high | Calls DbgHelp StackWalk for IMAGE_FILE_MACHINE_I386 and formats flags-1 output as raw CS:EIP text. |
 | `app_handle_d_option_stub` | `0x0057A460` | high | Empty function called for the suffix of an uppercase -D command-line token. |
 | `app_parse_command_line` | `0x0057A550` | high | Scans the WinMain command tail for space-delimited dash tokens and recognizes only uppercase D. |
@@ -703,6 +710,87 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_has_clock_pane` | `0x0042EE70` | high | Reports whether clock_pane_singleton_ptr is non-null. |
 | `ui_get_clock_pane` | `0x0042EE90` | high | Returns the active ClockPane singleton pointer. |
 | `ui_clock_pane_timer_scalar_deleting_dtor_thunk` | `0x0042EEA0` | high | Adjusts a TimerHandler this pointer back to ClockPane and enters its scalar deleting destructor. |
+| `ui_command_history_add` | `0x00430E30` | high | Adds a command to a 256-entry history, moving duplicates to the newest position. |
+| `ui_command_line_input_pane_ctor` | `0x00430F50` | high | Constructs the command-line input pane and initializes its local history state. |
+| `ui_command_line_input_pane_handle_keyboard_event` | `0x00430FB0` | high | Handles command-line editing, history traversal, submission, and cancellation keys. |
+| `ui_command_line_input_pane_submit` | `0x00431170` | high | Submits the current line for parsing and records nonempty input in command history. |
+| `ui_command_line_input_pane_scalar_deleting_dtor` | `0x00431600` | high | Compiler scalar-deleting destructor for the command-line input pane. |
+| `ui_command_line_input_pane_timer_scalar_deleting_dtor_thunk` | `0x004316F0` | high | Adjusted-this TimerHandler scalar-deleting destructor thunk for the command-line input pane. |
+| `ui_unitel_pane_ctor` | `0x00436B20` | high | Constructs exact RTTI UnitelPane and initializes its legacy endpoint-integration state. |
+| `ui_unitel_pane_dtor` | `0x00436BA0` | high | Destroys exact RTTI UnitelPane and its Pane base. |
+| `ui_unitel_pane_apply_endpoint_message` | `0x00436C10` | high | Parses an ampersand-delimited Unitel host, port, and identifier message and updates the Config endpoint. |
+| `ui_unitel_pane_scalar_deleting_dtor` | `0x004374E0` | high | Compiler scalar-deleting destructor for UnitelPane. |
+| `ui_unitel_pane_singleton_register` | `0x004379B0` | high | Registers the UnitelPane singleton. |
+| `ui_unitel_pane_singleton_unregister` | `0x004379F0` | high | Clears the UnitelPane singleton when the supplied instance owns it. |
+| `ui_unitel_pane_timer_scalar_deleting_dtor_thunk` | `0x00437A30` | high | Adjusted-this TimerHandler scalar-deleting destructor thunk for UnitelPane. |
+| `ui_control_set_focus_outline_enabled` | `0x00437E60` | high | Copies the dialog-wide focus-outline policy into ControlPane offset 0x19B. |
+| `ui_control_ctor` | `0x00437E80` | high | Constructs exact RTTI ControlPane and initializes its control kind, rectangle, enabled state, palette index, and focus-outline flag. |
+| `ui_control_set_color_index` | `0x00437F60` | high | Changes the ControlPane palette index and invalidates its rectangle. |
+| `ui_control_enable` | `0x00437FA0` | high | Sets the common ControlPane enabled flag and invalidates the control. |
+| `ui_control_disable` | `0x00437FE0` | high | Clears the common ControlPane enabled flag and invalidates the control. |
+| `ui_progress_bar_control_ctor` | `0x00438020` | high | Constructs exact RTTI ProgressBarControlPane and loads its two bar pixmaps. |
+| `ui_progress_bar_control_dtor` | `0x00438170` | high | Destroys ProgressBarControlPane through the ControlPane base. |
+| `ui_progress_bar_control_draw` | `0x004381A0` | high | Draws the progress background and foreground segments using the current progress value. |
+| `ui_button_control_ctor` | `0x00438290` | high | Constructs exact RTTI ButtonControlPane and initializes state, toggle lock, and focus. |
+| `ui_button_control_dtor` | `0x00438310` | high | Destroys ButtonControlPane through the ControlPane base. |
+| `ui_button_control_set_state` | `0x00438340` | high | Changes the button state unless toggle locking suppresses the transition. |
+| `ui_button_control_invalidate` | `0x004383A0` | high | Invalidates the button rectangle. |
+| `ui_button_control_set_toggle_lock` | `0x004383C0` | high | Sets the ButtonControlPane toggle-lock flag. |
+| `ui_button_control_set_color_index` | `0x00438440` | high | Forwards palette-index changes to ControlPane. |
+| `ui_button_control_enable` | `0x00438490` | high | Enables ButtonControlPane through ControlPane. |
+| `ui_button_control_disable` | `0x004384D0` | high | Disables ButtonControlPane through ControlPane. |
+| `ui_button_control_focus` | `0x00438510` | high | Sets the button focus flag and invalidates its rectangle. |
+| `ui_button_control_unfocus` | `0x00438550` | high | Clears the button focus flag and invalidates its rectangle. |
+| `ui_button_control_handle_keyboard_event` | `0x00438590` | high | Consumes Enter or Space and sends dialog action 8 with the control ID. |
+| `ui_text_button_control_refresh_label` | `0x00438600` | high | Rebuilds the centered child label pane for TextButtonControlPane. |
+| `ui_text_button_control_ctor` | `0x004386D0` | high | Constructs exact RTTI TextButtonControlPane and creates its child label pane. |
+| `ui_text_button_control_dtor` | `0x00438810` | high | Destroys the owned label pane and ButtonControlPane base. |
+| `ui_text_button_control_copy_label` | `0x004388C0` | high | Copies the child label into a bounded caller buffer. |
+| `ui_text_button_control_register_screen` | `0x00438940` | high | Registers TextButtonControlPane and attaches its child label pane. |
+| `ui_text_button_control_unregister_screen` | `0x00438A00` | high | Detaches the child label pane and unregisters TextButtonControlPane. |
+| `ui_text_button_control_draw` | `0x00438A70` | high | Draws the text-button frame, focus feedback, and child label. |
+| `ui_text_button_control_get_label_rect` | `0x00438CC0` | high | Computes the centered label rectangle inside TextButtonControlPane. |
+| `ui_text_button_ex_control_refresh_label` | `0x00438DC0` | high | Rebuilds the centered child label pane for TextButtonExControlPane. |
+| `ui_text_button_ex_control_ctor` | `0x00438E90` | high | Constructs exact RTTI TextButtonExControlPane and creates its child label pane. |
+| `ui_text_button_ex_control_dtor` | `0x00438FD0` | high | Destroys the owned label pane and ButtonControlPane base. |
+| `ui_text_button_ex_control_copy_label` | `0x00439080` | high | Copies the TextButtonEx label with DBCS-aware length clamping and a local terminator. |
+| `ui_text_button_ex_control_register_screen` | `0x00439100` | high | Registers TextButtonEx and attaches its owned child text pane. |
+| `ui_text_button_ex_control_unregister_screen` | `0x004391C0` | high | Detaches the owned child text pane and unregisters TextButtonEx. |
+| `ui_text_button_ex_control_draw` | `0x00439230` | high | Draws an extended button frame from buttonex.epf or btn220.epf and then focus feedback. |
+| `ui_text_button_ex_control_get_label_rect` | `0x004393C0` | high | Centers a 6-pixel-per-byte, 12-pixel-high label and clips it to the control bounds. |
+| `ui_get_default_button_skin_rect` | `0x004394C0` | high | Loads and caches the first butt001.epf image bounds. |
+| `ui_offset_default_button_skin_rect` | `0x00439560` | high | Returns the cached butt001.epf bounds offset by a caller-supplied origin. |
+| `ui_image_button_control_ctor` | `0x00439640` | high | Constructs exact RTTI ImageButtonControlPane with three pixmap slots. |
+| `ui_image_button_control_load_images` | `0x00439700` | high | Loads three consecutive butt001.epf frames or copies three caller-supplied pixmaps. |
+| `ui_image_button_control_dtor` | `0x00439830` | high | Destroys ImageButtonControlPane through ButtonControlPane. |
+| `ui_image_button_control_draw` | `0x00439860` | high | Draws the pixmap selected by button state and optional enabled focus feedback. |
+| `ui_image_button_ex_control_ctor` | `0x004399B0` | high | Constructs exact RTTI ImageButtonExControlPane and its optional child label. |
+| `ui_image_button_ex_control_dtor` | `0x00439AD0` | high | Destroys the owned ImageButtonEx label pane and ImageButtonControlPane base. |
+| `ui_image_button_ex_control_set_label` | `0x00439B50` | high | Creates or refreshes the centered ImageButtonEx child text pane. |
+| `ui_image_button_ex_control_register_screen` | `0x00439DC0` | high | Registers ImageButtonEx and attaches its child label pane. |
+| `ui_image_button_ex_control_unregister_screen` | `0x00439E70` | high | Detaches the child label pane and unregisters ImageButtonEx. |
+| `ui_radio_group_control_ctor` | `0x00439EB0` | high | Constructs exact RTTI RadioGroupControlPane with an empty option list. |
+| `ui_radio_group_control_dtor` | `0x00439F00` | high | Destroys the owned radio-option list and ControlPane base. |
+| `ui_radio_group_control_add_option` | `0x00439FB0` | high | Lazily creates the option collection and appends a bounded label plus rectangle. |
+| `ui_radio_group_control_remove_option` | `0x0043A0E0` | high | Removes a radio option through the owned collection. |
+| `ui_radio_group_control_set_selected` | `0x0043A110` | high | Invalidates the old and new option rectangles and stores the selected index. |
+| `ui_radio_group_control_handle_mouse_event` | `0x0043A190` | high | Selects the hit radio option on a primary-button mouse event. |
+| `ui_radio_group_control_hit_test` | `0x0043A220` | high | Returns a hit option index with bit 0x40 set or sentinel 7. |
+| `ui_radio_group_control_draw` | `0x0043A2C0` | high | Draws every radio option in collection order. |
+| `ui_radio_group_control_get_option_count` | `0x0043A320` | high | Returns the radio-option count or zero before allocation. |
+| `ui_radio_group_control_get_option` | `0x0043A350` | high | Returns one radio-option record from the owned collection. |
+| `ui_radio_group_control_get_option_rect` | `0x0043A380` | high | Copies one radio option's four-coordinate rectangle. |
+| `ui_radio_group_control_draw_option` | `0x0043A3C0` | high | Draws one indicator and label using enabled, hover, and selected palette states. |
+| `ui_scrollable_control_ctor` | `0x0043A790` | high | Constructs exact RTTI ScrollableControlPane around an owned child pane. |
+| `ui_scrollable_control_dtor` | `0x0043A840` | high | Queues the owned child pane for destruction and destroys ControlPane. |
+| `ui_scrollable_control_set_rect` | `0x0043A970` | high | Updates the control rectangle and forwards the local rectangle to the child. |
+| `ui_scrollable_control_enable` | `0x0043AA90` | high | Enables ScrollableControlPane through ControlPane. |
+| `ui_scrollable_control_disable` | `0x0043AAB0` | high | Disables ScrollableControlPane through ControlPane. |
+| `ui_scrollable_control_register_screen` | `0x0043AB50` | high | Registers the control, updates the child's local rectangle, and attaches the child. |
+| `ui_scrollable_control_unregister_screen` | `0x0043ACB0` | high | Detaches the owned child pane and unregisters ScrollableControlPane. |
+| `ui_scrollable_control_draw` | `0x0043ACE0` | high | Draws the scrollable surface and uses palette index 31 for its active state. |
+| `ui_text_edit_control_default_ctor` | `0x0043AD10` | high | Constructs an empty exact RTTI TextEditControlPane and captures the shared text-input service. |
+| `ui_text_edit_control_ctor` | `0x0043ADE0` | high | Constructs TextEditControlPane, its text canvas, margins, initial text, and edit state. |
 | `ui_create_user_dialog_ctor` | `0x0043C370` | high | Constructs RTTI class CreateUserDialogPane from _ncreate.txt, attaches appearance controls and account fields, and registers the pane for events and timers. |
 | `ui_create_user_draw` | `0x0043D190` | high | Draws the creation preview using gender at +0x674, hair style at +0x676, and hair-color palette index at +0x678. |
 | `ui_create_user_handle_pointer_event` | `0x0043DC80` | high | Handles CreateUserDialogPane appearance clicks, including gender selection and conversion of the 2-by-7 hair-color swatch grid into palette indexes. |
@@ -1977,6 +2065,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `audio_bgm_unregister_singleton` | `0x00405ED0` | high | Clears the BGMPlayer singleton pointer when the registered instance is destroyed. |
 | `audio_get_miles_driver` | `0x00405F10` | high | Returns the shared Miles digital driver handle used by BGM, sound effects, and video audio. |
 | `audio_is_miles_driver_open` | `0x0042E730` | high | Returns whether the Miles audio driver pointer is present. |
+| `audio_has_sound_manager` | `0x004316C0` | high | Reports whether the global sound-manager singleton exists. |
 | `audio_get_sound_manager` | `0x004316E0` | high | Returns the SoundManager singleton pointer. |
 | `audio_midi_play_file` | `0x00508D80` | high | Dormant standard MIDI play entry point with no static caller in the matching client. |
 | `audio_midi_stop_or_restart` | `0x00508ED0` | high | Pauses, resets, or restarts the Windows MIDI stream according to its flags. |
@@ -2044,10 +2133,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_album_record_vector_deleting_dtor` | `0x00403E20` | high | Implements the MSVC scalar/vector deleting-destructor wrapper for one record or a count-prefixed array of 0x68-byte album records. |
 | `file_bulletin_bang_find_or_append_user_record` | `0x00428070` | high | Finds a fixed-width user record or appends a zeroed record in the open bang-list file. |
 | `file_bulletin_bang_open_list` | `0x004285E0` | high | Opens banglist&lt;character&gt;.txt for update, creating it when absent. |
+| `file_hpf_compressor_ctor` | `0x00431730` | high | Constructs exact RTTI Compressor and initializes its owned HPF decode buffer. |
+| `file_hpf_compressor_dtor` | `0x004317B0` | high | Releases the Compressor-owned HPF decode buffer. |
+| `file_hpf_clear_decode_result` | `0x00431840` | high | Clears and frees the current Compressor decode result. |
+| `file_hpf_decode_strict_allocating` | `0x00431860` | high | Allocates an input-size-times-ten output buffer, requires HPF magic 0xFF02AA55, and decodes through symbol 256. |
 | `file_hpf_decode` | `0x004319B0` | high | Checks magic 0xFF02AA55, decodes symbols through an adaptive tree, and accepts raw input when magic is absent. |
 | `file_hpf_tree_initialize` | `0x00431B80` | high | Builds the complete initial tree for byte symbols and the 256 terminator. |
 | `file_hpf_decode_symbol` | `0x00431C40` | high | Reads bits least-significant bit first and walks the active HPF tree to a symbol leaf. |
 | `file_hpf_rotate_tree` | `0x00431D20` | high | Applies the parent and sibling rotations used after every decoded HPF symbol. |
+| `file_hpf_compressor_scalar_deleting_dtor` | `0x00431E20` | high | Compiler scalar-deleting destructor for exact RTTI Compressor. |
+| `file_hpf_compressor_singleton_register` | `0x00431E50` | high | Registers the Compressor singleton. |
+| `file_hpf_compressor_singleton_unregister` | `0x00431E90` | high | Clears the Compressor singleton when the supplied instance owns it. |
 | `file_load_color_table` | `0x0044CD50` | medium | Loads color.tbl records and packs six RGB triples per record for the renderer. |
 | `file_open_efa` | `0x00456F30` | high | Opens an EFA resource and returns its u32 frame count from header +0x04 and u32 frame interval from header +0x08. |
 | `file_decode_efa_frame` | `0x00457030` | high | Inflates one zlib payload from a 0x40-byte EFA frame record and builds an Image view. |
@@ -2154,6 +2250,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | --- | --- | --- | --- |
 | `maybe_command_dispatcher_noop` | `0x0042F410` | low | Empty CommandDispatcher virtual method; the exact interface role is not yet established. |
 | `maybe_command_dispatcher_return_argument` | `0x0042F420` | low | CommandDispatcher virtual method that returns its second argument unchanged; the exact interface role is not yet established. |
+| `maybe_net_load_endpoint_from_command_file` | `0x00433B50` | medium | Unreferenced parser that treats command-line tail text as a filename and loads a host or IPv4 address plus port into Config. |
 | `maybe_app_configure_distribution_mode_12` | `0x00436A10` | medium | Dormant mode 12 handler with no matching marker return; sets connection flags without installing an endpoint. |
 | `maybe_ui_manufacture_dialog_ctor_from_body` | `0x004C1AD0` | medium | Duplicates the lmanu.txt construction path and applies a decoded opcode-first body, but no live static caller was recovered. |
 | `maybe_ui_manufacture_dialog_apply_manual_body` | `0x004C2990` | medium | Applies RecipeCount or Recipe from a decoded opcode-first body for the duplicate raw-body pane path. |
@@ -2282,6 +2379,59 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `command_dispatcher_handle_play_minigame` | `0x00430430` | high | Pops one integer minigame selector and launches the minigame through the active root pane. |
 | `command_dispatcher_handle_send_fieldmap` | `0x00430490` | high | Pops three integer map fields and sends the corresponding 0x3F client packet. |
 | `command_dispatcher_handle_show` | `0x00430560` | high | Pops a string and integer selector and forwards them to the configured command target. |
+| `command_dispatcher_push_integer` | `0x00430600` | high | Pushes a tagged integer onto the fixed 1024-entry command argument stack. |
+| `command_dispatcher_push_string` | `0x00430630` | high | Copies a string into the dispatcher arena and pushes a tagged string argument. |
+| `command_dispatcher_copy_string_to_arena` | `0x00430680` | high | Grows the command string arena when needed and copies one terminated string into it. |
+| `command_dispatcher_push_argument` | `0x004307A0` | high | Pushes one already-tagged command argument when the 1024-entry stack has capacity. |
+| `command_argument_copy` | `0x004307F0` | high | Copies a tagged command argument value. |
+| `command_dispatcher_pop_argument` | `0x00430830` | high | Pops the newest command argument or reports an empty argument stack. |
+| `command_dispatcher_clear_arguments` | `0x00430880` | high | Clears the argument stack and rewinds the temporary string arena. |
+| `command_executor_ctor` | `0x004308B0` | high | Constructs CommandExecutor and registers its 500 ms and 2000 ms timers. |
+| `command_executor_dtor` | `0x00430940` | high | Unregisters CommandExecutor timers and destroys its TimerHandler base. |
+| `command_executor_timer1_tick_noop` | `0x004309C0` | high | Receives the repeating 500 ms executor timer without changing command state. |
+| `command_executor_timer_callback` | `0x004309D0` | high | Routes executor timers, requeues timers 1 and 4, accepts timer 2, and rejects timer 3. |
+| `command_executor_message` | `0x00430A50` | high | Displays a local command message through the active UI message path. |
+| `command_executor_schedule_auto_use_spell` | `0x00430B40` | high | Schedules or clears timer 3 using the selector multiplied by 1000 ms. |
+| `command_executor_set_tile_noop` | `0x00430C20` | high | Default CommandExecutor set_tile target; intentionally does nothing. |
+| `command_executor_set_color_noop` | `0x00430C30` | high | Default CommandExecutor set_color target; intentionally does nothing. |
+| `command_executor_effect_noop` | `0x00430C40` | high | Default CommandExecutor effect target; intentionally does nothing. |
+| `command_executor_motion_noop` | `0x00430C50` | high | Default CommandExecutor motion target; intentionally does nothing. |
+| `command_executor_move_noop` | `0x00430C60` | high | Default CommandExecutor move target; intentionally does nothing. |
+| `command_executor_put_item_noop` | `0x00430C70` | high | Default CommandExecutor put_item target; intentionally does nothing. |
+| `command_executor_put_monster_noop` | `0x00430C80` | high | Default CommandExecutor put_monster target; intentionally does nothing. |
+| `command_executor_put_human_noop` | `0x00430C90` | high | Default CommandExecutor put_human target; intentionally does nothing. |
+| `command_executor_human_to_monster_noop` | `0x00430CA0` | high | Default CommandExecutor human_to_monster target; intentionally does nothing. |
+| `command_executor_play_sound` | `0x00430CB0` | high | Plays a local sound through the active sound manager. |
+| `command_executor_set_ground_tile_noop` | `0x00430CE0` | high | Default CommandExecutor set_gnd_tile target; intentionally does nothing. |
+| `command_executor_set_static_tile_noop` | `0x00430CF0` | high | Default CommandExecutor set_stc_tile target; intentionally does nothing. |
+| `command_executor_play_minigame` | `0x00430D00` | high | Launches the selected minigame through the active root pane. |
+| `command_executor_send_fieldmap` | `0x00430D30` | high | Builds and sends the field-map client command from three integer fields. |
+| `command_executor_show_noop` | `0x00430E20` | high | Default CommandExecutor show target; intentionally does nothing. |
+| `command_parse_and_execute_line` | `0x004311E0` | high | Tokenizes one bounded command line, pushes arguments in reverse order, dispatches by name, and clears temporaries. |
+| `command_is_bare_token_character` | `0x00431540` | high | Accepts ASCII letters, digits, and underscore in an unquoted command token. |
+| `command_dispatcher_scalar_deleting_dtor` | `0x004315A0` | high | Compiler scalar-deleting destructor for CommandDispatcher. |
+| `command_executor_scalar_deleting_dtor` | `0x004315D0` | high | Compiler scalar-deleting destructor for CommandExecutor. |
+| `command_dispatcher_singleton_register` | `0x00431630` | high | Registers the CommandDispatcher singleton. |
+| `command_dispatcher_singleton_unregister` | `0x00431670` | high | Clears the CommandDispatcher singleton when the supplied instance owns it. |
+| `command_get_dispatcher` | `0x004316B0` | high | Returns the current CommandDispatcher singleton. |
+| `text_format_wide_buffer` | `0x00431FB0` | high | Formats a bounded wide-character string into the caller buffer using the client's shared varargs helper. |
+| `text_copy_nth_space_token_wide` | `0x00436A50` | high | Copies one zero-based, space-delimited token from wide text into a bounded caller buffer. |
+| `com_get_bstr_result` | `0x00436F80` | high | Retrieves a BSTR result from a legacy endpoint COM service and wraps it in client storage. |
+| `com_bstr_ref_create_from_ansi` | `0x004370A0` | high | Converts ANSI text into an owned BSTR reference wrapper. |
+| `com_bstr_ref_release_and_clear` | `0x00437150` | high | Releases an owned BSTR reference and clears the wrapper. |
+| `com_bstr_ref_get_ansi` | `0x00437180` | high | Converts the wrapped BSTR to the client's cached ANSI representation. |
+| `com_bstr_storage_ctor` | `0x004371E0` | high | Constructs the client's reference-counted BSTR storage object. |
+| `com_bstr_storage_release` | `0x00437250` | high | Releases one reference to the BSTR storage object. |
+| `com_bstr_storage_destroy` | `0x004372A0` | high | Destroys BSTR storage and frees the underlying COM string. |
+| `com_invoke_bstr_input_method` | `0x00437300` | high | Invokes a legacy COM method with one BSTR input argument. |
+| `com_invoke_bstr_output_method` | `0x004373A0` | high | Invokes a legacy COM method that returns a BSTR. |
+| `com_invoke_int_output_method` | `0x00437490` | high | Invokes a legacy COM method that returns an integer. |
+| `com_release_interface` | `0x00437510` | high | Calls Release on a non-null COM interface pointer and clears the caller slot. |
+| `com_create_thrunet_service_by_progid` | `0x00437540` | high | Creates the legacy Thrunet endpoint service from its registered ProgID. |
+| `com_create_excitegame_service` | `0x00437790` | high | Creates and initializes the legacy ExciteGame endpoint COM service. |
+| `com_create_thrunet_service` | `0x00437860` | high | Creates and initializes the legacy Thrunet endpoint COM service. |
+| `exception_context_dumper_dtor` | `0x00437D20` | high | Destroys the StackWalker owned by exact RTTI ContextDumper. |
+| `exception_context_dumper_scalar_deleting_dtor` | `0x00437E30` | high | Compiler scalar-deleting destructor for exact RTTI ContextDumper. |
 | `metadata_denied_item_list_ctor` | `0x004407C0` | high | Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription. |
 | `metadata_denied_item_list_subscribe` | `0x00440AA0` | high | Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable. |
 | `metadata_denied_item_list_apply_table` | `0x00440B20` | high | Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers. |

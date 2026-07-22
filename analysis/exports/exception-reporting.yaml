@@ -7,14 +7,26 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
-  - address: "0x00437BB0"
-    name: app_context_dumper_ctor
+  - address: "0x00437A40"
+    name: app_context_dumper_from_thread_ctor
     confidence: high
-    evidence: "Constructs exact RTTI ContextDumper and an x86 StackWalker over the supplied crashing CONTEXT."
+    evidence: "Constructs exact RTTI ContextDumper by capturing a thread CONTEXT and immediately collects bounded trace text."
+  - address: "0x00437BB0"
+    name: app_context_dumper_from_context_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ContextDumper from a supplied x86 CONTEXT and immediately collects bounded trace text."
+  - address: "0x00437D20"
+    name: exception_context_dumper_dtor
+    confidence: high
+    evidence: "Destroys the StackWalker owned by exact RTTI ContextDumper."
   - address: "0x00437D70"
     name: app_collect_stack_trace_text
     confidence: high
     evidence: "Collects StackWalker frames into the bounded 8192-byte LCrash.nfo trace buffer with newline separators."
+  - address: "0x00437E30"
+    name: exception_context_dumper_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for exact RTTI ContextDumper."
   - address: "0x00468AD0"
     name: app_exception_handler_ctor
     confidence: high
@@ -55,8 +67,12 @@ functions:
     name: app_check_speedhack_clocks
     confidence: high
     evidence: "Compares several local time sources, counts differences greater than five seconds, and sends one SpeedHack CException report per process after repeated mismatches."
+  - address: "0x0056D4E0"
+    name: app_stack_walker_from_thread_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI StackWalker and captures the supplied thread or current thread into an x86 CONTEXT."
   - address: "0x0056D540"
-    name: app_stack_walker_ctor
+    name: app_stack_walker_from_context_ctor
     confidence: high
     evidence: "Constructs exact RTTI StackWalker and copies the supplied 0x2CC-byte x86 CONTEXT."
   - address: "0x0056D660"

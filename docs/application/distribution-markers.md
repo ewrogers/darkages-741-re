@@ -54,6 +54,8 @@ The configuration constructor still has a switch for every returned mode. These 
 
 The Japan and Singapore initializers store four compiled address bytes directly. They correspond to `4.216.215.61` and `130.228.172.202` respectively. These are historical values in dormant code, not claims about current services.
 
+The dormant ISP paths retain two distinct integration styles. Exact RTTI `UnitelPane` accepts an ampersand-delimited host, port, and identifier message, resolves the host, and writes the result into `Config`. The Thrunet and ExciteGame paths instead create registered COM services, exchange `BSTR` values, and recover endpoint fields through small COM-call wrappers. These paths are evidence of the old distribution integrations, but the hardcoded mode-1 selector does not construct them.
+
 ## Language selected by the distribution
 
 The distribution choice also feeds a smaller four-value language selector. The default mode is Korean, modes 1 through 12 are English, mode 13 is Japanese, mode 14 is Taiwan, and mode 15 returns to English.

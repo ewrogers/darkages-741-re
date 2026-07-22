@@ -19,6 +19,22 @@ functions:
     name: ui_legend_list_contains_key
     confidence: high
     evidence: Searches the current self-look legend records for an exact, case-sensitive hidden key match.
+  - address: "0x00431730"
+    name: file_hpf_compressor_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI Compressor and initializes its owned HPF decode buffer."
+  - address: "0x004317B0"
+    name: file_hpf_compressor_dtor
+    confidence: high
+    evidence: "Releases the Compressor-owned HPF decode buffer."
+  - address: "0x00431840"
+    name: file_hpf_clear_decode_result
+    confidence: high
+    evidence: "Clears and frees the current Compressor decode result."
+  - address: "0x00431860"
+    name: file_hpf_decode_strict_allocating
+    confidence: high
+    evidence: "Allocates an input-size-times-ten output buffer, requires HPF magic 0xFF02AA55, and decodes through symbol 256."
   - address: "0x004319B0"
     name: file_hpf_decode
     confidence: high
@@ -35,6 +51,18 @@ functions:
     name: file_hpf_rotate_tree
     confidence: high
     evidence: Applies the parent and sibling rotations used after every decoded HPF symbol.
+  - address: "0x00431E20"
+    name: file_hpf_compressor_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for exact RTTI Compressor."
+  - address: "0x00431E50"
+    name: file_hpf_compressor_singleton_register
+    confidence: high
+    evidence: "Registers the Compressor singleton."
+  - address: "0x00431E90"
+    name: file_hpf_compressor_singleton_unregister
+    confidence: high
+    evidence: "Clears the Compressor singleton when the supplied instance owns it."
   - address: "0x004407C0"
     name: metadata_denied_item_list_ctor
     confidence: high

@@ -19,6 +19,8 @@ The tree has byte symbols 0 through 255 plus symbol 256 as the end marker. It be
 
 ## Decode
 
+There are two entry paths. `file_hpf_decode` reuses the `Compressor` object's owned result buffer and deliberately copies raw data when the magic is absent. `file_hpf_decode_strict_allocating` allocates a fresh buffer sized at ten times the input length and requires the magic. The strict path does not treat a non-HPF input as raw bytes.
+
 ```text
 decode_hpf(input):
     if read_u32_le(input) != 0xFF02AA55:
@@ -92,6 +94,8 @@ The palette comes from `stcpal.tbl`. In the common sprite path, palette index 0 
 
 ## Evidence
 
+- `file_hpf_compressor_ctor` at `0x00431730`
+- `file_hpf_decode_strict_allocating` at `0x00431860`
 - `file_hpf_decode` at `0x004319B0`
 - `file_hpf_tree_initialize` at `0x00431B80`
 - `file_hpf_decode_symbol` at `0x00431C40`
