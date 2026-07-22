@@ -573,6 +573,90 @@ functions:
     name: net_send_merchant_item_variant_selection
     confidence: high
     evidence: "Sends CMerchant opcode 0x39 with a row variant byte; mode 3 wraps it between literal selector bytes."
+  - address: "0x004D40B0"
+    name: ui_item_list_pane_get_draw_origin
+    confidence: high
+    evidence: "Returns the shared draw origin reached through two owner-pane links for row icon placement."
+  - address: "0x004D40F0"
+    name: ui_item_list_pane_get_item_icon_position
+    confidence: high
+    evidence: "Computes the standard item icon origin according to the retained merchant mode."
+  - address: "0x004D4180"
+    name: ui_item_list_pane_get_item_name_position
+    confidence: high
+    evidence: "Computes the standard horizontally centered item-name origin according to merchant mode."
+  - address: "0x004D4200"
+    name: ui_item_list_pane_get_item_price_position
+    confidence: high
+    evidence: "Computes the standard horizontally centered item-price origin 272 pixels below the row."
+  - address: "0x004D4250"
+    name: ui_item_list_pane_draw_item
+    confidence: high
+    evidence: "Draws one 0x224-byte row with cached item, spell, skill, or monster art plus mode-specific text and formatted value."
+  - address: "0x004D4CD0"
+    name: ui_item_list_pane_show_row_detail
+    confidence: high
+    evidence: "Forwards a selected row's nonempty detail string at offset 0x118 to the shared description-display path."
+  - address: "0x004D4D20"
+    name: ui_client_item_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ClientItemMenuDialog, resolves the server-selected local inventory slots, and builds its lmerd item list."
+  - address: "0x004D4FD0"
+    name: ui_client_item_menu_dialog_dtor
+    confidence: high
+    evidence: "Releases the parsed local inventory slot array and destroys the ClientItemMenuDialog base."
+  - address: "0x004D5020"
+    name: net_parse_client_item_menu_dialog_slots
+    confidence: high
+    evidence: "Parses a u16 subtype and u8 local inventory-slot count; subtype 0x4E adds a u32 display value per slot."
+  - address: "0x004D5160"
+    name: ui_server_spell_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ServerSpellMenuDialog from server-defined rows and attaches the shared lmerd detail controls."
+  - address: "0x004D52D0"
+    name: ui_server_spell_menu_dialog_dtor
+    confidence: high
+    evidence: "Releases the parsed server spell row array and destroys the dialog base."
+  - address: "0x004D5320"
+    name: net_parse_server_spell_menu_dialog_entries
+    confidence: high
+    evidence: "Parses counted 0x108-byte server spell rows containing kind, icon, variant, and string8 name."
+  - address: "0x004D54D0"
+    name: ui_client_spell_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ClientSpellMenuDialog by resolving a local spell-slot whitelist; zero count enumerates slots 1 through 89."
+  - address: "0x004D56D0"
+    name: ui_client_spell_menu_dialog_dtor
+    confidence: high
+    evidence: "Releases the parsed local spell-slot whitelist and destroys the dialog base."
+  - address: "0x004D5720"
+    name: net_parse_client_spell_menu_dialog_slots
+    confidence: high
+    evidence: "Parses a u16 subtype, u8 count, and that many one-byte local spell slots."
+  - address: "0x004D5820"
+    name: ui_server_skill_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ServerSkillMenuDialog from server-defined rows and attaches the shared lmerd detail controls."
+  - address: "0x004D5990"
+    name: ui_server_skill_menu_dialog_dtor
+    confidence: high
+    evidence: "Releases the parsed server skill row array and destroys the dialog base."
+  - address: "0x004D59E0"
+    name: net_parse_server_skill_menu_dialog_entries
+    confidence: high
+    evidence: "Parses counted 0x108-byte server skill rows containing kind, icon, variant, and string8 name."
+  - address: "0x004D5B90"
+    name: ui_client_skill_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ClientSkillMenuDialog by resolving a local skill-slot whitelist; zero count enumerates slots 1 through 89."
+  - address: "0x004D5D60"
+    name: ui_client_skill_menu_dialog_dtor
+    confidence: high
+    evidence: "Releases the parsed local skill-slot whitelist and destroys the dialog base."
+  - address: "0x004D5DB0"
+    name: net_parse_client_skill_menu_dialog_slots
+    confidence: high
+    evidence: "Parses a u16 subtype, u8 count, and that many one-byte local skill slots."
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high

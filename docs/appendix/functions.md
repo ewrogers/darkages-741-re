@@ -2221,6 +2221,22 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_item_list_pane_clear_items` | `0x004D38A0` | high | Erases the complete current item range before a paged server-item view is repopulated. |
 | `ui_item_list_pane_handle_timer_event` | `0x004D38C0` | high | Handles quantity-result timer 0x463 and retained-row activation timer 0x464 through the adjusted TimerHandler subobject. |
 | `ui_item_list_pane_activate_selected_entry` | `0x004D39A0` | high | Activates the selected merchant row by sending its name, prompting for quantity, or sending its spell or skill variant. |
+| `ui_item_list_pane_get_draw_origin` | `0x004D40B0` | high | Returns the shared draw origin reached through two owner-pane links for row icon placement. |
+| `ui_item_list_pane_get_item_icon_position` | `0x004D40F0` | high | Computes the standard item icon origin according to the retained merchant mode. |
+| `ui_item_list_pane_get_item_name_position` | `0x004D4180` | high | Computes the standard horizontally centered item-name origin according to merchant mode. |
+| `ui_item_list_pane_get_item_price_position` | `0x004D4200` | high | Computes the standard horizontally centered item-price origin 272 pixels below the row. |
+| `ui_item_list_pane_draw_item` | `0x004D4250` | high | Draws one 0x224-byte row with cached item, spell, skill, or monster art plus mode-specific text and formatted value. |
+| `ui_item_list_pane_show_row_detail` | `0x004D4CD0` | high | Forwards a selected row's nonempty detail string at offset 0x118 to the shared description-display path. |
+| `ui_client_item_menu_dialog_ctor` | `0x004D4D20` | high | Constructs exact RTTI ClientItemMenuDialog, resolves the server-selected local inventory slots, and builds its lmerd item list. |
+| `ui_client_item_menu_dialog_dtor` | `0x004D4FD0` | high | Releases the parsed local inventory slot array and destroys the ClientItemMenuDialog base. |
+| `ui_server_spell_menu_dialog_ctor` | `0x004D5160` | high | Constructs exact RTTI ServerSpellMenuDialog from server-defined rows and attaches the shared lmerd detail controls. |
+| `ui_server_spell_menu_dialog_dtor` | `0x004D52D0` | high | Releases the parsed server spell row array and destroys the dialog base. |
+| `ui_client_spell_menu_dialog_ctor` | `0x004D54D0` | high | Constructs exact RTTI ClientSpellMenuDialog by resolving a local spell-slot whitelist; zero count enumerates slots 1 through 89. |
+| `ui_client_spell_menu_dialog_dtor` | `0x004D56D0` | high | Releases the parsed local spell-slot whitelist and destroys the dialog base. |
+| `ui_server_skill_menu_dialog_ctor` | `0x004D5820` | high | Constructs exact RTTI ServerSkillMenuDialog from server-defined rows and attaches the shared lmerd detail controls. |
+| `ui_server_skill_menu_dialog_dtor` | `0x004D5990` | high | Releases the parsed server skill row array and destroys the dialog base. |
+| `ui_client_skill_menu_dialog_ctor` | `0x004D5B90` | high | Constructs exact RTTI ClientSkillMenuDialog by resolving a local skill-slot whitelist; zero count enumerates slots 1 through 89. |
+| `ui_client_skill_menu_dialog_dtor` | `0x004D5D60` | high | Releases the parsed local skill-slot whitelist and destroys the dialog base. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
@@ -2699,6 +2715,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_merchant_item_name_selection` | `0x004D3B80` | high | Sends CMerchant opcode 0x39 with the target, selected menu ID, and row name as string8. |
 | `net_send_merchant_item_quantity_selection` | `0x004D3D30` | high | Sends CMerchant opcode 0x39 with selector 1, a u32 item key, and a u8 quantity. |
 | `net_send_merchant_item_variant_selection` | `0x004D3EE0` | high | Sends CMerchant opcode 0x39 with a row variant byte; mode 3 wraps it between literal selector bytes. |
+| `net_parse_client_item_menu_dialog_slots` | `0x004D5020` | high | Parses a u16 subtype and u8 local inventory-slot count; subtype 0x4E adds a u32 display value per slot. |
+| `net_parse_server_spell_menu_dialog_entries` | `0x004D5320` | high | Parses counted 0x108-byte server spell rows containing kind, icon, variant, and string8 name. |
+| `net_parse_client_spell_menu_dialog_slots` | `0x004D5720` | high | Parses a u16 subtype, u8 count, and that many one-byte local spell slots. |
+| `net_parse_server_skill_menu_dialog_entries` | `0x004D59E0` | high | Parses counted 0x108-byte server skill rows containing kind, icon, variant, and string8 name. |
+| `net_parse_client_skill_menu_dialog_slots` | `0x004D5DB0` | high | Parses a u16 subtype, u8 count, and that many one-byte local skill slots. |
 | `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
 | `net_send_pursuit_selection` | `0x004DBC90` | high | MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method. |
 | `net_dispatch_metadata_events` | `0x004E4D80` | high | MetaTableManager recognizes decoded SMetaData opcode 0x6F outside the packet factory. |

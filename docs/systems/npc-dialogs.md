@@ -66,6 +66,10 @@ The active older `ServerItemMenuDialog` allocates fixed 0x224-byte item records 
 
 Activating a row selects one of three `CMerchant` opcode `0x39` response shapes. Name mode returns the row name as `string8`. Quantity mode returns selector `1`, a `u32` item key, and a `u8` quantity; quantities above one first open `ItemBuyAlertPane`. Spell and skill modes return the row's variant byte, with merchant mode 3 adding a literal selector byte on each side. The shared item pane also supplies the clear-and-append operations used by the paged `ServerItemMenuDialog2` and dormant `ServerItemMenuDialog3` views.
 
+`ClientItemMenuDialog` does not receive complete item rows. It receives a counted list of one-based local inventory slots and resolves each active slot through the live inventory interface. Menu subtype `0x4E` supplies one extra `u32` display value per slot.
+
+The spell and skill dialogs follow the same two-source split. Server variants receive counted 0x108-byte rows containing kind, icon, variant, and name. Client variants receive a byte-sized local slot whitelist and resolve the current learned spell or skill. A zero whitelist count means that the client enumerates slots 1 through 89.
+
 ### Target identity
 
 Both protocols carry `target_type` and `target_id`, and both client responses echo them. The local dialog builders do not decode that byte, and the screen-menu code contains a separate `target_type > 0x0C` behavior. A complete 7.41 target-type enum remains unresolved.
