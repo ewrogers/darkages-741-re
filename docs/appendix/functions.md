@@ -201,6 +201,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_mail_dialog_ctor` | `0x00424E00` | high | Loads _nmailr.txt and parses mail navigation, author, date, title, and string16 content. |
 | `ui_mail_apply_server_body` | `0x00425C00` | high | Routes active-mail SBulletin response type 7 to the operation reply UI. |
 | `ui_legend_list_draw_item` | `0x0042BA20` | high | Draws one Self Look legend record by icon, resolves its color through palette slot 0, and renders its text. |
+| `ui_legend_list_contains_key` | `0x0042BB70` | high | Searches the current self-look legend records for an exact, case-sensitive hidden key match. |
 | `ui_new_legend_dialog_action` | `0x0042CA50` | high | The RTTI-backed NewLegendDialogPane action normalizes line breaks, ends profile text at the fifth break, and saves profile.txt. |
 | `ui_legend_dialog_apply_self_look` | `0x0042CD80` | high | Clears and rebuilds the older LegendDialogPane list from SSelfLook's fixed-size legend records. |
 | `ui_intro_video_pane_ctor` | `0x0042DFF0` | high | Initializes the CIPane vtable and Bink-backed video state. |
@@ -440,6 +441,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_group_ad_pane_apply_self_look` | `0x00513E80` | high | Builds GroupAdPane's recruiting model from SSelfLook; it copies name and note but omits the already-parsed leader string. |
 | `ui_group_ad_info_dialog_handle_action` | `0x005140C0` | high | Routes GroupAdInfoDialogPane's join control to CGroup action 7 and then closes the dialog. |
 | `ui_group_ad_show_recruit_info` | `0x00514230` | high | Converts SGroup action 4 into the recruiting UI model, preserving five maximum/current class pairs and summing both columns. |
+| `ui_legend_info_pane_ctor` | `0x00515AB0` | high | Constructs the older local legend window and its class ability and seven event-category views. |
+| `ui_legend_info_apply_class_metadata` | `0x005166E0` | high | Applies parsed SClass records to the older skill and spell tabs. |
+| `ui_legend_info_apply_event_metadata` | `0x005168E0` | high | Applies one parsed SEvent table to the matching older event category. |
+| `ui_legend_info_timer` | `0x00516980` | high | Requests the active SClass table and all seven SEvent tables for the older legend window. |
+| `ui_spell_skill_view_draw` | `0x005184A0` | high | Draws learned, available, or locked ability rows with the matching numbered icon bank. |
+| `ui_spell_skill_property_dialog_ctor` | `0x005191E0` | high | Builds the older ability detail pane and colors satisfied and failed requirements differently. |
+| `ui_event_info_set_category_records` | `0x00519C40` | high | Assigns an SEvent record set to one of the older legend window event categories. |
+| `ui_event_info_rebuild_category` | `0x00519EC0` | high | Rebuilds older event rows using completion, qualification, and prerequisite checks. |
 | `ui_album_info_pane_ctor` | `0x0051BC70` | high | Constructs exact RTTI AlbumInfoPane and owns one AlbumViewPane. |
 | `ui_album_view_pane_ctor` | `0x0051BFA0` | high | Constructs exact RTTI AlbumViewPane from llalbum.txt with Portrait, Del, and Save regions and an AlbumFile owner. |
 | `ui_album_view_reload` | `0x0051C630` | high | Reloads the active character's album.dat through the AlbumViewPane AlbumFile object and invalidates the pane. |
@@ -626,10 +635,20 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_user_info_handle_server_packet` | `0x005AD160` | high | The UserInfoPane vtable event handler sends the local portrait response when the decoded opcode is 0x49. |
 | `ui_user_info_refresh_local_portrait` | `0x005AD5D0` | high | Builds the local portrait body and reapplies it to UserInfoPane without calling the network submitter. |
 | `ui_user_info_timer` | `0x005AD600` | high | Timer 0x1241 calls the local portrait refresh after the profile editor saves. |
+| `ui_user_info_apply_class_metadata` | `0x005ADB00` | high | Populates the local user profile skill or spell lists from parsed SClass records. |
+| `ui_spell_skill_row_state` | `0x005ADD00` | high | Returns learned, available, or locked state by combining live inventory lookup with SClass requirements. |
+| `ui_format_spell_skill_progress_requirement` | `0x005ADFB0` | high | Formats the SClass level, ability, and master progression requirement for the detail dialog. |
+| `ui_skill_spell_info_dialog_ctor` | `0x005AE090` | high | Constructs exact RTTI SkillSpellInfoDialogPane from _nui_ske.txt, selects the skill or spell icon, retains definition fields, and joins at most 32 description lines. |
+| `ui_user_info_apply_event_metadata` | `0x005AF090` | high | Maps SEvent1 through SEvent7 into the new local profile event categories, merging the last two into category six. |
+| `ui_event_row_state` | `0x005AF150` | high | Returns completed, available, or locked by checking the completion legend key before event requirements. |
+| `ui_format_event_progress_bucket` | `0x005AF390` | high | Formats an event progression requirement from its qualification bucket digits. |
+| `ui_event_info_dialog_ctor` | `0x005AF460` | high | Builds the new event detail dialog and selects incomplete summary or completed result text. |
+| `ui_find_event_by_completion_key` | `0x005AFBD0` | high | Resolves an event prerequisite key to metadata so its title can be displayed. |
 | `ui_user_info_reload_album` | `0x005B04A0` | high | Loads the active character's album.dat and repopulates the current nui_AlbumPane tiles. |
 | `ui_user_info_export_album_portrait_jpeg` | `0x005B0580` | high | Current Save fills transparent pixels from _nportbk.spf, copies the prior extensionless portrait to .bak, and always writes JFIF. |
 | `ui_user_info_handle_album_action` | `0x005B0AB0` | high | Maps album tile action 0 to Save confirmation event 0x1242 and action 1 to Remove confirmation event 0x1243. |
 | `ui_user_info_update_status_from_packet` | `0x005B0C40` | high | Updates UserInfoPane's five attributes and signed armor class from present SStatus blocks. |
+| `ui_user_info_apply_self_look` | `0x005B0D10` | high | Copies SSelfLook identity and nation fields into UserInfoPane, rebuilds its legend list, and reloads SClass metadata when the class changes. |
 | `ui_user_info_apply_self_look` | `0x005B0D10` | high | Copies SSelfLook identity and nation fields into UserInfoPane, rebuilds its legend list, and reloads SClass metadata when the class changes. |
 | `ui_user_info_add_equipment_from_packet` | `0x005B1070` | high | Maps SAddEquip slots 1 through 18 to UserInfoPane child-view indices 0 through 17 and forwards the visible item fields. |
 | `ui_user_info_remove_equipment_from_packet` | `0x005B1100` | high | Maps a checked SRemoveEquip slot and asks the UserInfoPane child equipment view to clear that entry. |
@@ -646,8 +665,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_nui_album_load_records` | `0x005B3320` | high | Clears all 100 tile previews and fills active entries from one loaded AlbumFile. |
 | `ui_nui_album_handle_page_action` | `0x005B3700` | high | Moves the visible page base backward or forward by two, clamped to 0 through 15. |
 | `ui_nui_album_handle_picture_action` | `0x005B3770` | high | Converts picture events 0x1234 through 0x1297 into parent album action and zero-based record index. |
+| `ui_nui_event_pane_create` | `0x005B3E20` | high | Creates the new local profile event pane from the _nui_ev layout. |
+| `ui_nui_event_pane_ctor` | `0x005B3EE0` | high | Constructs two visible event lists, previous and next controls, and six paged categories. |
+| `ui_nui_event_add_row` | `0x005B4370` | high | Adds a new event row using leicon frames for completed, available, and locked states. |
 | `ui_user_info_apply_legend_body` | `0x005B7D00` | high | Reads a u8 count followed by icon, color, string8 key, and string8 text legend records. |
 | `ui_nui_legend_pane_apply_self_look` | `0x005B7ED0` | high | Clears and rebuilds RTTI class nui_LegendPane from SSelfLook's legend records. |
+| `ui_nui_legend_contains_key` | `0x005B7F60` | high | Bridges new user-info checks to the live legend list exact-key lookup. |
+| `ui_nui_skill_spell_pane_ctor` | `0x005B80C0` | high | Constructs separate skill and spell lists for the new local profile from the _nui_sk layout. |
+| `ui_nui_skill_spell_add_row` | `0x005B8420` | high | Adds a new ability row using numbered skill or spell icon banks selected by learned, available, or locked state. |
 | `ui_map_loading_pane_ctor` | `0x005BA040` | high | Constructs RTTI class MapLoadingPane from _nloadm.txt, registers its singleton, and adds it as a visible screen pane at zero percent. |
 | `ui_map_loading_pane_dtor` | `0x005BA2B0` | high | Unregisters MapLoadingPane from the screen and clears its global singleton during destruction. |
 | `ui_map_loading_set_progress` | `0x005BA330` | high | Stores the SMapPart transfer percentage in MapLoadingPane and invalidates the pane for redraw. |
@@ -1479,6 +1504,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |
+| `metadata_parse_event_record` | `0x0055D6E0` | high | Parses one sequential start-to-end SEvent record and its title, id, qual, sum, result, sub, and reward groups. |
+| `metadata_event_requirements_met` | `0x0055E370` | high | Checks an event progression mask, class mask, and every prerequisite legend key against local user state. |
+| `metadata_parse_spell_skill_constraint` | `0x0055F890` | high | Parses the first six values of one SClass ability record into display and requirement fields. |
+| `metadata_spell_skill_requirements_met` | `0x005600B0` | high | Checks character level, ability and master flags, ability level, attributes, and two named learned-ability prerequisites. |
 | `crc16_buffer` | `0x00568870` | high | Applies the custom CRC16 update to a byte buffer starting from zero. |
 | `startup_run_pending_patcher` | `0x0057A330` | high | Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe; otherwise deletes both markers and continues. |
 | `crc16_update` | `0x005B8F30` | high | Updates the custom CRC16 with table[crc high byte] XOR crc shifted left XOR input byte. |

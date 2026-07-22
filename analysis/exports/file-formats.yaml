@@ -15,6 +15,10 @@ functions:
     name: file_spf_get_frame
     confidence: high
     evidence: Resolves one SPF frame, selects its indexed palette or direct pixel plane, and returns a zero-copy pixmap view.
+  - address: "0x0042BB70"
+    name: ui_legend_list_contains_key
+    confidence: high
+    evidence: Searches the current self-look legend records for an exact, case-sensitive hidden key match.
   - address: "0x004319B0"
     name: file_hpf_decode
     confidence: high
@@ -131,6 +135,38 @@ functions:
     name: file_load_motion_effect_table
     confidence: medium
     evidence: Loads structured motion effect definitions from meffect.tbl.
+  - address: "0x00515AB0"
+    name: ui_legend_info_pane_ctor
+    confidence: high
+    evidence: Constructs the older local legend window and its class ability and seven event-category views.
+  - address: "0x005166E0"
+    name: ui_legend_info_apply_class_metadata
+    confidence: high
+    evidence: Applies parsed SClass records to the older skill and spell tabs.
+  - address: "0x005168E0"
+    name: ui_legend_info_apply_event_metadata
+    confidence: high
+    evidence: Applies one parsed SEvent table to the matching older event category.
+  - address: "0x00516980"
+    name: ui_legend_info_timer
+    confidence: high
+    evidence: Requests the active SClass table and all seven SEvent tables for the older legend window.
+  - address: "0x005184A0"
+    name: ui_spell_skill_view_draw
+    confidence: high
+    evidence: Draws learned, available, or locked ability rows with the matching numbered icon bank.
+  - address: "0x005191E0"
+    name: ui_spell_skill_property_dialog_ctor
+    confidence: high
+    evidence: Builds the older ability detail pane and colors satisfied and failed requirements differently.
+  - address: "0x00519C40"
+    name: ui_event_info_set_category_records
+    confidence: high
+    evidence: Assigns an SEvent record set to one of the older legend window event categories.
+  - address: "0x00519EC0"
+    name: ui_event_info_rebuild_category
+    confidence: high
+    evidence: Rebuilds older event rows using completion, qualification, and prerequisite checks.
   - address: "0x00531B30"
     name: ui_npc_illustration_load_pixmap
     confidence: high
@@ -203,6 +239,22 @@ functions:
     name: net_transform_server_table_text
     confidence: high
     evidence: Leaves byte zero in place and swaps later byte pairs in a self-inverse text transform.
+  - address: "0x0055D6E0"
+    name: metadata_parse_event_record
+    confidence: high
+    evidence: Parses one sequential start-to-end SEvent record and its title, id, qual, sum, result, sub, and reward groups.
+  - address: "0x0055E370"
+    name: metadata_event_requirements_met
+    confidence: high
+    evidence: Checks an event progression mask, class mask, and every prerequisite legend key against local user state.
+  - address: "0x0055F890"
+    name: metadata_parse_spell_skill_constraint
+    confidence: high
+    evidence: Parses the first six values of one SClass ability record into display and requirement fields.
+  - address: "0x005600B0"
+    name: metadata_spell_skill_requirements_met
+    confidence: high
+    evidence: Checks character level, ability and master flags, ability level, attributes, and two named learned-ability prerequisites.
   - address: "0x00561490"
     name: file_initialize_skill_tables
     confidence: medium
@@ -235,6 +287,70 @@ functions:
     name: render_palette_pack_16bit
     confidence: high
     evidence: Packs 256 RGB colors for the active display mode while reserving packed zero for palette index zero.
+  - address: "0x005ADB00"
+    name: ui_user_info_apply_class_metadata
+    confidence: high
+    evidence: Populates the local user profile skill or spell lists from parsed SClass records.
+  - address: "0x005ADD00"
+    name: ui_spell_skill_row_state
+    confidence: high
+    evidence: Returns learned, available, or locked state by combining live inventory lookup with SClass requirements.
+  - address: "0x005ADFB0"
+    name: ui_format_spell_skill_progress_requirement
+    confidence: high
+    evidence: Formats the SClass level, ability, and master progression requirement for the detail dialog.
+  - address: "0x005AE090"
+    name: ui_skill_spell_info_dialog_ctor
+    confidence: high
+    evidence: Builds the new local profile ability detail dialog from SClass display and requirement fields.
+  - address: "0x005AF090"
+    name: ui_user_info_apply_event_metadata
+    confidence: high
+    evidence: Maps SEvent1 through SEvent7 into the new local profile event categories, merging the last two into category six.
+  - address: "0x005AF150"
+    name: ui_event_row_state
+    confidence: high
+    evidence: Returns completed, available, or locked by checking the completion legend key before event requirements.
+  - address: "0x005AF390"
+    name: ui_format_event_progress_bucket
+    confidence: high
+    evidence: Formats an event progression requirement from its qualification bucket digits.
+  - address: "0x005AF460"
+    name: ui_event_info_dialog_ctor
+    confidence: high
+    evidence: Builds the new event detail dialog and selects incomplete summary or completed result text.
+  - address: "0x005AFBD0"
+    name: ui_find_event_by_completion_key
+    confidence: high
+    evidence: Resolves an event prerequisite key to metadata so its title can be displayed.
+  - address: "0x005B0D10"
+    name: ui_user_info_apply_self_look
+    confidence: high
+    evidence: Requests the current class table when class changes and initializes all seven event-table subscriptions for local user info.
+  - address: "0x005B3E20"
+    name: ui_nui_event_pane_create
+    confidence: high
+    evidence: Creates the new local profile event pane from the _nui_ev layout.
+  - address: "0x005B3EE0"
+    name: ui_nui_event_pane_ctor
+    confidence: high
+    evidence: Constructs two visible event lists, previous and next controls, and six paged categories.
+  - address: "0x005B4370"
+    name: ui_nui_event_add_row
+    confidence: high
+    evidence: Adds a new event row using leicon frames for completed, available, and locked states.
+  - address: "0x005B7F60"
+    name: ui_nui_legend_contains_key
+    confidence: high
+    evidence: Bridges new user-info checks to the live legend list exact-key lookup.
+  - address: "0x005B80C0"
+    name: ui_nui_skill_spell_pane_ctor
+    confidence: high
+    evidence: Constructs separate skill and spell lists for the new local profile from the _nui_sk layout.
+  - address: "0x005B8420"
+    name: ui_nui_skill_spell_add_row
+    confidence: high
+    evidence: Adds a new ability row using numbered skill or spell icon banks selected by learned, available, or locked state.
   - address: "0x005B8F30"
     name: crc16_update
     confidence: high

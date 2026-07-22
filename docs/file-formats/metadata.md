@@ -62,6 +62,126 @@ build_metadata(groups):
 
 The cache filename and inventory name must agree. A server also needs to advertise the new CRC so the client knows whether to request the replacement.
 
+## Class ability tables
+
+The local character profile uses one class table to build its skill and spell reference. When [`SSelfLook`](../network/server/057-0x39-self-look.md) reports a different `character_class`, `UserInfoPane` subscribes to `SClass<character_class>`. A Wizard therefore requests `SClass3`.
+
+```text
+SClass<character_class>
+    -> parse skill and spell constraints
+    -> compare them with the local character
+    -> build the profile's skill and spell lists
+```
+
+The table is divided by four marker groups:
+
+```text
+Skill
+    ability groups...
+Skill_End
+Spell
+    ability groups...
+Spell_End
+```
+
+An ability group needs a nonempty group name and at least six values. The group name is the exact skill or spell name. The client consumes the first six values and ignores later values.
+
+| Value | Syntax | Client use |
+| ---: | --- | --- |
+| `0` | `level/show_ability_metadata/ability_level` | Minimum character progression. A nonzero third number also requires `show_master_metadata`. |
+| `1` | Four slash-separated integers | The first integer selects the icon frame. The other meanings remain unresolved. |
+| `2` | `STR/INT/WIS/CON/DEX` | Minimum attributes in this exact order. |
+| `3` | `name/level` | First prerequisite spell or skill. `0/0` disables it. |
+| `4` | `name/level` | Second prerequisite spell or skill. `0/0` disables it. |
+| `5` | Text split by `$` | Description and acquisition lines. |
+
+The local check first searches the live spell or skill inventory for the exact ability name. It also returns the learned level. A learned ability is shown as learned even if its current metadata requirements would fail.
+
+An unlearned ability is learnable only when all of these checks pass:
+
+- character level is at least value `0.0`;
+- `SSelfLook.show_ability_metadata` is at least value `0.1`;
+- when value `0.2` is nonzero, `SSelfLook.show_master_metadata` is nonzero and the `SStatus.ability_level` is high enough;
+- the five `SStatus` attributes meet value `2`;
+- each nonzero prerequisite name is present as either a learned spell or learned skill at the requested level.
+
+The resulting row state is `1` for learned, `2` for learnable, and `3` for locked. The newer UI uses that number to select `skill001.epf` through `skill003.epf`, or the matching `spell` file. The metadata icon number selects a frame from that file.
+
+### Skill and spell UI
+
+Only the local form of `UserInfoPane` constructs RTTI class `nui_SkillSpellPane`. Its `_nui_sk.txt` layout contains separate `SKILL` and `SPELL` scrollable lists.
+
+Selecting a row opens RTTI class `SkillSpellInfoDialogPane` from `_nui_ske.txt`. The dialog has `ICON`, `LEV`, `STR`, `INT`, `WIS`, `CON`, `DEX`, `NAME`, `SUB1`, `SUB2`, and `DESC` regions. Met requirements use palette index `0xFF`; failed requirements use `0x28`.
+
+The compiled older profile path keeps the same parsed constraint objects in `LegendInfoPane`. It shows them through `SpellSkillInfoPane` and opens `SpellSkillPropertyPane` from `llsprop.txt`. That dialog runs the same local requirement check and also marks failed lines with palette index `0x28`.
+
+## Event tables
+
+The local profile subscribes to `SEvent1` through `SEvent7` the first time it receives `SSelfLook`. Each table is parsed as a sequential set of records. A record starts at `<prefix>_start` and ends at `<prefix>_end`.
+
+| Group suffix | Values used | Meaning |
+| --- | --- | --- |
+| `start` | None | Begins one event record. |
+| `title` | First value | Display title. |
+| `id` | First value | Exact legend key that marks this event complete. |
+| `qual` | First two values | Progression-bucket digits, then class digits. |
+| `sum` | First value, split by `$` | Incomplete-event summary lines. |
+| `result` | First value, split by `$` | Completed-event result lines. |
+| `sub` | Every value | Legend keys for prerequisite events. |
+| `reward` | First value | Optional reward text. |
+| `end` | None | Completes the record. |
+
+`title`, `id`, `qual`, `sum`, `result`, `sub`, and `end` must all appear. `reward` is optional. Extra values are ignored except in `sub`, where every value is retained.
+
+The first `qual` value is a compact set of allowed progression buckets. The parser accepts digit characters `1` through `8`, although the matching client only produces buckets `1` through `7`:
+
+| Bucket | Local character state |
+| ---: | --- |
+| `1` | Level below 11 |
+| `2` | Level 11 through 40 |
+| `3` | Level 41 through 70 |
+| `4` | Level 71 through 98 |
+| `5` | Level 99 or higher |
+| `6` | `show_ability_metadata` is nonzero |
+| `7` | `show_master_metadata` is nonzero |
+
+Bucket `7` takes priority over bucket `6`, and both take priority over the ordinary level buckets. The second `qual` value is a set of allowed [`CharacterClass`](../network/protocol-types.md#characterclass) digits `1` through `5`. Peasant value `0` cannot match this mask.
+
+The client assigns each event one UI state:
+
+1. If its `id` exactly matches a current `SSelfLook` legend key, the event is complete.
+2. Otherwise it is available only when the progression and class masks match and every nonempty `sub` key is already in the legend.
+3. An incomplete event that fails any check is locked.
+
+Legend matching is case-sensitive. It compares the hidden legend key, not the visible legend text.
+
+### Event UI
+
+Only the local `UserInfoPane` constructs RTTI class `nui_EventPaneImpl`. `_nui_ev.txt` supplies two visible event lists plus `PREV` and `NEXT` controls. Six internal categories are shown as three pages of two lists. `SEvent1` through `SEvent5` have their own categories; `SEvent6` and `SEvent7` are both placed in the sixth category.
+
+Rows use frames `0`, `1`, and `2` from `leicon.epf` for complete, available, and locked. A row also shows its title and a localized progression label.
+
+Selecting a row opens `EventInfoDialogPane` from `_nui_eve.txt`. Its regions are `ICON`, `LEV`, `NAME`, `MUST`, `REWARD`, and `DESC`. An incomplete event shows `sum` lines; a complete event shows `result` lines. `MUST` resolves only the first prerequisite key to another event title, but the availability check still requires every `sub` key.
+
+The older `EventInfoPane` keeps seven categories. It uses the same completion, qualification, and legend checks, then expands each list row with up to four `sum` or `result` lines.
+
+### Inspected local cache
+
+The local installation contains `SClass3` and all seven event files. These counts describe that cache, not a fixed client limit:
+
+| File | Parsed records |
+| --- | ---: |
+| `SClass3` | 12 skills and 143 spells |
+| `SEvent1` | 15 events |
+| `SEvent2` | 6 events |
+| `SEvent3` | 5 events |
+| `SEvent4` | 6 events |
+| `SEvent5` | 7 events |
+| `SEvent6` | 0 events |
+| `SEvent7` | 0 events |
+
+One local `SClass3` ability group has a seventh value. The client ignores it, confirming that later values are not an extension of the six-value schema.
+
 ## Item, skill, and spell denial tables
 
 The RTTI-backed `DeniedItemList` is one consumer of this metadata system. It creates three empty runtime lookup containers and subscribes to these hardcoded table names:

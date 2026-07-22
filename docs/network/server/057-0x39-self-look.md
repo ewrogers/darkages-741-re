@@ -62,7 +62,7 @@ When `nation` is nonzero, the equipment pane draws frame `nation - 1` from `nati
 
 `nation` uses the shared [`Nation`](../protocol-types.md#nation) type. `character_class` uses [`CharacterClass`](../protocol-types.md#characterclass).
 
-`UserInfoPane` reloads its `SClass<value>` metadata when the class changes. The two metadata flags are parsed and retained by `EquipPane`, but no read of those saved bytes was found in the matched UI paths. Their descriptive names therefore remain protocol vocabulary rather than confirmed version-741 behavior.
+`UserInfoPane` reloads its `SClass<value>` metadata when the class changes and subscribes to `SEvent1` through `SEvent7`. The ability and event requirement checks read both metadata flags through the live world-pane interface. `show_ability_metadata` selects event progression bucket 6 and is compared with the second `SClass` progression requirement. `show_master_metadata` selects bucket 7; it is also required when an `SClass` row asks for a nonzero ability level. The field names remain project-owner protocol vocabulary, but these uses are confirmed in the matching client. See [Metadata files](../../file-formats/metadata.md#class-ability-tables).
 
 ## Recruiting group box
 

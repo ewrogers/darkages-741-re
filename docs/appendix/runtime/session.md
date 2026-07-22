@@ -77,6 +77,8 @@ The `WorldPane` allocation site requests exactly `0x167D0` bytes. `session_world
 
 The three fields at `+0x15C74` through `+0x15C7C` come from consecutive `SSelfLook` bytes. The packet stores them as widened values in the order `show_master_metadata`, `show_ability_metadata`, then `character_class`.
 
+The world-pane interface exposes these values to the class and event metadata checks. `show_ability_metadata` selects event progression bucket 6. `show_master_metadata` selects bucket 7 and gates nonzero `SClass` ability-level requirements. The live character class supplies the `SEvent` class mask and selects the `SClass<value>` table.
+
 The record definitions used by the arrays are expanded below.
 
 ## Inventory state
