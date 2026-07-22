@@ -1499,6 +1499,46 @@ functions:
     name: ui_spell_inventory_change_slot
     confidence: high
     evidence: "Validates a NewSpellInventoryPane drag destination, rejects slots divisible by 36 and entries under SActionDelay, then requests CChangeSlot category 1."
+  - address: "0x004924B0"
+    name: ui_inventory_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for InventoryPane_A; it calls the complete-object destructor and conditionally frees the allocation."
+  - address: "0x004924E0"
+    name: ui_new_skill_inventory_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for NewSkillInventoryPane; it calls the complete-object destructor and conditionally frees the allocation."
+  - address: "0x00492510"
+    name: ui_new_spell_inventory_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for NewSpellInventoryPane; it calls the complete-object destructor and conditionally frees the allocation."
+  - address: "0x00492540"
+    name: ui_skill_inventory_base_ctor
+    confidence: high
+    evidence: "Constructs the NewInventoryPane<SkillInvItemPane> base, including its item-pointer array, selection state, and grid defaults."
+  - address: "0x004926D0"
+    name: ui_skill_inventory_base_dtor
+    confidence: high
+    evidence: "Destroys every SkillInvItemPane child, frees the item-pointer array, and tears down the Pane base."
+  - address: "0x004927F0"
+    name: ui_skill_inventory_base_draw_content
+    confidence: high
+    evidence: "Clears the skill inventory canvas and draws the selected-slot outline when the selection is visible."
+  - address: "0x004928D0"
+    name: ui_skill_inventory_base_set_visible_layout
+    confidence: high
+    evidence: "Unregisters the old skill range, stores the grid and range parameters, then registers the new visible children."
+  - address: "0x00492920"
+    name: ui_skill_inventory_base_get_item
+    confidence: high
+    evidence: "Returns a SkillInvItemPane by one-based slot after validating it against the configured item count."
+  - address: "0x00492980"
+    name: ui_skill_inventory_base_hit_test_slot
+    confidence: high
+    evidence: "Maps a point into the visible skill grid and confirms the candidate against its computed slot rectangle."
+  - address: "0x00492AE0"
+    name: ui_skill_inventory_base_set_selection
+    confidence: high
+    evidence: "Changes the selected skill slot and invalidates the old and new slot rectangles."
   - address: "0x00492B30"
     name: ui_skill_inventory_set_item_at
     confidence: high
@@ -1511,6 +1551,38 @@ functions:
     name: net_send_skill_change_slot
     confidence: high
     evidence: "Builds the four-byte CChangeSlot body with category 2, one-based source skill slot, and one-based destination skill slot."
+  - address: "0x00492DA0"
+    name: ui_spell_inventory_base_ctor
+    confidence: high
+    evidence: "Constructs the NewInventoryPane<SpellInvItemPane> base, including its item-pointer array, selection state, and grid defaults."
+  - address: "0x00492F30"
+    name: ui_spell_inventory_base_dtor
+    confidence: high
+    evidence: "Destroys every SpellInvItemPane child, frees the item-pointer array, and tears down the Pane base."
+  - address: "0x00493050"
+    name: ui_spell_inventory_base_draw_content
+    confidence: high
+    evidence: "Clears the spell inventory canvas and draws the selected-slot outline when the selection is visible."
+  - address: "0x00493130"
+    name: ui_spell_inventory_base_set_visible_layout
+    confidence: high
+    evidence: "Unregisters the old spell range, stores the grid and range parameters, then registers the new visible children."
+  - address: "0x00493180"
+    name: ui_spell_inventory_base_get_item
+    confidence: high
+    evidence: "Returns a SpellInvItemPane by one-based slot after validating it against the configured item count."
+  - address: "0x004931E0"
+    name: ui_spell_inventory_base_hit_test_slot
+    confidence: high
+    evidence: "Maps a point into the visible spell grid and confirms the candidate against its computed slot rectangle."
+  - address: "0x00493340"
+    name: ui_spell_inventory_base_set_selection
+    confidence: high
+    evidence: "Changes the selected spell slot and invalidates the old and new slot rectangles."
+  - address: "0x00493390"
+    name: ui_spell_inventory_base_set_item
+    confidence: high
+    evidence: "Replaces a checked zero-based spell entry, then attaches and registers the new child when its slot is visible."
   - address: "0x00493460"
     name: ui_spell_inventory_remove_item_at
     confidence: high
@@ -1519,6 +1591,74 @@ functions:
     name: net_send_spell_change_slot
     confidence: high
     evidence: "Builds the four-byte CChangeSlot body with category 1, one-based source spell slot, and one-based destination spell slot."
+  - address: "0x00493640"
+    name: ui_skill_inventory_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for the shared NewInventoryPane<SkillInvItemPane> base."
+  - address: "0x00493670"
+    name: ui_spell_inventory_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for the shared NewInventoryPane<SpellInvItemPane> base."
+  - address: "0x004936A0"
+    name: ui_skill_inventory_base_register_visible_items
+    confidence: high
+    evidence: "Attaches and registers SkillInvItemPane children whose indexes fall inside the configured visible range."
+  - address: "0x00493760"
+    name: ui_skill_inventory_base_unregister_visible_items
+    confidence: high
+    evidence: "Unregisters and detaches SkillInvItemPane children in the configured visible range."
+  - address: "0x004937F0"
+    name: ui_skill_inventory_base_get_slot_rect
+    confidence: high
+    evidence: "Returns a skill slot rectangle only when the slot belongs to the configured visible grid window."
+  - address: "0x004938C0"
+    name: ui_skill_inventory_base_invalidate_slot
+    confidence: high
+    evidence: "Expands a visible skill slot rectangle by two pixels and invalidates it for redraw."
+  - address: "0x00493950"
+    name: ui_spell_inventory_base_register_visible_items
+    confidence: high
+    evidence: "Attaches and registers SpellInvItemPane children whose indexes fall inside the configured visible range."
+  - address: "0x00493A10"
+    name: ui_spell_inventory_base_unregister_visible_items
+    confidence: high
+    evidence: "Unregisters and detaches SpellInvItemPane children in the configured visible range."
+  - address: "0x00493AA0"
+    name: ui_spell_inventory_base_get_slot_rect
+    confidence: high
+    evidence: "Returns a spell slot rectangle only when the slot belongs to the configured visible grid window."
+  - address: "0x00493B70"
+    name: ui_spell_inventory_base_invalidate_slot
+    confidence: high
+    evidence: "Expands a visible spell slot rectangle by two pixels and invalidates it for redraw."
+  - address: "0x00493C00"
+    name: ui_skill_inventory_base_compute_cell_rect
+    confidence: high
+    evidence: "Computes a skill grid cell rectangle from the origin, cell dimensions, spacing, row, and column."
+  - address: "0x00493CB0"
+    name: ui_spell_inventory_base_compute_cell_rect
+    confidence: high
+    evidence: "Computes a spell grid cell rectangle from the origin, cell dimensions, spacing, row, and column."
+  - address: "0x00493D60"
+    name: ui_skill_inventory_base_adjusted_deleting_dtor
+    confidence: high
+    evidence: "TimerHandler secondary-base deleting-destructor thunk; adjusts this by -0x11C before dispatching to the skill base destructor."
+  - address: "0x00493D70"
+    name: ui_spell_inventory_base_adjusted_deleting_dtor
+    confidence: high
+    evidence: "TimerHandler secondary-base deleting-destructor thunk; adjusts this by -0x11C before dispatching to the spell base destructor."
+  - address: "0x00493D80"
+    name: ui_new_skill_inventory_pane_adjusted_deleting_dtor
+    confidence: high
+    evidence: "Secondary-base deleting-destructor thunk for the complete NewSkillInventoryPane object."
+  - address: "0x00493D90"
+    name: ui_inventory_pane_adjusted_deleting_dtor
+    confidence: high
+    evidence: "Secondary-base deleting-destructor thunk for the complete InventoryPane_A object."
+  - address: "0x00493DA0"
+    name: ui_new_spell_inventory_pane_adjusted_deleting_dtor
+    confidence: high
+    evidence: "Secondary-base deleting-destructor thunk for the complete NewSpellInventoryPane object."
   - address: "0x00495C60"
     name: ui_item_pane_ctor
     confidence: high

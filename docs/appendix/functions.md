@@ -1514,9 +1514,44 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_spell_inventory_remove_spell_from_packet` | `0x004922B0` | high | Accepts SRemoveSpell slots 1 through 90 and removes the slot when its SpellInvItemPane pointer is non-null. |
 | `ui_spell_inventory_apply_action_delay` | `0x00492330` | high | Accepts SActionDelay selector 0 and slots 1 through 90, sets the live spell item delay flag, and schedules the inventory expiry timer. |
 | `ui_spell_inventory_change_slot` | `0x004923F0` | high | Validates a NewSpellInventoryPane drag destination, rejects slots divisible by 36 and entries under SActionDelay, then requests CChangeSlot category 1. |
+| `ui_inventory_pane_scalar_deleting_dtor` | `0x004924B0` | high | MSVC scalar deleting destructor for InventoryPane_A; it calls the complete-object destructor and conditionally frees the allocation. |
+| `ui_new_skill_inventory_pane_scalar_deleting_dtor` | `0x004924E0` | high | MSVC scalar deleting destructor for NewSkillInventoryPane; it calls the complete-object destructor and conditionally frees the allocation. |
+| `ui_new_spell_inventory_pane_scalar_deleting_dtor` | `0x00492510` | high | MSVC scalar deleting destructor for NewSpellInventoryPane; it calls the complete-object destructor and conditionally frees the allocation. |
+| `ui_skill_inventory_base_ctor` | `0x00492540` | high | Constructs the NewInventoryPane&lt;SkillInvItemPane&gt; base, including its item-pointer array, selection state, and grid defaults. |
+| `ui_skill_inventory_base_dtor` | `0x004926D0` | high | Destroys every SkillInvItemPane child, frees the item-pointer array, and tears down the Pane base. |
+| `ui_skill_inventory_base_draw_content` | `0x004927F0` | high | Clears the skill inventory canvas and draws the selected-slot outline when the selection is visible. |
+| `ui_skill_inventory_base_set_visible_layout` | `0x004928D0` | high | Unregisters the old skill range, stores the grid and range parameters, then registers the new visible children. |
+| `ui_skill_inventory_base_get_item` | `0x00492920` | high | Returns a SkillInvItemPane by one-based slot after validating it against the configured item count. |
+| `ui_skill_inventory_base_hit_test_slot` | `0x00492980` | high | Maps a point into the visible skill grid and confirms the candidate against its computed slot rectangle. |
+| `ui_skill_inventory_base_set_selection` | `0x00492AE0` | high | Changes the selected skill slot and invalidates the old and new slot rectangles. |
 | `ui_skill_inventory_set_item_at` | `0x00492B30` | high | Replaces a checked zero-based skill inventory entry and attaches the new SkillInvItemPane to its visible slot. |
 | `ui_skill_inventory_remove_item_at` | `0x00492C00` | high | Checks a zero-based skill inventory index, releases its live UI item, and clears the pointer entry. |
+| `ui_spell_inventory_base_ctor` | `0x00492DA0` | high | Constructs the NewInventoryPane&lt;SpellInvItemPane&gt; base, including its item-pointer array, selection state, and grid defaults. |
+| `ui_spell_inventory_base_dtor` | `0x00492F30` | high | Destroys every SpellInvItemPane child, frees the item-pointer array, and tears down the Pane base. |
+| `ui_spell_inventory_base_draw_content` | `0x00493050` | high | Clears the spell inventory canvas and draws the selected-slot outline when the selection is visible. |
+| `ui_spell_inventory_base_set_visible_layout` | `0x00493130` | high | Unregisters the old spell range, stores the grid and range parameters, then registers the new visible children. |
+| `ui_spell_inventory_base_get_item` | `0x00493180` | high | Returns a SpellInvItemPane by one-based slot after validating it against the configured item count. |
+| `ui_spell_inventory_base_hit_test_slot` | `0x004931E0` | high | Maps a point into the visible spell grid and confirms the candidate against its computed slot rectangle. |
+| `ui_spell_inventory_base_set_selection` | `0x00493340` | high | Changes the selected spell slot and invalidates the old and new slot rectangles. |
+| `ui_spell_inventory_base_set_item` | `0x00493390` | high | Replaces a checked zero-based spell entry, then attaches and registers the new child when its slot is visible. |
 | `ui_spell_inventory_remove_item_at` | `0x00493460` | high | Checks a zero-based spell inventory index, releases its live SpellInvItemPane through the shared UI owner, and clears the pointer entry. |
+| `ui_skill_inventory_base_scalar_deleting_dtor` | `0x00493640` | high | MSVC scalar deleting destructor for the shared NewInventoryPane&lt;SkillInvItemPane&gt; base. |
+| `ui_spell_inventory_base_scalar_deleting_dtor` | `0x00493670` | high | MSVC scalar deleting destructor for the shared NewInventoryPane&lt;SpellInvItemPane&gt; base. |
+| `ui_skill_inventory_base_register_visible_items` | `0x004936A0` | high | Attaches and registers SkillInvItemPane children whose indexes fall inside the configured visible range. |
+| `ui_skill_inventory_base_unregister_visible_items` | `0x00493760` | high | Unregisters and detaches SkillInvItemPane children in the configured visible range. |
+| `ui_skill_inventory_base_get_slot_rect` | `0x004937F0` | high | Returns a skill slot rectangle only when the slot belongs to the configured visible grid window. |
+| `ui_skill_inventory_base_invalidate_slot` | `0x004938C0` | high | Expands a visible skill slot rectangle by two pixels and invalidates it for redraw. |
+| `ui_spell_inventory_base_register_visible_items` | `0x00493950` | high | Attaches and registers SpellInvItemPane children whose indexes fall inside the configured visible range. |
+| `ui_spell_inventory_base_unregister_visible_items` | `0x00493A10` | high | Unregisters and detaches SpellInvItemPane children in the configured visible range. |
+| `ui_spell_inventory_base_get_slot_rect` | `0x00493AA0` | high | Returns a spell slot rectangle only when the slot belongs to the configured visible grid window. |
+| `ui_spell_inventory_base_invalidate_slot` | `0x00493B70` | high | Expands a visible spell slot rectangle by two pixels and invalidates it for redraw. |
+| `ui_skill_inventory_base_compute_cell_rect` | `0x00493C00` | high | Computes a skill grid cell rectangle from the origin, cell dimensions, spacing, row, and column. |
+| `ui_spell_inventory_base_compute_cell_rect` | `0x00493CB0` | high | Computes a spell grid cell rectangle from the origin, cell dimensions, spacing, row, and column. |
+| `ui_skill_inventory_base_adjusted_deleting_dtor` | `0x00493D60` | high | TimerHandler secondary-base deleting-destructor thunk; adjusts this by -0x11C before dispatching to the skill base destructor. |
+| `ui_spell_inventory_base_adjusted_deleting_dtor` | `0x00493D70` | high | TimerHandler secondary-base deleting-destructor thunk; adjusts this by -0x11C before dispatching to the spell base destructor. |
+| `ui_new_skill_inventory_pane_adjusted_deleting_dtor` | `0x00493D80` | high | Secondary-base deleting-destructor thunk for the complete NewSkillInventoryPane object. |
+| `ui_inventory_pane_adjusted_deleting_dtor` | `0x00493D90` | high | Secondary-base deleting-destructor thunk for the complete InventoryPane_A object. |
+| `ui_new_spell_inventory_pane_adjusted_deleting_dtor` | `0x00493DA0` | high | Secondary-base deleting-destructor thunk for the complete NewSpellInventoryPane object. |
 | `ui_item_pane_ctor` | `0x00495C60` | high | Constructs exact RTTI class ItemPane and stores an item sprite, 128-byte display name, and dye color. |
 | `ui_inventory_item_set_display_name` | `0x00495DE0` | high | Replaces the InvItemPane display name through the same bounded 128-byte copy used by its ItemPane base. |
 | `ui_inventory_item_ctor` | `0x00495E10` | high | Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, maximum durability, and current durability. |

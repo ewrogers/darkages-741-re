@@ -55,6 +55,8 @@ Spell items do not keep a start time, end time, progress value, or repeating vis
 
 Both newer inventory panes can display two 12-column pages or one six-column compact view. Changing page leaves compact mode, while selecting the compact view rebuilds the visible slot range. Pointer activation first resolves the child item in the active view, so hidden-page entries are not activated by stale coordinates.
 
+The skill and spell panes use parallel `NewInventoryPane<T>` bases. Each base owns the full item-pointer array, but only attaches and registers children in the current visible range. A layout change unregisters the old range before registering the new one. Selection redraw also uses the same visible-range rectangle calculation, which keeps hidden slots out of hit testing and invalidation.
+
 ## Expiry ownership
 
 Both inventory handlers convert seconds to milliseconds and schedule timer ID zero on their own `NewSkillInventoryPane` or `NewSpellInventoryPane`. The timer payload is the one-based slot. At expiry, the callback resolves the current item pointer in that slot and clears its delay flag.
