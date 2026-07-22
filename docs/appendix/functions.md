@@ -1119,8 +1119,18 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_exchange_dialog_timer_scalar_deleting_dtor_thunk` | `0x0046C4B0` | high | Adjusts the ExchangeDialog TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor. |
 | `ui_exchange_item_list_pane_timer_scalar_deleting_dtor_thunk` | `0x0046C4C0` | high | Adjusts the ExchangeItemListPane TimerHandler subobject pointer by -0x11C and tail-calls the complete-object destructor. |
 | `ui_family_list_dialog_ctor` | `0x00471320` | high | Constructs FamilyListDialogPane from lfamily.txt, populates local rows, registers the pane, and sends CRequestFamilyName. |
+| `ui_family_list_dialog_dtor` | `0x00471700` | high | Destroys the exact RTTI FamilyListDialogPane, its twenty text controls, layout state, pane base, and timer base. |
+| `ui_family_list_dialog_copy_field_text` | `0x00471730` | high | Copies one indexed TextEditControl value from the family dialog into a caller buffer with the dialog's DBCS-safe bound. |
+| `ui_family_list_dialog_get_saved_entry` | `0x004717C0` | high | Returns one of the twenty local family-list slots used to seed the dialog fields. |
+| `ui_family_list_dialog_commit_fields` | `0x00471810` | high | Copies all twenty edited fields into the local family slots, truncates each to 30 DBCS-safe bytes, and writes Familylist.cfg. |
+| `ui_family_list_dialog_close` | `0x00471930` | high | Unregisters the open family-list dialog and queues its pane for deletion. |
+| `ui_family_list_dialog_handle_action` | `0x00471970` | high | Commits and closes on the confirm action, or closes without saving on the cancel action. |
 | `ui_family_list_dialog_handle_network_event` | `0x00471A20` | high | Consumes exact RTTI SFamilyName while FamilyListDialogPane is open. |
+| `ui_family_list_dialog_apply_raw_family_name_body` | `0x00471A80` | high | Parses a string8 directly from a raw decoded body into the dialog display buffer; no static caller reaches this alternate path. |
 | `ui_family_list_dialog_apply_family_name` | `0x00471AF0` | high | Copies the SFamilyName string8 bytes verbatim into the pane's 256-byte display buffer. |
+| `ui_family_list_dialog_draw` | `0x00471B30` | high | Draws the family-list dialog and centers the server family name and local character name in their layout rectangles. |
+| `ui_family_list_dialog_scalar_deleting_dtor` | `0x00471C50` | high | Runs the FamilyListDialogPane destructor and conditionally frees the complete object. |
+| `ui_family_list_dialog_timer_scalar_deleting_dtor_thunk` | `0x00471C80` | high | Adjusts the TimerHandler secondary-base pointer to the complete FamilyListDialogPane before scalar deletion. |
 | `ui_field_map_balloon_pane_ctor` | `0x00474310` | high | Constructs exact RTTI FieldMapBalloonPane, loads its EPF and optional palette, and retains its parent FieldMapPane for animation completion. |
 | `ui_field_map_balloon_handle_timer` | `0x00474660` | high | FieldMapBalloonPane TimerHandler callback advances the marker every 50 ms and schedules FieldMapPane completion event 1 when movement ends. |
 | `ui_field_map_balloon_set_target` | `0x00474A50` | high | Stores the marker target, movement-step count, correlation time, and parent completion-event selector; equal current and target coordinates collapse the step count to zero. |
@@ -2549,11 +2559,63 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_decode_efa_frame` | `0x00457030` | high | Inflates one zlib payload from a 0x40-byte EFA frame record and builds an Image view. |
 | `file_load_effect_frame_table` | `0x00458ED0` | high | Parses Effect.tbl decimal frame sequences into per-effect tables. |
 | `file_decode_embedded_indexed_image_rgb16` | `0x0045D820` | high | Validates an embedded indexed-image record, allocates a 16-bit pixel buffer, and expands its palette indexes through the client RGB packer. |
+| `file_archive_compare_legacy_entry_name` | `0x00471C90` | high | Compares a lookup key with the fixed 13-byte name at offset 4 of a legacy DAT index entry for binary search. |
+| `file_archive_compare_extended_entry_name` | `0x00471CB0` | high | Compares a lookup key with the filename pointer at offset 4 of an extended DAT index entry for binary search. |
+| `file_archive_ctor` | `0x00471CD0` | high | Initializes the DAT archive mapping, index, entry-handle pool, and extended-layout storage fields. |
+| `file_archive_dtor` | `0x00471D60` | high | Closes the archive and destroys its extended-layout pointer vector. |
 | `file_archive_xor_words` | `0x00471DC0` | high | XORs a buffer in 32-bit words for the extended DAT header and index path. |
 | `file_archive_open` | `0x00471E00` | high | Opens resource or loose DAT input and maps either the legacy index or the extended chunked index. |
+| `file_archive_close` | `0x004722D0` | high | Releases mapped or expanded entry storage, closes Windows mapping and file handles, clears the entry-handle pool, and resets the archive. |
 | `file_archive_find_entry` | `0x00472470` | high | Looks up a named entry in an opened archive. |
+| `file_archive_contains` | `0x00472720` | high | Looks up an entry by name, releases the temporary handle, and returns whether it exists. |
+| `file_archive_release_entry` | `0x00472760` | high | Returns an active entry handle to the archive's bounded reusable pool. |
+| `file_archive_read_exact` | `0x00472790` | high | Reads exactly the requested bytes from an entry and fails without advancing if the request exceeds its end. |
+| `file_archive_read` | `0x00472860` | high | Reads up to the requested bytes from an entry, reports the actual count, and advances its relative position. |
 | `file_archive_get_entry_data` | `0x00472900` | high | Returns the mapped data pointer for an archive entry. |
+| `file_archive_seek` | `0x00472970` | high | Moves an entry handle relative to its start, current position, or end while enforcing entry bounds. |
+| `file_archive_seek_and_tell` | `0x00472A80` | high | Seeks an entry and returns the resulting entry-relative position, or -1 on failure. |
+| `file_archive_tell` | `0x00472B70` | high | Returns the current entry-relative position, including the misc.dat overlay handle representation. |
+| `file_archive_entry_size` | `0x00472BE0` | high | Returns an entry handle's byte length, or -1 for an invalid handle. |
+| `file_archive_entry_start_offset` | `0x00472C10` | high | Resolves an entry's archive-relative start offset for the legacy or extended index layout. |
+| `file_archive_entry_end_offset` | `0x00472C40` | high | Returns the archive-relative end offset computed from an entry's start and stored length. |
 | `file_get_main_archive` | `0x00472C70` | high | Lazily constructs and returns the archive object opened as Legend.dat with DarkAges.dat fallback during startup. |
+| `file_get_seo_archive` | `0x00472D00` | high | Returns the lazy singleton opened as seo.dat during startup and used for map-tile resources. |
+| `file_get_transform_table_archive` | `0x00472D90` | high | Returns the lazy archive singleton supplied to the trans_a.tbl through trans_z.tbl readers. |
+| `file_get_khanpal_archive` | `0x00472E20` | high | Returns the lazy singleton opened as khanpal.dat for shared character palettes. |
+| `file_get_khanmad_archive` | `0x00472EB0` | high | Returns the lazy singleton opened as khanmad.dat for male character resources beginning a-d. |
+| `file_get_khanmeh_archive` | `0x00472F40` | high | Returns the lazy singleton opened as khanmeh.dat for male character resources beginning e-h. |
+| `file_get_khanmim_archive` | `0x00472FD0` | high | Returns the lazy singleton opened as khanmim.dat for male character resources beginning i-m. |
+| `file_get_khanmns_archive` | `0x00473060` | high | Returns the lazy singleton opened as khanmns.dat for male character resources beginning n-s. |
+| `file_get_khanmtz_archive` | `0x004730F0` | high | Returns the lazy singleton opened as khanmtz.dat for male character resources beginning t-z. |
+| `file_get_khanwad_archive` | `0x00473180` | high | Returns the lazy singleton opened as khanwad.dat for female character resources beginning a-d. |
+| `file_get_khanweh_archive` | `0x00473210` | high | Returns the lazy singleton opened as khanweh.dat for female character resources beginning e-h. |
+| `file_get_khanwim_archive` | `0x004732A0` | high | Returns the lazy singleton opened as khanwim.dat for female character resources beginning i-m. |
+| `file_get_khanwns_archive` | `0x00473330` | high | Returns the lazy singleton opened as khanwns.dat for female character resources beginning n-s. |
+| `file_get_khanwtz_archive` | `0x004733C0` | high | Returns the lazy singleton opened as khanwtz.dat for female character resources beginning t-z. |
+| `file_get_dormant_archive` | `0x00473450` | high | Returns the otherwise unopened archive singleton used by the documented optional minigame asset patch. |
+| `file_get_misc_archive` | `0x004734E0` | high | Returns the lazy singleton opened as misc.dat and consulted as the global archive overlay. |
+| `file_get_setoa_archive` | `0x00473570` | high | Returns the lazy singleton opened as setoa.dat for UI layouts and field-map assets. |
+| `file_get_national_archive` | `0x00473600` | high | Returns the lazy singleton opened as national.dat for localized tables and fonts. |
+| `file_get_ia_archive` | `0x00473690` | high | Returns the lazy singleton opened as ia.dat for static-tile resources and flags. |
+| `file_get_roh_archive` | `0x00473720` | high | Returns the lazy singleton opened as roh.dat for effect art and tables. |
+| `file_get_hades_archive` | `0x004737B0` | high | Returns the lazy singleton opened as hades.dat. |
+| `file_provider_get_static_tile_archive` | `0x00473840` | high | Archive-provider adapter used by static-tile, SOTP flag, static palette, and static animation readers; returns ia.dat. |
+| `file_provider_get_map_tile_archive` | `0x00473850` | high | Archive-provider adapter used by map-tile decoders, palette tables, and animation tables; returns seo.dat. |
+| `file_provider_get_transform_table_archive` | `0x00473860` | high | Archive-provider adapter used by the trans_a.tbl through trans_z.tbl loader. |
+| `file_provider_get_dormant_archive` | `0x00473870` | high | Archive-provider adapter for the dormant archive singleton; normal client code has no static caller. |
+| `file_select_character_archive` | `0x00473880` | high | Lowercases a character resource name and selects khanpal.dat or a male/female khan* archive from its first two letters. |
+| `file_provider_get_character_palette_archive` | `0x00473A30` | high | Archive-provider adapter used by field and character palette-table readers; returns khanpal.dat. |
+| `file_provider_get_hades_archive` | `0x00473A40` | high | Archive-provider adapter for hades.dat. |
+| `file_provider_get_layout_archive` | `0x00473A50` | high | Archive-provider adapter used by UI layout and ordinary pane-art readers; returns setoa.dat. |
+| `file_provider_get_national_archive` | `0x00473A60` | high | Archive-provider adapter used by localized message, font, coordinate, and regional table readers; returns national.dat. |
+| `file_provider_get_field_map_archive` | `0x00473A70` | high | Archive-provider adapter used by field-map palette, image, animation, and definition readers; returns setoa.dat. |
+| `file_provider_get_effect_archive` | `0x00473A80` | high | Archive-provider adapter used by EFA, effect-frame, effect-palette, and motion-effect readers; returns roh.dat. |
+| `file_provider_get_no_archive` | `0x00473A90` | high | Null archive-provider adapter used by readers that must use loose files rather than a DAT archive. |
+| `file_archive_pointer_vector_resize` | `0x00473AA0` | high | Resizes the archive-owned vector of expanded entry pointers by inserting nulls or erasing its tail. |
+| `file_archive_pointer_vector_erase_range` | `0x00473B70` | high | Erases a range from the archive-owned pointer vector and compacts the remaining pointers. |
+| `file_archive_pointer_vector_dtor` | `0x00473C20` | high | Frees the pointer vector allocation and clears its begin, end, and capacity pointers. |
+| `file_archive_pointer_vector_insert_n` | `0x00473C80` | high | Inserts repeated pointer values into the archive-owned vector, growing its allocation when required. |
+| `file_archive_pointer_vector_insert_n_cleanup` | `0x00473EE9` | high | Exception cleanup for a partially constructed replacement allocation during pointer-vector insertion. |
 | `file_load_variant_color_table` | `0x0047DEB0` | medium | Loads one numbered color table family used by renderable assets. |
 | `file_hea_build_row_views` | `0x00487380` | high | Clips a mask-canvas rectangle and builds one run pointer per pixel scanline; it scans horizontal band checkpoints but client 7.41 always uses band 0's row-offset table. |
 | `file_hea_open` | `0x004875B0` | high | Maps the HEA header, band array, row offsets, and packed run stream. |

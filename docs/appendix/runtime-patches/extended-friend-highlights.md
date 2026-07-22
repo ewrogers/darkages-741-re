@@ -27,6 +27,8 @@ The fixed owners are:
 | `user_info_save_friend_list` | `0x00592920` | `0x00192920` | Write twenty friend slots |
 | `user_info_load_family_list` | `0x00592560` | `0x00192560` | Clear and load twenty family slots |
 | `user_info_save_family_list` | `0x00592730` | `0x00192730` | Write twenty family slots |
+| `ui_family_list_dialog_ctor` | `0x00471320` | `0x00071320` | Construct the twenty-field `FamilyListDialogPane` |
+| `ui_family_list_dialog_commit_fields` | `0x00471810` | `0x00071810` | Copy, truncate, and save all twenty family fields |
 | `ui_friend_list_dialog_ctor` | `0x005435F0` | `0x001435F0` | Construct the twenty-field `FriendListDialog` |
 | `ui_friend_list_dialog_handle_action` | `0x00543C70` | `0x00143C70` | Handle OK/Cancel and save on OK |
 | `ui_show_users_rebuild_visible_list` | `0x0055C3E0` | `0x0015C3E0` | Apply server, friend, and family row colors |
@@ -39,6 +41,7 @@ The client exposes several different limits:
 | --- | ---: |
 | Safe `Friendlist.cfg` or `Familylist.cfg` line payload | 39 bytes |
 | Runtime slot including its terminating zero | 40 bytes |
+| Family dialog value retained on commit | 30 DBCS-safe bytes |
 | Name retained by `SShowUsers` | 24 bytes |
 | Playable character name reported by the project owner | Effectively 13 characters |
 | Row palette index | `0x00` through `0xFF` |
@@ -46,6 +49,8 @@ The client exposes several different limits:
 The file reader receives a capacity of 40, reads bytes until a newline, and then writes the terminating zero at the current index. A 40-byte payload can therefore write its terminator into the following slot. Keep every stock line at 39 bytes or less.
 
 The stock friend dialog has a related mismatch. Its commit handler asks a text field for up to 64 bytes while giving it a 40-byte destination slot. An extension should not depend on packed text surviving this path.
+
+The family dialog is more conservative but still fixed. Its commit path applies a DBCS-safe 30-byte truncation to each of exactly twenty fields before calling `user_info_save_family_list`. It cannot preserve packed data beyond that limit.
 
 The 24-byte Show Users limit is a parser boundary, not evidence that the game permits a 24-character playable name. The extension table should still use 24-byte name storage so it matches the row representation. Keep names as the client's original bytes, including code page 949 bytes when present. Do not convert them to UTF-8 inside the lookup table.
 

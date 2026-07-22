@@ -15,6 +15,30 @@ functions:
     name: ui_family_list_dialog_ctor
     confidence: high
     evidence: "Constructs FamilyListDialogPane from lfamily.txt, populates local rows, registers the pane, and sends CRequestFamilyName."
+  - address: "0x00471700"
+    name: ui_family_list_dialog_dtor
+    confidence: high
+    evidence: "Destroys the exact RTTI FamilyListDialogPane, its twenty text controls, layout state, pane base, and timer base."
+  - address: "0x00471730"
+    name: ui_family_list_dialog_copy_field_text
+    confidence: high
+    evidence: "Copies one indexed TextEditControl value from the family dialog into a caller buffer with the dialog's DBCS-safe bound."
+  - address: "0x004717C0"
+    name: ui_family_list_dialog_get_saved_entry
+    confidence: high
+    evidence: "Returns one of the twenty local family-list slots used to seed the dialog fields."
+  - address: "0x00471810"
+    name: ui_family_list_dialog_commit_fields
+    confidence: high
+    evidence: "Copies all twenty edited fields into the local family slots, truncates each to 30 DBCS-safe bytes, and writes Familylist.cfg."
+  - address: "0x00471930"
+    name: ui_family_list_dialog_close
+    confidence: high
+    evidence: "Unregisters the open family-list dialog and queues its pane for deletion."
+  - address: "0x00471970"
+    name: ui_family_list_dialog_handle_action
+    confidence: high
+    evidence: "Commits and closes on the confirm action, or closes without saving on the cancel action."
   - address: "0x004719B0"
     name: net_request_family_name
     confidence: high
@@ -23,10 +47,26 @@ functions:
     name: ui_family_list_dialog_handle_network_event
     confidence: high
     evidence: "Consumes exact RTTI SFamilyName while FamilyListDialogPane is open."
+  - address: "0x00471A80"
+    name: ui_family_list_dialog_apply_raw_family_name_body
+    confidence: high
+    evidence: "Parses a string8 directly from a raw decoded body into the dialog display buffer; no static caller reaches this alternate path."
   - address: "0x00471AF0"
     name: ui_family_list_dialog_apply_family_name
     confidence: high
     evidence: "Copies the SFamilyName string8 bytes verbatim into the pane's 256-byte display buffer."
+  - address: "0x00471B30"
+    name: ui_family_list_dialog_draw
+    confidence: high
+    evidence: "Draws the family-list dialog and centers the server family name and local character name in their layout rectangles."
+  - address: "0x00471C50"
+    name: ui_family_list_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the FamilyListDialogPane destructor and conditionally frees the complete object."
+  - address: "0x00471C80"
+    name: ui_family_list_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer to the complete FamilyListDialogPane before scalar deletion."
   - address: "0x00599100"
     name: net_create_family_name_server_packet
     confidence: high

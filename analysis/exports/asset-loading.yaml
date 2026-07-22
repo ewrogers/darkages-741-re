@@ -79,6 +79,134 @@ functions:
     name: file_get_main_archive
     confidence: high
     evidence: Lazily constructs and returns the archive object opened as Legend.dat with DarkAges.dat fallback during startup.
+  - address: "0x00472D00"
+    name: file_get_seo_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as seo.dat during startup and used for map-tile resources."
+  - address: "0x00472D90"
+    name: file_get_transform_table_archive
+    confidence: high
+    evidence: "Returns the lazy archive singleton supplied to the trans_a.tbl through trans_z.tbl readers."
+  - address: "0x00472E20"
+    name: file_get_khanpal_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanpal.dat for shared character palettes."
+  - address: "0x00472EB0"
+    name: file_get_khanmad_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanmad.dat for male character resources beginning a-d."
+  - address: "0x00472F40"
+    name: file_get_khanmeh_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanmeh.dat for male character resources beginning e-h."
+  - address: "0x00472FD0"
+    name: file_get_khanmim_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanmim.dat for male character resources beginning i-m."
+  - address: "0x00473060"
+    name: file_get_khanmns_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanmns.dat for male character resources beginning n-s."
+  - address: "0x004730F0"
+    name: file_get_khanmtz_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanmtz.dat for male character resources beginning t-z."
+  - address: "0x00473180"
+    name: file_get_khanwad_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanwad.dat for female character resources beginning a-d."
+  - address: "0x00473210"
+    name: file_get_khanweh_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanweh.dat for female character resources beginning e-h."
+  - address: "0x004732A0"
+    name: file_get_khanwim_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanwim.dat for female character resources beginning i-m."
+  - address: "0x00473330"
+    name: file_get_khanwns_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanwns.dat for female character resources beginning n-s."
+  - address: "0x004733C0"
+    name: file_get_khanwtz_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as khanwtz.dat for female character resources beginning t-z."
+  - address: "0x00473450"
+    name: file_get_dormant_archive
+    confidence: high
+    evidence: "Returns the otherwise unopened archive singleton used by the documented optional minigame asset patch."
+  - address: "0x004734E0"
+    name: file_get_misc_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as misc.dat and consulted as the global archive overlay."
+  - address: "0x00473570"
+    name: file_get_setoa_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as setoa.dat for UI layouts and field-map assets."
+  - address: "0x00473600"
+    name: file_get_national_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as national.dat for localized tables and fonts."
+  - address: "0x00473690"
+    name: file_get_ia_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as ia.dat for static-tile resources and flags."
+  - address: "0x00473720"
+    name: file_get_roh_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as roh.dat for effect art and tables."
+  - address: "0x004737B0"
+    name: file_get_hades_archive
+    confidence: high
+    evidence: "Returns the lazy singleton opened as hades.dat."
+  - address: "0x00473840"
+    name: file_provider_get_static_tile_archive
+    confidence: high
+    evidence: "Archive-provider adapter used by static-tile, SOTP flag, static palette, and static animation readers; returns ia.dat."
+  - address: "0x00473850"
+    name: file_provider_get_map_tile_archive
+    confidence: high
+    evidence: "Archive-provider adapter used by map-tile decoders, palette tables, and animation tables; returns seo.dat."
+  - address: "0x00473860"
+    name: file_provider_get_transform_table_archive
+    confidence: high
+    evidence: "Archive-provider adapter used by the trans_a.tbl through trans_z.tbl loader."
+  - address: "0x00473870"
+    name: file_provider_get_dormant_archive
+    confidence: high
+    evidence: "Archive-provider adapter for the dormant archive singleton; normal client code has no static caller."
+  - address: "0x00473880"
+    name: file_select_character_archive
+    confidence: high
+    evidence: "Lowercases a character resource name and selects khanpal.dat or a male/female khan* archive from its first two letters."
+  - address: "0x00473A30"
+    name: file_provider_get_character_palette_archive
+    confidence: high
+    evidence: "Archive-provider adapter used by field and character palette-table readers; returns khanpal.dat."
+  - address: "0x00473A40"
+    name: file_provider_get_hades_archive
+    confidence: high
+    evidence: "Archive-provider adapter for hades.dat."
+  - address: "0x00473A50"
+    name: file_provider_get_layout_archive
+    confidence: high
+    evidence: "Archive-provider adapter used by UI layout and ordinary pane-art readers; returns setoa.dat."
+  - address: "0x00473A60"
+    name: file_provider_get_national_archive
+    confidence: high
+    evidence: "Archive-provider adapter used by localized message, font, coordinate, and regional table readers; returns national.dat."
+  - address: "0x00473A70"
+    name: file_provider_get_field_map_archive
+    confidence: high
+    evidence: "Archive-provider adapter used by field-map palette, image, animation, and definition readers; returns setoa.dat."
+  - address: "0x00473A80"
+    name: file_provider_get_effect_archive
+    confidence: high
+    evidence: "Archive-provider adapter used by EFA, effect-frame, effect-palette, and motion-effect readers; returns roh.dat."
+  - address: "0x00473A90"
+    name: file_provider_get_no_archive
+    confidence: high
+    evidence: "Null archive-provider adapter used by readers that must use loose files rather than a DAT archive."
   - address: "0x0048B2C0"
     name: render_image_library_ctor
     confidence: high

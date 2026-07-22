@@ -431,6 +431,22 @@ functions:
     name: file_load_color_table
     confidence: medium
     evidence: Loads color.tbl records and packs six RGB triples per record for the renderer.
+  - address: "0x00471C90"
+    name: file_archive_compare_legacy_entry_name
+    confidence: high
+    evidence: "Compares a lookup key with the fixed 13-byte name at offset 4 of a legacy DAT index entry for binary search."
+  - address: "0x00471CB0"
+    name: file_archive_compare_extended_entry_name
+    confidence: high
+    evidence: "Compares a lookup key with the filename pointer at offset 4 of an extended DAT index entry for binary search."
+  - address: "0x00471CD0"
+    name: file_archive_ctor
+    confidence: high
+    evidence: "Initializes the DAT archive mapping, index, entry-handle pool, and extended-layout storage fields."
+  - address: "0x00471D60"
+    name: file_archive_dtor
+    confidence: high
+    evidence: "Closes the archive and destroys its extended-layout pointer vector."
   - address: "0x00471DC0"
     name: file_archive_xor_words
     confidence: high
@@ -439,14 +455,78 @@ functions:
     name: file_archive_open
     confidence: high
     evidence: Opens resource or loose DAT input and maps either the legacy index or the extended chunked index.
+  - address: "0x004722D0"
+    name: file_archive_close
+    confidence: high
+    evidence: "Releases mapped or expanded entry storage, closes Windows mapping and file handles, clears the entry-handle pool, and resets the archive."
   - address: "0x00472470"
     name: file_archive_find_entry
     confidence: high
     evidence: Looks up a named entry in an opened archive.
+  - address: "0x00472720"
+    name: file_archive_contains
+    confidence: high
+    evidence: "Looks up an entry by name, releases the temporary handle, and returns whether it exists."
+  - address: "0x00472760"
+    name: file_archive_release_entry
+    confidence: high
+    evidence: "Returns an active entry handle to the archive's bounded reusable pool."
+  - address: "0x00472790"
+    name: file_archive_read_exact
+    confidence: high
+    evidence: "Reads exactly the requested bytes from an entry and fails without advancing if the request exceeds its end."
+  - address: "0x00472860"
+    name: file_archive_read
+    confidence: high
+    evidence: "Reads up to the requested bytes from an entry, reports the actual count, and advances its relative position."
   - address: "0x00472900"
     name: file_archive_get_entry_data
     confidence: high
     evidence: Returns the mapped data pointer for an archive entry.
+  - address: "0x00472970"
+    name: file_archive_seek
+    confidence: high
+    evidence: "Moves an entry handle relative to its start, current position, or end while enforcing entry bounds."
+  - address: "0x00472A80"
+    name: file_archive_seek_and_tell
+    confidence: high
+    evidence: "Seeks an entry and returns the resulting entry-relative position, or -1 on failure."
+  - address: "0x00472B70"
+    name: file_archive_tell
+    confidence: high
+    evidence: "Returns the current entry-relative position, including the misc.dat overlay handle representation."
+  - address: "0x00472BE0"
+    name: file_archive_entry_size
+    confidence: high
+    evidence: "Returns an entry handle's byte length, or -1 for an invalid handle."
+  - address: "0x00472C10"
+    name: file_archive_entry_start_offset
+    confidence: high
+    evidence: "Resolves an entry's archive-relative start offset for the legacy or extended index layout."
+  - address: "0x00472C40"
+    name: file_archive_entry_end_offset
+    confidence: high
+    evidence: "Returns the archive-relative end offset computed from an entry's start and stored length."
+  - address: "0x00473AA0"
+    name: file_archive_pointer_vector_resize
+    confidence: high
+    evidence: "Resizes the archive-owned vector of expanded entry pointers by inserting nulls or erasing its tail."
+  - address: "0x00473B70"
+    name: file_archive_pointer_vector_erase_range
+    confidence: high
+    evidence: "Erases a range from the archive-owned pointer vector and compacts the remaining pointers."
+  - address: "0x00473C20"
+    name: file_archive_pointer_vector_dtor
+    confidence: high
+    evidence: "Frees the pointer vector allocation and clears its begin, end, and capacity pointers."
+  - address: "0x00473C80"
+    name: file_archive_pointer_vector_insert_n
+    confidence: high
+    evidence: "Inserts repeated pointer values into the archive-owned vector, growing its allocation when required."
+  - address: "0x00473EE9"
+    name: file_archive_pointer_vector_insert_n_cleanup
+    confidence: high
+    evidence: "Exception cleanup for a partially constructed replacement allocation during pointer-vector insertion."
   - address: "0x0047DEB0"
     name: file_load_variant_color_table
     confidence: medium

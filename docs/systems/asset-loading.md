@@ -23,11 +23,31 @@ shutdown
 
 ## Archive lifetime
 
-Each required DAT has its own archive object and global accessor. The accessor constructs the object on first use, but application startup immediately calls those accessors and opens the required archives. The main archive tries `Legend.dat` first and `DarkAges.dat` second. Other required archives fail startup when they cannot be opened.
+Each DAT has its own archive object and global accessor. The accessor constructs the object on first use. Application startup calls the required accessors and opens these archives:
+
+| Archive | Main use |
+| --- | --- |
+| `Legend.dat`, with `DarkAges.dat` fallback | Shared game art, tables, and sound effects |
+| `seo.dat` | Map tiles and their palettes and animation tables |
+| `khanpal.dat` | Shared character palettes |
+| `khanmad.dat` through `khanmtz.dat` | Male character resources split by the second filename letter |
+| `khanwad.dat` through `khanwtz.dat` | Female character resources split by the second filename letter |
+| `misc.dat` | Global same-name overlay for other archives |
+| `setoa.dat` | UI layouts, ordinary pane art, and field-map resources |
+| `national.dat` | Localized tables, fonts, and regional data |
+| `ia.dat` | Static-tile art, flags, palettes, and animation tables |
+| `roh.dat` | Effect art, palettes, frame tables, and motion-effect data |
+| `hades.dat` | A separate asset family whose remaining consumers are still being named |
+
+The main archive tries `Legend.dat` first and `DarkAges.dat` second. A missing required archive follows startup's failure path.
+
+Two other singleton slots are not opened by normal startup. `file_get_transform_table_archive` is supplied to the `trans_a.tbl` through `trans_z.tbl` readers, but the matching archive identity is not yet confirmed. `file_get_dormant_archive` has no normal asset consumer and is the slot used by the optional minigame asset patch.
 
 `file_archive_open` opens an archive read-only, creates a read-only file mapping, and maps the complete file. The installed version 741 archives use the legacy layout, so an entry's data pointer refers directly to bytes in that mapping. The reader also supports an extended layout whose compressed blocks are expanded while the archive opens and retained until it closes, but the installed archives do not use that path.
 
-An archive also has a small bounded pool of entry handles. `file_archive_find_entry` borrows one handle, records the entry pointer and size, and returns it to the caller. `file_archive_get_entry_data` exposes the stable mapped data. Closing the entry returns only that temporary handle to the pool. It does not unload the entry bytes.
+An archive also has a small bounded pool of entry handles. `file_archive_find_entry` borrows one handle, records the entry pointer and size, and returns it to the caller. `file_archive_get_entry_data` exposes the stable mapped data. `file_archive_read_exact` and `file_archive_read` provide exact and partial sequential reads. The seek, tell, and size helpers keep positions relative to the selected entry rather than the whole DAT.
+
+`file_archive_release_entry` returns only the temporary handle to the pool. It does not unload the entry bytes. `file_archive_close` releases the mapping, any expanded-layout storage, the handle pool, and the operating-system handles together.
 
 The startup calls request 20 handle slots per archive. This pool limits simultaneous open entry descriptions. It is not an asset cache.
 
