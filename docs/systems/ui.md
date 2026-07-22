@@ -17,6 +17,8 @@ Screen hierarchy             Event pane tree
 
 The spatial `HierList<Screen>` tracks screen relationships and positions. It helps answer questions such as "where is this pane on screen?" and "what is its parent position?"
 
+Each hierarchy record holds a parent-record pointer, an optional child list, and the caller payload. The backing list stores records contiguously. Insertion, removal, and movement can therefore change record addresses, so the `HierList` overrides those operations and repairs parent and child back-pointers for the affected range. Lookup walks child lists recursively and can return both the owning list and record index.
+
 `ui_screen_hierarchy_get_absolute_origin` walks this hierarchy to turn a local point into a screen point.
 
 ## Event pane tree
@@ -121,6 +123,12 @@ Exact RTTI `EmoticonSelectPane_A` owns eight option rectangles and a description
 A pointer selection or numeric key commits an option through the retained chat owner and shared emoticon state, then closes the pane. Other mapped keys close or refresh it without choosing. The selector clamps programmatic selection to the eight valid indexes and falls back to option zero.
 
 The shared label loader treats each configured option as two DBCS-aware text parts separated by a semicolon. `EquipPane` and `UserLookPane` draw the right-hand part beside the selected `HumanState` image.
+
+## Hot-key reference
+
+Exact RTTI `HotKeyPane` loads `_nhotkem.txt` and `_nhotkey.txt` and exposes 32 fixed or compound hit regions. Pointer movement updates the highlighted entry. Enter, Escape, or pointer event type 4 schedules timer 1; its callback detaches the pane and queues deferred deletion instead of freeing it inside input dispatch.
+
+Exact RTTI `HumanImageControlPane` is a smaller control used by character UI. It retains a 16-bit `HumanState` selector, clears its canvas, and asks the shared human-image renderer to draw that state.
 
 ## Equipment and character views
 

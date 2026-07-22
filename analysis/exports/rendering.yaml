@@ -1503,10 +1503,166 @@ functions:
     name: ui_hot_key_pane_ctor
     confidence: high
     evidence: Constructs the RTTI-backed HotKeyPane, loads _nhotkem.txt and _nhotkey.txt, and registers it with the screen and event trees.
+  - address: "0x00488720"
+    name: ui_hot_key_pane_dtor
+    confidence: high
+    evidence: "Restores the HotKeyPane vtables and delegates to the Pane destructor."
+  - address: "0x00488750"
+    name: ui_hot_key_pane_hit_test_entry
+    confidence: high
+    evidence: "Tests pointer coordinates against 32 fixed or compound hot-key entry regions."
+  - address: "0x00488900"
+    name: ui_hot_key_pane_draw_entry_image
+    confidence: high
+    evidence: "Draws one hot-key entry pixmap using its local and pane-relative rectangles."
+  - address: "0x004889D0"
+    name: ui_hot_key_pane_draw_content
+    confidence: high
+    evidence: "Primary Pane slot 22 draws the backgrounds, hovered entry art, and selection decoration."
+  - address: "0x00488BC0"
+    name: ui_hot_key_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Primary Pane slot 19 schedules the close timer for Enter or Escape."
+  - address: "0x00488C10"
+    name: ui_hot_key_pane_handle_pointer_event
+    confidence: high
+    evidence: "Primary Pane slot 18 updates hover state and schedules closing on event type 4."
+  - address: "0x00488CA0"
+    name: ui_hot_key_pane_on_timer
+    confidence: high
+    evidence: "TimerHandler callback detaches the pane and queues deferred deletion for timer 1."
   - address: "0x00488D00"
     name: ui_create_hot_key_pane
     confidence: high
     evidence: Allocates a 0x919C-byte HotKeyPane and calls ui_hot_key_pane_ctor; its only direct caller is GUIBackPane action 0.
+  - address: "0x00488D80"
+    name: ui_hot_key_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a HotKeyPane and optionally releases its allocation."
+  - address: "0x00488DB0"
+    name: ui_hot_key_entry_ctor
+    confidence: high
+    evidence: "Constructs the pixmap record embedded in one hot-key entry."
+  - address: "0x00488DD0"
+    name: ui_hot_key_pane_adjusted_deleting_dtor
+    confidence: high
+    evidence: "Adjusts a TimerHandler subobject pointer back to the complete HotKeyPane before destruction."
+  - address: "0x00488DE0"
+    name: ui_human_image_control_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI HumanImageControlPane and stores its 16-bit HumanState selector."
+  - address: "0x00488E30"
+    name: ui_human_image_control_pane_draw_content
+    confidence: high
+    evidence: "Primary Pane slot 22 clears the control and draws the selected HumanState image."
+  - address: "0x00488EE0"
+    name: ui_human_image_control_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a HumanImageControlPane and optionally releases its allocation."
+  - address: "0x00488F10"
+    name: ui_human_image_control_pane_adjusted_deleting_dtor
+    confidence: high
+    evidence: "Adjusts the TimerHandler subobject pointer before HumanImageControlPane destruction."
+  - address: "0x00488F20"
+    name: render_human_tile_attr_list_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI HumanTileAttrList, its 26 numeric sets, and loads the transform tables."
+  - address: "0x00488FB0"
+    name: render_human_tile_attr_list_dtor
+    confidence: high
+    evidence: "Destroys all 26 transform-table numeric sets and the HumanTileAttrList base object."
+  - address: "0x00489030"
+    name: render_human_tile_attr_list_contains
+    confidence: high
+    evidence: "Tests whether an a-through-z transform category contains one numeric tile attribute."
+  - address: "0x004890B0"
+    name: render_human_tile_attr_list_load_transform_tables
+    confidence: high
+    evidence: "Loads positive numeric tokens from trans_a.tbl through trans_z.tbl into per-letter sets."
+  - address: "0x004891D0"
+    name: render_human_tile_attr_list_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a HumanTileAttrList and optionally releases its allocation."
+  - address: "0x00489200"
+    name: render_human_tile_attr_list_register_global
+    confidence: high
+    evidence: "Registers the containing HumanTileAttrList as the process-global instance."
+  - address: "0x00489240"
+    name: render_human_tile_attr_list_unregister_global
+    confidence: high
+    evidence: "Clears the process-global HumanTileAttrList when this instance is registered."
+  - address: "0x00489280"
+    name: render_image_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI Image with empty bounds and three empty plane descriptors."
+  - address: "0x00489300"
+    name: render_image_dtor
+    confidence: high
+    evidence: "Clears all three Image planes."
+  - address: "0x00489320"
+    name: render_image_clear_planes
+    confidence: high
+    evidence: "Clears the three plane descriptors and frees any owned storage."
+  - address: "0x00489360"
+    name: render_image_clear_plane
+    confidence: high
+    evidence: "Frees one plane only when its ownership flag is set, then clears its pointer."
+  - address: "0x004893C0"
+    name: render_image_set_owned_plane
+    confidence: high
+    evidence: "Copies one plane into newly allocated storage and records stride, size, and ownership."
+  - address: "0x00489450"
+    name: render_image_set_borrowed_plane
+    confidence: high
+    evidence: "Retains caller-owned plane storage and marks it as borrowed."
+  - address: "0x004894C0"
+    name: render_image_set_owned_pixels
+    confidence: high
+    evidence: "Stores image bounds and copies plane zero using rectangle height times stride."
+  - address: "0x00489520"
+    name: render_image_set_borrowed_pixels
+    confidence: high
+    evidence: "Stores image bounds and retains borrowed plane-zero pixel storage."
+  - address: "0x00489580"
+    name: render_image_get_plane_data_mutable
+    confidence: high
+    evidence: "Returns mutable data for one of the three planes, or null for an invalid index."
+  - address: "0x004895B0"
+    name: render_image_get_plane_data
+    confidence: high
+    evidence: "Returns data for one of the three planes, or null for an invalid index."
+  - address: "0x004895E0"
+    name: render_image_get_plane_stride
+    confidence: high
+    evidence: "Returns the stored row stride for one plane."
+  - address: "0x00489610"
+    name: render_image_get_plane_size
+    confidence: high
+    evidence: "Returns the stored byte count for one plane."
+  - address: "0x00489640"
+    name: render_image_get_bounds
+    confidence: high
+    evidence: "Returns the Image rectangle at object offset four."
+  - address: "0x00489660"
+    name: render_image_allocate_plane_bytes
+    confidence: high
+    evidence: "Allocates raw storage for an owned Image plane through the client allocator."
+  - address: "0x00489680"
+    name: render_image_free_plane_bytes
+    confidence: high
+    evidence: "Releases owned Image-plane storage through the matching client allocator."
+  - address: "0x004896B0"
+    name: render_image_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an Image and optionally releases its allocation."
+  - address: "0x004896E0"
+    name: render_image_cache_entry_vector_deleting_dtor
+    confidence: high
+    evidence: "Destroys one or an allocated vector of 0x18-byte image-cache entries."
+  - address: "0x00489750"
+    name: render_image_cache_entry_dtor
+    confidence: high
+    evidence: "Destroys the owned image object retained at cache-entry offset four."
   - address: "0x0048B390"
     name: file_read_image_metadata
     confidence: high

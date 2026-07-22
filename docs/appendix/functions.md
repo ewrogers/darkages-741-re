@@ -1394,7 +1394,21 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_layout_filename_cache_map_move_assign` | `0x004866A0` | high | Clears the destination and takes the source filename-cache tree state. |
 | `ui_layout_filename_cache_value_copy_ctor_duplicate` | `0x00486740` | high | Duplicate code path that copies a filename and parsed-layout pointer. |
 | `ui_hot_key_pane_ctor` | `0x00488320` | high | Constructs the RTTI-backed HotKeyPane, loads _nhotkem.txt and _nhotkey.txt, and registers it with the screen and event trees. |
+| `ui_hot_key_pane_dtor` | `0x00488720` | high | Restores the HotKeyPane vtables and delegates to the Pane destructor. |
+| `ui_hot_key_pane_hit_test_entry` | `0x00488750` | high | Tests pointer coordinates against 32 fixed or compound hot-key entry regions. |
+| `ui_hot_key_pane_draw_entry_image` | `0x00488900` | high | Draws one hot-key entry pixmap using its local and pane-relative rectangles. |
+| `ui_hot_key_pane_draw_content` | `0x004889D0` | high | Primary Pane slot 22 draws the backgrounds, hovered entry art, and selection decoration. |
+| `ui_hot_key_pane_handle_keyboard_event` | `0x00488BC0` | high | Primary Pane slot 19 schedules the close timer for Enter or Escape. |
+| `ui_hot_key_pane_handle_pointer_event` | `0x00488C10` | high | Primary Pane slot 18 updates hover state and schedules closing on event type 4. |
+| `ui_hot_key_pane_on_timer` | `0x00488CA0` | high | TimerHandler callback detaches the pane and queues deferred deletion for timer 1. |
 | `ui_create_hot_key_pane` | `0x00488D00` | high | Allocates a 0x919C-byte HotKeyPane and calls ui_hot_key_pane_ctor; its only direct caller is GUIBackPane action 0. |
+| `ui_hot_key_pane_scalar_deleting_dtor` | `0x00488D80` | high | Destroys a HotKeyPane and optionally releases its allocation. |
+| `ui_hot_key_entry_ctor` | `0x00488DB0` | high | Constructs the pixmap record embedded in one hot-key entry. |
+| `ui_hot_key_pane_adjusted_deleting_dtor` | `0x00488DD0` | high | Adjusts a TimerHandler subobject pointer back to the complete HotKeyPane before destruction. |
+| `ui_human_image_control_pane_ctor` | `0x00488DE0` | high | Constructs exact RTTI HumanImageControlPane and stores its 16-bit HumanState selector. |
+| `ui_human_image_control_pane_draw_content` | `0x00488E30` | high | Primary Pane slot 22 clears the control and draws the selected HumanState image. |
+| `ui_human_image_control_pane_scalar_deleting_dtor` | `0x00488EE0` | high | Destroys a HumanImageControlPane and optionally releases its allocation. |
+| `ui_human_image_control_pane_adjusted_deleting_dtor` | `0x00488F10` | high | Adjusts the TimerHandler subobject pointer before HumanImageControlPane destruction. |
 | `ui_image_pane_draw_content` | `0x0048DD30` | high | Draws an ImagePane image into the pane's own canvas. |
 | `ui_inventory_pane_ctor` | `0x0048F7E0` | high | Constructs exact RTTI class InventoryPane_A, clears its 60 direct InvItemPane pointers, and initializes its selection state. |
 | `ui_inventory_pane_handle_network_event` | `0x004900C0` | high | InventoryPane_A and derived ItemInventoryPane route SAddInventory, SRemoveInventory, and SStatus to their local update paths. |
@@ -2638,6 +2652,31 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_alpha_runs_overlay_range_constant` | `0x004872A0` | high | Builds a constant run stream and maximum-overlays it across the requested interval. |
 | `render_alpha_run_subtract_length` | `0x004877F0` | high | Subtracts a pixel count from one run while preserving its low-six-bit intensity. |
 | `render_alpha_runs_merge_adjacent` | `0x00487850` | high | Merges adjacent equal-intensity runs when their combined length fits in one byte. |
+| `render_human_tile_attr_list_ctor` | `0x00488F20` | high | Constructs exact RTTI HumanTileAttrList, its 26 numeric sets, and loads the transform tables. |
+| `render_human_tile_attr_list_dtor` | `0x00488FB0` | high | Destroys all 26 transform-table numeric sets and the HumanTileAttrList base object. |
+| `render_human_tile_attr_list_contains` | `0x00489030` | high | Tests whether an a-through-z transform category contains one numeric tile attribute. |
+| `render_human_tile_attr_list_load_transform_tables` | `0x004890B0` | high | Loads positive numeric tokens from trans_a.tbl through trans_z.tbl into per-letter sets. |
+| `render_human_tile_attr_list_scalar_deleting_dtor` | `0x004891D0` | high | Destroys a HumanTileAttrList and optionally releases its allocation. |
+| `render_human_tile_attr_list_register_global` | `0x00489200` | high | Registers the containing HumanTileAttrList as the process-global instance. |
+| `render_human_tile_attr_list_unregister_global` | `0x00489240` | high | Clears the process-global HumanTileAttrList when this instance is registered. |
+| `render_image_ctor` | `0x00489280` | high | Constructs exact RTTI Image with empty bounds and three empty plane descriptors. |
+| `render_image_dtor` | `0x00489300` | high | Clears all three Image planes. |
+| `render_image_clear_planes` | `0x00489320` | high | Clears the three plane descriptors and frees any owned storage. |
+| `render_image_clear_plane` | `0x00489360` | high | Frees one plane only when its ownership flag is set, then clears its pointer. |
+| `render_image_set_owned_plane` | `0x004893C0` | high | Copies one plane into newly allocated storage and records stride, size, and ownership. |
+| `render_image_set_borrowed_plane` | `0x00489450` | high | Retains caller-owned plane storage and marks it as borrowed. |
+| `render_image_set_owned_pixels` | `0x004894C0` | high | Stores image bounds and copies plane zero using rectangle height times stride. |
+| `render_image_set_borrowed_pixels` | `0x00489520` | high | Stores image bounds and retains borrowed plane-zero pixel storage. |
+| `render_image_get_plane_data_mutable` | `0x00489580` | high | Returns mutable data for one of the three planes, or null for an invalid index. |
+| `render_image_get_plane_data` | `0x004895B0` | high | Returns data for one of the three planes, or null for an invalid index. |
+| `render_image_get_plane_stride` | `0x004895E0` | high | Returns the stored row stride for one plane. |
+| `render_image_get_plane_size` | `0x00489610` | high | Returns the stored byte count for one plane. |
+| `render_image_get_bounds` | `0x00489640` | high | Returns the Image rectangle at object offset four. |
+| `render_image_allocate_plane_bytes` | `0x00489660` | high | Allocates raw storage for an owned Image plane through the client allocator. |
+| `render_image_free_plane_bytes` | `0x00489680` | high | Releases owned Image-plane storage through the matching client allocator. |
+| `render_image_scalar_deleting_dtor` | `0x004896B0` | high | Destroys an Image and optionally releases its allocation. |
+| `render_image_cache_entry_vector_deleting_dtor` | `0x004896E0` | high | Destroys one or an allocated vector of 0x18-byte image-cache entries. |
+| `render_image_cache_entry_dtor` | `0x00489750` | high | Destroys the owned image object retained at cache-entry offset four. |
 | `render_image_library_ctor` | `0x0048B2C0` | high | Constructs RTTI class ImageLib and registers its singleton; the object has no filename or decoded-frame cache fields. |
 | `render_image_library_dtor` | `0x0048B330` | high | Unregisters and destroys the ImageLib singleton without releasing a shared image cache. |
 | `render_load_main_archive_pixmap` | `0x0048BB90` | high | Resolves one requested frame synchronously through file_load_image_frame using the main archive. |
@@ -3515,6 +3554,22 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `text_markup_segment_queue_commit_back` | `0x0047DA90` | high | Commits the current back slot by advancing the tail modulo 256. |
 | `text_markup_segment_queue_back_slot` | `0x0047DAD0` | high | Returns the uncommitted record at the markup segment ring tail. |
 | `text_byte_is_control_or_space` | `0x00480360` | high | Returns true for byte values from zero through ASCII space. |
+| `hier_list_ctor` | `0x00487910` | high | Constructs a root HierList with caller-sized payload records and no parent record. |
+| `hier_list_child_ctor` | `0x00487950` | high | Constructs a child HierList with the same record stride and a retained parent-record pointer. |
+| `hier_list_dtor` | `0x00487990` | high | Recursively destroys child lists before releasing the underlying record list. |
+| `hier_list_append` | `0x00487A60` | high | Appends a payload after the last sibling under an optional parent. |
+| `hier_list_prepend` | `0x00487B00` | high | Prepends a payload before the first sibling under an optional parent. |
+| `hier_list_insert_after` | `0x00487B20` | high | Inserts after a named sibling and creates the parent's child list on demand. |
+| `hier_list_insert_before` | `0x00487D30` | high | Inserts before a named sibling; the screen hierarchy uses this path for pane nodes. |
+| `hier_list_remove` | `0x00487F50` | high | Finds a payload, destroys its child list, and erases the owning record. |
+| `hier_list_get_payload` | `0x00487FE0` | high | Returns the caller payload at offset eight within one hierarchy record. |
+| `hier_list_insert_range` | `0x00488010` | high | Inserts records and repairs hierarchy links for records whose addresses moved. |
+| `hier_list_append_range` | `0x00488070` | high | Appends records through the base List operation; existing record addresses remain unchanged. |
+| `hier_list_erase_range` | `0x00488090` | high | Erases records and repairs links for the shifted suffix. |
+| `hier_list_move_item` | `0x004880E0` | high | Moves one record within the backing list and repairs hierarchy links around both positions. |
+| `hier_list_find` | `0x00488130` | high | Recursively compares payload bytes and optionally returns the owner list and index. |
+| `hier_list_relink_range` | `0x00488220` | high | Repairs parent-record and child-item back-pointers after record addresses change. |
+| `hier_list_scalar_deleting_dtor` | `0x004882F0` | high | Destroys a HierList and optionally releases its allocation. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

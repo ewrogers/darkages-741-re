@@ -1195,6 +1195,70 @@ functions:
     name: ui_rect_contains
     confidence: high
     evidence: "Tests whether the second rectangle contains the first, accepting an empty candidate."
+  - address: "0x00487910"
+    name: hier_list_ctor
+    confidence: high
+    evidence: "Constructs a root HierList with caller-sized payload records and no parent record."
+  - address: "0x00487950"
+    name: hier_list_child_ctor
+    confidence: high
+    evidence: "Constructs a child HierList with the same record stride and a retained parent-record pointer."
+  - address: "0x00487990"
+    name: hier_list_dtor
+    confidence: high
+    evidence: "Recursively destroys child lists before releasing the underlying record list."
+  - address: "0x00487A60"
+    name: hier_list_append
+    confidence: high
+    evidence: "Appends a payload after the last sibling under an optional parent."
+  - address: "0x00487B00"
+    name: hier_list_prepend
+    confidence: high
+    evidence: "Prepends a payload before the first sibling under an optional parent."
+  - address: "0x00487B20"
+    name: hier_list_insert_after
+    confidence: high
+    evidence: "Inserts after a named sibling and creates the parent's child list on demand."
+  - address: "0x00487D30"
+    name: hier_list_insert_before
+    confidence: high
+    evidence: "Inserts before a named sibling; the screen hierarchy uses this path for pane nodes."
+  - address: "0x00487F50"
+    name: hier_list_remove
+    confidence: high
+    evidence: "Finds a payload, destroys its child list, and erases the owning record."
+  - address: "0x00487FE0"
+    name: hier_list_get_payload
+    confidence: high
+    evidence: "Returns the caller payload at offset eight within one hierarchy record."
+  - address: "0x00488010"
+    name: hier_list_insert_range
+    confidence: high
+    evidence: "Inserts records and repairs hierarchy links for records whose addresses moved."
+  - address: "0x00488070"
+    name: hier_list_append_range
+    confidence: high
+    evidence: "Appends records through the base List operation; existing record addresses remain unchanged."
+  - address: "0x00488090"
+    name: hier_list_erase_range
+    confidence: high
+    evidence: "Erases records and repairs links for the shifted suffix."
+  - address: "0x004880E0"
+    name: hier_list_move_item
+    confidence: high
+    evidence: "Moves one record within the backing list and repairs hierarchy links around both positions."
+  - address: "0x00488130"
+    name: hier_list_find
+    confidence: high
+    evidence: "Recursively compares payload bytes and optionally returns the owner list and index."
+  - address: "0x00488220"
+    name: hier_list_relink_range
+    confidence: high
+    evidence: "Repairs parent-record and child-item back-pointers after record addresses change."
+  - address: "0x004882F0"
+    name: hier_list_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a HierList and optionally releases its allocation."
   - address: "0x0048E980"
     name: input_translate_win32_message
     confidence: high

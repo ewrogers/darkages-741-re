@@ -65,6 +65,8 @@ decode_efa_frame(file, index):
     return image_view(record, pixels, optional_second_plane)
 ```
 
+The returned RTTI-backed `Image` stores a rectangle and three plane descriptors. Each descriptor contains a data pointer, row stride, byte count, and ownership flag. EFA decoding normally attaches borrowed pointers into the inflated frame storage, while generated effect images can copy plane zero into owned memory. Replacing or destroying a plane frees it only when that ownership flag is set.
+
 ## Writer status
 
 A generated writer can serialize the table, zlib-compress each decoded payload, and calculate offsets and sizes. It still needs the unknown header fields, plane kinds, and pixel modes to be classified before it can safely create new effects from raw images. Preserving those fields from an existing compatible frame is the current safe approach.

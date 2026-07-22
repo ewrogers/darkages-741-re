@@ -41,7 +41,7 @@ Each DAT has its own archive object and global accessor. The accessor constructs
 
 The main archive tries `Legend.dat` first and `DarkAges.dat` second. A missing required archive follows startup's failure path.
 
-Two other singleton slots are not opened by normal startup. `file_get_transform_table_archive` is supplied to the `trans_a.tbl` through `trans_z.tbl` readers, but the matching archive identity is not yet confirmed. `file_get_dormant_archive` has no normal asset consumer and is the slot used by the optional minigame asset patch.
+Two other singleton slots are not opened by normal startup. `file_get_transform_table_archive` is supplied to the `trans_a.tbl` through `trans_z.tbl` readers, but the matching archive identity is not yet confirmed. `HumanTileAttrList` reads positive numeric tokens from each file into one set selected by its `a` through `z` suffix. Human-part rendering queries those sets by category letter and tile attribute. `file_get_dormant_archive` has no normal asset consumer and is the slot used by the optional minigame asset patch.
 
 `file_archive_open` opens an archive read-only, creates a read-only file mapping, and maps the complete file. The installed version 741 archives use the legacy layout, so an entry's data pointer refers directly to bytes in that mapping. The reader also supports an extended layout whose compressed blocks are expanded while the archive opens and retained until it closes, but the installed archives do not use that path.
 
