@@ -3743,6 +3743,50 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_bottom_layer_load_legacy_lod_file` | `0x004C4940` | high | Parses dormant loose .\maps\lodN.mbl placement text and resolves its PCX images through the SEO archive. |
 | `map_request_bottom_layer_metadata` | `0x004C4CB0` | high | Formats a six-digit map ID as NNNNNN.mbl and asks the resource manager to fill a fixed 0x1394-byte buffer. |
 | `map_bottom_layer_load_from_resource_entry` | `0x004C4D20` | high | Parses a resource-manager bottom-layer entry, resolves its cached PCX images, computes placement bounds, and marks the layer active. |
+| `map_bottom_layer_clear` | `0x004C5080` | high | Resets layer state, clears both placement lists, and releases the cached bottom-image library. |
+| `map_bottom_layer_draw` | `0x004C51E0` | high | Computes the current viewport, updates the visible placement list when the camera cell changes, and draws it through the common background-image renderer. |
+| `map_bottom_layer_compute_visible_bounds` | `0x004C5490` | high | Converts a camera cell and stored map height into the expanded isometric rectangle used for placement visibility. |
+| `map_bottom_layer_project_cell` | `0x004C5510` | high | Projects one map cell through the bottom layer's 28-by-14 isometric geometry. |
+| `map_bottom_layer_update_visible_placements` | `0x004C5560` | high | Moves placement records between visible and hidden lists according to rectangle overlap with the current viewport. |
+| `map_bottom_layer_handle_resource_result` | `0x004C5790` | high | Consumes the fixed 0x1394-byte metadata result, parses successful data, and forwards completion to the application callback. |
+| `map_bottom_image_library_scalar_deleting_dtor` | `0x004C5800` | high | MSVC scalar deleting destructor for exact RTTI class MapBtmImageLib. |
+| `map_bottom_layer_scalar_deleting_dtor` | `0x004C5830` | high | MSVC scalar deleting destructor for exact RTTI class MapBtmLayer. |
+| `map_bottom_image_id_set_unwind_dtor` | `0x004C5860` | high | Exception-unwind wrapper for the temporary ordered set of unique u16 bottom-image IDs. |
+| `map_bottom_placement_list_ctor` | `0x004C5880` | high | Constructs an empty sentinel-based list used for MapBtmLayer placement pointers. |
+| `map_bottom_placement_list_dtor` | `0x004C58E0` | high | Clears a bottom-placement list and frees its sentinel node. |
+| `map_bottom_placement_list_erase` | `0x004C5950` | high | Unlinks one placement-list node, frees it, decrements the count, and returns the next iterator. |
+| `map_bottom_placement_list_clear` | `0x004C59F0` | high | Frees every placement-list node while preserving the sentinel and resetting the count. |
+| `map_bottom_image_id_set_ctor` | `0x004C5A80` | high | Constructs the temporary ordered set used to count unique bottom-image IDs. |
+| `map_bottom_image_id_set_dtor` | `0x004C5AB0` | high | Erases the bottom-image ID tree and frees its head node. |
+| `map_bottom_placement_list_insert` | `0x004C5B50` | high | Creates and links a placement-pointer node before the supplied list position. |
+| `map_bottom_placement_list_free_head` | `0x004C5BE0` | high | Frees a bottom-placement list's sentinel allocation. |
+| `map_bottom_image_id_set_ctor_from_compare` | `0x004C5C10` | high | Constructs a bottom-image ID set from supplied comparison state. |
+| `map_bottom_image_id_set_clear` | `0x004C5C40` | high | Erases the full image-ID red-black tree while preserving its head node. |
+| `map_bottom_image_id_set_free_head` | `0x004C5C90` | high | Frees the bottom-image ID set's head-node allocation. |
+| `map_bottom_placement_list_create_node` | `0x004C5CC0` | high | Allocates and links a placement-list node and copy-constructs its stored pointer. |
+| `map_bottom_placement_list_node_failure_cleanup` | `0x004C5D32` | high | Exception cleanup that frees a placement-list node when value construction fails. |
+| `map_bottom_image_id_set_erase_range` | `0x004C5D80` | high | Erases a range of image-ID tree nodes, with a whole-tree fast path for begin-to-end. |
+| `map_bottom_image_id_set_base_ctor` | `0x004C5E60` | high | Initializes the image-ID red-black tree with an empty head node and zero elements. |
+| `map_bottom_placement_list_iterator_ctor` | `0x004C5EE0` | high | Constructs a bottom-placement list iterator from a node pointer. |
+| `map_bottom_image_id_set_erase_node` | `0x004C5F00` | high | Unlinks one image-ID node, performs red-black deletion fixup, frees it, and decrements the count. |
+| `map_bottom_image_id_set_clear_tree` | `0x004C63E0` | high | Frees the full image-ID tree and restores empty head links and count. |
+| `map_bottom_image_id_set_erase_subtree` | `0x004C6440` | high | Recursively frees one bottom-image ID red-black-tree subtree. |
+| `map_bottom_image_id_set_rotate_left` | `0x004C64B0` | high | Performs a left rotation around one image-ID tree node. |
+| `map_bottom_image_id_set_rotate_right` | `0x004C6560` | high | Performs a right rotation around one image-ID tree node. |
+| `map_bottom_image_id_set_iterator_next` | `0x004C6610` | high | Advances an image-ID set iterator to its in-order successor. |
+| `map_bottom_placement_list_value_dtor_noop` | `0x004C66C0` | high | No-op destructor for the raw placement pointer stored in a list node. |
+| `map_bottom_placement_list_value_copy_ctor` | `0x004C66D0` | high | Copy-constructs the raw placement pointer stored in a list node. |
+| `map_bottom_placement_list_allocate_raw_node` | `0x004C6710` | high | Allocates raw 12-byte placement-list node storage and throws std::bad_alloc on failure. |
+| `map_bottom_image_id_set_value_dtor_noop` | `0x004C6780` | high | No-op destructor for the u16 value stored in an image-ID set node. |
+| `map_bottom_image_id_set_allocate_raw_node` | `0x004C6790` | high | Allocates raw 16-byte image-ID tree node storage and throws std::bad_alloc on failure. |
+| `map_bottom_image_id_set_insert_unique` | `0x004C6800` | high | Searches the ordered u16 image-ID tree and inserts only when the key is absent. |
+| `map_bottom_image_id_set_iterator_ctor` | `0x004C6A50` | high | Constructs a bottom-image ID set iterator from a tree-node pointer. |
+| `map_bottom_image_id_set_link_and_rebalance` | `0x004C6A70` | high | Links a new image-ID node under its parent and performs red-black insertion fixup. |
+| `map_bottom_image_id_set_iterator_prev` | `0x004C6D50` | high | Moves a bottom-image ID set iterator to its in-order predecessor. |
+| `map_bottom_image_id_set_allocate_value_node` | `0x004C6E10` | high | Allocates one image-ID set node and copy-constructs its u16 key. |
+| `map_bottom_image_id_set_node_failure_cleanup` | `0x004C6E6D` | high | Exception cleanup that frees an image-ID set node whose key construction failed. |
+| `map_bottom_image_id_set_create_head_node` | `0x004C6EB0` | high | Allocates and initializes the sentinel head node for the image-ID red-black tree. |
+| `map_bottom_image_id_set_copy_key` | `0x004C6F00` | high | Copy-constructs the u16 key stored in one image-ID set node. |
 | `file_decode_ctf_map_tile` | `0x004C7000` | high | Palette-converts one alternate 784-byte indexed tile source to 16-bit pixels. |
 | `file_decode_dtf_map_tile` | `0x004C7180` | high | Reads one alternate 1568-byte 16-bit tile source and converts color format when needed. |
 | `file_tile_bank_storage_ctor` | `0x004C7280` | high | Opens one fixed-record raw tile bank and selects its palette path. |

@@ -2639,10 +2639,186 @@ functions:
     name: map_bottom_layer_load_from_resource_entry
     confidence: high
     evidence: "Parses a resource-manager bottom-layer entry, resolves its cached PCX images, computes placement bounds, and marks the layer active."
+  - address: "0x004C5080"
+    name: map_bottom_layer_clear
+    confidence: high
+    evidence: "Resets layer state, clears both placement lists, and releases the cached bottom-image library."
+  - address: "0x004C51E0"
+    name: map_bottom_layer_draw
+    confidence: high
+    evidence: "Computes the current viewport, updates the visible placement list when the camera cell changes, and draws it through the common background-image renderer."
   - address: "0x004C5270"
     name: render_map_background_images
     confidence: high
     evidence: Draws configured map background or bottom-layer images before world objects.
+  - address: "0x004C5490"
+    name: map_bottom_layer_compute_visible_bounds
+    confidence: high
+    evidence: "Converts a camera cell and stored map height into the expanded isometric rectangle used for placement visibility."
+  - address: "0x004C5510"
+    name: map_bottom_layer_project_cell
+    confidence: high
+    evidence: "Projects one map cell through the bottom layer's 28-by-14 isometric geometry."
+  - address: "0x004C5560"
+    name: map_bottom_layer_update_visible_placements
+    confidence: high
+    evidence: "Moves placement records between visible and hidden lists according to rectangle overlap with the current viewport."
+  - address: "0x004C5790"
+    name: map_bottom_layer_handle_resource_result
+    confidence: high
+    evidence: "Consumes the fixed 0x1394-byte metadata result, parses successful data, and forwards completion to the application callback."
+  - address: "0x004C5800"
+    name: map_bottom_image_library_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class MapBtmImageLib."
+  - address: "0x004C5830"
+    name: map_bottom_layer_scalar_deleting_dtor
+    confidence: high
+    evidence: "MSVC scalar deleting destructor for exact RTTI class MapBtmLayer."
+  - address: "0x004C5860"
+    name: map_bottom_image_id_set_unwind_dtor
+    confidence: high
+    evidence: "Exception-unwind wrapper for the temporary ordered set of unique u16 bottom-image IDs."
+  - address: "0x004C5880"
+    name: map_bottom_placement_list_ctor
+    confidence: high
+    evidence: "Constructs an empty sentinel-based list used for MapBtmLayer placement pointers."
+  - address: "0x004C58E0"
+    name: map_bottom_placement_list_dtor
+    confidence: high
+    evidence: "Clears a bottom-placement list and frees its sentinel node."
+  - address: "0x004C5950"
+    name: map_bottom_placement_list_erase
+    confidence: high
+    evidence: "Unlinks one placement-list node, frees it, decrements the count, and returns the next iterator."
+  - address: "0x004C59F0"
+    name: map_bottom_placement_list_clear
+    confidence: high
+    evidence: "Frees every placement-list node while preserving the sentinel and resetting the count."
+  - address: "0x004C5A80"
+    name: map_bottom_image_id_set_ctor
+    confidence: high
+    evidence: "Constructs the temporary ordered set used to count unique bottom-image IDs."
+  - address: "0x004C5AB0"
+    name: map_bottom_image_id_set_dtor
+    confidence: high
+    evidence: "Erases the bottom-image ID tree and frees its head node."
+  - address: "0x004C5B50"
+    name: map_bottom_placement_list_insert
+    confidence: high
+    evidence: "Creates and links a placement-pointer node before the supplied list position."
+  - address: "0x004C5BE0"
+    name: map_bottom_placement_list_free_head
+    confidence: high
+    evidence: "Frees a bottom-placement list's sentinel allocation."
+  - address: "0x004C5C10"
+    name: map_bottom_image_id_set_ctor_from_compare
+    confidence: high
+    evidence: "Constructs a bottom-image ID set from supplied comparison state."
+  - address: "0x004C5C40"
+    name: map_bottom_image_id_set_clear
+    confidence: high
+    evidence: "Erases the full image-ID red-black tree while preserving its head node."
+  - address: "0x004C5C90"
+    name: map_bottom_image_id_set_free_head
+    confidence: high
+    evidence: "Frees the bottom-image ID set's head-node allocation."
+  - address: "0x004C5CC0"
+    name: map_bottom_placement_list_create_node
+    confidence: high
+    evidence: "Allocates and links a placement-list node and copy-constructs its stored pointer."
+  - address: "0x004C5D32"
+    name: map_bottom_placement_list_node_failure_cleanup
+    confidence: high
+    evidence: "Exception cleanup that frees a placement-list node when value construction fails."
+  - address: "0x004C5D80"
+    name: map_bottom_image_id_set_erase_range
+    confidence: high
+    evidence: "Erases a range of image-ID tree nodes, with a whole-tree fast path for begin-to-end."
+  - address: "0x004C5E60"
+    name: map_bottom_image_id_set_base_ctor
+    confidence: high
+    evidence: "Initializes the image-ID red-black tree with an empty head node and zero elements."
+  - address: "0x004C5EE0"
+    name: map_bottom_placement_list_iterator_ctor
+    confidence: high
+    evidence: "Constructs a bottom-placement list iterator from a node pointer."
+  - address: "0x004C5F00"
+    name: map_bottom_image_id_set_erase_node
+    confidence: high
+    evidence: "Unlinks one image-ID node, performs red-black deletion fixup, frees it, and decrements the count."
+  - address: "0x004C63E0"
+    name: map_bottom_image_id_set_clear_tree
+    confidence: high
+    evidence: "Frees the full image-ID tree and restores empty head links and count."
+  - address: "0x004C6440"
+    name: map_bottom_image_id_set_erase_subtree
+    confidence: high
+    evidence: "Recursively frees one bottom-image ID red-black-tree subtree."
+  - address: "0x004C64B0"
+    name: map_bottom_image_id_set_rotate_left
+    confidence: high
+    evidence: "Performs a left rotation around one image-ID tree node."
+  - address: "0x004C6560"
+    name: map_bottom_image_id_set_rotate_right
+    confidence: high
+    evidence: "Performs a right rotation around one image-ID tree node."
+  - address: "0x004C6610"
+    name: map_bottom_image_id_set_iterator_next
+    confidence: high
+    evidence: "Advances an image-ID set iterator to its in-order successor."
+  - address: "0x004C66C0"
+    name: map_bottom_placement_list_value_dtor_noop
+    confidence: high
+    evidence: "No-op destructor for the raw placement pointer stored in a list node."
+  - address: "0x004C66D0"
+    name: map_bottom_placement_list_value_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs the raw placement pointer stored in a list node."
+  - address: "0x004C6710"
+    name: map_bottom_placement_list_allocate_raw_node
+    confidence: high
+    evidence: "Allocates raw 12-byte placement-list node storage and throws std::bad_alloc on failure."
+  - address: "0x004C6780"
+    name: map_bottom_image_id_set_value_dtor_noop
+    confidence: high
+    evidence: "No-op destructor for the u16 value stored in an image-ID set node."
+  - address: "0x004C6790"
+    name: map_bottom_image_id_set_allocate_raw_node
+    confidence: high
+    evidence: "Allocates raw 16-byte image-ID tree node storage and throws std::bad_alloc on failure."
+  - address: "0x004C6800"
+    name: map_bottom_image_id_set_insert_unique
+    confidence: high
+    evidence: "Searches the ordered u16 image-ID tree and inserts only when the key is absent."
+  - address: "0x004C6A50"
+    name: map_bottom_image_id_set_iterator_ctor
+    confidence: high
+    evidence: "Constructs a bottom-image ID set iterator from a tree-node pointer."
+  - address: "0x004C6A70"
+    name: map_bottom_image_id_set_link_and_rebalance
+    confidence: high
+    evidence: "Links a new image-ID node under its parent and performs red-black insertion fixup."
+  - address: "0x004C6D50"
+    name: map_bottom_image_id_set_iterator_prev
+    confidence: high
+    evidence: "Moves a bottom-image ID set iterator to its in-order predecessor."
+  - address: "0x004C6E10"
+    name: map_bottom_image_id_set_allocate_value_node
+    confidence: high
+    evidence: "Allocates one image-ID set node and copy-constructs its u16 key."
+  - address: "0x004C6E6D"
+    name: map_bottom_image_id_set_node_failure_cleanup
+    confidence: high
+    evidence: "Exception cleanup that frees an image-ID set node whose key construction failed."
+  - address: "0x004C6EB0"
+    name: map_bottom_image_id_set_create_head_node
+    confidence: high
+    evidence: "Allocates and initializes the sentinel head node for the image-ID red-black tree."
+  - address: "0x004C6F00"
+    name: map_bottom_image_id_set_copy_key
+    confidence: high
+    evidence: "Copy-constructs the u16 key stored in one image-ID set node."
   - address: "0x004C7000"
     name: file_decode_ctf_map_tile
     confidence: high

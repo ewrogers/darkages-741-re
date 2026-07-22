@@ -46,6 +46,8 @@ The server does not send every animation frame. See [tile animation tables](../f
 
 `MapBtmLayer` supplies that optional bottom layer. When `SMapSize` selects a map, the client asks its resource manager for a six-digit `NNNNNN.mbl` entry using a fixed 0x1394-byte destination buffer. The active loader reads a placement count followed by records containing three decimal integers: a bottom-image ID, x, and y. It resolves each image as `btmNNNNN.pcx` from the SEO archive, caches repeated IDs in `MapBtmImageLib`, and expands each placement to a rectangle using the decoded image width and height.
 
+The layer keeps visible and hidden placement lists. It recomputes the expanded isometric viewport only when the camera cell changes, moves overlapping records into the visible list, and sends that list to the common background-image renderer.
+
 A separate loader understands loose `.\\maps\\lodN.mbl` text and `.\\bottom\\btmNNNNN.pcx` files, but it has no local caller in this build. The resource-manager and SEO-archive path is the one connected to map changes.
 
 ## Sprites and objects
