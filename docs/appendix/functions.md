@@ -189,6 +189,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_event_manager_scalar_deleting_dtor` | `0x00468A00` | high | Scalar deleting destructor for exact RTTI EventMan. |
 | `input_event_manager_singleton_register` | `0x00468A30` | high | Registers the complete EventMan object from its Singleton base at +0x0C. |
 | `input_event_manager_singleton_unregister` | `0x00468A70` | high | Clears the EventMan singleton when the registered complete object matches. |
+| `input_manager_ctor` | `0x0048E650` | high | Constructs exact RTTI InputMan, hides the default IME window, and acquires its input context. |
+| `input_manager_dtor` | `0x0048E7C0` | high | Closes IME input, releases its context and hidden window, and destroys InputMan state. |
+| `input_manager_swap_active_owner` | `0x0048E890` | high | Replaces the active input-owner pointer and returns the previous owner. |
+| `input_manager_post_focus_reset` | `0x0048E8C0` | high | Posts private window message 0x5E2 with wParam 0 and lParam 1 after focus changes. |
+| `input_manager_is_native_conversion` | `0x0048E8F0` | high | Tests bit one of the saved IME conversion-mode flags. |
+| `input_manager_post_private_command` | `0x0048E910` | high | Posts private window message 0x5E2 with a caller-supplied wParam and lParam zero. |
+| `input_manager_post_text_input_enabled` | `0x0048E940` | high | Posts private window message 0x5E2 with wParam 1 and lParam 2. |
+| `input_manager_post_text_input_disabled` | `0x0048E960` | high | Posts private window message 0x5E2 with wParam 0 and lParam 2. |
 | `input_translate_win32_message` | `0x0048E980` | high | Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events. |
 | `input_map_key_to_world_direction` | `0x005F0B50` | high | Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3. |
 
@@ -1409,7 +1417,26 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_human_image_control_pane_draw_content` | `0x00488E30` | high | Primary Pane slot 22 clears the control and draws the selected HumanState image. |
 | `ui_human_image_control_pane_scalar_deleting_dtor` | `0x00488EE0` | high | Destroys a HumanImageControlPane and optionally releases its allocation. |
 | `ui_human_image_control_pane_adjusted_deleting_dtor` | `0x00488F10` | high | Adjusts the TimerHandler subobject pointer before HumanImageControlPane destruction. |
+| `ui_image_pane_ctor` | `0x0048DAB0` | high | Constructs exact RTTI ImagePane with an empty pixmap record and caller-selected interaction flag. |
+| `ui_image_pane_dtor` | `0x0048DB40` | high | Releases an owned pixmap record before delegating to the Pane destructor. |
+| `ui_image_pane_set_pixmap` | `0x0048DBC0` | high | Copies a 0x34-byte pixmap record, resizes from its bounds, and records storage ownership. |
+| `ui_image_pane_create_owned_pixmap` | `0x0048DC70` | high | Creates an owned 16-bit pixel buffer and maps it into the pane's pixmap record. |
 | `ui_image_pane_draw_content` | `0x0048DD30` | high | Draws an ImagePane image into the pane's own canvas. |
+| `ui_image_pane_handle_pointer_event` | `0x0048DD70` | high | Primary Pane slot 18 consumes pointer input only when enabled and inside the pane. |
+| `ui_image_pane_handle_keyboard_event` | `0x0048DDF0` | high | Primary Pane slot 19 returns the pane's interaction-enabled flag. |
+| `ui_image_pane_scalar_deleting_dtor` | `0x0048DE10` | high | Destroys an ImagePane and optionally releases its allocation. |
+| `ui_image_pane_adjusted_deleting_dtor` | `0x0048DE40` | high | Adjusts the TimerHandler subobject pointer before ImagePane destruction. |
+| `ui_ime_candidate_pane_ctor` | `0x0048DE50` | high | Constructs exact RTTI IMECandidatePane and registers it in the root event tree. |
+| `ui_ime_candidate_pane_dtor` | `0x0048DF20` | high | Hides and unregisters the candidate pane, clears singleton state, and destroys its Pane base. |
+| `ui_ime_candidate_pane_set_anchor` | `0x0048DFB0` | high | Stores the candidate window's requested x and y anchor coordinates. |
+| `ui_ime_candidate_pane_update_layout` | `0x0048DFE0` | high | Sizes the candidate box from its rows and longest byte string and keeps it inside 640 by 480. |
+| `ui_ime_candidate_pane_draw_content` | `0x0048E160` | high | Primary Pane slot 22 draws numbered candidates and highlights the selected row. |
+| `ui_ime_candidate_pane_handle_ime_event` | `0x0048E330` | high | Primary Pane slot 21 copies event 0x10 candidate-page data and hides on event 0x11. |
+| `ui_ime_candidate_pane_set_visible` | `0x0048E4D0` | high | Adds or removes the candidate pane from the screen hierarchy while retaining event registration. |
+| `ui_ime_candidate_pane_scalar_deleting_dtor` | `0x0048E590` | high | Destroys an IMECandidatePane and optionally releases its allocation. |
+| `ui_ime_candidate_pane_register_global` | `0x0048E5C0` | high | Registers the containing IMECandidatePane as the process-global candidate pane. |
+| `ui_ime_candidate_pane_unregister_global` | `0x0048E600` | high | Clears the process-global IMECandidatePane when this instance is registered. |
+| `ui_ime_candidate_pane_adjusted_deleting_dtor` | `0x0048E640` | high | Adjusts the TimerHandler subobject pointer before candidate-pane destruction. |
 | `ui_inventory_pane_ctor` | `0x0048F7E0` | high | Constructs exact RTTI class InventoryPane_A, clears its 60 direct InvItemPane pointers, and initializes its selection state. |
 | `ui_inventory_pane_handle_network_event` | `0x004900C0` | high | InventoryPane_A and derived ItemInventoryPane route SAddInventory, SRemoveInventory, and SStatus to their local update paths. |
 | `ui_inventory_create_item` | `0x00490540` | high | Allocates a 0x248-byte RTTI InvItemPane, inserts it into one of 60 inventory slots, and passes all SAddInventory item fields to its constructor. |
@@ -2728,13 +2755,35 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_image_library_ctor` | `0x0048B2C0` | high | Constructs RTTI class ImageLib and registers its singleton; the object has no filename or decoded-frame cache fields. |
 | `render_image_library_dtor` | `0x0048B330` | high | Unregisters and destroys the ImageLib singleton without releasing a shared image cache. |
 | `render_load_main_archive_pixmap` | `0x0048BB90` | high | Resolves one requested frame synchronously through file_load_image_frame using the main archive. |
+| `render_pixmap_downsample_2x_in_place` | `0x0048BC80` | high | Keeps every other source row and column in place and halves the pixmap stride and bounds. |
 | `render_human_image_library_ctor` | `0x0048BD90` | high | Constructs RTTI class HumanImageLib and registers its singleton. |
 | `render_human_image_library_dtor` | `0x0048BE00` | high | Releases the human image library's retained supporting data and unregisters its singleton. |
+| `render_draw_human_image` | `0x0048BED0` | high | Public composed-human draw entry that forwards through the shared HumanImageLib context. |
+| `render_human_image_noop_widening_thunk` | `0x0048BF20` | high | Zero-extends narrow arguments and forwards to the unused human-image no-op. |
+| `render_draw_human_image_impl` | `0x0048BF60` | high | Loads, positions, palette-remaps, and draws up to 23 human parts in direction-specific order. |
+| `render_human_image_noop` | `0x0048C850` | high | Unused human-image compatibility entry that accepts seven arguments and performs no work. |
+| `render_draw_human_riding_image` | `0x0048C860` | high | Loads and draws one m_r_###.spf or w_r_###.spf riding preview instead of composing body parts. |
+| `render_load_human_part_pixmap` | `0x0048CB30` | high | Builds a part filename from HumanState, loads its frame and position table, and resolves its palette. |
 | `render_monster_image_library_ctor` | `0x0048D010` | high | Constructs RTTI class MonsterImageLib and registers its singleton. |
 | `render_monster_image_library_dtor` | `0x0048D080` | high | Unregisters and destroys the MonsterImageLib singleton. |
+| `render_load_monster_mpf_frame` | `0x0048D0E0` | high | Opens mns###.mpf from the Hades archive and maps one motion and direction frame. |
 | `render_icon_image_library_ctor` | `0x0048D590` | high | Constructs RTTI class IconImageLib and registers its singleton. |
 | `render_icon_image_library_dtor` | `0x0048D610` | high | Unregisters and destroys the IconImageLib singleton. |
 | `render_icon_load_pixmap` | `0x0048D670` | high | Derives an icon resource and frame from the icon kind and ID, builds a caller-owned pixmap view, and attaches the resolved palette selector. |
+| `render_image_library_scalar_deleting_dtor` | `0x0048D7C0` | high | Destroys an ImageLib and optionally releases its allocation. |
+| `render_human_image_library_scalar_deleting_dtor` | `0x0048D7F0` | high | Destroys a HumanImageLib and optionally releases its allocation. |
+| `render_monster_image_library_scalar_deleting_dtor` | `0x0048D820` | high | Destroys a MonsterImageLib and optionally releases its allocation. |
+| `render_icon_image_library_scalar_deleting_dtor` | `0x0048D850` | high | Destroys an IconImageLib and optionally releases its allocation. |
+| `render_human_tile_attr_list_is_registered` | `0x0048D880` | high | Reports whether the HumanTileAttrList singleton exists. |
+| `render_get_human_tile_attr_list` | `0x0048D8A0` | high | Returns the registered HumanTileAttrList singleton. |
+| `render_image_library_register_global` | `0x0048D8B0` | high | Registers the containing ImageLib as the process-global image library. |
+| `render_image_library_unregister_global` | `0x0048D8F0` | high | Clears the process-global ImageLib when this instance is registered. |
+| `render_human_image_library_register_global` | `0x0048D930` | high | Registers the containing HumanImageLib as the process-global human image library. |
+| `render_human_image_library_unregister_global` | `0x0048D970` | high | Clears the process-global HumanImageLib when this instance is registered. |
+| `render_monster_image_library_register_global` | `0x0048D9B0` | high | Registers the containing MonsterImageLib as the process-global monster image library. |
+| `render_monster_image_library_unregister_global` | `0x0048D9F0` | high | Clears the process-global MonsterImageLib when this instance is registered. |
+| `render_icon_image_library_register_global` | `0x0048DA30` | high | Registers the containing IconImageLib as the process-global icon image library. |
+| `render_icon_image_library_unregister_global` | `0x0048DA70` | high | Clears the process-global IconImageLib when this instance is registered. |
 | `render_get_map_tile_library` | `0x004AE4E0` | high | Returns the MapTileImageLib singleton. |
 | `render_get_monster_image_library` | `0x004AE880` | high | Returns the RTTI-backed MonsterImageLib singleton. |
 | `render_map_background_images` | `0x004C5270` | high | Draws configured map background or bottom-layer images before world objects. |

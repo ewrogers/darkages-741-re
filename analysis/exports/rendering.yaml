@@ -1863,10 +1863,130 @@ functions:
     name: file_load_image_frame
     confidence: high
     evidence: Loads one EPF or SPF frame for the shared image library.
+  - address: "0x0048BC80"
+    name: render_pixmap_downsample_2x_in_place
+    confidence: high
+    evidence: "Keeps every other source row and column in place and halves the pixmap stride and bounds."
+  - address: "0x0048BED0"
+    name: render_draw_human_image
+    confidence: high
+    evidence: "Public composed-human draw entry that forwards through the shared HumanImageLib context."
+  - address: "0x0048BF20"
+    name: render_human_image_noop_widening_thunk
+    confidence: high
+    evidence: "Zero-extends narrow arguments and forwards to the unused human-image no-op."
+  - address: "0x0048BF60"
+    name: render_draw_human_image_impl
+    confidence: high
+    evidence: "Loads, positions, palette-remaps, and draws up to 23 human parts in direction-specific order."
+  - address: "0x0048C850"
+    name: render_human_image_noop
+    confidence: high
+    evidence: "Unused human-image compatibility entry that accepts seven arguments and performs no work."
+  - address: "0x0048C860"
+    name: render_draw_human_riding_image
+    confidence: high
+    evidence: "Loads and draws one m_r_###.spf or w_r_###.spf riding preview instead of composing body parts."
+  - address: "0x0048CB30"
+    name: render_load_human_part_pixmap
+    confidence: high
+    evidence: "Builds a part filename from HumanState, loads its frame and position table, and resolves its palette."
+  - address: "0x0048D0E0"
+    name: render_load_monster_mpf_frame
+    confidence: high
+    evidence: "Opens mns###.mpf from the Hades archive and maps one motion and direction frame."
+  - address: "0x0048D7C0"
+    name: render_image_library_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an ImageLib and optionally releases its allocation."
+  - address: "0x0048D7F0"
+    name: render_human_image_library_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a HumanImageLib and optionally releases its allocation."
+  - address: "0x0048D820"
+    name: render_monster_image_library_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a MonsterImageLib and optionally releases its allocation."
+  - address: "0x0048D850"
+    name: render_icon_image_library_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an IconImageLib and optionally releases its allocation."
+  - address: "0x0048D880"
+    name: render_human_tile_attr_list_is_registered
+    confidence: high
+    evidence: "Reports whether the HumanTileAttrList singleton exists."
+  - address: "0x0048D8A0"
+    name: render_get_human_tile_attr_list
+    confidence: high
+    evidence: "Returns the registered HumanTileAttrList singleton."
+  - address: "0x0048D8B0"
+    name: render_image_library_register_global
+    confidence: high
+    evidence: "Registers the containing ImageLib as the process-global image library."
+  - address: "0x0048D8F0"
+    name: render_image_library_unregister_global
+    confidence: high
+    evidence: "Clears the process-global ImageLib when this instance is registered."
+  - address: "0x0048D930"
+    name: render_human_image_library_register_global
+    confidence: high
+    evidence: "Registers the containing HumanImageLib as the process-global human image library."
+  - address: "0x0048D970"
+    name: render_human_image_library_unregister_global
+    confidence: high
+    evidence: "Clears the process-global HumanImageLib when this instance is registered."
+  - address: "0x0048D9B0"
+    name: render_monster_image_library_register_global
+    confidence: high
+    evidence: "Registers the containing MonsterImageLib as the process-global monster image library."
+  - address: "0x0048D9F0"
+    name: render_monster_image_library_unregister_global
+    confidence: high
+    evidence: "Clears the process-global MonsterImageLib when this instance is registered."
+  - address: "0x0048DA30"
+    name: render_icon_image_library_register_global
+    confidence: high
+    evidence: "Registers the containing IconImageLib as the process-global icon image library."
+  - address: "0x0048DA70"
+    name: render_icon_image_library_unregister_global
+    confidence: high
+    evidence: "Clears the process-global IconImageLib when this instance is registered."
+  - address: "0x0048DAB0"
+    name: ui_image_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ImagePane with an empty pixmap record and caller-selected interaction flag."
+  - address: "0x0048DB40"
+    name: ui_image_pane_dtor
+    confidence: high
+    evidence: "Releases an owned pixmap record before delegating to the Pane destructor."
+  - address: "0x0048DBC0"
+    name: ui_image_pane_set_pixmap
+    confidence: high
+    evidence: "Copies a 0x34-byte pixmap record, resizes from its bounds, and records storage ownership."
+  - address: "0x0048DC70"
+    name: ui_image_pane_create_owned_pixmap
+    confidence: high
+    evidence: "Creates an owned 16-bit pixel buffer and maps it into the pane's pixmap record."
   - address: "0x0048DD30"
     name: ui_image_pane_draw_content
     confidence: high
     evidence: Draws an ImagePane image into the pane's own canvas.
+  - address: "0x0048DD70"
+    name: ui_image_pane_handle_pointer_event
+    confidence: high
+    evidence: "Primary Pane slot 18 consumes pointer input only when enabled and inside the pane."
+  - address: "0x0048DDF0"
+    name: ui_image_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Primary Pane slot 19 returns the pane's interaction-enabled flag."
+  - address: "0x0048DE10"
+    name: ui_image_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an ImagePane and optionally releases its allocation."
+  - address: "0x0048DE40"
+    name: ui_image_pane_adjusted_deleting_dtor
+    confidence: high
+    evidence: "Adjusts the TimerHandler subobject pointer before ImagePane destruction."
   - address: "0x004A49B0"
     name: app_language_mode_from_distribution
     confidence: high

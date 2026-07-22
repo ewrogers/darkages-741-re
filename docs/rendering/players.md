@@ -156,4 +156,8 @@ render_living_object draws the composite into WorldPane
 
 Standing motion initializes all 21 resources. A motion update builds the current frame descriptors, caches the selected layers, and advances the animation. The final living-object draw applies the object's normal, highlighted, or translucent world blend to the completed composite.
 
+The shared compositor can load and order as many as 23 part categories. For each active category it builds the asset filename from `HumanState`, reads the selected frame, applies the optional companion position table, resolves a palette, and then draws in direction-specific back-to-front order. Composed results can be retained by `HumanImageCache` for later draws.
+
+Riding previews use a separate path. They select `m_r_###.spf` or `w_r_###.spf`, choose the direction-dependent frame, and draw that single sprite instead of assembling the normal body parts.
+
 This separation is useful for another renderer: first reproduce the appearance record and per-part asset lookup, then reproduce direction grouping and part order, and only then place the completed aisling at its world position.

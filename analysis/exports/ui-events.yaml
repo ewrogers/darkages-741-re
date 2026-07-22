@@ -1259,6 +1259,82 @@ functions:
     name: hier_list_scalar_deleting_dtor
     confidence: high
     evidence: "Destroys a HierList and optionally releases its allocation."
+  - address: "0x0048DE50"
+    name: ui_ime_candidate_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI IMECandidatePane and registers it in the root event tree."
+  - address: "0x0048DF20"
+    name: ui_ime_candidate_pane_dtor
+    confidence: high
+    evidence: "Hides and unregisters the candidate pane, clears singleton state, and destroys its Pane base."
+  - address: "0x0048DFB0"
+    name: ui_ime_candidate_pane_set_anchor
+    confidence: high
+    evidence: "Stores the candidate window's requested x and y anchor coordinates."
+  - address: "0x0048DFE0"
+    name: ui_ime_candidate_pane_update_layout
+    confidence: high
+    evidence: "Sizes the candidate box from its rows and longest byte string and keeps it inside 640 by 480."
+  - address: "0x0048E160"
+    name: ui_ime_candidate_pane_draw_content
+    confidence: high
+    evidence: "Primary Pane slot 22 draws numbered candidates and highlights the selected row."
+  - address: "0x0048E330"
+    name: ui_ime_candidate_pane_handle_ime_event
+    confidence: high
+    evidence: "Primary Pane slot 21 copies event 0x10 candidate-page data and hides on event 0x11."
+  - address: "0x0048E4D0"
+    name: ui_ime_candidate_pane_set_visible
+    confidence: high
+    evidence: "Adds or removes the candidate pane from the screen hierarchy while retaining event registration."
+  - address: "0x0048E590"
+    name: ui_ime_candidate_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an IMECandidatePane and optionally releases its allocation."
+  - address: "0x0048E5C0"
+    name: ui_ime_candidate_pane_register_global
+    confidence: high
+    evidence: "Registers the containing IMECandidatePane as the process-global candidate pane."
+  - address: "0x0048E600"
+    name: ui_ime_candidate_pane_unregister_global
+    confidence: high
+    evidence: "Clears the process-global IMECandidatePane when this instance is registered."
+  - address: "0x0048E640"
+    name: ui_ime_candidate_pane_adjusted_deleting_dtor
+    confidence: high
+    evidence: "Adjusts the TimerHandler subobject pointer before candidate-pane destruction."
+  - address: "0x0048E650"
+    name: input_manager_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI InputMan, hides the default IME window, and acquires its input context."
+  - address: "0x0048E7C0"
+    name: input_manager_dtor
+    confidence: high
+    evidence: "Closes IME input, releases its context and hidden window, and destroys InputMan state."
+  - address: "0x0048E890"
+    name: input_manager_swap_active_owner
+    confidence: high
+    evidence: "Replaces the active input-owner pointer and returns the previous owner."
+  - address: "0x0048E8C0"
+    name: input_manager_post_focus_reset
+    confidence: high
+    evidence: "Posts private window message 0x5E2 with wParam 0 and lParam 1 after focus changes."
+  - address: "0x0048E8F0"
+    name: input_manager_is_native_conversion
+    confidence: high
+    evidence: "Tests bit one of the saved IME conversion-mode flags."
+  - address: "0x0048E910"
+    name: input_manager_post_private_command
+    confidence: high
+    evidence: "Posts private window message 0x5E2 with a caller-supplied wParam and lParam zero."
+  - address: "0x0048E940"
+    name: input_manager_post_text_input_enabled
+    confidence: high
+    evidence: "Posts private window message 0x5E2 with wParam 1 and lParam 2."
+  - address: "0x0048E960"
+    name: input_manager_post_text_input_disabled
+    confidence: high
+    evidence: "Posts private window message 0x5E2 with wParam 0 and lParam 2."
   - address: "0x0048E980"
     name: input_translate_win32_message
     confidence: high
