@@ -7,6 +7,14 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x00415C70"
+    name: com_auto_init_ctor
+    confidence: high
+    evidence: "Constructs the compiler-generated AutoInit helper and calls OleInitialize for the current thread."
+  - address: "0x00415C90"
+    name: com_auto_init_dtor
+    confidence: high
+    evidence: "Runs OleUninitialize from the compiler-generated AutoInit destructor."
   - address: "0x0042DFF0"
     end_address: "0x0042E16C"
     name: ui_intro_video_pane_ctor

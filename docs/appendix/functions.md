@@ -171,6 +171,29 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_animation_pane_draw_content` | `0x004048F0` | high | Loads the current image frame and blits it into the AnimationPane canvas when initialized and in range. |
 | `ui_animation_pane_scalar_deleting_dtor` | `0x004049D0` | high | Runs the Pane base destructor for AnimationPane and conditionally frees the complete object. |
 | `ui_animation_pane_timer_deleting_dtor_thunk` | `0x00404A10` | high | Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the AnimationPane scalar deleting destructor. |
+| `ui_background_story_pane_ctor` | `0x00414720` | high | Constructs exact RTTI BkStoryPane as a full-screen Pane, registers it, starts a 150 ms timer, and hides the cursor. |
+| `ui_background_story_pane_dtor` | `0x00414860` | high | Restores both BkStoryPane vtables and runs the Pane base destructor. |
+| `ui_background_story_pane_handle_pointer_event` | `0x00414890` | high | Consumes pointer events and advances the story on event subtype 3 while a page is active. |
+| `ui_background_story_pane_handle_keyboard_event` | `0x004149A0` | high | Consumes keyboard events; Enter and Space advance the story and Escape closes the pane. |
+| `ui_background_story_pane_draw_content` | `0x00414AE0` | high | Primary-vtable content hook at slot +0x5C that draws the active story stage until stage 7. |
+| `ui_background_story_pane_close` | `0x00414B10` | high | Restores the palette and cursor, unregisters BkStoryPane, and destroys it through the normal pane path. |
+| `ui_background_story_pane_draw_page` | `0x00414BC0` | high | Loads the stage-specific background palette and EPF, draws the page, and renders the currently revealed story lines. |
+| `ui_background_story_pane_draw_story_line` | `0x00414E60` | high | Selects text color and position, then draws one buffered background-story line to the pane canvas. |
+| `ui_background_story_pane_timer_callback` | `0x00414ED0` | high | Advances the visible story-line count, invalidates the pane, and requeues timer ID 0 after 150 ms. |
+| `ui_background_story_pane_read_next_page` | `0x00414F60` | high | Reads the current story1.tbl through story7.tbl stream into fixed line buffers and returns page or stage termination state. |
+| `ui_staff_pane_ctor` | `0x004151D0` | high | Constructs exact RTTI StaffPane, registers it full-screen, starts a 20 ms timer, loads staff text, hides the cursor, and loads staff.epf. |
+| `ui_staff_pane_dtor` | `0x00415320` | high | Restores both StaffPane vtables and runs the Pane base destructor. |
+| `ui_staff_pane_handle_pointer_event` | `0x00415350` | high | Consumes pointer events and closes StaffPane on event subtype 3. |
+| `ui_staff_pane_handle_keyboard_event` | `0x004153A0` | high | Consumes keyboard events and closes StaffPane when Escape is pressed. |
+| `ui_staff_pane_draw_content` | `0x004153F0` | high | Primary-vtable content hook at slot +0x5C that draws staff.epf and the currently scrolling staff lines. |
+| `ui_staff_pane_close` | `0x004154C0` | high | Restores the palette and cursor, unregisters StaffPane, and queues it through the BlackHole deferred-deletion owner. |
+| `ui_staff_pane_draw_line` | `0x00415530` | high | Selects text color and scroll-relative position, then draws one buffered staff line. |
+| `ui_staff_pane_timer_callback` | `0x004155C0` | high | Advances the 20 ms staff animation and closes the pane when the loaded frame count is reached. |
+| `ui_staff_pane_load_text` | `0x00415680` | high | Reads DBCS-aware lines from staff.tbl in the archive into fixed 40-byte pane buffers. |
+| `ui_background_story_pane_scalar_deleting_dtor` | `0x00415890` | high | Runs the BkStoryPane destructor and conditionally frees the complete object. |
+| `ui_staff_pane_scalar_deleting_dtor` | `0x004158C0` | high | Runs the StaffPane destructor and conditionally frees the complete object. |
+| `ui_staff_pane_timer_deleting_dtor_thunk` | `0x004158F0` | high | Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the StaffPane scalar deleting destructor. |
+| `ui_background_story_pane_timer_deleting_dtor_thunk` | `0x00415900` | high | Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the BkStoryPane scalar deleting destructor. |
 | `ui_browser_dialog_ctor` | `0x00415CB0` | high | Constructs exact RTTI BrowserDialogPane with an embedded BrowserControlPane; when no response or initial URL is supplied, sends CWebBoard action 0. |
 | `ui_browser_dialog_apply_web_board` | `0x004165A0` | high | Accepts SWebBoard actions 0 and 1, installs domain and boardinfo WinINet cookies, sets the embedded browser base URL, and navigates to start_url. |
 | `ui_browser_dialog_handle_network_event` | `0x00416A50` | high | BrowserDialogPane's network-event handler dispatches exact RTTI SWebBoard opcode 0x62 to its cookie and navigation path. |
@@ -1234,11 +1257,71 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_blit_indexed_opaque` | `0x004065B0` | high | Maps every indexed source pixel through a 16-bit palette and copies it with all four horizontal and vertical flip combinations. |
 | `render_blit_indexed_zero_transparent` | `0x00406900` | high | Copies indexed pixels through a local palette whose index 0 entry is forced to pixel value zero, with both-axis flipping. |
 | `render_blit_indexed_transparent` | `0x00406D70` | high | Maps nonzero indexed pixels through a 16-bit palette while preserving destination pixels where the source index is zero. |
+| `render_blit_16bit_opaque` | `0x00407490` | high | Copies packed 16-bit pixels with all four horizontal and vertical flip combinations. |
+| `render_blit_16bit_inverted` | `0x00407700` | high | Copies packed 16-bit pixels after complementing every source pixel, with both-axis flipping. |
+| `render_blit_16bit_transparent` | `0x00407A30` | high | Copies nonzero packed 16-bit source pixels and preserves the destination where the source is zero. |
+| `render_blit_16bit_color_key` | `0x00407DB0` | high | Copies packed 16-bit pixels except those equal to a caller-supplied color key. |
+| `render_blit_16bit_average_transparent` | `0x00408140` | high | Averages each nonzero source pixel with the destination through packed half-color and carry tables. |
+| `render_blit_luminance_palette_rgb565` | `0x00408610` | high | Maps every RGB565 source pixel's luminance through one of four 32-entry color ramps. |
+| `render_blit_luminance_palette_rgb555` | `0x00408980` | high | Maps every RGB555 source pixel's luminance through one of four 32-entry color ramps. |
+| `render_blit_16bit_luminance_palette` | `0x00408CF0` | high | Dispatches luminance-ramp drawing to the optimized, RGB565, or RGB555 implementation. |
+| `render_blit_luminance_palette_color_key_rgb565` | `0x00408DC0` | high | Maps non-key RGB565 source pixels through a selected luminance color ramp. |
+| `render_blit_luminance_palette_color_key_rgb555` | `0x00409190` | high | Maps non-key RGB555 source pixels through a selected luminance color ramp. |
+| `render_blit_16bit_luminance_palette_transparent` | `0x00409560` | high | Dispatches color-keyed luminance-ramp drawing to the optimized or selected 16-bit format implementation. |
+| `render_blit_color_blend_rgb565` | `0x00409640` | high | Blends each RGB565 source pixel toward one packed color by a uniform 0..32 weight. |
+| `render_blit_color_blend_rgb555` | `0x004099D0` | high | Blends each RGB555 source pixel toward one packed color by a uniform 0..32 weight. |
+| `render_blit_16bit_color_blend` | `0x00409D60` | high | Dispatches uniform source-to-color blending to the optimized, RGB565, or RGB555 implementation. |
+| `render_blit_color_blend_color_key_rgb565` | `0x00409E40` | high | Blends non-key RGB565 source pixels toward one packed color by a uniform weight. |
+| `render_blit_color_blend_color_key_rgb555` | `0x0040A220` | high | Blends non-key RGB555 source pixels toward one packed color by a uniform weight. |
+| `render_blit_16bit_color_blend_transparent` | `0x0040A600` | high | Dispatches color-keyed source-to-color blending to the optimized or selected 16-bit format implementation. |
+| `render_blit_color_blend_alpha_plane_rgb565` | `0x0040A6F0` | high | Uses a second plane as per-pixel weights while blending RGB565 source pixels toward one color. |
+| `render_blit_color_blend_alpha_plane_rgb555` | `0x0040AB00` | high | Uses a second plane as per-pixel weights while blending RGB555 source pixels toward one color. |
+| `render_blit_16bit_color_blend_alpha_plane` | `0x0040AF10` | high | Dispatches source-to-color blending controlled by a per-pixel alpha plane. |
+| `render_blit_alpha_rgb565` | `0x0040AFF0` | high | Blends every RGB565 source pixel over the destination with one uniform 0..32 weight. |
+| `render_blit_alpha_rgb555` | `0x0040B3A0` | high | Blends every RGB555 source pixel over the destination with one uniform 0..32 weight. |
+| `render_blit_16bit_alpha` | `0x0040B750` | high | Dispatches uniform source-over-destination alpha blending. |
+| `render_blit_alpha_color_key_rgb565` | `0x0040B820` | high | Blends non-key RGB565 source pixels over the destination with one uniform weight. |
+| `render_blit_alpha_color_key_rgb555` | `0x0040BC20` | high | Blends non-key RGB555 source pixels over the destination with one uniform weight. |
+| `render_blit_16bit_alpha_color_key` | `0x0040C020` | high | Dispatches color-keyed uniform source-over-destination alpha blending. |
+| `render_blit_alpha_plane_rgb565` | `0x0040C100` | high | Blends RGB565 source pixels over the destination using a second source plane as per-pixel weights. |
+| `render_blit_alpha_plane_rgb555` | `0x0040C520` | high | Blends RGB555 source pixels over the destination using a second source plane as per-pixel weights. |
+| `render_blit_16bit_alpha_plane` | `0x0040C940` | high | Dispatches source-over-destination blending controlled by a per-pixel alpha plane. |
 | `render_blit_screen_rgb565` | `0x0040CD00` | high | Applies blend mode 0x6D to an RGB565 destination. |
 | `render_blit_screen_rgb555` | `0x0040D0D0` | high | Applies blend mode 0x6D to an RGB555 destination. |
 | `render_blit_screen_mode` | `0x0040D4A0` | high | Selects the RGB565 or RGB555 screen-style blend used by static render flag 0x80. |
+| `render_blit_screen_alpha_plane_rgb565` | `0x0040D560` | high | Applies a screen-style RGB565 composite using a second RGB555-formatted per-component alpha plane. |
+| `render_blit_screen_alpha_plane_rgb555` | `0x0040D980` | high | Applies a screen-style RGB555 composite using a second per-component alpha plane. |
+| `render_blit_16bit_screen_alpha_plane` | `0x0040DDA0` | high | Dispatches the screen-style composite controlled by a per-component alpha plane. |
+| `render_blit_additive_rgb565` | `0x0040DE70` | high | Adds RGB565 source and destination components independently and clamps each to its format maximum. |
+| `render_blit_additive_rgb555` | `0x0040E200` | high | Adds RGB555 source and destination components independently and clamps each to 31. |
+| `render_blit_16bit_additive` | `0x0040E590` | high | Dispatches saturating additive blending to the optimized, RGB565, or RGB555 implementation. |
+| `render_blit_relative_rle_alpha` | `0x0040E650` | high | Draws through row alpha streams located by relative offsets in one packed RLE alpha blob. |
+| `render_blit_pointer_rle_alpha` | `0x0040E6B0` | high | Draws through row alpha streams reached through an absolute-pointer row table. |
+| `render_blit_rle_alpha_color_key` | `0x0040E710` | high | Draws through RLE alpha rows while preserving destination pixels that match the source color key. |
+| `render_blit_dual_rle_alpha_color_key` | `0x0040E770` | high | Combines two RLE alpha streams while excluding source pixels equal to the supplied color key. |
+| `render_blit_rle_alpha_color_key_opacity` | `0x0040E7F0` | high | Combines an RLE alpha stream with a global opacity and a source color key. |
+| `render_blend_rgb565_with_color` | `0x0040E860` | high | Linearly blends one RGB565 pixel toward another packed color with a 0..32 weight. |
+| `render_blend_rgb555_with_color` | `0x0040E900` | high | Linearly blends one RGB555 pixel toward another packed color with a 0..32 weight. |
+| `render_screen_pixel_rgb565_with_rgb555_alpha` | `0x0040E9A0` | high | Composites one RGB565 source over a destination using independent five-bit alpha components from an RGB555-formatted plane. |
 | `render_screen_pixel_rgb555` | `0x0040EAE0` | high | Combines one RGB555 source and destination pixel with the screen-style component formula. |
 | `render_screen_pixel_rgb565` | `0x0040EC20` | high | Combines one RGB565 source and destination pixel with the screen-style component formula. |
+| `render_add_pixels_rgb565_saturating` | `0x0040ED60` | high | Adds two RGB565 pixels component by component and clamps red and blue to 31 and green to 63. |
+| `render_add_pixels_rgb555_saturating` | `0x0040EE10` | high | Adds two RGB555 pixels component by component and clamps every component to 31. |
+| `render_blit_relative_rle_alpha_mmx` | `0x0040EF60` | high | MMX implementation of packed relative-offset RLE alpha drawing. |
+| `render_blit_alpha_plane_mmx` | `0x0040FBE0` | high | MMX implementation of source-over-destination blending controlled by an alpha plane. |
+| `render_blit_screen_alpha_plane_mmx` | `0x00410920` | high | MMX implementation of the screen-style composite controlled by a per-component alpha plane. |
+| `render_blit_alpha_mmx` | `0x004109A0` | high | MMX implementation of uniform source-over-destination alpha blending. |
+| `render_blit_alpha_color_key_mmx` | `0x00410BD0` | high | MMX implementation of color-keyed uniform source-over-destination alpha blending. |
+| `render_blit_color_blend_alpha_plane_mmx` | `0x00410E50` | high | MMX implementation of source-to-color blending controlled by a per-pixel alpha plane. |
+| `render_blit_color_blend_mmx` | `0x004110C0` | high | MMX implementation of uniform source-to-color blending. |
+| `render_blit_color_blend_color_key_mmx` | `0x00411310` | high | MMX implementation of color-keyed source-to-color blending. |
+| `render_blit_additive_mmx` | `0x00411950` | high | MMX implementation of saturating additive packed-pixel blending. |
+| `render_blit_pointer_rle_alpha_mmx` | `0x004119C0` | high | MMX implementation of absolute-pointer-table RLE alpha drawing. |
+| `render_blit_rle_alpha_color_key_mmx` | `0x00411DC0` | high | MMX implementation of color-keyed RLE alpha drawing. |
+| `render_blit_rle_alpha_color_key_opacity_mmx` | `0x004121E0` | high | MMX implementation combining RLE alpha, a source color key, and global opacity. |
+| `render_blit_dual_rle_alpha_color_key_mmx` | `0x00412660` | high | MMX implementation combining two RLE alpha streams with source color-key exclusion. |
+| `render_blit_luminance_palette_mmx` | `0x00413B80` | high | MMX implementation of luminance-ramp color mapping. |
+| `render_blit_luminance_palette_color_key_mmx` | `0x00414630` | high | MMX implementation of color-keyed luminance-ramp mapping. |
 | `render_bink_open_clip` | `0x0042E2D0` | high | Calls BinkOpen, configures playback, and registers the frame timer. |
 | `render_bink_present_frame` | `0x0042E440` | high | Uses BinkWait, BinkDoFrame, BinkCopyToBuffer, and BinkNextFrame. |
 | `render_get_video_system` | `0x0042E7E0` | high | Returns the VideoSystem singleton. |
@@ -1284,6 +1367,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_font_load_legacy_english_fnt` | `0x0047BED0` | high | Dormant loader that places engNN.fnt at printable-ASCII index 0x21 in a 256-record table. |
 | `render_font_load_legacy_hangul_fnt` | `0x0047BFB0` | high | Dormant loader that copies the selected 57,624-byte hanNN.fnt entry. |
 | `render_font_map_legacy_hangul_code` | `0x0047C150` | high | Maps CP949 B0A1-C8FE syllables and A4A1-A4D3 jamo to the 2,401 fixed Hangul records. |
+| `render_map_rgb565_luminance_palette` | `0x00481980` | high | Computes five-bit luminance from RGB565 and resolves it through one of four 32-entry packed-color ramps. |
+| `render_map_rgb555_luminance_palette` | `0x00481A10` | high | Computes five-bit luminance from RGB555 and resolves it through one of four 32-entry packed-color ramps. |
 | `render_image_library_ctor` | `0x0048B2C0` | high | Constructs RTTI class ImageLib and registers its singleton; the object has no filename or decoded-frame cache fields. |
 | `render_image_library_dtor` | `0x0048B330` | high | Unregisters and destroys the ImageLib singleton without releasing a shared image cache. |
 | `render_load_main_archive_pixmap` | `0x0048BB90` | high | Resolves one requested frame synchronously through file_load_image_frame using the main archive. |
@@ -1635,6 +1720,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `std_bad_alloc_dtor` | `0x00405630` | high | Restores the std::bad_alloc vtable and runs the std::exception base destructor. |
 | `std_bad_alloc_scalar_deleting_dtor` | `0x00405650` | high | Runs the std::bad_alloc destructor and conditionally frees the complete exception object. |
 | `std_bad_alloc_copy_ctor` | `0x00405690` | high | Copy-constructs std::bad_alloc through its std::exception base and installs the derived vtable. |
+| `black_hole_ctor` | `0x00415910` | high | Constructs exact RTTI BlackHole as an LObject with an empty dynamically grown pointer array. |
+| `black_hole_dtor` | `0x00415950` | high | Frees the BlackHole pointer array and runs the LObject base destructor. |
+| `black_hole_queue_object` | `0x00415990` | high | Appends one object to BlackHole and clears its Concurrency task stack before deferred destruction. |
+| `black_hole_queue_pane` | `0x004159C0` | high | Detaches a Pane, queues its TimerHandler secondary-base pointer in BlackHole, and clears pending tasks. |
+| `black_hole_destroy_object` | `0x00415A20` | high | Detaches and immediately destroys one queued-compatible object through its deleting destructor. |
+| `black_hole_destroy_queued_objects` | `0x00415A70` | high | Runs the deleting destructor for every nonnull BlackHole entry and resets the queued count. |
+| `black_hole_append` | `0x00415B00` | high | Reserves capacity, appends one pointer, and increments the BlackHole queue count. |
+| `black_hole_reserve` | `0x00415B40` | high | Grows the BlackHole pointer array in 1024-entry chunks while preserving existing entries. |
+| `black_hole_scalar_deleting_dtor` | `0x00415C40` | high | Runs the BlackHole destructor and conditionally frees the complete object. |
+| `com_auto_init_ctor` | `0x00415C70` | high | Constructs the compiler-generated AutoInit helper and calls OleInitialize for the current thread. |
+| `com_auto_init_dtor` | `0x00415C90` | high | Runs OleUninitialize from the compiler-generated AutoInit destructor. |
 | `metadata_denied_item_list_ctor` | `0x004407C0` | high | Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription. |
 | `metadata_denied_item_list_subscribe` | `0x00440AA0` | high | Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable. |
 | `metadata_denied_item_list_apply_table` | `0x00440B20` | high | Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers. |

@@ -53,6 +53,18 @@ Its indexed-image entry points make the transparency rule explicit:
 
 All three accept horizontal and vertical flip flags. The ordinary loops handle all four combinations directly; optimized paths encode the flags in a shared byte before drawing.
 
+### Alpha sources
+
+The 16-bit dispatch supports three alpha sources:
+
+- one uniform `0..32` weight for the whole draw
+- a second pixel plane containing per-pixel weights
+- row-based run-length alpha streams
+
+An RLE alpha token stores its repeat count in the high byte and its alpha value in the low byte. One image representation locates each row by an offset relative to the packed alpha blob; another stores absolute row pointers. Variants can also apply a source color key, a global opacity, or two alpha streams.
+
+Separate entry points implement luminance-ramp recoloring, screen-style per-component composition, and saturating additive blending. The dispatcher selects paired RGB565 or RGB555 scalar loops, or an MMX implementation when the optimized path is active.
+
 ## Why DirectDraw is not doing the blend
 
 The sprite loops read source pixels, test transparency, combine color components, and write the destination canvas directly. DirectDraw receives the completed canvas later. This means normal sprites and alpha effects behave the same across the DirectDraw and window DC presentation paths.

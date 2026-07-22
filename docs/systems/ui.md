@@ -81,6 +81,16 @@ When a screen behaves strangely, check each state instead of treating "shown" as
 
 Hidden panes are skipped for pointer and keyboard input. If they remain registered, application and network events can still reach them. Hiding a pane also releases mouse capture when that pane owns it.
 
+## Full-screen story panes
+
+Two early full-screen panes combine archive text, art, input, and timers without using a dialog layout.
+
+Exact RTTI `BkStoryPane` reads `story1.tbl` through `story7.tbl`, pairs each stage with `bkstory1.epf` through `bkstory7.epf` and `backpal1.pal` through `backpal7.pal`, and reveals the buffered lines on a 150 ms timer. Enter, Space, or a pointer release advances the page. Escape closes it.
+
+Exact RTTI `StaffPane` loads `staff.tbl` and `staff.epf`, scrolls the visible lines and art on a 20 ms timer, and closes when the loaded frame count is reached. A pointer release or Escape also closes it.
+
+Both panes register against the root screen and event trees, hide the Windows cursor while active, and restore the cursor and `legend01.pal` when closing. `StaffPane` uses the exact RTTI `BlackHole` owner for deferred deletion after it has detached from events and timers. This keeps stale queued callbacks from targeting an already freed pane.
+
 ## Drawing hooks
 
 The pane tree also controls drawing. `render_screen_subtree` clips a visible pane, calls its draw-to-target virtual method, and then walks its children.

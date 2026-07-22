@@ -91,8 +91,46 @@ functions:
     name: std_bad_alloc_copy_ctor
     confidence: high
     evidence: "Copy-constructs std::bad_alloc through its std::exception base and installs the derived vtable."
+  - address: "0x00415910"
+    name: black_hole_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI BlackHole as an LObject with an empty dynamically grown pointer array."
+  - address: "0x00415950"
+    name: black_hole_dtor
+    confidence: high
+    evidence: "Frees the BlackHole pointer array and runs the LObject base destructor."
+  - address: "0x00415990"
+    name: black_hole_queue_object
+    confidence: high
+    evidence: "Appends one object to BlackHole and clears its Concurrency task stack before deferred destruction."
+  - address: "0x004159C0"
+    name: black_hole_queue_pane
+    confidence: high
+    evidence: "Detaches a Pane, queues its TimerHandler secondary-base pointer in BlackHole, and clears pending tasks."
+  - address: "0x00415A20"
+    name: black_hole_destroy_object
+    confidence: high
+    evidence: "Detaches and immediately destroys one queued-compatible object through its deleting destructor."
+  - address: "0x00415A70"
+    name: black_hole_destroy_queued_objects
+    confidence: high
+    evidence: "Runs the deleting destructor for every nonnull BlackHole entry and resets the queued count."
+  - address: "0x00415B00"
+    name: black_hole_append
+    confidence: high
+    evidence: "Reserves capacity, appends one pointer, and increments the BlackHole queue count."
+  - address: "0x00415B40"
+    name: black_hole_reserve
+    confidence: high
+    evidence: "Grows the BlackHole pointer array in 1024-entry chunks while preserving existing entries."
+  - address: "0x00415C40"
+    name: black_hole_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the BlackHole destructor and conditionally frees the complete object."
 data_symbols: []
 comments:
   - address: "0x00404B06"
     text: "Keep one circular-buffer slot empty so head equal to tail remains the unambiguous empty state."
+  - address: "0x00415B4A"
+    text: "Grow the BlackHole pointer array in 1024-entry chunks."
 runtime_patches: []

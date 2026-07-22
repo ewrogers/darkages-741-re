@@ -95,6 +95,98 @@ functions:
     name: batch_job_scalar_deleting_dtor
     confidence: high
     evidence: "Runs the BatchJob destructor and conditionally frees the complete object."
+  - address: "0x00414720"
+    name: ui_background_story_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI BkStoryPane as a full-screen Pane, registers it, starts a 150 ms timer, and hides the cursor."
+  - address: "0x00414860"
+    name: ui_background_story_pane_dtor
+    confidence: high
+    evidence: "Restores both BkStoryPane vtables and runs the Pane base destructor."
+  - address: "0x00414890"
+    name: ui_background_story_pane_handle_pointer_event
+    confidence: high
+    evidence: "Consumes pointer events and advances the story on event subtype 3 while a page is active."
+  - address: "0x004149A0"
+    name: ui_background_story_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Consumes keyboard events; Enter and Space advance the story and Escape closes the pane."
+  - address: "0x00414AE0"
+    name: ui_background_story_pane_draw_content
+    confidence: high
+    evidence: "Primary-vtable content hook at slot +0x5C that draws the active story stage until stage 7."
+  - address: "0x00414B10"
+    name: ui_background_story_pane_close
+    confidence: high
+    evidence: "Restores the palette and cursor, unregisters BkStoryPane, and destroys it through the normal pane path."
+  - address: "0x00414BC0"
+    name: ui_background_story_pane_draw_page
+    confidence: high
+    evidence: "Loads the stage-specific background palette and EPF, draws the page, and renders the currently revealed story lines."
+  - address: "0x00414E60"
+    name: ui_background_story_pane_draw_story_line
+    confidence: high
+    evidence: "Selects text color and position, then draws one buffered background-story line to the pane canvas."
+  - address: "0x00414ED0"
+    name: ui_background_story_pane_timer_callback
+    confidence: high
+    evidence: "Advances the visible story-line count, invalidates the pane, and requeues timer ID 0 after 150 ms."
+  - address: "0x00414F60"
+    name: ui_background_story_pane_read_next_page
+    confidence: high
+    evidence: "Reads the current story1.tbl through story7.tbl stream into fixed line buffers and returns page or stage termination state."
+  - address: "0x004151D0"
+    name: ui_staff_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI StaffPane, registers it full-screen, starts a 20 ms timer, loads staff text, hides the cursor, and loads staff.epf."
+  - address: "0x00415320"
+    name: ui_staff_pane_dtor
+    confidence: high
+    evidence: "Restores both StaffPane vtables and runs the Pane base destructor."
+  - address: "0x00415350"
+    name: ui_staff_pane_handle_pointer_event
+    confidence: high
+    evidence: "Consumes pointer events and closes StaffPane on event subtype 3."
+  - address: "0x004153A0"
+    name: ui_staff_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Consumes keyboard events and closes StaffPane when Escape is pressed."
+  - address: "0x004153F0"
+    name: ui_staff_pane_draw_content
+    confidence: high
+    evidence: "Primary-vtable content hook at slot +0x5C that draws staff.epf and the currently scrolling staff lines."
+  - address: "0x004154C0"
+    name: ui_staff_pane_close
+    confidence: high
+    evidence: "Restores the palette and cursor, unregisters StaffPane, and queues it through the BlackHole deferred-deletion owner."
+  - address: "0x00415530"
+    name: ui_staff_pane_draw_line
+    confidence: high
+    evidence: "Selects text color and scroll-relative position, then draws one buffered staff line."
+  - address: "0x004155C0"
+    name: ui_staff_pane_timer_callback
+    confidence: high
+    evidence: "Advances the 20 ms staff animation and closes the pane when the loaded frame count is reached."
+  - address: "0x00415680"
+    name: ui_staff_pane_load_text
+    confidence: high
+    evidence: "Reads DBCS-aware lines from staff.tbl in the archive into fixed 40-byte pane buffers."
+  - address: "0x00415890"
+    name: ui_background_story_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the BkStoryPane destructor and conditionally frees the complete object."
+  - address: "0x004158C0"
+    name: ui_staff_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the StaffPane destructor and conditionally frees the complete object."
+  - address: "0x004158F0"
+    name: ui_staff_pane_timer_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the StaffPane scalar deleting destructor."
+  - address: "0x00415900"
+    name: ui_background_story_pane_timer_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the BkStoryPane scalar deleting destructor."
   - address: "0x0041AE80"
     name: event_get_dispatcher
     confidence: high
@@ -769,6 +861,16 @@ comments:
     text: "TimerHandler secondary-base deleting-destructor thunk: subtract 0x11C to recover the complete AgreementDialogPane object."
   - address: "0x0040506E"
     text: "Remove the next queued BatchJob before attempting to begin it; disabled jobs are cleaned up and skipped."
+  - address: "0x004147CB"
+    text: "Start BkStoryPane page animation on timer ID 0 at 150 ms."
+  - address: "0x004149C6"
+    text: "Enter and Space advance the story state; Escape closes the BkStoryPane."
+  - address: "0x00414F78"
+    text: "Select story1.tbl through story7.tbl from the current story stage byte."
+  - address: "0x00415286"
+    text: "Start StaffPane animation on timer ID 0 at 20 ms."
+  - address: "0x004155EF"
+    text: "Advance the animation frame every 20 ms; close the StaffPane when the loaded frame count is reached."
   - address: "0x0042E82C"
     text: "Do not allocate a second ClockPane when its singleton already exists. Repeated SBlockInput state 0 therefore does not stack blockers."
   - address: "0x0042E877"

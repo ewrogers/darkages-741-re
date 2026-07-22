@@ -135,6 +135,122 @@ functions:
     name: render_blit_indexed_transparent
     confidence: high
     evidence: "Maps nonzero indexed pixels through a 16-bit palette while preserving destination pixels where the source index is zero."
+  - address: "0x00407490"
+    name: render_blit_16bit_opaque
+    confidence: high
+    evidence: "Copies packed 16-bit pixels with all four horizontal and vertical flip combinations."
+  - address: "0x00407700"
+    name: render_blit_16bit_inverted
+    confidence: high
+    evidence: "Copies packed 16-bit pixels after complementing every source pixel, with both-axis flipping."
+  - address: "0x00407A30"
+    name: render_blit_16bit_transparent
+    confidence: high
+    evidence: "Copies nonzero packed 16-bit source pixels and preserves the destination where the source is zero."
+  - address: "0x00407DB0"
+    name: render_blit_16bit_color_key
+    confidence: high
+    evidence: "Copies packed 16-bit pixels except those equal to a caller-supplied color key."
+  - address: "0x00408140"
+    name: render_blit_16bit_average_transparent
+    confidence: high
+    evidence: "Averages each nonzero source pixel with the destination through packed half-color and carry tables."
+  - address: "0x00408610"
+    name: render_blit_luminance_palette_rgb565
+    confidence: high
+    evidence: "Maps every RGB565 source pixel's luminance through one of four 32-entry color ramps."
+  - address: "0x00408980"
+    name: render_blit_luminance_palette_rgb555
+    confidence: high
+    evidence: "Maps every RGB555 source pixel's luminance through one of four 32-entry color ramps."
+  - address: "0x00408CF0"
+    name: render_blit_16bit_luminance_palette
+    confidence: high
+    evidence: "Dispatches luminance-ramp drawing to the optimized, RGB565, or RGB555 implementation."
+  - address: "0x00408DC0"
+    name: render_blit_luminance_palette_color_key_rgb565
+    confidence: high
+    evidence: "Maps non-key RGB565 source pixels through a selected luminance color ramp."
+  - address: "0x00409190"
+    name: render_blit_luminance_palette_color_key_rgb555
+    confidence: high
+    evidence: "Maps non-key RGB555 source pixels through a selected luminance color ramp."
+  - address: "0x00409560"
+    name: render_blit_16bit_luminance_palette_transparent
+    confidence: high
+    evidence: "Dispatches color-keyed luminance-ramp drawing to the optimized or selected 16-bit format implementation."
+  - address: "0x00409640"
+    name: render_blit_color_blend_rgb565
+    confidence: high
+    evidence: "Blends each RGB565 source pixel toward one packed color by a uniform 0..32 weight."
+  - address: "0x004099D0"
+    name: render_blit_color_blend_rgb555
+    confidence: high
+    evidence: "Blends each RGB555 source pixel toward one packed color by a uniform 0..32 weight."
+  - address: "0x00409D60"
+    name: render_blit_16bit_color_blend
+    confidence: high
+    evidence: "Dispatches uniform source-to-color blending to the optimized, RGB565, or RGB555 implementation."
+  - address: "0x00409E40"
+    name: render_blit_color_blend_color_key_rgb565
+    confidence: high
+    evidence: "Blends non-key RGB565 source pixels toward one packed color by a uniform weight."
+  - address: "0x0040A220"
+    name: render_blit_color_blend_color_key_rgb555
+    confidence: high
+    evidence: "Blends non-key RGB555 source pixels toward one packed color by a uniform weight."
+  - address: "0x0040A600"
+    name: render_blit_16bit_color_blend_transparent
+    confidence: high
+    evidence: "Dispatches color-keyed source-to-color blending to the optimized or selected 16-bit format implementation."
+  - address: "0x0040A6F0"
+    name: render_blit_color_blend_alpha_plane_rgb565
+    confidence: high
+    evidence: "Uses a second plane as per-pixel weights while blending RGB565 source pixels toward one color."
+  - address: "0x0040AB00"
+    name: render_blit_color_blend_alpha_plane_rgb555
+    confidence: high
+    evidence: "Uses a second plane as per-pixel weights while blending RGB555 source pixels toward one color."
+  - address: "0x0040AF10"
+    name: render_blit_16bit_color_blend_alpha_plane
+    confidence: high
+    evidence: "Dispatches source-to-color blending controlled by a per-pixel alpha plane."
+  - address: "0x0040AFF0"
+    name: render_blit_alpha_rgb565
+    confidence: high
+    evidence: "Blends every RGB565 source pixel over the destination with one uniform 0..32 weight."
+  - address: "0x0040B3A0"
+    name: render_blit_alpha_rgb555
+    confidence: high
+    evidence: "Blends every RGB555 source pixel over the destination with one uniform 0..32 weight."
+  - address: "0x0040B750"
+    name: render_blit_16bit_alpha
+    confidence: high
+    evidence: "Dispatches uniform source-over-destination alpha blending."
+  - address: "0x0040B820"
+    name: render_blit_alpha_color_key_rgb565
+    confidence: high
+    evidence: "Blends non-key RGB565 source pixels over the destination with one uniform weight."
+  - address: "0x0040BC20"
+    name: render_blit_alpha_color_key_rgb555
+    confidence: high
+    evidence: "Blends non-key RGB555 source pixels over the destination with one uniform weight."
+  - address: "0x0040C020"
+    name: render_blit_16bit_alpha_color_key
+    confidence: high
+    evidence: "Dispatches color-keyed uniform source-over-destination alpha blending."
+  - address: "0x0040C100"
+    name: render_blit_alpha_plane_rgb565
+    confidence: high
+    evidence: "Blends RGB565 source pixels over the destination using a second source plane as per-pixel weights."
+  - address: "0x0040C520"
+    name: render_blit_alpha_plane_rgb555
+    confidence: high
+    evidence: "Blends RGB555 source pixels over the destination using a second source plane as per-pixel weights."
+  - address: "0x0040C940"
+    name: render_blit_16bit_alpha_plane
+    confidence: high
+    evidence: "Dispatches source-over-destination blending controlled by a per-pixel alpha plane."
   - address: "0x0040CD00"
     name: render_blit_screen_rgb565
     confidence: high
@@ -147,6 +263,62 @@ functions:
     name: render_blit_screen_mode
     confidence: high
     evidence: Selects the RGB565 or RGB555 screen-style blend used by static render flag 0x80.
+  - address: "0x0040D560"
+    name: render_blit_screen_alpha_plane_rgb565
+    confidence: high
+    evidence: "Applies a screen-style RGB565 composite using a second RGB555-formatted per-component alpha plane."
+  - address: "0x0040D980"
+    name: render_blit_screen_alpha_plane_rgb555
+    confidence: high
+    evidence: "Applies a screen-style RGB555 composite using a second per-component alpha plane."
+  - address: "0x0040DDA0"
+    name: render_blit_16bit_screen_alpha_plane
+    confidence: high
+    evidence: "Dispatches the screen-style composite controlled by a per-component alpha plane."
+  - address: "0x0040DE70"
+    name: render_blit_additive_rgb565
+    confidence: high
+    evidence: "Adds RGB565 source and destination components independently and clamps each to its format maximum."
+  - address: "0x0040E200"
+    name: render_blit_additive_rgb555
+    confidence: high
+    evidence: "Adds RGB555 source and destination components independently and clamps each to 31."
+  - address: "0x0040E590"
+    name: render_blit_16bit_additive
+    confidence: high
+    evidence: "Dispatches saturating additive blending to the optimized, RGB565, or RGB555 implementation."
+  - address: "0x0040E650"
+    name: render_blit_relative_rle_alpha
+    confidence: high
+    evidence: "Draws through row alpha streams located by relative offsets in one packed RLE alpha blob."
+  - address: "0x0040E6B0"
+    name: render_blit_pointer_rle_alpha
+    confidence: high
+    evidence: "Draws through row alpha streams reached through an absolute-pointer row table."
+  - address: "0x0040E710"
+    name: render_blit_rle_alpha_color_key
+    confidence: high
+    evidence: "Draws through RLE alpha rows while preserving destination pixels that match the source color key."
+  - address: "0x0040E770"
+    name: render_blit_dual_rle_alpha_color_key
+    confidence: high
+    evidence: "Combines two RLE alpha streams while excluding source pixels equal to the supplied color key."
+  - address: "0x0040E7F0"
+    name: render_blit_rle_alpha_color_key_opacity
+    confidence: high
+    evidence: "Combines an RLE alpha stream with a global opacity and a source color key."
+  - address: "0x0040E860"
+    name: render_blend_rgb565_with_color
+    confidence: high
+    evidence: "Linearly blends one RGB565 pixel toward another packed color with a 0..32 weight."
+  - address: "0x0040E900"
+    name: render_blend_rgb555_with_color
+    confidence: high
+    evidence: "Linearly blends one RGB555 pixel toward another packed color with a 0..32 weight."
+  - address: "0x0040E9A0"
+    name: render_screen_pixel_rgb565_with_rgb555_alpha
+    confidence: high
+    evidence: "Composites one RGB565 source over a destination using independent five-bit alpha components from an RGB555-formatted plane."
   - address: "0x0040EAE0"
     name: render_screen_pixel_rgb555
     confidence: high
@@ -155,6 +327,74 @@ functions:
     name: render_screen_pixel_rgb565
     confidence: high
     evidence: Combines one RGB565 source and destination pixel with the screen-style component formula.
+  - address: "0x0040ED60"
+    name: render_add_pixels_rgb565_saturating
+    confidence: high
+    evidence: "Adds two RGB565 pixels component by component and clamps red and blue to 31 and green to 63."
+  - address: "0x0040EE10"
+    name: render_add_pixels_rgb555_saturating
+    confidence: high
+    evidence: "Adds two RGB555 pixels component by component and clamps every component to 31."
+  - address: "0x0040EF60"
+    name: render_blit_relative_rle_alpha_mmx
+    confidence: high
+    evidence: "MMX implementation of packed relative-offset RLE alpha drawing."
+  - address: "0x0040FBE0"
+    name: render_blit_alpha_plane_mmx
+    confidence: high
+    evidence: "MMX implementation of source-over-destination blending controlled by an alpha plane."
+  - address: "0x00410920"
+    name: render_blit_screen_alpha_plane_mmx
+    confidence: high
+    evidence: "MMX implementation of the screen-style composite controlled by a per-component alpha plane."
+  - address: "0x004109A0"
+    name: render_blit_alpha_mmx
+    confidence: high
+    evidence: "MMX implementation of uniform source-over-destination alpha blending."
+  - address: "0x00410BD0"
+    name: render_blit_alpha_color_key_mmx
+    confidence: high
+    evidence: "MMX implementation of color-keyed uniform source-over-destination alpha blending."
+  - address: "0x00410E50"
+    name: render_blit_color_blend_alpha_plane_mmx
+    confidence: high
+    evidence: "MMX implementation of source-to-color blending controlled by a per-pixel alpha plane."
+  - address: "0x004110C0"
+    name: render_blit_color_blend_mmx
+    confidence: high
+    evidence: "MMX implementation of uniform source-to-color blending."
+  - address: "0x00411310"
+    name: render_blit_color_blend_color_key_mmx
+    confidence: high
+    evidence: "MMX implementation of color-keyed source-to-color blending."
+  - address: "0x00411950"
+    name: render_blit_additive_mmx
+    confidence: high
+    evidence: "MMX implementation of saturating additive packed-pixel blending."
+  - address: "0x004119C0"
+    name: render_blit_pointer_rle_alpha_mmx
+    confidence: high
+    evidence: "MMX implementation of absolute-pointer-table RLE alpha drawing."
+  - address: "0x00411DC0"
+    name: render_blit_rle_alpha_color_key_mmx
+    confidence: high
+    evidence: "MMX implementation of color-keyed RLE alpha drawing."
+  - address: "0x004121E0"
+    name: render_blit_rle_alpha_color_key_opacity_mmx
+    confidence: high
+    evidence: "MMX implementation combining RLE alpha, a source color key, and global opacity."
+  - address: "0x00412660"
+    name: render_blit_dual_rle_alpha_color_key_mmx
+    confidence: high
+    evidence: "MMX implementation combining two RLE alpha streams with source color-key exclusion."
+  - address: "0x00413B80"
+    name: render_blit_luminance_palette_mmx
+    confidence: high
+    evidence: "MMX implementation of luminance-ramp color mapping."
+  - address: "0x00414630"
+    name: render_blit_luminance_palette_color_key_mmx
+    confidence: high
+    evidence: "MMX implementation of color-keyed luminance-ramp mapping."
   - address: "0x0042E7E0"
     name: render_get_video_system
     confidence: high
@@ -315,6 +555,14 @@ functions:
     name: render_font_map_legacy_hangul_code
     confidence: high
     evidence: Maps CP949 B0A1-C8FE syllables and A4A1-A4D3 jamo to the 2,401 fixed Hangul records.
+  - address: "0x00481980"
+    name: render_map_rgb565_luminance_palette
+    confidence: high
+    evidence: "Computes five-bit luminance from RGB565 and resolves it through one of four 32-entry packed-color ramps."
+  - address: "0x00481A10"
+    name: render_map_rgb555_luminance_palette
+    confidence: high
+    evidence: "Computes five-bit luminance from RGB555 and resolves it through one of four 32-entry packed-color ramps."
   - address: "0x00488320"
     name: ui_hot_key_pane_ctor
     confidence: high
@@ -1171,8 +1419,26 @@ comments:
     text: "Force palette index 0 to output pixel value 0 for the zero-transparent indexed blit variant."
   - address: "0x00406E43"
     text: "Skip palette index 0 so transparent source pixels preserve the existing destination pixel."
+  - address: "0x0040821E"
+    text: "Treat source pixel 0 as transparent; otherwise average source and destination components through the packed 16-bit half-color and carry tables."
+  - address: "0x0040B0E7"
+    text: "Blend each source pixel over the current destination with one uniform 0..32 weight."
+  - address: "0x0040C224"
+    text: "Use the second source plane as a per-pixel 0..32 weight while blending the first source over the destination."
   - address: "0x0040D4A0"
     text: Blend mode 0x6D uses a screen-style per-component software blend in RGB565 or RGB555.
+  - address: "0x0040DF61"
+    text: "Add source and destination color components independently and clamp each component to the RGB565 maximum."
+  - address: "0x0040EA24"
+    text: "Use RGB555-formatted per-component alpha values while compositing an RGB565 source over the destination."
+  - address: "0x0040ED81"
+    text: "Saturating RGB565 add: sum each component and clamp red and blue to 31 and green to 63."
+  - address: "0x0040F083"
+    text: "Resolve this row's alpha run stream from a relative offset stored in the alpha-plane row table."
+  - address: "0x00411AE0"
+    text: "Load this row's alpha run stream from the absolute pointer stored in the alpha-plane row table."
+  - address: "0x004122D6"
+    text: "Replicate the color key and global opacity for the MMX alpha-mask comparison and blend."
   - address: "0x00449FA7"
     text: Pass DDFLIP_WAIT. DirectDraw may block until the backbuffer flip can complete; this does not establish a fixed monitor refresh rate.
   - address: "0x0044DE30"
@@ -1191,6 +1457,10 @@ comments:
     text: Select lod.lft for mode 0, da.lft for mode 1, yami.lft for mode 2, or taiwan.lft for mode 3.
   - address: "0x0047BC09"
     text: Expand LFT rows from their four-byte-aligned source into a one-byte or two-byte-per-row temporary mask according to the glyph advance.
+  - address: "0x004819FC"
+    text: "Use the source pixel luminance as an index into one of four 32-entry RGB565 palette ramps."
+  - address: "0x00481A8A"
+    text: "Use the source pixel luminance as an index into one of four 32-entry RGB555 palette ramps."
   - address: "0x004A4D25"
     text: Korean language mode records Windows code page 949; Japanese mode records 932. Other modes leave the code-page value at the system default.
   - address: "0x004C7280"
