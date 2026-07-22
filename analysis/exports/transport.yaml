@@ -59,14 +59,62 @@ functions:
     name: net_send_login_request
     confidence: high
     evidence: "Builds CLogin opcode 0x03 with two u8-length credential strings and a 16-byte masked installation block, submits it through the static-key path, then persists the submitted character name."
+  - address: "0x004C7CD0"
+    name: crypto_md5_digest_to_lower_hex
+    confidence: high
+    evidence: "Formats a 16-byte MD5 digest as 32 lowercase hexadecimal characters plus a terminator."
   - address: "0x004C7D80"
     name: crypto_md5_hex_string
     confidence: high
     evidence: "Hashes a NUL-terminated string and returns lowercase MD5 hexadecimal text."
+  - address: "0x004C7DE0"
+    name: crypto_md5_hex_bytes
+    confidence: high
+    evidence: "Hashes a caller-supplied byte span with the local MD5 context and returns lowercase hexadecimal text."
   - address: "0x004C7E30"
     name: crypto_md5_bytes
     confidence: high
     evidence: "Hashes an explicit byte span and retains the raw MD5 digest."
+  - address: "0x004C7E80"
+    name: crypto_md5_hex_file
+    confidence: high
+    evidence: "Opens a binary file, hashes it in 0x400-byte chunks, and returns lowercase MD5 text or a fixed failure result."
+  - address: "0x004C7F66"
+    name: crypto_md5_hex_file_failure_cleanup
+    confidence: high
+    evidence: "Structured-exception cleanup continuation that transfers the file-path MD5 wrapper to its failure result."
+  - address: "0x004C7FA0"
+    name: crypto_md5_hex_stream
+    confidence: high
+    evidence: "Hashes an already-open FILE stream in 0x400-byte chunks and returns lowercase MD5 text."
+  - address: "0x004C8050"
+    name: crypto_md5_context_init
+    confidence: high
+    evidence: "Initializes the local MD5 context with the four standard chaining words and a zero bit count."
+  - address: "0x004C80A0"
+    name: crypto_md5_context_update
+    confidence: high
+    evidence: "Updates the local MD5 bit count, fills the pending block, and transforms each complete 64-byte block."
+  - address: "0x004C81A0"
+    name: crypto_md5_context_final
+    confidence: high
+    evidence: "Pads the local MD5 context, appends the original little-endian bit count, emits the digest, and wipes state."
+  - address: "0x004C8280"
+    name: crypto_md5_context_transform
+    confidence: high
+    evidence: "Runs the standard MD5 compression transform over one 64-byte block and accumulates the result."
+  - address: "0x004C91E0"
+    name: crypto_md5_context_encode_words_le
+    confidence: high
+    evidence: "Serializes 32-bit words into little-endian bytes for the local MD5 digest and length paths."
+  - address: "0x004C9290"
+    name: crypto_md5_context_decode_words_le
+    confidence: high
+    evidence: "Decodes little-endian bytes into 32-bit words for the local MD5 compression block."
+  - address: "0x004C9310"
+    name: crypto_md5_round4_step
+    confidence: high
+    evidence: "Performs one standard MD5 round-four I-function add, rotate, and chaining-word step."
   - address: "0x004E4D80"
     name: net_dispatch_metadata_events
     confidence: high

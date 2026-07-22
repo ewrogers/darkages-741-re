@@ -57,6 +57,12 @@ for row in 0 .. 26:
 
 The result is 784 packed pixels, or 1,568 bytes in the 16-bit render format.
 
+## Storage and cache
+
+`MapTileImageLib` owns two RTTI-backed `BMPMapTileStorage` objects. The constructor resolves `tilea.bmp` and `tileas.bmp` through the map-tile archive, and each storage object retains the archive entry, byte size, and palette selector used by `file_decode_raw_map_tile`.
+
+The library also contains a decoded-tile cache API. One cache entry holds a valid flag and a reusable 0x620-byte pixel buffer. The code can grow the entry array, allocate buffers in batches, invalidate one entry, or reset all entries without freeing their buffers. No local code or data reference reaches the cache store and invalidate methods, so this analysis does not treat that cache path as active gameplay behavior.
+
 ## Create a bank
 
 Write records back to back with no header. Set padding bytes to zero and place the visible indexes into the same diamond shape.
@@ -82,4 +88,4 @@ The same `SMapSize` bit also changes fixed map objects:
 
 This lets the ground and walls change together without changing the tile IDs stored in the map.
 
-RTTI also exposes `CTFMapTileStorage` and `DTFMapTileStorage`. Their readers accept different in-memory tile layouts, but no active constructor uses them in this client.
+RTTI also exposes `CTFMapTileStorage` and `DTFMapTileStorage`. Their constructors use the same archive-entry ownership pattern, and their readers accept different in-memory tile layouts. No active caller constructs either class in this client.

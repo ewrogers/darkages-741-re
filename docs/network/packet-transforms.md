@@ -158,6 +158,8 @@ for i from 0 through 8
 
 `net_send_login_request` stores the submitted character name. The later key setup passes that same value to `net_build_md5_salt_source`, confirming the name is the seed input.
 
+`crypto_md5_hex_string` produces the lowercase text through a conventional streaming MD5 context: 64-byte compression blocks, little-endian word decoding, standard padding, and a 32-character hexadecimal result.
+
 The client copies the nine selected bytes four times into an expanded buffer. This lets the 32-bit XOR loop cycle through the short key without reading past it.
 
 ## Seed XOR table

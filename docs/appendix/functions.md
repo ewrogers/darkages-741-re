@@ -3787,12 +3787,29 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_bottom_image_id_set_node_failure_cleanup` | `0x004C6E6D` | high | Exception cleanup that frees an image-ID set node whose key construction failed. |
 | `map_bottom_image_id_set_create_head_node` | `0x004C6EB0` | high | Allocates and initializes the sentinel head node for the image-ID red-black tree. |
 | `map_bottom_image_id_set_copy_key` | `0x004C6F00` | high | Copy-constructs the u16 key stored in one image-ID set node. |
+| `file_ctf_map_tile_storage_ctor` | `0x004C6F40` | high | Constructs RTTI-backed CTFMapTileStorage, resolves its archive entry and size, and retains the bank selector. |
+| `file_ctf_map_tile_storage_dtor` | `0x004C6FB0` | high | Releases the CTFMapTileStorage archive entry and restores its MapTileStorage base state. |
+| `file_ctf_map_tile_storage_is_valid` | `0x004C6FE0` | high | Reports whether CTFMapTileStorage resolved a non-null archive entry. |
 | `file_decode_ctf_map_tile` | `0x004C7000` | high | Palette-converts one alternate 784-byte indexed tile source to 16-bit pixels. |
+| `file_dtf_map_tile_storage_ctor` | `0x004C70D0` | high | Constructs RTTI-backed DTFMapTileStorage, resolves its archive entry and size, and retains the bank selector. |
+| `file_dtf_map_tile_storage_dtor` | `0x004C7130` | high | Releases the DTFMapTileStorage archive entry and restores its MapTileStorage base state. |
+| `file_dtf_map_tile_storage_is_valid` | `0x004C7160` | high | Reports whether DTFMapTileStorage resolved a non-null archive entry. |
 | `file_decode_dtf_map_tile` | `0x004C7180` | high | Reads one alternate 1568-byte 16-bit tile source and converts color format when needed. |
-| `file_tile_bank_storage_ctor` | `0x004C7280` | high | Opens one fixed-record raw tile bank and selects its palette path. |
+| `file_bmp_map_tile_storage_ctor` | `0x004C7280` | high | Constructs RTTI-backed BMPMapTileStorage for one fixed-record raw tile bank and selects its palette path. |
+| `file_bmp_map_tile_storage_dtor` | `0x004C7340` | high | Releases the BMPMapTileStorage archive entry and restores its MapTileStorage base state. |
+| `file_bmp_map_tile_storage_is_valid` | `0x004C7370` | high | Reports whether BMPMapTileStorage resolved a non-null archive entry. |
 | `file_decode_raw_map_tile` | `0x004C7390` | high | Extracts and palette-converts one 784-pixel diamond from a raw 56 by 27 indexed record. |
+| `map_tile_library_grow_tile_buffer_pool` | `0x004C74A0` | high | Grows the pointer array that owns reusable 0x620-byte decoded-tile buffers. |
 | `map_tile_library_ctor` | `0x004C7560` | high | Opens tilea.bmp as the base ground bank and tileas.bmp as the alternate bank. |
+| `map_tile_library_dtor` | `0x004C7780` | high | Releases both tile-storage backends, frees cache storage, and unregisters the MapTileImageLib singleton. |
 | `map_load_tile_pixels` | `0x004C78C0` | high | Applies ground animation, then loads the alternate bank with base-bank fallback when selected. |
+| `map_tile_library_invalidate_cache_entry` | `0x004C7980` | high | Clears the valid flag for one in-range decoded-tile cache entry while retaining its reusable buffer. |
+| `map_tile_library_store_cache_entry` | `0x004C79B0` | high | Allocates cache storage as needed, copies one 0x620-byte decoded tile, and marks the entry valid. |
+| `map_tile_library_reset_cache` | `0x004C7AD0` | high | Resets the buffer-pool cursor and reinitializes every decoded-tile cache entry without freeing buffers. |
+| `map_tile_library_scalar_deleting_dtor` | `0x004C7B30` | high | Compiler scalar-deleting destructor wrapper for MapTileImageLib. |
+| `map_tile_library_register_singleton` | `0x004C7B60` | high | Registers the embedded Singleton&lt;MapTileImageLib&gt; helper and publishes the active library pointer. |
+| `map_tile_library_unregister_singleton` | `0x004C7BA0` | high | Clears the active MapTileImageLib pointer when owned and destroys the embedded singleton helper. |
+| `map_tile_library_grow_cache_entries` | `0x004C7BE0` | high | Grows the array of eight-byte decoded-tile cache entries and initializes each new slot. |
 | `file_load_metadata_compressed` | `0x004E5570` | high | Loads a cached compressed metadata file and inflates it for parsing. |
 | `file_save_metadata_compressed` | `0x004E56E0` | high | Writes the original compressed metadata payload under the metafile directory. |
 | `file_load_motion_effect_table` | `0x0050E840` | medium | Loads structured motion effect definitions from meffect.tbl. |
@@ -3871,8 +3888,20 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `crypto_md5_transform` | `0x00401250` | high | Runs the standard 64-step MD5 compression function over one 64-byte block and adds the result to the chaining state. |
 | `crypto_md5_encode_words_le` | `0x004020B0` | high | Serializes 32-bit words into little-endian bytes for the MD5 digest and bit-count paths. |
 | `crypto_md5_decode_words_le` | `0x00402150` | high | Decodes little-endian bytes into 32-bit words for the MD5 compression block. |
+| `crypto_md5_digest_to_lower_hex` | `0x004C7CD0` | high | Formats a 16-byte MD5 digest as 32 lowercase hexadecimal characters plus a terminator. |
 | `crypto_md5_hex_string` | `0x004C7D80` | high | Hashes a NUL-terminated string and returns lowercase MD5 hexadecimal text. |
+| `crypto_md5_hex_bytes` | `0x004C7DE0` | high | Hashes a caller-supplied byte span with the local MD5 context and returns lowercase hexadecimal text. |
 | `crypto_md5_bytes` | `0x004C7E30` | high | Hashes an explicit byte span and retains the raw MD5 digest. |
+| `crypto_md5_hex_file` | `0x004C7E80` | high | Opens a binary file, hashes it in 0x400-byte chunks, and returns lowercase MD5 text or a fixed failure result. |
+| `crypto_md5_hex_file_failure_cleanup` | `0x004C7F66` | high | Structured-exception cleanup continuation that transfers the file-path MD5 wrapper to its failure result. |
+| `crypto_md5_hex_stream` | `0x004C7FA0` | high | Hashes an already-open FILE stream in 0x400-byte chunks and returns lowercase MD5 text. |
+| `crypto_md5_context_init` | `0x004C8050` | high | Initializes the local MD5 context with the four standard chaining words and a zero bit count. |
+| `crypto_md5_context_update` | `0x004C80A0` | high | Updates the local MD5 bit count, fills the pending block, and transforms each complete 64-byte block. |
+| `crypto_md5_context_final` | `0x004C81A0` | high | Pads the local MD5 context, appends the original little-endian bit count, emits the digest, and wipes state. |
+| `crypto_md5_context_transform` | `0x004C8280` | high | Runs the standard MD5 compression transform over one 64-byte block and accumulates the result. |
+| `crypto_md5_context_encode_words_le` | `0x004C91E0` | high | Serializes 32-bit words into little-endian bytes for the local MD5 digest and length paths. |
+| `crypto_md5_context_decode_words_le` | `0x004C9290` | high | Decodes little-endian bytes into 32-bit words for the local MD5 compression block. |
+| `crypto_md5_round4_step` | `0x004C9310` | high | Performs one standard MD5 round-four I-function add, rotate, and chaining-word step. |
 
 ## Uncertain
 
@@ -3889,6 +3918,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `maybe_net_dispatch_main_menu_events_return_fragment` | `0x004B8CA6` | medium | Compiler-recovered overlapping false-return fragment at the end of net_dispatch_main_menu_events; it has no independent callers. |
 | `maybe_ui_manufacture_dialog_ctor_from_body` | `0x004C1AD0` | medium | Duplicates the lmanu.txt construction path and applies a decoded opcode-first body, but no live static caller was recovered. |
 | `maybe_ui_manufacture_dialog_apply_manual_body` | `0x004C2990` | medium | Applies RecipeCount or Recipe from a decoded opcode-first body for the duplicate raw-body pane path. |
+| `maybe_map_tile_library_noop_two_arg_method` | `0x004C7960` | low | Unreferenced thiscall method beside MapTileImageLib code; accepts two stack arguments and intentionally does nothing. |
+| `maybe_map_tile_library_noop_three_arg_method` | `0x004C7970` | low | Unreferenced thiscall method beside MapTileImageLib code; accepts three stack arguments and intentionally does nothing. |
 
 ## Other
 

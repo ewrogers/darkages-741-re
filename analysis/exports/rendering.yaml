@@ -2819,30 +2819,106 @@ functions:
     name: map_bottom_image_id_set_copy_key
     confidence: high
     evidence: "Copy-constructs the u16 key stored in one image-ID set node."
+  - address: "0x004C6F40"
+    name: file_ctf_map_tile_storage_ctor
+    confidence: high
+    evidence: "Constructs RTTI-backed CTFMapTileStorage, resolves its archive entry and size, and retains the bank selector."
+  - address: "0x004C6FB0"
+    name: file_ctf_map_tile_storage_dtor
+    confidence: high
+    evidence: "Releases the CTFMapTileStorage archive entry and restores its MapTileStorage base state."
+  - address: "0x004C6FE0"
+    name: file_ctf_map_tile_storage_is_valid
+    confidence: high
+    evidence: "Reports whether CTFMapTileStorage resolved a non-null archive entry."
   - address: "0x004C7000"
     name: file_decode_ctf_map_tile
     confidence: high
     evidence: Palette-converts one alternate 784-byte indexed tile source to 16-bit pixels.
+  - address: "0x004C70D0"
+    name: file_dtf_map_tile_storage_ctor
+    confidence: high
+    evidence: "Constructs RTTI-backed DTFMapTileStorage, resolves its archive entry and size, and retains the bank selector."
+  - address: "0x004C7130"
+    name: file_dtf_map_tile_storage_dtor
+    confidence: high
+    evidence: "Releases the DTFMapTileStorage archive entry and restores its MapTileStorage base state."
+  - address: "0x004C7160"
+    name: file_dtf_map_tile_storage_is_valid
+    confidence: high
+    evidence: "Reports whether DTFMapTileStorage resolved a non-null archive entry."
   - address: "0x004C7180"
     name: file_decode_dtf_map_tile
     confidence: high
     evidence: Reads one alternate 1568-byte 16-bit tile source and converts color format when needed.
   - address: "0x004C7280"
-    name: file_tile_bank_storage_ctor
+    name: file_bmp_map_tile_storage_ctor
     confidence: high
-    evidence: Opens one fixed-record raw tile bank and selects its palette path.
+    evidence: "Constructs RTTI-backed BMPMapTileStorage for one fixed-record raw tile bank and selects its palette path."
+  - address: "0x004C7340"
+    name: file_bmp_map_tile_storage_dtor
+    confidence: high
+    evidence: "Releases the BMPMapTileStorage archive entry and restores its MapTileStorage base state."
+  - address: "0x004C7370"
+    name: file_bmp_map_tile_storage_is_valid
+    confidence: high
+    evidence: "Reports whether BMPMapTileStorage resolved a non-null archive entry."
   - address: "0x004C7390"
     name: file_decode_raw_map_tile
     confidence: high
     evidence: Extracts and palette-converts one 784-pixel diamond from a raw 56 by 27 indexed record.
+  - address: "0x004C74A0"
+    name: map_tile_library_grow_tile_buffer_pool
+    confidence: high
+    evidence: "Grows the pointer array that owns reusable 0x620-byte decoded-tile buffers."
   - address: "0x004C7560"
     name: map_tile_library_ctor
     confidence: high
     evidence: Opens tilea.bmp as the base ground bank and tileas.bmp as the alternate bank.
+  - address: "0x004C7780"
+    name: map_tile_library_dtor
+    confidence: high
+    evidence: "Releases both tile-storage backends, frees cache storage, and unregisters the MapTileImageLib singleton."
   - address: "0x004C78C0"
     name: map_load_tile_pixels
     confidence: high
     evidence: Applies ground animation, then loads the alternate bank with base-bank fallback when selected.
+  - address: "0x004C7960"
+    name: maybe_map_tile_library_noop_two_arg_method
+    confidence: low
+    evidence: "Unreferenced thiscall method beside MapTileImageLib code; accepts two stack arguments and intentionally does nothing."
+  - address: "0x004C7970"
+    name: maybe_map_tile_library_noop_three_arg_method
+    confidence: low
+    evidence: "Unreferenced thiscall method beside MapTileImageLib code; accepts three stack arguments and intentionally does nothing."
+  - address: "0x004C7980"
+    name: map_tile_library_invalidate_cache_entry
+    confidence: high
+    evidence: "Clears the valid flag for one in-range decoded-tile cache entry while retaining its reusable buffer."
+  - address: "0x004C79B0"
+    name: map_tile_library_store_cache_entry
+    confidence: high
+    evidence: "Allocates cache storage as needed, copies one 0x620-byte decoded tile, and marks the entry valid."
+  - address: "0x004C7AD0"
+    name: map_tile_library_reset_cache
+    confidence: high
+    evidence: "Resets the buffer-pool cursor and reinitializes every decoded-tile cache entry without freeing buffers."
+  - address: "0x004C7B30"
+    name: map_tile_library_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor wrapper for MapTileImageLib."
+  - address: "0x004C7B60"
+    name: map_tile_library_register_singleton
+    confidence: high
+    evidence: "Registers the embedded Singleton<MapTileImageLib> helper and publishes the active library pointer."
+  - address: "0x004C7BA0"
+    name: map_tile_library_unregister_singleton
+    confidence: high
+    evidence: "Clears the active MapTileImageLib pointer when owned and destroys the embedded singleton helper."
+  - address: "0x004C7BE0"
+    name: map_tile_library_grow_cache_entries
+    confidence: high
+    evidence: "Grows the array of eight-byte decoded-tile cache entries and initializes each new slot."
   - address: "0x004C9D10"
     name: memory_manager_singleton_register_adjusted
     confidence: high
