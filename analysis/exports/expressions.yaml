@@ -359,6 +359,10 @@ functions:
     name: expression_numeric_divide_evaluate
     confidence: high
     evidence: "Evaluates and divides two numeric operands."
+  - address: "0x004706AD"
+    name: expression_numeric_divide_eh_cleanup
+    confidence: high
+    evidence: "Exception-table cleanup funclet that restores the division evaluator's temporary floating-point result state."
   - address: "0x004706E0"
     name: expression_boolean_and_evaluate
     confidence: high
@@ -367,8 +371,184 @@ functions:
     name: expression_boolean_or_evaluate
     confidence: high
     evidence: "Evaluates Boolean OR with short-circuit behavior."
+  - address: "0x004707A0"
+    name: expression_numeric_node_pointer_trivial_dtor
+    confidence: high
+    evidence: "No-op destructor for a numeric expression-node pointer stored in an ownership list."
+  - address: "0x004707B0"
+    name: expression_boolean_node_pointer_trivial_dtor
+    confidence: high
+    evidence: "No-op destructor for a Boolean expression-node pointer stored in an ownership list."
   - address: "0x004707C0"
     name: expression_operator_metadata_copy
     confidence: high
     evidence: "Copies the parser's three-field operator metadata record."
+  - address: "0x00470810"
+    name: expression_operator_record_trivial_dtor
+    confidence: high
+    evidence: "Trivial element destructor used when an operator record is popped."
+  - address: "0x00470820"
+    name: expression_operator_block_pointer_trivial_dtor
+    confidence: high
+    evidence: "Trivial destructor used while releasing operator-deque block pointers."
+  - address: "0x00470830"
+    name: expression_deque_allocator_trivial_dtor
+    confidence: high
+    evidence: "No-op allocator destructor shared by the expression parser's deque instances."
+  - address: "0x00470840"
+    name: expression_node_pointer_copy
+    confidence: high
+    evidence: "Copies one expression-node pointer into deque storage."
+  - address: "0x00470880"
+    name: expression_node_pointer_trivial_dtor
+    confidence: high
+    evidence: "Trivial element destructor used when an expression-node pointer is popped."
+  - address: "0x00470890"
+    name: expression_node_block_pointer_trivial_dtor
+    confidence: high
+    evidence: "Trivial destructor used while releasing node-deque block pointers."
+  - address: "0x004708A0"
+    name: expression_numeric_node_list_allocate_nodes
+    confidence: high
+    evidence: "Allocates 12-byte list nodes for numeric expression-node ownership lists, with overflow and allocation checks."
+  - address: "0x00470910"
+    name: expression_boolean_node_list_allocate_nodes
+    confidence: high
+    evidence: "Allocates 12-byte list nodes for Boolean expression-node ownership lists, with overflow and allocation checks."
+  - address: "0x00470980"
+    name: expression_deque_proxy_record_copy
+    confidence: high
+    evidence: "Copies the two-word deque proxy record used by both parser stacks."
+  - address: "0x004709C0"
+    name: expression_operator_deque_allocate_block
+    confidence: high
+    evidence: "Allocates a deque block containing 12-byte operator records."
+  - address: "0x00470A30"
+    name: expression_node_deque_allocate_block
+    confidence: high
+    evidence: "Allocates a deque block containing expression-node pointers."
+  - address: "0x00470AA0"
+    name: expression_operator_deque_allocate_map
+    confidence: high
+    evidence: "Allocates the operator deque's block-pointer map."
+  - address: "0x00470B10"
+    name: expression_node_deque_allocate_map
+    confidence: high
+    evidence: "Allocates the expression-node deque's block-pointer map."
+  - address: "0x00470B80"
+    name: expression_deque_allocate_proxy
+    confidence: high
+    evidence: "Allocates the eight-byte container proxy used by either parser deque."
+  - address: "0x00470BF0"
+    name: expression_numeric_value_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for valueOperator<double>."
+  - address: "0x00470C20"
+    name: expression_boolean_value_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for charNode, the Boolean value node."
+  - address: "0x00470C50"
+    name: expression_numeric_conditional_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for the numeric ternary-expression base."
+  - address: "0x00470C80"
+    name: expression_boolean_conditional_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for the Boolean ternary-expression base."
+  - address: "0x00470CB0"
+    name: expression_numeric_comparison_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for the Boolean-result binary base with numeric operands."
+  - address: "0x00470CE0"
+    name: expression_boolean_binary_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for the Boolean-result binary base with Boolean operands."
+  - address: "0x00470D10"
+    name: expression_boolean_unary_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for the Boolean unary-expression base."
+  - address: "0x00470D40"
+    name: expression_numeric_binary_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for the numeric binary-expression base."
+  - address: "0x00470D70"
+    name: expression_numeric_base_ctor
+    confidence: high
+    evidence: "Constructs __expression<double> and reports the node through the active numeric ownership callback."
+  - address: "0x00470DF0"
+    name: expression_base_ctor
+    confidence: high
+    evidence: "Constructs __baseExpression by installing its base vtable."
+  - address: "0x00470E10"
+    name: expression_boolean_base_ctor
+    confidence: high
+    evidence: "Constructs __expression<bool> and reports the node through the active Boolean ownership callback."
+  - address: "0x00470E90"
+    name: expression_numeric_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for __expression<double>."
+  - address: "0x00470EC0"
+    name: expression_boolean_base_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for __expression<bool>."
+  - address: "0x00470EF0"
+    name: expression_numeric_node_pointer_copy
+    confidence: high
+    evidence: "Copies a numeric expression-node pointer from a list element."
+  - address: "0x00470F10"
+    name: expression_boolean_node_pointer_copy
+    confidence: high
+    evidence: "Copies a Boolean expression-node pointer from a list element."
+  - address: "0x00470F30"
+    name: expression_numeric_node_list_iterator_advance
+    confidence: high
+    evidence: "Advances a numeric-node list iterator to its next link."
+  - address: "0x00470F50"
+    name: expression_boolean_node_list_iterator_advance
+    confidence: high
+    evidence: "Advances a Boolean-node list iterator to its next link."
+  - address: "0x00470F70"
+    name: expression_numeric_node_list_insert
+    confidence: high
+    evidence: "Creates and links a numeric-node list element before the requested position."
+  - address: "0x00471000"
+    name: expression_boolean_node_list_insert
+    confidence: high
+    evidence: "Creates and links a Boolean-node list element before the requested position."
+  - address: "0x00471090"
+    name: expression_numeric_node_list_create_node
+    confidence: high
+    evidence: "Allocates and initializes one numeric expression-node list element."
+  - address: "0x00471102"
+    name: expression_numeric_node_list_create_node_eh_cleanup
+    confidence: high
+    evidence: "Exception cleanup that frees a partially constructed numeric-node list element."
+  - address: "0x00471150"
+    name: expression_boolean_node_list_create_node
+    confidence: high
+    evidence: "Allocates and initializes one Boolean expression-node list element."
+  - address: "0x004711C2"
+    name: expression_boolean_node_list_create_node_eh_cleanup
+    confidence: high
+    evidence: "Exception cleanup that frees a partially constructed Boolean-node list element."
+  - address: "0x00471210"
+    name: expression_numeric_node_pointer_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs the pointer payload in a numeric-node list element."
+  - address: "0x00471250"
+    name: expression_boolean_node_pointer_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs the pointer payload in a Boolean-node list element."
+  - address: "0x00471290"
+    name: expression_allocator_trivial_dtor
+    confidence: high
+    evidence: "No-op allocator destructor used by expression list and deque cleanup paths."
+  - address: "0x004712A0"
+    name: expression_deque_iterator_proxy_copy
+    confidence: high
+    evidence: "Copies the iterator's container proxy link when forming a deque iterator."
+  - address: "0x00471310"
+    name: expression_deque_proxy_allocator_trivial_dtor
+    confidence: high
+    evidence: "No-op allocator destructor used for deque container proxies."
 comments: []

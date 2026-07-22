@@ -3054,9 +3054,54 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `expression_numeric_subtract_evaluate` | `0x004705C0` | high | Evaluates and subtracts two numeric operands. |
 | `expression_numeric_multiply_evaluate` | `0x00470600` | high | Evaluates and multiplies two numeric operands. |
 | `expression_numeric_divide_evaluate` | `0x00470640` | high | Evaluates and divides two numeric operands. |
+| `expression_numeric_divide_eh_cleanup` | `0x004706AD` | high | Exception-table cleanup funclet that restores the division evaluator's temporary floating-point result state. |
 | `expression_boolean_and_evaluate` | `0x004706E0` | high | Evaluates Boolean AND with short-circuit behavior. |
 | `expression_boolean_or_evaluate` | `0x00470740` | high | Evaluates Boolean OR with short-circuit behavior. |
+| `expression_numeric_node_pointer_trivial_dtor` | `0x004707A0` | high | No-op destructor for a numeric expression-node pointer stored in an ownership list. |
+| `expression_boolean_node_pointer_trivial_dtor` | `0x004707B0` | high | No-op destructor for a Boolean expression-node pointer stored in an ownership list. |
 | `expression_operator_metadata_copy` | `0x004707C0` | high | Copies the parser's three-field operator metadata record. |
+| `expression_operator_record_trivial_dtor` | `0x00470810` | high | Trivial element destructor used when an operator record is popped. |
+| `expression_operator_block_pointer_trivial_dtor` | `0x00470820` | high | Trivial destructor used while releasing operator-deque block pointers. |
+| `expression_deque_allocator_trivial_dtor` | `0x00470830` | high | No-op allocator destructor shared by the expression parser's deque instances. |
+| `expression_node_pointer_copy` | `0x00470840` | high | Copies one expression-node pointer into deque storage. |
+| `expression_node_pointer_trivial_dtor` | `0x00470880` | high | Trivial element destructor used when an expression-node pointer is popped. |
+| `expression_node_block_pointer_trivial_dtor` | `0x00470890` | high | Trivial destructor used while releasing node-deque block pointers. |
+| `expression_numeric_node_list_allocate_nodes` | `0x004708A0` | high | Allocates 12-byte list nodes for numeric expression-node ownership lists, with overflow and allocation checks. |
+| `expression_boolean_node_list_allocate_nodes` | `0x00470910` | high | Allocates 12-byte list nodes for Boolean expression-node ownership lists, with overflow and allocation checks. |
+| `expression_deque_proxy_record_copy` | `0x00470980` | high | Copies the two-word deque proxy record used by both parser stacks. |
+| `expression_operator_deque_allocate_block` | `0x004709C0` | high | Allocates a deque block containing 12-byte operator records. |
+| `expression_node_deque_allocate_block` | `0x00470A30` | high | Allocates a deque block containing expression-node pointers. |
+| `expression_operator_deque_allocate_map` | `0x00470AA0` | high | Allocates the operator deque's block-pointer map. |
+| `expression_node_deque_allocate_map` | `0x00470B10` | high | Allocates the expression-node deque's block-pointer map. |
+| `expression_deque_allocate_proxy` | `0x00470B80` | high | Allocates the eight-byte container proxy used by either parser deque. |
+| `expression_numeric_value_scalar_deleting_dtor` | `0x00470BF0` | high | Compiler scalar-deleting destructor for valueOperator&lt;double&gt;. |
+| `expression_boolean_value_scalar_deleting_dtor` | `0x00470C20` | high | Compiler scalar-deleting destructor for charNode, the Boolean value node. |
+| `expression_numeric_conditional_base_scalar_deleting_dtor` | `0x00470C50` | high | Compiler scalar-deleting destructor for the numeric ternary-expression base. |
+| `expression_boolean_conditional_base_scalar_deleting_dtor` | `0x00470C80` | high | Compiler scalar-deleting destructor for the Boolean ternary-expression base. |
+| `expression_numeric_comparison_base_scalar_deleting_dtor` | `0x00470CB0` | high | Compiler scalar-deleting destructor for the Boolean-result binary base with numeric operands. |
+| `expression_boolean_binary_base_scalar_deleting_dtor` | `0x00470CE0` | high | Compiler scalar-deleting destructor for the Boolean-result binary base with Boolean operands. |
+| `expression_boolean_unary_base_scalar_deleting_dtor` | `0x00470D10` | high | Compiler scalar-deleting destructor for the Boolean unary-expression base. |
+| `expression_numeric_binary_base_scalar_deleting_dtor` | `0x00470D40` | high | Compiler scalar-deleting destructor for the numeric binary-expression base. |
+| `expression_numeric_base_ctor` | `0x00470D70` | high | Constructs __expression&lt;double&gt; and reports the node through the active numeric ownership callback. |
+| `expression_base_ctor` | `0x00470DF0` | high | Constructs __baseExpression by installing its base vtable. |
+| `expression_boolean_base_ctor` | `0x00470E10` | high | Constructs __expression&lt;bool&gt; and reports the node through the active Boolean ownership callback. |
+| `expression_numeric_base_scalar_deleting_dtor` | `0x00470E90` | high | Compiler scalar-deleting destructor for __expression&lt;double&gt;. |
+| `expression_boolean_base_scalar_deleting_dtor` | `0x00470EC0` | high | Compiler scalar-deleting destructor for __expression&lt;bool&gt;. |
+| `expression_numeric_node_pointer_copy` | `0x00470EF0` | high | Copies a numeric expression-node pointer from a list element. |
+| `expression_boolean_node_pointer_copy` | `0x00470F10` | high | Copies a Boolean expression-node pointer from a list element. |
+| `expression_numeric_node_list_iterator_advance` | `0x00470F30` | high | Advances a numeric-node list iterator to its next link. |
+| `expression_boolean_node_list_iterator_advance` | `0x00470F50` | high | Advances a Boolean-node list iterator to its next link. |
+| `expression_numeric_node_list_insert` | `0x00470F70` | high | Creates and links a numeric-node list element before the requested position. |
+| `expression_boolean_node_list_insert` | `0x00471000` | high | Creates and links a Boolean-node list element before the requested position. |
+| `expression_numeric_node_list_create_node` | `0x00471090` | high | Allocates and initializes one numeric expression-node list element. |
+| `expression_numeric_node_list_create_node_eh_cleanup` | `0x00471102` | high | Exception cleanup that frees a partially constructed numeric-node list element. |
+| `expression_boolean_node_list_create_node` | `0x00471150` | high | Allocates and initializes one Boolean expression-node list element. |
+| `expression_boolean_node_list_create_node_eh_cleanup` | `0x004711C2` | high | Exception cleanup that frees a partially constructed Boolean-node list element. |
+| `expression_numeric_node_pointer_copy_ctor` | `0x00471210` | high | Copy-constructs the pointer payload in a numeric-node list element. |
+| `expression_boolean_node_pointer_copy_ctor` | `0x00471250` | high | Copy-constructs the pointer payload in a Boolean-node list element. |
+| `expression_allocator_trivial_dtor` | `0x00471290` | high | No-op allocator destructor used by expression list and deque cleanup paths. |
+| `expression_deque_iterator_proxy_copy` | `0x004712A0` | high | Copies the iterator's container proxy link when forming a deque iterator. |
+| `expression_deque_proxy_allocator_trivial_dtor` | `0x00471310` | high | No-op allocator destructor used for deque container proxies. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |
