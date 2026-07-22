@@ -2169,7 +2169,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_merchant_dialog_ensure_screen_dimmer` | `0x004CE8C0` | high | Lazily allocates and retains a full-screen exact RTTI ScreenDimmer in mode 5. |
 | `ui_merchant_dialog_handle_pointer_event` | `0x004CE960` | high | Delegates merchant pointer input and updates the shared merchant screen origin from drag movement. |
 | `ui_merchant_dialog_handle_network_event` | `0x004CEA20` | high | Accepts decoded SScreenMenu opcode 0x2F bodies and forwards them to the derived dialog's virtual parser. |
+| `ui_open_merchant_text_menu` | `0x004CEA80` | high | Opens SScreenMenu type 0 in TextMenuDialog or TextMenuDialogEx when the row count exceeds eight. |
+| `ui_open_merchant_argumented_text_menu` | `0x004CEBE0` | high | Opens SScreenMenu type 1 in ArgumentedTextMenuDialog or its Ex variant when the row count exceeds eight. |
+| `ui_open_merchant_text_input_menu` | `0x004CED70` | high | Opens SScreenMenu type 2 in exact RTTI TextInputMenuDialog. |
+| `ui_open_merchant_argumented_text_input_menu` | `0x004CEE30` | high | Opens SScreenMenu type 3 in exact RTTI ArgumentedTextInputMenuDialog. |
 | `ui_open_server_item_menu_dialog` | `0x004CEEF0` | high | Chooses and constructs a merchant server-item dialog; the always-false build selector leaves ServerItemMenuDialog3 dormant and selects the older dialog. |
+| `ui_open_merchant_client_item_menu` | `0x004CF020` | high | Opens SScreenMenu types 5 and 11 in exact RTTI ClientItemMenuDialog. |
+| `ui_open_merchant_server_spell_menu` | `0x004CF0E0` | high | Opens SScreenMenu type 6 in exact RTTI ServerSpellMenuDialog. |
+| `ui_open_merchant_client_spell_menu` | `0x004CF1A0` | high | Opens SScreenMenu type 8 in exact RTTI ClientSpellMenuDialog. |
+| `ui_open_merchant_server_skill_menu` | `0x004CF260` | high | Opens SScreenMenu type 7 in exact RTTI ServerSkillMenuDialog. |
+| `ui_open_merchant_client_skill_menu` | `0x004CF320` | high | Opens SScreenMenu type 9 in exact RTTI ClientSkillMenuDialog. |
+| `ui_open_merchant_face_menu` | `0x004CF3E0` | high | Constructs exact RTTI FaceMenuDialog with lmerd bounds and pushes it onto MerchantSession. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |

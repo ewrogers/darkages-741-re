@@ -321,10 +321,50 @@ functions:
     name: ui_merchant_dialog_handle_network_event
     confidence: high
     evidence: "Accepts decoded SScreenMenu opcode 0x2F bodies and forwards them to the derived dialog's virtual parser."
+  - address: "0x004CEA80"
+    name: ui_open_merchant_text_menu
+    confidence: high
+    evidence: "Opens SScreenMenu type 0 in TextMenuDialog or TextMenuDialogEx when the row count exceeds eight."
+  - address: "0x004CEBE0"
+    name: ui_open_merchant_argumented_text_menu
+    confidence: high
+    evidence: "Opens SScreenMenu type 1 in ArgumentedTextMenuDialog or its Ex variant when the row count exceeds eight."
+  - address: "0x004CED70"
+    name: ui_open_merchant_text_input_menu
+    confidence: high
+    evidence: "Opens SScreenMenu type 2 in exact RTTI TextInputMenuDialog."
+  - address: "0x004CEE30"
+    name: ui_open_merchant_argumented_text_input_menu
+    confidence: high
+    evidence: "Opens SScreenMenu type 3 in exact RTTI ArgumentedTextInputMenuDialog."
   - address: "0x004CEEF0"
     name: ui_open_server_item_menu_dialog
     confidence: high
     evidence: "Chooses and constructs a merchant server-item dialog; the always-false build selector leaves ServerItemMenuDialog3 dormant and selects the older dialog."
+  - address: "0x004CF020"
+    name: ui_open_merchant_client_item_menu
+    confidence: high
+    evidence: "Opens SScreenMenu types 5 and 11 in exact RTTI ClientItemMenuDialog."
+  - address: "0x004CF0E0"
+    name: ui_open_merchant_server_spell_menu
+    confidence: high
+    evidence: "Opens SScreenMenu type 6 in exact RTTI ServerSpellMenuDialog."
+  - address: "0x004CF1A0"
+    name: ui_open_merchant_client_spell_menu
+    confidence: high
+    evidence: "Opens SScreenMenu type 8 in exact RTTI ClientSpellMenuDialog."
+  - address: "0x004CF260"
+    name: ui_open_merchant_server_skill_menu
+    confidence: high
+    evidence: "Opens SScreenMenu type 7 in exact RTTI ServerSkillMenuDialog."
+  - address: "0x004CF320"
+    name: ui_open_merchant_client_skill_menu
+    confidence: high
+    evidence: "Opens SScreenMenu type 9 in exact RTTI ClientSkillMenuDialog."
+  - address: "0x004CF3E0"
+    name: ui_open_merchant_face_menu
+    confidence: high
+    evidence: "Constructs exact RTTI FaceMenuDialog with lmerd bounds and pushes it onto MerchantSession."
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high

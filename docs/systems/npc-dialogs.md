@@ -41,6 +41,21 @@ This path uses `lmerc.txt` for segmented menus, `lmerd.txt` for detail panes, an
 
 The nested classes share `MerchantDialogPane`. Its common header contains target type, target ID, pursuit ID, content text, and seller text. A derived dialog may opt into one more trailing string. The base centers each pane, carries the owning session, sends target-information requests, and updates a shared screen origin while the player drags the dialog. Detail-style panes draw the fixed `lmerd` background; other styles can build a scalable frame from tiled 16-pixel edges and four corners.
 
+The older subtype factory uses these exact RTTI classes:
+
+| Types | Compiled dialog |
+| --- | --- |
+| `0` | `TextMenuDialog`, or `TextMenuDialogEx` above eight rows |
+| `1` | `ArgumentedTextMenuDialog`, or `ArgumentedTextMenuDialogEx` above eight rows |
+| `2` | `TextInputMenuDialog` |
+| `3` | `ArgumentedTextInputMenuDialog` |
+| `4`, `10` | `ServerItemMenuDialog` because the newer dialog is disabled |
+| `5`, `11` | `ClientItemMenuDialog` |
+| `6` | `ServerSpellMenuDialog` |
+| `7` | `ServerSkillMenuDialog` |
+| `8` | `ClientSpellMenuDialog` |
+| `9` | `ClientSkillMenuDialog` |
+
 ### Target identity
 
 Both protocols carry `target_type` and `target_id`, and both client responses echo them. The local dialog builders do not decode that byte, and the screen-menu code contains a separate `target_type > 0x0C` behavior. A complete 7.41 target-type enum remains unresolved.
