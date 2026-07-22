@@ -1,0 +1,194 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x004781F0"
+    name: ui_fishing_impact_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI FishingImpactPane from fsh_bar.txt, prepares its moving pointer canvas, and schedules 25 ms updates."
+  - address: "0x00478680"
+    name: ui_fishing_impact_pane_dtor
+    confidence: high
+    evidence: "Destroys FishingImpactPane's owned canvas and Pane base."
+  - address: "0x004786F0"
+    name: ui_fishing_impact_pane_handle_event
+    confidence: high
+    evidence: "Consumes the space-key event once while the impact gauge is active and schedules delayed completion."
+  - address: "0x00478750"
+    name: ui_fishing_impact_pane_handle_timer
+    confidence: high
+    evidence: "Moves the gauge pointer between its bounds; completion notifies the parent and queues the pane for deletion."
+  - address: "0x00478A40"
+    name: ui_fishing_impact_pane_draw
+    confidence: high
+    evidence: "Draws the impact bar, pin, target band, and cached moving-pointer image."
+  - address: "0x00478CE0"
+    name: ui_fishing_get_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI FishingGetPane from two fsh_mget.txt frames and schedules 50 ms animation."
+  - address: "0x00478E40"
+    name: ui_fishing_get_pane_draw
+    confidence: high
+    evidence: "Draws the currently selected catch-result animation frame."
+  - address: "0x00478EF0"
+    name: ui_fishing_get_pane_handle_timer
+    confidence: high
+    evidence: "Alternates the two catch-result frames and reschedules the same timer."
+  - address: "0x00478F60"
+    name: ui_fishing_boat_view_load_assets
+    confidence: high
+    evidence: "Loads fsh_ship.txt ship, character, fishing-character, and needle art and derives their offsets."
+  - address: "0x004791A0"
+    name: ui_fishing_boat_view_get_invalidation_bounds
+    confidence: high
+    evidence: "Combines the boat, line, and hook rectangles into the dirty region for the current line length."
+  - address: "0x004792F0"
+    name: ui_fishing_boat_view_get_hook_rect
+    confidence: high
+    evidence: "Returns the hook rectangle at the current line length."
+  - address: "0x004793A0"
+    name: ui_fishing_boat_view_draw
+    confidence: high
+    evidence: "Draws the boat, selected character frame, fishing line, and hook into a destination canvas."
+  - address: "0x004795B0"
+    name: ui_fishing_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI FishingDialogPane, loads its layout and four object sprites, seeds random state, and schedules 50 ms game updates."
+  - address: "0x00479A70"
+    name: ui_fishing_dialog_dtor
+    confidence: high
+    evidence: "Notifies the configured timer owner, destroys the moving-object list, and tears down the DialogPane base."
+  - address: "0x00479B40"
+    name: ui_fishing_dialog_show_get_pane
+    confidence: high
+    evidence: "Creates and centers the FishingGetPane catch-result animation when one is not already open."
+  - address: "0x00479CB0"
+    name: ui_fishing_dialog_close_get_pane
+    confidence: high
+    evidence: "Unregisters, detaches, and queues the active FishingGetPane for deletion."
+  - address: "0x00479D20"
+    name: ui_fishing_dialog_draw_top_background
+    confidence: high
+    evidence: "Draws the top fishing-dialog background pixmap at its layout rectangle."
+  - address: "0x00479DD0"
+    name: ui_fishing_dialog_draw_bottom_background
+    confidence: high
+    evidence: "Draws the bottom fishing-dialog background pixmap with the requested blend flag."
+  - address: "0x00479E80"
+    name: ui_fishing_dialog_draw
+    confidence: high
+    evidence: "Draws the backgrounds, boat and line, moving objects, clipping bands, and foreground overlay."
+  - address: "0x0047A230"
+    name: ui_fishing_dialog_handle_keyboard
+    confidence: high
+    evidence: "Tracks left, right, and space key-down and key-up state for the fishing game."
+  - address: "0x0047A3A0"
+    name: ui_fishing_dialog_handle_timer
+    confidence: high
+    evidence: "Runs the game state machine, moves the boat and hook, advances objects, detects collisions, opens the impact gauge, and schedules new objects."
+  - address: "0x0047AE90"
+    name: ui_fishing_dialog_close
+    confidence: high
+    evidence: "Unregisters, detaches, and queues the fishing dialog for deletion."
+  - address: "0x0047AED0"
+    name: ui_fishing_dialog_invalidate_objects
+    confidence: high
+    evidence: "Invalidates the current rectangle of every moving fishing object."
+  - address: "0x0047AFD0"
+    name: ui_fishing_dialog_update_line_bounds
+    confidence: high
+    evidence: "Invalidates the old line region, recomputes the boat-view dirty bounds, offsets them into the dialog, and invalidates the new region."
+  - address: "0x0047B0B0"
+    name: ui_fishing_dialog_set_boat_offset
+    confidence: high
+    evidence: "Updates the boat-view offset and refreshes the combined line dirty region."
+  - address: "0x0047B0E0"
+    name: ui_fishing_dialog_set_line_length
+    confidence: high
+    evidence: "Updates the fishing-line length and refreshes the combined line dirty region."
+  - address: "0x0047B110"
+    name: ui_fishing_dialog_spawn_object
+    confidence: high
+    evidence: "Creates one moving-object list record with sprite, speed, position, direction, and active-state fields."
+  - address: "0x0047B1E0"
+    name: ui_fishing_dialog_create
+    confidence: high
+    evidence: "Allocates and constructs a FishingDialogPane for the supplied timer owner and completion selector."
+  - address: "0x0047B260"
+    name: ui_fishing_impact_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the FishingImpactPane destructor and conditionally frees the complete object."
+  - address: "0x0047B290"
+    name: ui_fishing_get_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys FishingGetPane through its Pane base and conditionally frees the complete object."
+  - address: "0x0047B2C0"
+    name: ui_fishing_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the FishingDialogPane destructor and conditionally frees the complete object."
+  - address: "0x0047B2F0"
+    name: ui_fishing_boat_view_ctor
+    confidence: high
+    evidence: "Initializes the boat view's ship, four character-frame, and hook pixmap descriptions."
+  - address: "0x0047B350"
+    name: ui_fishing_object_list_ctor
+    confidence: high
+    evidence: "Constructs the sentinel-based list that owns moving fishing-object records."
+  - address: "0x0047B3B0"
+    name: ui_fishing_object_list_dtor
+    confidence: high
+    evidence: "Clears every moving-object node and frees the list sentinel."
+  - address: "0x0047B420"
+    name: ui_fishing_object_list_erase
+    confidence: high
+    evidence: "Unlinks and frees one moving-object node and returns the following iterator."
+  - address: "0x0047B4C0"
+    name: ui_fishing_object_list_destroy_sentinel
+    confidence: high
+    evidence: "Frees the moving-object list sentinel node."
+  - address: "0x0047B4F0"
+    name: ui_fishing_object_list_clear
+    confidence: high
+    evidence: "Unlinks and frees all moving-object nodes while preserving the sentinel."
+  - address: "0x0047B580"
+    name: ui_fishing_object_record_dtor
+    confidence: high
+    evidence: "Trivial destructor for the five-integer moving fishing-object record."
+  - address: "0x0047B590"
+    name: ui_fishing_object_list_allocate_nodes
+    confidence: high
+    evidence: "Performs checked allocation of 28-byte moving-object list nodes."
+  - address: "0x0047B600"
+    name: ui_fishing_object_list_insert_before
+    confidence: high
+    evidence: "Creates and links a copied moving-object record before the selected list position."
+  - address: "0x0047B690"
+    name: ui_fishing_object_list_create_node
+    confidence: high
+    evidence: "Allocates a moving-object node and initializes its links and five-field record."
+  - address: "0x0047B702"
+    name: ui_fishing_object_list_create_node_cleanup
+    confidence: high
+    evidence: "Frees a partially constructed moving-object node and rethrows after construction fails."
+  - address: "0x0047B750"
+    name: ui_fishing_object_record_copy_ctor
+    confidence: high
+    evidence: "Copies the five integer fields in a moving fishing-object record."
+  - address: "0x0047B7A0"
+    name: ui_fishing_get_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer before FishingGetPane scalar deletion."
+  - address: "0x0047B7B0"
+    name: ui_fishing_impact_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer before FishingImpactPane scalar deletion."
+  - address: "0x0047B7C0"
+    name: ui_fishing_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler secondary-base pointer before FishingDialogPane scalar deletion."
+comments: []

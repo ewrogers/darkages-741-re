@@ -18,6 +18,7 @@
   - [UI layout files](systems/ui-layouts.md)
   - [Asset loading and lifetime](systems/asset-loading.md)
   - [Movement and swimming](systems/movement-and-swimming.md)
+  - [Fishing minigame](systems/fishing.md)
   - [Player popup menu](systems/player-popup-menu.md)
   - [Player exchange](systems/player-exchange.md)
   - [Manufacturing manuals](systems/manufacturing.md)

@@ -207,6 +207,46 @@ functions:
     name: file_provider_get_no_archive
     confidence: high
     evidence: "Null archive-provider adapter used by readers that must use loose files rather than a DAT archive."
+  - address: "0x004778F0"
+    name: file_updater_default_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI FileUpdater with empty source, destination, archive, mode, and destination settings."
+  - address: "0x00477980"
+    name: file_updater_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI FileUpdater and applies its source, archive, mode, destination kind, and subdirectory settings."
+  - address: "0x00477A10"
+    name: file_updater_set_source
+    confidence: high
+    evidence: "Sets the source archive entry, optional destination filename, and archive object; the destination defaults to the source name."
+  - address: "0x00477A90"
+    name: file_updater_set_mode
+    confidence: high
+    evidence: "Sets the FileUpdater comparison or replacement mode."
+  - address: "0x00477AB0"
+    name: file_updater_set_destination_kind
+    confidence: high
+    evidence: "Selects the destination root, including current, Windows, System, or Program Files based locations."
+  - address: "0x00477AD0"
+    name: file_updater_set_destination_subdirectory
+    confidence: high
+    evidence: "Stores an optional destination subdirectory and normalizes its trailing backslash for supported destination kinds."
+  - address: "0x00477B70"
+    name: file_updater_apply
+    confidence: high
+    evidence: "Finds the source DAT entry, resolves the destination, compares existing bytes when requested, and creates or replaces the file according to mode."
+  - address: "0x00477D80"
+    name: file_updater_apply_replace_handler
+    confidence: high
+    evidence: "Closes temporary resources and writes the archive entry when the FileUpdater replacement path is selected."
+  - address: "0x00477E60"
+    name: file_updater_resolve_destination_path
+    confidence: high
+    evidence: "Builds the final directory from the selected root and optional subdirectory, creating Program Files subdirectories when required."
+  - address: "0x004781B0"
+    name: file_updater_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI FileUpdater through its LObject base and conditionally frees the complete object."
   - address: "0x0048B2C0"
     name: render_image_library_ctor
     confidence: high
@@ -251,6 +291,10 @@ functions:
     name: app_shutdown
     confidence: high
     evidence: Tears down runtime managers and panes, then closes and destroys the DAT archive singletons before window cleanup.
+  - address: "0x004AD040"
+    name: file_update_ahnlab_security_components
+    confidence: high
+    evidence: "Uses FileUpdater with national.dat to verify or extract MFSVC.DLL, the AhnLab MFGS DLLs, and XUPDATE.EXE into their Windows destinations."
   - address: "0x004AE880"
     name: render_get_monster_image_library
     confidence: high

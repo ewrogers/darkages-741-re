@@ -1267,6 +1267,18 @@ functions:
     name: ui_load_field_map_assets
     confidence: high
     evidence: "Loads the field-name EPF background, optional PAL, required TXT metadata, palette list, and locally styled waypoint records."
+  - address: "0x004775D0"
+    name: ui_legend_info_load_field_map_records
+    confidence: high
+    evidence: "Parses one of two legend field-map metadata tables into fixed key, icon, position, palette, and text records."
+  - address: "0x00477790"
+    name: ui_legend_field_map_record_ctor
+    confidence: high
+    evidence: "Constructs one 0x60-byte legend field-map metadata record and initializes its three owned strings."
+  - address: "0x00477850"
+    name: ui_legend_field_map_record_dtor
+    confidence: high
+    evidence: "Releases the three owned strings in a legend field-map metadata record."
   - address: "0x0048F7E0"
     name: ui_inventory_pane_ctor
     confidence: high

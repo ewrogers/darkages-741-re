@@ -1188,6 +1188,55 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_text_field_map_point_timer_scalar_deleting_dtor_thunk` | `0x00476EC0` | high | Adjusts the TimerHandler secondary-base pointer before TextFieldMapPointPane scalar deletion. |
 | `ui_image_field_map_point_timer_scalar_deleting_dtor_thunk` | `0x00476ED0` | high | Adjusts the TimerHandler secondary-base pointer before ImageFieldMapPointPane scalar deletion. |
 | `ui_load_field_map_assets` | `0x00476EE0` | high | Loads the field-name EPF background, optional PAL, required TXT metadata, palette list, and locally styled waypoint records. |
+| `ui_legend_info_load_field_map_records` | `0x004775D0` | high | Parses one of two legend field-map metadata tables into fixed key, icon, position, palette, and text records. |
+| `ui_legend_field_map_record_ctor` | `0x00477790` | high | Constructs one 0x60-byte legend field-map metadata record and initializes its three owned strings. |
+| `ui_legend_field_map_record_dtor` | `0x00477850` | high | Releases the three owned strings in a legend field-map metadata record. |
+| `ui_fishing_impact_pane_ctor` | `0x004781F0` | high | Constructs exact RTTI FishingImpactPane from fsh_bar.txt, prepares its moving pointer canvas, and schedules 25 ms updates. |
+| `ui_fishing_impact_pane_dtor` | `0x00478680` | high | Destroys FishingImpactPane's owned canvas and Pane base. |
+| `ui_fishing_impact_pane_handle_event` | `0x004786F0` | high | Consumes the space-key event once while the impact gauge is active and schedules delayed completion. |
+| `ui_fishing_impact_pane_handle_timer` | `0x00478750` | high | Moves the gauge pointer between its bounds; completion notifies the parent and queues the pane for deletion. |
+| `ui_fishing_impact_pane_draw` | `0x00478A40` | high | Draws the impact bar, pin, target band, and cached moving-pointer image. |
+| `ui_fishing_get_pane_ctor` | `0x00478CE0` | high | Constructs exact RTTI FishingGetPane from two fsh_mget.txt frames and schedules 50 ms animation. |
+| `ui_fishing_get_pane_draw` | `0x00478E40` | high | Draws the currently selected catch-result animation frame. |
+| `ui_fishing_get_pane_handle_timer` | `0x00478EF0` | high | Alternates the two catch-result frames and reschedules the same timer. |
+| `ui_fishing_boat_view_load_assets` | `0x00478F60` | high | Loads fsh_ship.txt ship, character, fishing-character, and needle art and derives their offsets. |
+| `ui_fishing_boat_view_get_invalidation_bounds` | `0x004791A0` | high | Combines the boat, line, and hook rectangles into the dirty region for the current line length. |
+| `ui_fishing_boat_view_get_hook_rect` | `0x004792F0` | high | Returns the hook rectangle at the current line length. |
+| `ui_fishing_boat_view_draw` | `0x004793A0` | high | Draws the boat, selected character frame, fishing line, and hook into a destination canvas. |
+| `ui_fishing_dialog_ctor` | `0x004795B0` | high | Constructs exact RTTI FishingDialogPane, loads its layout and four object sprites, seeds random state, and schedules 50 ms game updates. |
+| `ui_fishing_dialog_dtor` | `0x00479A70` | high | Notifies the configured timer owner, destroys the moving-object list, and tears down the DialogPane base. |
+| `ui_fishing_dialog_show_get_pane` | `0x00479B40` | high | Creates and centers the FishingGetPane catch-result animation when one is not already open. |
+| `ui_fishing_dialog_close_get_pane` | `0x00479CB0` | high | Unregisters, detaches, and queues the active FishingGetPane for deletion. |
+| `ui_fishing_dialog_draw_top_background` | `0x00479D20` | high | Draws the top fishing-dialog background pixmap at its layout rectangle. |
+| `ui_fishing_dialog_draw_bottom_background` | `0x00479DD0` | high | Draws the bottom fishing-dialog background pixmap with the requested blend flag. |
+| `ui_fishing_dialog_draw` | `0x00479E80` | high | Draws the backgrounds, boat and line, moving objects, clipping bands, and foreground overlay. |
+| `ui_fishing_dialog_handle_keyboard` | `0x0047A230` | high | Tracks left, right, and space key-down and key-up state for the fishing game. |
+| `ui_fishing_dialog_handle_timer` | `0x0047A3A0` | high | Runs the game state machine, moves the boat and hook, advances objects, detects collisions, opens the impact gauge, and schedules new objects. |
+| `ui_fishing_dialog_close` | `0x0047AE90` | high | Unregisters, detaches, and queues the fishing dialog for deletion. |
+| `ui_fishing_dialog_invalidate_objects` | `0x0047AED0` | high | Invalidates the current rectangle of every moving fishing object. |
+| `ui_fishing_dialog_update_line_bounds` | `0x0047AFD0` | high | Invalidates the old line region, recomputes the boat-view dirty bounds, offsets them into the dialog, and invalidates the new region. |
+| `ui_fishing_dialog_set_boat_offset` | `0x0047B0B0` | high | Updates the boat-view offset and refreshes the combined line dirty region. |
+| `ui_fishing_dialog_set_line_length` | `0x0047B0E0` | high | Updates the fishing-line length and refreshes the combined line dirty region. |
+| `ui_fishing_dialog_spawn_object` | `0x0047B110` | high | Creates one moving-object list record with sprite, speed, position, direction, and active-state fields. |
+| `ui_fishing_dialog_create` | `0x0047B1E0` | high | Allocates and constructs a FishingDialogPane for the supplied timer owner and completion selector. |
+| `ui_fishing_impact_pane_scalar_deleting_dtor` | `0x0047B260` | high | Runs the FishingImpactPane destructor and conditionally frees the complete object. |
+| `ui_fishing_get_pane_scalar_deleting_dtor` | `0x0047B290` | high | Destroys FishingGetPane through its Pane base and conditionally frees the complete object. |
+| `ui_fishing_dialog_scalar_deleting_dtor` | `0x0047B2C0` | high | Runs the FishingDialogPane destructor and conditionally frees the complete object. |
+| `ui_fishing_boat_view_ctor` | `0x0047B2F0` | high | Initializes the boat view's ship, four character-frame, and hook pixmap descriptions. |
+| `ui_fishing_object_list_ctor` | `0x0047B350` | high | Constructs the sentinel-based list that owns moving fishing-object records. |
+| `ui_fishing_object_list_dtor` | `0x0047B3B0` | high | Clears every moving-object node and frees the list sentinel. |
+| `ui_fishing_object_list_erase` | `0x0047B420` | high | Unlinks and frees one moving-object node and returns the following iterator. |
+| `ui_fishing_object_list_destroy_sentinel` | `0x0047B4C0` | high | Frees the moving-object list sentinel node. |
+| `ui_fishing_object_list_clear` | `0x0047B4F0` | high | Unlinks and frees all moving-object nodes while preserving the sentinel. |
+| `ui_fishing_object_record_dtor` | `0x0047B580` | high | Trivial destructor for the five-integer moving fishing-object record. |
+| `ui_fishing_object_list_allocate_nodes` | `0x0047B590` | high | Performs checked allocation of 28-byte moving-object list nodes. |
+| `ui_fishing_object_list_insert_before` | `0x0047B600` | high | Creates and links a copied moving-object record before the selected list position. |
+| `ui_fishing_object_list_create_node` | `0x0047B690` | high | Allocates a moving-object node and initializes its links and five-field record. |
+| `ui_fishing_object_list_create_node_cleanup` | `0x0047B702` | high | Frees a partially constructed moving-object node and rethrows after construction fails. |
+| `ui_fishing_object_record_copy_ctor` | `0x0047B750` | high | Copies the five integer fields in a moving fishing-object record. |
+| `ui_fishing_get_pane_timer_scalar_deleting_dtor_thunk` | `0x0047B7A0` | high | Adjusts the TimerHandler secondary-base pointer before FishingGetPane scalar deletion. |
+| `ui_fishing_impact_pane_timer_scalar_deleting_dtor_thunk` | `0x0047B7B0` | high | Adjusts the TimerHandler secondary-base pointer before FishingImpactPane scalar deletion. |
+| `ui_fishing_dialog_timer_scalar_deleting_dtor_thunk` | `0x0047B7C0` | high | Adjusts the TimerHandler secondary-base pointer before FishingDialogPane scalar deletion. |
 | `ui_game_message_pane_ctor` | `0x0047C2A0` | high | Constructs the RTTI-backed four-row floating GameMessagePane used for short colored notices. |
 | `ui_game_message_pane_append_formatted_rgb` | `0x0047C5C0` | high | Parses inline color markup and appends colored byte cells to the fading GameMessagePane overlay. |
 | `ui_game_message_pane_append_bytes` | `0x0047C6F0` | high | Writes colored byte cells into the current floating-message row, wrapping and rotating the four-row buffer. |
@@ -2663,6 +2712,16 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_archive_pointer_vector_insert_n_rethrow_cleanup` | `0x0047409E` | high | Restores pointer-vector construction state and rethrows after insertion fails. |
 | `file_archive_pointer_vector_allocate` | `0x00474260` | high | Performs checked allocation for an array of four-byte expanded-entry pointers. |
 | `file_archive_pointer_vector_copy_range` | `0x004742D0` | high | Copies a contiguous pointer range into replacement vector storage and returns its new end. |
+| `file_updater_default_ctor` | `0x004778F0` | high | Constructs exact RTTI FileUpdater with empty source, destination, archive, mode, and destination settings. |
+| `file_updater_ctor` | `0x00477980` | high | Constructs exact RTTI FileUpdater and applies its source, archive, mode, destination kind, and subdirectory settings. |
+| `file_updater_set_source` | `0x00477A10` | high | Sets the source archive entry, optional destination filename, and archive object; the destination defaults to the source name. |
+| `file_updater_set_mode` | `0x00477A90` | high | Sets the FileUpdater comparison or replacement mode. |
+| `file_updater_set_destination_kind` | `0x00477AB0` | high | Selects the destination root, including current, Windows, System, or Program Files based locations. |
+| `file_updater_set_destination_subdirectory` | `0x00477AD0` | high | Stores an optional destination subdirectory and normalizes its trailing backslash for supported destination kinds. |
+| `file_updater_apply` | `0x00477B70` | high | Finds the source DAT entry, resolves the destination, compares existing bytes when requested, and creates or replaces the file according to mode. |
+| `file_updater_apply_replace_handler` | `0x00477D80` | high | Closes temporary resources and writes the archive entry when the FileUpdater replacement path is selected. |
+| `file_updater_resolve_destination_path` | `0x00477E60` | high | Builds the final directory from the selected root and optional subdirectory, creating Program Files subdirectories when required. |
+| `file_updater_scalar_deleting_dtor` | `0x004781B0` | high | Destroys exact RTTI FileUpdater through its LObject base and conditionally frees the complete object. |
 | `file_load_variant_color_table` | `0x0047DEB0` | medium | Loads one numbered color table family used by renderable assets. |
 | `file_hea_build_row_views` | `0x00487380` | high | Clips a mask-canvas rectangle and builds one run pointer per pixel scanline; it scans horizontal band checkpoints but client 7.41 always uses band 0's row-offset table. |
 | `file_hea_open` | `0x004875B0` | high | Maps the HEA header, band array, row offsets, and packed run stream. |
@@ -2673,6 +2732,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_decode_jpeg_to_rgb16` | `0x004A1840` | high | Uses bundled IJG version 62 to decode an in-memory JPEG to renderer-native 16-bit pixels and returns its width and height. |
 | `file_write_jpeg_from_rgb16` | `0x004A1AF0` | high | Converts RGB555 or RGB565 source pixels to RGB triples and writes JFIF with IJG defaults: quality 75 and 4:2:0 sampling. |
 | `file_load_message_table` | `0x004A4AA0` | high | Loads the line-oriented msg.tbl data from an archive or loose file. |
+| `file_update_ahnlab_security_components` | `0x004AD040` | high | Uses FileUpdater with national.dat to verify or extract MFSVC.DLL, the AhnLab MFGS DLLs, and XUPDATE.EXE into their Windows destinations. |
 | `file_decode_ctf_map_tile` | `0x004C7000` | high | Palette-converts one alternate 784-byte indexed tile source to 16-bit pixels. |
 | `file_decode_dtf_map_tile` | `0x004C7180` | high | Reads one alternate 1568-byte 16-bit tile source and converts color format when needed. |
 | `file_tile_bank_storage_ctor` | `0x004C7280` | high | Opens one fixed-record raw tile bank and selects its palette path. |

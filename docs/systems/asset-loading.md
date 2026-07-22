@@ -59,6 +59,12 @@ This makes `misc.dat` a small patch archive. A same-named entry can replace an a
 
 The override applies only to requests that pass through this archive lookup path. It does not replace loose files, map files opened directly from disk, or formats handled by unrelated readers. A bad replacement is also global: every caller requesting that name receives the `misc.dat` copy.
 
+## FileUpdater extracts installed components
+
+The RTTI class `FileUpdater` is a local DAT-to-filesystem installer, not a network downloader. It selects an entry in an already open archive, resolves a destination under the current directory, Windows directory, System directory, or Program Files, and can compare an existing file before replacing it.
+
+`file_update_ahnlab_security_components` uses this helper with `national.dat`. It verifies or extracts `MFSVC.DLL`, four AhnLab MFGS DLLs, and `XUPDATE.EXE`. The Program Files mode creates the configured `Ahnlab\MFGS` subdirectories as needed. No HTTP or socket work occurs in `FileUpdater`; any archive refresh must happen elsewhere.
+
 ## Loading is synchronous
 
 The active paths perform archive lookup, parsing, decompression, palette conversion, and middleware setup in the calling path. No background asset worker or asynchronous completion queue was found.
