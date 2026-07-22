@@ -76,6 +76,26 @@ The type model parses the remaining packet bytes. The visible dialog then builds
 
 The server-item family has a zero-delay queued hover path into the shared `DescPane`. The local-inventory list is a different control family and should not be assumed to use the same producer. See [Item and ability descriptions](item-and-ability-descriptions.md) for the confirmed paths and remaining shop and bank mapping limit.
 
+### Player-owned selection lists
+
+Some screen menus ask the player to choose from state the client already owns instead of drawing records supplied by the server. Project-owner behavior identifies selling an item and forgetting a skill or spell as uses of these pickers. Those action names belong to the active NPC conversation. The client has no `sell` or `forget` mode enum here, so the same picker can support another server-defined action.
+
+| Type | Local source | Server restriction | Row and response |
+| ---: | --- | --- | --- |
+| `5`, `11` | Inventory | Required list of one-based slots | Local item icon and name; returns the inventory slot |
+| `8` | Spell book | Optional list of one-based slots | Local spell icon and name; returns the spell slot |
+| `9` | Skill book | Optional list of one-based slots | Local skill icon and name; returns the skill slot |
+
+The outer `NPC_Merchant_MessageDialog` contains an `NPCListMenuDialog` for these modes. The nested pane uses the generic `lnpcd2.txt` geometry and contains a scrollable row list plus a separate default submit button. Selecting a row does not replace the normal player inventory or book pane. It selects a row in this temporary NPC-owned list.
+
+`NPCClientItemMenu` receives an exact slot list from the packet. `ui_npc_client_item_menu_build_row` resolves each slot through the live inventory interface when the dialog is built. Only an active local item becomes a row. The row copies the local icon and name. Pursuit `0x004E` also draws the server's extra `u32` value and returns the special `1, slot, 1` response form. A zero item count produces an empty list.
+
+`NPCClientSpellMenu` and `NPCClientSkillMenu` resolve the supplied slots through the live spell or skill book. A nonzero whitelist limits the candidates to those slots. If the list is absent or has count zero, the client scans slots 1 through 89 and collects every active learned entry. Spell rows use the spell icon bank; skill rows use the skill icon bank. Both show the retained ability name.
+
+These row builders check only that the local slot currently contains an active item, spell, or skill. They do not apply `SClass` learnability requirements, inspect legend entries, compare stats, or perform a sellable or forgettable check. No separate learned-level field is drawn or returned. The server receives only the selected one-based slot through [`CMerchant`](../network/client/057-0x39-merchant.md) and decides whether the conversation action succeeds.
+
+After submission, the nested menu enters response-pending and stops accepting another choice. The outer Close action still closes locally without sending `CMerchant`.
+
 ### Pursuit classes
 
 The outer exact class is `NPC_Pursuit_MessageDialog`. `ui_npc_pursuit_build_subtype` adds one of these answer models:

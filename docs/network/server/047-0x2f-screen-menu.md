@@ -131,6 +131,14 @@ Types 10 and 11 are handled explicitly by the binary. Their gameplay distinction
 
 For types 8 and 9, an absent or zero slot list means all learned entries in local book slots 1 through 89. A nonzero list restricts the dialog to those server-selected slots.
 
+### Player-owned choices
+
+Types 5, 8, 9, and 11 do not carry complete display records. They tell the client which local inventory, spell-book, or skill-book slots may be selected. The client resolves each slot against current player state and copies the active entry's icon and name into a temporary scrollable NPC list.
+
+Project-owner behavior identifies selling an item and forgetting a skill or spell as gameplay uses. The action itself is not encoded by `menu_type`: the active server conversation and `pursuit_id` give the returned slot its meaning. The local code therefore performs no sellability, forgettability, character-level, learned-level, stat, legend, or `SClass` requirement check. It only requires an active entry in the selected local slot.
+
+The ability rows draw no separate learned-level value, and [`CMerchant`](../client/057-0x39-merchant.md) returns only the one-based book slot. See [Player-owned selection lists](../../systems/npc-dialogs.md#player-owned-selection-lists) for containment, fallback enumeration, and response-pending behavior.
+
 ## Item and graphic behavior
 
 The ordinary server-item record displays `display_value` with the item. The client does not prove that every use of this field is a purchase price.
@@ -155,7 +163,7 @@ Other values use the blank or fallback path.
 
 `net_deserialize_screen_menu_server_packet` reads the common fields and keeps the remaining bytes in an owned reader. `ui_npc_session_open_screen_menu` copies the packet state into `NPCSession`, refreshes the speaker art, and creates the exact RTTI class `NPC_Merchant_MessageDialog`. `ui_npc_dispatch_screen_menu_type` then constructs the subtype-specific model and controls.
 
-The dialog uses `lnpcd.txt` for the speaker name, content, scrolling, top, and close controls. Its nested menu uses `lnpcd2.txt`; item lists use `lnpcd3.txt`. Input is ordinary `DialogPane` input: child hit testing turns clicks into attachment-order actions, the focused text control receives keyboard and IME events, and Tab moves focus.
+The dialog uses `lnpcd.txt` for the speaker name, content, scrolling, top, and close controls. Generic nested menus, including the player-owned lists, use `lnpcd2.txt`. Server-item types 4 and 10 use the larger `lnpcd3.txt` item layout. Input is ordinary `DialogPane` input: child hit testing turns clicks into attachment-order actions, the focused text control receives keyboard and IME events, and Tab moves focus.
 
 The outer merchant pane attaches Top as action 4 and Close as action 5. Top sends [`CRequestObjectInfo`](../client/067-0x43-request-object-info.md) subtype 1 with this screen menu's `target_id`, then closes the NPC session. Close only closes locally. Neither outer action sends `CMerchant`.
 

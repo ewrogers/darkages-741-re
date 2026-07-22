@@ -467,6 +467,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_message_dialog_close` | `0x0052D950` | high | Closes the owning NPCSession when present, or destroys a standalone NPC message pane, without sending a merchant or pursuit response. |
 | `ui_npc_menu_dialog_ctor` | `0x0052DCB0` | high | Constructs the shared NPCMenuDialog base used by choice, input, item, skill, and spell subpanes. |
 | `ui_npc_menu_dialog_handle_keyboard_event` | `0x0052DDF0` | high | Returns false for Escape so the outer NPC message dialog can handle its cancel action; all other keyboard events use the inherited DialogPane handler. |
+| `ui_npc_list_menu_dialog_ctor` | `0x00530230` | high | Builds a nested NPC selection pane with a scrollable list and a separate default submit button. |
+| `ui_npc_list_menu_dialog_handle_action` | `0x005302F0` | high | Handles the default submit action, delegates the selected row to the active model, and then closes or deactivates the nested pane. |
+| `ui_npc_list_menu_submit_selected_row` | `0x00530450` | high | Reads the scroll control's selected row and calls the model's contextual CMerchant selection builder. |
 | `ui_npc_item_list_row_queue_hover` | `0x005308F0` | high | Resolves a valid row and schedules the owner TimerHandler with its timer ID, a zero-millisecond delay, subtype 2, and the row's u16 index. |
 | `ui_npc_item_list_row_queue_hover_close` | `0x00530960` | high | Schedules the owner TimerHandler with a zero-millisecond delay, subtype 3, and a zero payload when the row hover ends. |
 | `ui_npc_illustration_load_pixmap` | `0x00531B30` | high | Resolves an NPC name and illustration index, then loads frame zero of the mapped image from npcbase.dat. |
@@ -480,6 +483,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_merchant_request_object_info` | `0x00534A90` | high | Top sends CRequestObjectInfo opcode 0x43 subtype 1 with the SScreenMenu target ID, then closes the active NPC session. |
 | `ui_npc_merchant_message_handle_action` | `0x00534B70` | high | Routes base actions 0 through 3 to content handling, action 4 to Top object-info request, and action 5 to local close. |
 | `ui_npc_dispatch_screen_menu_type` | `0x00534C40` | high | Maps SScreenMenu values 0 through 11 to text, input, server item, local item, server skill-spell, and local skill-spell models. |
+| `ui_npc_build_screen_menu_list` | `0x00535080` | high | Constructs the type-specific list model for SScreenMenu types 5 through 9 and 11, then embeds it in NPCListMenuDialog. |
+| `ui_npc_client_item_menu_ctor` | `0x00535C70` | high | Constructs NPCClientItemMenu for SScreenMenu types 5 and 11 and selects the pursuit-0x004E row variant when applicable. |
+| `ui_npc_client_item_menu_count` | `0x00535D90` | high | Returns the server-supplied local inventory slot count used to build the scrollable list. |
+| `ui_npc_client_item_menu_build_row` | `0x00535DB0` | high | Resolves one server-supplied slot against the live inventory and builds an active row from its local icon and name, plus the optional display value. |
+| `ui_npc_client_skill_spell_menu_ctor` | `0x00536C80` | high | Constructs the shared local skill and spell list model before the exact derived type is installed. |
+| `ui_npc_client_skill_menu_build_row` | `0x00536FE0` | high | Resolves one local skill slot and builds an active row from the learned skill's icon and retained name. |
+| `ui_npc_client_skill_menu_initialize` | `0x00537260` | high | Parses the type-9 slot whitelist and falls back to enumerating the local skill book when the count is zero. |
+| `ui_npc_client_skill_menu_enumerate_all` | `0x00537290` | high | Collects active learned skill slots 1 through 89 when the server supplies no nonzero whitelist. |
+| `ui_npc_client_spell_menu_build_row` | `0x00537400` | high | Resolves one local spell slot and builds an active row from the learned spell's icon and retained name. |
+| `ui_npc_client_spell_menu_initialize` | `0x00537680` | high | Parses the type-8 slot whitelist and falls back to enumerating the local spell book when the count is zero. |
+| `ui_npc_client_spell_menu_enumerate_all` | `0x005376B0` | high | Collects active learned spell slots 1 through 89 when the server supplies no nonzero whitelist. |
 | `ui_npc_server_item_menu_timer_callback` | `0x00539340` | high | NPCServerItemMenuDialog TimerHandler callback; timer ID 1 routes subtype 2 to the row tooltip update and subtype 3 to tooltip close. |
 | `ui_npc_server_item_menu_handle_pointer_event` | `0x005393F0` | high | Stores pointer coordinates on move, closes the tooltip outside the visible client bounds, and then delegates to DialogPane pointer handling. |
 | `ui_npc_server_item_menu_show_hover_desc` | `0x00539600` | high | Resolves a changed server-item row by name, opens DescPane near the pointer, repositions existing content for the same row, and refreshes the dialog's detail controls. |

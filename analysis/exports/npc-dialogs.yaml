@@ -145,6 +145,18 @@ functions:
     name: ui_npc_menu_dialog_handle_keyboard_event
     confidence: high
     evidence: "Returns false for Escape so the outer NPC message dialog can handle its cancel action; all other keyboard events use the inherited DialogPane handler."
+  - address: "0x00530230"
+    name: ui_npc_list_menu_dialog_ctor
+    confidence: high
+    evidence: "Builds a nested NPC selection pane with a scrollable list and a separate default submit button."
+  - address: "0x005302F0"
+    name: ui_npc_list_menu_dialog_handle_action
+    confidence: high
+    evidence: "Handles the default submit action, delegates the selected row to the active model, and then closes or deactivates the nested pane."
+  - address: "0x00530450"
+    name: ui_npc_list_menu_submit_selected_row
+    confidence: high
+    evidence: "Reads the scroll control's selected row and calls the model's contextual CMerchant selection builder."
   - address: "0x00534990"
     name: ui_npc_merchant_message_dialog_ctor
     confidence: high
@@ -161,6 +173,10 @@ functions:
     name: ui_npc_dispatch_screen_menu_type
     confidence: high
     evidence: "Maps SScreenMenu values 0 through 11 to text, input, server item, local item, server skill-spell, and local skill-spell models."
+  - address: "0x00535080"
+    name: ui_npc_build_screen_menu_list
+    confidence: high
+    evidence: "Constructs the type-specific list model for SScreenMenu types 5 through 9 and 11, then embeds it in NPCListMenuDialog."
   - address: "0x00535590"
     name: net_send_merchant_text_menu_selection
     confidence: high
@@ -177,6 +193,18 @@ functions:
     name: net_parse_merchant_text_input_menu
     confidence: high
     evidence: "Parses the optional type-3 string8 server argument and the common u16 pursuit ID for a merchant text input."
+  - address: "0x00535C70"
+    name: ui_npc_client_item_menu_ctor
+    confidence: high
+    evidence: "Constructs NPCClientItemMenu for SScreenMenu types 5 and 11 and selects the pursuit-0x004E row variant when applicable."
+  - address: "0x00535D90"
+    name: ui_npc_client_item_menu_count
+    confidence: high
+    evidence: "Returns the server-supplied local inventory slot count used to build the scrollable list."
+  - address: "0x00535DB0"
+    name: ui_npc_client_item_menu_build_row
+    confidence: high
+    evidence: "Resolves one server-supplied slot against the live inventory and builds an active row from its local icon and name, plus the optional display value."
   - address: "0x005362A0"
     name: net_send_merchant_inventory_item_selection
     confidence: high
@@ -193,6 +221,10 @@ functions:
     name: net_parse_merchant_server_skill_spell_menu
     confidence: high
     evidence: "Parses pursuit ID and u16-counted graphic type, sprite, color, and string8 name records."
+  - address: "0x00536C80"
+    name: ui_npc_client_skill_spell_menu_ctor
+    confidence: high
+    evidence: "Constructs the shared local skill and spell list model before the exact derived type is installed."
   - address: "0x00536D60"
     name: net_send_merchant_client_skill_spell_selection
     confidence: high
@@ -201,6 +233,30 @@ functions:
     name: net_parse_merchant_client_skill_spell_menu
     confidence: high
     evidence: "Parses pursuit ID and an optional u8-counted slot whitelist; absent or zero count enumerates all learned slots 1 through 89."
+  - address: "0x00536FE0"
+    name: ui_npc_client_skill_menu_build_row
+    confidence: high
+    evidence: "Resolves one local skill slot and builds an active row from the learned skill's icon and retained name."
+  - address: "0x00537260"
+    name: ui_npc_client_skill_menu_initialize
+    confidence: high
+    evidence: "Parses the type-9 slot whitelist and falls back to enumerating the local skill book when the count is zero."
+  - address: "0x00537290"
+    name: ui_npc_client_skill_menu_enumerate_all
+    confidence: high
+    evidence: "Collects active learned skill slots 1 through 89 when the server supplies no nonzero whitelist."
+  - address: "0x00537400"
+    name: ui_npc_client_spell_menu_build_row
+    confidence: high
+    evidence: "Resolves one local spell slot and builds an active row from the learned spell's icon and retained name."
+  - address: "0x00537680"
+    name: ui_npc_client_spell_menu_initialize
+    confidence: high
+    evidence: "Parses the type-8 slot whitelist and falls back to enumerating the local spell book when the count is zero."
+  - address: "0x005376B0"
+    name: ui_npc_client_spell_menu_enumerate_all
+    confidence: high
+    evidence: "Collects active learned spell slots 1 through 89 when the server supplies no nonzero whitelist."
   - address: "0x00538710"
     name: net_send_merchant_server_item_selection
     confidence: high
@@ -296,6 +352,20 @@ comments:
     text: "Return false for Escape so the outer NPC_Pursuit_MessageDialog can run its cancel action and send CPursuit Close."
   - address: "0x00534C40"
     text: "Dispatch SScreenMenu types: 0/1 text, 2/3 input, 4/10 server items, 5/11 local items, 6/7 server spell-skill, 8/9 local spell-skill."
+  - address: "0x005350EE"
+    text: "SScreenMenu types 5 and 11 build NPCClientItemMenu from server-selected local inventory slots."
+  - address: "0x005351EA"
+    text: "SScreenMenu type 8 builds NPCClientSpellMenu from the local spell book."
+  - address: "0x0053523B"
+    text: "SScreenMenu type 9 builds NPCClientSkillMenu from the local skill book."
+  - address: "0x00535DFF"
+    text: "Resolve this server-supplied one-based slot through the live local inventory interface; inactive entries do not produce rows."
+  - address: "0x005364C4"
+    text: "Pursuit 0x004E supplies one extra u32 display value for each local inventory slot."
+  - address: "0x005372AF"
+    text: "A zero or absent whitelist enumerates active learned skill slots 1 through 89."
+  - address: "0x005376CF"
+    text: "A zero or absent whitelist enumerates active learned spell slots 1 through 89."
   - address: "0x0053CCB1"
     text: "Register attachment-order action 6 (Close) as this dialog's Escape/cancel action."
   - address: "0x0053CD1C"

@@ -44,6 +44,8 @@ All multibyte values are big-endian. `net_build_merchant_response_header` writes
 
 The two fixed `1` bytes in the `0x004E` form are literal client constants. Their meanings are unresolved. Inventory and book slots are one-based.
 
+Project-owner behavior identifies local selling and ability-forgetting conversations as uses of the player-owned selection families. The packet does not label either action and does not include the item's properties, ability name, or learned level. It returns the chosen local slot, while the active `SScreenMenu` conversation and `pursuit_id` tell the server how to interpret it. See [Player-owned selection lists](../../systems/npc-dialogs.md#player-owned-selection-lists).
+
 Argumented menus treat `server_argument` as opaque. The client does not display or reinterpret it; it returns the same bytes when the user submits.
 
 Every confirmed nested-menu submitter asks `NPCSession` to enter response-pending after queuing `CMerchant`. This deactivates the current nested menu. A continuing interaction needs another server packet to refresh the session and pane.
