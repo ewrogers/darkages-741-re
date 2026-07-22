@@ -679,6 +679,158 @@ functions:
     name: file_load_image_pixmap
     confidence: high
     evidence: Loads one image frame into a pixmap view and applies the EPF palette selector when required.
+  - address: "0x00493DB0"
+    name: metadata_item_info_list_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class ItemInfoList, binds its singleton, initializes the name-keyed record map, and starts metadata subscription."
+  - address: "0x00493E40"
+    name: metadata_item_info_list_dtor
+    confidence: high
+    evidence: "Destroys the ItemInfo record map, unbinds the singleton, and tears down the TimerHandler base."
+  - address: "0x00493EC0"
+    name: metadata_item_info_list_handle_event
+    confidence: high
+    evidence: "Applies available ItemInfo metadata, subscribes to matching variants, or retries when the metadata manager is unavailable."
+  - address: "0x00494030"
+    name: metadata_item_info_list_lookup
+    confidence: high
+    evidence: "Finds an exact item-name string and copies its fixed 0xC0-byte information record to the caller."
+  - address: "0x00494130"
+    name: metadata_item_info_list_is_loaded
+    confidence: high
+    evidence: "Returns the ItemInfoList loaded-state byte at object offset 0x0C."
+  - address: "0x00494150"
+    name: metadata_item_info_list_subscribe
+    confidence: high
+    evidence: "Subscribes to ItemInfo metadata or schedules a retry after 1000 ms when MetaTableManager is unavailable."
+  - address: "0x004941A0"
+    name: metadata_item_info_list_apply_table
+    confidence: high
+    evidence: "Iterates every row group in an ItemInfo metadata table and passes each row to the record parser."
+  - address: "0x00494200"
+    name: metadata_item_info_list_parse_row
+    confidence: high
+    evidence: "Parses four numeric fields and optional 48-byte and 128-byte text fields, then indexes the 0xC0-byte record by row key."
+  - address: "0x004944F0"
+    name: metadata_item_info_list_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler scalar-deleting destructor for exact RTTI class ItemInfoList."
+  - address: "0x00494520"
+    name: metadata_item_info_map_cleanup
+    confidence: high
+    evidence: "Exception-cleanup wrapper that destroys the ItemInfo map."
+  - address: "0x00494540"
+    name: metadata_item_info_lookup_key_dtor
+    confidence: high
+    evidence: "Destroys the temporary std::string key used by ItemInfo lookup."
+  - address: "0x004945A0"
+    name: metadata_item_info_map_ctor
+    confidence: high
+    evidence: "Constructs the name-keyed ItemInfo record map and its sentinel node."
+  - address: "0x004945D0"
+    name: metadata_item_info_map_dtor
+    confidence: high
+    evidence: "Erases all ItemInfo map nodes and releases the sentinel node."
+  - address: "0x00494670"
+    name: metadata_item_info_map_find
+    confidence: high
+    evidence: "Finds an exact std::string key by lower_bound and returns the map sentinel when absent."
+  - address: "0x00494750"
+    name: metadata_item_info_map_head_cleanup
+    confidence: high
+    evidence: "Exception-cleanup helper that releases the ItemInfo map sentinel node."
+  - address: "0x00494780"
+    name: metadata_item_info_map_value_ctor
+    confidence: high
+    evidence: "Default-constructs an empty string key followed by a zeroed 0xC0-byte ItemInfo record."
+  - address: "0x00494840"
+    name: metadata_item_info_map_erase_range
+    confidence: high
+    evidence: "Erases ItemInfo map nodes in a half-open iterator range and returns the successor iterator."
+  - address: "0x00494920"
+    name: metadata_item_info_map_lower_bound
+    confidence: high
+    evidence: "Walks the ItemInfo red-black tree to find the first key not less than the supplied string."
+  - address: "0x004949D0"
+    name: metadata_item_info_map_initialize
+    confidence: high
+    evidence: "Allocates and initializes the ItemInfo map sentinel, tree links, and element count."
+  - address: "0x00494A50"
+    name: metadata_item_info_map_iterator_ctor
+    confidence: high
+    evidence: "Constructs an ItemInfo map iterator from a node pointer."
+  - address: "0x00494A70"
+    name: metadata_item_info_map_erase
+    confidence: high
+    evidence: "Unlinks one ItemInfo red-black-tree node, repairs tree invariants, destroys its value, and releases the node."
+  - address: "0x00494FD0"
+    name: metadata_item_info_map_clear
+    confidence: high
+    evidence: "Destroys the ItemInfo map tree and resets the sentinel links and element count."
+  - address: "0x00495030"
+    name: metadata_item_info_map_destroy_subtree
+    confidence: high
+    evidence: "Recursively destroys an ItemInfo map subtree, including its string values and node allocations."
+  - address: "0x004950A0"
+    name: metadata_item_info_map_rotate_left
+    confidence: high
+    evidence: "Performs the red-black tree left rotation used by ItemInfo insertion and erase repair."
+  - address: "0x00495150"
+    name: metadata_item_info_map_rotate_right
+    confidence: high
+    evidence: "Performs the red-black tree right rotation used by ItemInfo insertion and erase repair."
+  - address: "0x00495200"
+    name: metadata_item_info_map_iterator_next
+    confidence: high
+    evidence: "Advances an ItemInfo map iterator to its in-order successor."
+  - address: "0x004952B0"
+    name: metadata_item_info_list_bind_singleton
+    confidence: high
+    evidence: "Binds the ItemInfoList complete-object pointer from its Singleton<ItemInfoList> base at this+0x0C."
+  - address: "0x004952F0"
+    name: metadata_item_info_list_unbind_singleton
+    confidence: high
+    evidence: "Clears the ItemInfoList singleton when the destroyed singleton base owns the current binding."
+  - address: "0x00495330"
+    name: metadata_item_info_map_value_destroy
+    confidence: high
+    evidence: "Destroys the std::string key stored in an ItemInfo map node value."
+  - address: "0x004953A0"
+    name: metadata_item_info_map_allocate_nodes
+    confidence: high
+    evidence: "Allocates one or more 0xEC-byte ItemInfo map nodes and throws std::bad_alloc on failure."
+  - address: "0x00495410"
+    name: metadata_item_info_map_insert_unique
+    confidence: high
+    evidence: "Searches for a unique ItemInfo string key, inserts a new node when absent, and reports whether insertion occurred."
+  - address: "0x00495670"
+    name: metadata_item_info_map_insert_node
+    confidence: high
+    evidence: "Links a new ItemInfo node under the selected parent and repairs red-black-tree invariants."
+  - address: "0x00495970"
+    name: metadata_item_info_map_iterator_prev
+    confidence: high
+    evidence: "Moves an ItemInfo map iterator to its in-order predecessor."
+  - address: "0x00495A40"
+    name: metadata_item_info_map_create_node
+    confidence: high
+    evidence: "Allocates an ItemInfo map node and copy-constructs its string-plus-record value."
+  - address: "0x00495A9D"
+    name: metadata_item_info_map_create_node_exception_cleanup
+    confidence: high
+    evidence: "Exception cleanup that releases a partially constructed ItemInfo map node before rethrowing."
+  - address: "0x00495AE0"
+    name: metadata_item_info_map_allocate_node
+    confidence: high
+    evidence: "Allocates one 0xEC-byte ItemInfo map node and initializes its links and color and sentinel flags."
+  - address: "0x00495B40"
+    name: metadata_item_info_map_value_copy
+    confidence: high
+    evidence: "Conditionally copy-constructs an ItemInfo string-plus-record value into node storage."
+  - address: "0x00495BB0"
+    name: metadata_item_info_map_value_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs an ItemInfo map value by copying its std::string key and 0xC0-byte record."
   - address: "0x004A4AA0"
     name: file_load_message_table
     confidence: high
@@ -691,6 +843,14 @@ functions:
     name: net_handle_stipulation
     confidence: high
     evidence: Handles the RTTI-backed SStipulation object with the same greeting update behavior.
+  - address: "0x004D9330"
+    name: metadata_item_info_list_exists
+    confidence: high
+    evidence: "Returns whether the exact RTTI ItemInfoList singleton is currently bound."
+  - address: "0x004D9350"
+    name: metadata_item_info_list_get
+    confidence: high
+    evidence: "Returns the exact RTTI ItemInfoList singleton pointer."
   - address: "0x004E53F0"
     name: net_request_metadata
     confidence: high

@@ -182,6 +182,25 @@ The local installation contains `SClass3` and all seven event files. These count
 
 One local `SClass3` ability group has a seventh value. The client ignores it, confirming that later values are not an extension of the six-value schema.
 
+## Item information table
+
+The exact RTTI class `ItemInfoList` subscribes to the `ItemInfo` table and keeps a name-keyed runtime index. If `MetaTableManager` is not ready during construction, it retries after 1,000 ms. It can also subscribe to additional table names that begin with `ItemInfo`, allowing the metadata inventory to advertise variants without hardcoding each full name.
+
+Each accepted row has at least three values. Value zero contains one or two decimal integers separated by `/`; value one and value two each contain one decimal integer. Value three is optional text copied into 48 bytes, and value four is optional text copied into 128 bytes. The first text field has a trailing carriage return removed. The stored value is therefore exactly 192 bytes:
+
+```c
+struct ItemInfoRecord {
+    i32 category;       // value 1
+    i32 range_min;      // second number in value 0, or -1
+    i32 range_max;      // first number in value 0
+    i32 numeric_value;  // value 2
+    char label[48];     // optional value 3
+    char detail[128];   // optional value 4
+};
+```
+
+Inventory and item-description panes query this index by the item's display name. The category is range-checked to `0..5` before it selects localized text. The two range fields are displayed as a single value or a minimum-to-maximum range, while the remaining number and strings populate other description fields.
+
 ## Item, skill, and spell denial tables
 
 The RTTI-backed `DeniedItemList` is one consumer of this metadata system. It creates three empty runtime lookup containers and subscribes to these hardcoded table names:

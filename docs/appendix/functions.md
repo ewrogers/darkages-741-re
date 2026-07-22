@@ -3753,12 +3753,52 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `hier_list_find` | `0x00488130` | high | Recursively compares payload bytes and optionally returns the owner list and index. |
 | `hier_list_relink_range` | `0x00488220` | high | Repairs parent-record and child-item back-pointers after record addresses change. |
 | `hier_list_scalar_deleting_dtor` | `0x004882F0` | high | Destroys a HierList and optionally releases its allocation. |
+| `metadata_item_info_list_ctor` | `0x00493DB0` | high | Constructs exact RTTI class ItemInfoList, binds its singleton, initializes the name-keyed record map, and starts metadata subscription. |
+| `metadata_item_info_list_dtor` | `0x00493E40` | high | Destroys the ItemInfo record map, unbinds the singleton, and tears down the TimerHandler base. |
+| `metadata_item_info_list_handle_event` | `0x00493EC0` | high | Applies available ItemInfo metadata, subscribes to matching variants, or retries when the metadata manager is unavailable. |
+| `metadata_item_info_list_lookup` | `0x00494030` | high | Finds an exact item-name string and copies its fixed 0xC0-byte information record to the caller. |
+| `metadata_item_info_list_is_loaded` | `0x00494130` | high | Returns the ItemInfoList loaded-state byte at object offset 0x0C. |
+| `metadata_item_info_list_subscribe` | `0x00494150` | high | Subscribes to ItemInfo metadata or schedules a retry after 1000 ms when MetaTableManager is unavailable. |
+| `metadata_item_info_list_apply_table` | `0x004941A0` | high | Iterates every row group in an ItemInfo metadata table and passes each row to the record parser. |
+| `metadata_item_info_list_parse_row` | `0x00494200` | high | Parses four numeric fields and optional 48-byte and 128-byte text fields, then indexes the 0xC0-byte record by row key. |
+| `metadata_item_info_list_scalar_deleting_dtor` | `0x004944F0` | high | Compiler scalar-deleting destructor for exact RTTI class ItemInfoList. |
+| `metadata_item_info_map_cleanup` | `0x00494520` | high | Exception-cleanup wrapper that destroys the ItemInfo map. |
+| `metadata_item_info_lookup_key_dtor` | `0x00494540` | high | Destroys the temporary std::string key used by ItemInfo lookup. |
+| `metadata_item_info_map_ctor` | `0x004945A0` | high | Constructs the name-keyed ItemInfo record map and its sentinel node. |
+| `metadata_item_info_map_dtor` | `0x004945D0` | high | Erases all ItemInfo map nodes and releases the sentinel node. |
+| `metadata_item_info_map_find` | `0x00494670` | high | Finds an exact std::string key by lower_bound and returns the map sentinel when absent. |
+| `metadata_item_info_map_head_cleanup` | `0x00494750` | high | Exception-cleanup helper that releases the ItemInfo map sentinel node. |
+| `metadata_item_info_map_value_ctor` | `0x00494780` | high | Default-constructs an empty string key followed by a zeroed 0xC0-byte ItemInfo record. |
+| `metadata_item_info_map_erase_range` | `0x00494840` | high | Erases ItemInfo map nodes in a half-open iterator range and returns the successor iterator. |
+| `metadata_item_info_map_lower_bound` | `0x00494920` | high | Walks the ItemInfo red-black tree to find the first key not less than the supplied string. |
+| `metadata_item_info_map_initialize` | `0x004949D0` | high | Allocates and initializes the ItemInfo map sentinel, tree links, and element count. |
+| `metadata_item_info_map_iterator_ctor` | `0x00494A50` | high | Constructs an ItemInfo map iterator from a node pointer. |
+| `metadata_item_info_map_erase` | `0x00494A70` | high | Unlinks one ItemInfo red-black-tree node, repairs tree invariants, destroys its value, and releases the node. |
+| `metadata_item_info_map_clear` | `0x00494FD0` | high | Destroys the ItemInfo map tree and resets the sentinel links and element count. |
+| `metadata_item_info_map_destroy_subtree` | `0x00495030` | high | Recursively destroys an ItemInfo map subtree, including its string values and node allocations. |
+| `metadata_item_info_map_rotate_left` | `0x004950A0` | high | Performs the red-black tree left rotation used by ItemInfo insertion and erase repair. |
+| `metadata_item_info_map_rotate_right` | `0x00495150` | high | Performs the red-black tree right rotation used by ItemInfo insertion and erase repair. |
+| `metadata_item_info_map_iterator_next` | `0x00495200` | high | Advances an ItemInfo map iterator to its in-order successor. |
+| `metadata_item_info_list_bind_singleton` | `0x004952B0` | high | Binds the ItemInfoList complete-object pointer from its Singleton&lt;ItemInfoList&gt; base at this+0x0C. |
+| `metadata_item_info_list_unbind_singleton` | `0x004952F0` | high | Clears the ItemInfoList singleton when the destroyed singleton base owns the current binding. |
+| `metadata_item_info_map_value_destroy` | `0x00495330` | high | Destroys the std::string key stored in an ItemInfo map node value. |
+| `metadata_item_info_map_allocate_nodes` | `0x004953A0` | high | Allocates one or more 0xEC-byte ItemInfo map nodes and throws std::bad_alloc on failure. |
+| `metadata_item_info_map_insert_unique` | `0x00495410` | high | Searches for a unique ItemInfo string key, inserts a new node when absent, and reports whether insertion occurred. |
+| `metadata_item_info_map_insert_node` | `0x00495670` | high | Links a new ItemInfo node under the selected parent and repairs red-black-tree invariants. |
+| `metadata_item_info_map_iterator_prev` | `0x00495970` | high | Moves an ItemInfo map iterator to its in-order predecessor. |
+| `metadata_item_info_map_create_node` | `0x00495A40` | high | Allocates an ItemInfo map node and copy-constructs its string-plus-record value. |
+| `metadata_item_info_map_create_node_exception_cleanup` | `0x00495A9D` | high | Exception cleanup that releases a partially constructed ItemInfo map node before rethrowing. |
+| `metadata_item_info_map_allocate_node` | `0x00495AE0` | high | Allocates one 0xEC-byte ItemInfo map node and initializes its links and color and sentinel flags. |
+| `metadata_item_info_map_value_copy` | `0x00495B40` | high | Conditionally copy-constructs an ItemInfo string-plus-record value into node storage. |
+| `metadata_item_info_map_value_copy_ctor` | `0x00495BB0` | high | Copy-constructs an ItemInfo map value by copying its std::string key and 0xC0-byte record. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |
 | `lobject_ctor` | `0x004B4480` | high | Installs the LObject vtable and writes live-cookie bytes 62 6F 73 79 ("bosy") at +0x04. |
 | `lobject_dtor` | `0x004B44B0` | high | Restores the LObject vtable and clears the live cookie at +0x04 to zero. |
 | `lobject_is_live` | `0x004B4550` | high | Returns true only when LObject +0x04 equals 0x79736F62; event_dispatch_immediate uses it before dispatch. |
+| `metadata_item_info_list_exists` | `0x004D9330` | high | Returns whether the exact RTTI ItemInfoList singleton is currently bound. |
+| `metadata_item_info_list_get` | `0x004D9350` | high | Returns the exact RTTI ItemInfoList singleton pointer. |
 | `metadata_parse_event_record` | `0x0055D6E0` | high | Parses one sequential start-to-end SEvent record and its title, id, qual, sum, result, sub, and reward groups. |
 | `metadata_event_requirements_met` | `0x0055E370` | high | Checks an event progression mask, class mask, and every prerequisite legend key against local user state. |
 | `metadata_parse_spell_skill_constraint` | `0x0055F890` | high | Parses the first six values of one SClass ability record into display and requirement fields. |
