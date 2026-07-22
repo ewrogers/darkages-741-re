@@ -2186,6 +2186,20 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_text_menu_dialog_ex_add_row_button` | `0x004CFCE0` | high | Creates and attaches one TextButtonExControlPane at the requested lmerc row. |
 | `ui_text_menu_dialog_ex_handle_action` | `0x004CFDE0` | high | Handles target-info and close controls; row actions invoke the derived selection sender and then close. |
 | `ui_argumented_text_menu_dialog_ex_ctor` | `0x004CFF90` | high | Constructs exact RTTI ArgumentedTextMenuDialogEx and parses its argumented menu payload. |
+| `ui_argumented_text_menu_dialog_ex_has_optional_header_text` | `0x004D0010` | high | Returns true so the common merchant header consumes the argumented menu's trailing string. |
+| `ui_task_list_dialog_ctor` | `0x004D01E0` | high | Constructs exact RTTI TaskListDialog over MerchantDialogPane and enables its task-list state. |
+| `ui_task_list_dialog_submit_selected_item` | `0x004D0220` | high | Finds the attached TaskListPane and invokes its selected item's submit virtual. |
+| `ui_task_list_dialog_handle_action` | `0x004D0270` | high | Routes submit, close, and target-info controls and optionally closes after a successful selection. |
+| `ui_task_list_dialog_update_scroll_button_state` | `0x004D02E0` | high | Reads the task list's current index and enables or disables the related navigation control. |
+| `ui_task_list_dialog_build_detail_controls` | `0x004D0370` | high | Builds the lmerd title, monster, description, scrollable list, and three image-button controls. |
+| `ui_task_list_dialog_build_lmerc2_controls` | `0x004D06C0` | high | Builds the lmerc2 title, seller monster, description, scrollable list, and three image-button controls. |
+| `ui_task_list_pane_ctor` | `0x004D0A40` | high | Constructs exact RTTI TaskListPane with 0x402-byte rows and retains target identity for response packets. |
+| `ui_task_list_pane_append_text_row` | `0x004D0AA0` | high | Appends one task row containing a u16 selection value and bounded text. |
+| `ui_task_list_pane_submit_selected_row` | `0x004D0B00` | high | Submits the selected task row through the derived response virtual when a row is selected. |
+| `ui_task_list_pane_notify_selection_changed` | `0x004D0B50` | high | Notifies the owning TaskListDialog through its attached-control path after selection changes. |
+| `ui_task_list_pane_draw_text_row` | `0x004D0B90` | high | Draws one task row with selected or normal palette color and vertically centered text. |
+| `ui_text_menu_dialog_ctor` | `0x004D0D50` | high | Constructs exact RTTI TextMenuDialog, parses rows, builds TaskListPane, and attaches lmerd controls. |
+| `ui_text_menu_dialog_dtor` | `0x004D0EC0` | high | Frees TextMenuDialog's allocated row array and destroys its DialogPane base. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
@@ -2654,6 +2668,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_parse_merchant_dialog_common_header` | `0x004CE250` | high | Parses merchant target type, target ID, pursuit ID, content, seller text, and an optional derived-dialog string. |
 | `net_parse_text_menu_dialog_ex` | `0x004CF590` | high | Parses the common header and rows, sizes the segmented lmerc body, and attaches title, monster, description, controls, and row buttons. |
 | `net_send_merchant_selection` | `0x004CFE60` | high | MerchantDialogPane::TextMenuDialogEx virtual method that builds and sends CMerchant opcode 0x39. |
+| `net_send_argumented_text_menu_ex_selection` | `0x004D0020` | high | Sends CMerchant with target type, target ID, the selected row's pursuit ID, and the retained argument string. |
+| `net_send_merchant_task_selection` | `0x004D0C30` | high | Sends the eight-byte CMerchant response with target type, target ID, and selected u16 task value. |
+| `net_parse_text_menu_dialog` | `0x004D0F10` | high | Parses the common header plus a u8 row count and repeated string8 text with u16 selection values. |
 | `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
 | `net_send_pursuit_selection` | `0x004DBC90` | high | MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method. |
 | `net_dispatch_metadata_events` | `0x004E4D80` | high | MetaTableManager recognizes decoded SMetaData opcode 0x6F outside the packet factory. |

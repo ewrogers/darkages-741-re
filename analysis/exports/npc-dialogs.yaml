@@ -393,6 +393,74 @@ functions:
     name: ui_argumented_text_menu_dialog_ex_ctor
     confidence: high
     evidence: "Constructs exact RTTI ArgumentedTextMenuDialogEx and parses its argumented menu payload."
+  - address: "0x004D0010"
+    name: ui_argumented_text_menu_dialog_ex_has_optional_header_text
+    confidence: high
+    evidence: "Returns true so the common merchant header consumes the argumented menu's trailing string."
+  - address: "0x004D0020"
+    name: net_send_argumented_text_menu_ex_selection
+    confidence: high
+    evidence: "Sends CMerchant with target type, target ID, the selected row's pursuit ID, and the retained argument string."
+  - address: "0x004D01E0"
+    name: ui_task_list_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TaskListDialog over MerchantDialogPane and enables its task-list state."
+  - address: "0x004D0220"
+    name: ui_task_list_dialog_submit_selected_item
+    confidence: high
+    evidence: "Finds the attached TaskListPane and invokes its selected item's submit virtual."
+  - address: "0x004D0270"
+    name: ui_task_list_dialog_handle_action
+    confidence: high
+    evidence: "Routes submit, close, and target-info controls and optionally closes after a successful selection."
+  - address: "0x004D02E0"
+    name: ui_task_list_dialog_update_scroll_button_state
+    confidence: high
+    evidence: "Reads the task list's current index and enables or disables the related navigation control."
+  - address: "0x004D0370"
+    name: ui_task_list_dialog_build_detail_controls
+    confidence: high
+    evidence: "Builds the lmerd title, monster, description, scrollable list, and three image-button controls."
+  - address: "0x004D06C0"
+    name: ui_task_list_dialog_build_lmerc2_controls
+    confidence: high
+    evidence: "Builds the lmerc2 title, seller monster, description, scrollable list, and three image-button controls."
+  - address: "0x004D0A40"
+    name: ui_task_list_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TaskListPane with 0x402-byte rows and retains target identity for response packets."
+  - address: "0x004D0AA0"
+    name: ui_task_list_pane_append_text_row
+    confidence: high
+    evidence: "Appends one task row containing a u16 selection value and bounded text."
+  - address: "0x004D0B00"
+    name: ui_task_list_pane_submit_selected_row
+    confidence: high
+    evidence: "Submits the selected task row through the derived response virtual when a row is selected."
+  - address: "0x004D0B50"
+    name: ui_task_list_pane_notify_selection_changed
+    confidence: high
+    evidence: "Notifies the owning TaskListDialog through its attached-control path after selection changes."
+  - address: "0x004D0B90"
+    name: ui_task_list_pane_draw_text_row
+    confidence: high
+    evidence: "Draws one task row with selected or normal palette color and vertically centered text."
+  - address: "0x004D0C30"
+    name: net_send_merchant_task_selection
+    confidence: high
+    evidence: "Sends the eight-byte CMerchant response with target type, target ID, and selected u16 task value."
+  - address: "0x004D0D50"
+    name: ui_text_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TextMenuDialog, parses rows, builds TaskListPane, and attaches lmerd controls."
+  - address: "0x004D0EC0"
+    name: ui_text_menu_dialog_dtor
+    confidence: high
+    evidence: "Frees TextMenuDialog's allocated row array and destroys its DialogPane base."
+  - address: "0x004D0F10"
+    name: net_parse_text_menu_dialog
+    confidence: high
+    evidence: "Parses the common header plus a u8 row count and repeated string8 text with u16 selection values."
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high
