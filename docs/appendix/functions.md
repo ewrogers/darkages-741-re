@@ -217,6 +217,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_manager_register_global` | `0x0048F740` | high | Registers the containing InputMan as the process-global text-input service. |
 | `input_manager_unregister_global` | `0x0048F780` | high | Clears the process-global InputMan when this instance is registered. |
 | `input_event_manager_is_registered` | `0x0048F7C0` | high | Reports whether the separate InputEventManager singleton exists. |
+| `input_keyboard_manager_ctor` | `0x004A1FD0` | high | Constructs exact RTTI KeyboardMan, publishes its singleton pointer, and initializes repeat and keyboard-state fields. |
 | `input_map_key_to_world_direction` | `0x005F0B50` | high | Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3. |
 
 ## UI
@@ -1716,12 +1717,44 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_item_shop_icon_inventory_control_hit_test` | `0x0049EEE0` | high | Maps a control-relative point through 33 by 36 pixel cells, rejects the four-pixel gaps, and returns the visible item index. |
 | `ui_item_shop_icon_inventory_control_set_items` | `0x0049EF50` | high | Stores the visible item-record pointer and count, then invalidates ItemShop::IconInvControlPane. |
 | `ui_item_shop_icon_inventory_control_select_cell` | `0x0049EF80` | high | Invalidates the old and new cells and stores the selected grid index, or -1 when outside the visible range. |
+| `ui_item_shop_icon_inventory_control_invalidate_cell` | `0x0049F010` | high | Bounds-checks one grid cell, builds its 32 by 32 rectangle on the 33 by 36 layout, and invalidates that region. |
+| `ui_item_shop_icon_inventory_control_draw` | `0x0049F0C0` | high | Draws visible icon records, applies per-record palette colors, and outlines the selected cell with palette index 0x97. |
+| `ui_item_shop_get_alert_ctor` | `0x0049F380` | high | Constructs exact RTTI ItemShop::SBGetAlertPane and retains the shopping-bag owner used after acceptance. |
+| `ui_item_shop_get_alert_dtor` | `0x0049F3C0` | high | Restores the ItemShop::SBGetAlertPane vtables and destroys its DialogPane base. |
+| `ui_item_shop_get_alert_handle_accept` | `0x0049F3F0` | high | Schedules timer ID 1 immediately on the retained shopping-bag owner so the confirmed request runs after the alert closes. |
+| `ui_item_shop_get_alert_handle_dismiss` | `0x0049F440` | high | ItemShop::SBGetAlertPane dismissal callback intentionally performs no follow-up work. |
 | `ui_item_shop_shopping_bag_ctor` | `0x0049F450` | high | Constructs exact RTTI ItemShop::ShoppingBagDialogPane from lshopba2.txt and sends CCashShop action 0. |
 | `ui_item_shop_shopping_bag_dtor` | `0x0049F7E0` | high | Unregisters and destroys ShoppingBagDialogPane and its attached item controls. |
+| `ui_item_shop_shopping_bag_handle_pointer_event` | `0x0049F8A0` | high | Handles grid selection and information actions, including opening SBGetAlertPane with the selected record text. |
+| `ui_item_shop_shopping_bag_handle_timer` | `0x0049FBD0` | high | Timer ID 1 dispatches shopping-bag dialog action 5 after SBGetAlertPane acceptance. |
+| `ui_item_shop_shopping_bag_draw` | `0x0049FC10` | high | Draws the shopping-bag dialog and its one-based current-page and total-page indicator. |
+| `ui_item_shop_shopping_bag_handle_action` | `0x0049FD10` | high | Handles previous page, next page, selected-item request, and close actions. |
+| `ui_item_shop_shopping_bag_refresh_action_state` | `0x0049FDF0` | high | Updates previous-page, next-page, and selected-item action availability from current pane state. |
+| `ui_item_shop_shopping_bag_format_record_description` | `0x004A0100` | high | Selects the normal or alternate SItemShop description and appends quantity when greater than one. |
+| `ui_item_shop_shopping_bag_update_description_control` | `0x004A01F0` | high | Formats the selected SItemShop record description and writes it to the shopping-bag text control. |
+| `ui_item_shop_shopping_bag_previous_page` | `0x004A0270` | high | Moves to the previous 30-record page, replaces the icon-grid source, clears selection, and redraws. |
+| `ui_item_shop_shopping_bag_next_page` | `0x004A02F0` | high | Moves to the next 30-record page, installs the remaining record count, clears selection, and redraws. |
 | `ui_item_shop_shopping_bag_handle_network_event` | `0x004A0550` | high | Consumes exact RTTI SItemShop in the shopping-bag pane. |
 | `ui_item_shop_shopping_bag_apply_packet` | `0x004A05B0` | high | Replaces records for SItemShop variant 0 and clears the pane's busy state for variants 0 and 1. |
+| `ui_item_shop_shopping_bag_set_busy` | `0x004A0990` | high | Stores the request-busy flag, refreshes action availability, and redraws the shopping-bag pane. |
 | `ui_item_shop_browser_dialog_ctor` | `0x004A09F0` | high | Constructs the separate exact RTTI ItemShop::ShopDialogPane around BrowserControlPane; no static constructor caller is present. |
+| `ui_item_shop_browser_dialog_dtor` | `0x004A0FD0` | high | Shuts down BrowserControlPane, unbinds the ShopDialogPane singleton, and destroys DialogPane. |
+| `ui_item_shop_browser_dialog_handle_action` | `0x004A1050` | high | Closes exact RTTI ItemShop::ShopDialogPane when dialog action 0 is dispatched. |
+| `ui_item_shop_browser_dialog_handle_timer` | `0x004A1080` | high | Closes ShopDialogPane for the three recognized BrowserControlPane completion or failure timer codes. |
+| `ui_item_shop_browser_dialog_shutdown` | `0x004A1100` | high | Shuts down the embedded BrowserControlPane when present, then runs the pane cleanup virtual. |
+| `ui_item_shop_build_browser_query` | `0x004A1140` | high | Builds the character, game, domain, level, sex, and uppercase MD5-derived query for the embedded shop URL. |
 | `ui_item_shop_icon_inventory_control_scalar_deleting_dtor` | `0x004A1470` | high | Runs ItemShop::IconInvControlPane's destructor and conditionally frees the complete object. |
+| `ui_item_shop_get_alert_scalar_deleting_dtor` | `0x004A14A0` | high | Runs ItemShop::SBGetAlertPane's destructor and conditionally frees the complete object. |
+| `ui_item_shop_shopping_bag_scalar_deleting_dtor` | `0x004A14D0` | high | Runs ItemShop::ShoppingBagDialogPane's destructor and conditionally frees the complete object. |
+| `ui_item_shop_browser_dialog_scalar_deleting_dtor` | `0x004A1500` | high | Runs ItemShop::ShopDialogPane's destructor and conditionally frees the complete object. |
+| `ui_item_shop_shopping_bag_bind_singleton` | `0x004A1530` | high | Binds exact RTTI ItemShop::ShoppingBagDialogPane after adjusting from its Singleton base at +0x630. |
+| `ui_item_shop_shopping_bag_unbind_singleton` | `0x004A1570` | high | Clears the ShoppingBagDialogPane singleton only when it still references this adjusted complete object. |
+| `ui_item_shop_browser_dialog_bind_singleton` | `0x004A15B0` | high | Binds exact RTTI ItemShop::ShopDialogPane after adjusting from its Singleton base at +0x630. |
+| `ui_item_shop_browser_dialog_unbind_singleton` | `0x004A15F0` | high | Clears the ShopDialogPane singleton only when it still references this adjusted complete object. |
+| `ui_item_shop_shopping_bag_timer_scalar_deleting_dtor_thunk` | `0x004A1660` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the shopping-bag scalar deleting destructor. |
+| `ui_item_shop_icon_inventory_control_timer_scalar_deleting_dtor_thunk` | `0x004A1670` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls IconInvControlPane's scalar deleting destructor. |
+| `ui_item_shop_get_alert_timer_scalar_deleting_dtor_thunk` | `0x004A1680` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls SBGetAlertPane's scalar deleting destructor. |
+| `ui_item_shop_browser_dialog_timer_scalar_deleting_dtor_thunk` | `0x004A1690` | high | Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls ShopDialogPane's scalar deleting destructor. |
 | `ui_layout_parse_control` | `0x004A81F0` | high | Parses CONTROL, NAME, TYPE, RECT, IMAGE, VALUE, COLOR, and ENDCONTROL tokens. |
 | `ui_layout_serialize_control` | `0x004A8820` | high | Writes one parsed control back to the same line-oriented layout grammar. |
 | `ui_open_town_map_for_current_map` | `0x004AD250` | high | Opens exact RTTI TownMapPane in the built-in button mode, which selects _tcoord.txt from the active client map number. |
@@ -2179,6 +2212,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_spell_delay_say` | `0x0049BB40` | high | Builds CSpellDelaySay as opcode 0x4E followed by a string8 configured cast line or the final spell name. |
 | `net_request_cash_shop_bag` | `0x004A03B0` | high | Builds CCashShop action 0 as the two-byte body 6C 00. |
 | `net_request_cash_shop_item` | `0x004A0430` | high | Builds CCashShop action 1 with the selected SItemShop record type and u32 record ID. |
+| `net_send_cash_shop_action_2` | `0x004A1400` | high | Sends the two-byte CCashShop body 6C 02 when ShopDialogPane constructs its embedded browser. |
 | `net_send_quit` | `0x004B79C0` | high | Builds the opcode-only CQuit variant, submits one byte, tears down the current connection, then chooses a local TerminalPane2 restart or process-close path. |
 | `net_handle_version_check` | `0x004B7F80` | high | Handles SVersionCheck opcode 0x00 outside the RTTI packet factory; subtype 0 installs transport state and subtype 2 constructs NewPatchPane for the Patcher2.exe handoff. |
 | `net_handle_login_check` | `0x004B8420` | high | Handles SLoginCheck opcode 0x02; status zero enters session setup and failures carry a display message. |
@@ -3952,6 +3986,15 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_item_description_map_allocate_node` | `0x0049EB60` | high | Allocates one 0x30-byte map node and initializes its parent, child, color, and sentinel fields. |
 | `metadata_item_description_map_copy_value_if_present` | `0x0049EBB0` | high | Conditionally invokes the ItemMetaDescMan map value copy constructor when destination storage is non-null. |
 | `metadata_item_description_map_value_copy_ctor` | `0x0049EC20` | high | Copy-constructs the map value's std::string key and trailing mapped pointer field. |
+| `metadata_options_exists` | `0x004A1630` | high | Reports whether the exact RTTI MetaOptions singleton has been constructed. |
+| `metadata_options_get` | `0x004A1650` | high | Returns the exact RTTI MetaOptions singleton pointer. |
+| `jpeg_memory_source_init` | `0x004A16A0` | high | IJG jpeg_source_mgr init_source callback for the client's in-memory JPEG source; no setup is required. |
+| `jpeg_memory_source_fill_input_buffer` | `0x004A16B0` | high | Restores the retained buffer once and supplies an EOI marker after the in-memory JPEG input is exhausted. |
+| `jpeg_memory_source_skip_input_data` | `0x004A1710` | high | Advances the in-memory JPEG source byte pointer and reduces its remaining byte count. |
+| `jpeg_memory_source_term` | `0x004A1750` | high | IJG jpeg_source_mgr term_source callback for the in-memory JPEG source; no cleanup is required. |
+| `jpeg_set_memory_source` | `0x004A1760` | high | Allocates and initializes the client's IJG jpeg_source_mgr callback table around caller-owned bytes. |
+| `jpeg_error_exit_longjmp` | `0x004A1800` | high | Shared IJG fatal-error callback that invokes the configured message hook and longjmps through the client recovery buffer. |
+| `jpeg_build_generator_comment` | `0x004A1F90` | high | Builds the gen-%x- text written to JPEG COM marker 0xFE from the bitwise complement of the current CRT time value. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |
@@ -3960,6 +4003,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `lobject_is_live` | `0x004B4550` | high | Returns true only when LObject +0x04 equals 0x79736F62; event_dispatch_immediate uses it before dispatch. |
 | `metadata_item_info_list_exists` | `0x004D9330` | high | Returns whether the exact RTTI ItemInfoList singleton is currently bound. |
 | `metadata_item_info_list_get` | `0x004D9350` | high | Returns the exact RTTI ItemInfoList singleton pointer. |
+| `metadata_options_bind_singleton` | `0x004E25C0` | high | Binds the exact RTTI MetaOptions complete object after adjusting from its Singleton base subobject. |
+| `metadata_options_unbind_singleton` | `0x004E2600` | high | Clears the MetaOptions singleton global only when it still references this adjusted complete object. |
 | `metadata_parse_event_record` | `0x0055D6E0` | high | Parses one sequential start-to-end SEvent record and its title, id, qual, sum, result, sub, and reward groups. |
 | `metadata_event_requirements_met` | `0x0055E370` | high | Checks an event progression mask, class mask, and every prerequisite legend key against local user state. |
 | `metadata_parse_spell_skill_constraint` | `0x0055F890` | high | Parses the first six values of one SClass ability record into display and requirement fields. |

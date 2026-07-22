@@ -2215,30 +2215,6 @@ functions:
     name: ui_spell_inventory_item_handle_network_event
     confidence: high
     evidence: "SpellInvItemPane primary-vtable network-event handler returns false without consuming the event."
-  - address: "0x0049EE30"
-    name: ui_item_shop_icon_inventory_control_ctor
-    confidence: high
-    evidence: "Constructs exact RTTI ItemShop::IconInvControlPane and initializes its item source, grid span, selection, and visible range."
-  - address: "0x0049EEB0"
-    name: ui_item_shop_icon_inventory_control_dtor
-    confidence: high
-    evidence: "Restores the ItemShop::IconInvControlPane vtables and destroys its Pane base."
-  - address: "0x0049EEE0"
-    name: ui_item_shop_icon_inventory_control_hit_test
-    confidence: high
-    evidence: "Maps a control-relative point through 33 by 36 pixel cells, rejects the four-pixel gaps, and returns the visible item index."
-  - address: "0x0049EF50"
-    name: ui_item_shop_icon_inventory_control_set_items
-    confidence: high
-    evidence: "Stores the visible item-record pointer and count, then invalidates ItemShop::IconInvControlPane."
-  - address: "0x0049EF80"
-    name: ui_item_shop_icon_inventory_control_select_cell
-    confidence: high
-    evidence: "Invalidates the old and new cells and stores the selected grid index, or -1 when outside the visible range."
-  - address: "0x004A1470"
-    name: ui_item_shop_icon_inventory_control_scalar_deleting_dtor
-    confidence: high
-    evidence: "Runs ItemShop::IconInvControlPane's destructor and conditionally frees the complete object."
   - address: "0x004AD250"
     name: ui_open_town_map_for_current_map
     confidence: high

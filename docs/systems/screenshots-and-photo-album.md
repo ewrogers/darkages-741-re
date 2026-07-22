@@ -76,6 +76,8 @@ The output is always JFIF JPEG. `file_write_jpeg_from_rgb16` uses the bundled IJ
 - Baseline tables
 - YCbCr with 2 by 2 luma and 1 by 1 chroma sampling, also called 4:2:0
 
+The writer also adds a JPEG COM marker containing `gen-<hex>-`. The hexadecimal value is derived from the bitwise complement of the current CRT time value. It is metadata inside the JPEG, not part of the portrait filename.
+
 There is no Save branch for EPF or PCX. The older `AlbumViewPane` reaches the same JPEG writer. The uploader can read an existing portrait-sized EPF, but it does not convert album pixels into one. See [Portraits and profiles](portraits-and-profiles.md).
 
 Remove clears the selected active record, rewrites `album.dat`, and refreshes the tiles. It does not delete the exported extensionless portrait or its `.bak` file.
