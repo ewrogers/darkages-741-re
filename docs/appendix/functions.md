@@ -2675,8 +2675,56 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_image_allocate_plane_bytes` | `0x00489660` | high | Allocates raw storage for an owned Image plane through the client allocator. |
 | `render_image_free_plane_bytes` | `0x00489680` | high | Releases owned Image-plane storage through the matching client allocator. |
 | `render_image_scalar_deleting_dtor` | `0x004896B0` | high | Destroys an Image and optionally releases its allocation. |
-| `render_image_cache_entry_vector_deleting_dtor` | `0x004896E0` | high | Destroys one or an allocated vector of 0x18-byte image-cache entries. |
-| `render_image_cache_entry_dtor` | `0x00489750` | high | Destroys the owned image object retained at cache-entry offset four. |
+| `render_human_image_cache_entry_vector_deleting_dtor` | `0x004896E0` | high | Destroys one or an allocated vector of 0x18-byte composed-human cache entries. |
+| `render_human_image_cache_entry_dtor` | `0x00489750` | high | Destroys the owned Canvas retained at composed-human cache-entry offset four. |
+| `render_image_cache_manager_ctor` | `0x004897A0` | high | Constructs exact RTTI ImageCacheMan and allocates the shared human and damage-effect caches. |
+| `render_image_cache_manager_dtor` | `0x00489880` | high | Destroys the registered human and damage-effect cache instances and manager state. |
+| `render_image_cache_manager_resolve_fixed_image` | `0x004898F0` | high | Resolves a type-one fixed-cache reference to its canvas and cell rectangle. |
+| `render_image_cache_manager_draw_fixed_image` | `0x00489940` | high | Resolves one fixed-cache reference and blits its cell to a destination canvas. |
+| `render_image_cache_manager_make_damage_effect_ref` | `0x00489A30` | high | Builds a type-one image reference for one clamped damage-effect cell. |
+| `render_image_cache_manager_get_human_image` | `0x00489A70` | high | Forwards a composed-human lookup or build request to HumanImageCache. |
+| `render_image_cache_manager_add_human_state` | `0x00489AC0` | high | Adds one HumanState bucket to the shared composed-human cache. |
+| `render_image_cache_manager_remove_human_state` | `0x00489AE0` | high | Removes one HumanState bucket from the shared composed-human cache. |
+| `render_fixed_size_image_cache_ctor` | `0x00489B00` | high | Constructs a lazy multi-canvas atlas with a fixed cell grid and seeded free-cell stack. |
+| `render_fixed_size_image_cache_dtor` | `0x00489D50` | high | Destroys allocated atlas canvases and releases the mapping and free-cell arrays. |
+| `render_fixed_size_image_cache_get_cell` | `0x00489E50` | high | Validates atlas indexes, ensures the backing canvas, and returns its cell rectangle. |
+| `render_fixed_size_image_cache_ensure_canvas` | `0x00489F00` | high | Lazily allocates, begins, clears, and ends one memory-backed atlas canvas. |
+| `render_fixed_size_image_cache_acquire_free_cell` | `0x0048A010` | high | Pops one packed canvas, column, and row cell from the free stack. |
+| `render_fixed_size_image_cache_release_cell` | `0x0048A080` | high | Pushes one packed cell back onto the free stack while capacity remains. |
+| `render_fixed_size_image_cache_get_cell_owner` | `0x0048A0C0` | high | Reads the owner value mapped to one canvas, column, and row coordinate. |
+| `render_fixed_size_image_cache_set_cell_owner` | `0x0048A110` | high | Writes the owner value mapped to one canvas, column, and row coordinate. |
+| `render_fixed_size_image_cache_get_cell_owner_by_index` | `0x0048A160` | high | Reads one flat cell-owner array entry. |
+| `render_fixed_size_image_cache_set_cell_owner_by_index` | `0x0048A190` | high | Writes one flat cell-owner array entry. |
+| `render_human_image_cache_ctor` | `0x0048A1B0` | high | Constructs exact RTTI HumanImageCache with 40 state slots and a 24 MiB pixel budget. |
+| `render_human_image_cache_dtor` | `0x0048A290` | high | Destroys all state buckets, retained entry canvases, and the 40-slot array. |
+| `render_human_image_cache_add_state` | `0x0048A3B0` | high | Allocates or reuses one of 40 HumanState buckets and constructs 40 keyed entries. |
+| `render_human_image_cache_remove_state` | `0x0048A550` | high | Destroys one active state bucket and recalculates retained pixel bytes. |
+| `render_human_image_cache_clear` | `0x0048A610` | high | Removes every active HumanState bucket. |
+| `render_human_image_cache_recalculate_bytes` | `0x0048A670` | high | Sums retained composed-image bytes across all active state buckets. |
+| `render_human_image_cache_create_canvas` | `0x0048A6F0` | high | Requests a memory canvas for one composed human-image rectangle. |
+| `render_human_image_cache_get_or_build` | `0x0048A720` | high | Returns a keyed composed-human subcanvas or renders and retains it on a cache miss. |
+| `render_human_image_cache_make_key` | `0x0048AC40` | high | Packs human-part selectors and alternate or transform flags into a 32-bit cache key. |
+| `render_damage_effect_image_cache_ctor` | `0x0048ACA0` | high | Constructs a one-canvas 1-by-26 atlas with 27-by-5 palette-colored cells. |
+| `render_damage_effect_image_cache_dtor` | `0x0048AE50` | high | Unregisters and destroys exact RTTI DamageEffectImageCache and its fixed atlas base. |
+| `render_damage_effect_image_cache_make_cell_ref` | `0x0048AEB0` | high | Builds the packed fixed-cache cell selector after clamping its index to 25. |
+| `render_image_cache_manager_scalar_deleting_dtor` | `0x0048AEF0` | high | Destroys an ImageCacheMan and optionally releases its allocation. |
+| `render_fixed_size_image_cache_scalar_deleting_dtor` | `0x0048AF20` | high | Destroys a FixedSizeImageCache and optionally releases its allocation. |
+| `render_human_image_cache_scalar_deleting_dtor` | `0x0048AF50` | high | Destroys a HumanImageCache and optionally releases its allocation. |
+| `render_human_image_cache_state_deleting_dtor` | `0x0048AF80` | high | Destroys a state's 40-entry vector and optionally releases the state allocation. |
+| `render_human_image_cache_entry_ctor` | `0x0048AFE0` | high | Initializes one composed-human cache entry with key -1 and no retained canvas. |
+| `render_damage_effect_image_cache_scalar_deleting_dtor` | `0x0048B010` | high | Destroys a DamageEffectImageCache and optionally releases its allocation. |
+| `render_image_cache_manager_register_global` | `0x0048B040` | high | Registers the containing ImageCacheMan as the process-global manager. |
+| `render_image_cache_manager_unregister_global` | `0x0048B080` | high | Clears the process-global ImageCacheMan when this instance is registered. |
+| `render_human_image_cache_register_global` | `0x0048B0C0` | high | Registers the containing HumanImageCache as the process-global instance. |
+| `render_human_image_cache_unregister_global` | `0x0048B100` | high | Clears the process-global HumanImageCache when this instance is registered. |
+| `render_get_human_image_cache` | `0x0048B140` | high | Returns the registered HumanImageCache singleton. |
+| `render_destroy_human_image_cache` | `0x0048B150` | high | Destroys the registered HumanImageCache singleton when present. |
+| `render_damage_effect_image_cache_register_global` | `0x0048B1A0` | high | Registers the containing DamageEffectImageCache as the process-global instance. |
+| `render_damage_effect_image_cache_unregister_global` | `0x0048B1E0` | high | Clears the process-global DamageEffectImageCache when this instance is registered. |
+| `render_get_damage_effect_image_cache` | `0x0048B220` | high | Returns the registered DamageEffectImageCache singleton. |
+| `render_destroy_damage_effect_image_cache` | `0x0048B230` | high | Destroys the registered DamageEffectImageCache singleton when present. |
+| `render_human_image_cache_is_registered` | `0x0048B280` | high | Reports whether the HumanImageCache singleton exists. |
+| `render_damage_effect_image_cache_is_registered` | `0x0048B2A0` | high | Reports whether the DamageEffectImageCache singleton exists. |
 | `render_image_library_ctor` | `0x0048B2C0` | high | Constructs RTTI class ImageLib and registers its singleton; the object has no filename or decoded-frame cache fields. |
 | `render_image_library_dtor` | `0x0048B330` | high | Unregisters and destroys the ImageLib singleton without releasing a shared image cache. |
 | `render_load_main_archive_pixmap` | `0x0048BB90` | high | Resolves one requested frame synchronously through file_load_image_frame using the main archive. |

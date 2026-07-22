@@ -39,6 +39,12 @@ Every primitive maps local coordinates through the Canvas clip and backing origi
 
 `render_canvas_scroll_rect` copies overlapping rows in the safe direction for the requested x and y movement. It also returns the newly exposed strips through the caller's region object, allowing the pane to redraw only pixels that were not preserved by the scroll.
 
+## Image views and caches
+
+The RTTI-backed `Image` type is a lightweight rectangle plus three pixel-plane descriptors. A plane can own copied storage or borrow bytes retained by a decoded asset. Only owned planes are freed when the plane is replaced or the image is destroyed.
+
+`ImageCacheMan` owns two specialized caches. `DamageEffectImageCache` prepaints one fixed 1-by-26 atlas of 27-by-5 cells. `HumanImageCache` keeps up to 40 active `HumanState` buckets, each with 40 keyed composed sprites. A hit returns a subcanvas of the retained sprite; a miss renders the human once and stores its canvas while the cache remains below its 24 MiB pixel budget.
+
 ## Read next
 
 - [Renderer lifecycle](lifecycle.md) covers setup, presentation, and cleanup.

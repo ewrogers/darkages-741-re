@@ -1656,13 +1656,205 @@ functions:
     confidence: high
     evidence: "Destroys an Image and optionally releases its allocation."
   - address: "0x004896E0"
-    name: render_image_cache_entry_vector_deleting_dtor
+    name: render_human_image_cache_entry_vector_deleting_dtor
     confidence: high
-    evidence: "Destroys one or an allocated vector of 0x18-byte image-cache entries."
+    evidence: "Destroys one or an allocated vector of 0x18-byte composed-human cache entries."
   - address: "0x00489750"
-    name: render_image_cache_entry_dtor
+    name: render_human_image_cache_entry_dtor
     confidence: high
-    evidence: "Destroys the owned image object retained at cache-entry offset four."
+    evidence: "Destroys the owned Canvas retained at composed-human cache-entry offset four."
+  - address: "0x004897A0"
+    name: render_image_cache_manager_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ImageCacheMan and allocates the shared human and damage-effect caches."
+  - address: "0x00489880"
+    name: render_image_cache_manager_dtor
+    confidence: high
+    evidence: "Destroys the registered human and damage-effect cache instances and manager state."
+  - address: "0x004898F0"
+    name: render_image_cache_manager_resolve_fixed_image
+    confidence: high
+    evidence: "Resolves a type-one fixed-cache reference to its canvas and cell rectangle."
+  - address: "0x00489940"
+    name: render_image_cache_manager_draw_fixed_image
+    confidence: high
+    evidence: "Resolves one fixed-cache reference and blits its cell to a destination canvas."
+  - address: "0x00489A30"
+    name: render_image_cache_manager_make_damage_effect_ref
+    confidence: high
+    evidence: "Builds a type-one image reference for one clamped damage-effect cell."
+  - address: "0x00489A70"
+    name: render_image_cache_manager_get_human_image
+    confidence: high
+    evidence: "Forwards a composed-human lookup or build request to HumanImageCache."
+  - address: "0x00489AC0"
+    name: render_image_cache_manager_add_human_state
+    confidence: high
+    evidence: "Adds one HumanState bucket to the shared composed-human cache."
+  - address: "0x00489AE0"
+    name: render_image_cache_manager_remove_human_state
+    confidence: high
+    evidence: "Removes one HumanState bucket from the shared composed-human cache."
+  - address: "0x00489B00"
+    name: render_fixed_size_image_cache_ctor
+    confidence: high
+    evidence: "Constructs a lazy multi-canvas atlas with a fixed cell grid and seeded free-cell stack."
+  - address: "0x00489D50"
+    name: render_fixed_size_image_cache_dtor
+    confidence: high
+    evidence: "Destroys allocated atlas canvases and releases the mapping and free-cell arrays."
+  - address: "0x00489E50"
+    name: render_fixed_size_image_cache_get_cell
+    confidence: high
+    evidence: "Validates atlas indexes, ensures the backing canvas, and returns its cell rectangle."
+  - address: "0x00489F00"
+    name: render_fixed_size_image_cache_ensure_canvas
+    confidence: high
+    evidence: "Lazily allocates, begins, clears, and ends one memory-backed atlas canvas."
+  - address: "0x0048A010"
+    name: render_fixed_size_image_cache_acquire_free_cell
+    confidence: high
+    evidence: "Pops one packed canvas, column, and row cell from the free stack."
+  - address: "0x0048A080"
+    name: render_fixed_size_image_cache_release_cell
+    confidence: high
+    evidence: "Pushes one packed cell back onto the free stack while capacity remains."
+  - address: "0x0048A0C0"
+    name: render_fixed_size_image_cache_get_cell_owner
+    confidence: high
+    evidence: "Reads the owner value mapped to one canvas, column, and row coordinate."
+  - address: "0x0048A110"
+    name: render_fixed_size_image_cache_set_cell_owner
+    confidence: high
+    evidence: "Writes the owner value mapped to one canvas, column, and row coordinate."
+  - address: "0x0048A160"
+    name: render_fixed_size_image_cache_get_cell_owner_by_index
+    confidence: high
+    evidence: "Reads one flat cell-owner array entry."
+  - address: "0x0048A190"
+    name: render_fixed_size_image_cache_set_cell_owner_by_index
+    confidence: high
+    evidence: "Writes one flat cell-owner array entry."
+  - address: "0x0048A1B0"
+    name: render_human_image_cache_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI HumanImageCache with 40 state slots and a 24 MiB pixel budget."
+  - address: "0x0048A290"
+    name: render_human_image_cache_dtor
+    confidence: high
+    evidence: "Destroys all state buckets, retained entry canvases, and the 40-slot array."
+  - address: "0x0048A3B0"
+    name: render_human_image_cache_add_state
+    confidence: high
+    evidence: "Allocates or reuses one of 40 HumanState buckets and constructs 40 keyed entries."
+  - address: "0x0048A550"
+    name: render_human_image_cache_remove_state
+    confidence: high
+    evidence: "Destroys one active state bucket and recalculates retained pixel bytes."
+  - address: "0x0048A610"
+    name: render_human_image_cache_clear
+    confidence: high
+    evidence: "Removes every active HumanState bucket."
+  - address: "0x0048A670"
+    name: render_human_image_cache_recalculate_bytes
+    confidence: high
+    evidence: "Sums retained composed-image bytes across all active state buckets."
+  - address: "0x0048A6F0"
+    name: render_human_image_cache_create_canvas
+    confidence: high
+    evidence: "Requests a memory canvas for one composed human-image rectangle."
+  - address: "0x0048A720"
+    name: render_human_image_cache_get_or_build
+    confidence: high
+    evidence: "Returns a keyed composed-human subcanvas or renders and retains it on a cache miss."
+  - address: "0x0048AC40"
+    name: render_human_image_cache_make_key
+    confidence: high
+    evidence: "Packs human-part selectors and alternate or transform flags into a 32-bit cache key."
+  - address: "0x0048ACA0"
+    name: render_damage_effect_image_cache_ctor
+    confidence: high
+    evidence: "Constructs a one-canvas 1-by-26 atlas with 27-by-5 palette-colored cells."
+  - address: "0x0048AE50"
+    name: render_damage_effect_image_cache_dtor
+    confidence: high
+    evidence: "Unregisters and destroys exact RTTI DamageEffectImageCache and its fixed atlas base."
+  - address: "0x0048AEB0"
+    name: render_damage_effect_image_cache_make_cell_ref
+    confidence: high
+    evidence: "Builds the packed fixed-cache cell selector after clamping its index to 25."
+  - address: "0x0048AEF0"
+    name: render_image_cache_manager_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys an ImageCacheMan and optionally releases its allocation."
+  - address: "0x0048AF20"
+    name: render_fixed_size_image_cache_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a FixedSizeImageCache and optionally releases its allocation."
+  - address: "0x0048AF50"
+    name: render_human_image_cache_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a HumanImageCache and optionally releases its allocation."
+  - address: "0x0048AF80"
+    name: render_human_image_cache_state_deleting_dtor
+    confidence: high
+    evidence: "Destroys a state's 40-entry vector and optionally releases the state allocation."
+  - address: "0x0048AFE0"
+    name: render_human_image_cache_entry_ctor
+    confidence: high
+    evidence: "Initializes one composed-human cache entry with key -1 and no retained canvas."
+  - address: "0x0048B010"
+    name: render_damage_effect_image_cache_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a DamageEffectImageCache and optionally releases its allocation."
+  - address: "0x0048B040"
+    name: render_image_cache_manager_register_global
+    confidence: high
+    evidence: "Registers the containing ImageCacheMan as the process-global manager."
+  - address: "0x0048B080"
+    name: render_image_cache_manager_unregister_global
+    confidence: high
+    evidence: "Clears the process-global ImageCacheMan when this instance is registered."
+  - address: "0x0048B0C0"
+    name: render_human_image_cache_register_global
+    confidence: high
+    evidence: "Registers the containing HumanImageCache as the process-global instance."
+  - address: "0x0048B100"
+    name: render_human_image_cache_unregister_global
+    confidence: high
+    evidence: "Clears the process-global HumanImageCache when this instance is registered."
+  - address: "0x0048B140"
+    name: render_get_human_image_cache
+    confidence: high
+    evidence: "Returns the registered HumanImageCache singleton."
+  - address: "0x0048B150"
+    name: render_destroy_human_image_cache
+    confidence: high
+    evidence: "Destroys the registered HumanImageCache singleton when present."
+  - address: "0x0048B1A0"
+    name: render_damage_effect_image_cache_register_global
+    confidence: high
+    evidence: "Registers the containing DamageEffectImageCache as the process-global instance."
+  - address: "0x0048B1E0"
+    name: render_damage_effect_image_cache_unregister_global
+    confidence: high
+    evidence: "Clears the process-global DamageEffectImageCache when this instance is registered."
+  - address: "0x0048B220"
+    name: render_get_damage_effect_image_cache
+    confidence: high
+    evidence: "Returns the registered DamageEffectImageCache singleton."
+  - address: "0x0048B230"
+    name: render_destroy_damage_effect_image_cache
+    confidence: high
+    evidence: "Destroys the registered DamageEffectImageCache singleton when present."
+  - address: "0x0048B280"
+    name: render_human_image_cache_is_registered
+    confidence: high
+    evidence: "Reports whether the HumanImageCache singleton exists."
+  - address: "0x0048B2A0"
+    name: render_damage_effect_image_cache_is_registered
+    confidence: high
+    evidence: "Reports whether the DamageEffectImageCache singleton exists."
   - address: "0x0048B390"
     name: file_read_image_metadata
     confidence: high
