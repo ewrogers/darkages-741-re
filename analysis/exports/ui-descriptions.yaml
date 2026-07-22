@@ -7,6 +7,10 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x00495DB0"
+    name: ui_item_pane_get_display_name
+    confidence: high
+    evidence: "Copies the ItemPane display-name bytes from object offset 0x192 into the caller's bounded buffer."
   - address: "0x00495FF0"
     name: ui_inventory_item_show_desc
     confidence: high
@@ -15,6 +19,10 @@ functions:
     name: ui_skill_inventory_item_get_base_name
     confidence: high
     evidence: "Copies the retained skill name only through the suffix split position and appends a NUL terminator."
+  - address: "0x00498BE0"
+    name: ui_skill_inventory_item_get_display_name
+    confidence: high
+    evidence: "Copies the full SkillInvItemPane display name into the caller's bounded buffer."
   - address: "0x00499660"
     name: ui_parse_skill_spell_level_suffix
     confidence: high

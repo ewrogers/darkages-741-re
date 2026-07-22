@@ -1535,6 +1535,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_spell_inventory_base_set_selection` | `0x00493340` | high | Changes the selected spell slot and invalidates the old and new slot rectangles. |
 | `ui_spell_inventory_base_set_item` | `0x00493390` | high | Replaces a checked zero-based spell entry, then attaches and registers the new child when its slot is visible. |
 | `ui_spell_inventory_remove_item_at` | `0x00493460` | high | Checks a zero-based spell inventory index, releases its live SpellInvItemPane through the shared UI owner, and clears the pointer entry. |
+| `ui_manufacture_dialog_exists` | `0x00493600` | high | Returns whether either exact manufacture-dialog constructor has bound the shared singleton at complete-object offset 0x630. |
+| `ui_equip_pane_get` | `0x00493620` | high | Returns the EquipPane singleton pointer registered by ui_equip_pane_singleton_register. |
+| `ui_spell_delay_control_pane_get` | `0x00493630` | high | Returns the SpellDelayControlPane singleton pointer bound from its secondary singleton base at complete-object offset 0x190. |
 | `ui_skill_inventory_base_scalar_deleting_dtor` | `0x00493640` | high | MSVC scalar deleting destructor for the shared NewInventoryPane&lt;SkillInvItemPane&gt; base. |
 | `ui_spell_inventory_base_scalar_deleting_dtor` | `0x00493670` | high | MSVC scalar deleting destructor for the shared NewInventoryPane&lt;SpellInvItemPane&gt; base. |
 | `ui_skill_inventory_base_register_visible_items` | `0x004936A0` | high | Attaches and registers SkillInvItemPane children whose indexes fall inside the configured visible range. |
@@ -1552,11 +1555,21 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_new_skill_inventory_pane_adjusted_deleting_dtor` | `0x00493D80` | high | Secondary-base deleting-destructor thunk for the complete NewSkillInventoryPane object. |
 | `ui_inventory_pane_adjusted_deleting_dtor` | `0x00493D90` | high | Secondary-base deleting-destructor thunk for the complete InventoryPane_A object. |
 | `ui_new_spell_inventory_pane_adjusted_deleting_dtor` | `0x00493DA0` | high | Secondary-base deleting-destructor thunk for the complete NewSpellInventoryPane object. |
+| `ui_item_pane_get_screen_parent` | `0x00495C40` | high | Returns the shared root Screen pointer used when item panes attach to the spatial screen hierarchy. |
+| `ui_item_pane_get_event_parent` | `0x00495C50` | high | Returns null, making item panes roots for their local event-handler registration path. |
 | `ui_item_pane_ctor` | `0x00495C60` | high | Constructs exact RTTI class ItemPane and stores an item sprite, 128-byte display name, and dye color. |
+| `ui_item_pane_draw_content` | `0x00495CD0` | high | Loads the item icon, selects the alternate icon bank above ID 0x8000, and blits it with the optional palette index. |
+| `ui_item_pane_get_display_name` | `0x00495DB0` | high | Copies the ItemPane display-name bytes from object offset 0x192 into the caller's bounded buffer. |
 | `ui_inventory_item_set_display_name` | `0x00495DE0` | high | Replaces the InvItemPane display name through the same bounded 128-byte copy used by its ItemPane base. |
 | `ui_inventory_item_ctor` | `0x00495E10` | high | Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, maximum durability, and current durability. |
+| `ui_inventory_item_dtor` | `0x00495F60` | high | Destroys exact RTTI class InvItemPane and closes DescPane when it currently describes this item. |
 | `ui_inventory_item_show_desc` | `0x00495FF0` | high | Builds an InvItemPane tooltip anchor, keeps it within 640 by 480, resolves the item's description provider, and opens the shared DescPane with the item as owner. |
 | `ui_inventory_item_handle_pointer_event` | `0x004963C0` | high | InvItemPane pointer-event handler starts a DraggedInvItemPane from the selected inventory item and its one-based source slot. |
+| `ui_inventory_item_pointer_case_1_miss` | `0x0049653F` | high | Compiler-split pointer-event type 1 miss branch that forwards to the common false return. |
+| `ui_inventory_item_pointer_case_2_miss` | `0x004965AD` | high | Compiler-split pointer-event type 2 miss branch that forwards to the common false return. |
+| `ui_inventory_item_pointer_return_false` | `0x004967B4` | high | Compiler-split common false-return block for InvItemPane pointer-event handling. |
+| `ui_inventory_item_pointer_destroy_drag_preview` | `0x004967B8` | high | Compiler-split cleanup block that destroys an unattached DraggedInvItemPane preview and returns true. |
+| `ui_inventory_item_pointer_epilogue` | `0x004967E6` | high | Shared SEH and stack-cookie epilogue for the compiler-split InvItemPane pointer-event handler. |
 | `ui_inventory_item_submit_drop_quantity` | `0x00496820` | high | Numeric-input callback sends the saved CDrop target and source item only when the submitted u32 quantity is nonzero. |
 | `ui_inventory_item_submit_give_quantity` | `0x00496860` | high | Forwards a nonzero u32 quantity and saved living target object ID to CGive, but has no confirmed static reference in the live drag path. |
 | `ui_inventory_item_send_drop` | `0x00496890` | high | InvItemPane virtual sender forwards target Y, target X, and quantity to the concrete CDrop builder. |
@@ -1564,18 +1577,35 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_inventory_item_handle_timer` | `0x004968E0` | high | TimerHandler event 0 handles a world-tile drop; event 1 gives to a living object, sending quantity one for normal items or opening GiveGoldDialogPane for slot 60. |
 | `ui_inventory_item_activate` | `0x00496E70` | high | InvItemPane activation wrapper reaches the shared CUse sender used by pointer and number-key activation. |
 | `ui_inventory_item_is_denied` | `0x00496F30` | high | Copies the InvItemPane name and checks the RTTI-backed DeniedItemList item table; a match suppresses CUse locally. |
+| `ui_gold_amount_dialog_load_layout` | `0x00496FE0` | high | Loads shared _nmoney.txt assets and caches the label plus OK, Cancel, Title, and Text geometry and images once. |
+| `ui_gold_amount_dialog_noop` | `0x004971A0` | high | No-op return stub adjacent to the shared gold-amount dialog layout initializer. |
 | `ui_drop_gold_dialog_ctor` | `0x004971B0` | high | Constructs exact RTTI class DropGoldDialogPane, retains the drag-selected Y and X, builds the _nmoney.txt controls, and focuses the amount input. |
+| `ui_drop_gold_dialog_dtor` | `0x00497530` | high | Destroys exact RTTI class DropGoldDialogPane through its DialogPane base. |
 | `ui_drop_gold_dialog_handle_action` | `0x00497560` | high | DropGoldDialogPane action 0 parses and submits CDropGold; action 1 closes the dialog without sending. |
 | `ui_give_gold_dialog_ctor` | `0x00497710` | high | Constructs exact RTTI class GiveGoldDialogPane, retains the drag-selected living target object ID, builds the _nmoney.txt controls, and focuses the amount input. |
+| `ui_give_gold_dialog_dtor` | `0x00497A80` | high | Destroys exact RTTI class GiveGoldDialogPane through its DialogPane base. |
 | `ui_give_gold_dialog_handle_action` | `0x00497AB0` | high | GiveGoldDialogPane action 0 parses and submits CGiveGold; action 1 closes the dialog without sending. |
 | `ui_dragged_inventory_item_pane_ctor` | `0x00497C30` | high | Constructs exact RTTI class DraggedInvItemPane and retains the dragged item kind, inventory slot, and owner pane. |
+| `ui_dragged_inventory_item_create_preview` | `0x00497CA0` | high | Creates and attaches an InvItemPane preview at the source item's world-root-relative rectangle. |
 | `ui_dragged_inventory_item_dispatch_drop` | `0x00497EC0` | high | Dispatches the dragged inventory-item record and pointer position through the pane tree to the selected drop target. |
+| `ui_map_item_pane_ctor` | `0x00497F50` | high | Constructs exact RTTI class MapItem_Pane with owner, coordinates, icon ID, palette, and pointer-drag state. |
+| `ui_map_item_pane_get_cell_size` | `0x00498000` | high | Returns the fixed 32 by 32 MapItem_Pane cell size. |
 | `ui_map_item_pane_handle_pointer_event` | `0x00498020` | high | Handles MapItem_Pane pointer events; a left double click inside the pane finds an empty inventory slot and sends CGet for the pane's world coordinates. |
+| `ui_map_item_pointer_case_1_miss` | `0x004981AB` | high | Compiler-split pointer-event type 1 miss branch that forwards to the common false return. |
+| `ui_map_item_pointer_case_2_miss` | `0x0049824E` | high | Compiler-split pointer-event type 2 miss branch that forwards to the common false return. |
+| `ui_map_item_pointer_return_false` | `0x00498396` | high | Compiler-split common false-return block for MapItem_Pane pointer-event handling. |
+| `ui_map_item_pointer_destroy_drag_preview` | `0x0049839A` | high | Compiler-split cleanup block that destroys an unattached DraggedMapItemPane preview and returns true. |
+| `ui_map_item_pointer_epilogue` | `0x004983C8` | high | Shared SEH and stack-cookie epilogue for the compiler-split MapItem_Pane pointer-event handler. |
 | `ui_map_item_pane_handle_timer` | `0x00498400` | high | TimerHandler callback for MapItem_Pane; resolves an inventory slot when needed and sends CGet through the pane-owned builder. |
+| `ui_map_item_pane_draw_content` | `0x00498470` | high | Loads the map-item icon, selects the alternate icon bank above ID 0x8000, and blits it with the optional palette index. |
+| `ui_dragged_map_item_pane_ctor` | `0x00498630` | high | Constructs exact RTTI class DraggedMapItemPane from a source MapItem_Pane. |
+| `ui_dragged_map_item_create_preview` | `0x00498670` | high | Creates and attaches a MapItem_Pane preview at the source item's world-root-relative rectangle. |
+| `ui_dragged_map_item_dispatch_drop` | `0x004988C0` | high | Dispatches a dragged map-item record to the selected pane target and preserves the global dragged pane when unconsumed. |
 | `ui_skill_inventory_item_ctor` | `0x00498940` | high | Constructs exact RTTI class SkillInvItemPane and retains the SAddSkill icon, name, and one-based slot. |
 | `ui_skill_item_start_cooldown_visual` | `0x00498AD0` | high | Sets progress to zero, records timeGetTime start and end values, marks the visual active, redraws, and schedules timer ID 0x10204 after 100 ms. |
 | `ui_skill_item_set_cooldown_progress` | `0x00498B40` | high | Stores a changed 0 through 30 skill cooldown step and invalidates the item pane. |
 | `ui_skill_inventory_item_get_base_name` | `0x00498B90` | high | Copies the retained skill name only through the suffix split position and appends a NUL terminator. |
+| `ui_skill_inventory_item_get_display_name` | `0x00498BE0` | high | Copies the full SkillInvItemPane display name into the caller's bounded buffer. |
 | `ui_skill_item_cooldown_visual_timer` | `0x00498C10` | high | For timer ID 0x10204, maps elapsed time to 30 integer steps, redraws, and reschedules at 100 ms while the delay and visual-active flags remain set. |
 | `ui_skill_inventory_item_handle_pointer_event` | `0x00498D40` | high | Skill item pointer handler checks complete-object offset +0x322 and blocks drag start, activation, and information actions while action-delayed. |
 | `ui_skill_inventory_item_draw` | `0x004991D0` | high | Draws the skill icon, applies palette index 0x58 across a delayed icon, and palette index 0x18 below a vertical boundary derived from the 0 through 30 progress step. |

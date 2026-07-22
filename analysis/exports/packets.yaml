@@ -1591,6 +1591,14 @@ functions:
     name: net_send_spell_change_slot
     confidence: high
     evidence: "Builds the four-byte CChangeSlot body with category 1, one-based source spell slot, and one-based destination spell slot."
+  - address: "0x00493620"
+    name: ui_equip_pane_get
+    confidence: high
+    evidence: "Returns the EquipPane singleton pointer registered by ui_equip_pane_singleton_register."
+  - address: "0x00493630"
+    name: ui_spell_delay_control_pane_get
+    confidence: high
+    evidence: "Returns the SpellDelayControlPane singleton pointer bound from its secondary singleton base at complete-object offset 0x190."
   - address: "0x00493640"
     name: ui_skill_inventory_base_scalar_deleting_dtor
     confidence: high
@@ -1659,10 +1667,22 @@ functions:
     name: ui_new_spell_inventory_pane_adjusted_deleting_dtor
     confidence: high
     evidence: "Secondary-base deleting-destructor thunk for the complete NewSpellInventoryPane object."
+  - address: "0x00495C40"
+    name: ui_item_pane_get_screen_parent
+    confidence: high
+    evidence: "Returns the shared root Screen pointer used when item panes attach to the spatial screen hierarchy."
+  - address: "0x00495C50"
+    name: ui_item_pane_get_event_parent
+    confidence: high
+    evidence: "Returns null, making item panes roots for their local event-handler registration path."
   - address: "0x00495C60"
     name: ui_item_pane_ctor
     confidence: high
     evidence: "Constructs exact RTTI class ItemPane and stores an item sprite, 128-byte display name, and dye color."
+  - address: "0x00495CD0"
+    name: ui_item_pane_draw_content
+    confidence: high
+    evidence: "Loads the item icon, selects the alternate icon bank above ID 0x8000, and blits it with the optional palette index."
   - address: "0x00495DE0"
     name: ui_inventory_item_set_display_name
     confidence: high
@@ -1671,10 +1691,34 @@ functions:
     name: ui_inventory_item_ctor
     confidence: high
     evidence: "Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, maximum durability, and current durability."
+  - address: "0x00495F60"
+    name: ui_inventory_item_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI class InvItemPane and closes DescPane when it currently describes this item."
   - address: "0x004963C0"
     name: ui_inventory_item_handle_pointer_event
     confidence: high
     evidence: "InvItemPane pointer-event handler starts a DraggedInvItemPane from the selected inventory item and its one-based source slot."
+  - address: "0x0049653F"
+    name: ui_inventory_item_pointer_case_1_miss
+    confidence: high
+    evidence: "Compiler-split pointer-event type 1 miss branch that forwards to the common false return."
+  - address: "0x004965AD"
+    name: ui_inventory_item_pointer_case_2_miss
+    confidence: high
+    evidence: "Compiler-split pointer-event type 2 miss branch that forwards to the common false return."
+  - address: "0x004967B4"
+    name: ui_inventory_item_pointer_return_false
+    confidence: high
+    evidence: "Compiler-split common false-return block for InvItemPane pointer-event handling."
+  - address: "0x004967B8"
+    name: ui_inventory_item_pointer_destroy_drag_preview
+    confidence: high
+    evidence: "Compiler-split cleanup block that destroys an unattached DraggedInvItemPane preview and returns true."
+  - address: "0x004967E6"
+    name: ui_inventory_item_pointer_epilogue
+    confidence: high
+    evidence: "Shared SEH and stack-cookie epilogue for the compiler-split InvItemPane pointer-event handler."
   - address: "0x00496820"
     name: ui_inventory_item_submit_drop_quantity
     confidence: high
@@ -1715,10 +1759,22 @@ functions:
     name: ui_inventory_item_is_denied
     confidence: high
     evidence: "Copies the InvItemPane name and checks the RTTI-backed DeniedItemList item table; a match suppresses CUse locally."
+  - address: "0x00496FE0"
+    name: ui_gold_amount_dialog_load_layout
+    confidence: high
+    evidence: "Loads shared _nmoney.txt assets and caches the label plus OK, Cancel, Title, and Text geometry and images once."
+  - address: "0x004971A0"
+    name: ui_gold_amount_dialog_noop
+    confidence: high
+    evidence: "No-op return stub adjacent to the shared gold-amount dialog layout initializer."
   - address: "0x004971B0"
     name: ui_drop_gold_dialog_ctor
     confidence: high
     evidence: "Constructs exact RTTI class DropGoldDialogPane, retains the drag-selected Y and X, builds the _nmoney.txt controls, and focuses the amount input."
+  - address: "0x00497530"
+    name: ui_drop_gold_dialog_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI class DropGoldDialogPane through its DialogPane base."
   - address: "0x00497560"
     name: ui_drop_gold_dialog_handle_action
     confidence: high
@@ -1731,6 +1787,10 @@ functions:
     name: ui_give_gold_dialog_ctor
     confidence: high
     evidence: "Constructs exact RTTI class GiveGoldDialogPane, retains the drag-selected living target object ID, builds the _nmoney.txt controls, and focuses the amount input."
+  - address: "0x00497A80"
+    name: ui_give_gold_dialog_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI class GiveGoldDialogPane through its DialogPane base."
   - address: "0x00497AB0"
     name: ui_give_gold_dialog_handle_action
     confidence: high
@@ -1743,22 +1803,70 @@ functions:
     name: ui_dragged_inventory_item_pane_ctor
     confidence: high
     evidence: "Constructs exact RTTI class DraggedInvItemPane and retains the dragged item kind, inventory slot, and owner pane."
+  - address: "0x00497CA0"
+    name: ui_dragged_inventory_item_create_preview
+    confidence: high
+    evidence: "Creates and attaches an InvItemPane preview at the source item's world-root-relative rectangle."
   - address: "0x00497EC0"
     name: ui_dragged_inventory_item_dispatch_drop
     confidence: high
     evidence: "Dispatches the dragged inventory-item record and pointer position through the pane tree to the selected drop target."
+  - address: "0x00497F50"
+    name: ui_map_item_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class MapItem_Pane with owner, coordinates, icon ID, palette, and pointer-drag state."
+  - address: "0x00498000"
+    name: ui_map_item_pane_get_cell_size
+    confidence: high
+    evidence: "Returns the fixed 32 by 32 MapItem_Pane cell size."
   - address: "0x00498020"
     name: ui_map_item_pane_handle_pointer_event
     confidence: high
     evidence: "Handles MapItem_Pane pointer events; a left double click inside the pane finds an empty inventory slot and sends CGet for the pane's world coordinates."
+  - address: "0x004981AB"
+    name: ui_map_item_pointer_case_1_miss
+    confidence: high
+    evidence: "Compiler-split pointer-event type 1 miss branch that forwards to the common false return."
+  - address: "0x0049824E"
+    name: ui_map_item_pointer_case_2_miss
+    confidence: high
+    evidence: "Compiler-split pointer-event type 2 miss branch that forwards to the common false return."
+  - address: "0x00498396"
+    name: ui_map_item_pointer_return_false
+    confidence: high
+    evidence: "Compiler-split common false-return block for MapItem_Pane pointer-event handling."
+  - address: "0x0049839A"
+    name: ui_map_item_pointer_destroy_drag_preview
+    confidence: high
+    evidence: "Compiler-split cleanup block that destroys an unattached DraggedMapItemPane preview and returns true."
+  - address: "0x004983C8"
+    name: ui_map_item_pointer_epilogue
+    confidence: high
+    evidence: "Shared SEH and stack-cookie epilogue for the compiler-split MapItem_Pane pointer-event handler."
   - address: "0x00498400"
     name: ui_map_item_pane_handle_timer
     confidence: high
     evidence: "TimerHandler callback for MapItem_Pane; resolves an inventory slot when needed and sends CGet through the pane-owned builder."
+  - address: "0x00498470"
+    name: ui_map_item_pane_draw_content
+    confidence: high
+    evidence: "Loads the map-item icon, selects the alternate icon bank above ID 0x8000, and blits it with the optional palette index."
   - address: "0x00498550"
     name: net_send_get_from_map_item_pane
     confidence: high
     evidence: "Builds CGet as opcode, destination slot, MapItem_Pane world X, and world Y."
+  - address: "0x00498630"
+    name: ui_dragged_map_item_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class DraggedMapItemPane from a source MapItem_Pane."
+  - address: "0x00498670"
+    name: ui_dragged_map_item_create_preview
+    confidence: high
+    evidence: "Creates and attaches a MapItem_Pane preview at the source item's world-root-relative rectangle."
+  - address: "0x004988C0"
+    name: ui_dragged_map_item_dispatch_drop
+    confidence: high
+    evidence: "Dispatches a dragged map-item record to the selected pane target and preserves the global dragged pane when unconsumed."
   - address: "0x00498940"
     name: ui_skill_inventory_item_ctor
     confidence: high
