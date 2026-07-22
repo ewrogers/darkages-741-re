@@ -110,6 +110,12 @@ The callback-relative form falls back to the normal base when no timer callback 
 
 A `Pane` contains a secondary `TimerHandler` base at offset `0x11C`. Because of that inheritance layout, a timer callback may receive a pointer adjusted to that base. This detail matters when naming callbacks or building hooks.
 
+## Batched jobs
+
+`BatchSession` sequences small asynchronous jobs without blocking the event loop. It owns a linked queue of `BatchJob` pointers and keeps at most one job active. `batch_session_start_next_job` removes entries from the front until it finds an enabled job, then calls `batch_job_begin`.
+
+`BatchJob` is an abstract base. Beginning a job records its owning session and invokes the job's virtual execute method. When derived work finishes, `batch_job_complete` schedules timer ID `0` on the owning `BatchSession` and invokes the job's virtual cleanup method. The session's next timer callback starts the following queued job. Disabled jobs are cleaned up and skipped instead of stalling the queue.
+
 ## Pointer timing
 
 Win32 pointer messages carry `GetMessageTime()` timestamps into the event system. `EventMan` synthesizes a double-click only when the new press uses the same button, arrives less than 1,000 ms after the saved press, and has a Manhattan coordinate difference of at most 2 logical pixels. A match emits left type `0x02` or right type `0x05` and clears the saved timestamp. A normal press stores its button, position, and time for the next comparison.

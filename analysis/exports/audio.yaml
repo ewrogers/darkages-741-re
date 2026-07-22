@@ -15,6 +15,10 @@ functions:
     name: audio_bgm_player_dtor
     confidence: high
     evidence: Stops the active music path and unregisters the BGMPlayer singleton.
+  - address: "0x00405810"
+    name: audio_bgm_initialize
+    confidence: high
+    evidence: Trivial BGMPlayer initialization hook called by SoundManager immediately after construction; reports success.
   - address: "0x00405830"
     name: audio_bgm_shutdown
     confidence: high
@@ -39,6 +43,10 @@ functions:
     name: audio_bgm_set_target_volume
     confidence: high
     evidence: Changes the one-byte BGM target and schedules a fade tick when needed.
+  - address: "0x00405980"
+    name: audio_bgm_is_unmuted
+    confidence: high
+    evidence: Returns the BGMPlayer output-enabled byte cleared by mute and restored by unmute.
   - address: "0x004059A0"
     name: audio_bgm_mute
     confidence: high
@@ -75,6 +83,22 @@ functions:
     name: audio_bgm_schedule_tick
     confidence: high
     evidence: Schedules a 200 ms BGM transition timer through the shared event system.
+  - address: "0x00405E60"
+    name: audio_bgm_player_scalar_deleting_dtor
+    confidence: high
+    evidence: Runs the BGMPlayer destructor and conditionally frees the complete object.
+  - address: "0x00405E90"
+    name: audio_bgm_register_singleton
+    confidence: high
+    evidence: Registers the complete BGMPlayer pointer from its Singleton secondary-base subobject.
+  - address: "0x00405ED0"
+    name: audio_bgm_unregister_singleton
+    confidence: high
+    evidence: Clears the BGMPlayer singleton pointer when the registered instance is destroyed.
+  - address: "0x00405F10"
+    name: audio_get_miles_driver
+    confidence: high
+    evidence: Returns the shared Miles digital driver handle used by BGM, sound effects, and video audio.
   - address: "0x004316E0"
     name: audio_get_sound_manager
     confidence: high

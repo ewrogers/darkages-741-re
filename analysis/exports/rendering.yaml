@@ -59,10 +59,82 @@ functions:
     name: ui_segmented_alpha_screen_pane_timer_deleting_dtor_thunk
     confidence: high
     evidence: "Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the AlphaScreenPaneSegmented scalar deleting destructor."
+  - address: "0x00404590"
+    name: ui_animation_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI AnimationPane, clears its playing state, and marks it uninitialized until an image is loaded."
+  - address: "0x004045E0"
+    name: ui_animation_pane_load
+    confidence: high
+    evidence: "Stops prior playback, stores the image and palette settings, reads image dimensions and frame count, selects the starting frame, and registers the pane rectangle."
+  - address: "0x00404750"
+    name: ui_animation_pane_start
+    confidence: high
+    evidence: "Starts an initialized idle AnimationPane at frame zero and schedules timer ID 0."
+  - address: "0x004047B0"
+    name: ui_animation_pane_stop
+    confidence: high
+    evidence: "Cancels this pane's timers, restores its configured starting frame, clears the playing state, and invalidates the pane."
+  - address: "0x00404840"
+    name: ui_animation_pane_timer_callback
+    confidence: high
+    evidence: "Handles timer ID 0, advances the frame modulo frame_count while active, invalidates the pane, and requeues the stored interval."
+  - address: "0x004048F0"
+    name: ui_animation_pane_draw_content
+    confidence: high
+    evidence: "Loads the current image frame and blits it into the AnimationPane canvas when initialized and in range."
+  - address: "0x004049D0"
+    name: ui_animation_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the Pane base destructor for AnimationPane and conditionally frees the complete object."
   - address: "0x00404A00"
     name: render_get_image_library
     confidence: high
     evidence: Returns the ImageLib singleton used for sprite and UI frames.
+  - address: "0x00404A10"
+    name: ui_animation_pane_timer_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the AnimationPane scalar deleting destructor."
+  - address: "0x00405F20"
+    name: render_set_blit_flip_flags
+    confidence: high
+    evidence: "Encodes horizontal and vertical flip requests as bits 0 and 1 for the optimized software blitters."
+  - address: "0x00405F60"
+    name: render_initialize_blit_dispatch
+    confidence: high
+    evidence: "Selects RGB565 or RGB555 software rendering, builds its lookup tables, and installs the complete blitter dispatch table."
+  - address: "0x004060D0"
+    name: render_shutdown_blit_dispatch
+    confidence: high
+    evidence: "Frees the 16-bit blend tables and clears the software blitter dispatch pointers during video shutdown or reinitialization."
+  - address: "0x004061A0"
+    name: render_build_16bit_blend_tables
+    confidence: high
+    evidence: "Builds pixel-format-specific half-color, carry-bit, and component-maximum tables for optimized RGB565 or RGB555 blending."
+  - address: "0x00406480"
+    name: render_free_16bit_blend_tables
+    confidence: high
+    evidence: "Frees all six optimized 16-bit blend lookup buffers and clears their globals."
+  - address: "0x00406580"
+    name: render_build_16bit_blend_tables_thunk
+    confidence: high
+    evidence: "Tail-calls the 16-bit blend-table builder for compiler-generated initialization plumbing."
+  - address: "0x004065A0"
+    name: render_free_16bit_blend_tables_thunk
+    confidence: high
+    evidence: "Tail-calls the 16-bit blend-table cleanup for compiler-generated shutdown plumbing."
+  - address: "0x004065B0"
+    name: render_blit_indexed_opaque
+    confidence: high
+    evidence: "Maps every indexed source pixel through a 16-bit palette and copies it with all four horizontal and vertical flip combinations."
+  - address: "0x00406900"
+    name: render_blit_indexed_zero_transparent
+    confidence: high
+    evidence: "Copies indexed pixels through a local palette whose index 0 entry is forced to pixel value zero, with both-axis flipping."
+  - address: "0x00406D70"
+    name: render_blit_indexed_transparent
+    confidence: high
+    evidence: "Maps nonzero indexed pixels through a 16-bit palette while preserving destination pixels where the source index is zero."
   - address: "0x0040CD00"
     name: render_blit_screen_rgb565
     confidence: high
@@ -1087,6 +1159,18 @@ data_symbols:
 comments:
   - address: "0x00404369"
     text: "Split the registered screen rectangle into 33 vertical child panes, then clear each child canvas with the shared overlay color."
+  - address: "0x00404653"
+    text: "Load image width, height, and frame count for this AnimationPane; reject zero width or height."
+  - address: "0x0040489F"
+    text: "Advance the frame modulo frame_count, invalidate the pane, and requeue timer ID 0 using the stored interval."
+  - address: "0x00405F20"
+    text: "Encode horizontal and vertical flip requests as bits 0 and 1. The optimized blitters use bit 1 to reverse destination row traversal."
+  - address: "0x004061A0"
+    text: "Rebuild pixel-format-specific 16-bit lookup tables used by the optimized RGB565 or RGB555 software blitters."
+  - address: "0x0040692D"
+    text: "Force palette index 0 to output pixel value 0 for the zero-transparent indexed blit variant."
+  - address: "0x00406E43"
+    text: "Skip palette index 0 so transparent source pixels preserve the existing destination pixel."
   - address: "0x0040D4A0"
     text: Blend mode 0x6D uses a screen-style per-component software blend in RGB565 or RGB555.
   - address: "0x00449FA7"

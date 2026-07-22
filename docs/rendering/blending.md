@@ -43,6 +43,16 @@ The static art is blended over the pixels already drawn for the player. See [Wal
 
 The tables are created with the video system and released by `render_free_blend_tables` during shutdown.
 
+The optimized blitter dispatch has a second table family. `render_initialize_blit_dispatch` selects RGB565 or RGB555, installs the format-specific software routines, and calls `render_build_16bit_blend_tables`. Those tables split packed pixels into component and carry values so the inner loops can process several 16-bit pixels at once. Video shutdown clears the dispatch and frees all six buffers.
+
+Its indexed-image entry points make the transparency rule explicit:
+
+- `render_blit_indexed_opaque` maps every source index through the palette.
+- `render_blit_indexed_zero_transparent` maps index 0 to packed pixel value 0.
+- `render_blit_indexed_transparent` skips index 0 and preserves the destination.
+
+All three accept horizontal and vertical flip flags. The ordinary loops handle all four combinations directly; optimized paths encode the flags in a shared byte before drawing.
+
 ## Why DirectDraw is not doing the blend
 
 The sprite loops read source pixels, test transparency, combine color components, and write the destination canvas directly. DirectDraw receives the completed canvas later. This means normal sprites and alpha effects behave the same across the DirectDraw and window DC presentation paths.

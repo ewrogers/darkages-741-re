@@ -31,6 +31,70 @@ functions:
     name: ui_agreement_dialog_pane_timer_deleting_dtor_thunk
     confidence: high
     evidence: "Adjusts the TimerHandler secondary-base pointer by -0x11C and tail-calls the AgreementDialogPane scalar deleting destructor."
+  - address: "0x00404D30"
+    name: batch_session_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI BatchSession as a TimerHandler with an empty linked job queue and no active job."
+  - address: "0x00404DA0"
+    name: batch_session_dtor
+    confidence: high
+    evidence: "Restores the BatchSession vtable, destroys its queued-job list, releases the sentinel node, and runs the TimerHandler destructor."
+  - address: "0x00404E30"
+    name: batch_session_cancel_all
+    confidence: high
+    evidence: "Invokes each queued BatchJob's virtual cleanup method and erases every queue node."
+  - address: "0x00404EC0"
+    name: batch_session_start_if_idle
+    confidence: high
+    evidence: "Starts the next queued job only when BatchSession does not already have an active job."
+  - address: "0x00404EF0"
+    name: batch_session_timer_callback
+    confidence: high
+    evidence: "Handles timer ID 0 by starting the next queued BatchJob and rejects other timer IDs."
+  - address: "0x00404F20"
+    name: batch_session_enqueue_job
+    confidence: high
+    evidence: "Appends one BatchJob pointer to the session's linked queue."
+  - address: "0x00404F80"
+    name: batch_session_remove_job
+    confidence: high
+    evidence: "Finds a queued job by pointer identity, invokes its virtual cleanup method, and erases its node."
+  - address: "0x00405020"
+    name: batch_session_start_next_job
+    confidence: high
+    evidence: "Pops queued jobs until one enabled job begins; disabled jobs are cleaned up, and an empty queue clears the active flag."
+  - address: "0x004050E0"
+    name: batch_job_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI BatchJob and enables it for a future BatchSession begin call."
+  - address: "0x00405100"
+    name: batch_job_dtor
+    confidence: high
+    evidence: "Restores the exact RTTI BatchJob vtable."
+  - address: "0x00405120"
+    name: batch_job_begin
+    confidence: high
+    evidence: "Rejects a disabled job; otherwise records its BatchSession and queue token, invokes the pure virtual execute method, and reports success."
+  - address: "0x00405170"
+    name: batch_job_complete
+    confidence: high
+    evidence: "Schedules timer ID 0 on the live owning BatchSession and invokes the job's virtual cleanup method."
+  - address: "0x004051C0"
+    name: batch_job_is_enabled
+    confidence: high
+    evidence: "Returns the BatchJob enabled byte at object offset 0x0C."
+  - address: "0x004051E0"
+    name: batch_job_disable
+    confidence: high
+    evidence: "Clears the BatchJob enabled byte so BatchSession skips it when dequeued."
+  - address: "0x00405200"
+    name: batch_session_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the BatchSession destructor and conditionally frees the complete object."
+  - address: "0x00405230"
+    name: batch_job_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the BatchJob destructor and conditionally frees the complete object."
   - address: "0x0041AE80"
     name: event_get_dispatcher
     confidence: high
@@ -703,6 +767,8 @@ data_symbols:
 comments:
   - address: "0x00402AD0"
     text: "TimerHandler secondary-base deleting-destructor thunk: subtract 0x11C to recover the complete AgreementDialogPane object."
+  - address: "0x0040506E"
+    text: "Remove the next queued BatchJob before attempting to begin it; disabled jobs are cleaned up and skipped."
   - address: "0x0042E82C"
     text: "Do not allocate a second ClockPane when its singleton already exists. Repeated SBlockInput state 0 therefore does not stack blockers."
   - address: "0x0042E877"

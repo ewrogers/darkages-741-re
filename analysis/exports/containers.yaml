@@ -1,0 +1,98 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x00404A20"
+    name: point_queue_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI PointQueue as a 400-entry circular buffer of two-word points with head and tail at zero."
+  - address: "0x00404A60"
+    name: point_queue_dtor
+    confidence: high
+    evidence: "Restores the exact RTTI PointQueue vtable and runs the LObject base destructor."
+  - address: "0x00404AF0"
+    name: point_queue_push
+    confidence: high
+    evidence: "Appends one two-word point unless advancing the tail would collide with the head; one of 400 slots is reserved to distinguish full from empty."
+  - address: "0x00404B70"
+    name: point_queue_pop_front
+    confidence: high
+    evidence: "Copies and removes the oldest queued point, wrapping the head at the fixed capacity."
+  - address: "0x00404BE0"
+    name: point_queue_is_empty
+    confidence: high
+    evidence: "Returns true when the circular queue head and tail indexes are equal."
+  - address: "0x00404C30"
+    name: point_queue_pop_back
+    confidence: high
+    evidence: "Moves the tail backward with wraparound and returns the newest queued point."
+  - address: "0x00404CA0"
+    name: point_queue_copy_assign
+    confidence: high
+    evidence: "Copies capacity, head, tail, and every fixed two-word point slot from another PointQueue."
+  - address: "0x00404D00"
+    name: point_queue_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the PointQueue destructor and conditionally frees the complete object."
+  - address: "0x00405260"
+    name: batch_job_list_ctor
+    confidence: high
+    evidence: "Constructs the sentinel-backed linked list used by BatchSession to own queued BatchJob pointers."
+  - address: "0x004052C0"
+    name: batch_job_list_erase_node
+    confidence: high
+    evidence: "Unlinks one BatchJob list node, destroys its stored value, frees the node, and returns the following iterator."
+  - address: "0x00405360"
+    name: batch_job_list_free_sentinel
+    confidence: high
+    evidence: "Clears the BatchJob list and frees its sentinel node."
+  - address: "0x00405390"
+    name: batch_job_list_clear
+    confidence: high
+    evidence: "Walks every BatchJob list node, destroys its stored value, frees it, and restores the empty sentinel links."
+  - address: "0x00405420"
+    name: batch_job_list_value_dtor
+    confidence: high
+    evidence: "Compiler-generated value destructor used while releasing one BatchJob pointer list node."
+  - address: "0x00405430"
+    name: batch_job_list_allocate_nodes
+    confidence: high
+    evidence: "Allocates and links a requested run of default BatchJob list nodes before a supplied position."
+  - address: "0x004054A0"
+    name: batch_job_list_insert_before
+    confidence: high
+    evidence: "Creates one node and links it immediately before the supplied BatchJob list iterator."
+  - address: "0x00405530"
+    name: batch_job_list_create_node
+    confidence: high
+    evidence: "Allocates one BatchJob list node and copy-constructs its stored pointer value with exception cleanup."
+  - address: "0x004055A2"
+    name: batch_job_list_create_node_exception_cleanup
+    confidence: high
+    evidence: "Exception landing pad that frees a newly allocated BatchJob list node when value construction fails."
+  - address: "0x004055F0"
+    name: batch_job_list_copy_value
+    confidence: high
+    evidence: "Compiler-generated copy helper for the pointer value stored in a BatchJob list node."
+  - address: "0x00405630"
+    name: std_bad_alloc_dtor
+    confidence: high
+    evidence: "Restores the std::bad_alloc vtable and runs the std::exception base destructor."
+  - address: "0x00405650"
+    name: std_bad_alloc_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the std::bad_alloc destructor and conditionally frees the complete exception object."
+  - address: "0x00405690"
+    name: std_bad_alloc_copy_ctor
+    confidence: high
+    evidence: "Copy-constructs std::bad_alloc through its std::exception base and installs the derived vtable."
+data_symbols: []
+comments:
+  - address: "0x00404B06"
+    text: "Keep one circular-buffer slot empty so head equal to tail remains the unambiguous empty state."
+runtime_patches: []

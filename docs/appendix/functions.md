@@ -163,6 +163,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_segmented_alpha_screen_pane_scalar_deleting_dtor` | `0x004044D0` | high | Runs the AlphaScreenPaneSegmented destructor and conditionally frees the complete object. |
 | `ui_alpha_screen_pane_timer_deleting_dtor_thunk` | `0x00404500` | high | Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the AlphaScreenPane scalar deleting destructor. |
 | `ui_segmented_alpha_screen_pane_timer_deleting_dtor_thunk` | `0x00404510` | high | Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the AlphaScreenPaneSegmented scalar deleting destructor. |
+| `ui_animation_pane_ctor` | `0x00404590` | high | Constructs exact RTTI AnimationPane, clears its playing state, and marks it uninitialized until an image is loaded. |
+| `ui_animation_pane_load` | `0x004045E0` | high | Stops prior playback, stores the image and palette settings, reads image dimensions and frame count, selects the starting frame, and registers the pane rectangle. |
+| `ui_animation_pane_start` | `0x00404750` | high | Starts an initialized idle AnimationPane at frame zero and schedules timer ID 0. |
+| `ui_animation_pane_stop` | `0x004047B0` | high | Cancels this pane's timers, restores its configured starting frame, clears the playing state, and invalidates the pane. |
+| `ui_animation_pane_timer_callback` | `0x00404840` | high | Handles timer ID 0, advances the frame modulo frame_count while active, invalidates the pane, and requeues the stored interval. |
+| `ui_animation_pane_draw_content` | `0x004048F0` | high | Loads the current image frame and blits it into the AnimationPane canvas when initialized and in range. |
+| `ui_animation_pane_scalar_deleting_dtor` | `0x004049D0` | high | Runs the Pane base destructor for AnimationPane and conditionally frees the complete object. |
+| `ui_animation_pane_timer_deleting_dtor_thunk` | `0x00404A10` | high | Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the AnimationPane scalar deleting destructor. |
 | `ui_browser_dialog_ctor` | `0x00415CB0` | high | Constructs exact RTTI BrowserDialogPane with an embedded BrowserControlPane; when no response or initial URL is supplied, sends CWebBoard action 0. |
 | `ui_browser_dialog_apply_web_board` | `0x004165A0` | high | Accepts SWebBoard actions 0 and 1, installs domain and boardinfo WinINet cookies, sets the embedded browser base URL, and navigates to start_url. |
 | `ui_browser_dialog_handle_network_event` | `0x00416A50` | high | BrowserDialogPane's network-event handler dispatches exact RTTI SWebBoard opcode 0x62 to its cookie and navigation path. |
@@ -1216,6 +1224,16 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
 | `render_get_image_library` | `0x00404A00` | high | Returns the ImageLib singleton used for sprite and UI frames. |
+| `render_set_blit_flip_flags` | `0x00405F20` | high | Encodes horizontal and vertical flip requests as bits 0 and 1 for the optimized software blitters. |
+| `render_initialize_blit_dispatch` | `0x00405F60` | high | Selects RGB565 or RGB555 software rendering, builds its lookup tables, and installs the complete blitter dispatch table. |
+| `render_shutdown_blit_dispatch` | `0x004060D0` | high | Frees the 16-bit blend tables and clears the software blitter dispatch pointers during video shutdown or reinitialization. |
+| `render_build_16bit_blend_tables` | `0x004061A0` | high | Builds pixel-format-specific half-color, carry-bit, and component-maximum tables for optimized RGB565 or RGB555 blending. |
+| `render_free_16bit_blend_tables` | `0x00406480` | high | Frees all six optimized 16-bit blend lookup buffers and clears their globals. |
+| `render_build_16bit_blend_tables_thunk` | `0x00406580` | high | Tail-calls the 16-bit blend-table builder for compiler-generated initialization plumbing. |
+| `render_free_16bit_blend_tables_thunk` | `0x004065A0` | high | Tail-calls the 16-bit blend-table cleanup for compiler-generated shutdown plumbing. |
+| `render_blit_indexed_opaque` | `0x004065B0` | high | Maps every indexed source pixel through a 16-bit palette and copies it with all four horizontal and vertical flip combinations. |
+| `render_blit_indexed_zero_transparent` | `0x00406900` | high | Copies indexed pixels through a local palette whose index 0 entry is forced to pixel value zero, with both-axis flipping. |
+| `render_blit_indexed_transparent` | `0x00406D70` | high | Maps nonzero indexed pixels through a 16-bit palette while preserving destination pixels where the source index is zero. |
 | `render_blit_screen_rgb565` | `0x0040CD00` | high | Applies blend mode 0x6D to an RGB565 destination. |
 | `render_blit_screen_rgb555` | `0x0040D0D0` | high | Applies blend mode 0x6D to an RGB555 destination. |
 | `render_blit_screen_mode` | `0x0040D4A0` | high | Selects the RGB565 or RGB555 screen-style blend used by static render flag 0x80. |
@@ -1378,12 +1396,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | --- | --- | --- | --- |
 | `audio_bgm_player_ctor` | `0x004056C0` | high | Constructs the RTTI-backed BGMPlayer, installs Miles file callbacks, and keeps one stream handle. |
 | `audio_bgm_player_dtor` | `0x004057A0` | high | Stops the active music path and unregisters the BGMPlayer singleton. |
+| `audio_bgm_initialize` | `0x00405810` | high | Trivial BGMPlayer initialization hook called by SoundManager immediately after construction; reports success. |
 | `audio_bgm_shutdown` | `0x00405830` | high | Cancels fade timers, pauses and closes the stream, and clears its handle. |
 | `audio_bgm_play_path` | `0x00405880` | high | Queues one path for the BGM transition state machine. |
 | `audio_bgm_queue_track` | `0x004058B0` | high | Saves a pending music path and starts the fade timer. |
 | `audio_bgm_queue_stop` | `0x004058F0` | high | Queues an empty path so the current music fades out and closes. |
 | `audio_bgm_get_target_volume` | `0x00405920` | high | Returns the one-byte BGM target volume. |
 | `audio_bgm_set_target_volume` | `0x00405940` | high | Changes the one-byte BGM target and schedules a fade tick when needed. |
+| `audio_bgm_is_unmuted` | `0x00405980` | high | Returns the BGMPlayer output-enabled byte cleared by mute and restored by unmute. |
 | `audio_bgm_mute` | `0x004059A0` | high | Mutes the Miles stream output without replacing the stored target volume. |
 | `audio_bgm_unmute` | `0x004059D0` | high | Restores stream output from the current fade volume. |
 | `audio_bgm_file_open` | `0x00405A00` | high | Rewrites the logical .mp3 extension to .mus and opens the loose music file. |
@@ -1393,6 +1413,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `audio_bgm_timer_callback` | `0x00405B80` | high | Advances timer ID 0 and schedules another BGM fade tick after 200 ms while needed. |
 | `audio_bgm_transition_tick` | `0x00405BC0` | high | Fades the old stream to zero, replaces it, and fades the new stream toward the target. |
 | `audio_bgm_schedule_tick` | `0x00405E20` | high | Schedules a 200 ms BGM transition timer through the shared event system. |
+| `audio_bgm_player_scalar_deleting_dtor` | `0x00405E60` | high | Runs the BGMPlayer destructor and conditionally frees the complete object. |
+| `audio_bgm_register_singleton` | `0x00405E90` | high | Registers the complete BGMPlayer pointer from its Singleton secondary-base subobject. |
+| `audio_bgm_unregister_singleton` | `0x00405ED0` | high | Clears the BGMPlayer singleton pointer when the registered instance is destroyed. |
+| `audio_get_miles_driver` | `0x00405F10` | high | Returns the shared Miles digital driver handle used by BGM, sound effects, and video audio. |
 | `audio_get_sound_manager` | `0x004316E0` | high | Returns the SoundManager singleton pointer. |
 | `audio_midi_play_file` | `0x00508D80` | high | Dormant standard MIDI play entry point with no static caller in the matching client. |
 | `audio_midi_stop_or_restart` | `0x00508ED0` | high | Pauses, resets, or restarts the Windows MIDI stream according to its flags. |
@@ -1574,6 +1598,43 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
+| `point_queue_ctor` | `0x00404A20` | high | Constructs exact RTTI PointQueue as a 400-entry circular buffer of two-word points with head and tail at zero. |
+| `point_queue_dtor` | `0x00404A60` | high | Restores the exact RTTI PointQueue vtable and runs the LObject base destructor. |
+| `point_queue_push` | `0x00404AF0` | high | Appends one two-word point unless advancing the tail would collide with the head; one of 400 slots is reserved to distinguish full from empty. |
+| `point_queue_pop_front` | `0x00404B70` | high | Copies and removes the oldest queued point, wrapping the head at the fixed capacity. |
+| `point_queue_is_empty` | `0x00404BE0` | high | Returns true when the circular queue head and tail indexes are equal. |
+| `point_queue_pop_back` | `0x00404C30` | high | Moves the tail backward with wraparound and returns the newest queued point. |
+| `point_queue_copy_assign` | `0x00404CA0` | high | Copies capacity, head, tail, and every fixed two-word point slot from another PointQueue. |
+| `point_queue_scalar_deleting_dtor` | `0x00404D00` | high | Runs the PointQueue destructor and conditionally frees the complete object. |
+| `batch_session_ctor` | `0x00404D30` | high | Constructs exact RTTI BatchSession as a TimerHandler with an empty linked job queue and no active job. |
+| `batch_session_dtor` | `0x00404DA0` | high | Restores the BatchSession vtable, destroys its queued-job list, releases the sentinel node, and runs the TimerHandler destructor. |
+| `batch_session_cancel_all` | `0x00404E30` | high | Invokes each queued BatchJob's virtual cleanup method and erases every queue node. |
+| `batch_session_start_if_idle` | `0x00404EC0` | high | Starts the next queued job only when BatchSession does not already have an active job. |
+| `batch_session_timer_callback` | `0x00404EF0` | high | Handles timer ID 0 by starting the next queued BatchJob and rejects other timer IDs. |
+| `batch_session_enqueue_job` | `0x00404F20` | high | Appends one BatchJob pointer to the session's linked queue. |
+| `batch_session_remove_job` | `0x00404F80` | high | Finds a queued job by pointer identity, invokes its virtual cleanup method, and erases its node. |
+| `batch_session_start_next_job` | `0x00405020` | high | Pops queued jobs until one enabled job begins; disabled jobs are cleaned up, and an empty queue clears the active flag. |
+| `batch_job_ctor` | `0x004050E0` | high | Constructs exact RTTI BatchJob and enables it for a future BatchSession begin call. |
+| `batch_job_dtor` | `0x00405100` | high | Restores the exact RTTI BatchJob vtable. |
+| `batch_job_begin` | `0x00405120` | high | Rejects a disabled job; otherwise records its BatchSession and queue token, invokes the pure virtual execute method, and reports success. |
+| `batch_job_complete` | `0x00405170` | high | Schedules timer ID 0 on the live owning BatchSession and invokes the job's virtual cleanup method. |
+| `batch_job_is_enabled` | `0x004051C0` | high | Returns the BatchJob enabled byte at object offset 0x0C. |
+| `batch_job_disable` | `0x004051E0` | high | Clears the BatchJob enabled byte so BatchSession skips it when dequeued. |
+| `batch_session_scalar_deleting_dtor` | `0x00405200` | high | Runs the BatchSession destructor and conditionally frees the complete object. |
+| `batch_job_scalar_deleting_dtor` | `0x00405230` | high | Runs the BatchJob destructor and conditionally frees the complete object. |
+| `batch_job_list_ctor` | `0x00405260` | high | Constructs the sentinel-backed linked list used by BatchSession to own queued BatchJob pointers. |
+| `batch_job_list_erase_node` | `0x004052C0` | high | Unlinks one BatchJob list node, destroys its stored value, frees the node, and returns the following iterator. |
+| `batch_job_list_free_sentinel` | `0x00405360` | high | Clears the BatchJob list and frees its sentinel node. |
+| `batch_job_list_clear` | `0x00405390` | high | Walks every BatchJob list node, destroys its stored value, frees it, and restores the empty sentinel links. |
+| `batch_job_list_value_dtor` | `0x00405420` | high | Compiler-generated value destructor used while releasing one BatchJob pointer list node. |
+| `batch_job_list_allocate_nodes` | `0x00405430` | high | Allocates and links a requested run of default BatchJob list nodes before a supplied position. |
+| `batch_job_list_insert_before` | `0x004054A0` | high | Creates one node and links it immediately before the supplied BatchJob list iterator. |
+| `batch_job_list_create_node` | `0x00405530` | high | Allocates one BatchJob list node and copy-constructs its stored pointer value with exception cleanup. |
+| `batch_job_list_create_node_exception_cleanup` | `0x004055A2` | high | Exception landing pad that frees a newly allocated BatchJob list node when value construction fails. |
+| `batch_job_list_copy_value` | `0x004055F0` | high | Compiler-generated copy helper for the pointer value stored in a BatchJob list node. |
+| `std_bad_alloc_dtor` | `0x00405630` | high | Restores the std::bad_alloc vtable and runs the std::exception base destructor. |
+| `std_bad_alloc_scalar_deleting_dtor` | `0x00405650` | high | Runs the std::bad_alloc destructor and conditionally frees the complete exception object. |
+| `std_bad_alloc_copy_ctor` | `0x00405690` | high | Copy-constructs std::bad_alloc through its std::exception base and installs the derived vtable. |
 | `metadata_denied_item_list_ctor` | `0x004407C0` | high | Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription. |
 | `metadata_denied_item_list_subscribe` | `0x00440AA0` | high | Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable. |
 | `metadata_denied_item_list_apply_table` | `0x00440B20` | high | Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers. |

@@ -8,6 +8,8 @@ This directory contains deterministic Binary Ninja exports such as user symbols,
 
 [`crypto.yaml`](crypto.yaml) records standalone checksum and cryptographic primitives recovered during the local-function naming sweep.
 
+[`containers.yaml`](containers.yaml) records application-owned queues and other reusable container helpers recovered during the sweep.
+
 Use [`sync_user_analysis.py`](../../binaryninja/scripts/sync_user_analysis.py) from Binary Ninja's Python console to import or refresh tracked names and comments and to normalize packet records. The script requires [PyYAML](https://pyyaml.org/). Pass `client/Darkages.exe` as `binary_path` so the script fails before changing analysis when the private input does not match.
 
 Do not copy legacy exports here without revalidation.
