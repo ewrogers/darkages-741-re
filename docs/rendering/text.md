@@ -34,6 +34,8 @@ Color is separate from the font. Normal controls set a canvas color before drawi
 
 The text layout path also preserves fixed-width spacing behavior. `text_rotate_leading_spaces_to_end` moves leading spaces to the end of a bounded span, while `text_count_trailing_and_total_spaces` reports the trailing and overall space counts used by `render_canvas_draw_text`. These helpers operate on byte spans, so their limits follow the same ANSI and DBCS rules as glyph lookup.
 
+Two UI helpers use a simpler six-pixel cell model. `text_truncate_with_ellipsis_dbcs` shortens a mutable label to its available cells and appends three dots without cutting a detected DBCS pair. `render_canvas_draw_wrapped_fixed_text` splits a bounded byte span into six-pixel columns and advances twelve pixels per line. It restores the caller's original text position after drawing.
+
 The final canvas reaches DirectDraw or the window DC only after all text, UI, sprites, and effects have already been composed. The client imports no `TextOut`, `DrawText`, or `CreateFont` function for this path.
 
 ## Active font selection

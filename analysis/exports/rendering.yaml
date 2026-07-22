@@ -863,6 +863,10 @@ functions:
     name: render_blit_pixmap
     confidence: high
     evidence: Draws an indexed PixMap with transparent zero pixels and several software blend modes.
+  - address: "0x004513D0"
+    name: render_blit_pixel_buffer
+    confidence: high
+    evidence: "Blits a raw pixel buffer through the format-selected software dispatch with clipping, modes, and optional flips."
   - address: "0x00451E40"
     name: render_blit_canvas
     confidence: high
@@ -871,14 +875,98 @@ functions:
     name: render_canvas_blit_mask
     confidence: high
     evidence: Draws a one-bit bitmap mask into a 16-bit Canvas using the current foreground, background, and blend mode.
+  - address: "0x00452D20"
+    name: render_canvas_scroll_rect
+    confidence: high
+    evidence: "Scrolls a clipped Canvas rectangle in place and accumulates the newly exposed area into the caller region."
+  - address: "0x00453860"
+    name: render_canvas_tile_pixmap
+    confidence: high
+    evidence: "Temporarily clips a Canvas, tiles a pixmap across the target rectangle, and restores the previous clip."
+  - address: "0x00453A80"
+    name: render_blit_indexed_pixmap_palette
+    confidence: high
+    evidence: "Draws an indexed pixmap through its selected palette with transparency and optional horizontal reversal."
   - address: "0x00453E60"
     name: render_blit_pixmap_with_palette_mappings
     confidence: high
     evidence: Draws indexed monster pixels while replacing configured source-index ranges through ordered palette-family and palette-selector mappings.
+  - address: "0x00454540"
+    name: render_canvas_blend_nonzero_with_draw_color
+    confidence: high
+    evidence: "Blends each nonzero pixel in a clipped rectangle with the Canvas primary draw color."
+  - address: "0x00454570"
+    name: render_canvas_blend_nonzero_with_color
+    confidence: high
+    evidence: "Blends each nonzero pixel in a clipped rectangle with an explicit 16-bit color."
+  - address: "0x00454730"
+    name: render_canvas_blend_rect
+    confidence: high
+    evidence: "Blends a clipped rectangle toward a color using a uniform weight from 0 through 32."
   - address: "0x004548B0"
     name: render_average_pixels
     confidence: high
     evidence: Combines two 16-bit pixels with the fixed component-average lookup path.
+  - address: "0x004548F0"
+    name: render_clip_blit_rects
+    confidence: high
+    evidence: "Clips source and destination rectangles together and adjusts their origins for horizontal or vertical flips."
+  - address: "0x00454A70"
+    name: rect_intersect_or_empty
+    confidence: high
+    evidence: "Computes a nonempty rectangle intersection or writes the shared empty rectangle and returns false."
+  - address: "0x00454BA0"
+    name: render_canvas_set_pixel_draw_color
+    confidence: high
+    evidence: "Writes the Canvas primary draw color to one clipped pixel."
+  - address: "0x00454BD0"
+    name: render_canvas_set_pixel_color
+    confidence: high
+    evidence: "Writes an explicit 16-bit color to one clipped Canvas pixel."
+  - address: "0x00454C80"
+    name: render_canvas_set_pixel_rgb
+    confidence: high
+    evidence: "Packs an RGB triplet and writes it to one clipped Canvas pixel."
+  - address: "0x00454D40"
+    name: render_canvas_draw_line
+    confidence: high
+    evidence: "Draws a clipped line between two points using the Canvas primary draw color."
+  - address: "0x004550E0"
+    name: render_canvas_draw_line_relative
+    confidence: high
+    evidence: "Draws from the current Canvas position by a relative delta and advances the position."
+  - address: "0x00455160"
+    name: render_canvas_draw_line_to
+    confidence: high
+    evidence: "Draws from the current Canvas position to an absolute point and stores the new position."
+  - address: "0x004551C0"
+    name: render_canvas_draw_horizontal_span_draw_color
+    confidence: high
+    evidence: "Draws a horizontal span from the current position with the Canvas primary draw color."
+  - address: "0x004551F0"
+    name: render_canvas_draw_horizontal_span
+    confidence: high
+    evidence: "Draws a colored horizontal span under the Canvas copy, transparency, blend, and dither modes."
+  - address: "0x004554D0"
+    name: render_canvas_fill_diamond_palette
+    confidence: high
+    evidence: "Fills a clipped diamond marker with a palette-resolved color and optional dither mode."
+  - address: "0x00455710"
+    name: render_canvas_set_pixel_palette_color
+    confidence: high
+    evidence: "Resolves a palette index and writes it to one clipped Canvas pixel."
+  - address: "0x00455740"
+    name: text_truncate_with_ellipsis_dbcs
+    confidence: high
+    evidence: "Truncates a mutable byte string to a six-pixel-cell width, preserves DBCS pairs, and appends three dots."
+  - address: "0x00455880"
+    name: text_find_last_nonspace_index
+    confidence: high
+    evidence: "Returns the last byte index that is not a space, tab, or carriage return."
+  - address: "0x004558F0"
+    name: render_measure_fixed_width_text
+    confidence: high
+    evidence: "Returns the six-pixel-cell width for a supplied byte count."
   - address: "0x00455910"
     name: render_canvas_draw_glyph
     confidence: high
@@ -887,6 +975,30 @@ functions:
     name: render_canvas_draw_text
     confidence: high
     evidence: Splits an ANSI byte string with IsDBCSLeadByte, builds one LFT glyph mask per key, and draws it to the software Canvas.
+  - address: "0x00455D50"
+    name: render_canvas_draw_wrapped_fixed_text
+    confidence: high
+    evidence: "Draws DBCS-aware fixed-cell text using six-pixel columns and twelve-pixel line steps."
+  - address: "0x00456000"
+    name: render_canvas_draw_rect_outline
+    confidence: high
+    evidence: "Draws the clipped outline of a rectangle and preserves the prior Canvas drawing position."
+  - address: "0x004561D0"
+    name: render_canvas_fill_rect_draw_color
+    confidence: high
+    evidence: "Fills a clipped rectangle with the Canvas primary draw color and preserves the prior position."
+  - address: "0x00456370"
+    name: render_canvas_clear_rect
+    confidence: high
+    evidence: "Clears a clipped Canvas rectangle to pixel value zero."
+  - address: "0x004564D0"
+    name: render_canvas_toggle_rect_colors
+    confidence: high
+    evidence: "Toggles each pixel in a clipped rectangle between the primary and secondary Canvas colors."
+  - address: "0x00456690"
+    name: render_canvas_clear
+    confidence: high
+    evidence: "Clears the complete Canvas through the clipped rectangle clear path."
   - address: "0x004566B0"
     name: render_get_font_image_library
     confidence: high
@@ -895,6 +1007,10 @@ functions:
     name: file_open_efa
     confidence: high
     evidence: Opens an EFA resource and returns its u32 frame count from header +0x04 and u32 frame interval from header +0x08.
+  - address: "0x00456FA0"
+    name: file_load_efa_frame
+    confidence: high
+    evidence: "Finds an EFA archive entry and decodes the requested frame into caller-provided image metadata."
   - address: "0x00457030"
     name: file_decode_efa_frame
     confidence: high
@@ -903,14 +1019,82 @@ functions:
     name: render_effect_image_session_ctor
     confidence: high
     evidence: Opens the available EFA or EPF variant for one effect image session.
+  - address: "0x00457D50"
+    name: render_effect_image_session_dtor
+    confidence: high
+    evidence: "Destroys an EffectImageSession, releases loaded frame records, and frees its user-pointer array."
+  - address: "0x00457DC0"
+    name: render_effect_image_session_get_total_duration
+    confidence: high
+    evidence: "Sums the duration field across every loaded effect-image frame record."
+  - address: "0x00457E20"
+    name: render_effect_image_session_get_effect_id
+    confidence: high
+    evidence: "Returns the effect identifier retained by an EffectImageSession."
+  - address: "0x00457E40"
+    name: render_effect_image_session_get_frame_count
+    confidence: high
+    evidence: "Returns the number of loaded frame records in an EffectImageSession."
+  - address: "0x00457E60"
+    name: render_effect_image_session_add_user
+    confidence: high
+    evidence: "Adds an effect user pointer when absent and updates the session activity time."
+  - address: "0x00457F10"
+    name: render_effect_image_session_remove_user
+    confidence: high
+    evidence: "Removes an effect user pointer by swapping down the last entry."
+  - address: "0x00457FB0"
+    name: render_effect_image_session_get_user_count
+    confidence: high
+    evidence: "Returns the number of active users retained by an EffectImageSession."
   - address: "0x00457FD0"
     name: render_get_effect_frame_image
     confidence: high
     evidence: Lazily decodes and caches one requested effect frame image.
+  - address: "0x00458630"
+    name: render_effect_image_session_get_frame_info
+    confidence: high
+    evidence: "Returns one loaded frame rectangle, two numeric properties, and a low-bit flag."
+  - address: "0x004586D0"
+    name: render_effect_image_session_get_frame_image
+    confidence: high
+    evidence: "Returns one loaded frame image pointer and writes its duration."
+  - address: "0x00458DF0"
+    name: render_effect_frame_table_ctor
+    confidence: high
+    evidence: "Constructs the exact RTTI EffectFrameTable and loads effect-frame metadata."
+  - address: "0x00458E50"
+    name: render_effect_frame_table_dtor
+    confidence: high
+    evidence: "Frees EffectFrameTable-owned buffers and runs the LObject base destructor."
   - address: "0x00458ED0"
     name: file_load_effect_frame_table
     confidence: high
     evidence: Parses Effect.tbl decimal frame sequences into per-effect tables.
+  - address: "0x00459210"
+    name: render_effect_frame_table_lookup
+    confidence: high
+    evidence: "Looks up one byte by effect identifier and frame index in the EffectFrameTable."
+  - address: "0x00459240"
+    name: render_effect_frame_record_init
+    confidence: high
+    evidence: "Initializes an effect-frame record's owned pointers and duration to zero."
+  - address: "0x00459270"
+    name: render_effect_frame_record_dtor
+    confidence: high
+    evidence: "Releases the owned image object and auxiliary allocation in an effect-frame record."
+  - address: "0x004592E0"
+    name: render_effect_image_session_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the EffectImageSession destructor and conditionally frees the complete object."
+  - address: "0x00459310"
+    name: render_effect_frame_record_array_deleting_dtor
+    confidence: high
+    evidence: "Destroys one effect-frame record or an allocated array of 0x2C-byte records."
+  - address: "0x004593B0"
+    name: render_effect_frame_table_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the EffectFrameTable destructor and conditionally frees the complete object."
   - address: "0x00459460"
     name: render_get_effect_image_pool
     confidence: high

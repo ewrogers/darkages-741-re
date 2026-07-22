@@ -31,6 +31,14 @@ The world view is part of the pane system. `WorldPane` has its own content hook,
 
 DirectDraw does not appear to be the sprite engine. Sprites, tiles, effects, transparency, and color blends are handled by client code before presentation.
 
+## Canvas drawing primitives
+
+The Canvas API supplies the small operations used by panes and higher-level sprite code. Confirmed helpers draw or fill clipped rectangles, individual pixels, lines, horizontal spans, and palette-colored diamond markers. A rectangle can also be cleared, scrolled in place, blended toward a color, or tiled with one pixmap.
+
+Every primitive maps local coordinates through the Canvas clip and backing origin first. Subcanvases therefore use the same software loops as owning canvases. Drawing state supplies the primary and secondary colors, copy or blend mode, optional dithering, and the current pen or text position.
+
+`render_canvas_scroll_rect` copies overlapping rows in the safe direction for the requested x and y movement. It also returns the newly exposed strips through the caller's region object, allowing the pane to redraw only pixels that were not preserved by the scroll.
+
 ## Read next
 
 - [Renderer lifecycle](lifecycle.md) covers setup, presentation, and cleanup.

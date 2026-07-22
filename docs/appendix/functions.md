@@ -929,6 +929,29 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_window_message_dialog_pane_timer_scalar_deleting_dtor_thunk` | `0x00448F50` | high | Adjusts the TimerHandler subobject pointer before the WindowMessageDialogPane deleting destructor. |
 | `ui_alert_pane_timer_scalar_deleting_dtor_thunk` | `0x00448F60` | high | Adjusts the TimerHandler subobject pointer before the AlertPane deleting destructor. |
 | `ui_yes_no_alert_pane_timer_scalar_deleting_dtor_thunk` | `0x00448F70` | high | Adjusts the TimerHandler subobject pointer before the YesNoAlertPane deleting destructor. |
+| `ui_dragged_pane_set_pointer_origin` | `0x004566C0` | high | Stores pointer coordinates used as the DraggedPane movement and drop origin. |
+| `ui_dragged_pane_ctor` | `0x004566F0` | high | Constructs exact RTTI DraggedPane, captures the mouse, and replaces any active dragged pane. |
+| `ui_dragged_pane_dtor` | `0x00456830` | high | Destroys exact RTTI DraggedPane, releases retained state and mouse capture, and clears the active pointer. |
+| `ui_dragged_pane_handle_pointer_event` | `0x004568F0` | high | Handles drag movement, hover, and release and dispatches the final drop through the screen hierarchy. |
+| `ui_dragged_pane_handle_pointer_event_tail` | `0x00456997` | high | Compiler-split false-return tail inside the DraggedPane pointer-event handler. |
+| `ui_dragged_pane_register_screen` | `0x00456C70` | high | Registers a DraggedPane, notifies its owner about the drag rectangle, and opens it. |
+| `ui_dragged_pane_unregister_screen` | `0x00456D50` | high | Notifies the retained owner when required and unregisters the DraggedPane. |
+| `ui_dragged_pane_handle_event_0x90` | `0x00456D90` | high | Consumes event family 8 code 0x90 according to the DraggedPane retained state flag. |
+| `ui_dragged_pane_dispatch_drop_at_origin` | `0x00456DD0` | high | Finds the screen under the stored pointer origin and invokes the drop-target callback. |
+| `ui_dragged_pane_scalar_deleting_dtor` | `0x00456EB0` | high | Runs the DraggedPane destructor and conditionally frees the complete object. |
+| `ui_dragged_pane_timer_scalar_deleting_dtor_thunk` | `0x00456EE0` | high | Adjusts the TimerHandler pointer before the DraggedPane scalar deleting destructor. |
+| `ui_emoticon_select_pane_ctor` | `0x00459470` | high | Constructs exact RTTI EmoticonSelectPane_A and initializes its eight option groups. |
+| `ui_emoticon_select_pane_dtor` | `0x00459910` | high | Destroys exact RTTI EmoticonSelectPane_A and runs the Pane base destructor. |
+| `ui_emoticon_select_pane_hit_test_option` | `0x00459940` | high | Returns the emoticon option containing a local pointer coordinate, or -1. |
+| `ui_emoticon_select_pane_draw` | `0x004599D0` | high | Draws the selector background, eight option states, and current option description. |
+| `ui_emoticon_select_pane_invalidate_option` | `0x00459BF0` | high | Invalidates one of the eight emoticon option rectangles. |
+| `ui_emoticon_select_pane_set_option_description` | `0x00459C30` | high | Copies the fixed description string for one emoticon option. |
+| `ui_emoticon_select_pane_invalidate_description` | `0x00459C70` | high | Invalidates the emoticon selector description rectangle. |
+| `ui_emoticon_select_pane_open` | `0x00459C90` | high | Resets hover selection and registers and shows the selector once. |
+| `ui_emoticon_select_pane_close` | `0x00459D00` | high | Unregisters and hides the emoticon selector when open. |
+| `ui_emoticon_select_pane_handle_keyboard_event` | `0x00459D40` | high | Selects emoticons from numeric keys and handles selector close or refresh keys. |
+| `ui_emoticon_select_pane_handle_pointer_event` | `0x00459EA0` | high | Updates hover state and commits an emoticon on pointer selection. |
+| `ui_emoticon_select_pane_set_selected_option` | `0x00459FB0` | high | Clamps and stores the selected option and refreshes its description. |
 | `ui_employee_dialog_ctor` | `0x0045AF00` | high | Constructs exact RTTI EmployeeDialogPane from lshop0.txt, applies an SMercenary Open body, registers the pane, and sends CMercenary RequestInfo. |
 | `ui_employee_dialog_dtor` | `0x0045B7C0` | high | Unregisters and destroys EmployeeDialogPane and its attached controls. |
 | `ui_employee_dialog_handle_action` | `0x0045BD90` | high | Routes employee-shop controls and item operations to the CMercenary action builders. |
@@ -2087,17 +2110,71 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_canvas_blit_pixels_software` | `0x0044D860` | high | Runs the software Canvas blit with clipping, scanline offsets, flips, color key, and optional alpha masks. |
 | `render_blit_image` | `0x0044DE30` | high | Draws a decoded Image with copy, blend, alpha, and special plane modes. |
 | `render_blit_pixmap` | `0x0044FB80` | high | Draws an indexed PixMap with transparent zero pixels and several software blend modes. |
+| `render_blit_pixel_buffer` | `0x004513D0` | high | Blits a raw pixel buffer through the format-selected software dispatch with clipping, modes, and optional flips. |
 | `render_blit_canvas` | `0x00451E40` | high | Copies or blends one Canvas into another. |
 | `render_canvas_blit_mask` | `0x004526C0` | high | Draws a one-bit bitmap mask into a 16-bit Canvas using the current foreground, background, and blend mode. |
+| `render_canvas_scroll_rect` | `0x00452D20` | high | Scrolls a clipped Canvas rectangle in place and accumulates the newly exposed area into the caller region. |
+| `render_canvas_tile_pixmap` | `0x00453860` | high | Temporarily clips a Canvas, tiles a pixmap across the target rectangle, and restores the previous clip. |
+| `render_blit_indexed_pixmap_palette` | `0x00453A80` | high | Draws an indexed pixmap through its selected palette with transparency and optional horizontal reversal. |
 | `render_blit_pixmap_with_palette_mappings` | `0x00453E60` | high | Draws indexed monster pixels while replacing configured source-index ranges through ordered palette-family and palette-selector mappings. |
+| `render_canvas_blend_nonzero_with_draw_color` | `0x00454540` | high | Blends each nonzero pixel in a clipped rectangle with the Canvas primary draw color. |
+| `render_canvas_blend_nonzero_with_color` | `0x00454570` | high | Blends each nonzero pixel in a clipped rectangle with an explicit 16-bit color. |
+| `render_canvas_blend_rect` | `0x00454730` | high | Blends a clipped rectangle toward a color using a uniform weight from 0 through 32. |
 | `render_average_pixels` | `0x004548B0` | high | Combines two 16-bit pixels with the fixed component-average lookup path. |
+| `render_clip_blit_rects` | `0x004548F0` | high | Clips source and destination rectangles together and adjusts their origins for horizontal or vertical flips. |
+| `render_canvas_set_pixel_draw_color` | `0x00454BA0` | high | Writes the Canvas primary draw color to one clipped pixel. |
+| `render_canvas_set_pixel_color` | `0x00454BD0` | high | Writes an explicit 16-bit color to one clipped Canvas pixel. |
+| `render_canvas_set_pixel_rgb` | `0x00454C80` | high | Packs an RGB triplet and writes it to one clipped Canvas pixel. |
+| `render_canvas_draw_line` | `0x00454D40` | high | Draws a clipped line between two points using the Canvas primary draw color. |
+| `render_canvas_draw_line_relative` | `0x004550E0` | high | Draws from the current Canvas position by a relative delta and advances the position. |
+| `render_canvas_draw_line_to` | `0x00455160` | high | Draws from the current Canvas position to an absolute point and stores the new position. |
+| `render_canvas_draw_horizontal_span_draw_color` | `0x004551C0` | high | Draws a horizontal span from the current position with the Canvas primary draw color. |
+| `render_canvas_draw_horizontal_span` | `0x004551F0` | high | Draws a colored horizontal span under the Canvas copy, transparency, blend, and dither modes. |
+| `render_canvas_fill_diamond_palette` | `0x004554D0` | high | Fills a clipped diamond marker with a palette-resolved color and optional dither mode. |
+| `render_canvas_set_pixel_palette_color` | `0x00455710` | high | Resolves a palette index and writes it to one clipped Canvas pixel. |
+| `render_measure_fixed_width_text` | `0x004558F0` | high | Returns the six-pixel-cell width for a supplied byte count. |
 | `render_canvas_draw_glyph` | `0x00455910` | high | Resolves one 16-bit byte-code key through FontImageLib, blits its one-bit mask, and advances the Canvas cursor. |
 | `render_canvas_draw_text` | `0x00455A30` | high | Splits an ANSI byte string with IsDBCSLeadByte, builds one LFT glyph mask per key, and draws it to the software Canvas. |
+| `render_canvas_draw_wrapped_fixed_text` | `0x00455D50` | high | Draws DBCS-aware fixed-cell text using six-pixel columns and twelve-pixel line steps. |
+| `render_canvas_draw_rect_outline` | `0x00456000` | high | Draws the clipped outline of a rectangle and preserves the prior Canvas drawing position. |
+| `render_canvas_fill_rect_draw_color` | `0x004561D0` | high | Fills a clipped rectangle with the Canvas primary draw color and preserves the prior position. |
+| `render_canvas_clear_rect` | `0x00456370` | high | Clears a clipped Canvas rectangle to pixel value zero. |
+| `render_canvas_toggle_rect_colors` | `0x004564D0` | high | Toggles each pixel in a clipped rectangle between the primary and secondary Canvas colors. |
+| `render_canvas_clear` | `0x00456690` | high | Clears the complete Canvas through the clipped rectangle clear path. |
 | `render_get_font_image_library` | `0x004566B0` | high | Returns the RTTI-backed FontImageLib singleton used by the active text renderer. |
 | `render_effect_image_session_ctor` | `0x004575B0` | high | Opens the available EFA or EPF variant for one effect image session. |
+| `render_effect_image_session_dtor` | `0x00457D50` | high | Destroys an EffectImageSession, releases loaded frame records, and frees its user-pointer array. |
+| `render_effect_image_session_get_total_duration` | `0x00457DC0` | high | Sums the duration field across every loaded effect-image frame record. |
+| `render_effect_image_session_get_effect_id` | `0x00457E20` | high | Returns the effect identifier retained by an EffectImageSession. |
+| `render_effect_image_session_get_frame_count` | `0x00457E40` | high | Returns the number of loaded frame records in an EffectImageSession. |
+| `render_effect_image_session_add_user` | `0x00457E60` | high | Adds an effect user pointer when absent and updates the session activity time. |
+| `render_effect_image_session_remove_user` | `0x00457F10` | high | Removes an effect user pointer by swapping down the last entry. |
+| `render_effect_image_session_get_user_count` | `0x00457FB0` | high | Returns the number of active users retained by an EffectImageSession. |
 | `render_get_effect_frame_image` | `0x00457FD0` | high | Lazily decodes and caches one requested effect frame image. |
+| `render_effect_image_session_get_frame_info` | `0x00458630` | high | Returns one loaded frame rectangle, two numeric properties, and a low-bit flag. |
+| `render_effect_image_session_get_frame_image` | `0x004586D0` | high | Returns one loaded frame image pointer and writes its duration. |
+| `render_effect_image_pool_ctor` | `0x00458720` | high | Constructs EffectImagePool, loads its frame table, allocates session slots, and schedules 30-second cleanup. |
+| `render_effect_image_pool_dtor` | `0x00458860` | high | Clears EffectImagePool sessions, releases the frame table, and tears down its timer base. |
 | `render_effect_image_pool_clear` | `0x00458900` | high | Destroys every retained EffectImageSession and frees the effect-ID pointer array. |
 | `render_effect_image_pool_get_frame` | `0x004589C0` | high | Creates one EffectImageSession on the first request for an effect ID, retains it, and asks it for the selected frame. |
+| `render_effect_image_pool_remove_user` | `0x00458AA0` | high | Removes a user pointer from one existing effect-image session. |
+| `render_effect_image_pool_prune_inactive` | `0x00458B00` | high | Deletes effect-image sessions with no retained activity for more than 30 seconds. |
+| `render_effect_image_pool_timer_tick` | `0x00458BE0` | high | Prunes inactive effect-image sessions and requeues the cleanup timer. |
+| `render_effect_image_pool_resolve_frame_index` | `0x00458C20` | high | Resolves an animation frame index from effect metadata, session state, and the requested frame. |
+| `render_effect_image_pool_get_frame_info` | `0x00458CF0` | high | Returns rectangle and flag metadata for one loaded effect frame. |
+| `render_effect_image_pool_get_frame_image` | `0x00458D50` | high | Returns one loaded effect frame image pointer and writes its duration. |
+| `render_effect_image_pool_get_total_duration` | `0x00458DA0` | high | Returns the total duration retained for one loaded effect-image session. |
+| `render_effect_frame_table_ctor` | `0x00458DF0` | high | Constructs the exact RTTI EffectFrameTable and loads effect-frame metadata. |
+| `render_effect_frame_table_dtor` | `0x00458E50` | high | Frees EffectFrameTable-owned buffers and runs the LObject base destructor. |
+| `render_effect_frame_table_lookup` | `0x00459210` | high | Looks up one byte by effect identifier and frame index in the EffectFrameTable. |
+| `render_effect_frame_record_init` | `0x00459240` | high | Initializes an effect-frame record's owned pointers and duration to zero. |
+| `render_effect_frame_record_dtor` | `0x00459270` | high | Releases the owned image object and auxiliary allocation in an effect-frame record. |
+| `render_effect_image_session_scalar_deleting_dtor` | `0x004592E0` | high | Runs the EffectImageSession destructor and conditionally frees the complete object. |
+| `render_effect_frame_record_array_deleting_dtor` | `0x00459310` | high | Destroys one effect-frame record or an allocated array of 0x2C-byte records. |
+| `render_effect_image_pool_scalar_deleting_dtor` | `0x00459380` | high | Runs the EffectImagePool destructor and conditionally frees the complete object. |
+| `render_effect_frame_table_scalar_deleting_dtor` | `0x004593B0` | high | Runs the EffectFrameTable destructor and conditionally frees the complete object. |
+| `render_effect_image_pool_singleton_register` | `0x004593E0` | high | Registers the complete EffectImagePool from its TimerHandler secondary-base pointer. |
+| `render_effect_image_pool_singleton_unregister` | `0x00459420` | high | Clears the EffectImagePool singleton when the adjusted TimerHandler owner matches. |
 | `render_get_effect_image_pool` | `0x00459460` | high | Returns the EffectImagePool singleton. |
 | `render_get_icon_image_library` | `0x0045D7E0` | high | Returns the RTTI-backed IconImageLib singleton. |
 | `render_font_image_library_ctor` | `0x0047B7D0` | high | Constructs RTTI class FontImageLib, registers its singleton, and loads the language-selected LFT entry. |
@@ -2332,6 +2409,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_color_table_read_decimal` | `0x0044CCA0` | high | Skips non-digits and parses the next unsigned decimal integer from color-table input. |
 | `file_load_color_table` | `0x0044CD50` | medium | Loads color.tbl records and packs six RGB triples per record for the renderer. |
 | `file_open_efa` | `0x00456F30` | high | Opens an EFA resource and returns its u32 frame count from header +0x04 and u32 frame interval from header +0x08. |
+| `file_load_efa_frame` | `0x00456FA0` | high | Finds an EFA archive entry and decodes the requested frame into caller-provided image metadata. |
 | `file_decode_efa_frame` | `0x00457030` | high | Inflates one zlib payload from a 0x40-byte EFA frame record and builds an Image view. |
 | `file_load_effect_frame_table` | `0x00458ED0` | high | Parses Effect.tbl decimal frame sequences into per-effect tables. |
 | `file_archive_xor_words` | `0x00471DC0` | high | XORs a buffer in 32-bit words for the extended DAT header and index path. |
@@ -2712,6 +2790,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `text_count_trailing_and_total_spaces` | `0x0044CA70` | high | Counts trailing spaces and total spaces in a fixed-length span for Canvas text layout. |
 | `text_rotate_leading_spaces_to_end` | `0x0044CB10` | high | Moves leading spaces to the end of a fixed-length text span while preserving its length. |
 | `lobject_dtor_wrapper` | `0x0044D840` | high | Thin wrapper that invokes the recovered LObject destructor. |
+| `rect_intersect_or_empty` | `0x00454A70` | high | Computes a nonempty rectangle intersection or writes the shared empty rectangle and returns false. |
+| `text_truncate_with_ellipsis_dbcs` | `0x00455740` | high | Truncates a mutable byte string to a six-pixel-cell width, preserves DBCS pairs, and appends three dots. |
+| `text_find_last_nonspace_index` | `0x00455880` | high | Returns the last byte index that is not a space, tab, or carriage return. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

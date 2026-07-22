@@ -15,6 +15,14 @@ functions:
     name: render_get_palette_manager
     confidence: high
     evidence: Returns the RTTI-backed PaletteMan singleton.
+  - address: "0x00458720"
+    name: render_effect_image_pool_ctor
+    confidence: high
+    evidence: "Constructs EffectImagePool, loads its frame table, allocates session slots, and schedules 30-second cleanup."
+  - address: "0x00458860"
+    name: render_effect_image_pool_dtor
+    confidence: high
+    evidence: "Clears EffectImagePool sessions, releases the frame table, and tears down its timer base."
   - address: "0x00458900"
     name: render_effect_image_pool_clear
     confidence: high
@@ -23,6 +31,46 @@ functions:
     name: render_effect_image_pool_get_frame
     confidence: high
     evidence: Creates one EffectImageSession on the first request for an effect ID, retains it, and asks it for the selected frame.
+  - address: "0x00458AA0"
+    name: render_effect_image_pool_remove_user
+    confidence: high
+    evidence: "Removes a user pointer from one existing effect-image session."
+  - address: "0x00458B00"
+    name: render_effect_image_pool_prune_inactive
+    confidence: high
+    evidence: "Deletes effect-image sessions with no retained activity for more than 30 seconds."
+  - address: "0x00458BE0"
+    name: render_effect_image_pool_timer_tick
+    confidence: high
+    evidence: "Prunes inactive effect-image sessions and requeues the cleanup timer."
+  - address: "0x00458C20"
+    name: render_effect_image_pool_resolve_frame_index
+    confidence: high
+    evidence: "Resolves an animation frame index from effect metadata, session state, and the requested frame."
+  - address: "0x00458CF0"
+    name: render_effect_image_pool_get_frame_info
+    confidence: high
+    evidence: "Returns rectangle and flag metadata for one loaded effect frame."
+  - address: "0x00458D50"
+    name: render_effect_image_pool_get_frame_image
+    confidence: high
+    evidence: "Returns one loaded effect frame image pointer and writes its duration."
+  - address: "0x00458DA0"
+    name: render_effect_image_pool_get_total_duration
+    confidence: high
+    evidence: "Returns the total duration retained for one loaded effect-image session."
+  - address: "0x00459380"
+    name: render_effect_image_pool_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the EffectImagePool destructor and conditionally frees the complete object."
+  - address: "0x004593E0"
+    name: render_effect_image_pool_singleton_register
+    confidence: high
+    evidence: "Registers the complete EffectImagePool from its TimerHandler secondary-base pointer."
+  - address: "0x00459420"
+    name: render_effect_image_pool_singleton_unregister
+    confidence: high
+    evidence: "Clears the EffectImagePool singleton when the adjusted TimerHandler owner matches."
   - address: "0x0045D7E0"
     name: render_get_icon_image_library
     confidence: high

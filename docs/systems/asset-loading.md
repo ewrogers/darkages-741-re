@@ -106,7 +106,11 @@ The RTTI-backed `HumanImageLib`, `MonsterImageLib`, and `IconImageLib` singleton
 - an EPF effect frame is read as indexed pixels, palette-converted once into an owned 16-bit `Image`, and cached;
 - an EFA frame is inflated from zlib data into owned image storage and cached.
 
-The pool has a clear routine that destroys every retained session, and each session destroys its decoded frames. That clear routine is reached through the pool destructor. The mapped normal shutdown path does not explicitly invoke the separate effect-pool destroy helper, so these cached images normally remain until the process reclaims them.
+Each session also keeps a bounded set of live user pointers. Acquiring an existing user refreshes the same activity timestamp as adding a new one. Removing a user swaps the last pointer into its slot, so removal does not preserve user order.
+
+`EffectImagePool` schedules a repeating 30-second cleanup. `render_effect_image_pool_prune_inactive` deletes a retained session when its activity timestamp is nonzero and more than 30 seconds old. This is age-based cache cleanup, not memory-pressure or least-recently-used eviction.
+
+The pool also has a full clear routine that destroys every retained session, and each session destroys its decoded frames. That clear routine is reached through the pool destructor. The mapped normal shutdown path does not explicitly invoke the separate effect-pool destroy helper, but inactive sessions can still disappear during normal play through the cleanup timer.
 
 ## What is actually unloaded
 
@@ -115,11 +119,11 @@ The client uses several meanings of release:
 - Closing an archive entry returns a short-lived handle slot. It does not unmap data.
 - Destroying an ordinary pixmap owner drops a view. It does not free the mapped EPF bytes.
 - Clearing a tile cache discards decoded tile results so the next draw rebuilds them.
-- Destroying an effect session releases its owned decoded images, although the global pool normally retains sessions.
+- Destroying an effect session releases its owned decoded images. The effect pool may do this after 30 seconds without retained activity.
 - Audio shutdown releases the cached Miles handles.
 - `app_shutdown` closes and unmaps the archive objects after their consumers have been torn down.
 
-No general memory-pressure eviction, least-recently-used list, or periodic asset purge was found. The client relies on small mapped views for common art and long-lived caches for work that is expensive to repeat.
+No general memory-pressure eviction or least-recently-used list was found. Most subsystems rely on mapped views or long-lived caches. The effect-image pool is the confirmed exception with its own periodic age-based cleanup.
 
 ## File formats and rendering
 

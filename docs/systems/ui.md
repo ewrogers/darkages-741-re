@@ -100,6 +100,20 @@ The dialog keeps the focused attachment index separately from the control object
 
 `AlertPane` maps attachment action `0` to its first choice and action `2` to its optional second choice. `YesNoAlertPane` retains callback state and converts those choices to `true` or `false`. After dispatch, the alert unregisters, hides, and enters the normal deferred-deletion path. The exact RTTI destructor thunks adjust the `TimerHandler` secondary base by `0x11C` before destroying the complete pane.
 
+## Dragged panes
+
+Exact RTTI `DraggedPane` is a temporary captured pane used as the common base for dragged inventory items, map items, pictures, skills, spells, and world items. Construction captures the mouse and replaces any older active dragged pane through deferred deletion.
+
+Pointer movement updates the pane position from a retained pointer origin. On release, the pane walks the screen hierarchy under that origin and calls its virtual drop-target hook with target-local coordinates. The walk continues until a target consumes the drop. The pane then releases capture, unregisters, hides, and enters deferred deletion.
+
+The drag pane's visibility, capture, and lifetime remain separate states. Its owner can receive a callback during registration or removal, and the exact `TimerHandler` destructor thunk adjusts `this` by `0x11C`.
+
+## Emoticon selector
+
+Exact RTTI `EmoticonSelectPane_A` owns eight option rectangles and a description buffer. Pointer movement hit-tests those rectangles, invalidates the old and new option, copies the selected option description, and redraws the description area.
+
+A pointer selection or numeric key commits an option through the retained chat owner and shared emoticon state, then closes the pane. Other mapped keys close or refresh it without choosing. The selector clamps programmatic selection to the eight valid indexes and falls back to option zero.
+
 ## Full-screen story panes
 
 Two early full-screen panes combine archive text, art, input, and timers without using a dialog layout.

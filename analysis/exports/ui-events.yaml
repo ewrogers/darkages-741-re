@@ -451,6 +451,98 @@ functions:
     name: ui_yes_no_alert_pane_timer_scalar_deleting_dtor_thunk
     confidence: high
     evidence: "Adjusts the TimerHandler subobject pointer before the YesNoAlertPane deleting destructor."
+  - address: "0x004566C0"
+    name: ui_dragged_pane_set_pointer_origin
+    confidence: high
+    evidence: "Stores pointer coordinates used as the DraggedPane movement and drop origin."
+  - address: "0x004566F0"
+    name: ui_dragged_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI DraggedPane, captures the mouse, and replaces any active dragged pane."
+  - address: "0x00456830"
+    name: ui_dragged_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI DraggedPane, releases retained state and mouse capture, and clears the active pointer."
+  - address: "0x004568F0"
+    name: ui_dragged_pane_handle_pointer_event
+    confidence: high
+    evidence: "Handles drag movement, hover, and release and dispatches the final drop through the screen hierarchy."
+  - address: "0x00456997"
+    name: ui_dragged_pane_handle_pointer_event_tail
+    confidence: high
+    evidence: "Compiler-split false-return tail inside the DraggedPane pointer-event handler."
+  - address: "0x00456C70"
+    name: ui_dragged_pane_register_screen
+    confidence: high
+    evidence: "Registers a DraggedPane, notifies its owner about the drag rectangle, and opens it."
+  - address: "0x00456D50"
+    name: ui_dragged_pane_unregister_screen
+    confidence: high
+    evidence: "Notifies the retained owner when required and unregisters the DraggedPane."
+  - address: "0x00456D90"
+    name: ui_dragged_pane_handle_event_0x90
+    confidence: high
+    evidence: "Consumes event family 8 code 0x90 according to the DraggedPane retained state flag."
+  - address: "0x00456DD0"
+    name: ui_dragged_pane_dispatch_drop_at_origin
+    confidence: high
+    evidence: "Finds the screen under the stored pointer origin and invokes the drop-target callback."
+  - address: "0x00456EB0"
+    name: ui_dragged_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the DraggedPane destructor and conditionally frees the complete object."
+  - address: "0x00456EE0"
+    name: ui_dragged_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler pointer before the DraggedPane scalar deleting destructor."
+  - address: "0x00459470"
+    name: ui_emoticon_select_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI EmoticonSelectPane_A and initializes its eight option groups."
+  - address: "0x00459910"
+    name: ui_emoticon_select_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI EmoticonSelectPane_A and runs the Pane base destructor."
+  - address: "0x00459940"
+    name: ui_emoticon_select_pane_hit_test_option
+    confidence: high
+    evidence: "Returns the emoticon option containing a local pointer coordinate, or -1."
+  - address: "0x004599D0"
+    name: ui_emoticon_select_pane_draw
+    confidence: high
+    evidence: "Draws the selector background, eight option states, and current option description."
+  - address: "0x00459BF0"
+    name: ui_emoticon_select_pane_invalidate_option
+    confidence: high
+    evidence: "Invalidates one of the eight emoticon option rectangles."
+  - address: "0x00459C30"
+    name: ui_emoticon_select_pane_set_option_description
+    confidence: high
+    evidence: "Copies the fixed description string for one emoticon option."
+  - address: "0x00459C70"
+    name: ui_emoticon_select_pane_invalidate_description
+    confidence: high
+    evidence: "Invalidates the emoticon selector description rectangle."
+  - address: "0x00459C90"
+    name: ui_emoticon_select_pane_open
+    confidence: high
+    evidence: "Resets hover selection and registers and shows the selector once."
+  - address: "0x00459D00"
+    name: ui_emoticon_select_pane_close
+    confidence: high
+    evidence: "Unregisters and hides the emoticon selector when open."
+  - address: "0x00459D40"
+    name: ui_emoticon_select_pane_handle_keyboard_event
+    confidence: high
+    evidence: "Selects emoticons from numeric keys and handles selector close or refresh keys."
+  - address: "0x00459EA0"
+    name: ui_emoticon_select_pane_handle_pointer_event
+    confidence: high
+    evidence: "Updates hover state and commits an emoticon on pointer selection."
+  - address: "0x00459FB0"
+    name: ui_emoticon_select_pane_set_selected_option
+    confidence: high
+    evidence: "Clamps and stores the selected option and refreshes its description."
   - address: "0x00463820"
     name: event_dispatcher_ctor
     confidence: high
