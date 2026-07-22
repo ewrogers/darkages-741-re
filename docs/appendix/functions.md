@@ -3920,6 +3920,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `maybe_ui_manufacture_dialog_apply_manual_body` | `0x004C2990` | medium | Applies RecipeCount or Recipe from a decoded opcode-first body for the duplicate raw-body pane path. |
 | `maybe_map_tile_library_noop_two_arg_method` | `0x004C7960` | low | Unreferenced thiscall method beside MapTileImageLib code; accepts two stack arguments and intentionally does nothing. |
 | `maybe_map_tile_library_noop_three_arg_method` | `0x004C7970` | low | Unreferenced thiscall method beside MapTileImageLib code; accepts three stack arguments and intentionally does nothing. |
+| `maybe_memory_manager_return_null_noop` | `0x004C9550` | low | Unreferenced MemoryMan-adjacent method that performs no work and returns null. |
 
 ## Other
 
@@ -4638,6 +4639,22 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `local_storage_file_entry_value_copy_construct` | `0x004B5F20` | high | Placement copy-constructs a LocalStorage filename, size, and cache pointer. |
 | `local_storage_file_entry_value_copy_members` | `0x004B5F90` | high | Copy-constructs a filename string and copies the file size and cache pointer. |
 | `local_storage_file_name_c_str` | `0x004B6020` | high | Returns the inline or heap-backed C string for a LocalStorage filename value. |
+| `memory_manager_ctor` | `0x004C9370` | high | Constructs exact RTTI MemoryMan, registers its embedded singleton helper, and installs its vtable. |
+| `memory_manager_allocate` | `0x004C93C0` | high | Allocates a requested byte count and throws Win32Error on heap failure. |
+| `memory_manager_allocate_zeroed` | `0x004C9470` | high | Allocates a requested byte count, clears every byte, and throws Win32Error on heap failure. |
+| `memory_manager_free` | `0x004C9530` | high | Frees one heap block and returns null so the owner can clear its pointer. |
+| `memory_manager_resize` | `0x004C9560` | high | Resizes a heap block and throws Win32Error when the bundled reallocation routine fails. |
+| `memory_manager_resize_and_clear` | `0x004C9610` | medium | A second resize entry point labeled 'set ptr size and clear'; its body is byte-for-byte equivalent in behavior to memory_manager_resize and contains no explicit clearing step. |
+| `memory_manager_copy` | `0x004C96C0` | high | Validates destination, source, and length through ContextDumper, then copies the requested bytes. |
+| `memory_manager_fill` | `0x004C9740` | high | Fills a destination range with one caller-supplied byte value. |
+| `memory_manager_select_copy_implementation` | `0x004C9770` | high | Probes CPUID, benchmarks the available baseline, x87, and MMX copy loops, and returns the fastest implementation. |
+| `memory_copy_cpuid_probe_cleanup_1` | `0x004C97B9` | high | Structured-exception cleanup continuation that marks the first copy-strategy CPU probe as unavailable. |
+| `memory_copy_cpuid_probe_cleanup_2` | `0x004C97F0` | high | Structured-exception cleanup continuation that marks the second copy-strategy CPU probe as unavailable. |
+| `memory_manager_select_copy_implementation_continue` | `0x004C9820` | high | Continuation that benchmarks the supported copy loops and returns the fastest function pointer. |
+| `memory_benchmark_copy_implementation` | `0x004C9920` | high | Times 20,000 copies of a 30,000-byte test buffer with QueryPerformanceCounter or GetTickCount. |
+| `memory_copy_baseline` | `0x004C9B00` | high | Baseline three-argument adapter around the bundled memcpy implementation. |
+| `memory_copy_x87_blocks` | `0x004C9B20` | high | Aligns the destination, transfers large inputs in paired x87 64-bit loads and stores, and copies the edges as bytes. |
+| `memory_copy_mmx_blocks` | `0x004C9C00` | high | Aligns the destination, transfers large inputs with MMX movq, copies the edges as bytes, and executes emms. |
 | `memory_manager_singleton_register_adjusted` | `0x004C9D10` | high | Registers exact RTTI MemoryMan from its Singleton secondary base. |
 | `memory_manager_singleton_unregister_adjusted` | `0x004C9D50` | high | Clears the MemoryMan singleton from its adjusted secondary-base pointer. |
 | `metadata_item_info_list_exists` | `0x004D9330` | high | Returns whether the exact RTTI ItemInfoList singleton is currently bound. |

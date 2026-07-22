@@ -2919,14 +2919,6 @@ functions:
     name: map_tile_library_grow_cache_entries
     confidence: high
     evidence: "Grows the array of eight-byte decoded-tile cache entries and initializes each new slot."
-  - address: "0x004C9D10"
-    name: memory_manager_singleton_register_adjusted
-    confidence: high
-    evidence: "Registers exact RTTI MemoryMan from its Singleton secondary base."
-  - address: "0x004C9D50"
-    name: memory_manager_singleton_unregister_adjusted
-    confidence: high
-    evidence: "Clears the MemoryMan singleton from its adjusted secondary-base pointer."
   - address: "0x00549F60"
     name: ui_pane_invalidate
     confidence: high

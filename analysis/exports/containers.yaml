@@ -319,6 +319,82 @@ functions:
     name: memory_allocation_failed
     confidence: high
     evidence: "Returns the client memory manager's current allocation-failure flag."
+  - address: "0x004C9370"
+    name: memory_manager_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI MemoryMan, registers its embedded singleton helper, and installs its vtable."
+  - address: "0x004C93C0"
+    name: memory_manager_allocate
+    confidence: high
+    evidence: "Allocates a requested byte count and throws Win32Error on heap failure."
+  - address: "0x004C9470"
+    name: memory_manager_allocate_zeroed
+    confidence: high
+    evidence: "Allocates a requested byte count, clears every byte, and throws Win32Error on heap failure."
+  - address: "0x004C9530"
+    name: memory_manager_free
+    confidence: high
+    evidence: "Frees one heap block and returns null so the owner can clear its pointer."
+  - address: "0x004C9550"
+    name: maybe_memory_manager_return_null_noop
+    confidence: low
+    evidence: "Unreferenced MemoryMan-adjacent method that performs no work and returns null."
+  - address: "0x004C9560"
+    name: memory_manager_resize
+    confidence: high
+    evidence: "Resizes a heap block and throws Win32Error when the bundled reallocation routine fails."
+  - address: "0x004C9610"
+    name: memory_manager_resize_and_clear
+    confidence: medium
+    evidence: "A second resize entry point labeled 'set ptr size and clear'; its body is byte-for-byte equivalent in behavior to memory_manager_resize and contains no explicit clearing step."
+  - address: "0x004C96C0"
+    name: memory_manager_copy
+    confidence: high
+    evidence: "Validates destination, source, and length through ContextDumper, then copies the requested bytes."
+  - address: "0x004C9740"
+    name: memory_manager_fill
+    confidence: high
+    evidence: "Fills a destination range with one caller-supplied byte value."
+  - address: "0x004C9770"
+    name: memory_manager_select_copy_implementation
+    confidence: high
+    evidence: "Probes CPUID, benchmarks the available baseline, x87, and MMX copy loops, and returns the fastest implementation."
+  - address: "0x004C97B9"
+    name: memory_copy_cpuid_probe_cleanup_1
+    confidence: high
+    evidence: "Structured-exception cleanup continuation that marks the first copy-strategy CPU probe as unavailable."
+  - address: "0x004C97F0"
+    name: memory_copy_cpuid_probe_cleanup_2
+    confidence: high
+    evidence: "Structured-exception cleanup continuation that marks the second copy-strategy CPU probe as unavailable."
+  - address: "0x004C9820"
+    name: memory_manager_select_copy_implementation_continue
+    confidence: high
+    evidence: "Continuation that benchmarks the supported copy loops and returns the fastest function pointer."
+  - address: "0x004C9920"
+    name: memory_benchmark_copy_implementation
+    confidence: high
+    evidence: "Times 20,000 copies of a 30,000-byte test buffer with QueryPerformanceCounter or GetTickCount."
+  - address: "0x004C9B00"
+    name: memory_copy_baseline
+    confidence: high
+    evidence: "Baseline three-argument adapter around the bundled memcpy implementation."
+  - address: "0x004C9B20"
+    name: memory_copy_x87_blocks
+    confidence: high
+    evidence: "Aligns the destination, transfers large inputs in paired x87 64-bit loads and stores, and copies the edges as bytes."
+  - address: "0x004C9C00"
+    name: memory_copy_mmx_blocks
+    confidence: high
+    evidence: "Aligns the destination, transfers large inputs with MMX movq, copies the edges as bytes, and executes emms."
+  - address: "0x004C9D10"
+    name: memory_manager_singleton_register_adjusted
+    confidence: high
+    evidence: "Registers exact RTTI MemoryMan from its Singleton secondary base."
+  - address: "0x004C9D50"
+    name: memory_manager_singleton_unregister_adjusted
+    confidence: high
+    evidence: "Clears the MemoryMan singleton from its adjusted secondary-base pointer."
 data_symbols: []
 comments:
   - address: "0x00404B06"

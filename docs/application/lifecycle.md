@@ -33,6 +33,14 @@ Win32 activation remains separate from construction. `app_set_active` applies th
 
 The mutex is named `Nexon.SingleInstance`. If Windows reports that it already exists, the original client exits. This is only a local guard. It does not change any account or server rules.
 
+## Memory manager
+
+`app_initialize` constructs the RTTI-backed `MemoryMan` singleton before the other core managers. It wraps allocation, zeroed allocation, resize, free, copy, and fill operations. Allocation failures become `Win32Error` objects instead of returning a null pointer to ordinary callers.
+
+At startup, `memory_manager_select_copy_implementation` probes the processor and benchmarks three byte-copy loops over fixed test buffers. The candidates are the bundled baseline copy, a 16-byte x87 loop, and an eight-byte MMX loop when CPUID reports MMX support. The manager keeps the fastest function pointer for later copies. This is a one-time runtime choice, not a build-time assumption about the processor.
+
+The entry point labeled by its embedded error text as "set ptr size and clear" calls the same reallocation routine as the ordinary resize entry point. Its body does not clear newly added bytes. Callers that need initialized growth, such as the generic list container, clear the new range separately.
+
 ## Patch handoff
 
 The lobby can notify this client about an update through [`SVersionCheck`](../network/server/000-0x00-version-check.md) subtype `2`. The client writes the supplied version and file-list data to `Patch/Info`, launches `Patcher2.exe`, and exits. This happens directly from the version response and does not require the separate `CRequestPatch` and `SSendPatch` opcodes.
