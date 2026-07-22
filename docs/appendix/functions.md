@@ -896,7 +896,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_dialog_unregister_screen` | `0x00445970` | high | Detaches each local control, then unregisters the dialog screen. |
 | `ui_dialog_handle_pointer_event` | `0x00445A20` | high | DialogPane primary-vtable +0x48 implementation for pane dragging, hit testing, child dispatch, visual-hover and secondary pointer-transition state, and same-control/same-zone click activation. |
 | `ui_dialog_handle_keyboard_event` | `0x00445FF0` | high | DialogPane primary-vtable +0x4C implementation: Tab traverses focus, Enter and Space normally dispatch the default action, Escape dispatches cancel, and remaining input reaches the focused enabled control. |
+| `ui_dialog_focused_control_uses_text_input` | `0x00446260` | high | Returns the enabled focused control's virtual text-input mode, or false when no eligible control has focus. |
 | `ui_dialog_handle_application_event` | `0x004462D0` | high | DialogPane primary-vtable +0x54 implementation that forwards application and IME events to the focused control. |
+| `ui_dialog_draw` | `0x00446360` | high | Runs the dialog background and content drawing hooks over the pane rectangle. |
+| `ui_dialog_draw_background` | `0x004463C0` | high | Draws the configured dialog background or lazily loads the default DlgBack2.spf skin. |
+| `ui_dialog_draw_default_frame` | `0x004464A0` | high | Draws the tiled default dialog frame when no named custom background is configured. |
 | `ui_dialog_hit_test_control` | `0x004468C0` | high | Walks DialogPane controls, checks each rectangle, and calls control virtual +0x78 for a local hit-zone code. |
 | `ui_dialog_update_hover_state` | `0x00446A10` | high | Updates DialogPane +0x5BC/+0x5C0 and sends visual hit-zone changes to the old and new controls; index -1 and zone 7 mean no hit. |
 | `ui_dialog_update_pointer_target` | `0x00446AE0` | high | Updates the secondary pointer-transition target at +0x5C4/+0x5C8 and calls old-control or new-control transition hooks when the control or zone changes. |
@@ -906,8 +910,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_dialog_dispatch_default_action` | `0x00446EE0` | high | Dispatches the enabled control selected by DialogPane +0x598 through the parent action handler with keyboard action code 8. |
 | `ui_dialog_dispatch_cancel_action` | `0x00446F60` | high | Dispatches the enabled control selected by DialogPane +0x59C through the parent action handler with keyboard action code 8. |
 | `ui_dialog_dispatch_pointer_to_control` | `0x00446FE0` | high | Converts pointer coordinates to control-local space, calls control virtual +0x48, and restores the event. |
+| `ui_dialog_refresh_default_action_state` | `0x00447090` | high | Refreshes the default action control through the dialog hook and invalidates it when its enabled state changes. |
+| `ui_alert_pane_ctor_wrapped_c_string` | `0x00447160` | high | Constructs an AlertPane from terminated text with caller-selected wrapping and one or two buttons. |
+| `ui_alert_pane_ctor_c_string` | `0x004478A0` | high | Constructs an AlertPane from terminated text using the fixed 40-byte wrapping path and optional owner rectangle. |
 | `ui_alert_pane_ctor` | `0x00448000` | high | Constructs exact RTTI class AlertPane from counted display text, a parent pane, and one or two button assets. |
+| `ui_alert_pane_handle_action` | `0x00448770` | high | Dispatches the first or second alert choice for attachment actions 0 or 2, then closes and queues the pane. |
+| `ui_yes_no_alert_pane_ctor` | `0x004487E0` | high | Constructs the exact RTTI YesNoAlertPane with Yes and No buttons and retained callback state. |
+| `ui_yes_no_alert_pane_choose_yes` | `0x00448840` | high | Invokes the retained YesNoAlertPane callback with true. |
+| `ui_yes_no_alert_pane_choose_no` | `0x00448880` | high | Invokes the retained YesNoAlertPane callback with false. |
 | `ui_window_message_dialog_pane_ctor` | `0x004488C0` | high | Builds the standard scrollable or alternate woodbook-style SMessage popup from an explicit byte buffer. |
+| `ui_window_message_dialog_close` | `0x00448E10` | high | Unregisters, hides, and queues the window-message dialog for deferred deletion. |
+| `ui_window_message_dialog_handle_action` | `0x00448E50` | high | Closes the window-message dialog only for attachment action zero. |
+| `ui_dialog_pane_scalar_deleting_dtor_variant` | `0x00448E80` | high | Runs the alternate DialogPane scalar deleting destructor associated with its RTTI vtable. |
+| `ui_alert_pane_scalar_deleting_dtor` | `0x00448EB0` | high | Runs the exact RTTI AlertPane destructor and conditionally frees the complete object. |
+| `ui_yes_no_alert_pane_scalar_deleting_dtor` | `0x00448EE0` | high | Runs the exact RTTI YesNoAlertPane destructor and conditionally frees the complete object. |
+| `ui_window_message_dialog_pane_scalar_deleting_dtor` | `0x00448F10` | high | Runs the exact RTTI WindowMessageDialogPane destructor and conditionally frees the complete object. |
+| `ui_dialog_pane_timer_scalar_deleting_dtor_variant_thunk` | `0x00448F40` | high | Adjusts the TimerHandler subobject pointer by 0x11C before the alternate DialogPane deleting destructor. |
+| `ui_window_message_dialog_pane_timer_scalar_deleting_dtor_thunk` | `0x00448F50` | high | Adjusts the TimerHandler subobject pointer before the WindowMessageDialogPane deleting destructor. |
+| `ui_alert_pane_timer_scalar_deleting_dtor_thunk` | `0x00448F60` | high | Adjusts the TimerHandler subobject pointer before the AlertPane deleting destructor. |
+| `ui_yes_no_alert_pane_timer_scalar_deleting_dtor_thunk` | `0x00448F70` | high | Adjusts the TimerHandler subobject pointer before the YesNoAlertPane deleting destructor. |
 | `ui_employee_dialog_ctor` | `0x0045AF00` | high | Constructs exact RTTI EmployeeDialogPane from lshop0.txt, applies an SMercenary Open body, registers the pane, and sends CMercenary RequestInfo. |
 | `ui_employee_dialog_dtor` | `0x0045B7C0` | high | Unregisters and destroys EmployeeDialogPane and its attached controls. |
 | `ui_employee_dialog_handle_action` | `0x0045BD90` | high | Routes employee-shop controls and item operations to the CMercenary action builders. |
@@ -1981,21 +2002,89 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_bink_present_frame` | `0x0042E440` | high | Uses BinkWait, BinkDoFrame, BinkCopyToBuffer, and BinkNextFrame. |
 | `render_get_video_system` | `0x0042E7E0` | high | Returns the VideoSystem singleton. |
 | `render_get_human_image_library` | `0x0043FD60` | high | Returns the RTTI-backed HumanImageLib singleton. |
+| `render_dibitmap_ctor` | `0x00448F90` | high | Constructs the exact RTTI DIBitmap as a top-down 16-bit DIB section and retains its dimensions and pixel pointer. |
+| `render_dibitmap_dtor` | `0x00449150` | high | Deletes the owned DIB handle and clears the DIBitmap pixel state. |
+| `render_dibitmap_get_handle` | `0x00449190` | high | Returns the DIBitmap GDI bitmap handle. |
+| `render_dibitmap_get_pixels` | `0x004491B0` | high | Returns the DIBitmap pixel pointer. |
+| `render_dibitmap_get_width` | `0x004491D0` | high | Returns the DIBitmap width. |
+| `render_dibitmap_get_height` | `0x004491F0` | high | Returns the DIBitmap height. |
+| `render_dibitmap_get_row_stride_pixels` | `0x00449210` | high | Returns the DIBitmap row stride measured in 16-bit pixels. |
+| `render_dibitmap_load_archive_image` | `0x00449230` | high | Loads an archive image and sends its encoded bytes through the DIBitmap decoder. |
+| `render_dibitmap_decode_image` | `0x004492A0` | high | Decodes image bytes to RGB555 and copies bounded aligned rows into a newly allocated DIBitmap. |
+| `render_dibitmap_scalar_deleting_dtor` | `0x00449480` | high | Runs the DIBitmap destructor and conditionally frees the complete object. |
 | `render_direct_draw_ctor` | `0x004494B0` | high | Constructs the RTTI-backed DirectDraw wrapper. |
 | `render_direct_draw_dtor` | `0x00449550` | high | Runs DirectDraw wrapper cleanup during deletion. |
 | `render_direct_draw_initialize` | `0x004495D0` | high | Creates DirectDraw, selects cooperative and display modes, and creates presentation surfaces. |
 | `render_direct_draw_shutdown` | `0x00449CB0` | high | Releases the clipper and surfaces, restores display mode, and releases DirectDraw. |
+| `render_direct_draw_create_offscreen_surface` | `0x00449D80` | high | Creates an offscreen DirectDraw surface with the requested dimensions and client-selected caps. |
+| `render_direct_draw_release_surface` | `0x00449E40` | high | Releases a retained DirectDraw surface pointer when present. |
+| `render_direct_draw_enter_fullscreen_mode` | `0x00449E60` | high | Enters exclusive DirectDraw mode, sets the retained display dimensions and bit depth, and restores surfaces. |
+| `render_direct_draw_leave_fullscreen_mode` | `0x00449F30` | high | Restores the display mode and returns DirectDraw to the normal cooperative level. |
 | `render_direct_draw_flip` | `0x00449FA0` | high | Flips the attached DirectDraw backbuffer with DDFLIP_WAIT so the call may block until the operation can complete. |
 | `render_direct_draw_present_canvas` | `0x00449FD0` | high | Copies a Canvas to the DirectDraw presentation surface and recovers a lost surface. |
+| `render_direct_draw_blt_canvas_to_primary` | `0x0044A260` | high | Uses DirectDraw BltFast to copy a surface-backed Canvas to the primary surface. |
+| `render_direct_draw_blt_primary_to_canvas` | `0x0044A320` | high | Uses DirectDraw Blt to copy the primary surface into a surface-backed Canvas. |
+| `render_direct_draw_scalar_deleting_dtor` | `0x0044A3E0` | high | Runs the DirectDraw wrapper destructor and conditionally frees the complete object. |
+| `render_direct_draw_singleton_register` | `0x0044A410` | high | Registers the DirectDraw wrapper singleton instance. |
+| `render_direct_draw_singleton_unregister` | `0x0044A450` | high | Unregisters the DirectDraw wrapper singleton instance. |
 | `render_canvas_ctor` | `0x0044A490` | high | Constructs the RTTI-backed Canvas object. |
+| `render_canvas_dtor` | `0x0044A710` | high | Releases Canvas backing, scanline offsets, alpha-mask rows, and other owned drawing state. |
+| `render_canvas_is_initialized` | `0x0044A9A0` | high | Returns whether the Canvas has initialized backing state. |
+| `render_canvas_is_drawable` | `0x0044A9E0` | high | Recursively checks a subcanvas parent or tests whether the Canvas has drawable backing. |
 | `render_canvas_attach_surface` | `0x0044AA30` | high | Attaches a Canvas to a DirectDraw surface. |
 | `render_canvas_create_memory` | `0x0044AB80` | high | Allocates a 16-bit memory canvas with width aligned to four pixels. |
+| `render_canvas_create_subcanvas` | `0x0044AD50` | high | Creates a mode-2 subcanvas over a parent rectangle and inherits its backing surface and dimensions. |
+| `render_canvas_initialize_point_target` | `0x0044AFF0` | high | Reinitializes the Canvas as a mode-1 point target with the supplied coordinates. |
+| `render_canvas_release_backing` | `0x0044B050` | high | Releases active DirectDraw or heap-backed storage and resets the Canvas backing mode. |
 | `render_canvas_release` | `0x0044B0D0` | high | Releases the current Canvas storage. |
 | `render_canvas_begin` | `0x0044B160` | high | Begins pixel access and locks a wrapped surface when needed. |
 | `render_canvas_end` | `0x0044B1B0` | high | Ends pixel access and unlocks a wrapped surface when needed. |
+| `render_canvas_set_draw_rgb` | `0x0044B210` | high | Packs an RGB triplet into the client 16-bit format and installs it as the primary draw color. |
+| `render_canvas_set_secondary_rgb` | `0x0044B240` | high | Packs an RGB triplet and installs it as the secondary Canvas color. |
+| `render_canvas_set_draw_color` | `0x0044B270` | high | Replaces the primary 16-bit draw color and returns its previous value. |
+| `render_canvas_set_secondary_color` | `0x0044B2A0` | high | Replaces the secondary 16-bit Canvas color and returns its previous value. |
+| `render_canvas_set_draw_palette_color` | `0x0044B2D0` | high | Resolves a client palette index and installs it as the primary draw color. |
+| `render_canvas_set_secondary_palette_color` | `0x0044B300` | high | Resolves a client palette index and installs it as the secondary Canvas color. |
+| `render_canvas_set_text_position_wrapper` | `0x0044B330` | high | Thin wrapper around the Canvas text-position setter. |
+| `render_canvas_set_text_position` | `0x0044B350` | high | Stores the x and y position consumed by subsequent Canvas text drawing. |
+| `render_canvas_map_rect_to_absolute_clip` | `0x0044B370` | high | Intersects a local rectangle with Canvas clipping and maps it to absolute backing coordinates. |
+| `render_canvas_get_absolute_clip_rect` | `0x0044B420` | high | Builds the absolute clip rectangle by recursively intersecting a subcanvas with its parent. |
+| `render_canvas_set_clip_region` | `0x0044B640` | high | Copies a rectangle wrapper into Canvas clipping, or resets clipping to the Canvas bounds. |
+| `render_canvas_set_clip_rect` | `0x0044B670` | high | Sets Canvas clipping from a raw rectangle, defaulting to the Canvas bounds. |
+| `render_canvas_get_clip_region` | `0x0044B6D0` | high | Copies the Canvas clip region into the caller's rectangle wrapper. |
+| `render_canvas_lock_pixels` | `0x0044B6F0` | high | Locks Canvas backing when needed and returns its pixel pointer and row pitch. |
+| `render_canvas_unlock_pixels` | `0x0044B730` | high | Unlocks a previously locked Canvas backing. |
+| `render_canvas_resolve_backing` | `0x0044B750` | high | Walks a subcanvas parent chain, accumulates offsets, and inherits the owning surface. |
+| `render_canvas_lock_backing` | `0x0044B820` | high | Locks heap or DirectDraw backing and caches its pixel pointer and pitch. |
+| `render_canvas_unlock_backing` | `0x0044B960` | high | Unlocks DirectDraw backing, restoring a lost surface and retrying when required. |
+| `render_canvas_copy_indexed_image` | `0x0044B9D0` | high | Copies a palette-indexed image into 16-bit Canvas pixels through the client RGB packer. |
+| `render_canvas_get_bounds_ptr` | `0x0044BBC0` | high | Returns a pointer to the Canvas bounds rectangle. |
+| `render_canvas_get_bounds` | `0x0044BBE0` | high | Copies the Canvas bounds rectangle to caller storage. |
+| `render_color_table_resolve_entry` | `0x0044CEA0` | high | Lazily resolves one six-color entry, using palette-index fallbacks for built-in entries. |
+| `render_canvas_set_flip_flags` | `0x0044CF60` | high | Stores the Canvas vertical and horizontal image-flip flags. |
+| `render_canvas_get_flip_flags` | `0x0044CF90` | high | Returns the Canvas vertical and horizontal flip flags used by image blitting. |
+| `render_canvas_set_color_key` | `0x0044CFC0` | high | Applies a 16-bit transparency key to DirectDraw backing or records it for heap backing. |
+| `render_canvas_set_color_key_directdraw_tail` | `0x0044D03E` | high | Compiler-split internal success tail of the DirectDraw color-key setter with no independent callers. |
+| `render_canvas_get_color_key` | `0x0044D070` | high | Returns the Canvas 16-bit transparency color key. |
+| `render_canvas_get_scanline_offset` | `0x0044D090` | high | Returns a phased scanline offset under the configured clamp-or-wrap mode. |
+| `render_canvas_get_scanline_offsets` | `0x0044D140` | high | Returns the scanline-offset array and writes its element count. |
+| `render_canvas_set_scanline_offset` | `0x0044D170` | high | Stores one scanline offset when the requested index is in range. |
+| `render_canvas_set_scanline_offset_phase` | `0x0044D1B0` | high | Sets the phase added when looking up scanline offsets. |
+| `render_canvas_get_scanline_offset_raw` | `0x0044D1D0` | high | Returns one unphased scanline-offset entry, or zero when out of range. |
+| `render_canvas_get_scanline_offset_mode` | `0x0044D210` | high | Returns the scanline-offset addressing mode used for clamped or wrapped lookup. |
+| `render_canvas_rotate_scanline_offsets` | `0x0044D230` | high | Rotates the scanline-offset array by a signed amount with optional caller scratch storage. |
+| `render_canvas_clear_scanline_offsets` | `0x0044D460` | high | Frees the Canvas scanline-offset array and clears its count. |
+| `render_canvas_configure_scanline_offsets` | `0x0044D4B0` | high | Clears and allocates a scanline-offset array with the requested count and addressing mode. |
+| `render_canvas_set_alpha_mask_rows` | `0x0044D540` | high | Copies a per-row alpha-mask pointer array and records its row count and mode. |
+| `render_canvas_clear_alpha_mask_rows` | `0x0044D610` | high | Frees the Canvas alpha-mask row array and clears its count. |
+| `render_canvas_set_alpha_mask_parameters` | `0x0044D660` | high | Stores four byte-sized alpha-mask parameters consumed by software blitting. |
+| `render_canvas_get_alpha_mask_rows` | `0x0044D6A0` | high | Returns the per-row alpha-mask array and writes its row count and mode. |
+| `render_canvas_get_alpha_mask_parameters` | `0x0044D6E0` | high | Returns four byte-sized alpha-mask parameters consumed by software blitting. |
 | `render_write_canvas_jpeg` | `0x0044D730` | high | Locks one canvas and sends its RGB16 pixels to the shared JFIF writer. |
+| `render_canvas_scalar_deleting_dtor` | `0x0044D7F0` | high | Runs the Canvas destructor and conditionally frees the complete object. |
 | `render_get_direct_draw` | `0x0044D820` | high | Returns the DirectDraw wrapper singleton. |
 | `render_get_palette_manager` | `0x0044D830` | high | Returns the RTTI-backed PaletteMan singleton. |
+| `render_canvas_blit_pixels_software` | `0x0044D860` | high | Runs the software Canvas blit with clipping, scanline offsets, flips, color key, and optional alpha masks. |
 | `render_blit_image` | `0x0044DE30` | high | Draws a decoded Image with copy, blend, alpha, and special plane modes. |
 | `render_blit_pixmap` | `0x0044FB80` | high | Draws an indexed PixMap with transparent zero pixels and several software blend modes. |
 | `render_blit_canvas` | `0x00451E40` | high | Copies or blends one Canvas into another. |
@@ -2237,6 +2326,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_hpf_compressor_scalar_deleting_dtor` | `0x00431E20` | high | Compiler scalar-deleting destructor for exact RTTI Compressor. |
 | `file_hpf_compressor_singleton_register` | `0x00431E50` | high | Registers the Compressor singleton. |
 | `file_hpf_compressor_singleton_unregister` | `0x00431E90` | high | Clears the Compressor singleton when the supplied instance owns it. |
+| `file_color_table_use_stream_input` | `0x0044CBE0` | high | Selects a CRT stream as color-table parser input and clears memory-input state. |
+| `file_color_table_use_memory_input` | `0x0044CC00` | high | Selects a bounded memory buffer as color-table parser input and resets its cursor. |
+| `file_color_table_read_byte` | `0x0044CC30` | high | Reads one byte from active stream or memory input, returning -1 at end of input. |
+| `file_color_table_read_decimal` | `0x0044CCA0` | high | Skips non-digits and parses the next unsigned decimal integer from color-table input. |
 | `file_load_color_table` | `0x0044CD50` | medium | Loads color.tbl records and packs six RGB triples per record for the renderer. |
 | `file_open_efa` | `0x00456F30` | high | Opens an EFA resource and returns its u32 frame count from header +0x04 and u32 frame interval from header +0x08. |
 | `file_decode_efa_frame` | `0x00457030` | high | Inflates one zlib payload from a 0x40-byte EFA frame record and builds an Image view. |
@@ -2616,6 +2709,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_denied_rule_record_list_erase` | `0x004450C0` | high | Unlinks and frees one rule-record pointer list node, decrements the count, and returns the following iterator. |
 | `metadata_denied_rule_record_list_create_copy_node` | `0x00445160` | high | Allocates a rule-record pointer list node, sets its neighboring links, and copy-constructs the stored pointer. |
 | `metadata_denied_rule_record_pointer_copy_ctor` | `0x00445220` | high | Copy-constructs the rule-record pointer stored in a copied list node. |
+| `text_count_trailing_and_total_spaces` | `0x0044CA70` | high | Counts trailing spaces and total spaces in a fixed-length span for Canvas text layout. |
+| `text_rotate_leading_spaces_to_end` | `0x0044CB10` | high | Moves leading spaces to the end of a fixed-length text span while preserving its length. |
+| `lobject_dtor_wrapper` | `0x0044D840` | high | Thin wrapper that invokes the recovered LObject destructor. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

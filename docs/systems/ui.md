@@ -92,6 +92,14 @@ When a screen behaves strangely, check each state instead of treating "shown" as
 
 Hidden panes are skipped for pointer and keyboard input. If they remain registered, application and network events can still reach them. Hiding a pane also releases mouse capture when that pane owns it.
 
+## Dialog drawing and alerts
+
+`DialogPane` separates its frame from its controls. `ui_dialog_draw` calls the background and content hooks over the dialog rectangle. A named background uses the configured pixmap. Without one, the client lazily loads `DlgBack2.spf` and can tile the built-in frame pieces.
+
+The dialog keeps the focused attachment index separately from the control objects. `ui_dialog_focused_control_uses_text_input` first checks that the focused control still exists and is enabled, then asks its virtual hook whether text input is active. The default action has its own attachment index. Refreshing it can change the control's enabled state and invalidate the expanded control rectangle.
+
+`AlertPane` maps attachment action `0` to its first choice and action `2` to its optional second choice. `YesNoAlertPane` retains callback state and converts those choices to `true` or `false`. After dispatch, the alert unregisters, hides, and enters the normal deferred-deletion path. The exact RTTI destructor thunks adjust the `TimerHandler` secondary base by `0x11C` before destroying the complete pane.
+
 ## Full-screen story panes
 
 Two early full-screen panes combine archive text, art, input, and timers without using a dialog layout.

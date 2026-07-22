@@ -65,6 +65,20 @@ An RLE alpha token stores its repeat count in the high byte and its alpha value 
 
 Separate entry points implement luminance-ramp recoloring, screen-style per-component composition, and saturating additive blending. The dispatcher selects paired RGB565 or RGB555 scalar loops, or an MMX implementation when the optimized path is active.
 
+## Per-canvas blit state
+
+A canvas carries more than a pixel buffer. `render_canvas_blit_pixels_software` reads several optional inputs while copying a source rectangle:
+
+- horizontal and vertical flip flags
+- a 16-bit color key
+- a signed offset for each scanline, with clamped or wrapped lookup
+- an optional pointer to an alpha mask for each row
+- four byte-sized alpha-mask parameters
+
+The scanline-offset table can be phased or rotated without changing the source image. This supplies row-by-row displacement to the software blitter. The alpha-screen pane uses the row-mask path: it builds one mask buffer per row, installs those row pointers on its canvas, and lets the normal software blit apply the gradient.
+
+For a DirectDraw-backed canvas, `render_canvas_set_color_key` also calls the surface `SetColorKey` method. Heap-backed canvases retain the same value for the software path. The color key therefore remains part of Canvas state even though only one backing type forwards it to DirectDraw.
+
 ## Why DirectDraw is not doing the blend
 
 The sprite loops read source pixels, test transparency, combine color components, and write the destination canvas directly. DirectDraw receives the completed canvas later. This means normal sprites and alpha effects behave the same across the DirectDraw and window DC presentation paths.

@@ -503,6 +503,46 @@ functions:
     name: render_get_video_system
     confidence: high
     evidence: Returns the VideoSystem singleton.
+  - address: "0x00448F90"
+    name: render_dibitmap_ctor
+    confidence: high
+    evidence: "Constructs the exact RTTI DIBitmap as a top-down 16-bit DIB section and retains its dimensions and pixel pointer."
+  - address: "0x00449150"
+    name: render_dibitmap_dtor
+    confidence: high
+    evidence: "Deletes the owned DIB handle and clears the DIBitmap pixel state."
+  - address: "0x00449190"
+    name: render_dibitmap_get_handle
+    confidence: high
+    evidence: "Returns the DIBitmap GDI bitmap handle."
+  - address: "0x004491B0"
+    name: render_dibitmap_get_pixels
+    confidence: high
+    evidence: "Returns the DIBitmap pixel pointer."
+  - address: "0x004491D0"
+    name: render_dibitmap_get_width
+    confidence: high
+    evidence: "Returns the DIBitmap width."
+  - address: "0x004491F0"
+    name: render_dibitmap_get_height
+    confidence: high
+    evidence: "Returns the DIBitmap height."
+  - address: "0x00449210"
+    name: render_dibitmap_get_row_stride_pixels
+    confidence: high
+    evidence: "Returns the DIBitmap row stride measured in 16-bit pixels."
+  - address: "0x00449230"
+    name: render_dibitmap_load_archive_image
+    confidence: high
+    evidence: "Loads an archive image and sends its encoded bytes through the DIBitmap decoder."
+  - address: "0x004492A0"
+    name: render_dibitmap_decode_image
+    confidence: high
+    evidence: "Decodes image bytes to RGB555 and copies bounded aligned rows into a newly allocated DIBitmap."
+  - address: "0x00449480"
+    name: render_dibitmap_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the DIBitmap destructor and conditionally frees the complete object."
   - address: "0x004494B0"
     name: render_direct_draw_ctor
     confidence: high
@@ -519,6 +559,22 @@ functions:
     name: render_direct_draw_shutdown
     confidence: high
     evidence: Releases the clipper and surfaces, restores display mode, and releases DirectDraw.
+  - address: "0x00449D80"
+    name: render_direct_draw_create_offscreen_surface
+    confidence: high
+    evidence: "Creates an offscreen DirectDraw surface with the requested dimensions and client-selected caps."
+  - address: "0x00449E40"
+    name: render_direct_draw_release_surface
+    confidence: high
+    evidence: "Releases a retained DirectDraw surface pointer when present."
+  - address: "0x00449E60"
+    name: render_direct_draw_enter_fullscreen_mode
+    confidence: high
+    evidence: "Enters exclusive DirectDraw mode, sets the retained display dimensions and bit depth, and restores surfaces."
+  - address: "0x00449F30"
+    name: render_direct_draw_leave_fullscreen_mode
+    confidence: high
+    evidence: "Restores the display mode and returns DirectDraw to the normal cooperative level."
   - address: "0x00449FA0"
     name: render_direct_draw_flip
     confidence: high
@@ -527,10 +583,42 @@ functions:
     name: render_direct_draw_present_canvas
     confidence: high
     evidence: Copies a Canvas to the DirectDraw presentation surface and recovers a lost surface.
+  - address: "0x0044A260"
+    name: render_direct_draw_blt_canvas_to_primary
+    confidence: high
+    evidence: "Uses DirectDraw BltFast to copy a surface-backed Canvas to the primary surface."
+  - address: "0x0044A320"
+    name: render_direct_draw_blt_primary_to_canvas
+    confidence: high
+    evidence: "Uses DirectDraw Blt to copy the primary surface into a surface-backed Canvas."
+  - address: "0x0044A3E0"
+    name: render_direct_draw_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the DirectDraw wrapper destructor and conditionally frees the complete object."
+  - address: "0x0044A410"
+    name: render_direct_draw_singleton_register
+    confidence: high
+    evidence: "Registers the DirectDraw wrapper singleton instance."
+  - address: "0x0044A450"
+    name: render_direct_draw_singleton_unregister
+    confidence: high
+    evidence: "Unregisters the DirectDraw wrapper singleton instance."
   - address: "0x0044A490"
     name: render_canvas_ctor
     confidence: high
     evidence: Constructs the RTTI-backed Canvas object.
+  - address: "0x0044A710"
+    name: render_canvas_dtor
+    confidence: high
+    evidence: "Releases Canvas backing, scanline offsets, alpha-mask rows, and other owned drawing state."
+  - address: "0x0044A9A0"
+    name: render_canvas_is_initialized
+    confidence: high
+    evidence: "Returns whether the Canvas has initialized backing state."
+  - address: "0x0044A9E0"
+    name: render_canvas_is_drawable
+    confidence: high
+    evidence: "Recursively checks a subcanvas parent or tests whether the Canvas has drawable backing."
   - address: "0x0044AA30"
     name: render_canvas_attach_surface
     confidence: high
@@ -539,6 +627,18 @@ functions:
     name: render_canvas_create_memory
     confidence: high
     evidence: Allocates a 16-bit memory canvas with width aligned to four pixels.
+  - address: "0x0044AD50"
+    name: render_canvas_create_subcanvas
+    confidence: high
+    evidence: "Creates a mode-2 subcanvas over a parent rectangle and inherits its backing surface and dimensions."
+  - address: "0x0044AFF0"
+    name: render_canvas_initialize_point_target
+    confidence: high
+    evidence: "Reinitializes the Canvas as a mode-1 point target with the supplied coordinates."
+  - address: "0x0044B050"
+    name: render_canvas_release_backing
+    confidence: high
+    evidence: "Releases active DirectDraw or heap-backed storage and resets the Canvas backing mode."
   - address: "0x0044B0D0"
     name: render_canvas_release
     confidence: high
@@ -551,10 +651,210 @@ functions:
     name: render_canvas_end
     confidence: high
     evidence: Ends pixel access and unlocks a wrapped surface when needed.
+  - address: "0x0044B210"
+    name: render_canvas_set_draw_rgb
+    confidence: high
+    evidence: "Packs an RGB triplet into the client 16-bit format and installs it as the primary draw color."
+  - address: "0x0044B240"
+    name: render_canvas_set_secondary_rgb
+    confidence: high
+    evidence: "Packs an RGB triplet and installs it as the secondary Canvas color."
+  - address: "0x0044B270"
+    name: render_canvas_set_draw_color
+    confidence: high
+    evidence: "Replaces the primary 16-bit draw color and returns its previous value."
+  - address: "0x0044B2A0"
+    name: render_canvas_set_secondary_color
+    confidence: high
+    evidence: "Replaces the secondary 16-bit Canvas color and returns its previous value."
+  - address: "0x0044B2D0"
+    name: render_canvas_set_draw_palette_color
+    confidence: high
+    evidence: "Resolves a client palette index and installs it as the primary draw color."
+  - address: "0x0044B300"
+    name: render_canvas_set_secondary_palette_color
+    confidence: high
+    evidence: "Resolves a client palette index and installs it as the secondary Canvas color."
+  - address: "0x0044B330"
+    name: render_canvas_set_text_position_wrapper
+    confidence: high
+    evidence: "Thin wrapper around the Canvas text-position setter."
+  - address: "0x0044B350"
+    name: render_canvas_set_text_position
+    confidence: high
+    evidence: "Stores the x and y position consumed by subsequent Canvas text drawing."
+  - address: "0x0044B370"
+    name: render_canvas_map_rect_to_absolute_clip
+    confidence: high
+    evidence: "Intersects a local rectangle with Canvas clipping and maps it to absolute backing coordinates."
+  - address: "0x0044B420"
+    name: render_canvas_get_absolute_clip_rect
+    confidence: high
+    evidence: "Builds the absolute clip rectangle by recursively intersecting a subcanvas with its parent."
+  - address: "0x0044B640"
+    name: render_canvas_set_clip_region
+    confidence: high
+    evidence: "Copies a rectangle wrapper into Canvas clipping, or resets clipping to the Canvas bounds."
+  - address: "0x0044B670"
+    name: render_canvas_set_clip_rect
+    confidence: high
+    evidence: "Sets Canvas clipping from a raw rectangle, defaulting to the Canvas bounds."
+  - address: "0x0044B6D0"
+    name: render_canvas_get_clip_region
+    confidence: high
+    evidence: "Copies the Canvas clip region into the caller's rectangle wrapper."
+  - address: "0x0044B6F0"
+    name: render_canvas_lock_pixels
+    confidence: high
+    evidence: "Locks Canvas backing when needed and returns its pixel pointer and row pitch."
+  - address: "0x0044B730"
+    name: render_canvas_unlock_pixels
+    confidence: high
+    evidence: "Unlocks a previously locked Canvas backing."
+  - address: "0x0044B750"
+    name: render_canvas_resolve_backing
+    confidence: high
+    evidence: "Walks a subcanvas parent chain, accumulates offsets, and inherits the owning surface."
+  - address: "0x0044B820"
+    name: render_canvas_lock_backing
+    confidence: high
+    evidence: "Locks heap or DirectDraw backing and caches its pixel pointer and pitch."
+  - address: "0x0044B960"
+    name: render_canvas_unlock_backing
+    confidence: high
+    evidence: "Unlocks DirectDraw backing, restoring a lost surface and retrying when required."
+  - address: "0x0044B9D0"
+    name: render_canvas_copy_indexed_image
+    confidence: high
+    evidence: "Copies a palette-indexed image into 16-bit Canvas pixels through the client RGB packer."
+  - address: "0x0044BBC0"
+    name: render_canvas_get_bounds_ptr
+    confidence: high
+    evidence: "Returns a pointer to the Canvas bounds rectangle."
+  - address: "0x0044BBE0"
+    name: render_canvas_get_bounds
+    confidence: high
+    evidence: "Copies the Canvas bounds rectangle to caller storage."
+  - address: "0x0044CA70"
+    name: text_count_trailing_and_total_spaces
+    confidence: high
+    evidence: "Counts trailing spaces and total spaces in a fixed-length span for Canvas text layout."
+  - address: "0x0044CB10"
+    name: text_rotate_leading_spaces_to_end
+    confidence: high
+    evidence: "Moves leading spaces to the end of a fixed-length text span while preserving its length."
+  - address: "0x0044CBE0"
+    name: file_color_table_use_stream_input
+    confidence: high
+    evidence: "Selects a CRT stream as color-table parser input and clears memory-input state."
+  - address: "0x0044CC00"
+    name: file_color_table_use_memory_input
+    confidence: high
+    evidence: "Selects a bounded memory buffer as color-table parser input and resets its cursor."
+  - address: "0x0044CC30"
+    name: file_color_table_read_byte
+    confidence: high
+    evidence: "Reads one byte from active stream or memory input, returning -1 at end of input."
+  - address: "0x0044CCA0"
+    name: file_color_table_read_decimal
+    confidence: high
+    evidence: "Skips non-digits and parses the next unsigned decimal integer from color-table input."
+  - address: "0x0044CEA0"
+    name: render_color_table_resolve_entry
+    confidence: high
+    evidence: "Lazily resolves one six-color entry, using palette-index fallbacks for built-in entries."
+  - address: "0x0044CF60"
+    name: render_canvas_set_flip_flags
+    confidence: high
+    evidence: "Stores the Canvas vertical and horizontal image-flip flags."
+  - address: "0x0044CF90"
+    name: render_canvas_get_flip_flags
+    confidence: high
+    evidence: "Returns the Canvas vertical and horizontal flip flags used by image blitting."
+  - address: "0x0044CFC0"
+    name: render_canvas_set_color_key
+    confidence: high
+    evidence: "Applies a 16-bit transparency key to DirectDraw backing or records it for heap backing."
+  - address: "0x0044D03E"
+    name: render_canvas_set_color_key_directdraw_tail
+    confidence: high
+    evidence: "Compiler-split internal success tail of the DirectDraw color-key setter with no independent callers."
+  - address: "0x0044D070"
+    name: render_canvas_get_color_key
+    confidence: high
+    evidence: "Returns the Canvas 16-bit transparency color key."
+  - address: "0x0044D090"
+    name: render_canvas_get_scanline_offset
+    confidence: high
+    evidence: "Returns a phased scanline offset under the configured clamp-or-wrap mode."
+  - address: "0x0044D140"
+    name: render_canvas_get_scanline_offsets
+    confidence: high
+    evidence: "Returns the scanline-offset array and writes its element count."
+  - address: "0x0044D170"
+    name: render_canvas_set_scanline_offset
+    confidence: high
+    evidence: "Stores one scanline offset when the requested index is in range."
+  - address: "0x0044D1B0"
+    name: render_canvas_set_scanline_offset_phase
+    confidence: high
+    evidence: "Sets the phase added when looking up scanline offsets."
+  - address: "0x0044D1D0"
+    name: render_canvas_get_scanline_offset_raw
+    confidence: high
+    evidence: "Returns one unphased scanline-offset entry, or zero when out of range."
+  - address: "0x0044D210"
+    name: render_canvas_get_scanline_offset_mode
+    confidence: high
+    evidence: "Returns the scanline-offset addressing mode used for clamped or wrapped lookup."
+  - address: "0x0044D230"
+    name: render_canvas_rotate_scanline_offsets
+    confidence: high
+    evidence: "Rotates the scanline-offset array by a signed amount with optional caller scratch storage."
+  - address: "0x0044D460"
+    name: render_canvas_clear_scanline_offsets
+    confidence: high
+    evidence: "Frees the Canvas scanline-offset array and clears its count."
+  - address: "0x0044D4B0"
+    name: render_canvas_configure_scanline_offsets
+    confidence: high
+    evidence: "Clears and allocates a scanline-offset array with the requested count and addressing mode."
+  - address: "0x0044D540"
+    name: render_canvas_set_alpha_mask_rows
+    confidence: high
+    evidence: "Copies a per-row alpha-mask pointer array and records its row count and mode."
+  - address: "0x0044D610"
+    name: render_canvas_clear_alpha_mask_rows
+    confidence: high
+    evidence: "Frees the Canvas alpha-mask row array and clears its count."
+  - address: "0x0044D660"
+    name: render_canvas_set_alpha_mask_parameters
+    confidence: high
+    evidence: "Stores four byte-sized alpha-mask parameters consumed by software blitting."
+  - address: "0x0044D6A0"
+    name: render_canvas_get_alpha_mask_rows
+    confidence: high
+    evidence: "Returns the per-row alpha-mask array and writes its row count and mode."
+  - address: "0x0044D6E0"
+    name: render_canvas_get_alpha_mask_parameters
+    confidence: high
+    evidence: "Returns four byte-sized alpha-mask parameters consumed by software blitting."
+  - address: "0x0044D7F0"
+    name: render_canvas_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the Canvas destructor and conditionally frees the complete object."
   - address: "0x0044D820"
     name: render_get_direct_draw
     confidence: high
     evidence: Returns the DirectDraw wrapper singleton.
+  - address: "0x0044D840"
+    name: lobject_dtor_wrapper
+    confidence: high
+    evidence: "Thin wrapper that invokes the recovered LObject destructor."
+  - address: "0x0044D860"
+    name: render_canvas_blit_pixels_software
+    confidence: high
+    evidence: "Runs the software Canvas blit with clipping, scanline offsets, flips, color key, and optional alpha masks."
   - address: "0x0044DE30"
     name: render_blit_image
     confidence: high

@@ -323,10 +323,26 @@ functions:
     name: ui_dialog_handle_keyboard_event
     confidence: high
     evidence: "DialogPane primary-vtable +0x4C implementation: Tab traverses focus, Enter and Space normally dispatch the default action, Escape dispatches cancel, and remaining input reaches the focused enabled control."
+  - address: "0x00446260"
+    name: ui_dialog_focused_control_uses_text_input
+    confidence: high
+    evidence: "Returns the enabled focused control's virtual text-input mode, or false when no eligible control has focus."
   - address: "0x004462D0"
     name: ui_dialog_handle_application_event
     confidence: high
     evidence: "DialogPane primary-vtable +0x54 implementation that forwards application and IME events to the focused control."
+  - address: "0x00446360"
+    name: ui_dialog_draw
+    confidence: high
+    evidence: "Runs the dialog background and content drawing hooks over the pane rectangle."
+  - address: "0x004463C0"
+    name: ui_dialog_draw_background
+    confidence: high
+    evidence: "Draws the configured dialog background or lazily loads the default DlgBack2.spf skin."
+  - address: "0x004464A0"
+    name: ui_dialog_draw_default_frame
+    confidence: high
+    evidence: "Draws the tiled default dialog frame when no named custom background is configured."
   - address: "0x004468C0"
     name: ui_dialog_hit_test_control
     confidence: high
@@ -363,10 +379,78 @@ functions:
     name: ui_dialog_dispatch_pointer_to_control
     confidence: high
     evidence: "Converts pointer coordinates to control-local space, calls control virtual +0x48, and restores the event."
+  - address: "0x00447090"
+    name: ui_dialog_refresh_default_action_state
+    confidence: high
+    evidence: "Refreshes the default action control through the dialog hook and invalidates it when its enabled state changes."
+  - address: "0x00447160"
+    name: ui_alert_pane_ctor_wrapped_c_string
+    confidence: high
+    evidence: "Constructs an AlertPane from terminated text with caller-selected wrapping and one or two buttons."
+  - address: "0x004478A0"
+    name: ui_alert_pane_ctor_c_string
+    confidence: high
+    evidence: "Constructs an AlertPane from terminated text using the fixed 40-byte wrapping path and optional owner rectangle."
+  - address: "0x00448770"
+    name: ui_alert_pane_handle_action
+    confidence: high
+    evidence: "Dispatches the first or second alert choice for attachment actions 0 or 2, then closes and queues the pane."
+  - address: "0x004487E0"
+    name: ui_yes_no_alert_pane_ctor
+    confidence: high
+    evidence: "Constructs the exact RTTI YesNoAlertPane with Yes and No buttons and retained callback state."
+  - address: "0x00448840"
+    name: ui_yes_no_alert_pane_choose_yes
+    confidence: high
+    evidence: "Invokes the retained YesNoAlertPane callback with true."
+  - address: "0x00448880"
+    name: ui_yes_no_alert_pane_choose_no
+    confidence: high
+    evidence: "Invokes the retained YesNoAlertPane callback with false."
   - address: "0x004488C0"
     name: ui_window_message_dialog_pane_ctor
     confidence: high
     evidence: "Builds the standard scrollable or alternate woodbook-style SMessage popup from an explicit byte buffer."
+  - address: "0x00448E10"
+    name: ui_window_message_dialog_close
+    confidence: high
+    evidence: "Unregisters, hides, and queues the window-message dialog for deferred deletion."
+  - address: "0x00448E50"
+    name: ui_window_message_dialog_handle_action
+    confidence: high
+    evidence: "Closes the window-message dialog only for attachment action zero."
+  - address: "0x00448E80"
+    name: ui_dialog_pane_scalar_deleting_dtor_variant
+    confidence: high
+    evidence: "Runs the alternate DialogPane scalar deleting destructor associated with its RTTI vtable."
+  - address: "0x00448EB0"
+    name: ui_alert_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the exact RTTI AlertPane destructor and conditionally frees the complete object."
+  - address: "0x00448EE0"
+    name: ui_yes_no_alert_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the exact RTTI YesNoAlertPane destructor and conditionally frees the complete object."
+  - address: "0x00448F10"
+    name: ui_window_message_dialog_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the exact RTTI WindowMessageDialogPane destructor and conditionally frees the complete object."
+  - address: "0x00448F40"
+    name: ui_dialog_pane_timer_scalar_deleting_dtor_variant_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler subobject pointer by 0x11C before the alternate DialogPane deleting destructor."
+  - address: "0x00448F50"
+    name: ui_window_message_dialog_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler subobject pointer before the WindowMessageDialogPane deleting destructor."
+  - address: "0x00448F60"
+    name: ui_alert_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler subobject pointer before the AlertPane deleting destructor."
+  - address: "0x00448F70"
+    name: ui_yes_no_alert_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler subobject pointer before the YesNoAlertPane deleting destructor."
   - address: "0x00463820"
     name: event_dispatcher_ctor
     confidence: high

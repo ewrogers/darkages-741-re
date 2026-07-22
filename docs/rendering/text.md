@@ -30,6 +30,10 @@ The matching LFT face has a nominal 12 by 12 cell. Individual records keep their
 
 Color is separate from the font. Normal controls set a canvas color before drawing. Formatted text can change the color between runs through the palette codes described in [Text color markup](../systems/text-color-markup.md).
 
+`render_canvas_set_text_position` records the x and y origin used by the next text draw. The primary and secondary colors can be supplied as packed 16-bit values, RGB triplets, or client palette indexes. The setters return the old packed value where a caller needs to restore drawing state.
+
+The text layout path also preserves fixed-width spacing behavior. `text_rotate_leading_spaces_to_end` moves leading spaces to the end of a bounded span, while `text_count_trailing_and_total_spaces` reports the trailing and overall space counts used by `render_canvas_draw_text`. These helpers operate on byte spans, so their limits follow the same ANSI and DBCS rules as glyph lookup.
+
 The final canvas reaches DirectDraw or the window DC only after all text, UI, sprites, and effects have already been composed. The client imports no `TextOut`, `DrawText`, or `CreateFont` function for this path.
 
 ## Active font selection

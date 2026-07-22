@@ -30,6 +30,12 @@ A canvas may own memory or wrap a DirectDraw surface. Drawing code calls `render
 
 Memory canvases use 16-bit pixels and an aligned row pitch. The logical width and row pitch are therefore related, but they are not always the same value.
 
+Subcanvases do not own another pixel buffer. `render_canvas_resolve_backing` walks their parent chain, accumulates each local origin, and resolves the memory buffer or DirectDraw surface that owns the pixels. Clipping follows the same chain. `render_canvas_get_absolute_clip_rect` intersects every local clip rectangle before mapping drawing coordinates into the shared backing.
+
+`render_canvas_lock_pixels` hides the backing difference from software drawing. Heap canvases return their stored pointer and pitch. Surface canvases call DirectDraw `Lock` and cache the returned pointer and pitch until `render_canvas_unlock_pixels`. If an unlock reports a lost surface, the client restores it and retries.
+
+The client can also construct a top-down 16-bit `DIBitmap`. Its decoder expands an archive image to RGB555 and copies aligned rows into a GDI DIB section. This is a conversion boundary, not the main sprite drawing path.
+
 ## Redraw and presentation cadence
 
 The root `ScreenPane` starts timer ID `0` during application setup. `render_screen_timer_tick` calls `render_screen_tree_frame`, then requeues itself for 10 ms after the current `timeGetTime()` value.
@@ -48,6 +54,8 @@ This makes 100 Hz the maximum scheduled redraw-check rate, not a fixed visible f
 The wait flags allow DirectDraw to block until the operation can complete. The client does not compile a separate monitor refresh rate into this path. The output backend and display can therefore make the visible presentation rate lower than the 10 ms redraw-check cadence.
 
 The output path applies the selected 1x or 2x presentation scale before the frame reaches the window or display surface.
+
+The DirectDraw wrapper owns the display-mode transition. Entering full-screen mode selects exclusive cooperative access, applies the retained width, height, and bit depth, then restores its surfaces. Leaving full-screen mode restores the desktop display mode and normal cooperative level. Its smaller helpers copy between a surface-backed canvas and the primary surface with `Blt` or `BltFast`.
 
 ## Cleanup
 
