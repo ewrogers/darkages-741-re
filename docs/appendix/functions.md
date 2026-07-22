@@ -84,6 +84,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_has_config` | `0x004AE0C0` | high | Reports whether the Config singleton pointer is non-null. |
 | `app_has_exception_handler` | `0x004AE420` | high | Reports whether the process exception-handler singleton pointer is non-null. |
 | `app_has_language_manager` | `0x004AE440` | high | Reports whether the exact RTTI Language singleton pointer is non-null. |
+| `app_send_mail_via_mapi` | `0x004B6770` | high | Loads MAPI32.DLL, resolves MAPISendMail, sends a one-recipient message, and unloads the library. |
 | `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client. |
 | `app_quit_after_patcher_launch` | `0x005287B0` | high | Destroys NewPatchPane, posts WM_QUIT, and terminates after the patcher launch attempt. |
 | `app_stack_walker_from_thread_ctor` | `0x0056D4E0` | high | Constructs exact RTTI StackWalker and captures the supplied thread or current thread into an x86 CONTEXT. |
@@ -2012,8 +2013,22 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_list_pane_draw_item_noop` | `0x004B4430` | high | Default ListPane item-render virtual implementation; intentionally draws nothing. |
 | `ui_list_pane_scalar_deleting_dtor` | `0x004B4440` | high | Destroys a ListPane and optionally frees the complete object. |
 | `ui_list_pane_timer_handler_scalar_deleting_dtor_thunk` | `0x004B4470` | high | Adjusts a TimerHandler secondary-base pointer back to its ListPane and tail-calls the deleting destructor. |
+| `ui_logo_load_legacy_epf_and_palette` | `0x004B6050` | high | Loads logo.epf bytes and the 0x300-byte logo.pal RGB palette for the legacy indexed-image splash path. |
+| `ui_logo_load_dat_variant` | `0x004B6160` | high | Loads logo&lt;distribution&gt;.dat when present, otherwise logo.dat, into a bounded splash-image buffer. |
+| `ui_logo_pane_ctor` | `0x004B6250` | high | Loads the distribution-specific or legacy splash, presents it immediately, and schedules the intro transition. |
+| `ui_logo_pane_dtor` | `0x004B65C0` | high | Unregisters the LogoPane singleton and destroys its Pane base. |
+| `ui_logo_pane_finish_display` | `0x004B6630` | high | Marks the root screen's logo phase complete and clears its logo-visible flag. |
+| `ui_logo_pane_draw_noop` | `0x004B6660` | high | The constructor presents the splash directly, so normal LogoPane drawing is intentionally empty. |
+| `ui_logo_pane_handle_timer` | `0x004B6670` | high | Handles timer ID 0 by finishing the logo phase and posting intro state 4. |
+| `ui_logo_pane_scalar_deleting_dtor` | `0x004B66B0` | high | Destroys LogoPane and optionally frees the complete object. |
 | `ui_logo_pane_register_adjusted` | `0x004B66E0` | high | Registers LogoPane from its Singleton secondary base. |
 | `ui_logo_pane_unregister_adjusted` | `0x004B6720` | high | Clears the LogoPane singleton from its adjusted secondary-base pointer. |
+| `ui_logo_pane_timer_handler_scalar_deleting_dtor_thunk` | `0x004B6760` | high | Adjusts a TimerHandler secondary-base pointer back to LogoPane and tail-calls its deleting destructor. |
+| `ui_logo_show_pane_ctor` | `0x004B6820` | high | Constructs LogoShowPane, loads six _nsl palette tables, and starts repeating timer 0x4D2. |
+| `ui_logo_show_pane_dtor` | `0x004B69F0` | high | Cancels all LogoShowPane timers and destroys its Pane base. |
+| `ui_logo_show_pane_draw` | `0x004B6A70` | high | Draws the configured logo frame while its phase lies in range, using the selected one of six palettes. |
+| `ui_logo_show_pane_handle_timer` | `0x004B6B40` | high | Advances timer 0x4D2, randomizes the palette on wrap, invalidates the pane, and requeues the timer. |
+| `ui_main_menu_model_ctor` | `0x004B6C40` | high | Constructs the RTTI MainMenu LObject model with six entries and no active selection. |
 | `ui_main_menu_activate_selected_action` | `0x004B7520` | high | Dispatches the selected MainMenuPane entry to login, character creation, password change, homepage, credits, or exit behavior. |
 | `ui_main_menu_handle_pointer_event` | `0x004B7BD0` | high | Rejects pointer input while MainMenuPane +0x500 is nonzero, then performs menu hit-testing and activation when the gate is clear. |
 | `ui_main_menu_handle_keyboard_event` | `0x004B7D00` | high | Rejects keyboard input while MainMenuPane +0x500 is nonzero, then handles menu selection and activation when the gate is clear. |
@@ -3744,6 +3759,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `maybe_app_set_guard_flags` | `0x004A9F60` | medium | Sets opaque bytes at 0x006C9806 and 0x00740405; the wider guard meaning remains unresolved. |
 | `maybe_ui_list_pane_scroll_limit_fragment` | `0x004B3987` | medium | Compiler-recovered overlapping return fragment inside the backward-scroll-limit routine; no independent callers are known. |
 | `maybe_ui_list_pane_pointer_event_fallback` | `0x004B3BB1` | medium | Compiler-recovered overlapping false-return fragment inside the pointer-event handler; no independent callers are known. |
+| `maybe_ui_main_menu_once_flag_test_and_set` | `0x004B6C20` | medium | Returns the previous value of an otherwise unreferenced one-byte flag and sets it on the first call. |
 | `maybe_ui_manufacture_dialog_ctor_from_body` | `0x004C1AD0` | medium | Duplicates the lmanu.txt construction path and applies a decoded opcode-first body, but no live static caller was recovered. |
 | `maybe_ui_manufacture_dialog_apply_manual_body` | `0x004C2990` | medium | Applies RecipeCount or Recipe from a decoded opcode-first body for the duplicate raw-body pane path. |
 
@@ -4435,6 +4451,35 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `lobject_is_instance_of` | `0x004B45A0` | high | Walks an object's custom class-information parent chain to test whether it belongs to a requested class. |
 | `memory_allocation_failed` | `0x004B45D0` | high | Returns the client memory manager's current allocation-failure flag. |
 | `lobject_scalar_deleting_dtor` | `0x004B45E0` | high | Destroys an LObject and optionally frees the complete object. |
+| `local_storage_ctor` | `0x004B4610` | high | Enumerates regular non-system files under a directory and records each name and size with an empty cache pointer. |
+| `local_storage_dtor` | `0x004B4870` | high | Frees every lazily cached file buffer and destroys the LocalStorage filename map. |
+| `local_storage_load_file` | `0x004B4960` | high | Finds a filename, lazily reads its complete bytes, writes the file size, and returns the cached buffer. |
+| `local_storage_scalar_deleting_dtor` | `0x004B4C60` | high | Destroys a LocalStorage object and optionally frees the complete instance. |
+| `local_storage_file_map_dtor_wrapper` | `0x004B4C90` | high | Destroys the LocalStorage filename-to-cache-entry map. |
+| `local_storage_file_name_dtor` | `0x004B4CB0` | high | Destroys a string used by a LocalStorage file entry. |
+| `local_storage_file_map_ctor` | `0x004B4D10` | high | Constructs the LocalStorage filename map and initializes its red-black-tree sentinel. |
+| `local_storage_file_map_dtor` | `0x004B4D40` | high | Erases all LocalStorage file-entry nodes and frees the map sentinel. |
+| `local_storage_file_map_deallocate_sentinel` | `0x004B4DE0` | high | Frees the LocalStorage file map's sentinel node. |
+| `local_storage_file_map_erase_range` | `0x004B4E10` | high | Erases a LocalStorage file-map iterator range, including an optimized full-tree path. |
+| `local_storage_file_map_tree_init` | `0x004B4EF0` | high | Allocates and initializes the LocalStorage file map's red-black-tree sentinel. |
+| `local_storage_file_map_erase_one` | `0x004B4F70` | high | Erases one LocalStorage file-map node and restores red-black-tree invariants. |
+| `local_storage_file_map_clear` | `0x004B5450` | high | Destroys every LocalStorage file-map node and resets the tree sentinel and count. |
+| `local_storage_file_map_iterator_next` | `0x004B54B0` | high | Advances a LocalStorage file-map iterator to its in-order successor. |
+| `local_storage_file_map_destroy_subtree` | `0x004B5560` | high | Recursively destroys a LocalStorage file-map subtree and frees its nodes. |
+| `local_storage_file_map_rotate_left` | `0x004B55D0` | high | Performs a left rotation in the LocalStorage filename red-black tree. |
+| `local_storage_file_map_rotate_right` | `0x004B5680` | high | Performs a right rotation in the LocalStorage filename red-black tree. |
+| `local_storage_file_entry_value_dtor` | `0x004B5730` | high | Destroys the filename string in a LocalStorage cache entry. |
+| `local_storage_file_map_node_allocate` | `0x004B57A0` | high | Allocates raw 0x34-byte LocalStorage file-map nodes and throws on failure. |
+| `local_storage_file_map_insert_unique_node` | `0x004B5810` | high | Finds the filename insertion position, inserts a unique cache entry, or rejects a duplicate. |
+| `local_storage_file_map_iterator_assign` | `0x004B5A70` | high | Copies the current node pointer of a LocalStorage file-map iterator. |
+| `local_storage_file_map_link_and_rebalance` | `0x004B5A90` | high | Links a newly constructed file-entry node and restores red-black-tree invariants. |
+| `local_storage_file_map_iterator_previous` | `0x004B5D70` | high | Moves a LocalStorage file-map iterator to its in-order predecessor. |
+| `local_storage_file_map_node_construct` | `0x004B5E30` | high | Allocates a file-map node and copy-constructs its filename, size, and cache pointer. |
+| `local_storage_file_map_node_construct_failure_cleanup` | `0x004B5E8D` | high | Frees a partially allocated LocalStorage file-map node during exception cleanup. |
+| `local_storage_file_map_node_allocate_and_init` | `0x004B5ED0` | high | Allocates a LocalStorage file-map node, initializes sentinel links, and clears its flags. |
+| `local_storage_file_entry_value_copy_construct` | `0x004B5F20` | high | Placement copy-constructs a LocalStorage filename, size, and cache pointer. |
+| `local_storage_file_entry_value_copy_members` | `0x004B5F90` | high | Copy-constructs a filename string and copies the file size and cache pointer. |
+| `local_storage_file_name_c_str` | `0x004B6020` | high | Returns the inline or heap-backed C string for a LocalStorage filename value. |
 | `memory_manager_singleton_register_adjusted` | `0x004C9D10` | high | Registers exact RTTI MemoryMan from its Singleton secondary base. |
 | `memory_manager_singleton_unregister_adjusted` | `0x004C9D50` | high | Clears the MemoryMan singleton from its adjusted secondary-base pointer. |
 | `metadata_item_info_list_exists` | `0x004D9330` | high | Returns whether the exact RTTI ItemInfoList singleton is currently bound. |

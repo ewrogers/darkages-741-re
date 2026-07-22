@@ -39,6 +39,14 @@ The lobby can notify this client about an update through [`SVersionCheck`](../ne
 
 Startup provides a recovery path for a handoff that has progressed far enough to contain both `Patch/Info` and `Patch/Script`. When both files exist, `startup_run_pending_patcher` launches `Patcher2.exe` and exits before the normal client starts. If only one marker exists, the client deletes both and continues. The patcher's own download and update behavior is outside this analysis.
 
+## Startup logo
+
+`LogoPane` displays the startup splash before handing control back to the intro-state flow. It first tries `logo<distribution>.dat`, falling back to `logo.dat`. If that path cannot produce an image, it tries the legacy `logo.epf` image with the separate 768-byte `logo.pal` RGB palette. Both paths read into a temporary 512 KiB buffer.
+
+A decoded splash is drawn directly to the video canvas and presented immediately. The pane schedules timer ID 0 for 3,000 ms after a successful display, or 100 ms when no usable image was found. The timer clears the root pane's logo-visible state and posts intro state 4. Normal pane drawing is empty because presentation already happened in the constructor.
+
+The similarly named `LogoShowPane` is a separate main-menu animation. It loads `_nsl01.pal` through `_nsl06.pal`, converts all six palettes to the current 16-bit display format, and advances on repeating timer `0x4D2`. When its phase wraps, it chooses one of the six palettes with the client random-number generator before invalidating the pane.
+
 ## Intro sequence
 
 The intro is a three-state sequence:

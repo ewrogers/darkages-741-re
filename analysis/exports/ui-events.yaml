@@ -1875,6 +1875,38 @@ functions:
     name: lobject_scalar_deleting_dtor
     confidence: high
     evidence: "Destroys an LObject and optionally frees the complete object."
+  - address: "0x004B6050"
+    name: ui_logo_load_legacy_epf_and_palette
+    confidence: high
+    evidence: "Loads logo.epf bytes and the 0x300-byte logo.pal RGB palette for the legacy indexed-image splash path."
+  - address: "0x004B6160"
+    name: ui_logo_load_dat_variant
+    confidence: high
+    evidence: "Loads logo<distribution>.dat when present, otherwise logo.dat, into a bounded splash-image buffer."
+  - address: "0x004B6250"
+    name: ui_logo_pane_ctor
+    confidence: high
+    evidence: "Loads the distribution-specific or legacy splash, presents it immediately, and schedules the intro transition."
+  - address: "0x004B65C0"
+    name: ui_logo_pane_dtor
+    confidence: high
+    evidence: "Unregisters the LogoPane singleton and destroys its Pane base."
+  - address: "0x004B6630"
+    name: ui_logo_pane_finish_display
+    confidence: high
+    evidence: "Marks the root screen's logo phase complete and clears its logo-visible flag."
+  - address: "0x004B6660"
+    name: ui_logo_pane_draw_noop
+    confidence: high
+    evidence: "The constructor presents the splash directly, so normal LogoPane drawing is intentionally empty."
+  - address: "0x004B6670"
+    name: ui_logo_pane_handle_timer
+    confidence: high
+    evidence: "Handles timer ID 0 by finishing the logo phase and posting intro state 4."
+  - address: "0x004B66B0"
+    name: ui_logo_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys LogoPane and optionally frees the complete object."
   - address: "0x004B66E0"
     name: ui_logo_pane_register_adjusted
     confidence: high
@@ -1883,6 +1915,38 @@ functions:
     name: ui_logo_pane_unregister_adjusted
     confidence: high
     evidence: "Clears the LogoPane singleton from its adjusted secondary-base pointer."
+  - address: "0x004B6760"
+    name: ui_logo_pane_timer_handler_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts a TimerHandler secondary-base pointer back to LogoPane and tail-calls its deleting destructor."
+  - address: "0x004B6770"
+    name: app_send_mail_via_mapi
+    confidence: high
+    evidence: "Loads MAPI32.DLL, resolves MAPISendMail, sends a one-recipient message, and unloads the library."
+  - address: "0x004B6820"
+    name: ui_logo_show_pane_ctor
+    confidence: high
+    evidence: "Constructs LogoShowPane, loads six _nsl palette tables, and starts repeating timer 0x4D2."
+  - address: "0x004B69F0"
+    name: ui_logo_show_pane_dtor
+    confidence: high
+    evidence: "Cancels all LogoShowPane timers and destroys its Pane base."
+  - address: "0x004B6A70"
+    name: ui_logo_show_pane_draw
+    confidence: high
+    evidence: "Draws the configured logo frame while its phase lies in range, using the selected one of six palettes."
+  - address: "0x004B6B40"
+    name: ui_logo_show_pane_handle_timer
+    confidence: high
+    evidence: "Advances timer 0x4D2, randomizes the palette on wrap, invalidates the pane, and requeues the timer."
+  - address: "0x004B6C20"
+    name: maybe_ui_main_menu_once_flag_test_and_set
+    confidence: medium
+    evidence: "Returns the previous value of an otherwise unreferenced one-byte flag and sets it on the first call."
+  - address: "0x004B6C40"
+    name: ui_main_menu_model_ctor
+    confidence: high
+    evidence: "Constructs the RTTI MainMenu LObject model with six entries and no active selection."
   - address: "0x0052C480"
     name: ui_npc_session_update_speaker_art
     confidence: high

@@ -871,6 +871,122 @@ functions:
     name: file_get_hpf_compressor
     confidence: high
     evidence: "Returns the HPF compressor singleton pointer."
+  - address: "0x004B4610"
+    name: local_storage_ctor
+    confidence: high
+    evidence: "Enumerates regular non-system files under a directory and records each name and size with an empty cache pointer."
+  - address: "0x004B4870"
+    name: local_storage_dtor
+    confidence: high
+    evidence: "Frees every lazily cached file buffer and destroys the LocalStorage filename map."
+  - address: "0x004B4960"
+    name: local_storage_load_file
+    confidence: high
+    evidence: "Finds a filename, lazily reads its complete bytes, writes the file size, and returns the cached buffer."
+  - address: "0x004B4C60"
+    name: local_storage_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys a LocalStorage object and optionally frees the complete instance."
+  - address: "0x004B4C90"
+    name: local_storage_file_map_dtor_wrapper
+    confidence: high
+    evidence: "Destroys the LocalStorage filename-to-cache-entry map."
+  - address: "0x004B4CB0"
+    name: local_storage_file_name_dtor
+    confidence: high
+    evidence: "Destroys a string used by a LocalStorage file entry."
+  - address: "0x004B4D10"
+    name: local_storage_file_map_ctor
+    confidence: high
+    evidence: "Constructs the LocalStorage filename map and initializes its red-black-tree sentinel."
+  - address: "0x004B4D40"
+    name: local_storage_file_map_dtor
+    confidence: high
+    evidence: "Erases all LocalStorage file-entry nodes and frees the map sentinel."
+  - address: "0x004B4DE0"
+    name: local_storage_file_map_deallocate_sentinel
+    confidence: high
+    evidence: "Frees the LocalStorage file map's sentinel node."
+  - address: "0x004B4E10"
+    name: local_storage_file_map_erase_range
+    confidence: high
+    evidence: "Erases a LocalStorage file-map iterator range, including an optimized full-tree path."
+  - address: "0x004B4EF0"
+    name: local_storage_file_map_tree_init
+    confidence: high
+    evidence: "Allocates and initializes the LocalStorage file map's red-black-tree sentinel."
+  - address: "0x004B4F70"
+    name: local_storage_file_map_erase_one
+    confidence: high
+    evidence: "Erases one LocalStorage file-map node and restores red-black-tree invariants."
+  - address: "0x004B5450"
+    name: local_storage_file_map_clear
+    confidence: high
+    evidence: "Destroys every LocalStorage file-map node and resets the tree sentinel and count."
+  - address: "0x004B54B0"
+    name: local_storage_file_map_iterator_next
+    confidence: high
+    evidence: "Advances a LocalStorage file-map iterator to its in-order successor."
+  - address: "0x004B5560"
+    name: local_storage_file_map_destroy_subtree
+    confidence: high
+    evidence: "Recursively destroys a LocalStorage file-map subtree and frees its nodes."
+  - address: "0x004B55D0"
+    name: local_storage_file_map_rotate_left
+    confidence: high
+    evidence: "Performs a left rotation in the LocalStorage filename red-black tree."
+  - address: "0x004B5680"
+    name: local_storage_file_map_rotate_right
+    confidence: high
+    evidence: "Performs a right rotation in the LocalStorage filename red-black tree."
+  - address: "0x004B5730"
+    name: local_storage_file_entry_value_dtor
+    confidence: high
+    evidence: "Destroys the filename string in a LocalStorage cache entry."
+  - address: "0x004B57A0"
+    name: local_storage_file_map_node_allocate
+    confidence: high
+    evidence: "Allocates raw 0x34-byte LocalStorage file-map nodes and throws on failure."
+  - address: "0x004B5810"
+    name: local_storage_file_map_insert_unique_node
+    confidence: high
+    evidence: "Finds the filename insertion position, inserts a unique cache entry, or rejects a duplicate."
+  - address: "0x004B5A70"
+    name: local_storage_file_map_iterator_assign
+    confidence: high
+    evidence: "Copies the current node pointer of a LocalStorage file-map iterator."
+  - address: "0x004B5A90"
+    name: local_storage_file_map_link_and_rebalance
+    confidence: high
+    evidence: "Links a newly constructed file-entry node and restores red-black-tree invariants."
+  - address: "0x004B5D70"
+    name: local_storage_file_map_iterator_previous
+    confidence: high
+    evidence: "Moves a LocalStorage file-map iterator to its in-order predecessor."
+  - address: "0x004B5E30"
+    name: local_storage_file_map_node_construct
+    confidence: high
+    evidence: "Allocates a file-map node and copy-constructs its filename, size, and cache pointer."
+  - address: "0x004B5E8D"
+    name: local_storage_file_map_node_construct_failure_cleanup
+    confidence: high
+    evidence: "Frees a partially allocated LocalStorage file-map node during exception cleanup."
+  - address: "0x004B5ED0"
+    name: local_storage_file_map_node_allocate_and_init
+    confidence: high
+    evidence: "Allocates a LocalStorage file-map node, initializes sentinel links, and clears its flags."
+  - address: "0x004B5F20"
+    name: local_storage_file_entry_value_copy_construct
+    confidence: high
+    evidence: "Placement copy-constructs a LocalStorage filename, size, and cache pointer."
+  - address: "0x004B5F90"
+    name: local_storage_file_entry_value_copy_members
+    confidence: high
+    evidence: "Copy-constructs a filename string and copies the file size and cache pointer."
+  - address: "0x004B6020"
+    name: local_storage_file_name_c_str
+    confidence: high
+    evidence: "Returns the inline or heap-backed C string for a LocalStorage filename value."
   - address: "0x004B8570"
     name: net_handle_stipulation_raw
     confidence: high
