@@ -56,6 +56,8 @@ The older subtype factory uses these exact RTTI classes:
 | `8` | `ClientSpellMenuDialog` |
 | `9` | `ClientSkillMenuDialog` |
 
+The `Ex` text-menu variants are expanded layouts, not paged lists. They draw one `lmerc` middle segment and attach one text button for every row between the fixed top and bottom segments. Selecting a row sends the derived menu response and closes the dialog.
+
 ### Target identity
 
 Both protocols carry `target_type` and `target_id`, and both client responses echo them. The local dialog builders do not decode that byte, and the screen-menu code contains a separate `target_type > 0x0C` behavior. A complete 7.41 target-type enum remains unresolved.

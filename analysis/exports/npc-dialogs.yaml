@@ -365,6 +365,34 @@ functions:
     name: ui_open_merchant_face_menu
     confidence: high
     evidence: "Constructs exact RTTI FaceMenuDialog with lmerd bounds and pushes it onto MerchantSession."
+  - address: "0x004CF4A0"
+    name: ui_text_menu_dialog_ex_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TextMenuDialogEx, parses the extended menu, and enables its third attached control."
+  - address: "0x004CF560"
+    name: ui_text_menu_dialog_ex_base_ctor
+    confidence: high
+    evidence: "Installs TextMenuDialogEx vtables without parsing, for use by ArgumentedTextMenuDialogEx."
+  - address: "0x004CF590"
+    name: net_parse_text_menu_dialog_ex
+    confidence: high
+    evidence: "Parses the common header and rows, sizes the segmented lmerc body, and attaches title, monster, description, controls, and row buttons."
+  - address: "0x004CFB10"
+    name: ui_text_menu_dialog_ex_draw
+    confidence: high
+    evidence: "Draws one lmerc top segment, the row-count middle segments, and one bottom segment."
+  - address: "0x004CFCE0"
+    name: ui_text_menu_dialog_ex_add_row_button
+    confidence: high
+    evidence: "Creates and attaches one TextButtonExControlPane at the requested lmerc row."
+  - address: "0x004CFDE0"
+    name: ui_text_menu_dialog_ex_handle_action
+    confidence: high
+    evidence: "Handles target-info and close controls; row actions invoke the derived selection sender and then close."
+  - address: "0x004CFF90"
+    name: ui_argumented_text_menu_dialog_ex_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ArgumentedTextMenuDialogEx and parses its argumented menu payload."
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high

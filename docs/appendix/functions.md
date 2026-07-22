@@ -2180,6 +2180,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_open_merchant_server_skill_menu` | `0x004CF260` | high | Opens SScreenMenu type 7 in exact RTTI ServerSkillMenuDialog. |
 | `ui_open_merchant_client_skill_menu` | `0x004CF320` | high | Opens SScreenMenu type 9 in exact RTTI ClientSkillMenuDialog. |
 | `ui_open_merchant_face_menu` | `0x004CF3E0` | high | Constructs exact RTTI FaceMenuDialog with lmerd bounds and pushes it onto MerchantSession. |
+| `ui_text_menu_dialog_ex_ctor` | `0x004CF4A0` | high | Constructs exact RTTI TextMenuDialogEx, parses the extended menu, and enables its third attached control. |
+| `ui_text_menu_dialog_ex_base_ctor` | `0x004CF560` | high | Installs TextMenuDialogEx vtables without parsing, for use by ArgumentedTextMenuDialogEx. |
+| `ui_text_menu_dialog_ex_draw` | `0x004CFB10` | high | Draws one lmerc top segment, the row-count middle segments, and one bottom segment. |
+| `ui_text_menu_dialog_ex_add_row_button` | `0x004CFCE0` | high | Creates and attaches one TextButtonExControlPane at the requested lmerc row. |
+| `ui_text_menu_dialog_ex_handle_action` | `0x004CFDE0` | high | Handles target-info and close controls; row actions invoke the derived selection sender and then close. |
+| `ui_argumented_text_menu_dialog_ex_ctor` | `0x004CFF90` | high | Constructs exact RTTI ArgumentedTextMenuDialogEx and parses its argumented menu payload. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
@@ -2646,6 +2652,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_parse_server_item_menu_dialog3_items` | `0x004CC270` | high | Parses the newer merchant payload into fixed 0x224-byte item records; menu type 0x4B uses the extended record form. |
 | `net_request_object_info` | `0x004CD350` | high | Merchant menu paths call this opcode 0x43 object information request. |
 | `net_parse_merchant_dialog_common_header` | `0x004CE250` | high | Parses merchant target type, target ID, pursuit ID, content, seller text, and an optional derived-dialog string. |
+| `net_parse_text_menu_dialog_ex` | `0x004CF590` | high | Parses the common header and rows, sizes the segmented lmerc body, and attaches title, monster, description, controls, and row buttons. |
 | `net_send_merchant_selection` | `0x004CFE60` | high | MerchantDialogPane::TextMenuDialogEx virtual method that builds and sends CMerchant opcode 0x39. |
 | `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
 | `net_send_pursuit_selection` | `0x004DBC90` | high | MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method. |
