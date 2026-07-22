@@ -27,6 +27,10 @@ functions:
     name: ui_alpha_screen_pane_draw_content
     confidence: high
     evidence: "Fills the AlphaScreenPane content rectangle with its selected Canvas color."
+  - address: "0x00403FE0"
+    name: ui_alpha_screen_pane_rebuild_gradient_mask
+    confidence: high
+    evidence: "Rebuilds AlphaScreenPane's per-column alpha-mask buffers from the pane bounds and fills them with the configured gradient."
   - address: "0x00404110"
     name: ui_segmented_alpha_screen_pane_ctor
     confidence: high
@@ -135,6 +139,10 @@ functions:
     name: render_blit_indexed_transparent
     confidence: high
     evidence: "Maps nonzero indexed pixels through a 16-bit palette while preserving destination pixels where the source index is zero."
+  - address: "0x00407100"
+    name: render_blit_indexed_transparent_duplicate
+    confidence: high
+    evidence: "Unreferenced duplicate of the indexed transparent palette blitter, including the same zero-index exclusion and flip cases."
   - address: "0x00407490"
     name: render_blit_16bit_opaque
     confidence: high
@@ -251,6 +259,18 @@ functions:
     name: render_blit_16bit_alpha_plane
     confidence: high
     evidence: "Dispatches source-over-destination blending controlled by a per-pixel alpha plane."
+  - address: "0x0040CA10"
+    name: render_blit_screen_alpha_plane_unflipped_rgb565
+    confidence: high
+    evidence: "Unflipped RGB565 screen-style composite using a second source plane as independent component alpha values."
+  - address: "0x0040CB40"
+    name: render_blit_screen_alpha_plane_unflipped_rgb555
+    confidence: high
+    evidence: "Unflipped RGB555 screen-style composite using a second source plane as independent component alpha values."
+  - address: "0x0040CC70"
+    name: render_blit_screen_alpha_plane_unflipped
+    confidence: high
+    evidence: "Dispatches the unflipped screen-style alpha-plane loop to its RGB565 or RGB555 implementation."
   - address: "0x0040CD00"
     name: render_blit_screen_rgb565
     confidence: high
@@ -335,14 +355,50 @@ functions:
     name: render_add_pixels_rgb555_saturating
     confidence: high
     evidence: "Adds two RGB555 pixels component by component and clamps every component to 31."
+  - address: "0x0040EEC0"
+    name: render_select_mmx_pixel_masks
+    confidence: high
+    evidence: "Selects the packed MMX channel and carry masks used by the optimized RGB565 or RGB555 software-blit loops."
   - address: "0x0040EF60"
     name: render_blit_relative_rle_alpha_mmx
     confidence: high
     evidence: "MMX implementation of packed relative-offset RLE alpha drawing."
+  - address: "0x0040F370"
+    name: render_blit_relative_rle_alpha_rgb565_mmx
+    confidence: high
+    evidence: "RGB565 MMX loop for packed relative-offset RLE alpha rows."
+  - address: "0x0040F760"
+    name: render_blit_relative_rle_alpha_rgb555_mmx
+    confidence: high
+    evidence: "RGB555 MMX loop for packed relative-offset RLE alpha rows."
+  - address: "0x0040FB50"
+    name: render_blit_relative_rle_alpha_legacy_dispatch
+    confidence: medium
+    evidence: "Unreferenced legacy dispatcher whose two pixel-format branches both currently select the RGB565 relative-RLE MMX loop."
   - address: "0x0040FBE0"
     name: render_blit_alpha_plane_mmx
     confidence: high
     evidence: "MMX implementation of source-over-destination blending controlled by an alpha plane."
+  - address: "0x0040FE30"
+    name: render_blit_screen_rgb565_mmx
+    confidence: high
+    evidence: "RGB565 MMX loop for the screen-style source and destination composite."
+  - address: "0x004100C0"
+    name: render_blit_screen_rgb555_mmx
+    confidence: high
+    evidence: "RGB555 MMX loop for the screen-style source and destination composite."
+  - address: "0x00410350"
+    name: render_blit_screen_mmx
+    confidence: high
+    evidence: "Dispatches the MMX screen-style composite to the active RGB565 or RGB555 pixel format."
+  - address: "0x004103C0"
+    name: render_blit_screen_alpha_plane_rgb565_mmx
+    confidence: high
+    evidence: "RGB565 MMX loop for screen-style compositing controlled by a per-component alpha plane."
+  - address: "0x00410670"
+    name: render_blit_screen_alpha_plane_rgb555_mmx
+    confidence: high
+    evidence: "RGB555 MMX loop for screen-style compositing controlled by a per-component alpha plane."
   - address: "0x00410920"
     name: render_blit_screen_alpha_plane_mmx
     confidence: high
@@ -367,6 +423,14 @@ functions:
     name: render_blit_color_blend_color_key_mmx
     confidence: high
     evidence: "MMX implementation of color-keyed source-to-color blending."
+  - address: "0x004115B0"
+    name: render_blit_additive_rgb565_mmx
+    confidence: high
+    evidence: "RGB565 MMX loop for saturating additive source and destination blending."
+  - address: "0x00411780"
+    name: render_blit_additive_rgb555_mmx
+    confidence: high
+    evidence: "RGB555 MMX loop for saturating additive source and destination blending."
   - address: "0x00411950"
     name: render_blit_additive_mmx
     confidence: high
@@ -387,10 +451,50 @@ functions:
     name: render_blit_dual_rle_alpha_color_key_mmx
     confidence: high
     evidence: "MMX implementation combining two RLE alpha streams with source color-key exclusion."
+  - address: "0x00412CC0"
+    name: render_blit_scale_channels_rgb565_mmx
+    confidence: high
+    evidence: "Unreferenced RGB565 MMX loop that scales red, green, and blue independently with three caller-supplied factors."
+  - address: "0x00412FF0"
+    name: render_blit_scale_channels_rgb555_mmx
+    confidence: high
+    evidence: "Unreferenced RGB555 MMX loop that scales red, green, and blue independently with three caller-supplied factors."
+  - address: "0x00413320"
+    name: render_blit_luminance_palette_nonzero_ramp_rgb565_mmx
+    confidence: high
+    evidence: "RGB565 MMX luminance-palette branch for caller-selected nonzero ramp indexes."
+  - address: "0x00413580"
+    name: render_blit_luminance_palette_nonzero_ramp_rgb555_mmx
+    confidence: high
+    evidence: "RGB555 MMX luminance-palette branch for caller-selected nonzero ramp indexes."
+  - address: "0x004137E0"
+    name: render_blit_luminance_palette_ramp0_rgb565_mmx
+    confidence: high
+    evidence: "RGB565 MMX luminance-palette branch specialized for ramp zero."
+  - address: "0x004139B0"
+    name: render_blit_luminance_palette_ramp0_rgb555_mmx
+    confidence: high
+    evidence: "RGB555 MMX luminance-palette branch specialized for ramp zero."
   - address: "0x00413B80"
     name: render_blit_luminance_palette_mmx
     confidence: high
     evidence: "MMX implementation of luminance-ramp color mapping."
+  - address: "0x00413C50"
+    name: render_blit_luminance_palette_color_key_nonzero_ramp_rgb565_mmx
+    confidence: high
+    evidence: "Color-keyed RGB565 MMX luminance-palette branch for caller-selected nonzero ramp indexes."
+  - address: "0x00413F10"
+    name: render_blit_luminance_palette_color_key_nonzero_ramp_rgb555_mmx
+    confidence: high
+    evidence: "Color-keyed RGB555 MMX luminance-palette branch for caller-selected nonzero ramp indexes."
+  - address: "0x004141D0"
+    name: render_blit_luminance_palette_color_key_ramp0_rgb565_mmx
+    confidence: high
+    evidence: "Color-keyed RGB565 MMX luminance-palette branch specialized for ramp zero."
+  - address: "0x00414400"
+    name: render_blit_luminance_palette_color_key_ramp0_rgb555_mmx
+    confidence: high
+    evidence: "Color-keyed RGB555 MMX luminance-palette branch specialized for ramp zero."
   - address: "0x00414630"
     name: render_blit_luminance_palette_color_key_mmx
     confidence: high

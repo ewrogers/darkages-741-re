@@ -68,6 +68,8 @@ anything=<domain-cookie-value>&<boardinfo-cookie-value>
 
 The client ignores the text before `=`. It installs the bytes between `=` and `&` as the WinINet cookie named `domain`. It percent-encodes the remaining bytes and installs them as the cookie named `boardinfo`. Both cookies use `base_url`, after which the embedded browser navigates to `start_url`.
 
+An unreferenced alternate helper performs the same action directly from a raw decoded buffer. It reads three one-byte-length strings, splits `board_data` the same way, installs the same cookies, and navigates the same embedded control. No caller reaches this older path in the analyzed client, so the RTTI-backed packet-object handler above remains the confirmed live implementation.
+
 The delimiter searches use wrapping eight-bit indexes. If either `=` or `&` is absent, the client loops indefinitely. Manually injected action `0` or `1` packets must include both delimiters.
 
 ### Action 3

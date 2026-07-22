@@ -11,10 +11,18 @@ functions:
     name: ui_browser_dialog_ctor
     confidence: high
     evidence: "Constructs exact RTTI BrowserDialogPane with an embedded BrowserControlPane; when no response or initial URL is supplied, sends CWebBoard action 0."
+  - address: "0x00416020"
+    name: ui_browser_dialog_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI BrowserDialogPane, clears its singleton pointer, and runs the DialogPane base destructor."
   - address: "0x004160A0"
     name: net_send_web_board_dialog_request
     confidence: high
     evidence: "Builds the exact two-byte CWebBoard action-0 body and starts BrowserDialogPane's 20-second response timer."
+  - address: "0x00416140"
+    name: ui_browser_dialog_apply_web_board_raw_buffer
+    confidence: medium
+    evidence: "Unreferenced alternate SWebBoard path that parses three byte-length strings from a raw buffer, installs domain and boardinfo cookies, saves the base URL, and navigates."
   - address: "0x004165A0"
     name: ui_browser_dialog_apply_web_board
     confidence: high
@@ -23,6 +31,14 @@ functions:
     name: net_percent_encode_web_board_cookie_value
     confidence: high
     evidence: "Percent-encodes reserved, unsafe, control, and non-ASCII bytes before BrowserDialogPane stores the boardinfo cookie."
+  - address: "0x00416990"
+    name: ui_browser_dialog_close
+    confidence: high
+    evidence: "Unregisters and detaches BrowserDialogPane, shuts down its embedded browser control, and queues the pane for deferred deletion."
+  - address: "0x00416A10"
+    name: ui_browser_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Consumes BrowserDialogPane's close-key event byte 0x90 and delegates all other keyboard events to the base dialog handler."
   - address: "0x00416A50"
     name: ui_browser_dialog_handle_network_event
     confidence: high
@@ -31,14 +47,246 @@ functions:
     name: ui_browser_dialog_handle_timer
     confidence: high
     evidence: "Timer 0x572 opens Web Board Request Timeout after 20 seconds and closes the waiting BrowserDialogPane."
+  - address: "0x00416C90"
+    name: ui_browser_control_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI BrowserControlPane, creates its child HWND and WebBrowser ActiveX object, installs the COM client interfaces, and optionally navigates."
+  - address: "0x004172E0"
+    name: ui_browser_control_dtor
+    confidence: high
+    evidence: "Destroys BrowserControlPane's ControlPane, TimerHandler, and COM-interface subobjects after releasing the embedded browser and child-window wrapper."
+  - address: "0x004173C0"
+    name: ui_browser_control_shutdown
+    confidence: high
+    evidence: "Hides the browser, removes its event advisory connection, releases the WebBrowser object, destroys the child HWND, and restores focus."
+  - address: "0x00417530"
+    name: ui_browser_control_register_screen
+    confidence: high
+    evidence: "Registers BrowserControlPane as a screen and moves its embedded child HWND to the pane rectangle."
+  - address: "0x004175B0"
+    name: ui_browser_control_capture_window
+    confidence: high
+    evidence: "Copies the visible browser child window into a supplied destination DC with BitBlt; screenshot capture calls this helper."
+  - address: "0x00417710"
+    name: ui_browser_control_draw_content
+    confidence: high
+    evidence: "Draws centered browser status text into the pane canvas while the embedded child window is hidden."
+  - address: "0x004177D0"
+    name: ui_browser_control_set_visible
+    confidence: high
+    evidence: "Shows or hides the browser child HWND and synchronizes cursor state and the browser message filter."
+  - address: "0x004178C0"
+    name: ui_browser_control_set_silent
+    confidence: high
+    evidence: "Stores and forwards the requested silent-mode value to the embedded WebBrowser COM property setter."
   - address: "0x00417910"
     name: ui_browser_control_set_base_url
     confidence: high
     evidence: "Copies a bounded base URL into BrowserControlPane's browser state."
+  - address: "0x004179F0"
+    name: ui_browser_control_set_status_text
+    confidence: high
+    evidence: "Copies or clears BrowserControlPane's bounded status text and invalidates the pane for redraw."
   - address: "0x00417A40"
     name: ui_browser_control_navigate
     confidence: high
     evidence: "Converts the URL and optional header to BSTR values and calls the embedded IWebBrowser navigation method."
+  - address: "0x00417C03"
+    name: ui_browser_control_navigate_exception_cleanup
+    confidence: high
+    evidence: "Releases navigation SAFEARRAY and BSTR temporaries, shuts down the embedded browser, and clears exception state."
+  - address: "0x00417C70"
+    name: ui_browser_control_get_document_cookie
+    confidence: high
+    evidence: "Queries the browser Document interface, reads its cookie BSTR, and converts it into the client's string representation."
+  - address: "0x00417DF0"
+    name: ui_browser_control_set_document_cookie
+    confidence: high
+    evidence: "Queries the browser Document interface and assigns a formatted name=value cookie BSTR."
+  - address: "0x00417F00"
+    name: ui_browser_control_query_interface
+    confidence: high
+    evidence: "BrowserControlPane COM QueryInterface implementation that returns the adjusted subobject for each supported IID."
+  - address: "0x00418110"
+    name: ui_browser_control_ole_client_site_add_ref
+    confidence: high
+    evidence: "IOleClientSite AddRef vtable entry; this embedded site uses a fixed reference count and returns 2."
+  - address: "0x00418120"
+    name: ui_browser_control_ole_client_site_release
+    confidence: high
+    evidence: "IOleClientSite Release vtable entry; this embedded site uses a fixed reference count and returns 1."
+  - address: "0x00418130"
+    name: ui_browser_control_ole_client_site_save_object
+    confidence: high
+    evidence: "IOleClientSite SaveObject vtable entry that returns E_NOTIMPL."
+  - address: "0x00418140"
+    name: ui_browser_control_ole_client_site_get_moniker
+    confidence: high
+    evidence: "IOleClientSite GetMoniker vtable entry that returns E_NOTIMPL."
+  - address: "0x00418150"
+    name: ui_browser_control_ole_client_site_get_container
+    confidence: high
+    evidence: "IOleClientSite GetContainer vtable entry that returns E_NOTIMPL."
+  - address: "0x00418160"
+    name: ui_browser_control_ole_client_site_show_object
+    confidence: high
+    evidence: "IOleClientSite ShowObject vtable entry that returns E_NOTIMPL."
+  - address: "0x00418170"
+    name: ui_browser_control_ole_client_site_on_show_window
+    confidence: high
+    evidence: "IOleClientSite OnShowWindow vtable entry that returns E_NOTIMPL."
+  - address: "0x00418180"
+    name: ui_browser_control_ole_client_site_request_new_object_layout
+    confidence: high
+    evidence: "IOleClientSite RequestNewObjectLayout vtable entry that returns E_NOTIMPL."
+  - address: "0x00418190"
+    name: ui_browser_control_ole_in_place_site_get_window
+    confidence: high
+    evidence: "IOleInPlaceSite GetWindow vtable entry that returns BrowserControlPane's child HWND."
+  - address: "0x004181B0"
+    name: ui_browser_control_ole_in_place_site_context_sensitive_help
+    confidence: high
+    evidence: "IOleInPlaceSite ContextSensitiveHelp vtable entry that returns E_NOTIMPL."
+  - address: "0x004181C0"
+    name: ui_browser_control_ole_in_place_site_can_in_place_activate
+    confidence: high
+    evidence: "IOleInPlaceSite CanInPlaceActivate vtable entry that returns S_OK."
+  - address: "0x004181D0"
+    name: ui_browser_control_ole_in_place_site_on_in_place_activate
+    confidence: high
+    evidence: "IOleInPlaceSite OnInPlaceActivate vtable entry that returns S_OK."
+  - address: "0x004181E0"
+    name: ui_browser_control_ole_in_place_site_on_ui_activate
+    confidence: high
+    evidence: "IOleInPlaceSite OnUIActivate vtable entry that returns E_NOTIMPL."
+  - address: "0x004181F0"
+    name: ui_browser_control_ole_in_place_site_get_window_context
+    confidence: high
+    evidence: "IOleInPlaceSite GetWindowContext vtable entry that supplies the child HWND client rectangle as position and clip bounds."
+  - address: "0x00418220"
+    name: ui_browser_control_ole_in_place_site_scroll
+    confidence: high
+    evidence: "IOleInPlaceSite Scroll vtable entry that returns E_NOTIMPL."
+  - address: "0x00418230"
+    name: ui_browser_control_ole_in_place_site_on_ui_deactivate
+    confidence: high
+    evidence: "IOleInPlaceSite OnUIDeactivate vtable entry that returns E_NOTIMPL."
+  - address: "0x00418240"
+    name: ui_browser_control_ole_in_place_site_on_in_place_deactivate
+    confidence: high
+    evidence: "IOleInPlaceSite OnInPlaceDeactivate vtable entry that returns S_OK."
+  - address: "0x00418250"
+    name: ui_browser_control_ole_in_place_site_discard_undo_state
+    confidence: high
+    evidence: "IOleInPlaceSite DiscardUndoState vtable entry that returns E_NOTIMPL."
+  - address: "0x00418260"
+    name: ui_browser_control_ole_in_place_site_deactivate_and_undo
+    confidence: high
+    evidence: "IOleInPlaceSite DeactivateAndUndo vtable entry that returns E_NOTIMPL."
+  - address: "0x00418270"
+    name: ui_browser_control_ole_in_place_site_on_pos_rect_change
+    confidence: high
+    evidence: "IOleInPlaceSite OnPosRectChange vtable entry that returns E_NOTIMPL."
+  - address: "0x00418280"
+    name: ui_browser_control_browser_events_get_ids_of_names
+    confidence: high
+    evidence: "DWebBrowserEvents2 IDispatch GetIDsOfNames vtable entry that returns E_NOTIMPL."
+  - address: "0x00418290"
+    name: ui_browser_control_browser_events_get_type_info
+    confidence: high
+    evidence: "DWebBrowserEvents2 IDispatch GetTypeInfo vtable entry that returns E_NOTIMPL."
+  - address: "0x004182A0"
+    name: ui_browser_control_browser_events_get_type_info_count
+    confidence: high
+    evidence: "DWebBrowserEvents2 IDispatch GetTypeInfoCount vtable entry that returns E_NOTIMPL."
+  - address: "0x004182B0"
+    name: ui_browser_control_browser_events_invoke
+    confidence: high
+    evidence: "DWebBrowserEvents2 Invoke sink that handles navigation, new-window, document-complete, and related browser DISPIDs and blocks disallowed URLs."
+  - address: "0x004186C0"
+    name: ui_browser_control_doc_host_enable_modeless
+    confidence: high
+    evidence: "IDocHostUIHandler EnableModeless vtable entry that returns E_NOTIMPL."
+  - address: "0x004186D0"
+    name: ui_browser_control_doc_host_filter_data_object
+    confidence: high
+    evidence: "IDocHostUIHandler FilterDataObject vtable entry that returns E_NOTIMPL."
+  - address: "0x004186E0"
+    name: ui_browser_control_doc_host_get_drop_target
+    confidence: high
+    evidence: "IDocHostUIHandler GetDropTarget vtable entry that returns E_NOTIMPL."
+  - address: "0x004186F0"
+    name: ui_browser_control_doc_host_get_external
+    confidence: high
+    evidence: "IDocHostUIHandler GetExternal vtable entry that clears the output pointer and returns E_NOTIMPL."
+  - address: "0x00418710"
+    name: ui_browser_control_doc_host_get_host_info
+    confidence: high
+    evidence: "IDocHostUIHandler GetHostInfo vtable entry that fills the 20-byte host-info structure and selects the browser-host flags."
+  - address: "0x00418750"
+    name: ui_browser_control_doc_host_get_option_key_path
+    confidence: high
+    evidence: "IDocHostUIHandler GetOptionKeyPath vtable entry that returns E_NOTIMPL."
+  - address: "0x00418760"
+    name: ui_browser_control_doc_host_hide_ui
+    confidence: high
+    evidence: "IDocHostUIHandler HideUI vtable entry that returns E_NOTIMPL."
+  - address: "0x00418770"
+    name: ui_browser_control_doc_host_on_doc_window_activate
+    confidence: high
+    evidence: "IDocHostUIHandler OnDocWindowActivate vtable entry that returns E_NOTIMPL."
+  - address: "0x00418780"
+    name: ui_browser_control_doc_host_on_frame_window_activate
+    confidence: high
+    evidence: "IDocHostUIHandler OnFrameWindowActivate vtable entry that returns E_NOTIMPL."
+  - address: "0x00418790"
+    name: ui_browser_control_doc_host_resize_border
+    confidence: high
+    evidence: "IDocHostUIHandler ResizeBorder vtable entry that returns E_NOTIMPL."
+  - address: "0x004187A0"
+    name: ui_browser_control_doc_host_show_context_menu
+    confidence: high
+    evidence: "IDocHostUIHandler ShowContextMenu vtable entry that returns S_OK and suppresses the embedded browser's default context menu."
+  - address: "0x004187B0"
+    name: ui_browser_control_doc_host_show_ui
+    confidence: high
+    evidence: "IDocHostUIHandler ShowUI vtable entry that returns E_NOTIMPL."
+  - address: "0x004187C0"
+    name: ui_browser_control_doc_host_translate_accelerator
+    confidence: high
+    evidence: "IDocHostUIHandler TranslateAccelerator vtable entry that returns E_NOTIMPL."
+  - address: "0x004187D0"
+    name: ui_browser_control_doc_host_translate_url
+    confidence: high
+    evidence: "IDocHostUIHandler TranslateUrl vtable entry that returns E_NOTIMPL."
+  - address: "0x004187E0"
+    name: ui_browser_control_doc_host_update_ui
+    confidence: high
+    evidence: "IDocHostUIHandler UpdateUI vtable entry that returns E_NOTIMPL."
+  - address: "0x004187F0"
+    name: ui_browser_control_doc_host_show_help
+    confidence: high
+    evidence: "IDocHostShowUI ShowHelp vtable entry that returns S_OK."
+  - address: "0x00418800"
+    name: ui_browser_control_doc_host_show_message
+    confidence: high
+    evidence: "IDocHostShowUI ShowMessage vtable entry that returns S_OK and suppresses the browser's default message UI."
+  - address: "0x00418810"
+    name: ui_browser_control_window_proc
+    confidence: high
+    evidence: "WNDPROC registered by BrowserControlPane; retrieves the pane from GWL_USERDATA and routes messages to its pane-aware handler."
+  - address: "0x00418860"
+    name: ui_browser_control_handle_window_message
+    confidence: high
+    evidence: "Validates the browser child window's WM_PAINT and suppresses minimize, maximize, move, size, and close system commands."
+  - address: "0x00418980"
+    name: ui_browser_control_pre_translate_message
+    confidence: high
+    evidence: "Visible-browser message filter that gives the active browser object first chance at keyboard messages and handles client close and screenshot shortcuts."
+  - address: "0x00418B90"
+    name: ui_browser_window_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI BrowserWindow, creates its child HWND and WebBrowser ActiveX object, installs the COM client and event interfaces, and optionally navigates."
   - address: "0x00419650"
     name: ui_browser_window_set_base_url
     confidence: high

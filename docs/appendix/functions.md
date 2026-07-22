@@ -155,6 +155,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_alpha_screen_pane_ctor` | `0x00403E90` | high | Constructs the exact RTTI AlphaScreenPane over Pane and selects its palette-resolved fill color. |
 | `ui_alpha_screen_pane_dtor` | `0x00403F20` | high | Releases AlphaScreenPane's retained child-pointer array, then runs the Pane base destructor. |
 | `ui_alpha_screen_pane_draw_content` | `0x00403FC0` | high | Fills the AlphaScreenPane content rectangle with its selected Canvas color. |
+| `ui_alpha_screen_pane_rebuild_gradient_mask` | `0x00403FE0` | high | Rebuilds AlphaScreenPane's per-column alpha-mask buffers from the pane bounds and fills them with the configured gradient. |
 | `ui_segmented_alpha_screen_pane_ctor` | `0x00404110` | high | Constructs exact RTTI AlphaScreenPaneSegmented and creates 33 colored child panes with linearly stepped pane values. |
 | `ui_segmented_alpha_screen_pane_dtor` | `0x00404260` | high | Destroys all 33 child panes, then runs the Pane base destructor for AlphaScreenPaneSegmented. |
 | `ui_segmented_alpha_screen_pane_register_screen` | `0x00404300` | high | Registers the parent, divides its rectangle into 33 vertical child strips, registers each child, and clears each child canvas with the shared color. |
@@ -195,11 +196,73 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_staff_pane_timer_deleting_dtor_thunk` | `0x004158F0` | high | Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the StaffPane scalar deleting destructor. |
 | `ui_background_story_pane_timer_deleting_dtor_thunk` | `0x00415900` | high | Adjusts a TimerHandler secondary-base pointer by -0x11C and tail-calls the BkStoryPane scalar deleting destructor. |
 | `ui_browser_dialog_ctor` | `0x00415CB0` | high | Constructs exact RTTI BrowserDialogPane with an embedded BrowserControlPane; when no response or initial URL is supplied, sends CWebBoard action 0. |
+| `ui_browser_dialog_dtor` | `0x00416020` | high | Destroys exact RTTI BrowserDialogPane, clears its singleton pointer, and runs the DialogPane base destructor. |
+| `ui_browser_dialog_apply_web_board_raw_buffer` | `0x00416140` | medium | Unreferenced alternate SWebBoard path that parses three byte-length strings from a raw buffer, installs domain and boardinfo cookies, saves the base URL, and navigates. |
 | `ui_browser_dialog_apply_web_board` | `0x004165A0` | high | Accepts SWebBoard actions 0 and 1, installs domain and boardinfo WinINet cookies, sets the embedded browser base URL, and navigates to start_url. |
+| `ui_browser_dialog_close` | `0x00416990` | high | Unregisters and detaches BrowserDialogPane, shuts down its embedded browser control, and queues the pane for deferred deletion. |
+| `ui_browser_dialog_handle_keyboard_event` | `0x00416A10` | high | Consumes BrowserDialogPane's close-key event byte 0x90 and delegates all other keyboard events to the base dialog handler. |
 | `ui_browser_dialog_handle_network_event` | `0x00416A50` | high | BrowserDialogPane's network-event handler dispatches exact RTTI SWebBoard opcode 0x62 to its cookie and navigation path. |
 | `ui_browser_dialog_handle_timer` | `0x00416AB0` | high | Timer 0x572 opens Web Board Request Timeout after 20 seconds and closes the waiting BrowserDialogPane. |
+| `ui_browser_control_ctor` | `0x00416C90` | high | Constructs exact RTTI BrowserControlPane, creates its child HWND and WebBrowser ActiveX object, installs the COM client interfaces, and optionally navigates. |
+| `ui_browser_control_dtor` | `0x004172E0` | high | Destroys BrowserControlPane's ControlPane, TimerHandler, and COM-interface subobjects after releasing the embedded browser and child-window wrapper. |
+| `ui_browser_control_shutdown` | `0x004173C0` | high | Hides the browser, removes its event advisory connection, releases the WebBrowser object, destroys the child HWND, and restores focus. |
+| `ui_browser_control_register_screen` | `0x00417530` | high | Registers BrowserControlPane as a screen and moves its embedded child HWND to the pane rectangle. |
+| `ui_browser_control_capture_window` | `0x004175B0` | high | Copies the visible browser child window into a supplied destination DC with BitBlt; screenshot capture calls this helper. |
+| `ui_browser_control_draw_content` | `0x00417710` | high | Draws centered browser status text into the pane canvas while the embedded child window is hidden. |
+| `ui_browser_control_set_visible` | `0x004177D0` | high | Shows or hides the browser child HWND and synchronizes cursor state and the browser message filter. |
+| `ui_browser_control_set_silent` | `0x004178C0` | high | Stores and forwards the requested silent-mode value to the embedded WebBrowser COM property setter. |
 | `ui_browser_control_set_base_url` | `0x00417910` | high | Copies a bounded base URL into BrowserControlPane's browser state. |
+| `ui_browser_control_set_status_text` | `0x004179F0` | high | Copies or clears BrowserControlPane's bounded status text and invalidates the pane for redraw. |
 | `ui_browser_control_navigate` | `0x00417A40` | high | Converts the URL and optional header to BSTR values and calls the embedded IWebBrowser navigation method. |
+| `ui_browser_control_navigate_exception_cleanup` | `0x00417C03` | high | Releases navigation SAFEARRAY and BSTR temporaries, shuts down the embedded browser, and clears exception state. |
+| `ui_browser_control_get_document_cookie` | `0x00417C70` | high | Queries the browser Document interface, reads its cookie BSTR, and converts it into the client's string representation. |
+| `ui_browser_control_set_document_cookie` | `0x00417DF0` | high | Queries the browser Document interface and assigns a formatted name=value cookie BSTR. |
+| `ui_browser_control_query_interface` | `0x00417F00` | high | BrowserControlPane COM QueryInterface implementation that returns the adjusted subobject for each supported IID. |
+| `ui_browser_control_ole_client_site_add_ref` | `0x00418110` | high | IOleClientSite AddRef vtable entry; this embedded site uses a fixed reference count and returns 2. |
+| `ui_browser_control_ole_client_site_release` | `0x00418120` | high | IOleClientSite Release vtable entry; this embedded site uses a fixed reference count and returns 1. |
+| `ui_browser_control_ole_client_site_save_object` | `0x00418130` | high | IOleClientSite SaveObject vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_client_site_get_moniker` | `0x00418140` | high | IOleClientSite GetMoniker vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_client_site_get_container` | `0x00418150` | high | IOleClientSite GetContainer vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_client_site_show_object` | `0x00418160` | high | IOleClientSite ShowObject vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_client_site_on_show_window` | `0x00418170` | high | IOleClientSite OnShowWindow vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_client_site_request_new_object_layout` | `0x00418180` | high | IOleClientSite RequestNewObjectLayout vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_in_place_site_get_window` | `0x00418190` | high | IOleInPlaceSite GetWindow vtable entry that returns BrowserControlPane's child HWND. |
+| `ui_browser_control_ole_in_place_site_context_sensitive_help` | `0x004181B0` | high | IOleInPlaceSite ContextSensitiveHelp vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_in_place_site_can_in_place_activate` | `0x004181C0` | high | IOleInPlaceSite CanInPlaceActivate vtable entry that returns S_OK. |
+| `ui_browser_control_ole_in_place_site_on_in_place_activate` | `0x004181D0` | high | IOleInPlaceSite OnInPlaceActivate vtable entry that returns S_OK. |
+| `ui_browser_control_ole_in_place_site_on_ui_activate` | `0x004181E0` | high | IOleInPlaceSite OnUIActivate vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_in_place_site_get_window_context` | `0x004181F0` | high | IOleInPlaceSite GetWindowContext vtable entry that supplies the child HWND client rectangle as position and clip bounds. |
+| `ui_browser_control_ole_in_place_site_scroll` | `0x00418220` | high | IOleInPlaceSite Scroll vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_in_place_site_on_ui_deactivate` | `0x00418230` | high | IOleInPlaceSite OnUIDeactivate vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_in_place_site_on_in_place_deactivate` | `0x00418240` | high | IOleInPlaceSite OnInPlaceDeactivate vtable entry that returns S_OK. |
+| `ui_browser_control_ole_in_place_site_discard_undo_state` | `0x00418250` | high | IOleInPlaceSite DiscardUndoState vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_in_place_site_deactivate_and_undo` | `0x00418260` | high | IOleInPlaceSite DeactivateAndUndo vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_ole_in_place_site_on_pos_rect_change` | `0x00418270` | high | IOleInPlaceSite OnPosRectChange vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_browser_events_get_ids_of_names` | `0x00418280` | high | DWebBrowserEvents2 IDispatch GetIDsOfNames vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_browser_events_get_type_info` | `0x00418290` | high | DWebBrowserEvents2 IDispatch GetTypeInfo vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_browser_events_get_type_info_count` | `0x004182A0` | high | DWebBrowserEvents2 IDispatch GetTypeInfoCount vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_browser_events_invoke` | `0x004182B0` | high | DWebBrowserEvents2 Invoke sink that handles navigation, new-window, document-complete, and related browser DISPIDs and blocks disallowed URLs. |
+| `ui_browser_control_doc_host_enable_modeless` | `0x004186C0` | high | IDocHostUIHandler EnableModeless vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_filter_data_object` | `0x004186D0` | high | IDocHostUIHandler FilterDataObject vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_get_drop_target` | `0x004186E0` | high | IDocHostUIHandler GetDropTarget vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_get_external` | `0x004186F0` | high | IDocHostUIHandler GetExternal vtable entry that clears the output pointer and returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_get_host_info` | `0x00418710` | high | IDocHostUIHandler GetHostInfo vtable entry that fills the 20-byte host-info structure and selects the browser-host flags. |
+| `ui_browser_control_doc_host_get_option_key_path` | `0x00418750` | high | IDocHostUIHandler GetOptionKeyPath vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_hide_ui` | `0x00418760` | high | IDocHostUIHandler HideUI vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_on_doc_window_activate` | `0x00418770` | high | IDocHostUIHandler OnDocWindowActivate vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_on_frame_window_activate` | `0x00418780` | high | IDocHostUIHandler OnFrameWindowActivate vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_resize_border` | `0x00418790` | high | IDocHostUIHandler ResizeBorder vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_show_context_menu` | `0x004187A0` | high | IDocHostUIHandler ShowContextMenu vtable entry that returns S_OK and suppresses the embedded browser's default context menu. |
+| `ui_browser_control_doc_host_show_ui` | `0x004187B0` | high | IDocHostUIHandler ShowUI vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_translate_accelerator` | `0x004187C0` | high | IDocHostUIHandler TranslateAccelerator vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_translate_url` | `0x004187D0` | high | IDocHostUIHandler TranslateUrl vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_update_ui` | `0x004187E0` | high | IDocHostUIHandler UpdateUI vtable entry that returns E_NOTIMPL. |
+| `ui_browser_control_doc_host_show_help` | `0x004187F0` | high | IDocHostShowUI ShowHelp vtable entry that returns S_OK. |
+| `ui_browser_control_doc_host_show_message` | `0x00418800` | high | IDocHostShowUI ShowMessage vtable entry that returns S_OK and suppresses the browser's default message UI. |
+| `ui_browser_control_window_proc` | `0x00418810` | high | WNDPROC registered by BrowserControlPane; retrieves the pane from GWL_USERDATA and routes messages to its pane-aware handler. |
+| `ui_browser_control_handle_window_message` | `0x00418860` | high | Validates the browser child window's WM_PAINT and suppresses minimize, maximize, move, size, and close system commands. |
+| `ui_browser_control_pre_translate_message` | `0x00418980` | high | Visible-browser message filter that gives the active browser object first chance at keyboard messages and handles client close and screenshot shortcuts. |
+| `ui_browser_window_ctor` | `0x00418B90` | high | Constructs exact RTTI BrowserWindow, creates its child HWND and WebBrowser ActiveX object, installs the COM client and event interfaces, and optionally navigates. |
 | `ui_browser_window_set_base_url` | `0x00419650` | high | Copies a bounded base URL into BrowserWindow's browser state. |
 | `ui_browser_window_navigate` | `0x00419700` | high | Navigates BrowserWindow's embedded IWebBrowser to the supplied URL and optional header. |
 | `ui_bottom_buttons_pane_ctor` | `0x0041B040` | high | Constructs exact RTTI class BtmButtonsPane_A, initializes its state, and immediately sends the empty CSelfLook request. |
@@ -1257,6 +1320,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_blit_indexed_opaque` | `0x004065B0` | high | Maps every indexed source pixel through a 16-bit palette and copies it with all four horizontal and vertical flip combinations. |
 | `render_blit_indexed_zero_transparent` | `0x00406900` | high | Copies indexed pixels through a local palette whose index 0 entry is forced to pixel value zero, with both-axis flipping. |
 | `render_blit_indexed_transparent` | `0x00406D70` | high | Maps nonzero indexed pixels through a 16-bit palette while preserving destination pixels where the source index is zero. |
+| `render_blit_indexed_transparent_duplicate` | `0x00407100` | high | Unreferenced duplicate of the indexed transparent palette blitter, including the same zero-index exclusion and flip cases. |
 | `render_blit_16bit_opaque` | `0x00407490` | high | Copies packed 16-bit pixels with all four horizontal and vertical flip combinations. |
 | `render_blit_16bit_inverted` | `0x00407700` | high | Copies packed 16-bit pixels after complementing every source pixel, with both-axis flipping. |
 | `render_blit_16bit_transparent` | `0x00407A30` | high | Copies nonzero packed 16-bit source pixels and preserves the destination where the source is zero. |
@@ -1286,6 +1350,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_blit_alpha_plane_rgb565` | `0x0040C100` | high | Blends RGB565 source pixels over the destination using a second source plane as per-pixel weights. |
 | `render_blit_alpha_plane_rgb555` | `0x0040C520` | high | Blends RGB555 source pixels over the destination using a second source plane as per-pixel weights. |
 | `render_blit_16bit_alpha_plane` | `0x0040C940` | high | Dispatches source-over-destination blending controlled by a per-pixel alpha plane. |
+| `render_blit_screen_alpha_plane_unflipped_rgb565` | `0x0040CA10` | high | Unflipped RGB565 screen-style composite using a second source plane as independent component alpha values. |
+| `render_blit_screen_alpha_plane_unflipped_rgb555` | `0x0040CB40` | high | Unflipped RGB555 screen-style composite using a second source plane as independent component alpha values. |
+| `render_blit_screen_alpha_plane_unflipped` | `0x0040CC70` | high | Dispatches the unflipped screen-style alpha-plane loop to its RGB565 or RGB555 implementation. |
 | `render_blit_screen_rgb565` | `0x0040CD00` | high | Applies blend mode 0x6D to an RGB565 destination. |
 | `render_blit_screen_rgb555` | `0x0040D0D0` | high | Applies blend mode 0x6D to an RGB555 destination. |
 | `render_blit_screen_mode` | `0x0040D4A0` | high | Selects the RGB565 or RGB555 screen-style blend used by static render flag 0x80. |
@@ -1307,20 +1374,41 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_screen_pixel_rgb565` | `0x0040EC20` | high | Combines one RGB565 source and destination pixel with the screen-style component formula. |
 | `render_add_pixels_rgb565_saturating` | `0x0040ED60` | high | Adds two RGB565 pixels component by component and clamps red and blue to 31 and green to 63. |
 | `render_add_pixels_rgb555_saturating` | `0x0040EE10` | high | Adds two RGB555 pixels component by component and clamps every component to 31. |
+| `render_select_mmx_pixel_masks` | `0x0040EEC0` | high | Selects the packed MMX channel and carry masks used by the optimized RGB565 or RGB555 software-blit loops. |
 | `render_blit_relative_rle_alpha_mmx` | `0x0040EF60` | high | MMX implementation of packed relative-offset RLE alpha drawing. |
+| `render_blit_relative_rle_alpha_rgb565_mmx` | `0x0040F370` | high | RGB565 MMX loop for packed relative-offset RLE alpha rows. |
+| `render_blit_relative_rle_alpha_rgb555_mmx` | `0x0040F760` | high | RGB555 MMX loop for packed relative-offset RLE alpha rows. |
+| `render_blit_relative_rle_alpha_legacy_dispatch` | `0x0040FB50` | medium | Unreferenced legacy dispatcher whose two pixel-format branches both currently select the RGB565 relative-RLE MMX loop. |
 | `render_blit_alpha_plane_mmx` | `0x0040FBE0` | high | MMX implementation of source-over-destination blending controlled by an alpha plane. |
+| `render_blit_screen_rgb565_mmx` | `0x0040FE30` | high | RGB565 MMX loop for the screen-style source and destination composite. |
+| `render_blit_screen_rgb555_mmx` | `0x004100C0` | high | RGB555 MMX loop for the screen-style source and destination composite. |
+| `render_blit_screen_mmx` | `0x00410350` | high | Dispatches the MMX screen-style composite to the active RGB565 or RGB555 pixel format. |
+| `render_blit_screen_alpha_plane_rgb565_mmx` | `0x004103C0` | high | RGB565 MMX loop for screen-style compositing controlled by a per-component alpha plane. |
+| `render_blit_screen_alpha_plane_rgb555_mmx` | `0x00410670` | high | RGB555 MMX loop for screen-style compositing controlled by a per-component alpha plane. |
 | `render_blit_screen_alpha_plane_mmx` | `0x00410920` | high | MMX implementation of the screen-style composite controlled by a per-component alpha plane. |
 | `render_blit_alpha_mmx` | `0x004109A0` | high | MMX implementation of uniform source-over-destination alpha blending. |
 | `render_blit_alpha_color_key_mmx` | `0x00410BD0` | high | MMX implementation of color-keyed uniform source-over-destination alpha blending. |
 | `render_blit_color_blend_alpha_plane_mmx` | `0x00410E50` | high | MMX implementation of source-to-color blending controlled by a per-pixel alpha plane. |
 | `render_blit_color_blend_mmx` | `0x004110C0` | high | MMX implementation of uniform source-to-color blending. |
 | `render_blit_color_blend_color_key_mmx` | `0x00411310` | high | MMX implementation of color-keyed source-to-color blending. |
+| `render_blit_additive_rgb565_mmx` | `0x004115B0` | high | RGB565 MMX loop for saturating additive source and destination blending. |
+| `render_blit_additive_rgb555_mmx` | `0x00411780` | high | RGB555 MMX loop for saturating additive source and destination blending. |
 | `render_blit_additive_mmx` | `0x00411950` | high | MMX implementation of saturating additive packed-pixel blending. |
 | `render_blit_pointer_rle_alpha_mmx` | `0x004119C0` | high | MMX implementation of absolute-pointer-table RLE alpha drawing. |
 | `render_blit_rle_alpha_color_key_mmx` | `0x00411DC0` | high | MMX implementation of color-keyed RLE alpha drawing. |
 | `render_blit_rle_alpha_color_key_opacity_mmx` | `0x004121E0` | high | MMX implementation combining RLE alpha, a source color key, and global opacity. |
 | `render_blit_dual_rle_alpha_color_key_mmx` | `0x00412660` | high | MMX implementation combining two RLE alpha streams with source color-key exclusion. |
+| `render_blit_scale_channels_rgb565_mmx` | `0x00412CC0` | high | Unreferenced RGB565 MMX loop that scales red, green, and blue independently with three caller-supplied factors. |
+| `render_blit_scale_channels_rgb555_mmx` | `0x00412FF0` | high | Unreferenced RGB555 MMX loop that scales red, green, and blue independently with three caller-supplied factors. |
+| `render_blit_luminance_palette_nonzero_ramp_rgb565_mmx` | `0x00413320` | high | RGB565 MMX luminance-palette branch for caller-selected nonzero ramp indexes. |
+| `render_blit_luminance_palette_nonzero_ramp_rgb555_mmx` | `0x00413580` | high | RGB555 MMX luminance-palette branch for caller-selected nonzero ramp indexes. |
+| `render_blit_luminance_palette_ramp0_rgb565_mmx` | `0x004137E0` | high | RGB565 MMX luminance-palette branch specialized for ramp zero. |
+| `render_blit_luminance_palette_ramp0_rgb555_mmx` | `0x004139B0` | high | RGB555 MMX luminance-palette branch specialized for ramp zero. |
 | `render_blit_luminance_palette_mmx` | `0x00413B80` | high | MMX implementation of luminance-ramp color mapping. |
+| `render_blit_luminance_palette_color_key_nonzero_ramp_rgb565_mmx` | `0x00413C50` | high | Color-keyed RGB565 MMX luminance-palette branch for caller-selected nonzero ramp indexes. |
+| `render_blit_luminance_palette_color_key_nonzero_ramp_rgb555_mmx` | `0x00413F10` | high | Color-keyed RGB555 MMX luminance-palette branch for caller-selected nonzero ramp indexes. |
+| `render_blit_luminance_palette_color_key_ramp0_rgb565_mmx` | `0x004141D0` | high | Color-keyed RGB565 MMX luminance-palette branch specialized for ramp zero. |
+| `render_blit_luminance_palette_color_key_ramp0_rgb555_mmx` | `0x00414400` | high | Color-keyed RGB555 MMX luminance-palette branch specialized for ramp zero. |
 | `render_blit_luminance_palette_color_key_mmx` | `0x00414630` | high | MMX implementation of color-keyed luminance-ramp mapping. |
 | `render_bink_open_clip` | `0x0042E2D0` | high | Calls BinkOpen, configures playback, and registers the frame timer. |
 | `render_bink_present_frame` | `0x0042E440` | high | Uses BinkWait, BinkDoFrame, BinkCopyToBuffer, and BinkNextFrame. |
