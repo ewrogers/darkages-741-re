@@ -35,6 +35,7 @@ The pane then uses helpers such as:
 - `ui_layout_get_control_image`
 - `ui_layout_get_control_value`
 - `ui_layout_get_control_color`
+- `ui_layout_prepare_image_button`
 - `ui_layout_create_image_button`
 
 A missing layout or a missing named control reaches a fatal invalid-layout error. Names are part of the contract between the asset and the pane class.
@@ -68,6 +69,12 @@ A missing layout or a missing named control reaches a fatal invalid-layout error
 | `IMAGE` | Ordered image entry name and frame index. Up to three entries are used by the image-button helper. |
 | `VALUE` | Ordered integer options. A button may use the first value as a built-in skin selector. |
 | `COLOR` | Ordered palette indexes used by the control constructor. |
+
+Each parsed `CONTROL` owns its `NAME` string, a vector of 0x20-byte IMAGE entries, and separate four-byte VALUE and COLOR vectors. The cache owns the parsed control collection. Clearing or destroying the layout manager walks both cache levels, deletes each parsed layout, destroys the filename strings and vectors, and then releases the map sentinels.
+
+The image-button path has two stages. `ui_layout_prepare_image_button` reads the rectangle, optional skin value, and up to three ordered image states into shared settings. `ui_layout_create_image_button` then allocates and constructs the actual control from those settings. This distinction matters for injected UI code because preparing a definition alone does not attach or even allocate a pane.
+
+Some older UI images also pass through `ui_layout_get_legacy_palette_for_image`. That helper uses a hardcoded filename and prefix table for assets such as `album.epf`, `legends.epf`, and `staff.epf`; the selector is not stored in the layout grammar. Unknown filenames receive selector zero.
 
 The matching archive contains 46 underscore-prefixed text layouts with 525 control definitions. Only `TYPE` values 0, 3, and 7 appear in those files. Type 0 is normally the window background. Type 7 is the common named region. Type 3 appears on two agreement buttons. Use a nearby working control as the model instead of assigning a new type from its number alone.
 

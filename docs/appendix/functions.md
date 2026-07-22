@@ -1298,15 +1298,67 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_layout_has_named_control` | `0x00481DF0` | high | Tests whether the currently loaded layout contains a control definition with the requested NAME. |
 | `ui_layout_find_control` | `0x00481E30` | high | Finds one named control definition in the selected parsed layout. |
 | `ui_layout_cache_file` | `0x00481E60` | high | Caches one parsed layout under its archive pointer and filename while rejecting duplicate insertion. |
+| `ui_layout_manager_clear` | `0x00482000` | high | Deletes every cached parsed layout, clears both cache levels, and resets the current selection. |
 | `ui_layout_select_control` | `0x00482140` | high | Selects a control by name and takes the fatal invalid-layout path when it is missing. |
+| `ui_layout_archive_contains_file` | `0x004822F0` | high | Tests for a named entry in the selected or default layout archive and releases its temporary handle. |
 | `ui_layout_load` | `0x00482340` | high | Loads a named text layout from the DAT archive, parses its CONTROL blocks, and caches the result. |
 | `ui_layout_get_control_rect` | `0x00482630` | high | Returns the selected control's four pane-local rectangle coordinates. |
 | `ui_layout_get_control_type` | `0x004826B0` | high | Returns the selected control's TYPE integer. |
 | `ui_layout_get_control_image` | `0x004826E0` | high | Returns one ordered IMAGE filename and frame index from the selected control. |
 | `ui_layout_get_control_color` | `0x00482840` | high | Returns one ordered COLOR palette index from the selected control. |
 | `ui_layout_get_control_value` | `0x00482870` | high | Returns one ordered VALUE integer from the selected control. |
-| `ui_layout_create_image_button` | `0x004828A0` | high | Creates an ImageButtonControlPane from a named layout definition. |
-| `ui_layout_build_image_button` | `0x004828E0` | high | Reads a rectangle, optional skin value, and up to three image states before constructing the button. |
+| `ui_layout_prepare_image_button` | `0x004828A0` | high | Prepares shared rectangle and three-state image settings for a named control without allocating it. |
+| `ui_layout_build_image_button_config` | `0x004828E0` | high | Reads a rectangle, optional skin value, and up to three image states into caller-supplied button settings. |
+| `ui_layout_get_control_rect_and_colors_shared` | `0x00482AE0` | high | Loads a named control's rectangle and first two COLOR values into shared UI-layout scratch storage. |
+| `ui_layout_get_control_rect_and_colors` | `0x00482B10` | high | Returns a named control's rectangle and first two COLOR values through caller-supplied outputs. |
+| `ui_layout_get_control_image_shared` | `0x00482B90` | high | Loads one ordered IMAGE filename and frame into shared UI-layout scratch storage. |
+| `ui_layout_get_legacy_palette_for_image` | `0x00482BC0` | high | Returns hardcoded legacy palette selectors for known UI EPF filenames and prefixes. |
+| `ui_layout_create_image_button` | `0x004832E0` | high | Allocates and constructs an ImageButtonControlPane from prepared shared layout settings. |
+| `ui_layout_load_control_pixmap` | `0x00483390` | high | Resolves one named control IMAGE entry and loads its frame into a pixmap record. |
+| `ui_layout_file_io_newline_byte` | `0x004833E0` | high | Returns the LayoutFileIO newline byte value 0x0A. |
+| `ui_layout_archive_cache_map_dtor_thunk` | `0x004833F0` | high | Forwards to the outer archive-cache map destructor. |
+| `ui_layout_filename_cache_map_dtor_thunk` | `0x00483410` | high | Adjusts the inner filename-cache map subobject and forwards to its destructor. |
+| `ui_layout_image_name_dtor` | `0x00483430` | high | Destroys one IMAGE entry's owned filename string. |
+| `ui_layout_control_definition_ctor` | `0x00483490` | high | Constructs one CONTROL definition with its NAME and IMAGE, VALUE, and COLOR vectors. |
+| `ui_layout_control_definition_dtor` | `0x004835B0` | high | Destroys one CONTROL definition and every owned string and vector allocation. |
+| `ui_layout_control_name_dtor` | `0x00483680` | high | Destroys the CONTROL definition's owned NAME string. |
+| `ui_layout_image_entry_vector_dtor_thunk` | `0x004836E0` | high | Forwards exception cleanup to the IMAGE-entry vector destructor. |
+| `ui_layout_value_vector_dtor_thunk` | `0x00483730` | high | Forwards exception cleanup to the VALUE vector destructor. |
+| `ui_layout_color_vector_dtor_thunk` | `0x00483780` | high | Forwards exception cleanup to the COLOR vector destructor. |
+| `ui_layout_archive_cache_map_ctor` | `0x004837D0` | high | Constructs the outer red-black-tree cache keyed by archive pointer. |
+| `ui_layout_archive_cache_map_dtor` | `0x00483800` | high | Destroys all archive-cache nodes and releases the outer map sentinel. |
+| `ui_layout_archive_cache_map_clear` | `0x004838A0` | high | Erases every archive-cache node while retaining an initialized empty sentinel. |
+| `ui_layout_archive_cache_map_find` | `0x00483900` | high | Finds an exact archive-pointer key through the outer map's lower-bound traversal. |
+| `ui_layout_filename_cache_map_ctor` | `0x004839A0` | high | Constructs an inner red-black-tree cache keyed by layout filename. |
+| `ui_layout_filename_cache_map_dtor` | `0x004839D0` | high | Destroys all filename-cache nodes and releases the inner map sentinel. |
+| `ui_layout_filename_cache_map_clear` | `0x00483A70` | high | Erases every filename-cache node while retaining an initialized empty sentinel. |
+| `ui_layout_filename_cache_map_find` | `0x00483AD0` | high | Finds an exact layout filename through the inner map's lower-bound traversal. |
+| `ui_layout_image_entry_vector_dtor` | `0x00483BB0` | high | Destroys every 0x20-byte IMAGE entry and releases the vector allocation. |
+| `ui_layout_value_vector_dtor_address` | `0x00483C50` | high | Returns the VALUE-vector destructor address for compiler-generated cleanup state. |
+| `ui_layout_value_vector_dtor` | `0x00483C60` | high | Releases the four-byte VALUE vector allocation and clears its three pointers. |
+| `ui_layout_color_vector_dtor_address` | `0x00483CC0` | high | Returns the COLOR-vector destructor address for compiler-generated cleanup state. |
+| `ui_layout_color_vector_dtor` | `0x00483CD0` | high | Releases the four-byte COLOR vector allocation and clears its three pointers. |
+| `ui_layout_archive_cache_destroy_subtree_address` | `0x00483D30` | high | Returns the outer-cache subtree destructor address for compiler-generated cleanup state. |
+| `ui_layout_archive_cache_map_destroy_subtree` | `0x00483D40` | high | Recursively destroys an outer cache subtree and each node's owned filename map. |
+| `ui_layout_archive_cache_map_destroy_sentinel` | `0x00483DB0` | high | Releases the outer archive-cache map sentinel. |
+| `ui_layout_filename_cache_map_destroy_subtree` | `0x00483DE0` | high | Recursively destroys an inner cache subtree and each owned filename key. |
+| `ui_layout_filename_cache_map_destroy_sentinel` | `0x00483E50` | high | Releases the inner filename-cache map sentinel. |
+| `ui_layout_archive_cache_map_erase_range` | `0x00483E80` | high | Erases a half-open iterator range from the outer archive cache. |
+| `ui_layout_archive_cache_map_lower_bound` | `0x00483F60` | high | Returns the first archive-cache node whose pointer key is not less than the request. |
+| `ui_layout_archive_cache_map_initialize_sentinel` | `0x00483FD0` | high | Allocates and initializes the empty outer cache sentinel. |
+| `ui_layout_filename_cache_map_erase_range` | `0x00484050` | high | Erases a half-open iterator range from an inner filename cache. |
+| `ui_layout_filename_cache_map_lower_bound` | `0x00484130` | high | Returns the first filename-cache node whose string key is not less than the request. |
+| `ui_layout_filename_cache_map_initialize_sentinel` | `0x004841D0` | high | Allocates and initializes an empty inner cache sentinel. |
+| `ui_layout_archive_cache_map_erase_node` | `0x00484250` | high | Removes one outer-cache node and restores red-black-tree ordering and color invariants. |
+| `ui_layout_archive_cache_map_iterator_ctor` | `0x00484730` | high | Constructs an outer archive-cache iterator around one node. |
+| `ui_layout_archive_cache_map_iterator_increment` | `0x00484750` | high | Advances an outer-cache iterator to its in-order successor. |
+| `ui_layout_filename_cache_map_erase_node` | `0x00484800` | high | Removes one inner-cache node and restores red-black-tree ordering and color invariants. |
+| `ui_layout_filename_cache_map_iterator_ctor` | `0x00484CE0` | high | Constructs an inner filename-cache iterator around one node. |
+| `ui_layout_filename_cache_map_iterator_increment` | `0x00484D00` | high | Advances an inner-cache iterator to its in-order successor. |
+| `ui_layout_archive_cache_map_rotate_left` | `0x00484DB0` | high | Performs a left rotation while rebalancing the outer archive cache. |
+| `ui_layout_archive_cache_map_rotate_right` | `0x00484E60` | high | Performs a right rotation while rebalancing the outer archive cache. |
+| `ui_layout_filename_cache_map_rotate_left` | `0x00484F10` | high | Performs a left rotation while rebalancing an inner filename cache. |
+| `ui_layout_filename_cache_map_rotate_right` | `0x00484FC0` | high | Performs a right rotation while rebalancing an inner filename cache. |
 | `ui_hot_key_pane_ctor` | `0x00488320` | high | Constructs the RTTI-backed HotKeyPane, loads _nhotkem.txt and _nhotkey.txt, and registers it with the screen and event trees. |
 | `ui_create_hot_key_pane` | `0x00488D00` | high | Allocates a 0x919C-byte HotKeyPane and calls ui_hot_key_pane_ctor; its only direct caller is GUIBackPane action 0. |
 | `ui_image_pane_draw_content` | `0x0048DD30` | high | Draws an ImagePane image into the pane's own canvas. |
