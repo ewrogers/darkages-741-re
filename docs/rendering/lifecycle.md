@@ -32,6 +32,8 @@ Memory canvases use 16-bit pixels and an aligned row pitch. The logical width an
 
 Subcanvases do not own another pixel buffer. `render_canvas_resolve_backing` walks their parent chain, accumulates each local origin, and resolves the memory buffer or DirectDraw surface that owns the pixels. Clipping follows the same chain. `render_canvas_get_absolute_clip_rect` intersects every local clip rectangle before mapping drawing coordinates into the shared backing.
 
+A canvas can also retain an already decoded render image. `render_canvas_attach_image` copies that image's bounds into the canvas and resolves its backing metadata without allocating a second image. `render_canvas_set_bounds` then keeps clip and dirty regions synchronized when panes move or resize, recreating owned backing only when the active storage mode requires it.
+
 `render_canvas_lock_pixels` hides the backing difference from software drawing. Heap canvases return their stored pointer and pitch. Surface canvases call DirectDraw `Lock` and cache the returned pointer and pitch until `render_canvas_unlock_pixels`. If an unlock reports a lost surface, the client restores it and retries.
 
 The client can also construct a top-down 16-bit `DIBitmap`. Its decoder expands an archive image to RGB555 and copies aligned rows into a GDI DIB section. A smaller shared decoder validates an embedded indexed-image record, allocates a 16-bit pixel buffer, and expands each palette index through the same client color packer. These are conversion boundaries, not the main sprite drawing path.

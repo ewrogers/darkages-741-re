@@ -135,6 +135,14 @@ functions:
     name: std_string_dtor_seh_wrapper
     confidence: high
     evidence: "Destroys an MSVC std::string through std_string_reset while installing its compiler-generated SEH cleanup frame."
+  - address: "0x00440F00"
+    name: std_int_set_dtor_wrapper
+    confidence: high
+    evidence: "Thin wrapper around the shared std::set<int>-style destructor reused across subsystems."
+  - address: "0x00443460"
+    name: std_int_noop_dtor
+    confidence: high
+    evidence: "Trivial destructor hook for a stored integer value."
   - address: "0x00465020"
     name: pointer_queue_scalar_deleting_dtor
     confidence: high

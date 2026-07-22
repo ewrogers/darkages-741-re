@@ -3417,8 +3417,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_direct_draw_ctor` | `0x004494B0` | high | Constructs the RTTI-backed DirectDraw wrapper. |
 | `render_direct_draw_dtor` | `0x00449550` | high | Runs DirectDraw wrapper cleanup during deletion. |
 | `render_direct_draw_initialize` | `0x004495D0` | high | Creates DirectDraw, selects cooperative and display modes, and creates presentation surfaces. |
+| `render_direct_draw_set_pixel_format_mode` | `0x00449C90` | high | Stores the retained DirectDraw pixel-format selector and returns false. |
 | `render_direct_draw_shutdown` | `0x00449CB0` | high | Releases the clipper and surfaces, restores display mode, and releases DirectDraw. |
 | `render_direct_draw_create_offscreen_surface` | `0x00449D80` | high | Creates an offscreen DirectDraw surface with the requested dimensions and client-selected caps. |
+| `render_direct_draw_pre_shutdown_noop` | `0x00449E30` | high | Empty DirectDraw teardown hook invoked before active presentation resources are released. |
 | `render_direct_draw_release_surface` | `0x00449E40` | high | Releases a retained DirectDraw surface pointer when present. |
 | `render_direct_draw_enter_fullscreen_mode` | `0x00449E60` | high | Enters exclusive DirectDraw mode, sets the retained display dimensions and bit depth, and restores surfaces. |
 | `render_direct_draw_leave_fullscreen_mode` | `0x00449F30` | high | Restores the display mode and returns DirectDraw to the normal cooperative level. |
@@ -3432,10 +3434,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_canvas_ctor` | `0x0044A490` | high | Constructs the RTTI-backed Canvas object. |
 | `render_canvas_dtor` | `0x0044A710` | high | Releases Canvas backing, scanline offsets, alpha-mask rows, and other owned drawing state. |
 | `render_canvas_is_initialized` | `0x0044A9A0` | high | Returns whether the Canvas has initialized backing state. |
+| `render_canvas_set_drawable` | `0x0044A9C0` | high | Stores the Canvas drawable-state flag used by render_canvas_is_drawable and returns the Canvas. |
 | `render_canvas_is_drawable` | `0x0044A9E0` | high | Recursively checks a subcanvas parent or tests whether the Canvas has drawable backing. |
 | `render_canvas_attach_surface` | `0x0044AA30` | high | Attaches a Canvas to a DirectDraw surface. |
 | `render_canvas_create_memory` | `0x0044AB80` | high | Allocates a 16-bit memory canvas with width aligned to four pixels. |
 | `render_canvas_create_subcanvas` | `0x0044AD50` | high | Creates a mode-2 subcanvas over a parent rectangle and inherits its backing surface and dimensions. |
+| `render_canvas_attach_image` | `0x0044AEA0` | high | Initializes Canvas bounds and backing metadata from a retained render image. |
 | `render_canvas_initialize_point_target` | `0x0044AFF0` | high | Reinitializes the Canvas as a mode-1 point target with the supplied coordinates. |
 | `render_canvas_release_backing` | `0x0044B050` | high | Releases active DirectDraw or heap-backed storage and resets the Canvas backing mode. |
 | `render_canvas_release` | `0x0044B0D0` | high | Releases the current Canvas storage. |
@@ -3462,6 +3466,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_canvas_copy_indexed_image` | `0x0044B9D0` | high | Copies a palette-indexed image into 16-bit Canvas pixels through the client RGB packer. |
 | `render_canvas_get_bounds_ptr` | `0x0044BBC0` | high | Returns a pointer to the Canvas bounds rectangle. |
 | `render_canvas_get_bounds` | `0x0044BBE0` | high | Copies the Canvas bounds rectangle to caller storage. |
+| `render_canvas_resize_backing` | `0x0044BC10` | high | Updates Canvas dimensions and recreates heap-backed storage when the backing mode requires it. |
+| `render_canvas_set_bounds` | `0x0044BEB0` | high | Applies new Canvas bounds, updates clip and dirty regions, and preserves or recreates backing as required by the active mode. |
 | `render_color_table_resolve_entry` | `0x0044CEA0` | high | Lazily resolves one six-color entry, using palette-index fallbacks for built-in entries. |
 | `render_canvas_set_flip_flags` | `0x0044CF60` | high | Stores the Canvas vertical and horizontal image-flip flags. |
 | `render_canvas_get_flip_flags` | `0x0044CF90` | high | Returns the Canvas vertical and horizontal flip flags used by image blitting. |
@@ -4510,7 +4516,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_denied_item_list_subscribe` | `0x00440AA0` | high | Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable. |
 | `metadata_denied_item_list_apply_table` | `0x00440B20` | high | Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers. |
 | `metadata_denied_item_list_handle_event` | `0x00440E70` | high | Applies an available denial metadata table or retries the table subscriptions. |
+| `metadata_denied_rule_map_dtor_wrapper` | `0x00440EE0` | high | Thin wrapper that destroys a denied-rule map through the shared map destructor. |
+| `std_int_set_dtor_wrapper` | `0x00440F00` | high | Thin wrapper around the shared std::set&lt;int&gt;-style destructor reused across subsystems. |
 | `metadata_denied_rule_record_dtor` | `0x00440F20` | high | Destroys both containers owned by one parsed denial-rule record. |
+| `metadata_denied_rule_record_list_heap_cleanup` | `0x00440F80` | high | Destroys an embedded denied-rule record list and frees its allocated header during compiler cleanup. |
 | `metadata_denied_item_list_scalar_deleting_dtor` | `0x00440FF0` | high | Compiler scalar-deleting destructor for exact RTTI DeniedItemList. |
 | `metadata_denied_numeric_set_ctor` | `0x00441020` | high | Constructs the numeric-token red-black set and initializes its header sentinel. |
 | `metadata_denied_numeric_set_dtor` | `0x00441050` | high | Erases the numeric-token set, then frees its header sentinel. |
@@ -4522,6 +4531,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_denied_rule_map_dtor` | `0x00441370` | high | Erases the denied-rule key map, then frees its header sentinel. |
 | `metadata_denied_rule_map_find` | `0x00441410` | high | Finds an exact signed rule key by lower-bound search and equality check. |
 | `metadata_denied_rule_record_list_storage_dtor` | `0x004414B0` | high | Destroys the owned doubly-linked rule-record list nodes and header storage. |
+| `metadata_denied_numeric_set_header_free_cleanup` | `0x00441540` | high | Compiler cleanup helper that frees the numeric-token set header allocated during construction. |
+| `metadata_denied_word_set_header_free_cleanup` | `0x00441570` | high | Compiler cleanup helper that frees the word-token set header allocated during construction. |
+| `metadata_denied_rule_map_header_free_cleanup` | `0x004415A0` | high | Compiler cleanup helper that frees the denied-rule map header allocated during construction. |
+| `metadata_denied_rule_record_list_header_free_cleanup` | `0x004415D0` | high | Compiler cleanup helper that frees the denied-rule record-list header allocated during construction. |
 | `metadata_denied_numeric_set_erase_range` | `0x00441600` | high | Erases a numeric-set iterator range, using a whole-tree fast path when the complete range is selected. |
 | `metadata_denied_numeric_set_lower_bound` | `0x004416E0` | high | Returns the first numeric-token set node whose signed key is not less than the requested value. |
 | `metadata_denied_numeric_set_initialize` | `0x00441750` | high | Allocates and initializes the numeric-set red-black tree header sentinel. |
@@ -4555,6 +4568,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_denied_word_set_iterator_next` | `0x004432F0` | high | Advances a word-token set iterator to its in-order successor. |
 | `metadata_denied_item_list_bind_singleton` | `0x004433A0` | high | Binds the exact RTTI DeniedItemList complete object after adjusting from its Singleton base subobject. |
 | `metadata_denied_item_list_unbind_singleton` | `0x004433E0` | high | Clears the DeniedItemList singleton global only when it still references this adjusted complete object. |
+| `metadata_table_manager_exists` | `0x00443420` | high | Reports whether the process-wide MetaTableManager singleton pointer is non-null. |
+| `metadata_table_manager_get` | `0x00443440` | high | Returns the process-wide MetaTableManager singleton pointer used by metadata consumers. |
+| `metadata_denied_rule_record_pointer_noop_dtor` | `0x00443450` | high | Trivial destructor hook for a rule-record pointer stored in the denial list. |
+| `std_int_noop_dtor` | `0x00443460` | high | Trivial destructor hook for a stored integer value. |
 | `metadata_denied_numeric_set_allocate_nodes` | `0x00443470` | high | Allocates one or more 0x14-byte numeric-token tree nodes and throws std::bad_alloc on overflow or failure. |
 | `metadata_denied_word_set_allocate_nodes` | `0x004434E0` | high | Allocates one or more 0x2c-byte word-token tree nodes and throws std::bad_alloc on overflow or failure. |
 | `metadata_denied_rule_map_value_destroy` | `0x00443550` | high | Template destruction wrapper used when a denied-rule map value must be discarded; delegates to the value destructor. |
@@ -4570,8 +4587,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_denied_word_set_iterator_prev` | `0x004446B0` | high | Moves a word-token set iterator to its in-order predecessor. |
 | `metadata_denied_rule_map_iterator_prev` | `0x00444770` | high | Moves a denied-rule map iterator to its in-order predecessor. |
 | `metadata_denied_numeric_set_create_node` | `0x00444830` | high | Allocates a numeric-token tree node and copy-constructs its stored integer value. |
+| `metadata_denied_numeric_set_create_node_unwind` | `0x0044488D` | high | Frees a partially constructed numeric-set node and resumes exception propagation. |
 | `metadata_denied_word_set_create_node` | `0x004448D0` | high | Allocates a word-token tree node and copy-constructs its stored string value. |
+| `metadata_denied_word_set_create_node_unwind` | `0x0044492D` | high | Frees a partially constructed word-set node and resumes exception propagation. |
 | `metadata_denied_rule_map_create_node` | `0x00444970` | high | Allocates a denied-rule map node and copy-constructs its key and record list value. |
+| `metadata_denied_rule_map_create_node_unwind` | `0x004449CD` | high | Frees a partially constructed denied-rule map node and resumes exception propagation. |
 | `metadata_denied_rule_map_value_dtor` | `0x00444A10` | high | Destroys the record list stored in one denied-rule map value and releases its list header. |
 | `metadata_denied_numeric_set_allocate_node` | `0x00444A90` | high | Allocates one numeric-token tree node and initializes its links and red-black tree flags. |
 | `metadata_denied_word_set_allocate_node` | `0x00444AE0` | high | Allocates one word-token tree node and initializes its links and red-black tree flags. |
@@ -4580,12 +4600,16 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_denied_rule_map_value_copy` | `0x00444BE0` | high | Copy-constructs a denied-rule map key together with its owned rule-record list. |
 | `metadata_denied_rule_record_list_insert_before` | `0x00444C60` | high | Creates and links one rule-record pointer node before the selected list position. |
 | `metadata_denied_rule_record_list_create_node` | `0x00444CF0` | high | Allocates one rule-record list node, sets its neighboring links, and copy-constructs the stored record pointer. |
+| `metadata_denied_rule_record_list_create_node_unwind` | `0x00444D62` | high | Frees a partially constructed rule-record list node and resumes exception propagation. |
 | `metadata_denied_rule_record_pointer_copy` | `0x00444DB0` | high | Copy-constructs the rule-record pointer stored in a list node. |
 | `metadata_denied_rule_record_list_copy_ctor` | `0x00444DF0` | high | Constructs a rule-record list and appends a copy of each source pointer node. |
+| `metadata_denied_rule_record_list_copy_ctor_unwind` | `0x00444EE9` | high | Destroys partially built list storage when rule-record list copy construction fails, then resumes exception propagation. |
 | `metadata_denied_rule_record_list_copy_range` | `0x00444F30` | high | Copies a source iterator range into a denied-rule record list before the selected position. |
+| `metadata_denied_rule_record_list_copy_range_unwind` | `0x00444FA9` | high | Erases nodes copied so far when a rule-record list range copy fails, then resumes exception propagation. |
 | `metadata_denied_rule_record_list_insert_copy_before` | `0x00445030` | high | Creates and links a copied rule-record pointer node before the selected position during list copy construction. |
 | `metadata_denied_rule_record_list_erase` | `0x004450C0` | high | Unlinks and frees one rule-record pointer list node, decrements the count, and returns the following iterator. |
 | `metadata_denied_rule_record_list_create_copy_node` | `0x00445160` | high | Allocates a rule-record pointer list node, sets its neighboring links, and copy-constructs the stored pointer. |
+| `metadata_denied_rule_record_list_create_copy_node_unwind` | `0x004451D2` | high | Frees a partially constructed copied list node and resumes exception propagation. |
 | `metadata_denied_rule_record_pointer_copy_ctor` | `0x00445220` | high | Copy-constructs the rule-record pointer stored in a copied list node. |
 | `text_count_trailing_and_total_spaces` | `0x0044CA70` | high | Counts trailing spaces and total spaces in a fixed-length span for Canvas text layout. |
 | `text_rotate_leading_spaces_to_end` | `0x0044CB10` | high | Moves leading spaces to the end of a fixed-length text span while preserving its length. |

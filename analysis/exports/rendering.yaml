@@ -555,6 +555,10 @@ functions:
     name: render_direct_draw_initialize
     confidence: high
     evidence: Creates DirectDraw, selects cooperative and display modes, and creates presentation surfaces.
+  - address: "0x00449C90"
+    name: render_direct_draw_set_pixel_format_mode
+    confidence: high
+    evidence: "Stores the retained DirectDraw pixel-format selector and returns false."
   - address: "0x00449CB0"
     name: render_direct_draw_shutdown
     confidence: high
@@ -563,6 +567,10 @@ functions:
     name: render_direct_draw_create_offscreen_surface
     confidence: high
     evidence: "Creates an offscreen DirectDraw surface with the requested dimensions and client-selected caps."
+  - address: "0x00449E30"
+    name: render_direct_draw_pre_shutdown_noop
+    confidence: high
+    evidence: "Empty DirectDraw teardown hook invoked before active presentation resources are released."
   - address: "0x00449E40"
     name: render_direct_draw_release_surface
     confidence: high
@@ -615,6 +623,10 @@ functions:
     name: render_canvas_is_initialized
     confidence: high
     evidence: "Returns whether the Canvas has initialized backing state."
+  - address: "0x0044A9C0"
+    name: render_canvas_set_drawable
+    confidence: high
+    evidence: "Stores the Canvas drawable-state flag used by render_canvas_is_drawable and returns the Canvas."
   - address: "0x0044A9E0"
     name: render_canvas_is_drawable
     confidence: high
@@ -631,6 +643,10 @@ functions:
     name: render_canvas_create_subcanvas
     confidence: high
     evidence: "Creates a mode-2 subcanvas over a parent rectangle and inherits its backing surface and dimensions."
+  - address: "0x0044AEA0"
+    name: render_canvas_attach_image
+    confidence: high
+    evidence: "Initializes Canvas bounds and backing metadata from a retained render image."
   - address: "0x0044AFF0"
     name: render_canvas_initialize_point_target
     confidence: high
@@ -735,6 +751,14 @@ functions:
     name: render_canvas_get_bounds
     confidence: high
     evidence: "Copies the Canvas bounds rectangle to caller storage."
+  - address: "0x0044BC10"
+    name: render_canvas_resize_backing
+    confidence: high
+    evidence: "Updates Canvas dimensions and recreates heap-backed storage when the backing mode requires it."
+  - address: "0x0044BEB0"
+    name: render_canvas_set_bounds
+    confidence: high
+    evidence: "Applies new Canvas bounds, updates clip and dirty regions, and preserves or recreates backing as required by the active mode."
   - address: "0x0044CA70"
     name: text_count_trailing_and_total_spaces
     confidence: high

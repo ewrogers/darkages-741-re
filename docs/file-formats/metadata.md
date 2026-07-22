@@ -209,6 +209,8 @@ The RTTI-backed `DeniedItemList` is one consumer of this metadata system. It cre
 - `BSkills`
 - `BSpells`
 
+The object is a process-wide singleton. Small `exists` and `get` helpers let action handlers consult the same three lists without owning their lifetime.
+
 If `MetaTableManager` is not ready when the list is constructed, the client retries the subscriptions after one second. A valid cached table can be applied locally. A missing or stale table follows the normal `SMetaData` inventory, `CMetaData` request, and `SMetaData` payload flow described above.
 
 Applying a table replaces the current in-memory lists and routes rows tagged `Item`, `Skill`, or `Spell` into the matching lookup. Item activation, skill activation, and spell activation consult their respective list before sending the normal action packet.
@@ -217,6 +219,8 @@ Each category is a signed-integer keyed map. A key owns a list of rule records, 
 
 - the numeric text is scanned for decimal runs and each parsed value enters a numeric set;
 - the word text is split on spaces, a trailing carriage return is removed, and each byte string enters a word set.
+
+These are ordinary compiler-library red-black trees and linked lists. Their extra cleanup entry points free partially constructed headers or nodes when allocation or value copying throws; they do not define additional metadata syntax.
 
 A lookup selects category `0` for items, `1` for skills, or `2` for spells. It then finds the requested rule key and accepts only a record containing both the requested numeric value and the exact word token. Several records may share one key, so any matching record denies the action. The word comparison is byte-for-byte through the client's normal string comparator.
 

@@ -127,10 +127,18 @@ functions:
     name: metadata_denied_item_list_handle_event
     confidence: high
     evidence: "Applies an available denial metadata table or retries the table subscriptions."
+  - address: "0x00440EE0"
+    name: metadata_denied_rule_map_dtor_wrapper
+    confidence: high
+    evidence: "Thin wrapper that destroys a denied-rule map through the shared map destructor."
   - address: "0x00440F20"
     name: metadata_denied_rule_record_dtor
     confidence: high
     evidence: "Destroys both containers owned by one parsed denial-rule record."
+  - address: "0x00440F80"
+    name: metadata_denied_rule_record_list_heap_cleanup
+    confidence: high
+    evidence: "Destroys an embedded denied-rule record list and frees its allocated header during compiler cleanup."
   - address: "0x00440FF0"
     name: metadata_denied_item_list_scalar_deleting_dtor
     confidence: high
@@ -175,6 +183,22 @@ functions:
     name: metadata_denied_rule_record_list_storage_dtor
     confidence: high
     evidence: "Destroys the owned doubly-linked rule-record list nodes and header storage."
+  - address: "0x00441540"
+    name: metadata_denied_numeric_set_header_free_cleanup
+    confidence: high
+    evidence: "Compiler cleanup helper that frees the numeric-token set header allocated during construction."
+  - address: "0x00441570"
+    name: metadata_denied_word_set_header_free_cleanup
+    confidence: high
+    evidence: "Compiler cleanup helper that frees the word-token set header allocated during construction."
+  - address: "0x004415A0"
+    name: metadata_denied_rule_map_header_free_cleanup
+    confidence: high
+    evidence: "Compiler cleanup helper that frees the denied-rule map header allocated during construction."
+  - address: "0x004415D0"
+    name: metadata_denied_rule_record_list_header_free_cleanup
+    confidence: high
+    evidence: "Compiler cleanup helper that frees the denied-rule record-list header allocated during construction."
   - address: "0x00441600"
     name: metadata_denied_numeric_set_erase_range
     confidence: high
@@ -307,6 +331,18 @@ functions:
     name: metadata_denied_item_list_unbind_singleton
     confidence: high
     evidence: "Clears the DeniedItemList singleton global only when it still references this adjusted complete object."
+  - address: "0x00443420"
+    name: metadata_table_manager_exists
+    confidence: high
+    evidence: "Reports whether the process-wide MetaTableManager singleton pointer is non-null."
+  - address: "0x00443440"
+    name: metadata_table_manager_get
+    confidence: high
+    evidence: "Returns the process-wide MetaTableManager singleton pointer used by metadata consumers."
+  - address: "0x00443450"
+    name: metadata_denied_rule_record_pointer_noop_dtor
+    confidence: high
+    evidence: "Trivial destructor hook for a rule-record pointer stored in the denial list."
   - address: "0x00443470"
     name: metadata_denied_numeric_set_allocate_nodes
     confidence: high
@@ -367,14 +403,26 @@ functions:
     name: metadata_denied_numeric_set_create_node
     confidence: high
     evidence: "Allocates a numeric-token tree node and copy-constructs its stored integer value."
+  - address: "0x0044488D"
+    name: metadata_denied_numeric_set_create_node_unwind
+    confidence: high
+    evidence: "Frees a partially constructed numeric-set node and resumes exception propagation."
   - address: "0x004448D0"
     name: metadata_denied_word_set_create_node
     confidence: high
     evidence: "Allocates a word-token tree node and copy-constructs its stored string value."
+  - address: "0x0044492D"
+    name: metadata_denied_word_set_create_node_unwind
+    confidence: high
+    evidence: "Frees a partially constructed word-set node and resumes exception propagation."
   - address: "0x00444970"
     name: metadata_denied_rule_map_create_node
     confidence: high
     evidence: "Allocates a denied-rule map node and copy-constructs its key and record list value."
+  - address: "0x004449CD"
+    name: metadata_denied_rule_map_create_node_unwind
+    confidence: high
+    evidence: "Frees a partially constructed denied-rule map node and resumes exception propagation."
   - address: "0x00444A10"
     name: metadata_denied_rule_map_value_dtor
     confidence: high
@@ -407,6 +455,10 @@ functions:
     name: metadata_denied_rule_record_list_create_node
     confidence: high
     evidence: "Allocates one rule-record list node, sets its neighboring links, and copy-constructs the stored record pointer."
+  - address: "0x00444D62"
+    name: metadata_denied_rule_record_list_create_node_unwind
+    confidence: high
+    evidence: "Frees a partially constructed rule-record list node and resumes exception propagation."
   - address: "0x00444DB0"
     name: metadata_denied_rule_record_pointer_copy
     confidence: high
@@ -415,10 +467,18 @@ functions:
     name: metadata_denied_rule_record_list_copy_ctor
     confidence: high
     evidence: "Constructs a rule-record list and appends a copy of each source pointer node."
+  - address: "0x00444EE9"
+    name: metadata_denied_rule_record_list_copy_ctor_unwind
+    confidence: high
+    evidence: "Destroys partially built list storage when rule-record list copy construction fails, then resumes exception propagation."
   - address: "0x00444F30"
     name: metadata_denied_rule_record_list_copy_range
     confidence: high
     evidence: "Copies a source iterator range into a denied-rule record list before the selected position."
+  - address: "0x00444FA9"
+    name: metadata_denied_rule_record_list_copy_range_unwind
+    confidence: high
+    evidence: "Erases nodes copied so far when a rule-record list range copy fails, then resumes exception propagation."
   - address: "0x00445030"
     name: metadata_denied_rule_record_list_insert_copy_before
     confidence: high
@@ -431,6 +491,10 @@ functions:
     name: metadata_denied_rule_record_list_create_copy_node
     confidence: high
     evidence: "Allocates a rule-record pointer list node, sets its neighboring links, and copy-constructs the stored pointer."
+  - address: "0x004451D2"
+    name: metadata_denied_rule_record_list_create_copy_node_unwind
+    confidence: high
+    evidence: "Frees a partially constructed copied list node and resumes exception propagation."
   - address: "0x00445220"
     name: metadata_denied_rule_record_pointer_copy_ctor
     confidence: high
