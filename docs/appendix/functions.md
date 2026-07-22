@@ -1608,23 +1608,42 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_skill_inventory_item_get_display_name` | `0x00498BE0` | high | Copies the full SkillInvItemPane display name into the caller's bounded buffer. |
 | `ui_skill_item_cooldown_visual_timer` | `0x00498C10` | high | For timer ID 0x10204, maps elapsed time to 30 integer steps, redraws, and reschedules at 100 ms while the delay and visual-active flags remain set. |
 | `ui_skill_inventory_item_handle_pointer_event` | `0x00498D40` | high | Skill item pointer handler checks complete-object offset +0x322 and blocks drag start, activation, and information actions while action-delayed. |
+| `ui_skill_inventory_item_pointer_case_1_blocked` | `0x00498EC4` | high | Compiler-split pointer-event type 1 branch that returns false outside the pane or while the skill is action-delayed. |
+| `ui_skill_inventory_item_pointer_case_2_blocked` | `0x00498F40` | high | Compiler-split pointer-event type 2 branch that returns false outside the pane or while the skill is action-delayed. |
+| `ui_skill_inventory_item_pointer_case_4_blocked` | `0x0049915F` | high | Compiler-split pointer-event type 4 branch that returns false outside the pane or while the skill is action-delayed. |
+| `ui_skill_inventory_item_pointer_return_false` | `0x0049916B` | high | Compiler-split common false-return block for SkillInvItemPane pointer-event handling. |
+| `ui_skill_inventory_item_pointer_destroy_drag_preview` | `0x0049916F` | high | Compiler-split cleanup block that destroys an unattached DraggedSkillInvItemPane preview and returns true. |
+| `ui_skill_inventory_item_pointer_epilogue` | `0x0049919D` | high | Shared SEH and stack-cookie epilogue for the compiler-split SkillInvItemPane pointer-event handler. |
 | `ui_skill_inventory_item_draw` | `0x004991D0` | high | Draws the skill icon, applies palette index 0x58 across a delayed icon, and palette index 0x18 below a vertical boundary derived from the 0 through 30 progress step. |
 | `ui_skill_inventory_activate` | `0x004992F0` | high | Blocks activation while SActionDelay flag +0x322 or unresolved state +0x323 is set, then sends any configured skill text and reaches the CUseSkill sender. |
 | `ui_skill_is_denied` | `0x004994C0` | high | Looks up the skill name in DeniedItemList mode 1 before CUseSkill construction; a match suppresses the packet. |
 | `ui_skill_item_clear_action_delay` | `0x00499570` | high | Clears SkillInvItemPane +0x322 and invalidates the item rectangle. |
 | `ui_skill_item_set_action_delay` | `0x004995A0` | high | Sets SkillInvItemPane +0x322 to one and invalidates the item rectangle. |
 | `ui_parse_skill_spell_level_suffix` | `0x00499660` | high | Scans backward for a space plus parenthesized slash pair, parses the two sides with atoi, and returns the base-name split position; it does not test the literal Lev label. |
+| `ui_dragged_skill_inventory_item_pane_ctor` | `0x00499B40` | high | Constructs exact RTTI class DraggedSkillInvItemPane from a source SkillInvItemPane. |
+| `ui_dragged_skill_inventory_item_create_preview` | `0x00499B80` | high | Creates and attaches a SkillInvItemPane preview at the source skill's world-root-relative rectangle. |
+| `ui_dragged_skill_inventory_item_dispatch_drop` | `0x00499D60` | high | Dispatches a dragged-skill record to the selected pane target and preserves the global dragged pane when unconsumed. |
 | `ui_spell_inventory_item_ctor` | `0x00499DE0` | high | Constructs exact RTTI class SpellInvItemPane and retains slot, icon, argument type, 128-byte name and prompt buffers, and cast_lines. |
 | `ui_spell_inventory_item_get_base_name` | `0x00499F30` | high | Copies the retained spell name only through the suffix split position and appends a NUL terminator. |
+| `ui_spell_inventory_item_get_display_name` | `0x00499F80` | high | Copies the full SpellInvItemPane display name into the caller's bounded buffer. |
 | `ui_spell_inventory_item_handle_pointer_event` | `0x00499FB0` | high | Spell item pointer handler checks complete-object offset +0x297 and blocks drag start, activation, and information actions while action-delayed. |
+| `ui_spell_inventory_item_pointer_case_1_blocked` | `0x0049A134` | high | Compiler-split pointer-event type 1 branch that returns false outside the pane or while the spell is action-delayed. |
+| `ui_spell_inventory_item_pointer_case_2_blocked` | `0x0049A1B0` | high | Compiler-split pointer-event type 2 branch that returns false outside the pane or while the spell is action-delayed. |
+| `ui_spell_inventory_item_pointer_case_6_blocked` | `0x0049A365` | high | Compiler-split pointer-event type 6 branch that returns false outside the pane or while the spell is action-delayed. |
+| `ui_spell_inventory_item_pointer_return_false` | `0x0049A371` | high | Compiler-split common false-return block for SpellInvItemPane pointer-event handling. |
+| `ui_spell_inventory_item_pointer_epilogue` | `0x0049A377` | high | Shared SEH and stack-cookie epilogue for the compiler-split SpellInvItemPane pointer-event handler. |
+| `ui_spell_inventory_item_handle_target_timer` | `0x0049A3B0` | high | TimerHandler callback that resolves a selected world target and builds the targeted CUseSpell body. |
 | `ui_spell_inventory_item_draw` | `0x0049A420` | high | Draws the spell icon and applies palette index 0x58 across the complete icon while action_delay_active is set. |
 | `ui_spell_begin_target_selection` | `0x0049A4E0` | high | Handles spell argument type 2 by creating a DraggedSpellInvItemPane for target selection. |
 | `ui_spell_inventory_activate` | `0x0049A670` | high | Blocks activation while SActionDelay flag +0x297 is one, then dispatches SpellInvItemPane argument types 1 through 7; type 8 is not handled in this switch. |
 | `ui_spell_open_string_input` | `0x0049A720` | high | Handles spell argument type 1 by opening RTTI class StringSpellInputPane with the SAddSpell prompt. |
+| `ui_spell_inventory_item_send_no_args` | `0x0049A930` | high | Spell-input-type wrapper that builds the two-byte no-argument CUseSpell body. |
 | `ui_spell_open_number_inputs` | `0x0049A950` | high | Opens NumberArgsSpellInputPane for one through four numeric values selected by spell argument types 7, 6, 4, and 3. |
 | `ui_spell_is_denied` | `0x0049AC90` | high | Looks up the spell name in DeniedItemList mode 2 before any cast delay starts; a match suppresses the cast. |
 | `ui_spell_item_clear_action_delay` | `0x0049AE10` | high | Clears SpellInvItemPane +0x297 and invalidates the item rectangle. |
 | `ui_spell_item_set_action_delay` | `0x0049AE40` | high | Sets SpellInvItemPane +0x297 to one and invalidates the item rectangle. |
+| `ui_dragged_spell_inventory_item_pane_ctor` | `0x0049AE70` | high | Constructs exact RTTI class DraggedSpellInvItemPane and retains its target-selection mode flag. |
+| `ui_dragged_spell_inventory_item_create_preview` | `0x0049AEC0` | high | Creates and attaches a SpellInvItemPane preview at the source spell's world-root-relative rectangle. |
 | `ui_spell_text_input_submit` | `0x0049B190` | high | Builds the CUseSpell text form as opcode, slot, and unprefixed raw text bytes after a nonempty input is submitted. |
 | `ui_spell_numeric_input_submit` | `0x0049B380` | high | Builds the numeric CUseSpell form as opcode, slot, and one through four big-endian u16 values selected by spell argument type. |
 | `ui_spell_delay_control_pane_ctor` | `0x0049B6F0` | high | Constructs the exact RTTI class SpellDelayControlPane, allocates its 0x8C98-byte object, and initializes cast_active at +0x8C94 to zero. |
@@ -2090,6 +2109,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_drop_gold` | `0x004975C0` | high | Parses a nonzero amount and builds CDropGold as opcode 0x24, u32 amount, u16 X, and u16 Y. |
 | `net_send_give_gold` | `0x00497B10` | high | Parses a nonzero amount and builds the 9-byte CGiveGold body as opcode 0x2A, u32 amount, and u32 living target object ID. |
 | `net_send_get_from_map_item_pane` | `0x00498550` | high | Builds CGet as opcode, destination slot, MapItem_Pane world X, and world Y. |
+| `net_send_skill_delay_say` | `0x00499330` | high | Loads the optional SkillBook.cfg line and sends CSpellDelaySay opcode 0x4E plus string8 text when nonempty. |
 | `net_send_use_skill` | `0x00499420` | high | Builds CUseSkill as opcode 0x3E followed by the one-byte slot retained from SAddSkill. |
 | `net_build_use_spell_target` | `0x0049AB60` | high | Builds CUseSpell as opcode, slot, u32 target ID, u16 X, and u16 Y, then queues the completed body for casting. |
 | `net_build_use_spell_no_args` | `0x0049AD40` | high | Builds the slot-only CUseSpell form and queues the completed two-byte body for casting. |
@@ -3213,6 +3233,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_read_image_metadata` | `0x0048B390` | high | Reads shared EPF metadata or dispatches SPF metadata parsing. |
 | `file_load_image_frame` | `0x0048B530` | high | Loads one EPF or SPF frame for the shared image library. |
 | `file_load_image_pixmap` | `0x0048BBC0` | high | Loads one image frame into a pixmap view and applies the EPF palette selector when required. |
+| `file_skill_book_name_equals` | `0x004995D0` | high | Compares two SkillBook.cfg name byte strings for equal length and exact byte equality. |
+| `file_load_skill_book_cast_text` | `0x004998B0` | high | Finds a suffix-stripped skill name in the character's SkillBook.cfg and copies its configured cast text into SkillInvItemPane. |
+| `file_read_skill_book_line` | `0x00499AB0` | high | Reads one SkillBook.cfg line through LF, CRLF, EOF, or error and appends a NUL terminator. |
 | `file_decode_jpeg_to_rgb16` | `0x004A1840` | high | Uses bundled IJG version 62 to decode an in-memory JPEG to renderer-native 16-bit pixels and returns its width and height. |
 | `file_write_jpeg_from_rgb16` | `0x004A1AF0` | high | Converts RGB555 or RGB565 source pixels to RGB triples and writes JFIF with IJG defaults: quality 75 and 4:2:0 sampling. |
 | `file_load_message_table` | `0x004A4AA0` | high | Loads the line-oriented msg.tbl data from an archive or loose file. |

@@ -146,6 +146,8 @@ Skill:<configured line>
 
 When a skill passes its local activation checks, `SkillInvItemPane` loads the matching line. A nonempty value is sent once through `CSpellDelaySay` immediately before [`CUseSkill`](../network/client/062-0x3e-use-skill.md). This is separate from the server-controlled slot lock described in [Skill and spell action delays](../systems/action-delays.md).
 
+The lookup strips the trailing parenthesized level pair from the live skill name and compares the remaining bytes exactly with each section name. The configured line is truncated to 32 bytes with the same DBCS-safe boundary rule used elsewhere in the client. Both LF and CRLF line endings are accepted.
+
 ### Family and friend lists
 
 `Familylist.cfg` and `Friendlist.cfg` each contain exactly twenty lines. Each line is one character name, and unused entries are blank. The client keeps each entry in a 40-byte runtime slot, so a compatible file should keep a name within 39 bytes plus its terminating zero.

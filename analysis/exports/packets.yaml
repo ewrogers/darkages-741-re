@@ -1871,10 +1871,38 @@ functions:
     name: ui_skill_inventory_item_ctor
     confidence: high
     evidence: "Constructs exact RTTI class SkillInvItemPane and retains the SAddSkill icon, name, and one-based slot."
+  - address: "0x00498EC4"
+    name: ui_skill_inventory_item_pointer_case_1_blocked
+    confidence: high
+    evidence: "Compiler-split pointer-event type 1 branch that returns false outside the pane or while the skill is action-delayed."
+  - address: "0x00498F40"
+    name: ui_skill_inventory_item_pointer_case_2_blocked
+    confidence: high
+    evidence: "Compiler-split pointer-event type 2 branch that returns false outside the pane or while the skill is action-delayed."
+  - address: "0x0049915F"
+    name: ui_skill_inventory_item_pointer_case_4_blocked
+    confidence: high
+    evidence: "Compiler-split pointer-event type 4 branch that returns false outside the pane or while the skill is action-delayed."
+  - address: "0x0049916B"
+    name: ui_skill_inventory_item_pointer_return_false
+    confidence: high
+    evidence: "Compiler-split common false-return block for SkillInvItemPane pointer-event handling."
+  - address: "0x0049916F"
+    name: ui_skill_inventory_item_pointer_destroy_drag_preview
+    confidence: high
+    evidence: "Compiler-split cleanup block that destroys an unattached DraggedSkillInvItemPane preview and returns true."
+  - address: "0x0049919D"
+    name: ui_skill_inventory_item_pointer_epilogue
+    confidence: high
+    evidence: "Shared SEH and stack-cookie epilogue for the compiler-split SkillInvItemPane pointer-event handler."
   - address: "0x004992F0"
     name: ui_skill_inventory_activate
     confidence: high
     evidence: "Blocks activation while SActionDelay flag +0x322 or unresolved state +0x323 is set, then sends any configured skill text and reaches the CUseSkill sender."
+  - address: "0x00499330"
+    name: net_send_skill_delay_say
+    confidence: high
+    evidence: "Loads the optional SkillBook.cfg line and sends CSpellDelaySay opcode 0x4E plus string8 text when nonempty."
   - address: "0x00499420"
     name: net_send_use_skill
     confidence: high
@@ -1883,10 +1911,62 @@ functions:
     name: ui_skill_is_denied
     confidence: high
     evidence: "Looks up the skill name in DeniedItemList mode 1 before CUseSkill construction; a match suppresses the packet."
+  - address: "0x004995D0"
+    name: file_skill_book_name_equals
+    confidence: high
+    evidence: "Compares two SkillBook.cfg name byte strings for equal length and exact byte equality."
+  - address: "0x004998B0"
+    name: file_load_skill_book_cast_text
+    confidence: high
+    evidence: "Finds a suffix-stripped skill name in the character's SkillBook.cfg and copies its configured cast text into SkillInvItemPane."
+  - address: "0x00499AB0"
+    name: file_read_skill_book_line
+    confidence: high
+    evidence: "Reads one SkillBook.cfg line through LF, CRLF, EOF, or error and appends a NUL terminator."
+  - address: "0x00499B40"
+    name: ui_dragged_skill_inventory_item_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class DraggedSkillInvItemPane from a source SkillInvItemPane."
+  - address: "0x00499B80"
+    name: ui_dragged_skill_inventory_item_create_preview
+    confidence: high
+    evidence: "Creates and attaches a SkillInvItemPane preview at the source skill's world-root-relative rectangle."
+  - address: "0x00499D60"
+    name: ui_dragged_skill_inventory_item_dispatch_drop
+    confidence: high
+    evidence: "Dispatches a dragged-skill record to the selected pane target and preserves the global dragged pane when unconsumed."
   - address: "0x00499DE0"
     name: ui_spell_inventory_item_ctor
     confidence: high
     evidence: "Constructs exact RTTI class SpellInvItemPane and retains slot, icon, argument type, 128-byte name and prompt buffers, and cast_lines."
+  - address: "0x00499F80"
+    name: ui_spell_inventory_item_get_display_name
+    confidence: high
+    evidence: "Copies the full SpellInvItemPane display name into the caller's bounded buffer."
+  - address: "0x0049A134"
+    name: ui_spell_inventory_item_pointer_case_1_blocked
+    confidence: high
+    evidence: "Compiler-split pointer-event type 1 branch that returns false outside the pane or while the spell is action-delayed."
+  - address: "0x0049A1B0"
+    name: ui_spell_inventory_item_pointer_case_2_blocked
+    confidence: high
+    evidence: "Compiler-split pointer-event type 2 branch that returns false outside the pane or while the spell is action-delayed."
+  - address: "0x0049A365"
+    name: ui_spell_inventory_item_pointer_case_6_blocked
+    confidence: high
+    evidence: "Compiler-split pointer-event type 6 branch that returns false outside the pane or while the spell is action-delayed."
+  - address: "0x0049A371"
+    name: ui_spell_inventory_item_pointer_return_false
+    confidence: high
+    evidence: "Compiler-split common false-return block for SpellInvItemPane pointer-event handling."
+  - address: "0x0049A377"
+    name: ui_spell_inventory_item_pointer_epilogue
+    confidence: high
+    evidence: "Shared SEH and stack-cookie epilogue for the compiler-split SpellInvItemPane pointer-event handler."
+  - address: "0x0049A3B0"
+    name: ui_spell_inventory_item_handle_target_timer
+    confidence: high
+    evidence: "TimerHandler callback that resolves a selected world target and builds the targeted CUseSpell body."
   - address: "0x0049A4E0"
     name: ui_spell_begin_target_selection
     confidence: high
@@ -1899,6 +1979,10 @@ functions:
     name: ui_spell_open_string_input
     confidence: high
     evidence: "Handles spell argument type 1 by opening RTTI class StringSpellInputPane with the SAddSpell prompt."
+  - address: "0x0049A930"
+    name: ui_spell_inventory_item_send_no_args
+    confidence: high
+    evidence: "Spell-input-type wrapper that builds the two-byte no-argument CUseSpell body."
   - address: "0x0049A950"
     name: ui_spell_open_number_inputs
     confidence: high
@@ -1915,6 +1999,14 @@ functions:
     name: net_build_use_spell_no_args
     confidence: high
     evidence: "Builds the slot-only CUseSpell form and queues the completed two-byte body for casting."
+  - address: "0x0049AE70"
+    name: ui_dragged_spell_inventory_item_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class DraggedSpellInvItemPane and retains its target-selection mode flag."
+  - address: "0x0049AEC0"
+    name: ui_dragged_spell_inventory_item_create_preview
+    confidence: high
+    evidence: "Creates and attaches a SpellInvItemPane preview at the source spell's world-root-relative rectangle."
   - address: "0x0049B190"
     name: ui_spell_text_input_submit
     confidence: high
