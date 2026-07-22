@@ -178,6 +178,12 @@ This makes a pane similar to a small game-engine node with its own surface. Layo
 
 RTTI exposes a large family of pane classes, including dialogs, controls, lists, world panes, overlays, and tabs. The inheritance data proves class relationships, but it does not prove which panes are alive at a given moment.
 
+### Destruction paths
+
+One pane class can have three destruction functions. The ordinary destructor releases owned controls, vectors, files, or child panes. Its MSVC scalar-deleting destructor then optionally frees the complete allocation. A second deleting-destructor entry belongs to the embedded `TimerHandler` base and first subtracts `0x11C` from `this` before reaching the complete object.
+
+This pattern is confirmed across the session information panes, including legend, spell and skill, event, world-map, album, monster, town, help, keyboard, and GUI views. The adjusted entry is not a second object lifetime. It exists because a virtual call through `TimerHandler` receives a pointer to that secondary subobject.
+
 ```text
 LObject
   +-- Canvas

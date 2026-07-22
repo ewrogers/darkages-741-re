@@ -1,0 +1,269 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x005147B0"
+    name: ui_session_layered_tab_pane_dtor
+    confidence: high
+    evidence: "Restores exact RTTI SessionLayeredTabPane primary and TimerHandler vtables, then destroys LayeredTabPane."
+  - address: "0x00516260"
+    name: ui_legend_info_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI LegendInfoPane, queues its child panes, releases retained record containers, and destroys SessionLayeredTabPane."
+  - address: "0x005177E0"
+    name: ui_spell_skill_info_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI SpellSkillInfoPane, releases its owned view and three record containers, and destroys SessionLayeredTabPane."
+  - address: "0x00518330"
+    name: ui_spell_skill_view_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI SpellSkillViewPane, releases its owned record vector, and destroys Pane."
+  - address: "0x005197C0"
+    name: ui_spell_skill_property_pane_dtor
+    confidence: high
+    evidence: "Restores exact RTTI SpellSkillPropertyPane primary and TimerHandler vtables, then destroys DialogPane."
+  - address: "0x00519A50"
+    name: ui_event_info_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI EventInfoPane, releases its owned view and seven record containers, and destroys SessionLayeredTabPane."
+  - address: "0x00519E90"
+    name: ui_event_view_pane_dtor
+    confidence: high
+    evidence: "Restores exact RTTI EventViewPane primary and TimerHandler vtables, then destroys DialogPane."
+  - address: "0x0051A570"
+    name: ui_event_list_pane_dtor
+    confidence: high
+    evidence: "Restores exact RTTI EventListPane primary and TimerHandler vtables, then destroys ListPane."
+  - address: "0x0051A820"
+    name: ui_world_map_info_pane_dtor
+    confidence: high
+    evidence: "Restores exact RTTI WorldMapInfoPane primary and TimerHandler vtables, then destroys Pane."
+  - address: "0x0051A940"
+    name: ui_world_map_info_normal_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI WorldMapInfo_Normal_Pane record containers, then destroys WorldMapInfoPane."
+  - address: "0x0051B150"
+    name: ui_world_map_image_pane_dtor
+    confidence: high
+    evidence: "Restores exact RTTI WorldMapImagePane primary and TimerHandler vtables, then destroys Pane."
+  - address: "0x0051B900"
+    name: ui_world_map_info_da_pane_dtor
+    confidence: high
+    evidence: "Restores exact RTTI WorldMapInfo_DA_Pane primary and TimerHandler vtables, then destroys WorldMapInfoPane."
+  - address: "0x0051BD40"
+    name: ui_album_info_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI AlbumInfoPane, releases its owned child object, and destroys Pane."
+  - address: "0x0051C570"
+    name: ui_album_view_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI AlbumViewPane, closes and releases its open album object, and destroys ScrollablePane."
+  - address: "0x0051F430"
+    name: ui_monster_info_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI MonsterInfoPane, releases its thirteen record slots, and destroys DialogPane."
+  - address: "0x0051FBB0"
+    name: ui_monster_list_pane_dtor
+    confidence: high
+    evidence: "Restores exact RTTI MonsterListPane primary and TimerHandler vtables, then destroys ListPane."
+  - address: "0x00520670"
+    name: ui_town_info_pane_dtor
+    confidence: high
+    evidence: "Restores exact RTTI TownInfoPane primary and TimerHandler vtables, then destroys DialogPane."
+  - address: "0x00520CA0"
+    name: ui_new_world_map_info_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI NewWorldMapInfoPane and its owned child pane, then destroys SessionLayeredTabPane."
+  - address: "0x00521020"
+    name: ui_help_info_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI HelpInfoPane and its two owned child panes, then destroys SessionLayeredTabPane."
+  - address: "0x005217C0"
+    name: ui_keyboard_info_pane_dtor
+    confidence: high
+    evidence: "Restores exact RTTI KeyboardInfoPane primary and TimerHandler vtables, then destroys Pane."
+  - address: "0x005220E0"
+    name: ui_gui_info_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI GUIInfoPane and its owned object vectors, then destroys Pane."
+  - address: "0x00523080"
+    name: ui_session_layered_tab_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys SessionLayeredTabPane and conditionally frees the complete object."
+  - address: "0x005230B0"
+    name: ui_legend_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys LegendInfoPane and conditionally frees the complete object."
+  - address: "0x005230E0"
+    name: ui_spell_skill_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys SpellSkillInfoPane and conditionally frees the complete object."
+  - address: "0x00523110"
+    name: ui_spell_skill_view_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys SpellSkillViewPane and conditionally frees the complete object."
+  - address: "0x00523140"
+    name: ui_spell_skill_property_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys SpellSkillPropertyPane and conditionally frees the complete object."
+  - address: "0x00523170"
+    name: ui_event_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys EventInfoPane and conditionally frees the complete object."
+  - address: "0x005231A0"
+    name: ui_event_view_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys EventViewPane and conditionally frees the complete object."
+  - address: "0x005231D0"
+    name: ui_event_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys EventListPane and conditionally frees the complete object."
+  - address: "0x00523200"
+    name: ui_world_map_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys WorldMapInfoPane and conditionally frees the complete object."
+  - address: "0x00523230"
+    name: ui_world_map_info_normal_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys WorldMapInfo_Normal_Pane and conditionally frees the complete object."
+  - address: "0x00523260"
+    name: ui_world_map_image_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys WorldMapImagePane and conditionally frees the complete object."
+  - address: "0x00523290"
+    name: ui_world_map_info_da_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys WorldMapInfo_DA_Pane and conditionally frees the complete object."
+  - address: "0x005232C0"
+    name: ui_album_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys AlbumInfoPane and conditionally frees the complete object."
+  - address: "0x005232F0"
+    name: ui_album_view_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys AlbumViewPane and conditionally frees the complete object."
+  - address: "0x00523320"
+    name: ui_dragged_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys DraggedPane and conditionally frees the complete object."
+  - address: "0x00523350"
+    name: ui_monster_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys MonsterInfoPane and conditionally frees the complete object."
+  - address: "0x00523490"
+    name: ui_monster_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys MonsterListPane and conditionally frees the complete object."
+  - address: "0x005234C0"
+    name: ui_town_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys TownInfoPane and conditionally frees the complete object."
+  - address: "0x005234F0"
+    name: ui_new_world_map_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys NewWorldMapInfoPane and conditionally frees the complete object."
+  - address: "0x00523520"
+    name: ui_help_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys HelpInfoPane and conditionally frees the complete object."
+  - address: "0x00523560"
+    name: ui_keyboard_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys KeyboardInfoPane and conditionally frees the complete object."
+  - address: "0x00523590"
+    name: ui_gui_info_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Destroys GUIInfoPane and conditionally frees the complete object."
+  - address: "0x00528280"
+    name: ui_event_list_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts EventListPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528290"
+    name: ui_help_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts HelpInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x005282A0"
+    name: ui_monster_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts MonsterInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x005282B0"
+    name: ui_album_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts AlbumInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x005282C0"
+    name: ui_world_map_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts WorldMapInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x005282D0"
+    name: ui_new_world_map_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts NewWorldMapInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x005282E0"
+    name: ui_world_map_image_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts WorldMapImagePane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x005282F0"
+    name: ui_gui_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts GUIInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528300"
+    name: ui_event_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts EventInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528310"
+    name: ui_legend_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts LegendInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528320"
+    name: ui_town_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TownInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528330"
+    name: ui_dragged_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts DraggedPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528340"
+    name: ui_spell_skill_property_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts SpellSkillPropertyPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528350"
+    name: ui_keyboard_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts KeyboardInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528360"
+    name: ui_world_map_info_da_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts WorldMapInfo_DA_Pane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528370"
+    name: ui_session_layered_tab_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts SessionLayeredTabPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528380"
+    name: ui_event_view_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts EventViewPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x00528390"
+    name: ui_monster_list_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts MonsterListPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x005283A0"
+    name: ui_spell_skill_info_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts SpellSkillInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x005283B0"
+    name: ui_world_map_info_normal_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts WorldMapInfo_Normal_Pane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x005283C0"
+    name: ui_album_view_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts AlbumViewPane TimerHandler this by -0x11C and tail-calls its deleting destructor."
+  - address: "0x005283D0"
+    name: ui_spell_skill_view_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts SpellSkillViewPane TimerHandler this by -0x11C and tail-calls its deleting destructor."

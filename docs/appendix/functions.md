@@ -2384,31 +2384,96 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_group_ad_pane_apply_self_look` | `0x00513E80` | high | Builds GroupAdPane's recruiting model from SSelfLook; it copies name and note but omits the already-parsed leader string. |
 | `ui_group_ad_info_dialog_handle_action` | `0x005140C0` | high | Routes GroupAdInfoDialogPane's join control to CGroup action 7 and then closes the dialog. |
 | `ui_group_ad_show_recruit_info` | `0x00514230` | high | Converts SGroup action 4 into the recruiting UI model, preserving five maximum/current class pairs and summing both columns. |
+| `ui_session_layered_tab_pane_dtor` | `0x005147B0` | high | Restores exact RTTI SessionLayeredTabPane primary and TimerHandler vtables, then destroys LayeredTabPane. |
 | `ui_legend_info_pane_ctor` | `0x00515AB0` | high | Constructs the older local legend window and its class ability and seven event-category views. |
+| `ui_legend_info_pane_dtor` | `0x00516260` | high | Destroys exact RTTI LegendInfoPane, queues its child panes, releases retained record containers, and destroys SessionLayeredTabPane. |
 | `ui_legend_info_apply_class_metadata` | `0x005166E0` | high | Applies parsed SClass records to the older skill and spell tabs. |
 | `ui_legend_info_apply_event_metadata` | `0x005168E0` | high | Applies one parsed SEvent table to the matching older event category. |
 | `ui_legend_info_timer` | `0x00516980` | high | Requests the active SClass table and all seven SEvent tables for the older legend window. |
+| `ui_spell_skill_info_pane_dtor` | `0x005177E0` | high | Destroys exact RTTI SpellSkillInfoPane, releases its owned view and three record containers, and destroys SessionLayeredTabPane. |
+| `ui_spell_skill_view_pane_dtor` | `0x00518330` | high | Destroys exact RTTI SpellSkillViewPane, releases its owned record vector, and destroys Pane. |
 | `ui_spell_skill_view_draw` | `0x005184A0` | high | Draws learned, available, or locked ability rows with the matching numbered icon bank. |
 | `ui_spell_skill_property_dialog_ctor` | `0x005191E0` | high | Builds the older ability detail pane and colors satisfied and failed requirements differently. |
+| `ui_spell_skill_property_pane_dtor` | `0x005197C0` | high | Restores exact RTTI SpellSkillPropertyPane primary and TimerHandler vtables, then destroys DialogPane. |
+| `ui_event_info_pane_dtor` | `0x00519A50` | high | Destroys exact RTTI EventInfoPane, releases its owned view and seven record containers, and destroys SessionLayeredTabPane. |
 | `ui_event_info_set_category_records` | `0x00519C40` | high | Assigns an SEvent record set to one of the older legend window event categories. |
+| `ui_event_view_pane_dtor` | `0x00519E90` | high | Restores exact RTTI EventViewPane primary and TimerHandler vtables, then destroys DialogPane. |
 | `ui_event_info_rebuild_category` | `0x00519EC0` | high | Rebuilds older event rows using completion, qualification, and prerequisite checks. |
+| `ui_event_list_pane_dtor` | `0x0051A570` | high | Restores exact RTTI EventListPane primary and TimerHandler vtables, then destroys ListPane. |
+| `ui_world_map_info_pane_dtor` | `0x0051A820` | high | Restores exact RTTI WorldMapInfoPane primary and TimerHandler vtables, then destroys Pane. |
+| `ui_world_map_info_normal_pane_dtor` | `0x0051A940` | high | Destroys exact RTTI WorldMapInfo_Normal_Pane record containers, then destroys WorldMapInfoPane. |
+| `ui_world_map_image_pane_dtor` | `0x0051B150` | high | Restores exact RTTI WorldMapImagePane primary and TimerHandler vtables, then destroys Pane. |
+| `ui_world_map_info_da_pane_dtor` | `0x0051B900` | high | Restores exact RTTI WorldMapInfo_DA_Pane primary and TimerHandler vtables, then destroys WorldMapInfoPane. |
 | `ui_album_info_pane_ctor` | `0x0051BC70` | high | Constructs exact RTTI AlbumInfoPane and owns one AlbumViewPane. |
+| `ui_album_info_pane_dtor` | `0x0051BD40` | high | Destroys exact RTTI AlbumInfoPane, releases its owned child object, and destroys Pane. |
 | `ui_album_view_pane_ctor` | `0x0051BFA0` | high | Constructs exact RTTI AlbumViewPane from llalbum.txt with Portrait, Del, and Save regions and an AlbumFile owner. |
+| `ui_album_view_pane_dtor` | `0x0051C570` | high | Destroys exact RTTI AlbumViewPane, closes and releases its open album object, and destroys ScrollablePane. |
 | `ui_album_view_reload` | `0x0051C630` | high | Reloads the active character's album.dat through the AlbumViewPane AlbumFile object and invalidates the pane. |
 | `ui_album_view_handle_action` | `0x0051D100` | high | Handles legacy album remove, save, and move confirmation events 0x1000 through 0x1003. |
 | `ui_album_view_remove_portrait` | `0x0051EA20` | high | Clears the selected legacy album record, rewrites album.dat, and reloads the pane. |
 | `ui_album_view_export_portrait_jpeg` | `0x0051EA70` | high | Legacy Save composites one album portrait and always writes the extensionless character portrait through the shared JFIF writer. |
 | `ui_album_view_move_portrait` | `0x0051EEC0` | high | Moves a legacy album record, rewrites album.dat, and reloads the pane. |
+| `ui_monster_info_pane_dtor` | `0x0051F430` | high | Destroys exact RTTI MonsterInfoPane, releases its thirteen record slots, and destroys DialogPane. |
+| `ui_monster_list_pane_dtor` | `0x0051FBB0` | high | Restores exact RTTI MonsterListPane primary and TimerHandler vtables, then destroys ListPane. |
+| `ui_town_info_pane_dtor` | `0x00520670` | high | Restores exact RTTI TownInfoPane primary and TimerHandler vtables, then destroys DialogPane. |
+| `ui_new_world_map_info_pane_dtor` | `0x00520CA0` | high | Destroys exact RTTI NewWorldMapInfoPane and its owned child pane, then destroys SessionLayeredTabPane. |
+| `ui_help_info_pane_dtor` | `0x00521020` | high | Destroys exact RTTI HelpInfoPane and its two owned child panes, then destroys SessionLayeredTabPane. |
+| `ui_keyboard_info_pane_dtor` | `0x005217C0` | high | Restores exact RTTI KeyboardInfoPane primary and TimerHandler vtables, then destroys Pane. |
+| `ui_gui_info_pane_dtor` | `0x005220E0` | high | Destroys exact RTTI GUIInfoPane and its owned object vectors, then destroys Pane. |
+| `ui_session_layered_tab_pane_scalar_deleting_dtor` | `0x00523080` | high | Destroys SessionLayeredTabPane and conditionally frees the complete object. |
+| `ui_legend_info_pane_scalar_deleting_dtor` | `0x005230B0` | high | Destroys LegendInfoPane and conditionally frees the complete object. |
+| `ui_spell_skill_info_pane_scalar_deleting_dtor` | `0x005230E0` | high | Destroys SpellSkillInfoPane and conditionally frees the complete object. |
+| `ui_spell_skill_view_pane_scalar_deleting_dtor` | `0x00523110` | high | Destroys SpellSkillViewPane and conditionally frees the complete object. |
+| `ui_spell_skill_property_pane_scalar_deleting_dtor` | `0x00523140` | high | Destroys SpellSkillPropertyPane and conditionally frees the complete object. |
+| `ui_event_info_pane_scalar_deleting_dtor` | `0x00523170` | high | Destroys EventInfoPane and conditionally frees the complete object. |
+| `ui_event_view_pane_scalar_deleting_dtor` | `0x005231A0` | high | Destroys EventViewPane and conditionally frees the complete object. |
+| `ui_event_list_pane_scalar_deleting_dtor` | `0x005231D0` | high | Destroys EventListPane and conditionally frees the complete object. |
+| `ui_world_map_info_pane_scalar_deleting_dtor` | `0x00523200` | high | Destroys WorldMapInfoPane and conditionally frees the complete object. |
+| `ui_world_map_info_normal_pane_scalar_deleting_dtor` | `0x00523230` | high | Destroys WorldMapInfo_Normal_Pane and conditionally frees the complete object. |
+| `ui_world_map_image_pane_scalar_deleting_dtor` | `0x00523260` | high | Destroys WorldMapImagePane and conditionally frees the complete object. |
+| `ui_world_map_info_da_pane_scalar_deleting_dtor` | `0x00523290` | high | Destroys WorldMapInfo_DA_Pane and conditionally frees the complete object. |
+| `ui_album_info_pane_scalar_deleting_dtor` | `0x005232C0` | high | Destroys AlbumInfoPane and conditionally frees the complete object. |
+| `ui_album_view_pane_scalar_deleting_dtor` | `0x005232F0` | high | Destroys AlbumViewPane and conditionally frees the complete object. |
+| `ui_dragged_pane_scalar_deleting_dtor` | `0x00523320` | high | Destroys DraggedPane and conditionally frees the complete object. |
+| `ui_monster_info_pane_scalar_deleting_dtor` | `0x00523350` | high | Destroys MonsterInfoPane and conditionally frees the complete object. |
+| `ui_monster_list_pane_scalar_deleting_dtor` | `0x00523490` | high | Destroys MonsterListPane and conditionally frees the complete object. |
+| `ui_town_info_pane_scalar_deleting_dtor` | `0x005234C0` | high | Destroys TownInfoPane and conditionally frees the complete object. |
+| `ui_new_world_map_info_pane_scalar_deleting_dtor` | `0x005234F0` | high | Destroys NewWorldMapInfoPane and conditionally frees the complete object. |
+| `ui_help_info_pane_scalar_deleting_dtor` | `0x00523520` | high | Destroys HelpInfoPane and conditionally frees the complete object. |
+| `ui_keyboard_info_pane_scalar_deleting_dtor` | `0x00523560` | high | Destroys KeyboardInfoPane and conditionally frees the complete object. |
+| `ui_gui_info_pane_scalar_deleting_dtor` | `0x00523590` | high | Destroys GUIInfoPane and conditionally frees the complete object. |
+| `ui_event_list_pane_timer_scalar_deleting_dtor_thunk` | `0x00528280` | high | Adjusts EventListPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_help_info_pane_timer_scalar_deleting_dtor_thunk` | `0x00528290` | high | Adjusts HelpInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_monster_info_pane_timer_scalar_deleting_dtor_thunk` | `0x005282A0` | high | Adjusts MonsterInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_album_info_pane_timer_scalar_deleting_dtor_thunk` | `0x005282B0` | high | Adjusts AlbumInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_world_map_info_pane_timer_scalar_deleting_dtor_thunk` | `0x005282C0` | high | Adjusts WorldMapInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_new_world_map_info_pane_timer_scalar_deleting_dtor_thunk` | `0x005282D0` | high | Adjusts NewWorldMapInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_world_map_image_pane_timer_scalar_deleting_dtor_thunk` | `0x005282E0` | high | Adjusts WorldMapImagePane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_gui_info_pane_timer_scalar_deleting_dtor_thunk` | `0x005282F0` | high | Adjusts GUIInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_event_info_pane_timer_scalar_deleting_dtor_thunk` | `0x00528300` | high | Adjusts EventInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_legend_info_pane_timer_scalar_deleting_dtor_thunk` | `0x00528310` | high | Adjusts LegendInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_town_info_pane_timer_scalar_deleting_dtor_thunk` | `0x00528320` | high | Adjusts TownInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_dragged_pane_timer_scalar_deleting_dtor_thunk` | `0x00528330` | high | Adjusts DraggedPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_spell_skill_property_pane_timer_scalar_deleting_dtor_thunk` | `0x00528340` | high | Adjusts SpellSkillPropertyPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_keyboard_info_pane_timer_scalar_deleting_dtor_thunk` | `0x00528350` | high | Adjusts KeyboardInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_world_map_info_da_pane_timer_scalar_deleting_dtor_thunk` | `0x00528360` | high | Adjusts WorldMapInfo_DA_Pane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_session_layered_tab_pane_timer_scalar_deleting_dtor_thunk` | `0x00528370` | high | Adjusts SessionLayeredTabPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_event_view_pane_timer_scalar_deleting_dtor_thunk` | `0x00528380` | high | Adjusts EventViewPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_monster_list_pane_timer_scalar_deleting_dtor_thunk` | `0x00528390` | high | Adjusts MonsterListPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_spell_skill_info_pane_timer_scalar_deleting_dtor_thunk` | `0x005283A0` | high | Adjusts SpellSkillInfoPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_world_map_info_normal_pane_timer_scalar_deleting_dtor_thunk` | `0x005283B0` | high | Adjusts WorldMapInfo_Normal_Pane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_album_view_pane_timer_scalar_deleting_dtor_thunk` | `0x005283C0` | high | Adjusts AlbumViewPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
+| `ui_spell_skill_view_pane_timer_scalar_deleting_dtor_thunk` | `0x005283D0` | high | Adjusts SpellSkillViewPane TimerHandler this by -0x11C and tail-calls its deleting destructor. |
 | `ui_new_patch_pane_ctor` | `0x005283E0` | high | Constructs RTTI class NewPatchPane from SVersionCheck subtype 2, parsing required version and u8-length file names before starting the patch handoff. |
 | `ui_new_patch_pane_dtor` | `0x005285E0` | high | Restores the NewPatchPane primary and TimerHandler vtables, then destroys its inherited Pane state. |
 | `ui_new_patch_pane_before_exit` | `0x005287F0` | high | Empty NewPatchPane hook called immediately before the pane is queued for destruction and the client exits. |
 | `ui_new_patch_pane_scalar_deleting_dtor` | `0x00528800` | high | Implements the complete-object MSVC scalar-deleting destructor contract for NewPatchPane. |
-| `ui_new_patch_pane_timer_scalar_deleting_dtor` | `0x00528830` | high | Adjusts TimerHandler this by -0x11C before tail-calling the complete-object deleting destructor. |
+| `ui_new_patch_pane_timer_scalar_deleting_dtor_thunk` | `0x00528830` | high | Adjusts TimerHandler this by -0x11C before tail-calling the complete-object deleting destructor. |
 | `ui_nexonclub_auth_alert_pane_ctor` | `0x00528B90` | high | Constructs exact RTTI NexonClubAuthAlertPane, registers its Singleton subobject, and retains its first control. |
 | `ui_nexonclub_auth_alert_pane_scalar_deleting_dtor` | `0x00528C40` | high | Unregisters the alert singleton, destroys inherited DialogPane state, and conditionally frees the complete object. |
 | `ui_nexonclub_auth_alert_register_singleton` | `0x00528D00` | high | Converts the Singleton subobject pointer to its complete alert pane and stores it as active. |
 | `ui_nexonclub_auth_alert_unregister_singleton` | `0x00528D40` | high | Clears the active NexonClubAuthAlertPane pointer when it matches the supplied Singleton subobject. |
-| `ui_nexonclub_auth_alert_timer_scalar_deleting_dtor` | `0x00528D80` | high | Adjusts TimerHandler this by -0x11C before tail-calling the alert's complete-object deleting destructor. |
+| `ui_nexonclub_auth_alert_timer_scalar_deleting_dtor_thunk` | `0x00528D80` | high | Adjusts TimerHandler this by -0x11C before tail-calling the alert's complete-object deleting destructor. |
 | `ui_nexonclub_dialog_ctor` | `0x00528D90` | high | Constructs exact RTTI NexonclubDialog for server message variant 9. |
 | `ui_nexonclub_dialog_dtor` | `0x00529070` | high | Restores the NexonclubDialog vtables and destroys its inherited DialogPane state. |
 | `ui_nexonclub_dialog_build_controls` | `0x005290A0` | high | Builds variant 9 with optional art, ID and masked password editors, navigation/submit controls, and account-registration button. |
@@ -2419,7 +2484,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_nexonclub_dialog_draw_segmented_frame` | `0x0052A8C0` | high | Draws the four-row segmented frame and fixed ID and Password labels. |
 | `ui_nexonclub_dialog_position_and_activate` | `0x0052AB20` | high | Sets submit as the default action, centers the dialog, and applies inherited pane activation. |
 | `ui_nexonclub_dialog_scalar_deleting_dtor` | `0x0052AC40` | high | Implements the complete-object MSVC scalar-deleting destructor contract for NexonclubDialog. |
-| `ui_nexonclub_dialog_timer_scalar_deleting_dtor` | `0x0052AC70` | high | Adjusts TimerHandler this by -0x11C before tail-calling the complete-object deleting destructor. |
+| `ui_nexonclub_dialog_timer_scalar_deleting_dtor_thunk` | `0x0052AC70` | high | Adjusts TimerHandler this by -0x11C before tail-calling the complete-object deleting destructor. |
 | `ui_npc_session_set_response_pending` | `0x0052C020` | high | Invokes the active NPC message pane's response-pending virtual after a merchant or pursuit response is queued; the pursuit implementation deactivates its nested answer pane, disables Previous and Next, and leaves Close available. |
 | `ui_npc_session_update_speaker_art` | `0x0052C480` | high | Loads the NPC illustration for the active packet fields or switches to NPCTilePane when lookup or decoding fails. |
 | `ui_npc_session_handle_network_event` | `0x0052C730` | high | Routes SScreenMenu 0x2F and SPursuitMessage 0x30 packet objects into their NPCSession update paths. |
