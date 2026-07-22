@@ -2274,6 +2274,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_client_spell_menu_dialog_scalar_deleting_dtor` | `0x004D90C0` | high | Compiler-generated scalar deleting destructor for exact RTTI ClientSpellMenuDialog. |
 | `ui_server_skill_menu_dialog_scalar_deleting_dtor` | `0x004D90F0` | high | Compiler-generated scalar deleting destructor for exact RTTI ServerSkillMenuDialog. |
 | `ui_client_skill_menu_dialog_scalar_deleting_dtor` | `0x004D9120` | high | Compiler-generated scalar deleting destructor for exact RTTI ClientSkillMenuDialog. |
+| `ui_merchant_face_menu_dialog_scalar_deleting_dtor` | `0x004D9150` | high | Compiler-generated scalar deleting destructor for exact RTTI FaceMenuDialog. |
 | `ui_user_shape_control_pane_scalar_deleting_dtor` | `0x004D9190` | high | Compiler-generated scalar deleting destructor for exact RTTI UserShapeControlPane. |
 | `ui_server_item_menu_dialog2_scalar_deleting_dtor` | `0x004D91C0` | high | Compiler-generated scalar deleting destructor for exact RTTI ServerItemMenuDialog2. |
 | `ui_item_category_vector_dtor_wrapper` | `0x004D91F0` | high | SEH-protected wrapper around destruction of the ServerItemMenuDialog3 category vector. |
@@ -2296,6 +2297,35 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_layout_value_vector_rotate_range` | `0x004D9D80` | high | Rotates a range of four-byte vector values using the greatest-common-divisor cycle algorithm. |
 | `ui_layout_value_vector_copy_ctor` | `0x004D9EA0` | high | Allocates and copy-constructs a shared four-byte layout/value vector. |
 | `ui_item_category_range_copy_ctor` | `0x004D9FE0` | high | Copy-constructs a range of 0xA0-byte item-category records into uninitialized storage. |
+| `ui_item_category_range_copy_ctor_unwind` | `0x004DA051` | high | Compiler unwind path that destroys already-constructed category records after a range-copy failure. |
+| `ui_item_category_record_swap` | `0x004DA0B0` | high | Swaps two 0xA0-byte category records, including their nested value vectors and remaining metadata. |
+| `ui_item_category_record_placement_copy_ctor` | `0x004DA250` | high | Placement-copy-constructs one category record with a deep copy of its nested value vector. |
+| `ui_layout_value_range_placement_copy_ctor` | `0x004DA300` | high | Placement-copy-constructs a range of four-byte layout/value records. |
+| `ui_layout_value_range_copy_ctor_unwind` | `0x004DA383` | high | Compiler unwind path for a failed four-byte value range copy. |
+| `ui_client_item_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA3E0` | high | Adjusts TimerHandler this by -0x11C and tail-calls ClientItemMenuDialog's scalar deleting destructor. |
+| `ui_server_item_menu_dialog2_timer_scalar_deleting_dtor_thunk` | `0x004DA3F0` | high | Adjusts TimerHandler this by -0x11C and tail-calls ServerItemMenuDialog2's scalar deleting destructor. |
+| `ui_task_list_pane_timer_scalar_deleting_dtor_thunk` | `0x004DA400` | high | Adjusts TimerHandler this by -0x11C and tail-calls TaskListPane's scalar deleting destructor. |
+| `ui_user_shape_control_pane_timer_scalar_deleting_dtor_thunk` | `0x004DA410` | high | Adjusts TimerHandler this by -0x11C and tail-calls UserShapeControlPane's scalar deleting destructor. |
+| `ui_merchant_face_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA420` | high | Adjusts TimerHandler this by -0x11C and tail-calls FaceMenuDialog's scalar deleting destructor. |
+| `ui_client_skill_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA430` | high | Adjusts TimerHandler this by -0x11C and tail-calls ClientSkillMenuDialog's scalar deleting destructor. |
+| `ui_server_skill_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA440` | high | Adjusts TimerHandler this by -0x11C and tail-calls ServerSkillMenuDialog's scalar deleting destructor. |
+| `ui_text_input_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA450` | high | Adjusts TimerHandler this by -0x11C and tail-calls TextInputMenuDialog's scalar deleting destructor. |
+| `ui_task_list_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA460` | high | Adjusts TimerHandler this by -0x11C and tail-calls TaskListDialog's scalar deleting destructor. |
+| `ui_argumented_text_menu_dialog_ex_timer_scalar_deleting_dtor_thunk` | `0x004DA470` | high | Adjusts TimerHandler this by -0x11C and tail-calls ArgumentedTextMenuDialogEx's scalar deleting destructor. |
+| `ui_merchant_dialog_pane_timer_scalar_deleting_dtor_thunk` | `0x004DA480` | high | Adjusts TimerHandler this by -0x11C and tail-calls MerchantDialogPane's scalar deleting destructor. |
+| `ui_merchant_session_timer_scalar_deleting_dtor_thunk` | `0x004DA490` | high | Adjusts TimerHandler this by -0x11C and tail-calls MerchantSession's scalar deleting destructor. |
+| `ui_item_buy_alert_pane_timer_scalar_deleting_dtor_thunk` | `0x004DA4A0` | high | Adjusts TimerHandler this by -0x11C and tail-calls ItemBuyAlertPane's scalar deleting destructor. |
+| `ui_server_item_menu_dialog3_timer_scalar_deleting_dtor_thunk` | `0x004DA4B0` | high | Adjusts TimerHandler this by -0x11C and tail-calls ServerItemMenuDialog3's scalar deleting destructor. |
+| `ui_item_list_new_timer_scalar_deleting_dtor_thunk` | `0x004DA4C0` | high | Adjusts TimerHandler this by -0x11C and tail-calls ItemListPane_New's scalar deleting destructor. |
+| `ui_text_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA4D0` | high | Adjusts TimerHandler this by -0x11C and tail-calls TextMenuDialog's scalar deleting destructor. |
+| `ui_text_menu_dialog_ex_timer_scalar_deleting_dtor_thunk` | `0x004DA4E0` | high | Adjusts TimerHandler this by -0x11C and tail-calls TextMenuDialogEx's scalar deleting destructor. |
+| `ui_argumented_text_menu_pane_timer_scalar_deleting_dtor_thunk` | `0x004DA4F0` | high | Adjusts TimerHandler this by -0x11C and tail-calls ArgumentedTextMenuPane's scalar deleting destructor. |
+| `ui_item_list_pane_timer_scalar_deleting_dtor_thunk` | `0x004DA500` | high | Adjusts TimerHandler this by -0x11C and tail-calls ItemListPane's scalar deleting destructor. |
+| `ui_argumented_text_input_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA510` | high | Adjusts TimerHandler this by -0x11C and tail-calls ArgumentedTextInputMenuDialog's scalar deleting destructor. |
+| `ui_server_spell_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA520` | high | Adjusts TimerHandler this by -0x11C and tail-calls ServerSpellMenuDialog's scalar deleting destructor. |
+| `ui_server_item_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA530` | high | Adjusts TimerHandler this by -0x11C and tail-calls ServerItemMenuDialog's scalar deleting destructor. |
+| `ui_client_spell_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA540` | high | Adjusts TimerHandler this by -0x11C and tail-calls ClientSpellMenuDialog's scalar deleting destructor. |
+| `ui_argumented_text_menu_dialog_timer_scalar_deleting_dtor_thunk` | `0x004DA550` | high | Adjusts TimerHandler this by -0x11C and tail-calls ArgumentedTextMenuDialog's scalar deleting destructor. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
 | `ui_find_farmpet_apply_mini_game_update` | `0x004EC3E0` | high | Consumes only SMiniGame action 7, matching its first u32 against two tracked IDs and storing the second u32 as the corresponding value. |
