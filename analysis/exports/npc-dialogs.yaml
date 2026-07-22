@@ -185,6 +185,66 @@ functions:
     name: ui_load_merchant_dialog_layouts
     confidence: high
     evidence: "Loads lmerc2, lmerc, and lmerd once and caches their pixmaps, control rectangles, segment sizes, and derived offsets."
+  - address: "0x004CD0F0"
+    name: ui_merchant_session_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI MerchantSession, loads merchant layouts, registers the full-screen pane, and dispatches an initial SScreenMenu body."
+  - address: "0x004CD230"
+    name: ui_merchant_session_dtor
+    confidence: high
+    evidence: "Closes the active merchant dialog, queues both retained dialog slots for deferred deletion, unregisters the pane, and destroys the base."
+  - address: "0x004CD330"
+    name: ui_merchant_session_close
+    confidence: high
+    evidence: "Queues MerchantSession for deferred pane deletion through BlackHole."
+  - address: "0x004CD400"
+    name: ui_merchant_session_get_primary_dialog
+    confidence: high
+    evidence: "Returns MerchantSession dialog slot zero."
+  - address: "0x004CD420"
+    name: ui_get_merchant_segmented_dialog_bounds
+    confidence: high
+    evidence: "Builds screen-relative bounds for the lmerc top, middle, and bottom segmented dialog."
+  - address: "0x004CD4F0"
+    name: ui_get_server_item_menu_dialog3_bounds
+    confidence: high
+    evidence: "Builds screen-relative bounds from the lmerc2 background and centers them vertically."
+  - address: "0x004CD5E0"
+    name: ui_get_merchant_detail_dialog_bounds
+    confidence: high
+    evidence: "Builds screen-relative bounds from the lmerd background and centers them vertically."
+  - address: "0x004CD6D0"
+    name: ui_get_merchant_session_default_bounds
+    confidence: medium
+    evidence: "Returns the fixed screen-relative merchant rectangle (20,160)-(420,480); no local caller reaches it."
+  - address: "0x004CD760"
+    name: ui_merchant_session_create_screen_dimmer
+    confidence: high
+    evidence: "Allocates a full-screen exact RTTI ScreenDimmer in mode 5 and retains it on MerchantSession."
+  - address: "0x004CD7F0"
+    name: ui_merchant_session_can_handle_network_event
+    confidence: high
+    evidence: "MerchantSession vtable predicate paired with its network-event handler; always returns true."
+  - address: "0x004CD800"
+    name: ui_merchant_session_handle_network_event
+    confidence: high
+    evidence: "Handles decoded payloads beginning with SScreenMenu opcode 0x2F or merchant-close opcode 0x30."
+  - address: "0x004CD880"
+    name: ui_merchant_session_get_dialog
+    confidence: high
+    evidence: "Returns one of two retained merchant dialog pointers by signed byte index."
+  - address: "0x004CD8A0"
+    name: ui_merchant_session_push_dialog
+    confidence: high
+    evidence: "Closes or defers the previous dialog, assigns one of two slots, records ownership, and activates the new merchant dialog."
+  - address: "0x004CD990"
+    name: ui_merchant_session_handle_close
+    confidence: high
+    evidence: "Queues MerchantSession for deferred deletion in response to merchant close opcode 0x30."
+  - address: "0x004CD9B0"
+    name: ui_merchant_session_dispatch_screen_menu
+    confidence: high
+    evidence: "Dispatches SScreenMenu types 0 through 11 to the compiled text, input, item, skill, and spell merchant dialog builders."
   - address: "0x004CEEF0"
     name: ui_open_server_item_menu_dialog
     confidence: high
@@ -433,6 +493,14 @@ functions:
     name: net_deserialize_screen_menu_server_packet
     confidence: high
     evidence: "Reads the SScreenMenu common fields, string16 content, and remaining subtype bytes into an owned packet reader."
+  - address: "0x005F72E0"
+    name: net_handle_screen_menu_raw
+    confidence: high
+    evidence: "Raw SScreenMenu handler that constructs MerchantSession from the decoded body and reports the event consumed."
+  - address: "0x005F7300"
+    name: ui_create_merchant_session
+    confidence: high
+    evidence: "Allocates exact RTTI MerchantSession and passes the decoded SScreenMenu body to its constructor."
 comments:
   - address: "0x0052C98A"
     text: "SPursuitMessage type 10 has no remaining fields and closes the NPC session immediately."

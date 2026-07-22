@@ -33,6 +33,12 @@ For `SPursuitMessage`, `ui_npc_session_open_pursuit_message` handles type 10 as 
 
 The stored session state lets the outer pane and the nested answer model read the same target ID, speaker presentation, pursuit ID, and current step without retaining the server packet object.
 
+### Older `MerchantSession` path
+
+The executable also retains an older full-screen `MerchantSession` implementation for the same `SScreenMenu` opcode `0x2F`. `net_handle_screen_menu_raw` constructs this pane directly from the decoded body. The session owns two nested dialog slots and `ui_merchant_session_dispatch_screen_menu` maps subtype values 0 through 11 to its compiled text, input, item, skill, and spell dialog families. A body beginning with opcode `0x30` closes the whole merchant session.
+
+This path uses `lmerc.txt` for segmented menus, `lmerd.txt` for detail panes, and the dormant `lmerc2.txt` item-list variant. The layouts are loaded together, but `ui_is_server_item_menu_dialog3_enabled` always returns false in this build, so the newer `ServerItemMenuDialog3` branch is never selected.
+
 ### Target identity
 
 Both protocols carry `target_type` and `target_id`, and both client responses echo them. The local dialog builders do not decode that byte, and the screen-menu code contains a separate `target_type > 0x0C` behavior. A complete 7.41 target-type enum remains unresolved.

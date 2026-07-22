@@ -2139,6 +2139,21 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_server_item_menu_dialog3_handle_pointer_event` | `0x004CBBA0` | high | Handles category-tab clicks, retains hover coordinates, closes descriptions outside content, and delegates other pointer behavior. |
 | `ui_server_item_menu_dialog3_draw` | `0x004CBD70` | high | Draws the lmerc2 background, page count, player money, and four selected or unselected category tabs. |
 | `ui_load_merchant_dialog_layouts` | `0x004CC970` | high | Loads lmerc2, lmerc, and lmerd once and caches their pixmaps, control rectangles, segment sizes, and derived offsets. |
+| `ui_merchant_session_ctor` | `0x004CD0F0` | high | Constructs exact RTTI MerchantSession, loads merchant layouts, registers the full-screen pane, and dispatches an initial SScreenMenu body. |
+| `ui_merchant_session_dtor` | `0x004CD230` | high | Closes the active merchant dialog, queues both retained dialog slots for deferred deletion, unregisters the pane, and destroys the base. |
+| `ui_merchant_session_close` | `0x004CD330` | high | Queues MerchantSession for deferred pane deletion through BlackHole. |
+| `ui_merchant_session_get_primary_dialog` | `0x004CD400` | high | Returns MerchantSession dialog slot zero. |
+| `ui_get_merchant_segmented_dialog_bounds` | `0x004CD420` | high | Builds screen-relative bounds for the lmerc top, middle, and bottom segmented dialog. |
+| `ui_get_server_item_menu_dialog3_bounds` | `0x004CD4F0` | high | Builds screen-relative bounds from the lmerc2 background and centers them vertically. |
+| `ui_get_merchant_detail_dialog_bounds` | `0x004CD5E0` | high | Builds screen-relative bounds from the lmerd background and centers them vertically. |
+| `ui_get_merchant_session_default_bounds` | `0x004CD6D0` | medium | Returns the fixed screen-relative merchant rectangle (20,160)-(420,480); no local caller reaches it. |
+| `ui_merchant_session_create_screen_dimmer` | `0x004CD760` | high | Allocates a full-screen exact RTTI ScreenDimmer in mode 5 and retains it on MerchantSession. |
+| `ui_merchant_session_can_handle_network_event` | `0x004CD7F0` | high | MerchantSession vtable predicate paired with its network-event handler; always returns true. |
+| `ui_merchant_session_handle_network_event` | `0x004CD800` | high | Handles decoded payloads beginning with SScreenMenu opcode 0x2F or merchant-close opcode 0x30. |
+| `ui_merchant_session_get_dialog` | `0x004CD880` | high | Returns one of two retained merchant dialog pointers by signed byte index. |
+| `ui_merchant_session_push_dialog` | `0x004CD8A0` | high | Closes or defers the previous dialog, assigns one of two slots, records ownership, and activates the new merchant dialog. |
+| `ui_merchant_session_handle_close` | `0x004CD990` | high | Queues MerchantSession for deferred deletion in response to merchant close opcode 0x30. |
+| `ui_merchant_session_dispatch_screen_menu` | `0x004CD9B0` | high | Dispatches SScreenMenu types 0 through 11 to the compiled text, input, item, skill, and spell merchant dialog builders. |
 | `ui_open_server_item_menu_dialog` | `0x004CEEF0` | high | Chooses and constructs a merchant server-item dialog; the always-false build selector leaves ServerItemMenuDialog3 dormant and selects the older dialog. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
@@ -2465,6 +2480,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_open_town_map_from_screen_shot_packet` | `0x005F6BC0` | high | Reads SScreenShot's retained u8 key and opens TownMapPane in the server-keyed _tncoord.txt mode. |
 | `ui_open_employee_dialog_from_server_body` | `0x005F6BF0` | high | Creates EmployeeDialogPane only for an SMercenary category 1 Open body. |
 | `ui_open_bulletin_session_from_server_body` | `0x005F6CD0` | high | Creates BulletinSession for a direct SBulletin body when no conflicting session is active and the admission flag check passes. |
+| `ui_create_merchant_session` | `0x005F7300` | high | Allocates exact RTTI MerchantSession and passes the decoded SScreenMenu body to its constructor. |
 | `ui_apply_block_input_server_packet` | `0x005F7AA0` | high | Maps SBlockInput state 0 to held-button release plus ClockPane creation and state 1 to ClockPane removal; other states are ignored. |
 | `ui_open_manufacture_dialog_from_manual_packet` | `0x005F7AE0` | high | Creates the singleton ManufactureDialogPane only for SManual RecipeCount and ignores Recipe detail messages when no pane exists. |
 | `ui_create_field_map_pane` | `0x005F88B0` | high | Allocates a 640 by 480 FieldMapPane, initializes it from decoded SFieldMap values, registers it with the screen root, and retains it in WorldPane. |
@@ -2923,6 +2939,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_message_server_packet` | `0x005F6D80` | high | Routes SMessage to the floating GameMessagePane, WindowMessageDialogPane, or ScorePane according to its type byte. |
 | `net_handle_enter_editing_mode_server_data` | `0x005F71C0` | high | WorldPane's raw opcode 0x1B branch allocates exact RTTI EditablePaperPane and constructs it in editable mode directly from the decoded body. |
 | `net_handle_show_paper_server_data` | `0x005F7250` | high | WorldPane's raw opcode 0x35 branch constructs the same EditablePaperPane in read-only mode. |
+| `net_handle_screen_menu_raw` | `0x005F72E0` | high | Raw SScreenMenu handler that constructs MerchantSession from the decoded body and reports the event consumed. |
 | `net_send_check_time` | `0x005F7830` | high | Immediate response to SCheckTime opcode 0x68; builds CCheckTime as opcode 0x75, echoed u32 server_value, and one timeGetTime() u32 sample without local comparison or enforcement. |
 | `net_handle_bad_guy_server_packet` | `0x005F7900` | high | Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths. |
 | `net_handle_show_users` | `0x005F7B80` | high | Handles raw decoded server opcode 0x36, applies the replacement list, and opens the RTTI-backed ShowUsersPane. |
