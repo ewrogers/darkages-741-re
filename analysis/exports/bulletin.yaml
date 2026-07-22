@@ -683,6 +683,10 @@ functions:
     name: ui_mail_confirm_delete_alert_ctor
     confidence: high
     evidence: "Constructs ConfirmDeleteAlert for the displayed mail and stores its mode."
+  - address: "0x00426CE0"
+    name: ui_confirm_delete_alert_accept
+    confidence: high
+    evidence: "Routes confirmation to article or mail deletion and selects list or detail behavior from the alert's stored owner and mode."
   - address: "0x00426DA0"
     name: ui_bulletin_session_scalar_deleting_dtor
     confidence: high

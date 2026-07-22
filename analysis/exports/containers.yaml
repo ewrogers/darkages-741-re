@@ -127,6 +127,14 @@ functions:
     name: black_hole_scalar_deleting_dtor
     confidence: high
     evidence: "Runs the BlackHole destructor and conditionally frees the complete object."
+  - address: "0x00427390"
+    name: memory_manager_get_instance
+    confidence: high
+    evidence: "Returns the process-wide game memory-manager pointer used by the allocation helpers."
+  - address: "0x00428C40"
+    name: std_string_dtor_seh_wrapper
+    confidence: high
+    evidence: "Destroys an MSVC std::string through std_string_reset while installing its compiler-generated SEH cleanup frame."
   - address: "0x00465020"
     name: pointer_queue_scalar_deleting_dtor
     confidence: high

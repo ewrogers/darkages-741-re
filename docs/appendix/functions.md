@@ -24,6 +24,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_context_dumper_from_thread_ctor` | `0x00437A40` | high | Constructs exact RTTI ContextDumper by capturing a thread CONTEXT and immediately collects bounded trace text. |
 | `app_context_dumper_from_context_ctor` | `0x00437BB0` | high | Constructs exact RTTI ContextDumper from a supplied x86 CONTEXT and immediately collects bounded trace text. |
 | `app_collect_stack_trace_text` | `0x00437D70` | high | Collects StackWalker frames into the bounded 8192-byte LCrash.nfo trace buffer with newline separators. |
+| `app_get_config` | `0x0043FD70` | high | Returns the process-wide Config singleton pointer stored at static address 0x006EB100. |
 | `app_exception_handler_ctor` | `0x00468AD0` | high | Constructs exact RTTI ExceptionHandler, installs app_unhandled_exception_filter, and retains the previous top-level filter. |
 | `app_exception_handler_dtor` | `0x00468B10` | high | Restores the previous Win32 unhandled exception filter and clears the ExceptionHandler singleton. |
 | `app_unhandled_exception_filter` | `0x00468EB0` | high | Top-level Win32 exception filter that writes LCrash.nfo and then chains to the previously installed filter. |
@@ -699,6 +700,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_mail_transfer_reply_alert_ctor` | `0x00426C00` | high | Constructs RTTI-backed MailTransferReplyAlert and stores the transfer result byte. |
 | `ui_mail_transfer_reply_alert_accept` | `0x00426C50` | high | Refreshes the prior mail list and returns to it when transfer succeeds. |
 | `ui_mail_confirm_delete_alert_ctor` | `0x00426C90` | high | Constructs ConfirmDeleteAlert for the displayed mail and stores its mode. |
+| `ui_confirm_delete_alert_accept` | `0x00426CE0` | high | Routes confirmation to article or mail deletion and selects list or detail behavior from the alert's stored owner and mode. |
 | `ui_bulletin_session_scalar_deleting_dtor` | `0x00426DA0` | high | Destroys BulletinSession and optionally frees its complete object. |
 | `ui_bulletin_dialog_scalar_deleting_dtor` | `0x00426DE0` | high | Destroys BulletinDialogPane and optionally frees its complete object. |
 | `ui_board_list_dialog_scalar_deleting_dtor` | `0x00426E30` | high | Destroys BoardListDialog and optionally frees its complete object. |
@@ -1037,6 +1039,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_create_user_accept_opcode_30` | `0x0043F8C0` | high | Returns handled for raw server opcode 0x30 without reading the body or changing CreateUserDialogPane state. |
 | `ui_create_user_dialog_scalar_deleting_dtor` | `0x0043FBE0` | high | Compiler scalar-deleting destructor for CreateUserDialogPane. |
 | `ui_dialog_pane_scalar_deleting_dtor` | `0x0043FC10` | high | Compiler scalar-deleting destructor for exact RTTI DialogPane. |
+| `ui_create_user_dialog_register_singleton` | `0x0043FC40` | high | Registers the CreateUserDialogPane complete-object pointer in its process-wide singleton slot. |
+| `ui_create_user_dialog_unregister_singleton` | `0x0043FC80` | high | Clears the CreateUserDialogPane singleton slot after verifying that it still owns the registered pointer. |
 | `ui_nexonclub_auth_alert_exists` | `0x0043FD30` | high | Reports whether exact RTTI NexonClubAuthAlertPane has an active Singleton instance. |
 | `ui_nexonclub_auth_alert_get` | `0x0043FD50` | high | Returns the active NexonClubAuthAlertPane singleton pointer. |
 | `ui_create_user_dialog_timer_scalar_deleting_dtor_thunk` | `0x0043FDA0` | high | Adjusted-this TimerHandler scalar-deleting destructor thunk for CreateUserDialogPane. |
@@ -2583,6 +2587,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_popup_menu_draw` | `0x0054C6F0` | high | Draws the target name, three action rectangles, hover highlight, and localized labels for PopupMenuPane. |
 | `ui_popup_menu_dispatch_action` | `0x0054C990` | high | Maps row 0 to CRequestObjectInfo subtype 1, row 1 to CGroup action 2, and row 2 to tell-target preparation. |
 | `ui_popup_menu_hit_test_action` | `0x0054CBD0` | high | Tests the pointer against exactly three action rectangles and returns index 0 through 2 or -1. |
+| `ui_create_user_dialog_get` | `0x0054E6C0` | high | Returns the current CreateUserDialogPane singleton pointer. |
+| `ui_create_user_dialog_exists` | `0x0054E720` | high | Reports whether the CreateUserDialogPane singleton slot is non-null. |
 | `ui_open_say_input` | `0x0054F840` | high | Creates ChatInputPane in Say mode 0 or Shout mode 1 and formats the local name prefix as colon-space or exclamation-space. |
 | `ui_open_tell_receiver_input` | `0x0054F9D0` | high | Creates exact RTTI class TellReceiverInputPane when the world keyboard handler receives the double-quote key. |
 | `ui_open_tell_input` | `0x0054FAB0` | high | Formats the local arrow, target name, and colon prefix, then creates exact RTTI class TellInputPane. |
@@ -4289,6 +4295,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `maybe_command_dispatcher_return_argument` | `0x0042F420` | low | CommandDispatcher virtual method that returns its second argument unchanged; the exact interface role is not yet established. |
 | `maybe_net_load_endpoint_from_command_file` | `0x00433B50` | medium | Unreferenced parser that treats command-line tail text as a filename and loads a host or IPv4 address plus port into Config. |
 | `maybe_app_configure_distribution_mode_12` | `0x00436A10` | medium | Dormant mode 12 handler with no matching marker return; sets connection flags without installing an endpoint. |
+| `maybe_ui_create_user_message_dialog_dispatch_fragment` | `0x0043F8EF` | medium | Compiler-split fragment constructs server message dialog variants 0 through 5 and stores the shared dialog pointer, but no incoming control-flow edge is recovered. |
 | `maybe_app_set_guard_flags` | `0x004A9F60` | medium | Sets opaque bytes at 0x006C9806 and 0x00740405; the wider guard meaning remains unresolved. |
 | `maybe_ui_list_pane_scroll_limit_fragment` | `0x004B3987` | medium | Compiler-recovered overlapping return fragment inside the backward-scroll-limit routine; no independent callers are known. |
 | `maybe_ui_list_pane_pointer_event_fallback` | `0x004B3BB1` | medium | Compiler-recovered overlapping false-return fragment inside the pointer-event handler; no independent callers are known. |
@@ -4355,14 +4362,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `black_hole_scalar_deleting_dtor` | `0x00415C40` | high | Runs the BlackHole destructor and conditionally frees the complete object. |
 | `com_auto_init_ctor` | `0x00415C70` | high | Constructs the compiler-generated AutoInit helper and calls OleInitialize for the current thread. |
 | `com_auto_init_dtor` | `0x00415C90` | high | Runs OleUninitialize from the compiler-generated AutoInit destructor. |
+| `com_auto_init_scalar_deleting_dtor` | `0x0041A690` | high | Runs the compiler-generated COM AutoInit destructor and conditionally frees the helper object. |
 | `com_advise_connection_point` | `0x0041A7A0` | high | Queries IConnectionPointContainer, finds the requested connection point, and advises the supplied event sink. |
 | `com_unadvise_connection_point` | `0x0041A860` | high | Queries IConnectionPointContainer, finds the requested connection point, and removes the supplied advisory cookie. |
 | `text_thread_acp_to_bstr` | `0x0041AA00` | high | Converts explicit-length or terminated CP_THREAD_ACP bytes into a newly allocated BSTR. |
 | `com_variant_clear` | `0x0041AB40` | high | Clears a VARIANT with VariantClear and returns the HRESULT. |
 | `com_variant_set_bstr` | `0x0041AB60` | high | Clears a VARIANT, assigns VT_BSTR, allocates the supplied wide string, and raises the client COM error on failure. |
 | `com_assign_iweb_browser2` | `0x0041AC10` | high | Queries a supplied COM object for IID_IWebBrowser2, replaces the retained interface pointer, and releases the previous value. |
+| `memory_manager_get_instance` | `0x00427390` | high | Returns the process-wide game memory-manager pointer used by the allocation helpers. |
 | `text_remove_ascii_spaces_dbcs_safe` | `0x004274B0` | high | Removes ASCII spaces while preserving DBCS trail bytes. |
 | `time_get_utc_date_yyyymmdd` | `0x00427BD0` | high | Returns the current UTC date as year*10000 + month*100 + day. |
+| `std_string_dtor_seh_wrapper` | `0x00428C40` | high | Destroys an MSVC std::string through std_string_reset while installing its compiler-generated SEH cleanup frame. |
 | `std_string_vector_insert_copy` | `0x0042A0C0` | high | Appends a string copy and rotates it into the requested insertion position. |
 | `std_string_vector_push_back` | `0x0042A260` | high | Grows a string vector when full and copy-constructs one element at its end. |
 | `std_string_vector_rotate_inserted_range` | `0x0042A2B0` | high | Rotates a string-vector range after insertion and returns its iterator. |
@@ -4480,6 +4490,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `com_create_thrunet_service` | `0x00437860` | high | Creates and initializes the legacy Thrunet endpoint COM service. |
 | `exception_context_dumper_dtor` | `0x00437D20` | high | Destroys the StackWalker owned by exact RTTI ContextDumper. |
 | `exception_context_dumper_scalar_deleting_dtor` | `0x00437E30` | high | Compiler scalar-deleting destructor for exact RTTI ContextDumper. |
+| `compiler_restore_seh_frame_epilogue` | `0x0043FB9D` | high | Restores the caller-supplied structured-exception chain and returns through a shared compiler epilogue. |
 | `nexonclub_auth_get_request` | `0x0043FCC0` | high | Returns the process-wide active NexonClub authentication request pointer. |
 | `nexonclub_auth_destroy_request` | `0x0043FCD0` | high | Destroys and frees the active NexonClub authentication request when one exists. |
 | `nexonclub_auth_request_exists` | `0x0043FD80` | high | Reports whether a process-wide NexonClub authentication request is active. |

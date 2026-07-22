@@ -100,6 +100,8 @@ The selected board ID determines whether the server answers action `2` with an a
 
 Article-list deletion can operate on multiple selected rows. After confirmation, the client sends one action `5` packet per article. Article-detail and mail-detail deletion send the six-byte form. Mail-list deletion sends a seven-byte form with a trailing zero.
 
+The shared `ConfirmDeleteAlert` keeps both its owner kind and list/detail mode. Accepting it dispatches to exactly one of the article-list, article-detail, mail-list, or mail-detail deletion paths, so the confirmation pane does not need four separate implementations.
+
 The optional `Hilight` control is attached as action ID `6` in `ArticleListDialog`. It sends action `7`, one packet per selected article, without a confirmation dialog. The layout spelling is preserved here because it is direct client evidence. The exact server-side effect and permission rule still need runtime confirmation.
 
 ## Server replies

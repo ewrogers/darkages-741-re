@@ -29,6 +29,8 @@ The names below can be searched in Binary Ninja. Addresses and confidence notes 
 
 The large `app_initialize` routine owns step 6. It starts Winsock, registers and creates the main window, opens the required archives, then constructs the core managers and panes in dependency order. If any required stage fails, `app_initialize_failure_cleanup` walks the completed stages in reverse, deletes each registered singleton, closes the archives, destroys the partial window, and unregisters its window class.
 
+`Config` follows the same process-wide singleton model. `app_config_singleton_register` installs it during startup, and `app_get_config` is the common accessor used by later version, distribution, and connection setup paths.
+
 Win32 activation remains separate from construction. `app_set_active` applies the configured process-priority override while inactive, restores the saved priority when active, forwards the state to the video system, and invalidates the root pane after reactivation. Window move and size messages update the DirectDraw presentation origin only in windowed mode.
 
 The mutex is named `Nexon.SingleInstance`. If Windows reports that it already exists, the original client exits. This is only a local guard. It does not change any account or server rules.

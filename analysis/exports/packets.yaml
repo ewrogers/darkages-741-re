@@ -855,10 +855,26 @@ functions:
     name: ui_create_user_timer
     confidence: high
     evidence: "CreateUserDialogPane TimerHandler callback; timer 3 sends CNewUser after the form action schedules a 200 ms delay."
+  - address: "0x0043F8EF"
+    name: maybe_ui_create_user_message_dialog_dispatch_fragment
+    confidence: medium
+    evidence: "Compiler-split fragment constructs server message dialog variants 0 through 5 and stores the shared dialog pointer, but no incoming control-flow edge is recovered."
+  - address: "0x0043FB9D"
+    name: compiler_restore_seh_frame_epilogue
+    confidence: high
+    evidence: "Restores the caller-supplied structured-exception chain and returns through a shared compiler epilogue."
   - address: "0x0043FBE0"
     name: ui_create_user_dialog_scalar_deleting_dtor
     confidence: high
     evidence: "Compiler scalar-deleting destructor for CreateUserDialogPane."
+  - address: "0x0043FC40"
+    name: ui_create_user_dialog_register_singleton
+    confidence: high
+    evidence: "Registers the CreateUserDialogPane complete-object pointer in its process-wide singleton slot."
+  - address: "0x0043FC80"
+    name: ui_create_user_dialog_unregister_singleton
+    confidence: high
+    evidence: "Clears the CreateUserDialogPane singleton slot after verifying that it still owns the registered pointer."
   - address: "0x0043FDA0"
     name: ui_create_user_dialog_timer_scalar_deleting_dtor_thunk
     confidence: high
@@ -2579,6 +2595,14 @@ functions:
     name: ui_editable_paper_build_controls
     confidence: high
     evidence: "Converts wire tabs to editor carriage returns, computes 16-pixel block geometry, builds the editable or read-only text control, and centers the pane within the native 640 by 480 view."
+  - address: "0x0054E6C0"
+    name: ui_create_user_dialog_get
+    confidence: high
+    evidence: "Returns the current CreateUserDialogPane singleton pointer."
+  - address: "0x0054E720"
+    name: ui_create_user_dialog_exists
+    confidence: high
+    evidence: "Reports whether the CreateUserDialogPane singleton slot is non-null."
   - address: "0x0054F840"
     name: ui_open_say_input
     confidence: high

@@ -19,6 +19,10 @@ The bootstrap connection selects an endpoint and transfers the client to the lob
 
 Opcode `0x02` is state-dependent on this connection. `MainMenuPane` reads it as `SLoginCheck`, while `CreateUserDialogPane` reads it as `SNewUserCheck`. The creation pane also accepts opcode `0x01` as a compiled alias, but the supplied live captures use `0x02` for both creation stages.
 
+The pane is process-local singleton state. Its constructor registers the complete object, its destructor clears the slot, and small `get` and `exists` helpers let the main menu and shutdown paths avoid opening or destroying a second copy.
+
+A nearby compiler-split fragment can construct server message dialog variants 0 through 5 and store the shared message-dialog pointer. Binary Ninja recovers no incoming control-flow edge to that fragment, so it remains a medium-confidence dormant or split path rather than established live character-creation behavior.
+
 ## Form submission
 
 The form contains separate name, password, and password-confirmation controls. The confirmation is checked locally and is not sent. A mismatch clears both password controls, focuses the first password control, and displays a localized client message.

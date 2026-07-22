@@ -15,6 +15,10 @@ functions:
     name: com_auto_init_dtor
     confidence: high
     evidence: "Runs OleUninitialize from the compiler-generated AutoInit destructor."
+  - address: "0x0041A690"
+    name: com_auto_init_scalar_deleting_dtor
+    confidence: high
+    evidence: "Runs the compiler-generated COM AutoInit destructor and conditionally frees the helper object."
   - address: "0x0042DF50"
     name: ui_intro_video_start_if_available
     confidence: high
@@ -197,6 +201,10 @@ functions:
     name: ui_unitel_pane_timer_scalar_deleting_dtor_thunk
     confidence: high
     evidence: "Adjusted-this TimerHandler scalar-deleting destructor thunk for UnitelPane."
+  - address: "0x0043FD70"
+    name: app_get_config
+    confidence: high
+    evidence: "Returns the process-wide Config singleton pointer stored at static address 0x006EB100."
   - address: "0x004A9B40"
     name: app_apply_process_priority_override
     confidence: high
