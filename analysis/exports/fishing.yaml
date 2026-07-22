@@ -83,6 +83,10 @@ functions:
     name: ui_fishing_dialog_draw
     confidence: high
     evidence: "Draws the backgrounds, boat and line, moving objects, clipping bands, and foreground overlay."
+  - address: "0x0047A220"
+    name: ui_fishing_dialog_can_handle_keyboard_event
+    confidence: high
+    evidence: "FishingDialogPane keyboard-event predicate; always returns true before its keyboard handler tracks control state."
   - address: "0x0047A230"
     name: ui_fishing_dialog_handle_keyboard
     confidence: high

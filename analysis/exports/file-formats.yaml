@@ -603,6 +603,10 @@ functions:
     name: file_archive_pointer_vector_insert_n_rethrow_cleanup
     confidence: high
     evidence: "Restores pointer-vector construction state and rethrows after insertion fails."
+  - address: "0x00474250"
+    name: file_archive_pointer_noop_dtor
+    confidence: high
+    evidence: "Trivial destructor hook for an expanded-entry pointer stored in the archive vector."
   - address: "0x00474260"
     name: file_archive_pointer_vector_allocate
     confidence: high

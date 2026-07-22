@@ -1395,6 +1395,10 @@ functions:
     name: render_coloring_table_manager_destroy
     confidence: high
     evidence: "Destroys the active ColoringTableMan singleton through its deleting destructor."
+  - address: "0x0047F300"
+    name: render_coloring_table_id_noop_dtor
+    confidence: high
+    evidence: "Trivial destructor hook for a table-ID value stored in the coloring-table map."
   - address: "0x0047F310"
     name: render_coloring_table_map_allocate_nodes
     confidence: high

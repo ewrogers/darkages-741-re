@@ -1215,6 +1215,10 @@ functions:
     name: ui_field_map_point_pane_handle_timer
     confidence: high
     evidence: "Shared FieldMapPointPane TimerHandler callback returns false without scheduling further work."
+  - address: "0x00476A30"
+    name: ui_field_map_point_pane_draw_noop
+    confidence: high
+    evidence: "Base FieldMapPointPane drawing hook; derived text and image point panes provide the visible rendering."
   - address: "0x00476A40"
     name: ui_field_map_point_pane_scalar_deleting_dtor
     confidence: high

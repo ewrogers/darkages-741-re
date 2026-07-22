@@ -1294,6 +1294,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_field_map_point_pane_get_display_rect` | `0x004769E0` | high | Base FieldMapPointPane display-rectangle virtual; the base implementation leaves the output unchanged. |
 | `ui_field_map_point_pane_get_content_bounds` | `0x004769F0` | high | Base FieldMapPointPane content-bounds virtual; the base implementation leaves the output unchanged. |
 | `ui_field_map_point_pane_handle_timer` | `0x00476A20` | high | Shared FieldMapPointPane TimerHandler callback returns false without scheduling further work. |
+| `ui_field_map_point_pane_draw_noop` | `0x00476A30` | high | Base FieldMapPointPane drawing hook; derived text and image point panes provide the visible rendering. |
 | `ui_field_map_point_pane_scalar_deleting_dtor` | `0x00476A40` | high | Destroys the exact RTTI FieldMapPointPane and conditionally frees the complete object. |
 | `ui_text_field_map_point_pane_scalar_deleting_dtor` | `0x00476A70` | high | Destroys the exact RTTI TextFieldMapPointPane through its Pane base and conditionally frees the complete object. |
 | `ui_field_map_point_pane_dtor` | `0x00476AA0` | high | Destroys the FieldMapPointPane Pane base during constructor cleanup. |
@@ -1336,6 +1337,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_fishing_dialog_draw_top_background` | `0x00479D20` | high | Draws the top fishing-dialog background pixmap at its layout rectangle. |
 | `ui_fishing_dialog_draw_bottom_background` | `0x00479DD0` | high | Draws the bottom fishing-dialog background pixmap with the requested blend flag. |
 | `ui_fishing_dialog_draw` | `0x00479E80` | high | Draws the backgrounds, boat and line, moving objects, clipping bands, and foreground overlay. |
+| `ui_fishing_dialog_can_handle_keyboard_event` | `0x0047A220` | high | FishingDialogPane keyboard-event predicate; always returns true before its keyboard handler tracks control state. |
 | `ui_fishing_dialog_handle_keyboard` | `0x0047A230` | high | Tracks left, right, and space key-down and key-up state for the fishing game. |
 | `ui_fishing_dialog_handle_timer` | `0x0047A3A0` | high | Runs the game state machine, moves the boat and hook, advances objects, detects collisions, opens the impact gauge, and schedules new objects. |
 | `ui_fishing_dialog_close` | `0x0047AE90` | high | Unregisters, detaches, and queues the fishing dialog for deletion. |
@@ -3627,6 +3629,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_coloring_table_manager_exists` | `0x0047F280` | high | Tests whether the ColoringTableMan singleton currently exists. |
 | `render_get_coloring_table_manager` | `0x0047F2A0` | high | Returns the active ColoringTableMan singleton pointer. |
 | `render_coloring_table_manager_destroy` | `0x0047F2B0` | high | Destroys the active ColoringTableMan singleton through its deleting destructor. |
+| `render_coloring_table_id_noop_dtor` | `0x0047F300` | high | Trivial destructor hook for a table-ID value stored in the coloring-table map. |
 | `render_coloring_table_map_allocate_nodes` | `0x0047F310` | high | Performs checked allocation for 0x18-byte table-ID map nodes. |
 | `render_coloring_table_map_insert_unique` | `0x0047F380` | high | Finds a table-ID insertion point and returns either the existing node or one newly inserted node. |
 | `render_coloring_table_map_insert_node` | `0x0047F5D0` | high | Links one node, updates map extrema, and restores red-black-tree color invariants. |
@@ -4055,6 +4058,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_archive_pointer_vector_insert_n` | `0x00473C80` | high | Inserts repeated pointer values into the archive-owned vector, growing its allocation when required. |
 | `file_archive_pointer_vector_insert_n_cleanup` | `0x00473EE9` | high | Exception cleanup for a partially constructed replacement allocation during pointer-vector insertion. |
 | `file_archive_pointer_vector_insert_n_rethrow_cleanup` | `0x0047409E` | high | Restores pointer-vector construction state and rethrows after insertion fails. |
+| `file_archive_pointer_noop_dtor` | `0x00474250` | high | Trivial destructor hook for an expanded-entry pointer stored in the archive vector. |
 | `file_archive_pointer_vector_allocate` | `0x00474260` | high | Performs checked allocation for an array of four-byte expanded-entry pointers. |
 | `file_archive_pointer_vector_copy_range` | `0x004742D0` | high | Copies a contiguous pointer range into replacement vector storage and returns its new end. |
 | `file_updater_default_ctor` | `0x004778F0` | high | Constructs exact RTTI FileUpdater with empty source, destination, archive, mode, and destination settings. |

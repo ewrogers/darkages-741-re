@@ -24,7 +24,7 @@ The dialog handles three client key codes:
 | `0x82` | Move in the other horizontal direction |
 | `0x20` | Lower or raise the fishing line, depending on the current phase |
 
-The client tracks key-down and key-up separately. Direction keys change the boat offset by three units per update while it remains inside its configured bounds. The space action advances the line through its lowering, collision, impact, and return phases.
+The dialog accepts keyboard events through an always-true predicate, then tracks key-down and key-up separately. Direction keys change the boat offset by three units per update while it remains inside its configured bounds. The space action advances the line through its lowering, collision, impact, and return phases.
 
 `ui_fishing_dialog_handle_timer` owns the game state machine. Each update can:
 
