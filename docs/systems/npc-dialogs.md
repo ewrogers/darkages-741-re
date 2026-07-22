@@ -60,6 +60,8 @@ The `Ex` text-menu variants are expanded layouts, not paged lists. They draw one
 
 The ordinary text-menu variants use `TaskListDialog` and `TaskListPane`. Each parsed row contains a display string and a server-supplied `u16` selection value. Selecting a row sends `CMerchant` with target type, target ID, and that value. Argumented variants opt into one additional string from the common header and append it to the response.
 
+`TextInputMenuDialog` builds a single-line edit control between the prompt and three actions: submit, target information, and cancel. Submit remains disabled while the input is empty. On submission the client copies at most 255 text bytes, invokes the derived response builder, and closes the dialog. The argumented input variant uses the same controls and adds its retained server string to the response.
+
 ### Target identity
 
 Both protocols carry `target_type` and `target_id`, and both client responses echo them. The local dialog builders do not decode that byte, and the screen-menu code contains a separate `target_type > 0x0C` behavior. A complete 7.41 target-type enum remains unresolved.

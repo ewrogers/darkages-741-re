@@ -461,6 +461,42 @@ functions:
     name: net_parse_text_menu_dialog
     confidence: high
     evidence: "Parses the common header plus a u8 row count and repeated string8 text with u16 selection values."
+  - address: "0x004D1070"
+    name: ui_argumented_text_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ArgumentedTextMenuDialog, parses rows and its argument string, builds ArgumentedTextMenuPane, and attaches detail controls."
+  - address: "0x004D11F0"
+    name: ui_argumented_text_menu_dialog_has_optional_header_text
+    confidence: high
+    evidence: "Returns true so the common merchant header consumes the argumented menu's trailing string."
+  - address: "0x004D1200"
+    name: ui_argumented_text_menu_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ArgumentedTextMenuPane, copies the retained server argument, and retains target identity."
+  - address: "0x004D12A0"
+    name: net_send_argumented_merchant_task_selection
+    confidence: high
+    evidence: "Sends CMerchant with target type, target ID, selected u16 task value, and the retained server argument."
+  - address: "0x004D1450"
+    name: ui_text_input_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI TextInputMenuDialog and attaches monster, prompt, label, text input, submit, info, and cancel controls."
+  - address: "0x004D1CF0"
+    name: ui_text_input_menu_dialog_draw
+    confidence: high
+    evidence: "Draws the text-input dialog from one lmerc top, one middle, and one bottom segment."
+  - address: "0x004D1EA0"
+    name: ui_text_input_menu_dialog_handle_action
+    confidence: high
+    evidence: "Routes submit, target-info, and cancel actions and closes after submission."
+  - address: "0x004D1F00"
+    name: ui_text_input_menu_dialog_submit
+    confidence: high
+    evidence: "Copies up to 255 bytes from the text input control and invokes the derived response sender."
+  - address: "0x004D1F90"
+    name: ui_text_input_menu_dialog_update_submit_enabled
+    confidence: high
+    evidence: "Enables the submit control only when the text input contains at least one byte."
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high

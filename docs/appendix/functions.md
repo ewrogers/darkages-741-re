@@ -2200,6 +2200,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_task_list_pane_draw_text_row` | `0x004D0B90` | high | Draws one task row with selected or normal palette color and vertically centered text. |
 | `ui_text_menu_dialog_ctor` | `0x004D0D50` | high | Constructs exact RTTI TextMenuDialog, parses rows, builds TaskListPane, and attaches lmerd controls. |
 | `ui_text_menu_dialog_dtor` | `0x004D0EC0` | high | Frees TextMenuDialog's allocated row array and destroys its DialogPane base. |
+| `ui_argumented_text_menu_dialog_ctor` | `0x004D1070` | high | Constructs exact RTTI ArgumentedTextMenuDialog, parses rows and its argument string, builds ArgumentedTextMenuPane, and attaches detail controls. |
+| `ui_argumented_text_menu_dialog_has_optional_header_text` | `0x004D11F0` | high | Returns true so the common merchant header consumes the argumented menu's trailing string. |
+| `ui_argumented_text_menu_pane_ctor` | `0x004D1200` | high | Constructs exact RTTI ArgumentedTextMenuPane, copies the retained server argument, and retains target identity. |
+| `ui_text_input_menu_dialog_ctor` | `0x004D1450` | high | Constructs exact RTTI TextInputMenuDialog and attaches monster, prompt, label, text input, submit, info, and cancel controls. |
+| `ui_text_input_menu_dialog_draw` | `0x004D1CF0` | high | Draws the text-input dialog from one lmerc top, one middle, and one bottom segment. |
+| `ui_text_input_menu_dialog_handle_action` | `0x004D1EA0` | high | Routes submit, target-info, and cancel actions and closes after submission. |
+| `ui_text_input_menu_dialog_submit` | `0x004D1F00` | high | Copies up to 255 bytes from the text input control and invokes the derived response sender. |
+| `ui_text_input_menu_dialog_update_submit_enabled` | `0x004D1F90` | high | Enables the submit control only when the text input contains at least one byte. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
@@ -2671,6 +2679,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_argumented_text_menu_ex_selection` | `0x004D0020` | high | Sends CMerchant with target type, target ID, the selected row's pursuit ID, and the retained argument string. |
 | `net_send_merchant_task_selection` | `0x004D0C30` | high | Sends the eight-byte CMerchant response with target type, target ID, and selected u16 task value. |
 | `net_parse_text_menu_dialog` | `0x004D0F10` | high | Parses the common header plus a u8 row count and repeated string8 text with u16 selection values. |
+| `net_send_argumented_merchant_task_selection` | `0x004D12A0` | high | Sends CMerchant with target type, target ID, selected u16 task value, and the retained server argument. |
 | `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
 | `net_send_pursuit_selection` | `0x004DBC90` | high | MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method. |
 | `net_dispatch_metadata_events` | `0x004E4D80` | high | MetaTableManager recognizes decoded SMetaData opcode 0x6F outside the packet factory. |
