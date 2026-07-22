@@ -1087,6 +1087,14 @@ functions:
     name: ui_append_game_message_rgb
     confidence: high
     evidence: "Appends text to the active GameMessagePane using explicit RGB bytes."
+  - address: "0x00480410"
+    name: ui_score_pane_dispatch_message_packet
+    confidence: high
+    evidence: "Forwards a decoded packet event to ScorePane only while its singleton exists."
+  - address: "0x00480430"
+    name: ui_score_pane_append_newline_if_present
+    confidence: high
+    evidence: "Appends one plain white newline to ScorePane when the singleton exists."
   - address: "0x00480450"
     name: ui_game_message_pane_exists
     confidence: high
@@ -1095,6 +1103,98 @@ functions:
     name: ui_get_game_message_pane
     confidence: high
     evidence: "Returns the active GameMessagePane singleton pointer."
+  - address: "0x00480480"
+    name: ui_score_pane_exists
+    confidence: high
+    evidence: "Tests whether the ScorePane singleton currently exists."
+  - address: "0x004804A0"
+    name: ui_get_score_pane
+    confidence: high
+    evidence: "Returns the active ScorePane singleton pointer."
+  - address: "0x00480CC0"
+    name: ui_region_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class Region over LObject with one empty stored rectangle."
+  - address: "0x00480D20"
+    name: ui_region_is_empty
+    confidence: high
+    evidence: "Tests whether the Region's stored right or bottom edge fails to exceed its corresponding origin."
+  - address: "0x00480D70"
+    name: ui_region_clear
+    confidence: high
+    evidence: "Resets the Region's stored rectangle to four zero coordinates."
+  - address: "0x00480DB0"
+    name: ui_region_set_rect
+    confidence: high
+    evidence: "Copies a valid rectangle into Region or stores the canonical all-zero empty rectangle."
+  - address: "0x00480E50"
+    name: ui_region_copy
+    confidence: high
+    evidence: "Copies another Region's valid rectangle or canonicalizes an empty source."
+  - address: "0x00480EF0"
+    name: ui_region_intersect_region
+    confidence: high
+    evidence: "Intersects the stored rectangle with another Region."
+  - address: "0x00480F40"
+    name: ui_region_intersect_rect
+    confidence: high
+    evidence: "Intersects the Region in place with a caller-supplied rectangle."
+  - address: "0x00480F70"
+    name: ui_region_union_rect
+    confidence: high
+    evidence: "Expands the Region in place to include a caller-supplied rectangle."
+  - address: "0x00480FA0"
+    name: ui_region_union_region
+    confidence: high
+    evidence: "Expands the stored rectangle to include another Region."
+  - address: "0x00480FF0"
+    name: ui_region_exclude_rect
+    confidence: high
+    evidence: "Shrinks or clears the single-rectangle Region when an exclusion covers an edge or the whole region."
+  - address: "0x00481200"
+    name: ui_region_exclude_region
+    confidence: high
+    evidence: "Extracts another Region's rectangle and applies the single-rectangle exclusion helper."
+  - address: "0x00481240"
+    name: ui_region_offset
+    confidence: high
+    evidence: "Offsets every edge of a nonempty Region by the requested horizontal and vertical deltas."
+  - address: "0x004812D0"
+    name: ui_region_intersects_rect
+    confidence: high
+    evidence: "Returns whether the Region and a caller-supplied rectangle have strict nonempty overlap."
+  - address: "0x00481300"
+    name: ui_region_intersects_region
+    confidence: high
+    evidence: "Returns whether two Regions have strict nonempty overlap."
+  - address: "0x00481330"
+    name: ui_region_contains_rect
+    confidence: high
+    evidence: "Tests whether the Region contains the supplied rectangle, with an empty candidate accepted."
+  - address: "0x00481350"
+    name: ui_region_contains_region
+    confidence: high
+    evidence: "Tests whether this Region contains another Region."
+  - address: "0x004813A0"
+    name: ui_region_equals_region
+    confidence: high
+    evidence: "Tests Region rectangle equality while treating any two empty rectangles as equal."
+  - address: "0x004813F0"
+    name: ui_region_get_rect
+    confidence: high
+    evidence: "Copies the Region's four stored rectangle coordinates to an output rectangle."
+  - address: "0x00481420"
+    name: ui_region_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI class Region."
+  - address: "0x00481450"
+    name: ui_rect_equals_with_empty
+    confidence: high
+    evidence: "Compares rectangle coordinates while considering any two empty rectangles equal."
+  - address: "0x00481500"
+    name: ui_rect_contains
+    confidence: high
+    evidence: "Tests whether the second rectangle contains the first, accepting an empty candidate."
   - address: "0x0048E980"
     name: input_translate_win32_message
     confidence: high

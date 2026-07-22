@@ -567,6 +567,58 @@ functions:
     name: render_coloring_table_parse_bytes
     confidence: high
     evidence: "Parses tuple width followed by indexed sequences of RGB triples into a ColoringTable."
+  - address: "0x0047FDF0"
+    name: file_text_reader_init_archive_entry
+    confidence: high
+    evidence: "Finds a named DAT entry and initializes the bounded text reader over its expanded bytes."
+  - address: "0x0047FE70"
+    name: file_text_reader_initialize_identifier_table
+    confidence: high
+    evidence: "Builds the one-time byte table for dot, underscore, ASCII letters, and decimal digits."
+  - address: "0x0047FF20"
+    name: file_text_reader_init_memory
+    confidence: high
+    evidence: "Initializes the bounded text reader directly over a caller-supplied memory buffer."
+  - address: "0x0047FF50"
+    name: file_text_reader_set_buffer
+    confidence: high
+    evidence: "Stores the text source pointer, byte length, and zero read offset."
+  - address: "0x0047FF80"
+    name: file_text_reader_read_byte
+    confidence: high
+    evidence: "Returns the next bounded source byte and advances the read offset."
+  - address: "0x0047FFD0"
+    name: file_text_reader_unread_byte
+    confidence: high
+    evidence: "Moves the bounded reader back by one byte when it is not already at offset zero."
+  - address: "0x00480000"
+    name: file_text_reader_skip_line_dbcs
+    confidence: high
+    evidence: "Consumes through LF while preserving DBCS lead and trail pairing."
+  - address: "0x00480060"
+    name: file_text_token_mode_accepts
+    confidence: high
+    evidence: "Treats mode zero as a wildcard or tests it against one requested tokenizer mode."
+  - address: "0x00480080"
+    name: file_text_reader_read_line
+    confidence: high
+    evidence: "Copies one bounded line through LF or end of source and null-terminates the destination."
+  - address: "0x004800F0"
+    name: file_text_reader_read_token
+    confidence: high
+    evidence: "Reads one bounded token with the default tokenizer behavior."
+  - address: "0x00480110"
+    name: file_text_reader_read_token_ex
+    confidence: high
+    evidence: "Reads one token with DBCS handling, whitespace and newline status, hash comments, and optional mode behavior."
+  - address: "0x00480360"
+    name: text_byte_is_control_or_space
+    confidence: high
+    evidence: "Returns true for byte values from zero through ASCII space."
+  - address: "0x00480380"
+    name: file_text_token_append_byte
+    confidence: high
+    evidence: "Appends one byte to the token destination and advances its length."
   - address: "0x00487380"
     name: file_hea_build_row_views
     confidence: high

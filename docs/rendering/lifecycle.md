@@ -36,6 +36,10 @@ Subcanvases do not own another pixel buffer. `render_canvas_resolve_backing` wal
 
 The client can also construct a top-down 16-bit `DIBitmap`. Its decoder expands an archive image to RGB555 and copies aligned rows into a GDI DIB section. A smaller shared decoder validates an embedded indexed-image record, allocates a 16-bit pixel buffer, and expands each palette index through the same client color packer. These are conversion boundaries, not the main sprite drawing path.
 
+Many panes and image loaders exchange a shared 0x34-byte pixmap record. It owns the pixel allocation, row stride, rectangle bounds, palette state, and an optional run-length opacity mask. Reset releases both owned allocations. Clone deep-copies both, so pane-local images do not share mutable pixel or mask storage by accident.
+
+The opacity mask groups transparent and nonzero pixels into runs of at most 126. Bit 7 marks transparent runs. A separate helper makes a half-width, half-height RGB16 pixmap by combining each source 2 by 2 block through the renderer's blend tables. This is asset downsampling and is separate from the final 2x presentation scale.
+
 ## Redraw and presentation cadence
 
 The root `ScreenPane` starts timer ID `0` during application setup. `render_screen_timer_tick` calls `render_screen_tree_frame`, then requeues itself for 10 ms after the current `timeGetTime()` value.

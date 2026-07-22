@@ -1172,9 +1172,9 @@ functions:
     confidence: high
     evidence: "Builds the bounding rectangle of two nonempty rectangles."
   - address: "0x0047D4F0"
-    name: ui_rect_intersect_nonempty
+    name: ui_rect_set_intersection_and_report_empty
     confidence: high
-    evidence: "Computes the overlap of two rectangles and reports whether the result is nonempty."
+    evidence: "Writes the intersection of two valid rectangles and returns true only when that computed result is empty; invalid input clears the destination and returns false."
   - address: "0x0047D6E0"
     name: text_format_u32_with_commas
     confidence: high
@@ -1371,6 +1371,78 @@ functions:
     name: render_coloring_table_map_allocate_nodes
     confidence: high
     evidence: "Performs checked allocation for 0x18-byte table-ID map nodes."
+  - address: "0x0047F380"
+    name: render_coloring_table_map_insert_unique
+    confidence: high
+    evidence: "Finds a table-ID insertion point and returns either the existing node or one newly inserted node."
+  - address: "0x0047F5D0"
+    name: render_coloring_table_map_insert_node
+    confidence: high
+    evidence: "Links one node, updates map extrema, and restores red-black-tree color invariants."
+  - address: "0x0047F8B0"
+    name: render_coloring_table_map_iterator_decrement
+    confidence: high
+    evidence: "Moves an iterator to the in-order predecessor map node."
+  - address: "0x0047F970"
+    name: render_coloring_table_map_create_node
+    confidence: high
+    evidence: "Allocates one map node and constructs its table ID and ColoringTable pointer payload."
+  - address: "0x0047F9CD"
+    name: render_coloring_table_map_create_node_exception_cleanup
+    confidence: high
+    evidence: "Releases a partially constructed map node before rethrowing its construction failure."
+  - address: "0x0047FA10"
+    name: render_coloring_table_map_allocate_node
+    confidence: high
+    evidence: "Allocates and initializes one red-black-tree node around the manager map sentinel."
+  - address: "0x0047FA60"
+    name: render_coloring_table_map_construct_value
+    confidence: high
+    evidence: "Copies the table ID and ColoringTable pointer into a newly allocated map node payload."
+  - address: "0x0047FAB0"
+    name: ui_rect_intersect
+    confidence: high
+    evidence: "Computes the strict nonempty overlap of two rectangles and optionally writes the result."
+  - address: "0x0047FC90"
+    name: ui_rect_inset_clamped
+    confidence: high
+    evidence: "Insets a rectangle by horizontal and vertical margins, collapsing crossed edges to their midpoint."
+  - address: "0x0047FD40"
+    name: ui_rect_inset_clamped_duplicate
+    confidence: high
+    evidence: "Second compiled copy of the clamped rectangle-inset helper used by another UI translation unit."
+  - address: "0x004804B0"
+    name: render_pixmap_record_ctor
+    confidence: high
+    evidence: "Initializes the shared 0x34-byte pixmap record with empty pixels, bounds, mask data, and palette state."
+  - address: "0x00480560"
+    name: render_pixmap_record_clone
+    confidence: high
+    evidence: "Deep-copies a pixmap's pixel allocation and optional opaque-run mask."
+  - address: "0x00480620"
+    name: render_pixmap_record_reset
+    confidence: high
+    evidence: "Releases the pixel and opaque-run allocations and clears their pointers and mask length."
+  - address: "0x00480680"
+    name: render_pixmap_build_opaque_run_mask
+    confidence: high
+    evidence: "Run-length encodes transparent and nonzero pixel spans with a maximum run length of 126."
+  - address: "0x004809A0"
+    name: render_pixmap_downsample_2x
+    confidence: high
+    evidence: "Allocates a half-size RGB16 pixmap and combines every source 2x2 block through renderer blend tables."
+  - address: "0x004815D0"
+    name: render_initialize_luminance_tables
+    confidence: high
+    evidence: "Builds RGB component luminance contributions and four output ramps for both RGB565 and RGB555."
+  - address: "0x00481840"
+    name: render_set_luminance_input_rgb555
+    confidence: high
+    evidence: "Selects RGB555 when nonzero or RGB565 when zero for the shared packed-pixel luminance mapper."
+  - address: "0x00481850"
+    name: render_map_current_rgb16_luminance_palette
+    confidence: high
+    evidence: "Computes five-bit luminance in the selected source format and resolves one of four packed-color ramps."
   - address: "0x00481980"
     name: render_map_rgb565_luminance_palette
     confidence: high

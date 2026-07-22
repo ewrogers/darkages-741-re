@@ -24,6 +24,10 @@ This is closer to a game UI skin than a complete scene file. The layout controls
 
 `ui_layout_load` finds the named entry through the normal DAT archive reader. It parses each `CONTROL` block and caches the result by layout filename.
 
+The parser reads through the small `LayoutFileIO` interface. `LayoutFromMem` supplies bytes from the bounded expanded DAT entry used by the normal load path. `LayoutFromFile` supplies the same byte-at-a-time interface over a file stream. End of input is reported as `-1` in both cases.
+
+The manager cache has two levels: archive pointer, then layout filename. This keeps identically named entries from different archives separate. A successful load inserts the parsed layout at that pair and makes it the current layout for later named-control queries. `ui_layout_has_named_control` checks the current layout without selecting or constructing a control.
+
 The pane then uses helpers such as:
 
 - `ui_layout_get_control_rect`

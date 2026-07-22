@@ -1251,14 +1251,53 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_game_message_pane_timer_scalar_deleting_dtor_thunk` | `0x0047D310` | high | Adjusts the TimerHandler subobject pointer before forwarding to the pane's deleting destructor. |
 | `ui_point_manhattan_distance` | `0x0047D320` | high | Returns the sum of the absolute horizontal and vertical differences between two points. |
 | `ui_rect_union_nonempty` | `0x0047D360` | high | Builds the bounding rectangle of two nonempty rectangles. |
-| `ui_rect_intersect_nonempty` | `0x0047D4F0` | high | Computes the overlap of two rectangles and reports whether the result is nonempty. |
+| `ui_rect_set_intersection_and_report_empty` | `0x0047D4F0` | high | Writes the intersection of two valid rectangles and returns true only when that computed result is empty; invalid input clears the destination and returns false. |
 | `ui_text_truncate_dbcs_safe` | `0x0047D670` | high | Stops at the byte limit without leaving a Windows DBCS lead byte at the end. |
+| `ui_rect_intersect` | `0x0047FAB0` | high | Computes the strict nonempty overlap of two rectangles and optionally writes the result. |
+| `ui_rect_inset_clamped` | `0x0047FC90` | high | Insets a rectangle by horizontal and vertical margins, collapsing crossed edges to their midpoint. |
+| `ui_rect_inset_clamped_duplicate` | `0x0047FD40` | high | Second compiled copy of the clamped rectangle-inset helper used by another UI translation unit. |
 | `ui_append_game_message_palette` | `0x004803A0` | high | Resolves a palette entry to RGB and appends the text to GameMessagePane. |
 | `ui_append_game_message_rgb` | `0x004803E0` | high | Appends text to the active GameMessagePane using explicit RGB bytes. |
+| `ui_score_pane_dispatch_message_packet` | `0x00480410` | high | Forwards a decoded packet event to ScorePane only while its singleton exists. |
+| `ui_score_pane_append_newline_if_present` | `0x00480430` | high | Appends one plain white newline to ScorePane when the singleton exists. |
 | `ui_game_message_pane_exists` | `0x00480450` | high | Tests whether the GameMessagePane singleton currently exists. |
 | `ui_get_game_message_pane` | `0x00480470` | high | Returns the active GameMessagePane singleton pointer. |
+| `ui_score_pane_exists` | `0x00480480` | high | Tests whether the ScorePane singleton currently exists. |
+| `ui_get_score_pane` | `0x004804A0` | high | Returns the active ScorePane singleton pointer. |
+| `ui_region_ctor` | `0x00480CC0` | high | Constructs exact RTTI class Region over LObject with one empty stored rectangle. |
+| `ui_region_is_empty` | `0x00480D20` | high | Tests whether the Region's stored right or bottom edge fails to exceed its corresponding origin. |
+| `ui_region_clear` | `0x00480D70` | high | Resets the Region's stored rectangle to four zero coordinates. |
+| `ui_region_set_rect` | `0x00480DB0` | high | Copies a valid rectangle into Region or stores the canonical all-zero empty rectangle. |
+| `ui_region_copy` | `0x00480E50` | high | Copies another Region's valid rectangle or canonicalizes an empty source. |
+| `ui_region_intersect_region` | `0x00480EF0` | high | Intersects the stored rectangle with another Region. |
+| `ui_region_intersect_rect` | `0x00480F40` | high | Intersects the Region in place with a caller-supplied rectangle. |
+| `ui_region_union_rect` | `0x00480F70` | high | Expands the Region in place to include a caller-supplied rectangle. |
+| `ui_region_union_region` | `0x00480FA0` | high | Expands the stored rectangle to include another Region. |
+| `ui_region_exclude_rect` | `0x00480FF0` | high | Shrinks or clears the single-rectangle Region when an exclusion covers an edge or the whole region. |
+| `ui_region_exclude_region` | `0x00481200` | high | Extracts another Region's rectangle and applies the single-rectangle exclusion helper. |
+| `ui_region_offset` | `0x00481240` | high | Offsets every edge of a nonempty Region by the requested horizontal and vertical deltas. |
+| `ui_region_intersects_rect` | `0x004812D0` | high | Returns whether the Region and a caller-supplied rectangle have strict nonempty overlap. |
+| `ui_region_intersects_region` | `0x00481300` | high | Returns whether two Regions have strict nonempty overlap. |
+| `ui_region_contains_rect` | `0x00481330` | high | Tests whether the Region contains the supplied rectangle, with an empty candidate accepted. |
+| `ui_region_contains_region` | `0x00481350` | high | Tests whether this Region contains another Region. |
+| `ui_region_equals_region` | `0x004813A0` | high | Tests Region rectangle equality while treating any two empty rectangles as equal. |
+| `ui_region_get_rect` | `0x004813F0` | high | Copies the Region's four stored rectangle coordinates to an output rectangle. |
+| `ui_region_scalar_deleting_dtor` | `0x00481420` | high | Scalar deleting destructor for exact RTTI class Region. |
+| `ui_rect_equals_with_empty` | `0x00481450` | high | Compares rectangle coordinates while considering any two empty rectangles equal. |
+| `ui_rect_contains` | `0x00481500` | high | Tests whether the second rectangle contains the first, accepting an empty candidate. |
+| `ui_layout_from_memory_ctor` | `0x00481AA0` | high | Constructs exact RTTI class LayoutFromMem over LayoutFileIO with an empty bounded source. |
+| `ui_layout_from_memory_set_buffer` | `0x00481AE0` | high | Stores the layout byte pointer, byte length, and zero read offset. |
+| `ui_layout_from_memory_unsupported_operation` | `0x00481B10` | high | Returns -1 for the second LayoutFileIO operation not supported by LayoutFromMem. |
+| `ui_layout_from_memory_read_byte` | `0x00481B20` | high | Returns one byte from the bounded memory source or -1 at end of input. |
+| `ui_layout_from_file_ctor` | `0x00481B70` | high | Constructs exact RTTI class LayoutFromFile over LayoutFileIO and retains its file stream. |
+| `ui_layout_from_file_unsupported_operation` | `0x00481BA0` | high | Returns -1 for the second LayoutFileIO operation not supported by LayoutFromFile. |
+| `ui_layout_from_file_read_byte` | `0x00481BB0` | high | Reads one byte through the retained file stream or returns -1 at end of input. |
+| `ui_layout_manager_ctor` | `0x00481BF0` | high | Registers the global layout manager and constructs its archive and filename cache maps. |
+| `ui_layout_manager_dtor` | `0x00481C70` | high | Deletes cached parsed layouts, destroys both cache levels, and unregisters the global manager. |
 | `ui_layout_find_cached_file` | `0x00481CE0` | high | Finds a parsed GUI layout by archive entry name in the layout manager cache. |
+| `ui_layout_has_named_control` | `0x00481DF0` | high | Tests whether the currently loaded layout contains a control definition with the requested NAME. |
 | `ui_layout_find_control` | `0x00481E30` | high | Finds one named control definition in the selected parsed layout. |
+| `ui_layout_cache_file` | `0x00481E60` | high | Caches one parsed layout under its archive pointer and filename while rejecting duplicate insertion. |
 | `ui_layout_select_control` | `0x00482140` | high | Selects a control by name and takes the fatal invalid-layout path when it is missing. |
 | `ui_layout_load` | `0x00482340` | high | Loads a named text layout from the DAT archive, parses its CONTROL blocks, and caches the result. |
 | `ui_layout_get_control_rect` | `0x00482630` | high | Returns the selected control's four pane-local rectangle coordinates. |
@@ -2484,6 +2523,21 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_get_coloring_table_manager` | `0x0047F2A0` | high | Returns the active ColoringTableMan singleton pointer. |
 | `render_coloring_table_manager_destroy` | `0x0047F2B0` | high | Destroys the active ColoringTableMan singleton through its deleting destructor. |
 | `render_coloring_table_map_allocate_nodes` | `0x0047F310` | high | Performs checked allocation for 0x18-byte table-ID map nodes. |
+| `render_coloring_table_map_insert_unique` | `0x0047F380` | high | Finds a table-ID insertion point and returns either the existing node or one newly inserted node. |
+| `render_coloring_table_map_insert_node` | `0x0047F5D0` | high | Links one node, updates map extrema, and restores red-black-tree color invariants. |
+| `render_coloring_table_map_iterator_decrement` | `0x0047F8B0` | high | Moves an iterator to the in-order predecessor map node. |
+| `render_coloring_table_map_create_node` | `0x0047F970` | high | Allocates one map node and constructs its table ID and ColoringTable pointer payload. |
+| `render_coloring_table_map_create_node_exception_cleanup` | `0x0047F9CD` | high | Releases a partially constructed map node before rethrowing its construction failure. |
+| `render_coloring_table_map_allocate_node` | `0x0047FA10` | high | Allocates and initializes one red-black-tree node around the manager map sentinel. |
+| `render_coloring_table_map_construct_value` | `0x0047FA60` | high | Copies the table ID and ColoringTable pointer into a newly allocated map node payload. |
+| `render_pixmap_record_ctor` | `0x004804B0` | high | Initializes the shared 0x34-byte pixmap record with empty pixels, bounds, mask data, and palette state. |
+| `render_pixmap_record_clone` | `0x00480560` | high | Deep-copies a pixmap's pixel allocation and optional opaque-run mask. |
+| `render_pixmap_record_reset` | `0x00480620` | high | Releases the pixel and opaque-run allocations and clears their pointers and mask length. |
+| `render_pixmap_build_opaque_run_mask` | `0x00480680` | high | Run-length encodes transparent and nonzero pixel spans with a maximum run length of 126. |
+| `render_pixmap_downsample_2x` | `0x004809A0` | high | Allocates a half-size RGB16 pixmap and combines every source 2x2 block through renderer blend tables. |
+| `render_initialize_luminance_tables` | `0x004815D0` | high | Builds RGB component luminance contributions and four output ramps for both RGB565 and RGB555. |
+| `render_set_luminance_input_rgb555` | `0x00481840` | high | Selects RGB555 when nonzero or RGB565 when zero for the shared packed-pixel luminance mapper. |
+| `render_map_current_rgb16_luminance_palette` | `0x00481850` | high | Computes five-bit luminance in the selected source format and resolves one of four packed-color ramps. |
 | `render_map_rgb565_luminance_palette` | `0x00481980` | high | Computes five-bit luminance from RGB565 and resolves it through one of four 32-entry packed-color ramps. |
 | `render_map_rgb555_luminance_palette` | `0x00481A10` | high | Computes five-bit luminance from RGB555 and resolves it through one of four 32-entry packed-color ramps. |
 | `render_image_library_ctor` | `0x0048B2C0` | high | Constructs RTTI class ImageLib and registers its singleton; the object has no filename or decoded-frame cache fields. |
@@ -2781,6 +2835,18 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_updater_scalar_deleting_dtor` | `0x004781B0` | high | Destroys exact RTTI FileUpdater through its LObject base and conditionally frees the complete object. |
 | `file_load_variant_color_table` | `0x0047DEB0` | medium | Loads one numbered color table family used by renderable assets. |
 | `file_load_coloring_table` | `0x0047E2C0` | high | Loads a named DAT entry, parses its coloring table from memory, and releases the archive handle. |
+| `file_text_reader_init_archive_entry` | `0x0047FDF0` | high | Finds a named DAT entry and initializes the bounded text reader over its expanded bytes. |
+| `file_text_reader_initialize_identifier_table` | `0x0047FE70` | high | Builds the one-time byte table for dot, underscore, ASCII letters, and decimal digits. |
+| `file_text_reader_init_memory` | `0x0047FF20` | high | Initializes the bounded text reader directly over a caller-supplied memory buffer. |
+| `file_text_reader_set_buffer` | `0x0047FF50` | high | Stores the text source pointer, byte length, and zero read offset. |
+| `file_text_reader_read_byte` | `0x0047FF80` | high | Returns the next bounded source byte and advances the read offset. |
+| `file_text_reader_unread_byte` | `0x0047FFD0` | high | Moves the bounded reader back by one byte when it is not already at offset zero. |
+| `file_text_reader_skip_line_dbcs` | `0x00480000` | high | Consumes through LF while preserving DBCS lead and trail pairing. |
+| `file_text_token_mode_accepts` | `0x00480060` | high | Treats mode zero as a wildcard or tests it against one requested tokenizer mode. |
+| `file_text_reader_read_line` | `0x00480080` | high | Copies one bounded line through LF or end of source and null-terminates the destination. |
+| `file_text_reader_read_token` | `0x004800F0` | high | Reads one bounded token with the default tokenizer behavior. |
+| `file_text_reader_read_token_ex` | `0x00480110` | high | Reads one token with DBCS handling, whitespace and newline status, hash comments, and optional mode behavior. |
+| `file_text_token_append_byte` | `0x00480380` | high | Appends one byte to the token destination and advances its length. |
 | `file_hea_build_row_views` | `0x00487380` | high | Clips a mask-canvas rectangle and builds one run pointer per pixel scanline; it scans horizontal band checkpoints but client 7.41 always uses band 0's row-offset table. |
 | `file_hea_open` | `0x004875B0` | high | Maps the HEA header, band array, row offsets, and packed run stream. |
 | `file_hea_project_map_position` | `0x004876D0` | high | Projects two map axes into the padded HEA mask canvas with 28-pixel horizontal and 14-pixel vertical steps, using header screen width and height as margins. |
@@ -3340,6 +3406,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `text_markup_segment_queue_pop_front` | `0x0047DA50` | high | Advances the markup segment ring head modulo 256. |
 | `text_markup_segment_queue_commit_back` | `0x0047DA90` | high | Commits the current back slot by advancing the tail modulo 256. |
 | `text_markup_segment_queue_back_slot` | `0x0047DAD0` | high | Returns the uncommitted record at the markup segment ring tail. |
+| `text_byte_is_control_or_space` | `0x00480360` | high | Returns true for byte values from zero through ASCII space. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

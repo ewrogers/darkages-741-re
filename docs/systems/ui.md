@@ -25,6 +25,12 @@ The spatial `HierList<Screen>` tracks screen relationships and positions. It hel
 
 The two trees often describe the same visible objects, but they serve different jobs. Do not assume a drawing parent is automatically the event parent.
 
+## Rectangle regions
+
+The RTTI-backed `Region` helper used by panes is a wrapper around one rectangle, not a general Windows region made of many pieces. It can clear, offset, intersect, union, compare, and test containment. Empty rectangles are canonicalized to four zero coordinates, and two empty rectangles compare equal even when their original coordinates differed.
+
+Exclusion is deliberately limited by that representation. Removing an edge-aligned rectangle can shrink the stored bounds, and removing a covering rectangle clears it. An exclusion that would leave two disjoint pieces cannot be preserved as two shapes. Pane invalidation code should therefore be read as single-rectangle dirty bounds unless a separate collection is visible around it.
+
 ## Dialog controls
 
 A `DialogPane` owns a local collection of controls. Controls are added with `ui_dialog_add_control` in the order chosen by the pane constructor. That order can differ from the order of definitions in the text layout file.

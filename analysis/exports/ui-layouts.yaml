@@ -11,14 +11,58 @@ functions:
     name: ui_get_layout_manager
     confidence: high
     evidence: "Returns the global layout manager used by pane constructors and named-control lookup helpers."
+  - address: "0x00481AA0"
+    name: ui_layout_from_memory_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class LayoutFromMem over LayoutFileIO with an empty bounded source."
+  - address: "0x00481AE0"
+    name: ui_layout_from_memory_set_buffer
+    confidence: high
+    evidence: "Stores the layout byte pointer, byte length, and zero read offset."
+  - address: "0x00481B10"
+    name: ui_layout_from_memory_unsupported_operation
+    confidence: high
+    evidence: "Returns -1 for the second LayoutFileIO operation not supported by LayoutFromMem."
+  - address: "0x00481B20"
+    name: ui_layout_from_memory_read_byte
+    confidence: high
+    evidence: "Returns one byte from the bounded memory source or -1 at end of input."
+  - address: "0x00481B70"
+    name: ui_layout_from_file_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI class LayoutFromFile over LayoutFileIO and retains its file stream."
+  - address: "0x00481BA0"
+    name: ui_layout_from_file_unsupported_operation
+    confidence: high
+    evidence: "Returns -1 for the second LayoutFileIO operation not supported by LayoutFromFile."
+  - address: "0x00481BB0"
+    name: ui_layout_from_file_read_byte
+    confidence: high
+    evidence: "Reads one byte through the retained file stream or returns -1 at end of input."
+  - address: "0x00481BF0"
+    name: ui_layout_manager_ctor
+    confidence: high
+    evidence: "Registers the global layout manager and constructs its archive and filename cache maps."
+  - address: "0x00481C70"
+    name: ui_layout_manager_dtor
+    confidence: high
+    evidence: "Deletes cached parsed layouts, destroys both cache levels, and unregisters the global manager."
   - address: "0x00481CE0"
     name: ui_layout_find_cached_file
     confidence: high
     evidence: "Finds a parsed GUI layout by archive entry name in the layout manager cache."
+  - address: "0x00481DF0"
+    name: ui_layout_has_named_control
+    confidence: high
+    evidence: "Tests whether the currently loaded layout contains a control definition with the requested NAME."
   - address: "0x00481E30"
     name: ui_layout_find_control
     confidence: high
     evidence: "Finds one named control definition in the selected parsed layout."
+  - address: "0x00481E60"
+    name: ui_layout_cache_file
+    confidence: high
+    evidence: "Caches one parsed layout under its archive pointer and filename while rejecting duplicate insertion."
   - address: "0x00482140"
     name: ui_layout_select_control
     confidence: high

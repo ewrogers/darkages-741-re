@@ -2,6 +2,8 @@
 
 TBL is a naming convention, not one shared binary format. Most TBL assets are line-oriented text, but each loader gives its file a separate grammar.
 
+Several loaders share a bounded byte reader. It can read directly from memory or from an expanded DAT entry, return a whole line, or split the input into tokens. Bare identifier characters are dot, underscore, ASCII letters, and decimal digits. The extended token path treats `#` as a line comment marker and skips to LF with DBCS lead-byte tracking, so a trail byte is not mistaken for syntax. This helper does not make every TBL grammar identical; each caller still decides which tokens and record order are valid.
+
 ## Palette range tables
 
 `pal*.tbl`, `itempal.tbl`, `effpal.tbl`, `stcpal.tbl`, and `mptpal.tbl` use the same range parser. Blank lines and `//` comments are skipped.

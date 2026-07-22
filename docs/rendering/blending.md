@@ -45,6 +45,8 @@ The tables are created with the video system and released by `render_free_blend_
 
 The optimized blitter dispatch has a second table family. `render_initialize_blit_dispatch` selects RGB565 or RGB555, installs the format-specific software routines, and calls `render_build_16bit_blend_tables`. Those tables split packed pixels into component and carry values so the inner loops can process several 16-bit pixels at once. Video shutdown clears the dispatch and frees all six buffers.
 
+Another compact lookup family supports luminance recoloring. `render_initialize_luminance_tables` builds red, green, and blue contributions using coefficients 0.299, 0.587, and 0.114, then creates four 32-entry output ramps for RGB565 and four for RGB555. Video setup tells the shared mapper which source packing is active. The blitter can then reduce a packed pixel to five-bit luminance and select one of four recolored ramps without repeating floating-point work per pixel.
+
 Its indexed-image entry points make the transparency rule explicit:
 
 - `render_blit_indexed_opaque` maps every source index through the palette.
