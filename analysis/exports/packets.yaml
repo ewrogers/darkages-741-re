@@ -2235,10 +2235,34 @@ functions:
     name: net_send_quit
     confidence: high
     evidence: "Builds the opcode-only CQuit variant, submits one byte, tears down the current connection, then chooses a local TerminalPane2 restart or process-close path."
+  - address: "0x004B8CA6"
+    name: maybe_net_dispatch_main_menu_events_return_fragment
+    confidence: medium
+    evidence: "Compiler-recovered overlapping false-return fragment at the end of net_dispatch_main_menu_events; it has no independent callers."
+  - address: "0x004B9680"
+    name: net_handle_transfer_server_raw
+    confidence: high
+    evidence: "Parses a raw transfer endpoint and token, switches the connection, and submits the CTransfer acknowledgement."
+  - address: "0x004B9870"
+    name: net_handle_browser_raw
+    confidence: high
+    evidence: "Parses raw SBrowser variants into URL alerts or direct browser launch behavior."
+  - address: "0x004B9CE0"
+    name: net_handle_advertisement_raw
+    confidence: high
+    evidence: "Parses a raw SAdvertisement body and saves its string and numeric arguments for post-exit launch."
   - address: "0x004B9DA0"
     name: net_handle_advertisement_server_packet
     confidence: high
     evidence: "MainMenuPane forwards the parsed SAdvertisement string, length, and three numeric fields into the application-wide deferred post-exit advertisement state."
+  - address: "0x004B9DE0"
+    name: net_handle_main_menu_message_raw
+    confidence: high
+    evidence: "Parses the raw SMessage type-1 text form used by the main-menu event path."
+  - address: "0x004B9EB0"
+    name: net_handle_main_menu_message
+    confidence: high
+    evidence: "Consumes an RTTI SMessage in the main-menu path and copies type-1 text into bounded local storage."
   - address: "0x004BA010"
     name: net_send_alive
     confidence: high

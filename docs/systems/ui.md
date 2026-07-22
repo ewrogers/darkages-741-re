@@ -95,6 +95,14 @@ The pane arranges records in a column-major grid from an item width, item height
 
 Drawing clears the pane, intersects each item rectangle with the visible region, and calls a virtual item renderer. The base renderer is empty, so each concrete list class supplies its own row or cell appearance while reusing the same storage, selection, input, and scrolling behavior.
 
+## Main menu
+
+`MainMenuPane` loads `_nstart.txt` and builds six actions in fixed order: Create, Continue, Password, Credit, Homepage, and Exit. A small `MainMenu` model stores the count and selected action, using `-1` when nothing is selected. Pointer hit testing and the four internal navigation keys invalidate only the old and new action rectangles. Enter, Space, or pointer release activates the selected action.
+
+The pane draws the layout background, selected or unselected art for all six actions, `Version major.minor`, and optional `addimg.spf` artwork. Create, Continue, and Password open their matching dialogs. Homepage asks the Windows shell to open `http://www.darkages.com`. Exit sends `CQuit`. Credit follows its own dialog path.
+
+Asian UI modes keep the lobby connection alive from a 30-second timer and from pointer or keyboard activity. Successful login removes the lobby panes, creates the equipment, game-message, and score panes, derives the packet salt source from the character name, and queues the old terminal pane for deferred deletion.
+
 ## Pane state
 
 Several states that look similar are independent:

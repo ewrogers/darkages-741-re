@@ -1947,6 +1947,78 @@ functions:
     name: ui_main_menu_model_ctor
     confidence: high
     evidence: "Constructs the RTTI MainMenu LObject model with six entries and no active selection."
+  - address: "0x004B6C70"
+    name: ui_main_menu_pane_ctor
+    confidence: high
+    evidence: "Loads _nstart.txt, six button-state pairs and bounds, LogoShowPane, and a 30-second menu timer."
+  - address: "0x004B73C0"
+    name: ui_main_menu_pane_dtor
+    confidence: high
+    evidence: "Destroys the owned LogoShowPane and MainMenu model, then destroys the Pane base."
+  - address: "0x004B74A0"
+    name: ui_main_menu_pane_register_screen
+    confidence: high
+    evidence: "Registers MainMenuPane and its owned LogoShowPane over the configured logo rectangle."
+  - address: "0x004B74F0"
+    name: ui_main_menu_pane_unregister_screen
+    confidence: high
+    evidence: "Unregisters the owned LogoShowPane before unregistering MainMenuPane."
+  - address: "0x004B75A0"
+    name: ui_main_menu_enter_game_session
+    confidence: high
+    evidence: "Removes login UI, creates in-game equipment, message, and score panes, derives the character salt source, and retires the terminal pane."
+  - address: "0x004B77F0"
+    name: ui_main_menu_open_create_user_dialog
+    confidence: high
+    evidence: "Allocates and constructs CreateUserDialog under the main menu's terminal pane."
+  - address: "0x004B7880"
+    name: ui_main_menu_open_login_dialog
+    confidence: high
+    evidence: "Allocates and constructs LoginDialog under the main menu's terminal pane."
+  - address: "0x004B7910"
+    name: ui_main_menu_open_change_password_dialog
+    confidence: high
+    evidence: "Allocates and constructs ChangePasswordDialog under the main menu's terminal pane."
+  - address: "0x004B79A0"
+    name: ui_main_menu_open_homepage
+    confidence: high
+    evidence: "Opens http://www.darkages.com with the Windows shell."
+  - address: "0x004B7B40"
+    name: ui_show_connection_failed_alert
+    confidence: high
+    evidence: "Sends the local quit packet and opens the Korean 'Unable to connect to the server' alert."
+  - address: "0x004B8CB0"
+    name: ui_main_menu_pane_draw
+    confidence: high
+    evidence: "Draws the background, six button states, version text, and optional addimg.spf artwork."
+  - address: "0x004B91E0"
+    name: ui_main_menu_pane_set_hidden
+    confidence: high
+    evidence: "Invalidates MainMenuPane and stores the flag that suppresses normal menu drawing."
+  - address: "0x004B9210"
+    name: ui_main_menu_pane_get_action_rect
+    confidence: high
+    evidence: "Returns one of the six action rectangles or an empty rectangle for an invalid index."
+  - address: "0x004B93E0"
+    name: ui_main_menu_pane_hit_test_action
+    confidence: high
+    evidence: "Returns the action containing a point, or -1 when no action rectangle contains it."
+  - address: "0x004B9480"
+    name: ui_main_menu_create_screen_dimmer
+    confidence: high
+    evidence: "Creates a ScreenDimmer with level 5 and stores it before login submission."
+  - address: "0x004B9F30"
+    name: ui_main_menu_set_credentials
+    confidence: high
+    evidence: "Copies the submitted account name and password into two fixed 16-byte MainMenuPane fields."
+  - address: "0x004B9F70"
+    name: ui_main_menu_handle_timer
+    confidence: high
+    evidence: "On timer ID 0 in Asian UI modes, sends the client alive packet from the adjusted MainMenuPane."
+  - address: "0x004B9FB0"
+    name: ui_main_menu_note_activity_and_send_alive
+    confidence: high
+    evidence: "Marks the menu active and sends an alive packet after more than 30 seconds without a saved activity update."
   - address: "0x0052C480"
     name: ui_npc_session_update_speaker_art
     confidence: high

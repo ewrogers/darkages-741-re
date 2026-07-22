@@ -2029,9 +2029,27 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_logo_show_pane_draw` | `0x004B6A70` | high | Draws the configured logo frame while its phase lies in range, using the selected one of six palettes. |
 | `ui_logo_show_pane_handle_timer` | `0x004B6B40` | high | Advances timer 0x4D2, randomizes the palette on wrap, invalidates the pane, and requeues the timer. |
 | `ui_main_menu_model_ctor` | `0x004B6C40` | high | Constructs the RTTI MainMenu LObject model with six entries and no active selection. |
+| `ui_main_menu_pane_ctor` | `0x004B6C70` | high | Loads _nstart.txt, six button-state pairs and bounds, LogoShowPane, and a 30-second menu timer. |
+| `ui_main_menu_pane_dtor` | `0x004B73C0` | high | Destroys the owned LogoShowPane and MainMenu model, then destroys the Pane base. |
+| `ui_main_menu_pane_register_screen` | `0x004B74A0` | high | Registers MainMenuPane and its owned LogoShowPane over the configured logo rectangle. |
+| `ui_main_menu_pane_unregister_screen` | `0x004B74F0` | high | Unregisters the owned LogoShowPane before unregistering MainMenuPane. |
 | `ui_main_menu_activate_selected_action` | `0x004B7520` | high | Dispatches the selected MainMenuPane entry to login, character creation, password change, homepage, credits, or exit behavior. |
+| `ui_main_menu_enter_game_session` | `0x004B75A0` | high | Removes login UI, creates in-game equipment, message, and score panes, derives the character salt source, and retires the terminal pane. |
+| `ui_main_menu_open_create_user_dialog` | `0x004B77F0` | high | Allocates and constructs CreateUserDialog under the main menu's terminal pane. |
+| `ui_main_menu_open_login_dialog` | `0x004B7880` | high | Allocates and constructs LoginDialog under the main menu's terminal pane. |
+| `ui_main_menu_open_change_password_dialog` | `0x004B7910` | high | Allocates and constructs ChangePasswordDialog under the main menu's terminal pane. |
+| `ui_main_menu_open_homepage` | `0x004B79A0` | high | Opens http://www.darkages.com with the Windows shell. |
+| `ui_show_connection_failed_alert` | `0x004B7B40` | high | Sends the local quit packet and opens the Korean 'Unable to connect to the server' alert. |
 | `ui_main_menu_handle_pointer_event` | `0x004B7BD0` | high | Rejects pointer input while MainMenuPane +0x500 is nonzero, then performs menu hit-testing and activation when the gate is clear. |
 | `ui_main_menu_handle_keyboard_event` | `0x004B7D00` | high | Rejects keyboard input while MainMenuPane +0x500 is nonzero, then handles menu selection and activation when the gate is clear. |
+| `ui_main_menu_pane_draw` | `0x004B8CB0` | high | Draws the background, six button states, version text, and optional addimg.spf artwork. |
+| `ui_main_menu_pane_set_hidden` | `0x004B91E0` | high | Invalidates MainMenuPane and stores the flag that suppresses normal menu drawing. |
+| `ui_main_menu_pane_get_action_rect` | `0x004B9210` | high | Returns one of the six action rectangles or an empty rectangle for an invalid index. |
+| `ui_main_menu_pane_hit_test_action` | `0x004B93E0` | high | Returns the action containing a point, or -1 when no action rectangle contains it. |
+| `ui_main_menu_create_screen_dimmer` | `0x004B9480` | high | Creates a ScreenDimmer with level 5 and stores it before login submission. |
+| `ui_main_menu_set_credentials` | `0x004B9F30` | high | Copies the submitted account name and password into two fixed 16-byte MainMenuPane fields. |
+| `ui_main_menu_handle_timer` | `0x004B9F70` | high | On timer ID 0 in Asian UI modes, sends the client alive packet from the adjusted MainMenuPane. |
+| `ui_main_menu_note_activity_and_send_alive` | `0x004B9FB0` | high | Marks the menu active and sends an alive packet after more than 30 seconds without a saved activity update. |
 | `ui_login_dialog_ctor` | `0x004BA180` | high | Constructs RTTI class LoginDialogPane from _nlogin.txt and attaches OK, Cancel, Name, and Password controls. |
 | `ui_login_dialog_handle_key_event` | `0x004BA810` | high | Moves focus from Name to Password when Enter is pressed and otherwise delegates supported keyboard events to DialogPane. |
 | `ui_login_dialog_handle_action` | `0x004BA8C0` | high | Action 0 reads LoginDialogPane controls 2 and 3 and sends CLogin; action 1 closes the dialog. |
@@ -2499,8 +2517,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_dispatch_main_menu_events` | `0x004B8B70` | high | MainMenuPane routes decoded SVersionCheck and SLoginCheck byte buffers outside the packet factory. |
 | `net_dispatch_main_menu_events` | `0x004B8B80` | high | Routes startup decoded buffers and RTTI packet objects to version, stipulation, transfer, and browser handlers. |
 | `net_handle_transfer_server` | `0x004B9510` | high | Reconnects to the endpoint in STransferServer, then sends raw opcode 0x10, the opaque handoff token unchanged, and the common submission terminator. |
+| `net_handle_transfer_server_raw` | `0x004B9680` | high | Parses a raw transfer endpoint and token, switches the connection, and submits the CTransfer acknowledgement. |
+| `net_handle_browser_raw` | `0x004B9870` | high | Parses raw SBrowser variants into URL alerts or direct browser launch behavior. |
 | `net_handle_browser` | `0x004B9B00` | high | Handles RTTI-backed SBrowser variants; subtype 3 caches the supplied homepage URL and marks it available. |
+| `net_handle_advertisement_raw` | `0x004B9CE0` | high | Parses a raw SAdvertisement body and saves its string and numeric arguments for post-exit launch. |
 | `net_handle_advertisement_server_packet` | `0x004B9DA0` | high | MainMenuPane forwards the parsed SAdvertisement string, length, and three numeric fields into the application-wide deferred post-exit advertisement state. |
+| `net_handle_main_menu_message_raw` | `0x004B9DE0` | high | Parses the raw SMessage type-1 text form used by the main-menu event path. |
+| `net_handle_main_menu_message` | `0x004B9EB0` | high | Consumes an RTTI SMessage in the main-menu path and copies type-1 text into bounded local storage. |
 | `net_send_alive` | `0x004BA010` | high | MainMenuPane timer paths send opcode 0x71 and schedule another callback after 30 seconds. |
 | `net_send_request_homepage` | `0x004BA0C0` | high | Builds CRequestHomepage fields 68 01; the common submission layer appends the transmitted zero byte. |
 | `net_send_login_request` | `0x004BAA80` | high | Builds CLogin opcode 0x03 with two u8-length credential strings and a 16-byte masked installation block, submits it through the static-key path, then persists the submitted character name. |
@@ -3760,6 +3783,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `maybe_ui_list_pane_scroll_limit_fragment` | `0x004B3987` | medium | Compiler-recovered overlapping return fragment inside the backward-scroll-limit routine; no independent callers are known. |
 | `maybe_ui_list_pane_pointer_event_fallback` | `0x004B3BB1` | medium | Compiler-recovered overlapping false-return fragment inside the pointer-event handler; no independent callers are known. |
 | `maybe_ui_main_menu_once_flag_test_and_set` | `0x004B6C20` | medium | Returns the previous value of an otherwise unreferenced one-byte flag and sets it on the first call. |
+| `maybe_net_dispatch_main_menu_events_return_fragment` | `0x004B8CA6` | medium | Compiler-recovered overlapping false-return fragment at the end of net_dispatch_main_menu_events; it has no independent callers. |
 | `maybe_ui_manufacture_dialog_ctor_from_body` | `0x004C1AD0` | medium | Duplicates the lmanu.txt construction path and applies a decoded opcode-first body, but no live static caller was recovered. |
 | `maybe_ui_manufacture_dialog_apply_manual_body` | `0x004C2990` | medium | Applies RecipeCount or Recipe from a decoded opcode-first body for the duplicate raw-body pane path. |
 
