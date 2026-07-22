@@ -657,14 +657,178 @@ functions:
     name: net_parse_client_skill_menu_dialog_slots
     confidence: high
     evidence: "Parses a u16 subtype, u8 count, and that many one-byte local skill slots."
+  - address: "0x004D5EB0"
+    name: ui_merchant_face_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI FaceMenuDialog, clamps the live look to parsed selector bounds, and builds its animated preview and controls."
+  - address: "0x004D71B0"
+    name: ui_merchant_face_menu_update_button_states
+    confidence: high
+    evidence: "Enables or disables each appearance decrement and increment button by comparing the live preview values with parsed bounds."
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high
     evidence: "Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form."
+  - address: "0x004D77C8"
+    name: debug_breakpoint_stub_4d77c8
+    confidence: high
+    evidence: "Single unreferenced INT3 recognized as a function between the face-menu action handler and response builder."
   - address: "0x004D77D0"
     name: net_send_merchant_face_menu_selection
     confidence: high
     evidence: "Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID."
+  - address: "0x004D790F"
+    name: ui_merchant_face_menu_ctor_unwind_cleanup
+    confidence: high
+    evidence: "Compiler-generated constructor unwind cleanup that clears FaceMenuDialog's construction guard and verifies the stack cookie."
+  - address: "0x004D7930"
+    name: ui_user_shape_control_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI UserShapeControlPane with gender, hair, and color values, frame zero, and a 300 ms preview timer."
+  - address: "0x004D7A10"
+    name: ui_user_shape_control_pane_dtor
+    confidence: high
+    evidence: "Cancels all owned timers and destroys the UserShapeControlPane base."
+  - address: "0x004D7A90"
+    name: ui_user_shape_control_pane_draw
+    confidence: high
+    evidence: "Builds a human-appearance record from the live selectors and draws the current preview frame."
+  - address: "0x004D7B90"
+    name: ui_user_shape_control_pane_handle_timer_event
+    confidence: high
+    evidence: "Timer ID zero advances and invalidates the preview, then requeues the next update after 300 ms."
+  - address: "0x004D7BE0"
+    name: ui_user_shape_control_pane_advance_frame
+    confidence: high
+    evidence: "Advances the preview frame modulo four and invalidates the pane."
+  - address: "0x004D7C20"
+    name: ui_server_item_menu_dialog2_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ServerItemMenuDialog2 and its five-row paging controls; no direct constructor caller exists in the 7.41 image."
+  - address: "0x004D7DE0"
+    name: ui_server_item_menu_dialog2_dtor
+    confidence: high
+    evidence: "Releases ServerItemMenuDialog2's 0x224-byte row array and destroys its dialog base."
+  - address: "0x004D7E30"
+    name: ui_server_item_menu_dialog2_handle_action
+    confidence: high
+    evidence: "Maps actions 6 through 20 to one-based pages while toggling the active page button."
+  - address: "0x004D7F00"
+    name: ui_server_item_menu_dialog2_show_item_page
+    confidence: high
+    evidence: "Clears the shared item pane and appends up to five records for the requested page."
+  - address: "0x004D7FD0"
+    name: net_parse_server_item_menu_dialog2_items
+    confidence: high
+    evidence: "Parses ordinary or subtype-0x4B server items directly into a counted 0x224-byte record array."
+  - address: "0x004D86D0"
+    name: ui_server_item_menu_dialog2_build_paging_controls
+    confidence: high
+    evidence: "Loads up to 15 page-button image pairs from lmerd NO1, creates one per five items, and selects page one."
+  - address: "0x004D8AD0"
+    name: ui_item_list_new_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ItemListPane_New."
+  - address: "0x004D8B90"
+    name: ui_virtual_return_false
+    confidence: high
+    evidence: "Shared merchant-dialog virtual stub that always returns false."
+  - address: "0x004D8BC0"
+    name: ui_server_item_menu_dialog3_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ServerItemMenuDialog3."
+  - address: "0x004D8BF0"
+    name: ui_virtual_return_true
+    confidence: high
+    evidence: "Shared merchant-dialog virtual stub that always returns true."
+  - address: "0x004D8C00"
+    name: ui_merchant_session_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI MerchantSession."
+  - address: "0x004D8C30"
+    name: ui_merchant_dialog_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI MerchantDialogPane."
+  - address: "0x004D8C60"
+    name: net_parse_screen_menu_common_fields
+    confidence: high
+    evidence: "Parses the fixed SScreenMenu header into a temporary view and retains the string16 content pointer and length."
+  - address: "0x004D8DE0"
+    name: ui_text_menu_dialog_ex_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI TextMenuDialogEx."
+  - address: "0x004D8E30"
+    name: ui_argumented_text_menu_dialog_ex_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ArgumentedTextMenuDialogEx."
+  - address: "0x004D8E60"
+    name: ui_task_list_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI TaskListDialog."
+  - address: "0x004D8E90"
+    name: ui_task_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI TaskListPane."
+  - address: "0x004D8EC0"
+    name: ui_text_menu_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI TextMenuDialog."
+  - address: "0x004D8EF0"
+    name: ui_argumented_text_menu_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ArgumentedTextMenuDialog."
+  - address: "0x004D8F20"
+    name: ui_argumented_text_menu_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ArgumentedTextMenuPane."
+  - address: "0x004D8F50"
+    name: ui_text_input_menu_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI TextInputMenuDialog."
+  - address: "0x004D8FA0"
+    name: ui_argumented_text_input_menu_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ArgumentedTextInputMenuDialog."
+  - address: "0x004D8FD0"
+    name: ui_server_item_menu_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ServerItemMenuDialog."
+  - address: "0x004D9000"
+    name: ui_item_buy_alert_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ItemBuyAlertPane."
+  - address: "0x004D9030"
+    name: ui_item_list_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ItemListPane."
+  - address: "0x004D9060"
+    name: ui_client_item_menu_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ClientItemMenuDialog."
+  - address: "0x004D9090"
+    name: ui_server_spell_menu_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ServerSpellMenuDialog."
+  - address: "0x004D90C0"
+    name: ui_client_spell_menu_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ClientSpellMenuDialog."
+  - address: "0x004D90F0"
+    name: ui_server_skill_menu_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ServerSkillMenuDialog."
+  - address: "0x004D9120"
+    name: ui_client_skill_menu_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ClientSkillMenuDialog."
+  - address: "0x004D9190"
+    name: ui_user_shape_control_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI UserShapeControlPane."
+  - address: "0x004D91C0"
+    name: ui_server_item_menu_dialog2_scalar_deleting_dtor
+    confidence: high
+    evidence: "Compiler-generated scalar deleting destructor for exact RTTI ServerItemMenuDialog2."
   - address: "0x0052C020"
     name: ui_npc_session_set_response_pending
     confidence: high

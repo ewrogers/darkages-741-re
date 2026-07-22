@@ -2237,7 +2237,45 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_server_skill_menu_dialog_dtor` | `0x004D5990` | high | Releases the parsed server skill row array and destroys the dialog base. |
 | `ui_client_skill_menu_dialog_ctor` | `0x004D5B90` | high | Constructs exact RTTI ClientSkillMenuDialog by resolving a local skill-slot whitelist; zero count enumerates slots 1 through 89. |
 | `ui_client_skill_menu_dialog_dtor` | `0x004D5D60` | high | Releases the parsed local skill-slot whitelist and destroys the dialog base. |
+| `ui_merchant_face_menu_dialog_ctor` | `0x004D5EB0` | high | Constructs exact RTTI FaceMenuDialog, clamps the live look to parsed selector bounds, and builds its animated preview and controls. |
+| `ui_merchant_face_menu_update_button_states` | `0x004D71B0` | high | Enables or disables each appearance decrement and increment button by comparing the live preview values with parsed bounds. |
 | `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
+| `ui_merchant_face_menu_ctor_unwind_cleanup` | `0x004D790F` | high | Compiler-generated constructor unwind cleanup that clears FaceMenuDialog's construction guard and verifies the stack cookie. |
+| `ui_user_shape_control_pane_ctor` | `0x004D7930` | high | Constructs exact RTTI UserShapeControlPane with gender, hair, and color values, frame zero, and a 300 ms preview timer. |
+| `ui_user_shape_control_pane_dtor` | `0x004D7A10` | high | Cancels all owned timers and destroys the UserShapeControlPane base. |
+| `ui_user_shape_control_pane_draw` | `0x004D7A90` | high | Builds a human-appearance record from the live selectors and draws the current preview frame. |
+| `ui_user_shape_control_pane_handle_timer_event` | `0x004D7B90` | high | Timer ID zero advances and invalidates the preview, then requeues the next update after 300 ms. |
+| `ui_user_shape_control_pane_advance_frame` | `0x004D7BE0` | high | Advances the preview frame modulo four and invalidates the pane. |
+| `ui_server_item_menu_dialog2_ctor` | `0x004D7C20` | high | Constructs exact RTTI ServerItemMenuDialog2 and its five-row paging controls; no direct constructor caller exists in the 7.41 image. |
+| `ui_server_item_menu_dialog2_dtor` | `0x004D7DE0` | high | Releases ServerItemMenuDialog2's 0x224-byte row array and destroys its dialog base. |
+| `ui_server_item_menu_dialog2_handle_action` | `0x004D7E30` | high | Maps actions 6 through 20 to one-based pages while toggling the active page button. |
+| `ui_server_item_menu_dialog2_show_item_page` | `0x004D7F00` | high | Clears the shared item pane and appends up to five records for the requested page. |
+| `ui_server_item_menu_dialog2_build_paging_controls` | `0x004D86D0` | high | Loads up to 15 page-button image pairs from lmerd NO1, creates one per five items, and selects page one. |
+| `ui_item_list_new_scalar_deleting_dtor` | `0x004D8AD0` | high | Compiler-generated scalar deleting destructor for exact RTTI ItemListPane_New. |
+| `ui_virtual_return_false` | `0x004D8B90` | high | Shared merchant-dialog virtual stub that always returns false. |
+| `ui_server_item_menu_dialog3_scalar_deleting_dtor` | `0x004D8BC0` | high | Compiler-generated scalar deleting destructor for exact RTTI ServerItemMenuDialog3. |
+| `ui_virtual_return_true` | `0x004D8BF0` | high | Shared merchant-dialog virtual stub that always returns true. |
+| `ui_merchant_session_scalar_deleting_dtor` | `0x004D8C00` | high | Compiler-generated scalar deleting destructor for exact RTTI MerchantSession. |
+| `ui_merchant_dialog_pane_scalar_deleting_dtor` | `0x004D8C30` | high | Compiler-generated scalar deleting destructor for exact RTTI MerchantDialogPane. |
+| `ui_text_menu_dialog_ex_scalar_deleting_dtor` | `0x004D8DE0` | high | Compiler-generated scalar deleting destructor for exact RTTI TextMenuDialogEx. |
+| `ui_argumented_text_menu_dialog_ex_scalar_deleting_dtor` | `0x004D8E30` | high | Compiler-generated scalar deleting destructor for exact RTTI ArgumentedTextMenuDialogEx. |
+| `ui_task_list_dialog_scalar_deleting_dtor` | `0x004D8E60` | high | Compiler-generated scalar deleting destructor for exact RTTI TaskListDialog. |
+| `ui_task_list_pane_scalar_deleting_dtor` | `0x004D8E90` | high | Compiler-generated scalar deleting destructor for exact RTTI TaskListPane. |
+| `ui_text_menu_dialog_scalar_deleting_dtor` | `0x004D8EC0` | high | Compiler-generated scalar deleting destructor for exact RTTI TextMenuDialog. |
+| `ui_argumented_text_menu_dialog_scalar_deleting_dtor` | `0x004D8EF0` | high | Compiler-generated scalar deleting destructor for exact RTTI ArgumentedTextMenuDialog. |
+| `ui_argumented_text_menu_pane_scalar_deleting_dtor` | `0x004D8F20` | high | Compiler-generated scalar deleting destructor for exact RTTI ArgumentedTextMenuPane. |
+| `ui_text_input_menu_dialog_scalar_deleting_dtor` | `0x004D8F50` | high | Compiler-generated scalar deleting destructor for exact RTTI TextInputMenuDialog. |
+| `ui_argumented_text_input_menu_dialog_scalar_deleting_dtor` | `0x004D8FA0` | high | Compiler-generated scalar deleting destructor for exact RTTI ArgumentedTextInputMenuDialog. |
+| `ui_server_item_menu_dialog_scalar_deleting_dtor` | `0x004D8FD0` | high | Compiler-generated scalar deleting destructor for exact RTTI ServerItemMenuDialog. |
+| `ui_item_buy_alert_pane_scalar_deleting_dtor` | `0x004D9000` | high | Compiler-generated scalar deleting destructor for exact RTTI ItemBuyAlertPane. |
+| `ui_item_list_pane_scalar_deleting_dtor` | `0x004D9030` | high | Compiler-generated scalar deleting destructor for exact RTTI ItemListPane. |
+| `ui_client_item_menu_dialog_scalar_deleting_dtor` | `0x004D9060` | high | Compiler-generated scalar deleting destructor for exact RTTI ClientItemMenuDialog. |
+| `ui_server_spell_menu_dialog_scalar_deleting_dtor` | `0x004D9090` | high | Compiler-generated scalar deleting destructor for exact RTTI ServerSpellMenuDialog. |
+| `ui_client_spell_menu_dialog_scalar_deleting_dtor` | `0x004D90C0` | high | Compiler-generated scalar deleting destructor for exact RTTI ClientSpellMenuDialog. |
+| `ui_server_skill_menu_dialog_scalar_deleting_dtor` | `0x004D90F0` | high | Compiler-generated scalar deleting destructor for exact RTTI ServerSkillMenuDialog. |
+| `ui_client_skill_menu_dialog_scalar_deleting_dtor` | `0x004D9120` | high | Compiler-generated scalar deleting destructor for exact RTTI ClientSkillMenuDialog. |
+| `ui_user_shape_control_pane_scalar_deleting_dtor` | `0x004D9190` | high | Compiler-generated scalar deleting destructor for exact RTTI UserShapeControlPane. |
+| `ui_server_item_menu_dialog2_scalar_deleting_dtor` | `0x004D91C0` | high | Compiler-generated scalar deleting destructor for exact RTTI ServerItemMenuDialog2. |
 | `ui_open_find_farmpet` | `0x004EAE40` | high | Mini-game selector 3 constructs, centers, and registers the exact RTTI FindFarmpet::FindFarmpetPane singleton. |
 | `ui_find_farmpet_pane_handle_network_event` | `0x004EB000` | high | FindFarmpet::FindFarmpetPane accepts server opcode 0x64 and forwards it to its action-7 update method. |
 | `ui_find_farmpet_apply_mini_game_update` | `0x004EC3E0` | high | Consumes only SMiniGame action 7, matching its first u32 against two tracked IDs and storing the second u32 as the corresponding value. |
@@ -2721,6 +2759,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_parse_server_skill_menu_dialog_entries` | `0x004D59E0` | high | Parses counted 0x108-byte server skill rows containing kind, icon, variant, and string8 name. |
 | `net_parse_client_skill_menu_dialog_slots` | `0x004D5DB0` | high | Parses a u16 subtype, u8 count, and that many one-byte local skill slots. |
 | `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
+| `net_parse_server_item_menu_dialog2_items` | `0x004D7FD0` | high | Parses ordinary or subtype-0x4B server items directly into a counted 0x224-byte record array. |
+| `net_parse_screen_menu_common_fields` | `0x004D8C60` | high | Parses the fixed SScreenMenu header into a temporary view and retains the string16 content pointer and length. |
 | `net_send_pursuit_selection` | `0x004DBC90` | high | MessageDialog and SimpleMessageDialog share this CPursuit opcode 0x3A selection method. |
 | `net_dispatch_metadata_events` | `0x004E4D80` | high | MetaTableManager recognizes decoded SMetaData opcode 0x6F outside the packet factory. |
 | `net_handle_metadata` | `0x004E4EA0` | high | Parses SMetaData table entries and validates or applies named metadata blobs. |
@@ -4798,6 +4838,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `memory_copy_mmx_blocks` | `0x004C9C00` | high | Aligns the destination, transfers large inputs with MMX movq, copies the edges as bytes, and executes emms. |
 | `memory_manager_singleton_register_adjusted` | `0x004C9D10` | high | Registers exact RTTI MemoryMan from its Singleton secondary base. |
 | `memory_manager_singleton_unregister_adjusted` | `0x004C9D50` | high | Clears the MemoryMan singleton from its adjusted secondary-base pointer. |
+| `debug_breakpoint_stub_4d77c8` | `0x004D77C8` | high | Single unreferenced INT3 recognized as a function between the face-menu action handler and response builder. |
 | `metadata_item_info_list_exists` | `0x004D9330` | high | Returns whether the exact RTTI ItemInfoList singleton is currently bound. |
 | `metadata_item_info_list_get` | `0x004D9350` | high | Returns the exact RTTI ItemInfoList singleton pointer. |
 | `metadata_options_bind_singleton` | `0x004E25C0` | high | Binds the exact RTTI MetaOptions complete object after adjusting from its Singleton base subobject. |

@@ -70,6 +70,10 @@ Activating a row selects one of three `CMerchant` opcode `0x39` response shapes.
 
 The spell and skill dialogs follow the same two-source split. Server variants receive counted 0x108-byte rows containing kind, icon, variant, and name. Client variants receive a byte-sized local slot whitelist and resolve the current learned spell or skill. A zero whitelist count means that the client enumerates slots 1 through 89.
 
+`FaceMenuDialog` is a separate merchant appearance editor. It clamps the current character's gender, hair, and color selectors to server-supplied minimum and maximum values, disables each direction button at its limit, and renders the result in `UserShapeControlPane`. The preview advances through four frames every 300 ms. Submission uses the compact nine-byte `CMerchant` form described in the function appendix rather than the normal pursuit-ID header.
+
+The executable also contains a complete `ServerItemMenuDialog2` with up to 15 page buttons and five items per page. Its constructor has no direct caller in this image. It is therefore documented as compiled but unreachable, separately from the active older dialog and the explicitly disabled `ServerItemMenuDialog3`.
+
 ### Target identity
 
 Both protocols carry `target_type` and `target_id`, and both client responses echo them. The local dialog builders do not decode that byte, and the screen-menu code contains a separate `target_type > 0x0C` behavior. A complete 7.41 target-type enum remains unresolved.
