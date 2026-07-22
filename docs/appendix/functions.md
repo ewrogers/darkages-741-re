@@ -218,6 +218,48 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_manager_unregister_global` | `0x0048F780` | high | Clears the process-global InputMan when this instance is registered. |
 | `input_event_manager_is_registered` | `0x0048F7C0` | high | Reports whether the separate InputEventManager singleton exists. |
 | `input_keyboard_manager_ctor` | `0x004A1FD0` | high | Constructs exact RTTI KeyboardMan, publishes its singleton pointer, and initializes repeat and keyboard-state fields. |
+| `input_keyboard_manager_dtor` | `0x004A2070` | high | Clears the published exact RTTI KeyboardMan singleton pointer and destroys its LObject base. |
+| `input_keyboard_manager_get` | `0x004A20A0` | high | Returns the exact RTTI KeyboardMan singleton pointer. |
+| `input_keyboard_manager_serialize_state` | `0x004A20B0` | high | Copies 22 KeyboardMan u32 state fields into an 88-byte big-endian scratch buffer. |
+| `input_keyboard_manager_deserialize_state` | `0x004A23D0` | high | Loads 22 big-endian u32 values from an 88-byte buffer into KeyboardMan state fields. |
+| `input_keyboard_manager_release_serialized_state` | `0x004A26C0` | high | Releases a scratch buffer produced by the KeyboardMan state serializer. |
+| `input_hangul_decode_cp949_components` | `0x004A26F0` | high | Maps one CP949 syllable pair to initial, medial, and final component indexes or preserves an unmatched pair behind an 0xFF marker. |
+| `input_hangul_encode_cp949_components` | `0x004A2830` | high | Maps component indexes to a precomposed CP949 pair, special pair, or eight-byte compatibility-Jamo fallback. |
+| `input_hangul_expand_component_jamo` | `0x004A2AA0` | high | Expands initial, medial, and final component indexes into one to three compatibility-Jamo CP949 codes. |
+| `input_keyboard_manager_toggle_language_mode` | `0x004A2BC0` | high | Toggles the configured Korean input mode, resets active composition state, and requests an input refresh. |
+| `input_keyboard_manager_set_internal_composition_enabled` | `0x004A2C30` | high | Resets composition and enables or disables the internal Hangul composer when the selected client configuration permits it. |
+| `input_hangul_components_have_precomposed_cp949` | `0x004A2C70` | high | Reports whether a component triple encodes as one two-byte precomposed CP949 syllable. |
+| `input_hangul_pack_components_cp949` | `0x004A2CC0` | high | Encodes a component triple and returns the first two output bytes as one packed CP949 value. |
+| `input_hangul_unpack_cp949_components` | `0x004A2D10` | high | Decodes one packed CP949 value into initial, medial, and final component indexes. |
+| `input_hangul_map_key_to_initial_jamo` | `0x004A2D60` | high | Maps an eligible ASCII key to an initial-consonant Jamo index through the client lookup table. |
+| `input_hangul_map_key_to_medial_jamo` | `0x004A2DA0` | high | Maps an eligible ASCII key to a medial-vowel Jamo index through the client lookup table. |
+| `input_hangul_map_key_to_final_jamo` | `0x004A2DE0` | high | Maps an eligible ASCII key to a final-consonant Jamo index through the client lookup table. |
+| `input_hangul_combine_initial_jamo_key` | `0x004A2E20` | high | Combines the current initial-consonant state with an ASCII key when the pair is valid. |
+| `input_hangul_combine_medial_jamo_key` | `0x004A2F00` | high | Combines the current medial-vowel state with an ASCII key when the pair is valid. |
+| `input_hangul_combine_final_jamo_key` | `0x004A2FB0` | high | Combines the current final-consonant state with an ASCII key when the pair is valid. |
+| `input_hangul_map_key_to_initial_component` | `0x004A3170` | high | Maps a keyboard key to the initial component index used by the precomposed-syllable path. |
+| `input_hangul_map_key_to_medial_component` | `0x004A31A0` | high | Maps a keyboard key to the medial component index used by the precomposed-syllable path. |
+| `input_hangul_map_key_to_final_component` | `0x004A31D0` | high | Maps a keyboard key to the final component index used by the precomposed-syllable path. |
+| `input_hangul_combine_final_component_key` | `0x004A3200` | high | Combines the current final component and keyboard key into a valid compound final component. |
+| `input_hangul_combine_medial_component_key` | `0x004A3350` | high | Combines the current medial component and keyboard key into a valid compound medial component. |
+| `input_keyboard_manager_reset_composition` | `0x004A3400` | high | Resets the Hangul initial, medial, final, pending-output, and history fields. |
+| `input_keyboard_manager_handle_noncomposing_key` | `0x004A3450` | high | Handles the language-toggle chord or emits one noncomposing key through the active layout. |
+| `input_keyboard_manager_translate_key` | `0x004A3500` | high | Composes CP949 Hangul syllables, handles compound components and backspace history, and reports replacement output. |
+| `input_keyboard_manager_translate_key_split_1` | `0x004A3610` | high | Compiler-split continuation inside input_keyboard_manager_translate_key, not an independent client behavior. |
+| `input_keyboard_manager_translate_key_split_2` | `0x004A372B` | high | Compiler-split continuation inside input_keyboard_manager_translate_key, not an independent client behavior. |
+| `input_keyboard_manager_translate_key_split_3` | `0x004A38E8` | high | Compiler-split continuation inside input_keyboard_manager_translate_key, not an independent client behavior. |
+| `input_keyboard_manager_translate_key_return_unhandled_thunk` | `0x004A3EF5` | high | Compiler-generated jump thunk to the shared unhandled-key return used by the KeyboardMan translator. |
+| `input_keyboard_manager_translate_key_split_4` | `0x004A4003` | high | Compiler-split continuation inside input_keyboard_manager_translate_key, not an independent client behavior. |
+| `input_keyboard_manager_translate_key_split_5` | `0x004A4170` | high | Compiler-split continuation inside input_keyboard_manager_translate_key, not an independent client behavior. |
+| `input_keyboard_manager_translate_key_split_6` | `0x004A42F2` | high | Compiler-split continuation inside input_keyboard_manager_translate_key, not an independent client behavior. |
+| `input_keyboard_manager_translate_key_split_7` | `0x004A43F9` | high | Compiler-split continuation inside input_keyboard_manager_translate_key, not an independent client behavior. |
+| `input_keyboard_manager_translate_key_return_unhandled` | `0x004A4527` | high | Shared KeyboardMan translator epilogue that returns the unhandled result code zero. |
+| `input_keyboard_manager_is_composition_idle` | `0x004A4540` | high | Reports whether the internal Hangul composition-state field is zero. |
+| `input_keyboard_manager_is_digit_key` | `0x004A4560` | high | Reports whether a key resolves to ASCII 0 through 9 under the active KeyboardMan layout. |
+| `input_keyboard_manager_set_layout` | `0x004A45F0` | high | Stores the numeric KeyboardMan layout selected by the KeyBoard configuration entry. |
+| `input_keyboard_manager_get_layout` | `0x004A4610` | high | Returns the numeric KeyboardMan layout selected by the KeyBoard configuration entry. |
+| `input_keyboard_manager_get_alternate_mode` | `0x004A4630` | high | Returns the secondary KeyboardMan input-mode flag. |
+| `input_keyboard_manager_scalar_deleting_dtor` | `0x004A4690` | high | Runs exact RTTI KeyboardMan's destructor and conditionally frees the complete object. |
 | `input_map_key_to_world_direction` | `0x005F0B50` | high | Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3. |
 
 ## UI

@@ -33,6 +33,7 @@
   - [Portraits and profiles](systems/portraits-and-profiles.md)
   - [NPC dialogs](systems/npc-dialogs.md)
   - [NPC dialog illustrations](systems/npc-dialog-illustrations.md)
+  - [Korean text input](systems/korean-text-input.md)
   - [Text color markup](systems/text-color-markup.md)
   - [Event proxy design](systems/event-proxy.md)
 
