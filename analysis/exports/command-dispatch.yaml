@@ -1,0 +1,129 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0042F250"
+    name: command_dispatcher_ctor
+    confidence: high
+    evidence: "Constructs CommandDispatcher, initializes its argument stack and string arena, and creates a default CommandExecutor when none is supplied."
+  - address: "0x0042F350"
+    name: command_dispatcher_dtor
+    confidence: high
+    evidence: "Destroys CommandDispatcher, its string arena, its owned default executor, and its argument storage."
+  - address: "0x0042F410"
+    name: maybe_command_dispatcher_noop
+    confidence: low
+    evidence: "Empty CommandDispatcher virtual method; the exact interface role is not yet established."
+  - address: "0x0042F420"
+    name: maybe_command_dispatcher_return_argument
+    confidence: low
+    evidence: "CommandDispatcher virtual method that returns its second argument unchanged; the exact interface role is not yet established."
+  - address: "0x0042F440"
+    name: command_dispatcher_execute_named_command
+    confidence: high
+    evidence: "Matches a command name against the supported command table, invokes its argument handler, and clears temporary arguments afterward."
+  - address: "0x0042F800"
+    name: command_dispatcher_handle_set_tile
+    confidence: high
+    evidence: "Pops set_tile arguments, retains defaults for missing values, and forwards them to the configured command target."
+  - address: "0x0042F8F0"
+    name: command_dispatcher_handle_set_color
+    confidence: high
+    evidence: "Pops set_color arguments, retains defaults for missing values, and forwards them to the configured command target."
+  - address: "0x0042F9E0"
+    name: command_dispatcher_handle_effect
+    confidence: high
+    evidence: "Pops effect arguments with type checks and forwards them to the configured command target."
+  - address: "0x0042FAC0"
+    name: command_dispatcher_handle_motion
+    confidence: high
+    evidence: "Pops motion arguments with type checks and forwards them to the configured command target."
+  - address: "0x0042FBA0"
+    name: command_dispatcher_handle_move
+    confidence: high
+    evidence: "Pops move arguments with type checks and forwards them to the configured command target."
+  - address: "0x0042FC40"
+    name: command_dispatcher_handle_put_item
+    confidence: high
+    evidence: "Pops four integer put_item arguments and forwards them to the configured command target."
+  - address: "0x0042FD50"
+    name: command_dispatcher_handle_put_monster
+    confidence: high
+    evidence: "Pops five integer put_monster arguments and forwards them to the configured command target."
+  - address: "0x0042FEA0"
+    name: command_dispatcher_handle_put_human
+    confidence: high
+    evidence: "Pops put_human arguments with type checks and forwards them to the configured command target."
+  - address: "0x0042FFC0"
+    name: command_dispatcher_handle_human_to_monster
+    confidence: high
+    evidence: "Pops human_to_monster arguments with type checks and forwards them to the configured command target."
+  - address: "0x004300A0"
+    name: command_dispatcher_handle_sound
+    confidence: high
+    evidence: "Pops one integer sound ID, forwards it to the command target, and plays the matching sound effect when audio is available."
+  - address: "0x00430100"
+    name: command_dispatcher_handle_auto_use_skill_noop
+    confidence: high
+    evidence: "Accepts the auto_use_skill command without consuming arguments or changing state."
+  - address: "0x00430110"
+    name: command_dispatcher_handle_aus_noop
+    confidence: high
+    evidence: "Accepts the aus alias without consuming arguments or changing state."
+  - address: "0x00430120"
+    name: command_dispatcher_handle_set_attr_tracker_noop
+    confidence: high
+    evidence: "Accepts the set_attr_tracker command without consuming arguments or changing state."
+  - address: "0x00430130"
+    name: command_dispatcher_handle_sat_noop
+    confidence: high
+    evidence: "Accepts the sat alias without consuming arguments or changing state."
+  - address: "0x00430140"
+    name: command_dispatcher_handle_auto_move_noop
+    confidence: high
+    evidence: "Accepts the auto_move command without consuming arguments or changing state."
+  - address: "0x00430150"
+    name: command_dispatcher_handle_set_merchant_auto_answer_noop
+    confidence: high
+    evidence: "Accepts the merchant auto-answer command without consuming arguments or changing state."
+  - address: "0x00430160"
+    name: command_dispatcher_handle_set_timer_noop
+    confidence: high
+    evidence: "Accepts the set_timer command without consuming arguments or changing state."
+  - address: "0x00430170"
+    name: command_dispatcher_handle_wait_event_noop
+    confidence: high
+    evidence: "Accepts the wait_event command without consuming arguments or changing state."
+  - address: "0x00430180"
+    name: command_dispatcher_handle_message
+    confidence: high
+    evidence: "Pops one string, appends it to the game message overlay in white, and adds a newline."
+  - address: "0x004301F0"
+    name: command_dispatcher_handle_auto_use_spell
+    confidence: high
+    evidence: "Pops one integer and forwards it to the CommandExecutor timed auto-use-spell path."
+  - address: "0x00430250"
+    name: command_dispatcher_handle_set_ground_tile
+    confidence: high
+    evidence: "Pops three integer set_gnd_tile arguments and forwards them to the configured command target."
+  - address: "0x00430320"
+    name: command_dispatcher_handle_set_static_tile
+    confidence: high
+    evidence: "Pops four integer set_stc_tile arguments and forwards them to the configured command target."
+  - address: "0x00430430"
+    name: command_dispatcher_handle_play_minigame
+    confidence: high
+    evidence: "Pops one integer minigame selector and launches the minigame through the active root pane."
+  - address: "0x00430490"
+    name: command_dispatcher_handle_send_fieldmap
+    confidence: high
+    evidence: "Pops three integer map fields and sends the corresponding 0x3F client packet."
+  - address: "0x00430560"
+    name: command_dispatcher_handle_show
+    confidence: high
+    evidence: "Pops a string and integer selector and forwards them to the configured command target."

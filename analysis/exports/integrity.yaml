@@ -1,0 +1,37 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0042EEB0"
+    name: integrity_crc16_buffer
+    confidence: high
+    evidence: "Calculates the table-driven 16-bit integrity checksum over a byte range, starting from zero."
+  - address: "0x0042EF10"
+    name: integrity_crc16_update
+    confidence: high
+    evidence: "Updates the table-driven 16-bit integrity checksum with one byte."
+  - address: "0x0042EF40"
+    name: memory_is_executable_address
+    confidence: high
+    evidence: "Uses VirtualQueryEx on the current process and accepts only committed executable page protections."
+  - address: "0x0042EFB0"
+    name: integrity_find_executable_page_range
+    confidence: high
+    evidence: "Walks pages from the integrity routine's code address and returns the first and last contiguous executable page plus the 0x1000 page size."
+  - address: "0x0042F0A0"
+    name: integrity_write_executable_page_checksums
+    confidence: high
+    evidence: "Writes repeated executable-page address and CRC16 pairs for the contiguous page span to the supplied stream."
+  - address: "0x0042F140"
+    name: integrity_verify_checksum_stream
+    confidence: high
+    evidence: "Reads at most 0x20000 bytes from a stream and validates its address and CRC16 records against live executable pages."
+  - address: "0x0042F1B0"
+    name: integrity_verify_executable_page_checksums
+    confidence: high
+    evidence: "Validates six-byte address and CRC16 records against committed executable pages; malformed trailing bytes are ignored."

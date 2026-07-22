@@ -690,15 +690,19 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_show_input_block_clock` | `0x0042E800` | high | Creates the exact RTTI ClockPane singleton when absent and activates its 50 ms animated wait-cursor path. |
 | `ui_hide_input_block_clock` | `0x0042E890` | high | Closes and destroys the active ClockPane singleton when present. |
 | `ui_clock_pane_ctor` | `0x0042E8C0` | high | Constructs the 0x1A0-byte exact RTTI ClockPane, loads lodclk.epf metadata, centers it on the current pointer, and registers it in the screen and event trees. |
+| `ui_clock_pane_dtor` | `0x0042EA70` | high | Restores ClockPane vtables, unregisters it from the event and screen trees, clears its singleton registration, and destroys the Pane base. |
 | `ui_clock_pane_show` | `0x0042EB00` | high | Selects root cursor mode 3, shows ClockPane, draws its next frame, and schedules timer 0x1234 at 50 ms. |
 | `ui_clock_pane_close` | `0x0042EBA0` | high | Cancels timer 0x1234, hides ClockPane, restores cursor mode 0, and notifies the optional cursor observer. |
 | `ui_clock_pane_timer_callback` | `0x0042EC00` | high | Advances the lodclk.epf frame modulo the loaded frame count and requeues timer 0x1234 using the existing 50 ms interval. |
 | `ui_clock_pane_handle_keyboard_event` | `0x0042EC70` | high | Returns true for every keyboard or text event so lower panes do not receive it while ClockPane is active. |
 | `ui_clock_pane_handle_pointer_event` | `0x0042EC80` | high | Re-centers ClockPane on pointer-move events and returns true for every pointer event, consuming clicks and wheel input. |
 | `ui_clock_pane_set_frame` | `0x0042ED00` | high | Loads and draws one lodclk.epf frame when its signed 16-bit selector differs from ClockPane +0x198. |
-| `ui_clock_pane_dtor` | `0x0042EDC0` | high | Destroys ClockPane and clears its Singleton&lt;ClockPane&gt; registration before the optional object free. |
+| `ui_clock_pane_scalar_deleting_dtor` | `0x0042EDC0` | high | Runs the complete ClockPane destructor and optionally frees the object when the scalar-delete flag is set. |
+| `ui_clock_pane_singleton_register` | `0x0042EDF0` | high | Stores the containing ClockPane pointer from its Singleton subobject. |
+| `ui_clock_pane_singleton_unregister` | `0x0042EE30` | high | Clears the ClockPane singleton when it still refers to the containing object. |
 | `ui_has_clock_pane` | `0x0042EE70` | high | Reports whether clock_pane_singleton_ptr is non-null. |
 | `ui_get_clock_pane` | `0x0042EE90` | high | Returns the active ClockPane singleton pointer. |
+| `ui_clock_pane_timer_scalar_deleting_dtor_thunk` | `0x0042EEA0` | high | Adjusts a TimerHandler this pointer back to ClockPane and enters its scalar deleting destructor. |
 | `ui_create_user_dialog_ctor` | `0x0043C370` | high | Constructs RTTI class CreateUserDialogPane from _ncreate.txt, attaches appearance controls and account fields, and registers the pane for events and timers. |
 | `ui_create_user_draw` | `0x0043D190` | high | Draws the creation preview using gender at +0x674, hair style at +0x676, and hair-color palette index at +0x678. |
 | `ui_create_user_handle_pointer_event` | `0x0043DC80` | high | Handles CreateUserDialogPane appearance clicks, including gender selection and conversion of the 2-by-7 hair-color swatch grid into palette indexes. |
@@ -2148,6 +2152,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
+| `maybe_command_dispatcher_noop` | `0x0042F410` | low | Empty CommandDispatcher virtual method; the exact interface role is not yet established. |
+| `maybe_command_dispatcher_return_argument` | `0x0042F420` | low | CommandDispatcher virtual method that returns its second argument unchanged; the exact interface role is not yet established. |
 | `maybe_app_configure_distribution_mode_12` | `0x00436A10` | medium | Dormant mode 12 handler with no matching marker return; sets connection flags without installing an endpoint. |
 | `maybe_ui_manufacture_dialog_ctor_from_body` | `0x004C1AD0` | medium | Duplicates the lmanu.txt construction path and applies a decoded opcode-first body, but no live static caller was recovered. |
 | `maybe_ui_manufacture_dialog_apply_manual_body` | `0x004C2990` | medium | Applies RecipeCount or Recipe from a decoded opcode-first body for the duplicate raw-body pane path. |
@@ -2241,6 +2247,41 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `std_string_reallocate` | `0x0042B530` | high | Chooses grown capacity, preserves a prefix, and releases old storage. |
 | `std_string_allocate_buffer` | `0x0042B7C0` | high | Allocates a string byte buffer and throws std::bad_alloc on failure. |
 | `std_string_vector_dtor` | `0x0042B830` | high | Destroys string elements, releases vector storage, and clears its pointers. |
+| `integrity_crc16_buffer` | `0x0042EEB0` | high | Calculates the table-driven 16-bit integrity checksum over a byte range, starting from zero. |
+| `integrity_crc16_update` | `0x0042EF10` | high | Updates the table-driven 16-bit integrity checksum with one byte. |
+| `memory_is_executable_address` | `0x0042EF40` | high | Uses VirtualQueryEx on the current process and accepts only committed executable page protections. |
+| `integrity_find_executable_page_range` | `0x0042EFB0` | high | Walks pages from the integrity routine's code address and returns the first and last contiguous executable page plus the 0x1000 page size. |
+| `integrity_write_executable_page_checksums` | `0x0042F0A0` | high | Writes repeated executable-page address and CRC16 pairs for the contiguous page span to the supplied stream. |
+| `integrity_verify_checksum_stream` | `0x0042F140` | high | Reads at most 0x20000 bytes from a stream and validates its address and CRC16 records against live executable pages. |
+| `integrity_verify_executable_page_checksums` | `0x0042F1B0` | high | Validates six-byte address and CRC16 records against committed executable pages; malformed trailing bytes are ignored. |
+| `command_dispatcher_ctor` | `0x0042F250` | high | Constructs CommandDispatcher, initializes its argument stack and string arena, and creates a default CommandExecutor when none is supplied. |
+| `command_dispatcher_dtor` | `0x0042F350` | high | Destroys CommandDispatcher, its string arena, its owned default executor, and its argument storage. |
+| `command_dispatcher_execute_named_command` | `0x0042F440` | high | Matches a command name against the supported command table, invokes its argument handler, and clears temporary arguments afterward. |
+| `command_dispatcher_handle_set_tile` | `0x0042F800` | high | Pops set_tile arguments, retains defaults for missing values, and forwards them to the configured command target. |
+| `command_dispatcher_handle_set_color` | `0x0042F8F0` | high | Pops set_color arguments, retains defaults for missing values, and forwards them to the configured command target. |
+| `command_dispatcher_handle_effect` | `0x0042F9E0` | high | Pops effect arguments with type checks and forwards them to the configured command target. |
+| `command_dispatcher_handle_motion` | `0x0042FAC0` | high | Pops motion arguments with type checks and forwards them to the configured command target. |
+| `command_dispatcher_handle_move` | `0x0042FBA0` | high | Pops move arguments with type checks and forwards them to the configured command target. |
+| `command_dispatcher_handle_put_item` | `0x0042FC40` | high | Pops four integer put_item arguments and forwards them to the configured command target. |
+| `command_dispatcher_handle_put_monster` | `0x0042FD50` | high | Pops five integer put_monster arguments and forwards them to the configured command target. |
+| `command_dispatcher_handle_put_human` | `0x0042FEA0` | high | Pops put_human arguments with type checks and forwards them to the configured command target. |
+| `command_dispatcher_handle_human_to_monster` | `0x0042FFC0` | high | Pops human_to_monster arguments with type checks and forwards them to the configured command target. |
+| `command_dispatcher_handle_sound` | `0x004300A0` | high | Pops one integer sound ID, forwards it to the command target, and plays the matching sound effect when audio is available. |
+| `command_dispatcher_handle_auto_use_skill_noop` | `0x00430100` | high | Accepts the auto_use_skill command without consuming arguments or changing state. |
+| `command_dispatcher_handle_aus_noop` | `0x00430110` | high | Accepts the aus alias without consuming arguments or changing state. |
+| `command_dispatcher_handle_set_attr_tracker_noop` | `0x00430120` | high | Accepts the set_attr_tracker command without consuming arguments or changing state. |
+| `command_dispatcher_handle_sat_noop` | `0x00430130` | high | Accepts the sat alias without consuming arguments or changing state. |
+| `command_dispatcher_handle_auto_move_noop` | `0x00430140` | high | Accepts the auto_move command without consuming arguments or changing state. |
+| `command_dispatcher_handle_set_merchant_auto_answer_noop` | `0x00430150` | high | Accepts the merchant auto-answer command without consuming arguments or changing state. |
+| `command_dispatcher_handle_set_timer_noop` | `0x00430160` | high | Accepts the set_timer command without consuming arguments or changing state. |
+| `command_dispatcher_handle_wait_event_noop` | `0x00430170` | high | Accepts the wait_event command without consuming arguments or changing state. |
+| `command_dispatcher_handle_message` | `0x00430180` | high | Pops one string, appends it to the game message overlay in white, and adds a newline. |
+| `command_dispatcher_handle_auto_use_spell` | `0x004301F0` | high | Pops one integer and forwards it to the CommandExecutor timed auto-use-spell path. |
+| `command_dispatcher_handle_set_ground_tile` | `0x00430250` | high | Pops three integer set_gnd_tile arguments and forwards them to the configured command target. |
+| `command_dispatcher_handle_set_static_tile` | `0x00430320` | high | Pops four integer set_stc_tile arguments and forwards them to the configured command target. |
+| `command_dispatcher_handle_play_minigame` | `0x00430430` | high | Pops one integer minigame selector and launches the minigame through the active root pane. |
+| `command_dispatcher_handle_send_fieldmap` | `0x00430490` | high | Pops three integer map fields and sends the corresponding 0x3F client packet. |
+| `command_dispatcher_handle_show` | `0x00430560` | high | Pops a string and integer selector and forwards them to the configured command target. |
 | `metadata_denied_item_list_ctor` | `0x004407C0` | high | Constructs exact RTTI class DeniedItemList, creates three empty lookup containers, and starts metadata subscription. |
 | `metadata_denied_item_list_subscribe` | `0x00440AA0` | high | Registers BItems, BSkills, and BSpells with MetaTableManager and retries after 1000 ms when the manager is unavailable. |
 | `metadata_denied_item_list_apply_table` | `0x00440B20` | high | Replaces the current denial lists and routes metadata rows tagged Item, Skill, or Spell into their lookup containers. |

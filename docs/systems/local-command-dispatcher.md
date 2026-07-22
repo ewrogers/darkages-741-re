@@ -1,0 +1,56 @@
+# Local command dispatcher
+
+The client contains a small text-command system for local scripted actions. A command line is split into a command name and typed arguments, then an RTTI-backed `CommandDispatcher` calls the matching handler. This is separate from ordinary chat commands and server packet dispatch.
+
+## Flow
+
+```text
+CommandLineInputPane text
+  -> tokenize quoted strings and bare words
+  -> classify decimal-only arguments as integers
+  -> push arguments in reverse order
+  -> CommandDispatcher handler
+  -> CommandExecutor or a direct client action
+```
+
+`CommandLineInputPane` copies at most 255 text bytes before parsing. The tokenizer accepts letters, digits, and underscore in bare words. Double quotes group a string containing separators. An unquoted token containing only decimal digits becomes an integer; other tokens remain strings.
+
+The dispatcher owns a stack of at most 1,024 tagged arguments and a growable string arena. It pushes parsed arguments from last to first so each handler can pop them in source order. Every dispatch clears the temporary stack and string arena, including an unknown command or a handler that rejects an argument type.
+
+## Command table
+
+The literal names below are compiled into version 741. Types describe what the local handler requires, but several argument meanings remain unresolved.
+
+| Command | Accepted argument types | Version 741 result |
+| --- | --- | --- |
+| `set_tile` | integer, string, string | Forwards to a default no-op executor method |
+| `set_color` | integer, string, string | Forwards to a default no-op executor method |
+| `effect` | integer, integer, string | Forwards to a default no-op executor method |
+| `motion` | integer, integer, string | Forwards to a default no-op executor method |
+| `move` | integer, string | Forwards to a default no-op executor method |
+| `put_item` | four integers | Forwards to a default no-op executor method |
+| `put_monster` | five integers | Forwards to a default no-op executor method |
+| `put_human` | three integers, string | Forwards to a default no-op executor method |
+| `human_to_monster` | two integers, string | Forwards to a default no-op executor method |
+| `sound` | integer | Plays a sound effect when the sound manager exists |
+| `auto_use_skill`, `aus` | none consumed | Accepted no-op |
+| `set_attr_tracker`, `sat` | none consumed | Accepted no-op |
+| `auto_move` | none consumed | Accepted no-op |
+| `set_merchant_auto_answer` | none consumed | Accepted no-op |
+| `set_timer` | none consumed | Accepted no-op |
+| `wait_event` | none consumed | Accepted no-op |
+| `message` | string | Appends white text and a newline to the game-message overlay |
+| `auto_use_spell` | integer | Selects or cancels a timed executor action |
+| `set_gnd_tile` | three integers | Forwards to a default no-op executor method |
+| `set_stc_tile` | four integers | Forwards to a default no-op executor method |
+| `play_minigame` | integer | Opens the selected minigame through the active root pane |
+| `send_fieldmap` | three integers | Sends a nine-byte client packet beginning with opcode `0x3F` |
+| `show` | string, integer | Forwards to a default no-op executor method |
+
+The no-op result is confirmed for the default `CommandExecutor` constructed by `CommandDispatcher`. The dispatcher can also receive an external executor pointer, so another owner could provide different behavior. No such owner has been confirmed yet.
+
+## Command history
+
+The line-input pane keeps up to 256 command strings in a process-global history. Adding an existing string moves the old entry to the end instead of creating a duplicate. Keyboard events cycle through this list and copy the selected command back into the input field with a trailing space.
+
+Static analysis confirms the parser and client-side handlers, but not which normal game screen exposes `CommandLineInputPane` in this build. The durable names and evidence are in [`command-dispatch.yaml`](../../analysis/exports/command-dispatch.yaml).

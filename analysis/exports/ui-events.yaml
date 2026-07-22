@@ -207,6 +207,10 @@ functions:
     name: ui_clock_pane_ctor
     confidence: high
     evidence: "Constructs the 0x1A0-byte exact RTTI ClockPane, loads lodclk.epf metadata, centers it on the current pointer, and registers it in the screen and event trees."
+  - address: "0x0042EA70"
+    name: ui_clock_pane_dtor
+    confidence: high
+    evidence: "Restores ClockPane vtables, unregisters it from the event and screen trees, clears its singleton registration, and destroys the Pane base."
   - address: "0x0042EB00"
     name: ui_clock_pane_show
     confidence: high
@@ -232,9 +236,17 @@ functions:
     confidence: high
     evidence: "Loads and draws one lodclk.epf frame when its signed 16-bit selector differs from ClockPane +0x198."
   - address: "0x0042EDC0"
-    name: ui_clock_pane_dtor
+    name: ui_clock_pane_scalar_deleting_dtor
     confidence: high
-    evidence: "Destroys ClockPane and clears its Singleton<ClockPane> registration before the optional object free."
+    evidence: "Runs the complete ClockPane destructor and optionally frees the object when the scalar-delete flag is set."
+  - address: "0x0042EDF0"
+    name: ui_clock_pane_singleton_register
+    confidence: high
+    evidence: "Stores the containing ClockPane pointer from its Singleton subobject."
+  - address: "0x0042EE30"
+    name: ui_clock_pane_singleton_unregister
+    confidence: high
+    evidence: "Clears the ClockPane singleton when it still refers to the containing object."
   - address: "0x0042EE70"
     name: ui_has_clock_pane
     confidence: high
@@ -243,6 +255,10 @@ functions:
     name: ui_get_clock_pane
     confidence: high
     evidence: "Returns the active ClockPane singleton pointer."
+  - address: "0x0042EEA0"
+    name: ui_clock_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts a TimerHandler this pointer back to ClockPane and enters its scalar deleting destructor."
   - address: "0x00445260"
     name: ui_dialog_pane_ctor
     confidence: high
