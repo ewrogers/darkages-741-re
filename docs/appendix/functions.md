@@ -63,15 +63,24 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | --- | --- | --- | --- |
 | `event_get_dispatcher` | `0x0041AE80` | high | Returns event_dispatcher_singleton_ptr. |
 | `event_intro_video_frame_timer` | `0x0042E600` | high | Advances the two clips and posts intro state 2 when playback finishes. |
+| `event_queue_ctor` | `0x00463740` | high | Constructs EventQueue over PointerQueue with an owned-Event deletion callback. |
+| `event_queue_delete_owned_event` | `0x00463770` | high | Deletes one non-null Event through its virtual deleting destructor. |
+| `event_stack_ctor` | `0x004637B0` | high | Constructs EventStack over PointerStack with an owned-Event deletion callback. |
+| `event_stack_delete_owned_event` | `0x004637E0` | high | Deletes one non-null Event through its virtual deleting destructor. |
 | `event_dispatcher_ctor` | `0x00463820` | high | Constructs the 0x1BC-byte EventDispatcher, queue, timer list, packet factory, capture state, and EventHandlerList. |
+| `event_dispatcher_dtor` | `0x00463AA0` | high | Destroys EventDispatcher timers, queues, handler list, critical section, and packet factory. |
+| `event_dispatcher_lock_queue` | `0x00463C00` | high | Enters EventDispatcher's queue critical section. |
+| `event_dispatcher_unlock_queue` | `0x00463C20` | high | Leaves EventDispatcher's queue critical section. |
 | `event_allocate_or_reuse` | `0x00463C40` | high | Returns a pooled Event pointer from EventDispatcher +0x28 when available, otherwise allocates 0xA8 bytes and calls event_ctor. |
 | `event_recycle` | `0x00463CF0` | high | Returns an Event pointer to the separate pool at EventDispatcher +0x28 without using an intrusive Event field. |
 | `event_queue_push_copy` | `0x00463D10` | high | Copies exactly 0xA8 event bytes into the synchronized pointer queue. |
 | `event_queue_pop_copy` | `0x00463D60` | high | Removes one queued event and copies exactly 0xA8 bytes to the caller. |
 | `event_register_pane` | `0x00463E40` | high | Sets Pane +0x188 bit 0x02 and inserts the pane through EventHandlerList. |
 | `event_unregister_pane` | `0x00463E80` | high | Clears Pane +0x188 bit 0x02 and removes the pane subtree from EventHandlerList. |
+| `event_post_intro_state` | `0x00463EB0` | high | Queues event type 0x14 with three dword fields for direct intro-state dispatch. |
 | `event_enqueue` | `0x00463F50` | high | Thin synchronized queue wrapper used when an event originates off the main thread. |
 | `event_dispatch_immediate` | `0x00463F70` | high | Validates and centrally dispatches an Event, then performs family-specific owned-payload cleanup. |
+| `event_dispatcher_schedule_timer` | `0x00463FF0` | high | Forwards a timer request to the ordered EventDispatcher timer scheduler. |
 | `event_arm_hidden_keyboard_sequence` | `0x00464120` | high | Arms a ten-second keyboard-sequence reader for literal nim@wmfRpa and a later wake timer; no static caller is present in this build. |
 | `event_dispatcher_tick_virtual` | `0x00464430` | high | Calls EventDispatcher primary-vtable +0x08, which resolves to event_dispatcher_tick. |
 | `event_register_pane_internal` | `0x00464450` | high | Calls EventHandlerList virtual insert and refreshes dispatcher state. |
@@ -952,10 +961,22 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_emoticon_select_pane_handle_keyboard_event` | `0x00459D40` | high | Selects emoticons from numeric keys and handles selector close or refresh keys. |
 | `ui_emoticon_select_pane_handle_pointer_event` | `0x00459EA0` | high | Updates hover state and commits an emoticon on pointer selection. |
 | `ui_emoticon_select_pane_set_selected_option` | `0x00459FB0` | high | Clamps and stores the selected option and refreshes its description. |
+| `ui_emoticon_get_option_label_part` | `0x0045A000` | high | Lazily parses eight DBCS-aware emoticon labels and returns the selected text before or after its semicolon. |
+| `ui_emoticon_select_pane_scalar_deleting_dtor` | `0x0045A190` | high | Scalar deleting destructor for exact RTTI EmoticonSelectPane_A. |
+| `ui_emoticon_select_pane_timer_scalar_deleting_dtor_thunk` | `0x0045A1C0` | high | Adjusts TimerHandler this by -0x11C before the EmoticonSelectPane_A deleting destructor. |
+| `ui_employee_item_property_dialog_ctor` | `0x0045A1D0` | high | Constructs exact RTTI EmployeeItemPropertyDialogPane from lshop2.txt with item, price, quantity, edit, OK, cancel, and clear controls. |
+| `ui_employee_item_property_dialog_draw` | `0x0045A810` | high | Draws the employee item-property dialog and its current item, price, and quantity state. |
+| `ui_employee_item_property_dialog_handle_action` | `0x0045A930` | high | Maps item-property controls to price, quantity, confirmation, cancellation, and clear operations. |
+| `ui_employee_quantity_input_dialog_ctor` | `0x0045AB00` | high | Constructs exact RTTI EmployeeQuantityInputDialogPane from lshop1.txt and initializes its bounded quantity field. |
+| `ui_employee_quantity_input_dialog_handle_action` | `0x0045AE00` | high | Commits or cancels the employee quantity input and returns the result to its owner dialog. |
 | `ui_employee_dialog_ctor` | `0x0045AF00` | high | Constructs exact RTTI EmployeeDialogPane from lshop0.txt, applies an SMercenary Open body, registers the pane, and sends CMercenary RequestInfo. |
 | `ui_employee_dialog_dtor` | `0x0045B7C0` | high | Unregisters and destroys EmployeeDialogPane and its attached controls. |
+| `ui_employee_dialog_draw` | `0x0045B860` | high | Draws EmployeeDialogPane title, money, capacity, and the currently visible employee item controls. |
+| `ui_employee_dialog_set_pending_item_values` | `0x0045BD60` | high | Stores the selected employee item and pending quantity and price values for deferred processing. |
 | `ui_employee_dialog_handle_action` | `0x0045BD90` | high | Routes employee-shop controls and item operations to the CMercenary action builders. |
+| `ui_employee_dialog_handle_pointer_event` | `0x0045BF80` | high | Shows the employee item sale tooltip for the hovered visible record, then delegates ordinary pointer handling. |
 | `ui_employee_dialog_timer_callback` | `0x0045C200` | high | Executes the employee pane's queued item, quantity, price, and confirmation operations on its TimerHandler callback. |
+| `ui_employee_dialog_begin_item_action` | `0x0045C3C0` | high | Resolves an employee item action and either opens the quantity dialog or queues the direct owner operation. |
 | `ui_employee_dialog_handle_network_event` | `0x0045C860` | high | Consumes decoded SMercenary bodies for the employee ID owned by this pane. |
 | `ui_employee_dialog_apply_server_body` | `0x0045C8C0` | high | Dispatches SMercenary message codes 0 through 4. |
 | `ui_employee_dialog_apply_open` | `0x0045CA10` | high | Reads gold, capacity, item count, and the initial employee records. |
@@ -964,12 +985,56 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_employee_dialog_apply_start_trade` | `0x0045CE80` | high | Reads a previous item ID and replacement trade record for SMercenary message code 3. |
 | `ui_employee_dialog_apply_request_response` | `0x0045D0A0` | high | Reads and displays the string8 response for SMercenary message code 4. |
 | `ui_employee_dialog_rebuild_visible_items` | `0x0045D5E0` | high | Rebuilds the employee pane's visible item controls from the current records. |
+| `ui_employee_item_property_dialog_scalar_deleting_dtor` | `0x0045D6D0` | high | Scalar deleting destructor for EmployeeItemPropertyDialogPane. |
+| `ui_employee_quantity_input_dialog_scalar_deleting_dtor` | `0x0045D700` | high | Scalar deleting destructor for EmployeeQuantityInputDialogPane. |
+| `ui_employee_dialog_scalar_deleting_dtor` | `0x0045D730` | high | Scalar deleting destructor for EmployeeDialogPane. |
+| `ui_employee_dialog_singleton_register` | `0x0045D760` | high | Registers the complete EmployeeDialogPane object from its Singleton base at +0x630. |
+| `ui_employee_dialog_singleton_unregister` | `0x0045D7A0` | high | Clears the EmployeeDialogPane singleton when the registered complete object matches. |
+| `ui_employee_dialog_timer_scalar_deleting_dtor_thunk` | `0x0045D7F0` | high | Adjusts TimerHandler this by -0x11C before the EmployeeDialogPane deleting destructor. |
+| `ui_employee_quantity_input_dialog_timer_scalar_deleting_dtor_thunk` | `0x0045D800` | high | Adjusts TimerHandler this by -0x11C before the employee quantity-dialog deleting destructor. |
+| `ui_employee_item_property_dialog_timer_scalar_deleting_dtor_thunk` | `0x0045D810` | high | Adjusts TimerHandler this by -0x11C before the employee item-property deleting destructor. |
 | `ui_equip_pane_handle_network_event` | `0x0045D970` | high | Exact RTTI class EquipPane routes SAddEquip, SRemoveEquip, and SSelfLook from its primary-vtable network-event slot. |
 | `ui_equip_pane_ctor` | `0x0045DA10` | high | Constructs exact RTTI class EquipPane over a 0x630-byte DialogPane base, 18 contiguous 0x34-byte slot-view records, profile text, named layout rectangles, and the worn-equipment arrays. |
+| `ui_equip_pane_dtor` | `0x0045EEE0` | high | Destroys exact RTTI EquipPane, its equipment views and dependent panes, then the DialogPane base. |
+| `ui_equip_pane_handle_pointer_event` | `0x0045F000` | high | Handles EquipPane equipment hover and selection before delegating ordinary dialog pointer behavior. |
 | `ui_equip_pane_handle_action` | `0x0045F260` | high | EquipPane action 0x19 allocates the exact RTTI FamilyListDialogPane. |
+| `ui_equip_pane_draw` | `0x0045F3B0` | high | Draws EquipPane identity, equipment slots, profile state, controls, and optional character preview. |
+| `ui_equip_pane_draw_emoticon` | `0x0045FBD0` | high | Draws the selected HumanState image and right-hand emoticon option label in EquipPane. |
+| `ui_equip_pane_request_remove_slots_1_and_3` | `0x0045FDA0` | high | Sends CRemoveEquipment for equipment slots 1 and 3 through the common builder. |
 | `ui_equip_pane_apply_self_look` | `0x0045FDC0` | high | Copies SSelfLook identity, nation, group, class, and legend state into EquipPane and its dependent panes. |
+| `ui_equip_pane_apply_equipment_detail_body` | `0x0045FFA0` | high | Parses one equipment-detail body into the selected EquipPane slot and invalidates the pane. |
+| `ui_equip_pane_apply_remove_equipment_detail_body` | `0x00460130` | high | Parses an equipment-detail removal body and clears the corresponding EquipPane state. |
 | `ui_equip_pane_add_equipment_from_packet` | `0x004601D0` | high | Converts the SAddEquip slot to an index and stores sprite, dye, name, current durability, and maximum durability in EquipPane's 18-entry arrays. |
 | `ui_equip_pane_remove_equipment_from_packet` | `0x004602B0` | high | Clears the selected EquipPane sprite, name, and durability fields without clearing the retained dye byte. |
+| `ui_equip_pane_refresh_group_toggle_button` | `0x004603C0` | high | Refreshes the EquipPane group-toggle button from the current local group state. |
+| `ui_equip_pane_toggle_group` | `0x004604A0` | high | Sends the empty CGroupToggle body, flips local group state, and refreshes the button. |
+| `ui_equip_pane_forward_portrait_profile_body` | `0x004605C0` | high | Forwards the remaining portrait and profile body to EquipPane's attached legend view. |
+| `ui_group_view_pane_ctor` | `0x00460600` | high | Constructs exact RTTI GroupViewPane and initializes its owner-relative collapsed presentation. |
+| `ui_group_view_pane_dtor` | `0x00460760` | high | Destroys exact RTTI GroupViewPane and its Pane base state. |
+| `ui_group_view_pane_timer_callback` | `0x004607F0` | high | Advances the GroupViewPane expand or collapse transition and requeues it until complete. |
+| `ui_group_view_pane_draw` | `0x00460850` | high | Draws GroupViewPane with equip02.epf or equip03.epf according to its transition state. |
+| `ui_group_view_pane_set_formatted_text` | `0x00460960` | high | Stores the formatted group-view text and invalidates the pane. |
+| `ui_group_view_pane_position_from_owner` | `0x004609A0` | high | Positions GroupViewPane relative to its retained owner rectangle. |
+| `ui_group_view_pane_start_expand` | `0x004609F0` | high | Starts the timed GroupViewPane expansion transition. |
+| `ui_group_view_pane_start_collapse` | `0x00460A40` | high | Starts the timed GroupViewPane collapse transition. |
+| `ui_user_look_pane_ctor` | `0x00460A90` | high | Constructs exact RTTI UserLookPane with 18 equipment pixmaps, auxiliary images, and an offscreen character canvas. |
+| `ui_user_look_pane_dtor` | `0x00461DC0` | high | Destroys exact RTTI UserLookPane, its legend child, image state, and DialogPane base. |
+| `ui_user_look_pane_handle_pointer_event` | `0x00461E80` | high | Handles UserLookPane pointer interaction and delegates the remaining dialog behavior. |
+| `ui_user_look_pane_handle_action` | `0x00461F40` | high | Maps UserLookPane actions to CGroup Request, close, and portrait-child forwarding. |
+| `ui_user_look_pane_draw` | `0x00461FB0` | high | Draws the viewed character profile, equipment, character preview, and emoticon state. |
+| `ui_user_look_pane_draw_emoticon` | `0x00462850` | high | Draws the selected HumanState image and right-hand emoticon option label in UserLookPane. |
+| `ui_user_look_pane_apply_body` | `0x004629D0` | high | Parses viewed character ID, 18 equipment entries, display fields, legends, portrait, and profile into UserLookPane. |
+| `ui_user_look_pane_send_exchange_start` | `0x00462EB0` | high | Builds CExchange action 0 with the viewed character ID stored at UserLookPane +0x1954. |
+| `ui_equip_pane_scalar_deleting_dtor` | `0x00462FB0` | high | Scalar deleting destructor for exact RTTI EquipPane. |
+| `ui_group_view_pane_scalar_deleting_dtor` | `0x00462FE0` | high | Scalar deleting destructor for exact RTTI GroupViewPane. |
+| `ui_user_look_pane_scalar_deleting_dtor` | `0x00463010` | high | Scalar deleting destructor for exact RTTI UserLookPane. |
+| `ui_equip_pane_singleton_register` | `0x00463040` | high | Registers the complete EquipPane object from its Singleton base at +0x630. |
+| `ui_equip_pane_singleton_unregister` | `0x00463080` | high | Clears the EquipPane singleton when the registered complete object matches. |
+| `ui_user_look_pane_singleton_register` | `0x004630C0` | high | Registers the complete UserLookPane object from its Singleton base at +0x630. |
+| `ui_user_look_pane_singleton_unregister` | `0x00463100` | high | Clears the UserLookPane singleton when the registered complete object matches. |
+| `ui_user_look_pane_timer_scalar_deleting_dtor_thunk` | `0x00463140` | high | Adjusts TimerHandler this by -0x11C before the UserLookPane deleting destructor. |
+| `ui_equip_pane_timer_scalar_deleting_dtor_thunk` | `0x00463150` | high | Adjusts TimerHandler this by -0x11C before the EquipPane deleting destructor. |
+| `ui_group_view_pane_timer_scalar_deleting_dtor_thunk` | `0x00463160` | high | Adjusts TimerHandler this by -0x11C before the GroupViewPane deleting destructor. |
 | `ui_pane_schedule_timer` | `0x00464050` | high | Schedules a timer for a Pane by passing its TimerHandler subobject at +0x11C. |
 | `ui_pane_cancel_timers` | `0x00464740` | high | Converts a Pane pointer to TimerHandler +0x11C and cancels matching timers. |
 | `ui_exchange_dialog_ctor` | `0x00469560` | high | Constructs the exact RTTI ExchangeDialog from _nexch.txt, attaches its offer controls, registers it under GUIBackPane, and stores the Started event ID at +0x630. |
@@ -1535,6 +1600,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_read_employee_item_record` | `0x0045D1B0` | high | Reads employee item ID, sprite, color, name, optional description, unknown byte, quantity, sell price, and buy price. |
 | `net_read_employee_trade_record` | `0x0045D380` | high | Reads the previous item ID and nonzero replacement item record used by StartTrade. |
 | `net_init_mercenary_packet` | `0x0045D550` | high | Initializes the shared CMercenary header as opcode 0x54, category 1, employee ID, and action. |
+| `net_send_remove_equipment` | `0x00460330` | high | Builds CRemoveEquipment opcode 0x44 followed by the one-byte equipment slot. |
 | `net_send_group` | `0x00462DC0` | high | UserLookPane calls this opcode 0x2E builder with a length-prefixed user name. |
 | `net_post_raw_server_bytes_event` | `0x00467000` | high | Copies a Winsock receive buffer without frame parsing and posts it through the network event family during initial raw-stream mode. |
 | `net_post_decoded_server_packet_event` | `0x00467060` | high | Copies a decoded opcode-first server body and queues it as network packet event type 0x13. |
@@ -2412,6 +2478,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_load_efa_frame` | `0x00456FA0` | high | Finds an EFA archive entry and decodes the requested frame into caller-provided image metadata. |
 | `file_decode_efa_frame` | `0x00457030` | high | Inflates one zlib payload from a 0x40-byte EFA frame record and builds an Image view. |
 | `file_load_effect_frame_table` | `0x00458ED0` | high | Parses Effect.tbl decimal frame sequences into per-effect tables. |
+| `file_decode_embedded_indexed_image_rgb16` | `0x0045D820` | high | Validates an embedded indexed-image record, allocates a 16-bit pixel buffer, and expands its palette indexes through the client RGB packer. |
 | `file_archive_xor_words` | `0x00471DC0` | high | XORs a buffer in 32-bit words for the extended DAT header and index path. |
 | `file_archive_open` | `0x00471E00` | high | Opens resource or loose DAT input and maps either the legacy index or the extended chunked index. |
 | `file_archive_find_entry` | `0x00472470` | high | Looks up a named entry in an opened archive. |
@@ -2793,6 +2860,19 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `rect_intersect_or_empty` | `0x00454A70` | high | Computes a nonempty rectangle intersection or writes the shared empty rectangle and returns false. |
 | `text_truncate_with_ellipsis_dbcs` | `0x00455740` | high | Truncates a mutable byte string to a six-pixel-cell width, preserves DBCS pairs, and appends three dots. |
 | `text_find_last_nonspace_index` | `0x00455880` | high | Returns the last byte index that is not a space, tab, or carriage return. |
+| `error_ctor` | `0x00463180` | high | Constructs Error and snapshots the active process-wide context tags into its fixed prefix. |
+| `error_context_push` | `0x00463240` | high | Pushes one string onto the process-wide bounded error-context stack. |
+| `error_context_pop` | `0x00463270` | high | Pops one entry from the process-wide error-context stack when nonempty. |
+| `error_format_message` | `0x00463290` | high | Formats the Error context prefix and stored message into a caller buffer. |
+| `error_set_message` | `0x004632F0` | high | Copies the supplied message into Error's fixed 0x100-byte message field. |
+| `win32_error_ctor` | `0x00463320` | high | Constructs Win32Error, captures GetLastError, and stores the caller message. |
+| `win32_error_format_message` | `0x00463360` | high | Appends FormatMessage text for the captured Win32 error, or its hexadecimal code. |
+| `direct_draw_error_ctor` | `0x00463450` | high | Constructs exact RTTI DDError with the supplied DirectDraw result code and caller message. |
+| `direct_draw_error_format_message` | `0x00463490` | high | Appends FormatMessage text for the DirectDraw error, or its hexadecimal code. |
+| `direct_sound_error_ctor` | `0x00463580` | high | Constructs exact RTTI DSError with the supplied DirectSound result code and caller message. |
+| `direct_sound_error_format_message` | `0x004635C0` | high | Appends FormatMessage text for the DirectSound error, or its hexadecimal code. |
+| `general_error_ctor` | `0x004636B0` | high | Constructs exact RTTI GeneralError and copies its caller-supplied derived message text. |
+| `general_error_format_message` | `0x00463700` | high | Formats the Error base prefix, then appends GeneralError's derived message text. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

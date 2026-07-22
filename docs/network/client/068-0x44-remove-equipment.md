@@ -16,15 +16,16 @@ The client sends this message for **remove equipment**.
 Known static callers lead to:
 
 - `DialogPane::EquipPane`
-- UI or subsystem owner not known yet
+
+`EquipPane` also has a helper that submits slots `1` and `3` through the same builder. The one-byte slot is passed through unchanged.
 
 ## Body
 
 ```text
 packet CRemoveEquipment {
     u8      opcode                    // 0x44
-    ...                         // fields pending
+    u8      slot                      // one-based equipment slot
 }
 ```
 
-Field order, variants, state effects, and paired packets remain to be traced.
+The server-side result is reflected through [`SRemoveEquip`](../server/056-0x38-remove-equip.md), whose consumers clear the corresponding local equipment entry. No additional client fields or variants were found in the representative builder.

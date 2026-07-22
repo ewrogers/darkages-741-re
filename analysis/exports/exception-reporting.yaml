@@ -27,6 +27,58 @@ functions:
     name: exception_context_dumper_scalar_deleting_dtor
     confidence: high
     evidence: "Compiler scalar-deleting destructor for exact RTTI ContextDumper."
+  - address: "0x00463180"
+    name: error_ctor
+    confidence: high
+    evidence: "Constructs Error and snapshots the active process-wide context tags into its fixed prefix."
+  - address: "0x00463240"
+    name: error_context_push
+    confidence: high
+    evidence: "Pushes one string onto the process-wide bounded error-context stack."
+  - address: "0x00463270"
+    name: error_context_pop
+    confidence: high
+    evidence: "Pops one entry from the process-wide error-context stack when nonempty."
+  - address: "0x00463290"
+    name: error_format_message
+    confidence: high
+    evidence: "Formats the Error context prefix and stored message into a caller buffer."
+  - address: "0x004632F0"
+    name: error_set_message
+    confidence: high
+    evidence: "Copies the supplied message into Error's fixed 0x100-byte message field."
+  - address: "0x00463320"
+    name: win32_error_ctor
+    confidence: high
+    evidence: "Constructs Win32Error, captures GetLastError, and stores the caller message."
+  - address: "0x00463360"
+    name: win32_error_format_message
+    confidence: high
+    evidence: "Appends FormatMessage text for the captured Win32 error, or its hexadecimal code."
+  - address: "0x00463450"
+    name: direct_draw_error_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI DDError with the supplied DirectDraw result code and caller message."
+  - address: "0x00463490"
+    name: direct_draw_error_format_message
+    confidence: high
+    evidence: "Appends FormatMessage text for the DirectDraw error, or its hexadecimal code."
+  - address: "0x00463580"
+    name: direct_sound_error_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI DSError with the supplied DirectSound result code and caller message."
+  - address: "0x004635C0"
+    name: direct_sound_error_format_message
+    confidence: high
+    evidence: "Appends FormatMessage text for the DirectSound error, or its hexadecimal code."
+  - address: "0x004636B0"
+    name: general_error_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI GeneralError and copies its caller-supplied derived message text."
+  - address: "0x00463700"
+    name: general_error_format_message
+    confidence: high
+    evidence: "Formats the Error base prefix, then appends GeneralError's derived message text."
   - address: "0x00468AD0"
     name: app_exception_handler_ctor
     confidence: high

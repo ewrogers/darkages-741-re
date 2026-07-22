@@ -27,6 +27,12 @@ The filter receives the normal Win32 `EXCEPTION_POINTERS` pair. It writes the re
 
 This uses Windows structured exception handling at the process boundary. The many compiler-generated SEH frames around ordinary C++ functions are cleanup and language-exception machinery; they are not separate `LCrash.nfo` writers. The filename has only two references in the client: the report writer and the later uploader.
 
+### Internal error objects
+
+The client also has a small C++ `Error` hierarchy for ordinary runtime failures. This is separate from the top-level crash-file path. A process-wide bounded context stack contributes tags to each new `Error`, and the base object stores a fixed message that can be formatted into a caller buffer.
+
+Exact RTTI `Win32Error`, `DDError`, and `DSError` retain an error code. Their formatters ask `FormatMessageA` for system text and fall back to the hexadecimal code. Exact RTTI `GeneralError` instead appends caller-supplied text. These objects explain how subsystems report recoverable Windows, DirectDraw, and DirectSound failures without implying that each one writes `LCrash.nfo`.
+
 ## File contents
 
 `LCrash.nfo` is opened as text in the process working directory. The active writer produces a hardcoded build line followed by a raw stack walk:

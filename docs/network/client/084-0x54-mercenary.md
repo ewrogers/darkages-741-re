@@ -65,3 +65,5 @@ The action names are embedded client debug strings. The two action-1 words remai
 ## UI
 
 `EmployeeDialogPane` draws the employee title, held money, capacity status, and ten visible item buttons. It also attaches OK, Dismiss, and WithdrawMoney controls. Item dialogs expose quantity and price operations, then queue the matching action through the pane's `TimerHandler` callback.
+
+Exact RTTI `EmployeeQuantityInputDialogPane` loads `lshop1.txt` for bounded quantity entry. Exact RTTI `EmployeeItemPropertyDialogPane` loads `lshop2.txt` for item, quantity, sell-price, and buy-price editing. Their commit paths return the selected values to `EmployeeDialogPane`, which performs the network action on its timer callback rather than directly inside the control handler.

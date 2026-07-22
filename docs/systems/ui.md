@@ -114,6 +114,16 @@ Exact RTTI `EmoticonSelectPane_A` owns eight option rectangles and a description
 
 A pointer selection or numeric key commits an option through the retained chat owner and shared emoticon state, then closes the pane. Other mapped keys close or refresh it without choosing. The selector clamps programmatic selection to the eight valid indexes and falls back to option zero.
 
+The shared label loader treats each configured option as two DBCS-aware text parts separated by a semicolon. `EquipPane` and `UserLookPane` draw the right-hand part beside the selected `HumanState` image.
+
+## Equipment and character views
+
+Exact RTTI `EquipPane` owns 18 worn-equipment entries. Each entry keeps its sprite, dye byte, name, current durability, and maximum durability. The pane draws those entries with the local character profile and can send [`CRemoveEquipment`](../network/client/068-0x44-remove-equipment.md) for a selected one-byte slot.
+
+An attached exact RTTI `GroupViewPane` is a small owner-relative panel. It draws `equip02.epf` or `equip03.epf` and advances its expand or collapse transition through a requeued timer callback. Group state and visibility remain separate from the transition state.
+
+Exact RTTI `UserLookPane` is the corresponding view for another character. Its decoded body carries the viewed character ID, 18 equipment records, display strings, legend data, portrait, and profile. The pane can send an ordinary group request for the displayed name or begin an exchange with the retained character ID.
+
 ## Full-screen story panes
 
 Two early full-screen panes combine archive text, art, input, and timers without using a dialog layout.

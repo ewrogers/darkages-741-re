@@ -7,6 +7,10 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x00462EB0"
+    name: ui_user_look_pane_send_exchange_start
+    confidence: high
+    evidence: "Builds CExchange action 0 with the viewed character ID stored at UserLookPane +0x1954."
   - address: "0x00469560"
     name: ui_exchange_dialog_ctor
     confidence: high

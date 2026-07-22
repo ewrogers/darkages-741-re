@@ -7,6 +7,26 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x0045A1D0"
+    name: ui_employee_item_property_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI EmployeeItemPropertyDialogPane from lshop2.txt with item, price, quantity, edit, OK, cancel, and clear controls."
+  - address: "0x0045A810"
+    name: ui_employee_item_property_dialog_draw
+    confidence: high
+    evidence: "Draws the employee item-property dialog and its current item, price, and quantity state."
+  - address: "0x0045A930"
+    name: ui_employee_item_property_dialog_handle_action
+    confidence: high
+    evidence: "Maps item-property controls to price, quantity, confirmation, cancellation, and clear operations."
+  - address: "0x0045AB00"
+    name: ui_employee_quantity_input_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI EmployeeQuantityInputDialogPane from lshop1.txt and initializes its bounded quantity field."
+  - address: "0x0045AE00"
+    name: ui_employee_quantity_input_dialog_handle_action
+    confidence: high
+    evidence: "Commits or cancels the employee quantity input and returns the result to its owner dialog."
   - address: "0x0045AF00"
     name: ui_employee_dialog_ctor
     confidence: high
@@ -15,14 +35,30 @@ functions:
     name: ui_employee_dialog_dtor
     confidence: high
     evidence: "Unregisters and destroys EmployeeDialogPane and its attached controls."
+  - address: "0x0045B860"
+    name: ui_employee_dialog_draw
+    confidence: high
+    evidence: "Draws EmployeeDialogPane title, money, capacity, and the currently visible employee item controls."
+  - address: "0x0045BD60"
+    name: ui_employee_dialog_set_pending_item_values
+    confidence: high
+    evidence: "Stores the selected employee item and pending quantity and price values for deferred processing."
   - address: "0x0045BD90"
     name: ui_employee_dialog_handle_action
     confidence: high
     evidence: "Routes employee-shop controls and item operations to the CMercenary action builders."
+  - address: "0x0045BF80"
+    name: ui_employee_dialog_handle_pointer_event
+    confidence: high
+    evidence: "Shows the employee item sale tooltip for the hovered visible record, then delegates ordinary pointer handling."
   - address: "0x0045C200"
     name: ui_employee_dialog_timer_callback
     confidence: high
     evidence: "Executes the employee pane's queued item, quantity, price, and confirmation operations on its TimerHandler callback."
+  - address: "0x0045C3C0"
+    name: ui_employee_dialog_begin_item_action
+    confidence: high
+    evidence: "Resolves an employee item action and either opens the quantity dialog or queues the direct owner operation."
   - address: "0x0045C500"
     name: net_send_mercenary_add_item
     confidence: high
@@ -103,6 +139,38 @@ functions:
     name: ui_employee_dialog_rebuild_visible_items
     confidence: high
     evidence: "Rebuilds the employee pane's visible item controls from the current records."
+  - address: "0x0045D6D0"
+    name: ui_employee_item_property_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for EmployeeItemPropertyDialogPane."
+  - address: "0x0045D700"
+    name: ui_employee_quantity_input_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for EmployeeQuantityInputDialogPane."
+  - address: "0x0045D730"
+    name: ui_employee_dialog_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for EmployeeDialogPane."
+  - address: "0x0045D760"
+    name: ui_employee_dialog_singleton_register
+    confidence: high
+    evidence: "Registers the complete EmployeeDialogPane object from its Singleton base at +0x630."
+  - address: "0x0045D7A0"
+    name: ui_employee_dialog_singleton_unregister
+    confidence: high
+    evidence: "Clears the EmployeeDialogPane singleton when the registered complete object matches."
+  - address: "0x0045D7F0"
+    name: ui_employee_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C before the EmployeeDialogPane deleting destructor."
+  - address: "0x0045D800"
+    name: ui_employee_quantity_input_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C before the employee quantity-dialog deleting destructor."
+  - address: "0x0045D810"
+    name: ui_employee_item_property_dialog_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C before the employee item-property deleting destructor."
   - address: "0x005ED9A0"
     name: net_dispatch_server_packet
     confidence: high

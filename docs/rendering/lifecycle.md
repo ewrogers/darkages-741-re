@@ -34,7 +34,7 @@ Subcanvases do not own another pixel buffer. `render_canvas_resolve_backing` wal
 
 `render_canvas_lock_pixels` hides the backing difference from software drawing. Heap canvases return their stored pointer and pitch. Surface canvases call DirectDraw `Lock` and cache the returned pointer and pitch until `render_canvas_unlock_pixels`. If an unlock reports a lost surface, the client restores it and retries.
 
-The client can also construct a top-down 16-bit `DIBitmap`. Its decoder expands an archive image to RGB555 and copies aligned rows into a GDI DIB section. This is a conversion boundary, not the main sprite drawing path.
+The client can also construct a top-down 16-bit `DIBitmap`. Its decoder expands an archive image to RGB555 and copies aligned rows into a GDI DIB section. A smaller shared decoder validates an embedded indexed-image record, allocates a 16-bit pixel buffer, and expands each palette index through the same client color packer. These are conversion boundaries, not the main sprite drawing path.
 
 ## Redraw and presentation cadence
 

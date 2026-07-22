@@ -49,7 +49,7 @@ The item slot is one-based. Action `0x01` means a quantity of one; the quantity 
 
 The action mapping comes from all local body builders and their callers. In particular, `ExchangeDialog` attaches OK before Cancel, then maps those action IDs to `0x05` and `0x04`. The inbound start handler also builds `0x04` when client state prevents it from opening the dialog.
 
-Related protocol vocabulary identifies the action `0x00` value as a target ID, but this builder has no recovered live static caller in the client. A successful [`SExchange`](../server/066-0x42-exchange.md) start supplies the value retained by the dialog and echoed by actions `0x01` through `0x05`. Static client code does not prove whether the two values are the same player ID or whether the server returns a separate exchange-session ID.
+Related protocol vocabulary identifies the action `0x00` value as a target ID. An equivalent `UserLookPane` member builder reads the viewed character ID retained by that pane, although neither action-0 implementation has a recovered live static caller. A successful [`SExchange`](../server/066-0x42-exchange.md) start supplies the value retained by the dialog and echoed by actions `0x01` through `0x05`. Static client code does not prove whether the initial target ID and returned value are the same player ID or whether the server returns a separate exchange-session ID.
 
 ## UI flow
 

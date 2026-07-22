@@ -875,10 +875,38 @@ functions:
     name: ui_equip_pane_ctor
     confidence: high
     evidence: "Constructs exact RTTI class EquipPane over a 0x630-byte DialogPane base, 18 contiguous 0x34-byte slot-view records, profile text, named layout rectangles, and the worn-equipment arrays."
+  - address: "0x0045EEE0"
+    name: ui_equip_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI EquipPane, its equipment views and dependent panes, then the DialogPane base."
+  - address: "0x0045F000"
+    name: ui_equip_pane_handle_pointer_event
+    confidence: high
+    evidence: "Handles EquipPane equipment hover and selection before delegating ordinary dialog pointer behavior."
+  - address: "0x0045F3B0"
+    name: ui_equip_pane_draw
+    confidence: high
+    evidence: "Draws EquipPane identity, equipment slots, profile state, controls, and optional character preview."
+  - address: "0x0045FBD0"
+    name: ui_equip_pane_draw_emoticon
+    confidence: high
+    evidence: "Draws the selected HumanState image and right-hand emoticon option label in EquipPane."
+  - address: "0x0045FDA0"
+    name: ui_equip_pane_request_remove_slots_1_and_3
+    confidence: high
+    evidence: "Sends CRemoveEquipment for equipment slots 1 and 3 through the common builder."
   - address: "0x0045FDC0"
     name: ui_equip_pane_apply_self_look
     confidence: high
     evidence: "Copies SSelfLook identity, nation, group, class, and legend state into EquipPane and its dependent panes."
+  - address: "0x0045FFA0"
+    name: ui_equip_pane_apply_equipment_detail_body
+    confidence: high
+    evidence: "Parses one equipment-detail body into the selected EquipPane slot and invalidates the pane."
+  - address: "0x00460130"
+    name: ui_equip_pane_apply_remove_equipment_detail_body
+    confidence: high
+    evidence: "Parses an equipment-detail removal body and clears the corresponding EquipPane state."
   - address: "0x004601D0"
     name: ui_equip_pane_add_equipment_from_packet
     confidence: high
@@ -887,10 +915,126 @@ functions:
     name: ui_equip_pane_remove_equipment_from_packet
     confidence: high
     evidence: "Clears the selected EquipPane sprite, name, and durability fields without clearing the retained dye byte."
+  - address: "0x00460330"
+    name: net_send_remove_equipment
+    confidence: high
+    evidence: "Builds CRemoveEquipment opcode 0x44 followed by the one-byte equipment slot."
+  - address: "0x004603C0"
+    name: ui_equip_pane_refresh_group_toggle_button
+    confidence: high
+    evidence: "Refreshes the EquipPane group-toggle button from the current local group state."
+  - address: "0x004604A0"
+    name: ui_equip_pane_toggle_group
+    confidence: high
+    evidence: "Sends the empty CGroupToggle body, flips local group state, and refreshes the button."
+  - address: "0x004605C0"
+    name: ui_equip_pane_forward_portrait_profile_body
+    confidence: high
+    evidence: "Forwards the remaining portrait and profile body to EquipPane's attached legend view."
+  - address: "0x00460600"
+    name: ui_group_view_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI GroupViewPane and initializes its owner-relative collapsed presentation."
+  - address: "0x00460760"
+    name: ui_group_view_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI GroupViewPane and its Pane base state."
+  - address: "0x004607F0"
+    name: ui_group_view_pane_timer_callback
+    confidence: high
+    evidence: "Advances the GroupViewPane expand or collapse transition and requeues it until complete."
+  - address: "0x00460850"
+    name: ui_group_view_pane_draw
+    confidence: high
+    evidence: "Draws GroupViewPane with equip02.epf or equip03.epf according to its transition state."
+  - address: "0x00460960"
+    name: ui_group_view_pane_set_formatted_text
+    confidence: high
+    evidence: "Stores the formatted group-view text and invalidates the pane."
+  - address: "0x004609A0"
+    name: ui_group_view_pane_position_from_owner
+    confidence: high
+    evidence: "Positions GroupViewPane relative to its retained owner rectangle."
+  - address: "0x004609F0"
+    name: ui_group_view_pane_start_expand
+    confidence: high
+    evidence: "Starts the timed GroupViewPane expansion transition."
+  - address: "0x00460A40"
+    name: ui_group_view_pane_start_collapse
+    confidence: high
+    evidence: "Starts the timed GroupViewPane collapse transition."
+  - address: "0x00460A90"
+    name: ui_user_look_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI UserLookPane with 18 equipment pixmaps, auxiliary images, and an offscreen character canvas."
+  - address: "0x00461DC0"
+    name: ui_user_look_pane_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI UserLookPane, its legend child, image state, and DialogPane base."
+  - address: "0x00461E80"
+    name: ui_user_look_pane_handle_pointer_event
+    confidence: high
+    evidence: "Handles UserLookPane pointer interaction and delegates the remaining dialog behavior."
+  - address: "0x00461F40"
+    name: ui_user_look_pane_handle_action
+    confidence: high
+    evidence: "Maps UserLookPane actions to CGroup Request, close, and portrait-child forwarding."
+  - address: "0x00461FB0"
+    name: ui_user_look_pane_draw
+    confidence: high
+    evidence: "Draws the viewed character profile, equipment, character preview, and emoticon state."
+  - address: "0x00462850"
+    name: ui_user_look_pane_draw_emoticon
+    confidence: high
+    evidence: "Draws the selected HumanState image and right-hand emoticon option label in UserLookPane."
+  - address: "0x004629D0"
+    name: ui_user_look_pane_apply_body
+    confidence: high
+    evidence: "Parses viewed character ID, 18 equipment entries, display fields, legends, portrait, and profile into UserLookPane."
   - address: "0x00462DC0"
     name: net_send_group
     confidence: high
     evidence: "UserLookPane calls this opcode 0x2E builder with a length-prefixed user name."
+  - address: "0x00462FB0"
+    name: ui_equip_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI EquipPane."
+  - address: "0x00462FE0"
+    name: ui_group_view_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI GroupViewPane."
+  - address: "0x00463010"
+    name: ui_user_look_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI UserLookPane."
+  - address: "0x00463040"
+    name: ui_equip_pane_singleton_register
+    confidence: high
+    evidence: "Registers the complete EquipPane object from its Singleton base at +0x630."
+  - address: "0x00463080"
+    name: ui_equip_pane_singleton_unregister
+    confidence: high
+    evidence: "Clears the EquipPane singleton when the registered complete object matches."
+  - address: "0x004630C0"
+    name: ui_user_look_pane_singleton_register
+    confidence: high
+    evidence: "Registers the complete UserLookPane object from its Singleton base at +0x630."
+  - address: "0x00463100"
+    name: ui_user_look_pane_singleton_unregister
+    confidence: high
+    evidence: "Clears the UserLookPane singleton when the registered complete object matches."
+  - address: "0x00463140"
+    name: ui_user_look_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C before the UserLookPane deleting destructor."
+  - address: "0x00463150"
+    name: ui_equip_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C before the EquipPane deleting destructor."
+  - address: "0x00463160"
+    name: ui_group_view_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C before the GroupViewPane deleting destructor."
   - address: "0x00474310"
     name: ui_field_map_balloon_pane_ctor
     confidence: high

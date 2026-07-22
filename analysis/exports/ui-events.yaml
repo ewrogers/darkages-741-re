@@ -543,10 +543,50 @@ functions:
     name: ui_emoticon_select_pane_set_selected_option
     confidence: high
     evidence: "Clamps and stores the selected option and refreshes its description."
+  - address: "0x0045A000"
+    name: ui_emoticon_get_option_label_part
+    confidence: high
+    evidence: "Lazily parses eight DBCS-aware emoticon labels and returns the selected text before or after its semicolon."
+  - address: "0x0045A190"
+    name: ui_emoticon_select_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI EmoticonSelectPane_A."
+  - address: "0x0045A1C0"
+    name: ui_emoticon_select_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts TimerHandler this by -0x11C before the EmoticonSelectPane_A deleting destructor."
+  - address: "0x00463740"
+    name: event_queue_ctor
+    confidence: high
+    evidence: "Constructs EventQueue over PointerQueue with an owned-Event deletion callback."
+  - address: "0x00463770"
+    name: event_queue_delete_owned_event
+    confidence: high
+    evidence: "Deletes one non-null Event through its virtual deleting destructor."
+  - address: "0x004637B0"
+    name: event_stack_ctor
+    confidence: high
+    evidence: "Constructs EventStack over PointerStack with an owned-Event deletion callback."
+  - address: "0x004637E0"
+    name: event_stack_delete_owned_event
+    confidence: high
+    evidence: "Deletes one non-null Event through its virtual deleting destructor."
   - address: "0x00463820"
     name: event_dispatcher_ctor
     confidence: high
     evidence: "Constructs the 0x1BC-byte EventDispatcher, queue, timer list, packet factory, capture state, and EventHandlerList."
+  - address: "0x00463AA0"
+    name: event_dispatcher_dtor
+    confidence: high
+    evidence: "Destroys EventDispatcher timers, queues, handler list, critical section, and packet factory."
+  - address: "0x00463C00"
+    name: event_dispatcher_lock_queue
+    confidence: high
+    evidence: "Enters EventDispatcher's queue critical section."
+  - address: "0x00463C20"
+    name: event_dispatcher_unlock_queue
+    confidence: high
+    evidence: "Leaves EventDispatcher's queue critical section."
   - address: "0x00463C40"
     name: event_allocate_or_reuse
     confidence: high
@@ -571,6 +611,10 @@ functions:
     name: event_unregister_pane
     confidence: high
     evidence: "Clears Pane +0x188 bit 0x02 and removes the pane subtree from EventHandlerList."
+  - address: "0x00463EB0"
+    name: event_post_intro_state
+    confidence: high
+    evidence: "Queues event type 0x14 with three dword fields for direct intro-state dispatch."
   - address: "0x00463F50"
     name: event_enqueue
     confidence: high
@@ -579,6 +623,10 @@ functions:
     name: event_dispatch_immediate
     confidence: high
     evidence: "Validates and centrally dispatches an Event, then performs family-specific owned-payload cleanup."
+  - address: "0x00463FF0"
+    name: event_dispatcher_schedule_timer
+    confidence: high
+    evidence: "Forwards a timer request to the ordered EventDispatcher timer scheduler."
   - address: "0x00464050"
     name: ui_pane_schedule_timer
     confidence: high

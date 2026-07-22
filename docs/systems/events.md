@@ -43,6 +43,8 @@ Most producers construct an `Event` on the stack, set its signed type byte, fill
 
 Main-thread events are dispatched immediately. Events from another thread are copied into a synchronized queue. The dispatcher keeps a separate pool of reusable `Event` objects for that queue, but the pool stores pointers outside the objects. Neither allocation nor recycling uses `Event +0x08` as a link.
 
+`EventQueue` and the timer-side `EventStack` both own their stored event pointers. Their deletion callbacks invoke the event's virtual deleting destructor. Queue push and pop operations use the `EventDispatcher` critical section and copy the complete fixed-size event value across the thread boundary.
+
 ## Event families
 
 `event_dispatch` groups event types by purpose:
@@ -55,7 +57,7 @@ Main-thread events are dispatched immediately. Events from another thread are co
 | `0x13` | Decoded server packet |
 | `0x14` | Intro state change |
 
-The first four families can travel through the pane tree. Intro state events go straight to `event_handle_intro_state`.
+The first four families can travel through the pane tree. Intro state events go straight to `event_handle_intro_state`. `event_post_intro_state` constructs that `0x14` event with three dword payload values and submits it through the same queueing boundary.
 
 ## Dispatch flow
 

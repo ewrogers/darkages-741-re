@@ -1099,6 +1099,10 @@ functions:
     name: render_get_effect_image_pool
     confidence: high
     evidence: Returns the EffectImagePool singleton.
+  - address: "0x0045D820"
+    name: file_decode_embedded_indexed_image_rgb16
+    confidence: high
+    evidence: "Validates an embedded indexed-image record, allocates a 16-bit pixel buffer, and expands its palette indexes through the client RGB packer."
   - address: "0x0047B7D0"
     name: render_font_image_library_ctor
     confidence: high
