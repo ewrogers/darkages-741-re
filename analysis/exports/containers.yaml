@@ -127,6 +127,98 @@ functions:
     name: black_hole_scalar_deleting_dtor
     confidence: high
     evidence: "Runs the BlackHole destructor and conditionally frees the complete object."
+  - address: "0x00465020"
+    name: pointer_queue_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for PointerQueue<Event>."
+  - address: "0x00465050"
+    name: pointer_stack_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for PointerStack<Event>."
+  - address: "0x004650B0"
+    name: lobject_dtor_thunk
+    confidence: high
+    evidence: "Compiler cleanup thunk that forwards directly to lobject_dtor."
+  - address: "0x004650D0"
+    name: lobject_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for the LObject base."
+  - address: "0x00465100"
+    name: pointer_queue_ctor
+    confidence: high
+    evidence: "Constructs a segmented pointer queue with one zeroed 0x400-entry block and an owned-value deletion callback."
+  - address: "0x004651D0"
+    name: pointer_queue_dtor
+    confidence: high
+    evidence: "Destroys every pointer-queue block and owned remaining value."
+  - address: "0x00465230"
+    name: pointer_queue_is_empty
+    confidence: high
+    evidence: "Returns true when the current queue block has no unread entries."
+  - address: "0x00465270"
+    name: pointer_queue_front
+    confidence: high
+    evidence: "Returns the current front pointer without removing it, or null when empty."
+  - address: "0x004652C0"
+    name: pointer_queue_pop_front
+    confidence: high
+    evidence: "Advances the queue front and rotates a fully consumed block to the reusable tail."
+  - address: "0x00465350"
+    name: pointer_queue_push
+    confidence: high
+    evidence: "Appends a pointer, allocating and linking another 0x400-entry block when the tail is full."
+  - address: "0x00465450"
+    name: pointer_stack_ctor
+    confidence: high
+    evidence: "Constructs a pointer stack with initial capacity 0x400 and an owned-value deletion callback."
+  - address: "0x004654F0"
+    name: pointer_stack_dtor
+    confidence: high
+    evidence: "Destroys the pointer-stack storage and every owned remaining value."
+  - address: "0x00465550"
+    name: pointer_stack_is_empty
+    confidence: high
+    evidence: "Returns true when the pointer-stack count is zero."
+  - address: "0x00465570"
+    name: pointer_stack_top
+    confidence: high
+    evidence: "Returns the most recently pushed pointer without removing it, or null when empty."
+  - address: "0x004655B0"
+    name: pointer_stack_pop
+    confidence: high
+    evidence: "Decrements the pointer-stack count when nonempty."
+  - address: "0x004655F0"
+    name: pointer_stack_push
+    confidence: high
+    evidence: "Forwards one pointer to the growing pointer-stack storage."
+  - address: "0x004656F0"
+    name: pointer_queue_block_dtor
+    confidence: high
+    evidence: "Recursively destroys following queue blocks, deletes unread owned values, and releases block storage."
+  - address: "0x004657B0"
+    name: pointer_queue_block_append
+    confidence: high
+    evidence: "Links a block at the end of the segmented pointer queue."
+  - address: "0x004657F0"
+    name: pointer_queue_block_push
+    confidence: high
+    evidence: "Appends a pointer to the first block with room, recursing through full linked blocks."
+  - address: "0x00465860"
+    name: pointer_queue_block_advance_read
+    confidence: high
+    evidence: "Advances a block's read index, resets reusable partial blocks, and signals when a full consumed block must rotate."
+  - address: "0x00465900"
+    name: pointer_stack_storage_ctor
+    confidence: high
+    evidence: "Allocates and zeroes the pointer stack's initial 0x400-entry storage."
+  - address: "0x00465990"
+    name: pointer_stack_storage_dtor
+    confidence: high
+    evidence: "Deletes remaining owned values in reverse order and frees pointer-stack storage."
+  - address: "0x00465A00"
+    name: pointer_stack_storage_push
+    confidence: high
+    evidence: "Grows pointer-stack storage in 0x400-entry steps and appends one pointer."
 data_symbols: []
 comments:
   - address: "0x00404B06"

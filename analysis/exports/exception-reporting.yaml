@@ -111,6 +111,18 @@ functions:
     name: app_resolve_fault_module_section
     confidence: high
     evidence: "Uses VirtualQuery and PE section headers to resolve the fault address to module, section index, and offset; the active writer does not serialize the results."
+  - address: "0x004694A0"
+    name: app_exception_handler_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI ExceptionHandler."
+  - address: "0x004694D0"
+    name: app_exception_handler_singleton_register
+    confidence: high
+    evidence: "Registers the complete ExceptionHandler object from its Singleton base at +0x04."
+  - address: "0x00469510"
+    name: app_exception_handler_singleton_unregister
+    confidence: high
+    evidence: "Clears the ExceptionHandler singleton when the registered complete object matches."
   - address: "0x00469550"
     name: app_get_exception_handler
     confidence: high

@@ -30,6 +30,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_write_unhandled_exception_report` | `0x00468F00` | high | Writes LCrash.nfo as build/distribution text plus raw CS:EIP frames produced from EXCEPTION_POINTERS. |
 | `app_get_exception_code_name` | `0x004690A0` | high | Maps common Win32 exception codes to names or formats an NTDLL fallback; the active LCrash writer discards the returned name. |
 | `app_resolve_fault_module_section` | `0x00469390` | high | Uses VirtualQuery and PE section headers to resolve the fault address to module, section index, and offset; the active writer does not serialize the results. |
+| `app_exception_handler_scalar_deleting_dtor` | `0x004694A0` | high | Scalar deleting destructor for exact RTTI ExceptionHandler. |
+| `app_exception_handler_singleton_register` | `0x004694D0` | high | Registers the complete ExceptionHandler object from its Singleton base at +0x04. |
+| `app_exception_handler_singleton_unregister` | `0x00469510` | high | Clears the ExceptionHandler singleton when the registered complete object matches. |
 | `app_get_exception_handler` | `0x00469550` | high | Returns the application-wide ExceptionHandler singleton used by the filter, uploader, and live diagnostic builder. |
 | `app_language_mode_from_distribution` | `0x004A49B0` | high | Maps distribution modes to Korean 0, English 1, Japanese 2, or Taiwan 3 language modes. |
 | `app_get_text_code_page` | `0x004A4A30` | high | Returns the code-page value selected with the current language mode. |
@@ -81,23 +84,44 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `event_enqueue` | `0x00463F50` | high | Thin synchronized queue wrapper used when an event originates off the main thread. |
 | `event_dispatch_immediate` | `0x00463F70` | high | Validates and centrally dispatches an Event, then performs family-specific owned-payload cleanup. |
 | `event_dispatcher_schedule_timer` | `0x00463FF0` | high | Forwards a timer request to the ordered EventDispatcher timer scheduler. |
+| `event_dispatcher_schedule_timer_default` | `0x00464020` | high | Schedules a timer with base mode 0, using EventDispatcher's sampled time plus the delay. |
+| `event_dispatcher_cancel_timers` | `0x004640A0` | high | Forwards a TimerHandler and timer ID to the ordered EventDispatcher cancellation path. |
+| `event_dispatcher_cancel_pane_timers` | `0x004640C0` | high | Adjusts a Pane to its TimerHandler subobject and cancels matching dispatcher timers. |
+| `event_dispatcher_set_capture_pane` | `0x004640E0` | high | Forwards capture changes to the dispatcher path that updates SetCapture or ReleaseCapture. |
+| `event_reset_hidden_keyboard_sequence_progress` | `0x00464100` | high | Resets the matched-character count for the optional hidden keyboard sequence. |
 | `event_arm_hidden_keyboard_sequence` | `0x00464120` | high | Arms a ten-second keyboard-sequence reader for literal nim@wmfRpa and a later wake timer; no static caller is present in this build. |
 | `event_dispatcher_tick_virtual` | `0x00464430` | high | Calls EventDispatcher primary-vtable +0x08, which resolves to event_dispatcher_tick. |
 | `event_register_pane_internal` | `0x00464450` | high | Calls EventHandlerList virtual insert and refreshes dispatcher state. |
 | `event_unregister_pane_internal` | `0x004644B0` | high | Calls EventHandlerList virtual subtree removal and refreshes dispatcher state. |
+| `event_dispatch_virtual` | `0x00464500` | high | Virtual wrapper that forwards one Event to the central event_dispatch implementation. |
 | `event_schedule_timer` | `0x00464520` | high | Inserts a five-dword TimerHandler entry ordered by due time, using the dispatcher sample, a fresh timeGetTime value, or the current callback's due time as its scheduling base. |
 | `event_cancel_timers` | `0x00464630` | high | Notifies TimerHandler virtual +0x0C, removes matching timer entries, and refreshes next-due time. |
 | `event_dispatch` | `0x004647C0` | high | Central dispatcher for capture, type 0x13 deserialization, pane-tree traversal, and type 0x14 special handling. |
+| `event_dispatcher_query_text_input_active` | `0x00464BD0` | high | Walks input-eligible panes in priority order and reports whether the text input service should be active. |
 | `event_dispatch_pane_tree` | `0x00464CF0` | high | Begins a root EventHandlerList iterator and invokes recursive pane-tree dispatch. |
 | `event_dispatch_pane_subtree` | `0x00464D50` | high | Traverses immediate siblings and descendants child-first, with local pointer coordinates and consumed-result stopping. |
 | `event_dispatch_to_pane` | `0x00464F40` | high | Maps pointer, keyboard/text, network, and application event families to Pane vtable slots. |
+| `event_dispatcher_scalar_deleting_dtor` | `0x00465080` | high | Scalar deleting destructor for exact RTTI EventDispatcher. |
+| `event_dispatcher_singleton_register` | `0x00465610` | high | Registers the complete EventDispatcher object from its Singleton base at +0x0C. |
+| `event_dispatcher_singleton_unregister` | `0x00465650` | high | Clears the EventDispatcher singleton when the registered complete object matches. |
+| `event_queue_scalar_deleting_dtor` | `0x00465690` | high | Scalar deleting destructor for exact RTTI EventQueue over PointerQueue&lt;Event&gt;. |
+| `event_stack_scalar_deleting_dtor` | `0x004656C0` | high | Scalar deleting destructor for exact RTTI EventStack over PointerStack&lt;Event&gt;. |
 | `event_handler_list_ctor` | `0x00465AF0` | high | Constructs RTTI-backed EventHandlerList with a 0x0C-byte entry array and 16 iterator slots. |
+| `event_handler_list_dtor` | `0x00465BA0` | high | Destroys EventHandlerList's contiguous registration storage. |
+| `event_handler_list_find_index` | `0x00465BD0` | high | Returns the registration index for a pane pointer, or -1 when absent. |
+| `event_handler_list_contains` | `0x00465C20` | high | Returns whether EventHandlerList contains the supplied pane pointer. |
 | `event_handler_list_insert` | `0x00465C50` | high | Inserts a pane at parent depth plus one in the flattened preorder tree. |
 | `event_handler_list_remove_subtree` | `0x00465D80` | high | Removes one entry and all following descendants with greater depth. |
 | `event_handler_list_begin_children` | `0x00465E10` | high | Initializes a mutation-aware iterator at root depth or one depth below an existing iterator. |
 | `event_handler_list_end_iterator` | `0x00466050` | high | Marks an EventHandlerList iterator slot unused. |
 | `event_handler_list_next` | `0x00466080` | high | Returns the current pane entry and advances the depth-aware iterator. |
+| `event_handler_list_get_entries` | `0x00466170` | high | Returns the contiguous registration array and writes its current entry count. |
 | `event_handler_list_advance_sibling` | `0x00466190` | high | Skips descendants and stops at the next valid entry with the iterator's target depth. |
+| `event_handler_list_get_pane_at` | `0x00466260` | high | Returns the pane pointer at a valid registration index, or null when out of range. |
+| `event_handler_list_allocate_iterator_id` | `0x00466290` | high | Returns and increments EventHandlerList's monotonically increasing iterator identifier. |
+| `event_handler_list_insert_record_at` | `0x004662D0` | high | Inserts one 12-byte registration record and adjusts every active iterator index. |
+| `event_handler_list_erase_range` | `0x00466450` | high | Erases a registration range, invalidates removed records, and adjusts active iterators. |
+| `event_handler_list_scalar_deleting_dtor` | `0x00466650` | high | Scalar deleting destructor for exact RTTI EventHandlerList. |
 | `event_ctor` | `0x00466680` | high | Calls lobject_ctor, installs the RTTI-backed Event vtable, and initializes the signed type byte at +0x0C to -1; +0x08 remains untouched. |
 | `event_dtor` | `0x004666B0` | high | Restores the Event vtable, resets signed type to -1, and calls lobject_dtor, which clears the live cookie. |
 | `event_is_pointer` | `0x004666E0` | high | Returns true for event types 0x00 through 0x07. |
@@ -106,6 +130,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `event_is_application` | `0x004667A0` | high | Returns true for event types 0x0D through 0x12. |
 | `event_dispatch_or_queue` | `0x004670F0` | high | Dispatches on app_main_thread_id and copies the Event into the queue from any other thread. |
 | `event_scalar_deleting_dtor` | `0x004689D0` | high | Calls event_dtor and frees the Event when the MSVC deleting-destructor flag requests it. |
+| `event_dispatcher_is_available` | `0x00468AB0` | high | Returns whether the application-wide EventDispatcher singleton currently exists. |
 | `event_handle_intro_state` | `0x004ACA50` | high | Dispatches intro states 0, 1, and 2 around Bink playback. |
 
 ## Input
@@ -115,8 +140,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_get_event_manager` | `0x00427380` | high | Returns input_event_manager_singleton_ptr. |
 | `input_set_capture_pane` | `0x00464780` | high | Stores EventDispatcher +0x40 and calls SetCapture or ReleaseCapture on the main window. |
 | `input_event_manager_ctor` | `0x004667E0` | high | Constructs RTTI EventMan state, key tables, pointer state, a client-owned 1,000 ms double-click window, and the socket object. |
+| `input_event_manager_dtor` | `0x00466A80` | high | Destroys exact RTTI EventMan, its TimerHandler state, network session owner, and global pointer. |
 | `input_repeat_pointer_move_timer` | `0x00466B40` | high | EventMan TimerHandler callback that emits stored pointer coordinates and reschedules after 20 ms. |
-| `input_get_pointer_position` | `0x00466C40` | high | Copies EventMan's current pointer coordinates from +0x10 and +0x14 into the caller's two-word position. |
+| `input_start_repeat_pointer_move` | `0x00466BB0` | high | Marks repeat-pointer processing active and schedules its first 20 ms timer. |
+| `input_stop_repeat_pointer_move` | `0x00466BF0` | high | Clears repeat-pointer processing and cancels every timer owned by EventMan. |
+| `input_set_pointer_position` | `0x00466C20` | high | Forwards a logical pointer position to the path that clamps it, moves the system cursor, and emits a pointer event. |
+| `input_copy_pointer_position` | `0x00466C40` | high | Byte-identical secondary implementation that copies EventMan's current pointer coordinates into the caller's two-word position. |
+| `input_get_modifier_flags` | `0x00466C60` | high | Copies EventMan's current keyboard modifier flag byte to the caller. |
 | `input_post_pointer_move` | `0x00466C80` | high | Public EventMan entry that honors input blocking before updating coordinates and emitting pointer type 0x00. |
 | `input_begin_server_block` | `0x00466CC0` | high | Emits releases for held left and right mouse buttons, then opens the singleton ClockPane input blocker. |
 | `input_end_server_block` | `0x00466D00` | high | Closes the singleton ClockPane used by the server-controlled input block. |
@@ -131,10 +161,13 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_post_ime_open_status_change` | `0x00466EB0` | high | Public EventMan entry that emits IME open-status event type 0x0D. |
 | `input_post_committed_text` | `0x00466ED0` | high | Public EventMan entry that copies a NUL-terminated committed-text string into event type 0x0B. |
 | `input_post_ime_composition_start` | `0x00466EF0` | high | Public EventMan entry that emits IME composition-start event type 0x0E. |
+| `input_post_ime_composition_update` | `0x00466F10` | high | Forwards IME composition text and its message timestamp to the EventMan event producer. |
 | `input_post_ime_composition_end` | `0x00466F30` | high | Public EventMan entry that emits IME composition-end event type 0x0F. |
 | `input_post_ime_candidate_list_data` | `0x00466F50` | high | Public EventMan entry for candidate-list event type 0x10; its pointer ownership requires the native IME path. |
 | `input_post_ime_candidate_list_close` | `0x00466F80` | high | Public EventMan entry that emits candidate-list-close event type 0x11. |
 | `input_post_alternate_key` | `0x00466FA0` | medium | Public EventMan entry for type 0x0C; the exact semantic distinction from normal key events remains unresolved. |
+| `input_set_pointer_position_and_emit` | `0x00467130` | high | Clamps a logical 640x480 pointer position, calls SetCursorPos, updates EventMan state, and emits pointer-move event type 0. |
+| `input_get_pointer_position` | `0x004672B0` | high | Copies EventMan's current logical pointer coordinates to the caller. |
 | `input_emit_pointer_move` | `0x004672F0` | high | Builds pointer event type 0x00 from EventMan coordinates, flags, and message time. |
 | `input_emit_left_button_down` | `0x004673F0` | high | Builds type 0x01 or synthesized double-click type 0x02; a match requires the same saved button, less than 1,000 ms, and Manhattan distance at most two logical pixels. |
 | `input_emit_left_button_up` | `0x00467680` | high | Builds pointer event type 0x03 and clears the left-held flag. |
@@ -144,6 +177,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_emit_key_down` | `0x00467C10` | high | Updates scan-code and modifier state and builds keyboard event type 0x08. |
 | `input_emit_key_up` | `0x00467E30` | high | Updates scan-code and modifier state and builds keyboard event type 0x09. |
 | `input_emit_character` | `0x00467FE0` | high | Builds text event type 0x0B with the character, message time, and current modifiers. |
+| `input_compute_modifier_flags` | `0x00468300` | high | Builds the four-bit modifier mask from the high bit of EventMan's tracked keyboard-state bytes. |
 | `input_emit_ime_open_status_change` | `0x00468390` | high | Builds application event type 0x0D from an IME open-status value and message time. |
 | `input_emit_committed_text` | `0x00468420` | high | Builds type 0x0B and copies at most 0x7F bytes of committed text into the Event object. |
 | `input_emit_ime_composition_start` | `0x00468550` | high | Builds IME composition-start event type 0x0E. |
@@ -152,6 +186,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `input_emit_alternate_key` | `0x00468790` | medium | Builds keyboard-family type 0x0C after translating the scan code through EventMan key tables. |
 | `input_emit_ime_candidate_list_data` | `0x004688A0` | high | Builds candidate-list event type 0x10 with pointer-bearing candidate data. |
 | `input_emit_ime_candidate_list_close` | `0x00468940` | high | Builds candidate-list-close event type 0x11. |
+| `input_event_manager_scalar_deleting_dtor` | `0x00468A00` | high | Scalar deleting destructor for exact RTTI EventMan. |
+| `input_event_manager_singleton_register` | `0x00468A30` | high | Registers the complete EventMan object from its Singleton base at +0x0C. |
+| `input_event_manager_singleton_unregister` | `0x00468A70` | high | Clears the EventMan singleton when the registered complete object matches. |
 | `input_translate_win32_message` | `0x0048E980` | high | Converts Win32 keyboard, character, IME, pointer, button, and wheel messages to internal events. |
 | `input_map_key_to_world_direction` | `0x005F0B50` | high | Maps all accepted movement-key aliases to the four cardinal Direction values 0 through 3. |
 
@@ -1039,8 +1076,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_pane_cancel_timers` | `0x00464740` | high | Converts a Pane pointer to TimerHandler +0x11C and cancels matching timers. |
 | `ui_exchange_dialog_ctor` | `0x00469560` | high | Constructs the exact RTTI ExchangeDialog from _nexch.txt, attaches its offer controls, registers it under GUIBackPane, and stores the Started event ID at +0x630. |
 | `ui_exchange_dialog_dtor` | `0x00469E70` | high | Decrements the modal count, unregisters ExchangeDialog from event and screen routing, and runs the DialogPane destructor. |
+| `ui_exchange_dialog_draw` | `0x00469F10` | high | Draws ExchangeDialog and the active accepted or unaccepted overlay pixmap at its configured position. |
 | `ui_exchange_dialog_handle_action` | `0x00469FF0` | high | Maps attachment-order action 0 to CExchange Accept 0x05 and action 1 to Cancel 0x04. |
 | `ui_exchange_dialog_handle_inventory_drop` | `0x0046A030` | high | Reads the source InvItemPane one-based slot and sends CExchange AddItem 0x01. |
+| `ui_exchange_dialog_refresh_controls` | `0x0046A080` | high | Enables or disables the exchange offer, accept, and gold controls from the dialog's three acknowledgement flags. |
 | `ui_exchange_dialog_handle_network_event` | `0x0046A1E0` | high | Consumes decoded opcode 0x42 and forwards it to the ExchangeDialog server-event dispatcher. |
 | `ui_exchange_dialog_dispatch_server_event` | `0x0046A240` | high | Routes SExchange events 0x01 through 0x05 to quantity, item, gold, cancelled, and accepted handlers. |
 | `ui_exchange_handle_count_request` | `0x0046A690` | high | Reads SExchange event 0x01 slot and creates AddItemWithCountDialog with that slot and the active exchange ID. |
@@ -1048,6 +1087,27 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_exchange_handle_gold_added` | `0x0046A900` | high | Reads event 0x03 party and big-endian u32 gold, then updates MyMoney for party zero or YourMoney otherwise. |
 | `ui_exchange_handle_cancelled` | `0x0046A9E0` | high | Skips the party byte, opens the supplied string8 message in a one-button alert, and removes ExchangeDialog immediately. |
 | `ui_exchange_handle_accepted` | `0x0046AB20` | high | Marks the indicated party accepted and opens the final message alert only when both local and other acknowledgement flags are set. |
+| `ui_exchange_dialog_set_focused_control` | `0x0046AD00` | high | When focus leaves the edited gold field, validates decimal text, sends CExchange SetGold, and then updates dialog focus. |
+| `ui_exchange_dialog_handle_keyboard_event` | `0x0046AE20` | high | Consumes Space and Enter and delegates other keyboard events to DialogPane. |
+| `ui_exchange_item_list_pane_ctor` | `0x0046AE60` | high | Constructs exact RTTI ExchangeItemListPane as an eight-row ListPane. |
+| `ui_exchange_item_list_set_item` | `0x0046AEA0` | high | Replaces or appends an exchange item record by ID with sprite, name, and dye. |
+| `ui_exchange_item_list_find_item` | `0x0046AF50` | high | Returns the list index whose exchange item ID matches, or -1. |
+| `ui_exchange_item_list_draw_item` | `0x0046AFD0` | high | Draws one exchange item icon with optional palette mapping and a DBCS-safe truncated name. |
+| `ui_exchange_add_item_dialog_ctor` | `0x0046B1E0` | high | Constructs exact RTTI AddItemDialog from lexchai.txt with the local inventory list and close controls. |
+| `ui_exchange_add_item_dialog_handle_action` | `0x0046B490` | high | On confirmation, sends the selected inventory slot as CExchange AddItem; confirmation and cancellation both close the dialog. |
+| `ui_exchange_add_item_dialog_refresh_confirm` | `0x0046B550` | high | Enables the confirmation control only while the local inventory list has a selected row. |
+| `ui_exchange_add_item_dialog_handle_network_event` | `0x0046B5E0` | high | Consumes decoded SExchange bodies and forwards them to the add-item dialog handler. |
+| `ui_exchange_add_item_dialog_apply_server_event` | `0x0046B640` | high | Closes AddItemDialog when SExchange reports event 4 Cancelled. |
+| `ui_exchange_add_item_dialog_send_selected_item` | `0x0046B690` | high | Builds CExchange action 1 from AddItemDialog's exchange ID and the selected one-based inventory slot. |
+| `ui_exchange_my_item_list_pane_ctor` | `0x0046B760` | high | Constructs exact RTTI MyItemListPane and snapshots the 60 live inventory slots into its list records. |
+| `ui_exchange_my_item_list_get_selected_slot` | `0x0046B8D0` | high | Returns the one-byte inventory slot stored by the selected MyItemListPane row. |
+| `ui_exchange_my_item_list_draw_item` | `0x0046B900` | high | Draws one local inventory icon, selected-row background, palette mapping, and DBCS-safe truncated name. |
+| `ui_exchange_count_dialog_load_layout` | `0x0046BB00` | high | Lazily loads litemex.txt and caches the AddItemWithCountDialog background and control rectangles. |
+| `ui_exchange_count_dialog_ctor` | `0x0046BC70` | high | Constructs exact RTTI AddItemWithCountDialog with OK, Cancel, title, and quantity text controls. |
+| `ui_exchange_count_dialog_handle_action` | `0x0046C060` | high | On confirmation, parses and clamps the quantity to u8, sends CExchange action 2, and closes; cancellation only closes. |
+| `ui_exchange_count_dialog_refresh_confirm` | `0x0046C170` | high | Enables the confirmation control only while the quantity text field is nonempty. |
+| `ui_exchange_count_dialog_handle_network_event` | `0x0046C1F0` | high | Consumes decoded SExchange bodies and forwards them to the count-dialog handler. |
+| `ui_exchange_count_dialog_apply_server_event` | `0x0046C250` | high | Closes AddItemWithCountDialog when SExchange reports event 4 Cancelled. |
 | `ui_family_list_dialog_ctor` | `0x00471320` | high | Constructs FamilyListDialogPane from lfamily.txt, populates local rows, registers the pane, and sends CRequestFamilyName. |
 | `ui_family_list_dialog_handle_network_event` | `0x00471A20` | high | Consumes exact RTTI SFamilyName while FamilyListDialogPane is open. |
 | `ui_family_list_dialog_apply_family_name` | `0x00471AF0` | high | Copies the SFamilyName string8 bytes verbatim into the pane's 256-byte display buffer. |
@@ -2873,6 +2933,29 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `direct_sound_error_format_message` | `0x004635C0` | high | Appends FormatMessage text for the DirectSound error, or its hexadecimal code. |
 | `general_error_ctor` | `0x004636B0` | high | Constructs exact RTTI GeneralError and copies its caller-supplied derived message text. |
 | `general_error_format_message` | `0x00463700` | high | Formats the Error base prefix, then appends GeneralError's derived message text. |
+| `pointer_queue_scalar_deleting_dtor` | `0x00465020` | high | Scalar deleting destructor for PointerQueue&lt;Event&gt;. |
+| `pointer_stack_scalar_deleting_dtor` | `0x00465050` | high | Scalar deleting destructor for PointerStack&lt;Event&gt;. |
+| `lobject_dtor_thunk` | `0x004650B0` | high | Compiler cleanup thunk that forwards directly to lobject_dtor. |
+| `lobject_scalar_deleting_dtor` | `0x004650D0` | high | Scalar deleting destructor for the LObject base. |
+| `pointer_queue_ctor` | `0x00465100` | high | Constructs a segmented pointer queue with one zeroed 0x400-entry block and an owned-value deletion callback. |
+| `pointer_queue_dtor` | `0x004651D0` | high | Destroys every pointer-queue block and owned remaining value. |
+| `pointer_queue_is_empty` | `0x00465230` | high | Returns true when the current queue block has no unread entries. |
+| `pointer_queue_front` | `0x00465270` | high | Returns the current front pointer without removing it, or null when empty. |
+| `pointer_queue_pop_front` | `0x004652C0` | high | Advances the queue front and rotates a fully consumed block to the reusable tail. |
+| `pointer_queue_push` | `0x00465350` | high | Appends a pointer, allocating and linking another 0x400-entry block when the tail is full. |
+| `pointer_stack_ctor` | `0x00465450` | high | Constructs a pointer stack with initial capacity 0x400 and an owned-value deletion callback. |
+| `pointer_stack_dtor` | `0x004654F0` | high | Destroys the pointer-stack storage and every owned remaining value. |
+| `pointer_stack_is_empty` | `0x00465550` | high | Returns true when the pointer-stack count is zero. |
+| `pointer_stack_top` | `0x00465570` | high | Returns the most recently pushed pointer without removing it, or null when empty. |
+| `pointer_stack_pop` | `0x004655B0` | high | Decrements the pointer-stack count when nonempty. |
+| `pointer_stack_push` | `0x004655F0` | high | Forwards one pointer to the growing pointer-stack storage. |
+| `pointer_queue_block_dtor` | `0x004656F0` | high | Recursively destroys following queue blocks, deletes unread owned values, and releases block storage. |
+| `pointer_queue_block_append` | `0x004657B0` | high | Links a block at the end of the segmented pointer queue. |
+| `pointer_queue_block_push` | `0x004657F0` | high | Appends a pointer to the first block with room, recursing through full linked blocks. |
+| `pointer_queue_block_advance_read` | `0x00465860` | high | Advances a block's read index, resets reusable partial blocks, and signals when a full consumed block must rotate. |
+| `pointer_stack_storage_ctor` | `0x00465900` | high | Allocates and zeroes the pointer stack's initial 0x400-entry storage. |
+| `pointer_stack_storage_dtor` | `0x00465990` | high | Deletes remaining owned values in reverse order and frees pointer-stack storage. |
+| `pointer_stack_storage_push` | `0x00465A00` | high | Grows pointer-stack storage in 0x400-entry steps and appends one pointer. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

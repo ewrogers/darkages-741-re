@@ -45,6 +45,10 @@ Main-thread events are dispatched immediately. Events from another thread are co
 
 `EventQueue` and the timer-side `EventStack` both own their stored event pointers. Their deletion callbacks invoke the event's virtual deleting destructor. Queue push and pop operations use the `EventDispatcher` critical section and copy the complete fixed-size event value across the thread boundary.
 
+The underlying `PointerQueue<Event>` uses linked blocks of 1,024 pointers. A fully consumed block rotates to the reusable tail, while a partially filled block resets its read and write indexes in place. `PointerStack<Event>` begins with 1,024 pointers and grows in 1,024-entry steps. These are internal storage choices, not limits on the number of queued events or timers.
+
+`EventHandlerList` keeps its pane registrations in contiguous 12-byte records. Insert and erase operations adjust every active iterator so a pane can register or remove a subtree without invalidating an in-progress traversal.
+
 ## Event families
 
 `event_dispatch` groups event types by purpose:
@@ -122,7 +126,9 @@ A `Pane` contains a secondary `TimerHandler` base at offset `0x11C`. Because of 
 
 Win32 pointer messages carry `GetMessageTime()` timestamps into the event system. `EventMan` synthesizes a double-click only when the new press uses the same button, arrives less than 1,000 ms after the saved press, and has a Manhattan coordinate difference of at most 2 logical pixels. A match emits left type `0x02` or right type `0x05` and clears the saved timestamp. A normal press stores its button, position, and time for the next comparison.
 
-`input_repeat_pointer_move_timer` can emit the last stored pointer coordinates and requeue itself after 20 ms while its repeat state is enabled. The path that enables and disables that repeat state is not mapped well enough to describe yet.
+`input_repeat_pointer_move_timer` can emit the last stored pointer coordinates and requeue itself after 20 ms while its repeat state is enabled. A control starts this mode on a retained pointer press and stops it on release. Stopping clears the state and cancels all timers owned by that `EventMan` handler.
+
+Programmatic pointer movement clamps the logical position to `0..639` by `0..479`, calls `SetCursorPos`, updates `EventMan`, and emits the same pointer-move event family. The manager also maintains a four-bit modifier mask derived from the high bits of its tracked keyboard-state bytes. Selection controls use that mask for additive and ranged selection behavior.
 
 The complete event type table, pane handler slots, timer entry, and tree-entry layout are in [Pane and event layouts](../appendix/runtime/panes.md).
 

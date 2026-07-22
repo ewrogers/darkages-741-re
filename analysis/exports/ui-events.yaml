@@ -627,10 +627,30 @@ functions:
     name: event_dispatcher_schedule_timer
     confidence: high
     evidence: "Forwards a timer request to the ordered EventDispatcher timer scheduler."
+  - address: "0x00464020"
+    name: event_dispatcher_schedule_timer_default
+    confidence: high
+    evidence: "Schedules a timer with base mode 0, using EventDispatcher's sampled time plus the delay."
   - address: "0x00464050"
     name: ui_pane_schedule_timer
     confidence: high
     evidence: "Schedules a timer for a Pane by passing its TimerHandler subobject at +0x11C."
+  - address: "0x004640A0"
+    name: event_dispatcher_cancel_timers
+    confidence: high
+    evidence: "Forwards a TimerHandler and timer ID to the ordered EventDispatcher cancellation path."
+  - address: "0x004640C0"
+    name: event_dispatcher_cancel_pane_timers
+    confidence: high
+    evidence: "Adjusts a Pane to its TimerHandler subobject and cancels matching dispatcher timers."
+  - address: "0x004640E0"
+    name: event_dispatcher_set_capture_pane
+    confidence: high
+    evidence: "Forwards capture changes to the dispatcher path that updates SetCapture or ReleaseCapture."
+  - address: "0x00464100"
+    name: event_reset_hidden_keyboard_sequence_progress
+    confidence: high
+    evidence: "Resets the matched-character count for the optional hidden keyboard sequence."
   - address: "0x00464120"
     name: event_arm_hidden_keyboard_sequence
     confidence: high
@@ -651,6 +671,10 @@ functions:
     name: event_unregister_pane_internal
     confidence: high
     evidence: "Calls EventHandlerList virtual subtree removal and refreshes dispatcher state."
+  - address: "0x00464500"
+    name: event_dispatch_virtual
+    confidence: high
+    evidence: "Virtual wrapper that forwards one Event to the central event_dispatch implementation."
   - address: "0x00464520"
     name: event_schedule_timer
     confidence: high
@@ -671,6 +695,10 @@ functions:
     name: event_dispatch
     confidence: high
     evidence: "Central dispatcher for capture, type 0x13 deserialization, pane-tree traversal, and type 0x14 special handling."
+  - address: "0x00464BD0"
+    name: event_dispatcher_query_text_input_active
+    confidence: high
+    evidence: "Walks input-eligible panes in priority order and reports whether the text input service should be active."
   - address: "0x00464CF0"
     name: event_dispatch_pane_tree
     confidence: high
@@ -683,10 +711,42 @@ functions:
     name: event_dispatch_to_pane
     confidence: high
     evidence: "Maps pointer, keyboard/text, network, and application event families to Pane vtable slots."
+  - address: "0x00465080"
+    name: event_dispatcher_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI EventDispatcher."
+  - address: "0x00465610"
+    name: event_dispatcher_singleton_register
+    confidence: high
+    evidence: "Registers the complete EventDispatcher object from its Singleton base at +0x0C."
+  - address: "0x00465650"
+    name: event_dispatcher_singleton_unregister
+    confidence: high
+    evidence: "Clears the EventDispatcher singleton when the registered complete object matches."
+  - address: "0x00465690"
+    name: event_queue_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI EventQueue over PointerQueue<Event>."
+  - address: "0x004656C0"
+    name: event_stack_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI EventStack over PointerStack<Event>."
   - address: "0x00465AF0"
     name: event_handler_list_ctor
     confidence: high
     evidence: "Constructs RTTI-backed EventHandlerList with a 0x0C-byte entry array and 16 iterator slots."
+  - address: "0x00465BA0"
+    name: event_handler_list_dtor
+    confidence: high
+    evidence: "Destroys EventHandlerList's contiguous registration storage."
+  - address: "0x00465BD0"
+    name: event_handler_list_find_index
+    confidence: high
+    evidence: "Returns the registration index for a pane pointer, or -1 when absent."
+  - address: "0x00465C20"
+    name: event_handler_list_contains
+    confidence: high
+    evidence: "Returns whether EventHandlerList contains the supplied pane pointer."
   - address: "0x00465C50"
     name: event_handler_list_insert
     confidence: high
@@ -707,10 +767,34 @@ functions:
     name: event_handler_list_next
     confidence: high
     evidence: "Returns the current pane entry and advances the depth-aware iterator."
+  - address: "0x00466170"
+    name: event_handler_list_get_entries
+    confidence: high
+    evidence: "Returns the contiguous registration array and writes its current entry count."
   - address: "0x00466190"
     name: event_handler_list_advance_sibling
     confidence: high
     evidence: "Skips descendants and stops at the next valid entry with the iterator's target depth."
+  - address: "0x00466260"
+    name: event_handler_list_get_pane_at
+    confidence: high
+    evidence: "Returns the pane pointer at a valid registration index, or null when out of range."
+  - address: "0x00466290"
+    name: event_handler_list_allocate_iterator_id
+    confidence: high
+    evidence: "Returns and increments EventHandlerList's monotonically increasing iterator identifier."
+  - address: "0x004662D0"
+    name: event_handler_list_insert_record_at
+    confidence: high
+    evidence: "Inserts one 12-byte registration record and adjusts every active iterator index."
+  - address: "0x00466450"
+    name: event_handler_list_erase_range
+    confidence: high
+    evidence: "Erases a registration range, invalidates removed records, and adjusts active iterators."
+  - address: "0x00466650"
+    name: event_handler_list_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI EventHandlerList."
   - address: "0x00466680"
     name: event_ctor
     confidence: high
@@ -739,14 +823,34 @@ functions:
     name: input_event_manager_ctor
     confidence: high
     evidence: "Constructs RTTI EventMan state, key tables, pointer state, a client-owned 1,000 ms double-click window, and the socket object."
+  - address: "0x00466A80"
+    name: input_event_manager_dtor
+    confidence: high
+    evidence: "Destroys exact RTTI EventMan, its TimerHandler state, network session owner, and global pointer."
   - address: "0x00466B40"
     name: input_repeat_pointer_move_timer
     confidence: high
     evidence: "EventMan TimerHandler callback that emits stored pointer coordinates and reschedules after 20 ms."
-  - address: "0x00466C40"
-    name: input_get_pointer_position
+  - address: "0x00466BB0"
+    name: input_start_repeat_pointer_move
     confidence: high
-    evidence: "Copies EventMan's current pointer coordinates from +0x10 and +0x14 into the caller's two-word position."
+    evidence: "Marks repeat-pointer processing active and schedules its first 20 ms timer."
+  - address: "0x00466BF0"
+    name: input_stop_repeat_pointer_move
+    confidence: high
+    evidence: "Clears repeat-pointer processing and cancels every timer owned by EventMan."
+  - address: "0x00466C20"
+    name: input_set_pointer_position
+    confidence: high
+    evidence: "Forwards a logical pointer position to the path that clamps it, moves the system cursor, and emits a pointer event."
+  - address: "0x00466C40"
+    name: input_copy_pointer_position
+    confidence: high
+    evidence: "Byte-identical secondary implementation that copies EventMan's current pointer coordinates into the caller's two-word position."
+  - address: "0x00466C60"
+    name: input_get_modifier_flags
+    confidence: high
+    evidence: "Copies EventMan's current keyboard modifier flag byte to the caller."
   - address: "0x00466C80"
     name: input_post_pointer_move
     confidence: high
@@ -803,6 +907,10 @@ functions:
     name: input_post_ime_composition_start
     confidence: high
     evidence: "Public EventMan entry that emits IME composition-start event type 0x0E."
+  - address: "0x00466F10"
+    name: input_post_ime_composition_update
+    confidence: high
+    evidence: "Forwards IME composition text and its message timestamp to the EventMan event producer."
   - address: "0x00466F30"
     name: input_post_ime_composition_end
     confidence: high
@@ -823,6 +931,14 @@ functions:
     name: event_dispatch_or_queue
     confidence: high
     evidence: "Dispatches on app_main_thread_id and copies the Event into the queue from any other thread."
+  - address: "0x00467130"
+    name: input_set_pointer_position_and_emit
+    confidence: high
+    evidence: "Clamps a logical 640x480 pointer position, calls SetCursorPos, updates EventMan state, and emits pointer-move event type 0."
+  - address: "0x004672B0"
+    name: input_get_pointer_position
+    confidence: high
+    evidence: "Copies EventMan's current logical pointer coordinates to the caller."
   - address: "0x004672F0"
     name: input_emit_pointer_move
     confidence: high
@@ -859,6 +975,10 @@ functions:
     name: input_emit_character
     confidence: high
     evidence: "Builds text event type 0x0B with the character, message time, and current modifiers."
+  - address: "0x00468300"
+    name: input_compute_modifier_flags
+    confidence: high
+    evidence: "Builds the four-bit modifier mask from the high bit of EventMan's tracked keyboard-state bytes."
   - address: "0x00468390"
     name: input_emit_ime_open_status_change
     confidence: high
@@ -895,6 +1015,22 @@ functions:
     name: event_scalar_deleting_dtor
     confidence: high
     evidence: "Calls event_dtor and frees the Event when the MSVC deleting-destructor flag requests it."
+  - address: "0x00468A00"
+    name: input_event_manager_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI EventMan."
+  - address: "0x00468A30"
+    name: input_event_manager_singleton_register
+    confidence: high
+    evidence: "Registers the complete EventMan object from its Singleton base at +0x0C."
+  - address: "0x00468A70"
+    name: input_event_manager_singleton_unregister
+    confidence: high
+    evidence: "Clears the EventMan singleton when the registered complete object matches."
+  - address: "0x00468AB0"
+    name: event_dispatcher_is_available
+    confidence: high
+    evidence: "Returns whether the application-wide EventDispatcher singleton currently exists."
   - address: "0x0047C2A0"
     name: ui_game_message_pane_ctor
     confidence: high

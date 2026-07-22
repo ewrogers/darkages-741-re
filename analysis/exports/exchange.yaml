@@ -19,6 +19,10 @@ functions:
     name: ui_exchange_dialog_dtor
     confidence: high
     evidence: "Decrements the modal count, unregisters ExchangeDialog from event and screen routing, and runs the DialogPane destructor."
+  - address: "0x00469F10"
+    name: ui_exchange_dialog_draw
+    confidence: high
+    evidence: "Draws ExchangeDialog and the active accepted or unaccepted overlay pixmap at its configured position."
   - address: "0x00469FF0"
     name: ui_exchange_dialog_handle_action
     confidence: high
@@ -27,6 +31,10 @@ functions:
     name: ui_exchange_dialog_handle_inventory_drop
     confidence: high
     evidence: "Reads the source InvItemPane one-based slot and sends CExchange AddItem 0x01."
+  - address: "0x0046A080"
+    name: ui_exchange_dialog_refresh_controls
+    confidence: high
+    evidence: "Enables or disables the exchange offer, accept, and gold controls from the dialog's three acknowledgement flags."
   - address: "0x0046A1E0"
     name: ui_exchange_dialog_handle_network_event
     confidence: high
@@ -75,6 +83,90 @@ functions:
     name: ui_exchange_handle_accepted
     confidence: high
     evidence: "Marks the indicated party accepted and opens the final message alert only when both local and other acknowledgement flags are set."
+  - address: "0x0046AD00"
+    name: ui_exchange_dialog_set_focused_control
+    confidence: high
+    evidence: "When focus leaves the edited gold field, validates decimal text, sends CExchange SetGold, and then updates dialog focus."
+  - address: "0x0046AE20"
+    name: ui_exchange_dialog_handle_keyboard_event
+    confidence: high
+    evidence: "Consumes Space and Enter and delegates other keyboard events to DialogPane."
+  - address: "0x0046AE60"
+    name: ui_exchange_item_list_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI ExchangeItemListPane as an eight-row ListPane."
+  - address: "0x0046AEA0"
+    name: ui_exchange_item_list_set_item
+    confidence: high
+    evidence: "Replaces or appends an exchange item record by ID with sprite, name, and dye."
+  - address: "0x0046AF50"
+    name: ui_exchange_item_list_find_item
+    confidence: high
+    evidence: "Returns the list index whose exchange item ID matches, or -1."
+  - address: "0x0046AFD0"
+    name: ui_exchange_item_list_draw_item
+    confidence: high
+    evidence: "Draws one exchange item icon with optional palette mapping and a DBCS-safe truncated name."
+  - address: "0x0046B1E0"
+    name: ui_exchange_add_item_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI AddItemDialog from lexchai.txt with the local inventory list and close controls."
+  - address: "0x0046B490"
+    name: ui_exchange_add_item_dialog_handle_action
+    confidence: high
+    evidence: "On confirmation, sends the selected inventory slot as CExchange AddItem; confirmation and cancellation both close the dialog."
+  - address: "0x0046B550"
+    name: ui_exchange_add_item_dialog_refresh_confirm
+    confidence: high
+    evidence: "Enables the confirmation control only while the local inventory list has a selected row."
+  - address: "0x0046B5E0"
+    name: ui_exchange_add_item_dialog_handle_network_event
+    confidence: high
+    evidence: "Consumes decoded SExchange bodies and forwards them to the add-item dialog handler."
+  - address: "0x0046B640"
+    name: ui_exchange_add_item_dialog_apply_server_event
+    confidence: high
+    evidence: "Closes AddItemDialog when SExchange reports event 4 Cancelled."
+  - address: "0x0046B690"
+    name: ui_exchange_add_item_dialog_send_selected_item
+    confidence: high
+    evidence: "Builds CExchange action 1 from AddItemDialog's exchange ID and the selected one-based inventory slot."
+  - address: "0x0046B760"
+    name: ui_exchange_my_item_list_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI MyItemListPane and snapshots the 60 live inventory slots into its list records."
+  - address: "0x0046B8D0"
+    name: ui_exchange_my_item_list_get_selected_slot
+    confidence: high
+    evidence: "Returns the one-byte inventory slot stored by the selected MyItemListPane row."
+  - address: "0x0046B900"
+    name: ui_exchange_my_item_list_draw_item
+    confidence: high
+    evidence: "Draws one local inventory icon, selected-row background, palette mapping, and DBCS-safe truncated name."
+  - address: "0x0046BB00"
+    name: ui_exchange_count_dialog_load_layout
+    confidence: high
+    evidence: "Lazily loads litemex.txt and caches the AddItemWithCountDialog background and control rectangles."
+  - address: "0x0046BC70"
+    name: ui_exchange_count_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI AddItemWithCountDialog with OK, Cancel, title, and quantity text controls."
+  - address: "0x0046C060"
+    name: ui_exchange_count_dialog_handle_action
+    confidence: high
+    evidence: "On confirmation, parses and clamps the quantity to u8, sends CExchange action 2, and closes; cancellation only closes."
+  - address: "0x0046C170"
+    name: ui_exchange_count_dialog_refresh_confirm
+    confidence: high
+    evidence: "Enables the confirmation control only while the quantity text field is nonempty."
+  - address: "0x0046C1F0"
+    name: ui_exchange_count_dialog_handle_network_event
+    confidence: high
+    evidence: "Consumes decoded SExchange bodies and forwards them to the count-dialog handler."
+  - address: "0x0046C250"
+    name: ui_exchange_count_dialog_apply_server_event
+    confidence: high
+    evidence: "Closes AddItemWithCountDialog when SExchange reports event 4 Cancelled."
   - address: "0x0046C2A0"
     name: net_send_exchange_add_stackable_item
     confidence: high

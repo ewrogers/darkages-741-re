@@ -21,7 +21,7 @@ later in-world STransferServer
 
 ## Exception-handler lifetime
 
-Exact RTTI class `ExceptionHandler` is constructed early in application initialization, immediately after the memory manager. Its constructor calls `SetUnhandledExceptionFilter`, retains the previous filter pointer, and registers `app_unhandled_exception_filter`.
+Exact RTTI class `ExceptionHandler` is constructed early in application initialization, immediately after the memory manager. Its constructor calls `SetUnhandledExceptionFilter`, retains the previous filter pointer, registers `app_unhandled_exception_filter`, and publishes the application-wide singleton. Destruction clears that singleton after restoring the previous filter.
 
 The filter receives the normal Win32 `EXCEPTION_POINTERS` pair. It writes the report, then calls the previous top-level filter when one was installed. Otherwise it returns `EXCEPTION_CONTINUE_SEARCH`. The `ExceptionHandler` destructor restores the previous filter.
 

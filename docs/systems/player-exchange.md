@@ -61,6 +61,14 @@ struct ExchangeDialogFields {
 
 The quality-of-life patch leaves the small or large main-UI layout and the inventory's expansion state alone. Making the dialog draggable is sufficient because the player can move it away from the inventory. No exchange lifecycle tracking or layout restoration is needed.
 
+## Item offer dialogs
+
+Exact RTTI `AddItemDialog` loads `lexchai.txt` and embeds exact RTTI `MyItemListPane`. The list snapshots the 60 local inventory slots, draws each icon and dye with a DBCS-safe truncated name, and exposes the selected one-based slot. Confirm sends `CExchange` action `0x01`; confirm and cancel then close this temporary dialog.
+
+If the server requests a quantity, exact RTTI `AddItemWithCountDialog` loads `litemex.txt`. Its confirmation control is enabled only while the quantity field is nonempty. Confirmation parses decimal text, clamps it to the `u8` range, sends action `0x02` with the staged slot, and closes. Both temporary dialogs also close if `SExchange` event `0x04` cancels the exchange while they are open.
+
+Exact RTTI `ExchangeItemListPane` owns the eight-row offer view used by the main dialog. Adding a server-supplied item replaces the row with the same item ID or appends a new row, then draws its icon, palette selection, and shortened name.
+
 ## Completion and cancellation popups
 
 The Cancelled handler reads its `string8` message, creates a one-button alert pane, and removes the exchange. The Accepted handler updates the indicated party first. It creates the same alert and removes the exchange only when both acknowledgement flags are one.
