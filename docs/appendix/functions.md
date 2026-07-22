@@ -1238,10 +1238,20 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_fishing_impact_pane_timer_scalar_deleting_dtor_thunk` | `0x0047B7B0` | high | Adjusts the TimerHandler secondary-base pointer before FishingImpactPane scalar deletion. |
 | `ui_fishing_dialog_timer_scalar_deleting_dtor_thunk` | `0x0047B7C0` | high | Adjusts the TimerHandler secondary-base pointer before FishingDialogPane scalar deletion. |
 | `ui_game_message_pane_ctor` | `0x0047C2A0` | high | Constructs the RTTI-backed four-row floating GameMessagePane used for short colored notices. |
+| `ui_game_message_pane_dtor` | `0x0047C4E0` | high | Releases the floating message row storage, then destroys the Pane base. |
 | `ui_game_message_pane_append_formatted_rgb` | `0x0047C5C0` | high | Parses inline color markup and appends colored byte cells to the fading GameMessagePane overlay. |
 | `ui_game_message_pane_append_bytes` | `0x0047C6F0` | high | Writes colored byte cells into the current floating-message row, wrapping and rotating the four-row buffer. |
 | `ui_game_message_pane_update_bounds` | `0x0047C9C0` | high | Recomputes the floating overlay bounds from the occupied rows and their widest line. |
+| `ui_game_message_pane_draw` | `0x0047CAE0` | high | Redraws visible message rows and their per-run RGB styling into the overlay canvas. |
+| `ui_game_message_pane_handle_timer` | `0x0047D010` | high | Advances fade events 0x1000 and 0x1001 in 0x20 steps and requeues active fading every 50 ms. |
 | `ui_game_message_pane_discard_oldest_line` | `0x0047D120` | high | Rotates the four line records and clears the oldest row when the overlay fills. |
+| `ui_game_message_pane_scalar_deleting_dtor` | `0x0047D260` | high | Scalar deleting destructor for exact RTTI class GameMessagePane. |
+| `ui_game_message_pane_singleton_register` | `0x0047D290` | high | Registers the complete GameMessagePane object from its Singleton base at +0x190. |
+| `ui_game_message_pane_singleton_unregister` | `0x0047D2D0` | high | Clears the GameMessagePane singleton when the registered complete object matches. |
+| `ui_game_message_pane_timer_scalar_deleting_dtor_thunk` | `0x0047D310` | high | Adjusts the TimerHandler subobject pointer before forwarding to the pane's deleting destructor. |
+| `ui_point_manhattan_distance` | `0x0047D320` | high | Returns the sum of the absolute horizontal and vertical differences between two points. |
+| `ui_rect_union_nonempty` | `0x0047D360` | high | Builds the bounding rectangle of two nonempty rectangles. |
+| `ui_rect_intersect_nonempty` | `0x0047D4F0` | high | Computes the overlap of two rectangles and reports whether the result is nonempty. |
 | `ui_text_truncate_dbcs_safe` | `0x0047D670` | high | Stops at the byte limit without leaving a Windows DBCS lead byte at the end. |
 | `ui_append_game_message_palette` | `0x004803A0` | high | Resolves a palette entry to RGB and appends the text to GameMessagePane. |
 | `ui_append_game_message_rgb` | `0x004803E0` | high | Appends text to the active GameMessagePane using explicit RGB bytes. |
@@ -2426,7 +2436,54 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_font_copy_legacy_fallback_glyph` | `0x0047BEB0` | high | Copies the built-in 24-byte fallback used by an unsupported legacy Hangul code. |
 | `render_font_load_legacy_english_fnt` | `0x0047BED0` | high | Dormant loader that places engNN.fnt at printable-ASCII index 0x21 in a 256-record table. |
 | `render_font_load_legacy_hangul_fnt` | `0x0047BFB0` | high | Dormant loader that copies the selected 57,624-byte hanNN.fnt entry. |
+| `render_font_expand_legacy_glyph_bits` | `0x0047C0B0` | high | Expands 24 source bytes into a 144-byte mask by mapping each low six-bit pixel to 0x00 or 0xFF. |
 | `render_font_map_legacy_hangul_code` | `0x0047C150` | high | Maps CP949 B0A1-C8FE syllables and A4A1-A4D3 jamo to the 2,401 fixed Hangul records. |
+| `render_font_image_library_scalar_deleting_dtor` | `0x0047C1F0` | high | RTTI-backed scalar deleting destructor for FontImageLib. |
+| `render_font_image_library_singleton_register` | `0x0047C220` | high | Registers the complete FontImageLib object from its Singleton base. |
+| `render_font_image_library_singleton_unregister` | `0x0047C260` | high | Clears the FontImageLib singleton when the registered complete object matches. |
+| `render_coloring_tuple_ctor` | `0x0047DAF0` | high | Constructs RTTI class ColoringTuple and allocates count six-byte color entries. |
+| `render_coloring_tuple_dtor` | `0x0047DB50` | high | Releases a ColoringTuple's color-entry allocation. |
+| `render_coloring_table_ctor` | `0x0047DB90` | high | Constructs RTTI class ColoringTable with 256 tuple pointers and a highest-used index. |
+| `render_coloring_table_dtor` | `0x0047DBF0` | high | Deletes every populated ColoringTuple owned by a ColoringTable. |
+| `render_coloring_table_get_or_create_tuple` | `0x0047DC70` | high | Returns one indexed tuple, allocating it with the table's configured width when absent. |
+| `render_coloring_table_get_tuple` | `0x0047DD40` | high | Returns one of the table's 256 tuple pointers when its index is in range. |
+| `render_coloring_table_manager_ctor` | `0x0047DDB0` | high | Constructs RTTI class ColoringTableMan and its table-ID map. |
+| `render_coloring_table_manager_dtor` | `0x0047DE30` | high | Deletes every managed ColoringTable, destroys the map, and unregisters the singleton. |
+| `render_coloring_table_manager_clear` | `0x0047E030` | high | Deletes every managed table and erases every table-ID map node. |
+| `render_coloring_table_manager_get_tuple` | `0x0047E0E0` | high | Finds a ColoringTable by table ID and returns one tuple from it. |
+| `render_coloring_parser_set_file_source` | `0x0047E150` | high | Configures the decimal coloring-table parser to read through the client's file stream helper. |
+| `render_coloring_parser_set_memory_source` | `0x0047E170` | high | Configures the decimal coloring-table parser over a bounded memory buffer. |
+| `render_coloring_parser_read_byte` | `0x0047E1A0` | high | Reads one byte from the configured file or bounded memory source. |
+| `render_coloring_parser_read_decimal` | `0x0047E210` | high | Skips non-digits and parses the next unsigned decimal integer. |
+| `render_coloring_table_parse_bytes` | `0x0047E340` | high | Parses tuple width followed by indexed sequences of RGB triples into a ColoringTable. |
+| `render_coloring_table_delete` | `0x0047E510` | high | Deletes a non-null ColoringTable through its deleting destructor. |
+| `render_coloring_table_manager_create` | `0x0047E550` | high | Allocates and constructs the global ColoringTableMan singleton. |
+| `render_coloring_table_manager_destroy_global` | `0x0047E5C0` | high | Forwards to the global ColoringTableMan singleton destruction path. |
+| `render_get_coloring_tuple` | `0x0047E5D0` | high | Looks up one coloring tuple through the global manager when it exists. |
+| `render_coloring_tuple_scalar_deleting_dtor` | `0x0047E600` | high | Scalar deleting destructor for exact RTTI class ColoringTuple. |
+| `render_coloring_table_scalar_deleting_dtor` | `0x0047E630` | high | Scalar deleting destructor for exact RTTI class ColoringTable. |
+| `render_coloring_table_manager_scalar_deleting_dtor` | `0x0047E660` | high | Scalar deleting destructor for exact RTTI class ColoringTableMan. |
+| `render_coloring_table_map_dtor_thunk` | `0x0047E690` | high | Adjusts the map subobject pointer and forwards to its destructor. |
+| `render_coloring_table_map_ctor` | `0x0047E6B0` | high | Initializes the manager's table-ID red-black-tree map and sentinel. |
+| `render_coloring_table_map_dtor` | `0x0047E6E0` | high | Destroys every map node and releases the red-black-tree sentinel. |
+| `render_coloring_table_map_clear` | `0x0047E780` | high | Erases all nodes while retaining an initialized empty map sentinel. |
+| `render_coloring_table_map_find` | `0x0047E7E0` | high | Finds an exact table ID through the map's lower-bound traversal. |
+| `render_coloring_table_map_destroy_subtree` | `0x0047E880` | high | Recursively destroys a map subtree and its owned nodes. |
+| `render_coloring_table_map_destroy_sentinel` | `0x0047E8F0` | high | Destroys and releases the map's sentinel node. |
+| `render_coloring_table_map_erase_range` | `0x0047E920` | high | Erases a half-open iterator range from the table-ID map. |
+| `render_coloring_table_map_lower_bound` | `0x0047EA00` | high | Returns the first map node whose table ID is not less than the requested key. |
+| `render_coloring_table_map_initialize_sentinel` | `0x0047EA70` | high | Allocates and initializes the empty map's red-black-tree sentinel. |
+| `render_coloring_table_map_iterator_ctor` | `0x0047EAF0` | high | Constructs an iterator around one table-ID map node. |
+| `render_coloring_table_map_erase_node` | `0x0047EB10` | high | Removes one node and restores the red-black tree's ordering and color invariants. |
+| `render_coloring_table_map_iterator_increment` | `0x0047EFF0` | high | Advances an iterator to the in-order successor map node. |
+| `render_coloring_table_map_rotate_left` | `0x0047F0A0` | high | Performs a left rotation while rebalancing the table-ID red-black tree. |
+| `render_coloring_table_map_rotate_right` | `0x0047F150` | high | Performs a right rotation while rebalancing the table-ID red-black tree. |
+| `render_coloring_table_manager_singleton_register` | `0x0047F200` | high | Registers the complete ColoringTableMan object from its Singleton base. |
+| `render_coloring_table_manager_singleton_unregister` | `0x0047F240` | high | Clears the ColoringTableMan singleton when the registered complete object matches. |
+| `render_coloring_table_manager_exists` | `0x0047F280` | high | Tests whether the ColoringTableMan singleton currently exists. |
+| `render_get_coloring_table_manager` | `0x0047F2A0` | high | Returns the active ColoringTableMan singleton pointer. |
+| `render_coloring_table_manager_destroy` | `0x0047F2B0` | high | Destroys the active ColoringTableMan singleton through its deleting destructor. |
+| `render_coloring_table_map_allocate_nodes` | `0x0047F310` | high | Performs checked allocation for 0x18-byte table-ID map nodes. |
 | `render_map_rgb565_luminance_palette` | `0x00481980` | high | Computes five-bit luminance from RGB565 and resolves it through one of four 32-entry packed-color ramps. |
 | `render_map_rgb555_luminance_palette` | `0x00481A10` | high | Computes five-bit luminance from RGB555 and resolves it through one of four 32-entry packed-color ramps. |
 | `render_image_library_ctor` | `0x0048B2C0` | high | Constructs RTTI class ImageLib and registers its singleton; the object has no filename or decoded-frame cache fields. |
@@ -2723,6 +2780,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_updater_resolve_destination_path` | `0x00477E60` | high | Builds the final directory from the selected root and optional subdirectory, creating Program Files subdirectories when required. |
 | `file_updater_scalar_deleting_dtor` | `0x004781B0` | high | Destroys exact RTTI FileUpdater through its LObject base and conditionally frees the complete object. |
 | `file_load_variant_color_table` | `0x0047DEB0` | medium | Loads one numbered color table family used by renderable assets. |
+| `file_load_coloring_table` | `0x0047E2C0` | high | Loads a named DAT entry, parses its coloring table from memory, and releases the archive handle. |
 | `file_hea_build_row_views` | `0x00487380` | high | Clips a mask-canvas rectangle and builds one run pointer per pixel scanline; it scans horizontal band checkpoints but client 7.41 always uses band 0's row-offset table. |
 | `file_hea_open` | `0x004875B0` | high | Maps the HEA header, band array, row offsets, and packed run stream. |
 | `file_hea_project_map_position` | `0x004876D0` | high | Projects two map axes into the padded HEA mask canvas with 28-pixel horizontal and 14-pixel vertical steps, using header screen width and height as margins. |
@@ -3271,6 +3329,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `expression_allocator_trivial_dtor` | `0x00471290` | high | No-op allocator destructor used by expression list and deque cleanup paths. |
 | `expression_deque_iterator_proxy_copy` | `0x004712A0` | high | Copies the iterator's container proxy link when forming a deque iterator. |
 | `expression_deque_proxy_allocator_trivial_dtor` | `0x00471310` | high | No-op allocator destructor used for deque container proxies. |
+| `text_format_u32_with_commas` | `0x0047D6E0` | high | Formats an unsigned decimal value with three-digit comma grouping. |
+| `text_markup_segment_queue_ctor` | `0x0047D7B0` | high | Initializes the fixed 256-entry markup segment ring. |
+| `text_markup_segment_queue_parse` | `0x0047D7D0` | high | Resets the segment ring and parses one byte string into text and palette-change records. |
+| `text_markup_segment_queue_parse_recursive` | `0x0047D7F0` | high | Recognizes lowercase {=&lt;a..x&gt; tokens and ordinary text while filling 16-byte segment records. |
+| `text_markup_segment_queue_reset` | `0x0047D990` | high | Resets the markup segment ring's head and tail indexes. |
+| `text_markup_segment_queue_front` | `0x0047D9C0` | high | Returns the segment at the ring's current head index. |
+| `text_markup_segment_queue_is_empty` | `0x0047D9E0` | high | Tests whether the markup segment ring has no committed records. |
+| `text_markup_segment_queue_is_full` | `0x0047DA10` | high | Tests whether advancing the tail would collide with the ring head. |
+| `text_markup_segment_queue_pop_front` | `0x0047DA50` | high | Advances the markup segment ring head modulo 256. |
+| `text_markup_segment_queue_commit_back` | `0x0047DA90` | high | Commits the current back slot by advancing the tail modulo 256. |
+| `text_markup_segment_queue_back_slot` | `0x0047DAD0` | high | Returns the uncommitted record at the markup segment ring tail. |
 | `light_list_ctor` | `0x004AE8D0` | high | Constructs the RTTI LightList singleton and starts loading its cached Light metadata. |
 | `light_list_load_metadata` | `0x004AEA80` | high | Requests the Light metadata table when available or schedules a one-second retry. |
 | `light_list_find_map_time_entry` | `0x004AEAD0` | high | Finds an inclusive map and time-range entry and returns ambient RGB, intensity, and whether HEA use is permitted. |

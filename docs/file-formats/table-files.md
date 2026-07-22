@@ -37,7 +37,7 @@ parse_palette_line(tokens):
 | `gndani.tbl`, `stcani.tbl` | Tile animation cycles | Numeric text described on the [animation table](tile-animation-tables.md) page |
 | `gndattr.tbl` | Ground paint and special tile states | Structured `set_attr` records applied to tile IDs and inclusive ranges |
 | `color.tbl` | Named color sets | Record ID followed by six RGB triples |
-| `color*.tbl` | Variant color sets | Related RGB text records |
+| `color*.tbl` | Variant color sets | Tuple width followed by indexed RGB records |
 | [`meffect.tbl`](motion-effect-table.md) | Motion effect definitions | Structured text with numeric or compiled expression fields |
 | `Skill_e.tbl`, `Skill_i.tbl` | Skill animation and behavior rows | Numeric text, semicolon comments |
 | `msg.tbl` | Language messages | Line-oriented byte strings |
@@ -45,6 +45,20 @@ parse_palette_line(tokens):
 | `trans_*.tbl` | Optional translation mappings | Reader exists, but no local samples were found |
 
 Do not decode every text field as UTF-8. ASCII is common, while Korean text may use Windows code page 949. Preserve the original bytes when a field's language is not known.
+
+### Variant color tables
+
+The variant-color reader treats punctuation and whitespace alike: it skips bytes until it reaches a decimal digit. The first integer is the number of colors in every tuple. Each remaining record begins with a tuple index from 0 through 255 and contains that many RGB triples.
+
+```text
+colors_per_tuple
+tuple_index red green blue [red green blue ...]
+tuple_index red green blue [red green blue ...]
+```
+
+For example, a width of six means that every tuple record carries six RGB triples. The loader stops at end of input or when the next tuple index is outside the 0 through 255 range. In memory, every RGB triple becomes a six-byte entry containing the original component bytes and the renderer's packed color value.
+
+`file_load_coloring_table` reads a named entry from the main DAT archive unless a caller supplies another archive. `file_load_variant_color_table` selects the numbered family used by renderable assets. The `ColoringTableMan` singleton then maps table IDs to parsed tables and resolves a tuple by table ID and tuple index.
 
 ### Ground attributes
 

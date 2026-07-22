@@ -15,6 +15,8 @@ The client has three different places that can show server text. A short notice 
 
 Long text wraps into another row. When a fifth row is needed, the oldest row is rotated out. Each append starts a 2,000 millisecond timer before its fade sequence begins. This pane is therefore a short display queue, not the persistent chat log.
 
+The timer handler uses two internal fade events, `0x1000` and `0x1001`. Once fading starts, it changes the overlay alpha by `0x20` per tick and schedules the next tick after 50 milliseconds. The draw path then rebuilds the visible rows with the RGB runs produced by the inline color-markup parser. Destroying the pane removes its row storage and unregisters the singleton, so no fade state survives pane teardown.
+
 ## Persistent history
 
 `NewSystemMessagePane` owns a `NewSystemMessageTextPane`, which is a specialized `TextEditPane`. It accepts `SMessage` types `0x00` through `0x06`, `0x0B`, and `0x0C` when the body is no longer than 70 bytes.

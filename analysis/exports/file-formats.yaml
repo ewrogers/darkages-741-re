@@ -543,6 +543,30 @@ functions:
     name: file_load_variant_color_table
     confidence: medium
     evidence: Loads one numbered color table family used by renderable assets.
+  - address: "0x0047E150"
+    name: render_coloring_parser_set_file_source
+    confidence: high
+    evidence: "Configures the decimal coloring-table parser to read through the client's file stream helper."
+  - address: "0x0047E170"
+    name: render_coloring_parser_set_memory_source
+    confidence: high
+    evidence: "Configures the decimal coloring-table parser over a bounded memory buffer."
+  - address: "0x0047E1A0"
+    name: render_coloring_parser_read_byte
+    confidence: high
+    evidence: "Reads one byte from the configured file or bounded memory source."
+  - address: "0x0047E210"
+    name: render_coloring_parser_read_decimal
+    confidence: high
+    evidence: "Skips non-digits and parses the next unsigned decimal integer."
+  - address: "0x0047E2C0"
+    name: file_load_coloring_table
+    confidence: high
+    evidence: "Loads a named DAT entry, parses its coloring table from memory, and releases the archive handle."
+  - address: "0x0047E340"
+    name: render_coloring_table_parse_bytes
+    confidence: high
+    evidence: "Parses tuple width followed by indexed sequences of RGB triples into a ColoringTable."
   - address: "0x00487380"
     name: file_hea_build_row_views
     confidence: high

@@ -17,6 +17,21 @@ The braces are not paired. A code changes the color of the text that follows unt
 
 Only lowercase `a` through `x` are accepted. Uppercase letters and incomplete codes remain ordinary visible text. The actual letter `x` is valid and selects palette index 0.
 
+## Shared segment parser
+
+Floating messages, chat text, and world balloons also use a small shared parser before their own draw code. It converts one byte string into a fixed ring of 256 segment records. Each record is 16 bytes and describes either an ordinary text span or a palette change.
+
+```c
+struct MarkupSegment {
+    u32 type;          // 0: palette change, 1: text span
+    u32 palette_index; // used by a palette-change record
+    const u8 *text;    // used by a text-span record
+    u32 length;        // text-span byte count
+};
+```
+
+The queue keeps separate head and tail indexes and advances them modulo 256. Parsing resets both indexes, emits text up to the next valid token, emits a palette-change record, and continues with the remaining bytes. The fixed ring bounds parsing work and storage, but it also means a caller must consume records rather than treating the result as an unbounded formatted string.
+
 ## Code table
 
 | Code | Palette index | Code | Palette index |

@@ -1035,6 +1035,10 @@ functions:
     name: ui_game_message_pane_ctor
     confidence: high
     evidence: "Constructs the RTTI-backed four-row floating GameMessagePane used for short colored notices."
+  - address: "0x0047C4E0"
+    name: ui_game_message_pane_dtor
+    confidence: high
+    evidence: "Releases the floating message row storage, then destroys the Pane base."
   - address: "0x0047C5C0"
     name: ui_game_message_pane_append_formatted_rgb
     confidence: high
@@ -1047,10 +1051,34 @@ functions:
     name: ui_game_message_pane_update_bounds
     confidence: high
     evidence: "Recomputes the floating overlay bounds from the occupied rows and their widest line."
+  - address: "0x0047CAE0"
+    name: ui_game_message_pane_draw
+    confidence: high
+    evidence: "Redraws visible message rows and their per-run RGB styling into the overlay canvas."
+  - address: "0x0047D010"
+    name: ui_game_message_pane_handle_timer
+    confidence: high
+    evidence: "Advances fade events 0x1000 and 0x1001 in 0x20 steps and requeues active fading every 50 ms."
   - address: "0x0047D120"
     name: ui_game_message_pane_discard_oldest_line
     confidence: high
     evidence: "Rotates the four line records and clears the oldest row when the overlay fills."
+  - address: "0x0047D260"
+    name: ui_game_message_pane_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI class GameMessagePane."
+  - address: "0x0047D290"
+    name: ui_game_message_pane_singleton_register
+    confidence: high
+    evidence: "Registers the complete GameMessagePane object from its Singleton base at +0x190."
+  - address: "0x0047D2D0"
+    name: ui_game_message_pane_singleton_unregister
+    confidence: high
+    evidence: "Clears the GameMessagePane singleton when the registered complete object matches."
+  - address: "0x0047D310"
+    name: ui_game_message_pane_timer_scalar_deleting_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the TimerHandler subobject pointer before forwarding to the pane's deleting destructor."
   - address: "0x004803A0"
     name: ui_append_game_message_palette
     confidence: high

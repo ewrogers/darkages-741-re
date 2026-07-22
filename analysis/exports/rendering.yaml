@@ -1143,10 +1143,234 @@ functions:
     name: render_font_load_legacy_hangul_fnt
     confidence: high
     evidence: Dormant loader that copies the selected 57,624-byte hanNN.fnt entry.
+  - address: "0x0047C0B0"
+    name: render_font_expand_legacy_glyph_bits
+    confidence: high
+    evidence: "Expands 24 source bytes into a 144-byte mask by mapping each low six-bit pixel to 0x00 or 0xFF."
   - address: "0x0047C150"
     name: render_font_map_legacy_hangul_code
     confidence: high
     evidence: Maps CP949 B0A1-C8FE syllables and A4A1-A4D3 jamo to the 2,401 fixed Hangul records.
+  - address: "0x0047C1F0"
+    name: render_font_image_library_scalar_deleting_dtor
+    confidence: high
+    evidence: "RTTI-backed scalar deleting destructor for FontImageLib."
+  - address: "0x0047C220"
+    name: render_font_image_library_singleton_register
+    confidence: high
+    evidence: "Registers the complete FontImageLib object from its Singleton base."
+  - address: "0x0047C260"
+    name: render_font_image_library_singleton_unregister
+    confidence: high
+    evidence: "Clears the FontImageLib singleton when the registered complete object matches."
+  - address: "0x0047D320"
+    name: ui_point_manhattan_distance
+    confidence: high
+    evidence: "Returns the sum of the absolute horizontal and vertical differences between two points."
+  - address: "0x0047D360"
+    name: ui_rect_union_nonempty
+    confidence: high
+    evidence: "Builds the bounding rectangle of two nonempty rectangles."
+  - address: "0x0047D4F0"
+    name: ui_rect_intersect_nonempty
+    confidence: high
+    evidence: "Computes the overlap of two rectangles and reports whether the result is nonempty."
+  - address: "0x0047D6E0"
+    name: text_format_u32_with_commas
+    confidence: high
+    evidence: "Formats an unsigned decimal value with three-digit comma grouping."
+  - address: "0x0047D7B0"
+    name: text_markup_segment_queue_ctor
+    confidence: high
+    evidence: "Initializes the fixed 256-entry markup segment ring."
+  - address: "0x0047D7D0"
+    name: text_markup_segment_queue_parse
+    confidence: high
+    evidence: "Resets the segment ring and parses one byte string into text and palette-change records."
+  - address: "0x0047D7F0"
+    name: text_markup_segment_queue_parse_recursive
+    confidence: high
+    evidence: "Recognizes lowercase {=<a..x> tokens and ordinary text while filling 16-byte segment records."
+  - address: "0x0047D990"
+    name: text_markup_segment_queue_reset
+    confidence: high
+    evidence: "Resets the markup segment ring's head and tail indexes."
+  - address: "0x0047D9C0"
+    name: text_markup_segment_queue_front
+    confidence: high
+    evidence: "Returns the segment at the ring's current head index."
+  - address: "0x0047D9E0"
+    name: text_markup_segment_queue_is_empty
+    confidence: high
+    evidence: "Tests whether the markup segment ring has no committed records."
+  - address: "0x0047DA10"
+    name: text_markup_segment_queue_is_full
+    confidence: high
+    evidence: "Tests whether advancing the tail would collide with the ring head."
+  - address: "0x0047DA50"
+    name: text_markup_segment_queue_pop_front
+    confidence: high
+    evidence: "Advances the markup segment ring head modulo 256."
+  - address: "0x0047DA90"
+    name: text_markup_segment_queue_commit_back
+    confidence: high
+    evidence: "Commits the current back slot by advancing the tail modulo 256."
+  - address: "0x0047DAD0"
+    name: text_markup_segment_queue_back_slot
+    confidence: high
+    evidence: "Returns the uncommitted record at the markup segment ring tail."
+  - address: "0x0047DAF0"
+    name: render_coloring_tuple_ctor
+    confidence: high
+    evidence: "Constructs RTTI class ColoringTuple and allocates count six-byte color entries."
+  - address: "0x0047DB50"
+    name: render_coloring_tuple_dtor
+    confidence: high
+    evidence: "Releases a ColoringTuple's color-entry allocation."
+  - address: "0x0047DB90"
+    name: render_coloring_table_ctor
+    confidence: high
+    evidence: "Constructs RTTI class ColoringTable with 256 tuple pointers and a highest-used index."
+  - address: "0x0047DBF0"
+    name: render_coloring_table_dtor
+    confidence: high
+    evidence: "Deletes every populated ColoringTuple owned by a ColoringTable."
+  - address: "0x0047DC70"
+    name: render_coloring_table_get_or_create_tuple
+    confidence: high
+    evidence: "Returns one indexed tuple, allocating it with the table's configured width when absent."
+  - address: "0x0047DD40"
+    name: render_coloring_table_get_tuple
+    confidence: high
+    evidence: "Returns one of the table's 256 tuple pointers when its index is in range."
+  - address: "0x0047DDB0"
+    name: render_coloring_table_manager_ctor
+    confidence: high
+    evidence: "Constructs RTTI class ColoringTableMan and its table-ID map."
+  - address: "0x0047DE30"
+    name: render_coloring_table_manager_dtor
+    confidence: high
+    evidence: "Deletes every managed ColoringTable, destroys the map, and unregisters the singleton."
+  - address: "0x0047E030"
+    name: render_coloring_table_manager_clear
+    confidence: high
+    evidence: "Deletes every managed table and erases every table-ID map node."
+  - address: "0x0047E0E0"
+    name: render_coloring_table_manager_get_tuple
+    confidence: high
+    evidence: "Finds a ColoringTable by table ID and returns one tuple from it."
+  - address: "0x0047E510"
+    name: render_coloring_table_delete
+    confidence: high
+    evidence: "Deletes a non-null ColoringTable through its deleting destructor."
+  - address: "0x0047E550"
+    name: render_coloring_table_manager_create
+    confidence: high
+    evidence: "Allocates and constructs the global ColoringTableMan singleton."
+  - address: "0x0047E5C0"
+    name: render_coloring_table_manager_destroy_global
+    confidence: high
+    evidence: "Forwards to the global ColoringTableMan singleton destruction path."
+  - address: "0x0047E5D0"
+    name: render_get_coloring_tuple
+    confidence: high
+    evidence: "Looks up one coloring tuple through the global manager when it exists."
+  - address: "0x0047E600"
+    name: render_coloring_tuple_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI class ColoringTuple."
+  - address: "0x0047E630"
+    name: render_coloring_table_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI class ColoringTable."
+  - address: "0x0047E660"
+    name: render_coloring_table_manager_scalar_deleting_dtor
+    confidence: high
+    evidence: "Scalar deleting destructor for exact RTTI class ColoringTableMan."
+  - address: "0x0047E690"
+    name: render_coloring_table_map_dtor_thunk
+    confidence: high
+    evidence: "Adjusts the map subobject pointer and forwards to its destructor."
+  - address: "0x0047E6B0"
+    name: render_coloring_table_map_ctor
+    confidence: high
+    evidence: "Initializes the manager's table-ID red-black-tree map and sentinel."
+  - address: "0x0047E6E0"
+    name: render_coloring_table_map_dtor
+    confidence: high
+    evidence: "Destroys every map node and releases the red-black-tree sentinel."
+  - address: "0x0047E780"
+    name: render_coloring_table_map_clear
+    confidence: high
+    evidence: "Erases all nodes while retaining an initialized empty map sentinel."
+  - address: "0x0047E7E0"
+    name: render_coloring_table_map_find
+    confidence: high
+    evidence: "Finds an exact table ID through the map's lower-bound traversal."
+  - address: "0x0047E880"
+    name: render_coloring_table_map_destroy_subtree
+    confidence: high
+    evidence: "Recursively destroys a map subtree and its owned nodes."
+  - address: "0x0047E8F0"
+    name: render_coloring_table_map_destroy_sentinel
+    confidence: high
+    evidence: "Destroys and releases the map's sentinel node."
+  - address: "0x0047E920"
+    name: render_coloring_table_map_erase_range
+    confidence: high
+    evidence: "Erases a half-open iterator range from the table-ID map."
+  - address: "0x0047EA00"
+    name: render_coloring_table_map_lower_bound
+    confidence: high
+    evidence: "Returns the first map node whose table ID is not less than the requested key."
+  - address: "0x0047EA70"
+    name: render_coloring_table_map_initialize_sentinel
+    confidence: high
+    evidence: "Allocates and initializes the empty map's red-black-tree sentinel."
+  - address: "0x0047EAF0"
+    name: render_coloring_table_map_iterator_ctor
+    confidence: high
+    evidence: "Constructs an iterator around one table-ID map node."
+  - address: "0x0047EB10"
+    name: render_coloring_table_map_erase_node
+    confidence: high
+    evidence: "Removes one node and restores the red-black tree's ordering and color invariants."
+  - address: "0x0047EFF0"
+    name: render_coloring_table_map_iterator_increment
+    confidence: high
+    evidence: "Advances an iterator to the in-order successor map node."
+  - address: "0x0047F0A0"
+    name: render_coloring_table_map_rotate_left
+    confidence: high
+    evidence: "Performs a left rotation while rebalancing the table-ID red-black tree."
+  - address: "0x0047F150"
+    name: render_coloring_table_map_rotate_right
+    confidence: high
+    evidence: "Performs a right rotation while rebalancing the table-ID red-black tree."
+  - address: "0x0047F200"
+    name: render_coloring_table_manager_singleton_register
+    confidence: high
+    evidence: "Registers the complete ColoringTableMan object from its Singleton base."
+  - address: "0x0047F240"
+    name: render_coloring_table_manager_singleton_unregister
+    confidence: high
+    evidence: "Clears the ColoringTableMan singleton when the registered complete object matches."
+  - address: "0x0047F280"
+    name: render_coloring_table_manager_exists
+    confidence: high
+    evidence: "Tests whether the ColoringTableMan singleton currently exists."
+  - address: "0x0047F2A0"
+    name: render_get_coloring_table_manager
+    confidence: high
+    evidence: "Returns the active ColoringTableMan singleton pointer."
+  - address: "0x0047F2B0"
+    name: render_coloring_table_manager_destroy
+    confidence: high
+    evidence: "Destroys the active ColoringTableMan singleton through its deleting destructor."
+  - address: "0x0047F310"
+    name: render_coloring_table_map_allocate_nodes
+    confidence: high
+    evidence: "Performs checked allocation for 0x18-byte table-ID map nodes."
   - address: "0x00481980"
     name: render_map_rgb565_luminance_palette
     confidence: high
