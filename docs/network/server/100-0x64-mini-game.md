@@ -9,9 +9,9 @@
 
 ## Purpose
 
-This packet can open one of the client's built-in mini games. It also carries updates for games that are already open and one world-specific action.
+This packet can open one of the client's built-in mini games, including the separate fishing dialog. It also carries updates for games that are already open.
 
-The path is live in this client. The server packet factory constructs `SMiniGame`, `net_deserialize_mini_game_server_packet` reads its action-dependent body, and the normal server packet dispatcher reaches `ui_apply_mini_game_server_packet`. Action `4` calls `ui_launch_mini_game`.
+The path is live in this client. The server packet factory constructs `SMiniGame`, `net_deserialize_mini_game_server_packet` reads its action-dependent body, and the normal server packet dispatcher reaches `ui_world_handle_mini_game_server_packet`. Action `4` continues through `ui_apply_mini_game_server_packet` and calls `ui_launch_mini_game`. Action `8`, subtype `1`, instead takes the world pane's dedicated [fishing](../../systems/fishing.md) path.
 
 ## Actions
 
@@ -22,7 +22,7 @@ The path is live in this client. The server packet factory constructs `SMiniGame
 | `5` | none | No server-packet behavior was found. The same value is the client's close notification in `CMiniGame`. |
 | `6` | none | No server-packet behavior was found. |
 | `7` | two `u32` values | Updates an existing Find Farmpet or Puzzle play pane. It does not open a pane. |
-| `8` | one `u8` subtype | Reaches a world/map-specific path. Subtype `1` has behavior, but it does not open a mini game. |
+| `8` | one `u8` subtype | Subtype `1` checks the player's fishing position and opens `FishingDialogPane` when valid. |
 
 Other action values do not cause the deserializer to read more bytes.
 
@@ -49,6 +49,14 @@ The smallest useful plaintext bodies are therefore:
 | `64 04 04` | Open Puzzle mode `0`. |
 
 These are plaintext packet bodies, not complete socket frames. A server must still apply the normal server-to-client framing, derived transform, sequence, and trailer for opcode `0x64`.
+
+## Opening fishing
+
+The plaintext body `64 08 01` requests the fishing dialog. `ui_world_handle_mini_game_server_packet` requires a loaded map and local user, then checks the current ground tile and the next two tiles in the character's facing direction. The current tile's `gndattr.tbl` height-1 marker must be clear, and at least one of the next two tiles must have the height-2 marker. This behaves like a local shore-and-water eligibility check.
+
+When the check succeeds, `ui_fishing_dialog_create` constructs the dialog. The world pane centers it on the game canvas, registers it, and supplies timer selector `0x0B` as its completion callback. The fish, hook, collision tests, and timing gauge then run locally on client timers.
+
+When the check fails, the client displays localized message slot `0x80` and reports a failed fishing result without opening the dialog. See the paired `CMiniGame` action `8` body below.
 
 ### Asset archive requirement
 
@@ -88,8 +96,8 @@ For action `7`, `FindFarmpet::FindFarmpetPane` applies `value` only when `entry_
 
 ## Paired client packet
 
-Closing `MiniGame::AbstractGame` or `FindFarmpet::FindFarmpetPane` sends [`CMiniGame`](../client/106-0x6a-mini-game.md) action `5`. Other game controls send actions `6` and `7`; the world pane also has an action `8` form.
+Closing `MiniGame::AbstractGame` or `FindFarmpet::FindFarmpetPane` sends [`CMiniGame`](../client/106-0x6a-mini-game.md) action `5`. Other game controls send actions `6` and `7`. Fishing completion returns action `8`, subtype `2`, with a client-calculated success flag.
 
 ## Known limits
 
-The open path and selector mapping are confirmed both statically and by a runtime `64 04 01` test that reached the expected missing-`lminig.txt` failure. The runtime archive patch has not yet been tested in game. The meanings of server actions `3` and `8` beyond their observed client paths remain unresolved.
+The action-4 open path and selector mapping are confirmed both statically and by a runtime `64 04 01` test that reached the expected missing-`lminig.txt` failure. The runtime archive patch has not yet been tested in game. Fishing action `8`, subtype `1`, is statically confirmed but has not yet been observed in a live packet trace. The meanings of server action `3` and other action-8 subtypes remain unresolved.

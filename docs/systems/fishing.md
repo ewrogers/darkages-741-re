@@ -1,6 +1,6 @@
 # Fishing minigame
 
-Fishing is a self-contained client UI game. The main dialog moves a boat and hook, creates falling or rising objects, detects hook collisions, and opens a timing gauge when the hook reaches an active object. Three RTTI-backed panes share the work.
+Fishing is a server-started but locally simulated UI game. The main dialog moves a boat and hook, creates horizontally moving objects, detects hook collisions, and opens a timing gauge when the hook reaches an active object. Three RTTI-backed panes share the work.
 
 ```text
 FishingDialogPane
@@ -10,7 +10,9 @@ FishingDialogPane
   -> FishingGetPane catch-result animation
 ```
 
-The code in this subsystem does not submit a network packet directly. The dialog reports completion through the timer owner supplied by its creator. A surrounding owner may continue the game or network flow after that callback.
+The server starts fishing with [`SMiniGame`](../network/server/100-0x64-mini-game.md) action `8`, subtype `1`. The world pane checks the current tile and two tiles in the character's facing direction before it constructs and registers `FishingDialogPane`. No server packet supplies individual object positions or advances the local game.
+
+The fishing panes do not submit a network packet directly. When the dialog closes, it reports its completion state through the world-pane timer owner supplied by its creator. The world pane converts that state into [`CMiniGame`](../network/client/106-0x6a-mini-game.md) action `8`, subtype `2`, with a success or failure flag.
 
 ## Main dialog
 
@@ -36,6 +38,8 @@ The dialog accepts keyboard events through an always-true predicate, then tracks
 - create new objects from one of four sprite families.
 
 Moving objects live in a private sentinel-based list. Each record contains a sprite selector, signed speed, position, direction flag, and active state. The dialog invalidates old and new rectangles instead of redrawing the entire window for every movement.
+
+Spawning and movement use the client C runtime random generator, seeded from `time()` plus `timeGetTime()`. A new object selects one of four sprites, one of two horizontal directions, a vertical position inside the configured water band, and a speed from two through five pixels per 50 ms update. The spawn chance rises with each update since the previous spawn and resets when an object is created.
 
 ## Boat view
 
