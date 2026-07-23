@@ -235,6 +235,7 @@
     - [Multiple clients](appendix/runtime-patches/multiple-clients.md)
     - [Stuck modifiers](appendix/runtime-patches/stuck-modifiers.md)
     - [Stale pursuit](appendix/runtime-patches/stale-pursuit.md)
+    - [Appearance editor](appendix/runtime-patches/appearance-editor.md)
     - [Minigame assets](appendix/runtime-patches/minigame-assets.md)
     - [Skip intro](appendix/runtime-patches/skip-intro.md)
     - [Ignore Bad Guy marker](appendix/runtime-patches/ignore-bad-guy-marker.md)

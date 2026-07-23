@@ -129,6 +129,8 @@ All multibyte values are big-endian. The common deserializer deliberately skips 
 
 Types 10 and 11 are handled explicitly by the binary. Their gameplay distinction is not encoded in either local parser, so their friendly names remain unresolved.
 
+A compiled `MerchantDialogPane::FaceMenuDialog` is not another stock menu type. It belongs to an older dormant merchant family, its opener has no recovered reference, and neither the live nor legacy subtype switch assigns it a value. The optional [Appearance editor runtime patch](../../appendix/runtime-patches/appearance-editor.md) reserves type 12 and defines its own shorter body.
+
 For types 8 and 9, an absent or zero slot list means all learned entries in local book slots 1 through 89. A nonzero list restricts the dialog to those server-selected slots.
 
 ### Player-owned choices

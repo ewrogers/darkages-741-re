@@ -2155,7 +2155,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_server_item_menu_dialog3_handle_pointer_event` | `0x004CBBA0` | high | Handles category-tab clicks, retains hover coordinates, closes descriptions outside content, and delegates other pointer behavior. |
 | `ui_server_item_menu_dialog3_draw` | `0x004CBD70` | high | Draws the lmerc2 background, page count, player money, and four selected or unselected category tabs. |
 | `ui_load_merchant_dialog_layouts` | `0x004CC970` | high | Loads lmerc2, lmerc, and lmerd once and caches their pixmaps, control rectangles, segment sizes, and derived offsets. |
-| `ui_merchant_session_ctor` | `0x004CD0F0` | high | Constructs exact RTTI MerchantSession, loads merchant layouts, registers the full-screen pane, and dispatches an initial SScreenMenu body. |
+| `ui_merchant_session_ctor` | `0x004CD0F0` | high | Constructs exact RTTI MerchantSession, loads merchant layouts, registers the full-screen pane, and dispatches an initial legacy raw SScreenMenu body; its only direct caller is the orphan raw-session allocator. |
 | `ui_merchant_session_dtor` | `0x004CD230` | high | Closes the active merchant dialog, queues both retained dialog slots for deferred deletion, unregisters the pane, and destroys the base. |
 | `ui_merchant_session_close` | `0x004CD330` | high | Queues MerchantSession for deferred pane deletion through BlackHole. |
 | `ui_merchant_session_get_primary_dialog` | `0x004CD400` | high | Returns MerchantSession dialog slot zero. |
@@ -2195,7 +2195,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_open_merchant_client_spell_menu` | `0x004CF1A0` | high | Opens SScreenMenu type 8 in exact RTTI ClientSpellMenuDialog. |
 | `ui_open_merchant_server_skill_menu` | `0x004CF260` | high | Opens SScreenMenu type 7 in exact RTTI ServerSkillMenuDialog. |
 | `ui_open_merchant_client_skill_menu` | `0x004CF320` | high | Opens SScreenMenu type 9 in exact RTTI ClientSkillMenuDialog. |
-| `ui_open_merchant_face_menu` | `0x004CF3E0` | high | Constructs exact RTTI FaceMenuDialog with lmerd bounds and pushes it onto MerchantSession. |
+| `ui_open_merchant_face_menu` | `0x004CF3E0` | high | Constructs exact RTTI FaceMenuDialog with lmerd bounds and pushes it onto MerchantSession; it has no recovered code or data reference and no legacy menu-type case selects it. |
 | `ui_text_menu_dialog_ex_ctor` | `0x004CF4A0` | high | Constructs exact RTTI TextMenuDialogEx, parses the extended menu, and enables its third attached control. |
 | `ui_text_menu_dialog_ex_base_ctor` | `0x004CF560` | high | Installs TextMenuDialogEx vtables without parsing, for use by ArgumentedTextMenuDialogEx. |
 | `ui_text_menu_dialog_ex_draw` | `0x004CFB10` | high | Draws one lmerc top segment, the row-count middle segments, and one bottom segment. |
@@ -2253,9 +2253,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_server_skill_menu_dialog_dtor` | `0x004D5990` | high | Releases the parsed server skill row array and destroys the dialog base. |
 | `ui_client_skill_menu_dialog_ctor` | `0x004D5B90` | high | Constructs exact RTTI ClientSkillMenuDialog by resolving a local skill-slot whitelist; zero count enumerates slots 1 through 89. |
 | `ui_client_skill_menu_dialog_dtor` | `0x004D5D60` | high | Releases the parsed local skill-slot whitelist and destroys the dialog base. |
-| `ui_merchant_face_menu_dialog_ctor` | `0x004D5EB0` | high | Constructs exact RTTI FaceMenuDialog, clamps the live look to parsed selector bounds, and builds its animated preview and controls. |
+| `ui_merchant_face_menu_dialog_ctor` | `0x004D5EB0` | high | Constructs exact RTTI FaceMenuDialog, clamps live gender, hair style, and hair color to three parsed min/max pairs, and builds its animated UserShapeControlPane preview and controls. |
 | `ui_merchant_face_menu_update_button_states` | `0x004D71B0` | high | Enables or disables each appearance decrement and increment button by comparing the live preview values with parsed bounds. |
-| `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form. |
+| `ui_merchant_face_menu_handle_action` | `0x004D74E0` | high | Adjusts gender, hair style, hair color, and a preview-only direction in five-step increments; action 0x0F submits the special CMerchant appearance form. |
 | `ui_merchant_face_menu_ctor_unwind_cleanup` | `0x004D790F` | high | Compiler-generated constructor unwind cleanup that clears FaceMenuDialog's construction guard and verifies the stack cookie. |
 | `ui_user_shape_control_pane_ctor` | `0x004D7930` | high | Constructs exact RTTI UserShapeControlPane with gender, hair, and color values, frame zero, and a 300 ms preview timer. |
 | `ui_user_shape_control_pane_dtor` | `0x004D7A10` | high | Cancels all owned timers and destroys the UserShapeControlPane base. |
@@ -2952,7 +2952,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_parse_client_spell_menu_dialog_slots` | `0x004D5720` | high | Parses a u16 subtype, u8 count, and that many one-byte local spell slots. |
 | `net_parse_server_skill_menu_dialog_entries` | `0x004D59E0` | high | Parses counted 0x108-byte server skill rows containing kind, icon, variant, and string8 name. |
 | `net_parse_client_skill_menu_dialog_slots` | `0x004D5DB0` | high | Parses a u16 subtype, u8 count, and that many one-byte local skill slots. |
-| `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID. |
+| `net_send_merchant_face_menu_selection` | `0x004D77D0` | high | Sends opcode 0x39, target type, target ID, hair style, one-based gender, and hair color; this nine-byte body has no u16 pursuit ID. |
 | `net_parse_server_item_menu_dialog2_items` | `0x004D7FD0` | high | Parses ordinary or subtype-0x4B server items directly into a counted 0x224-byte record array. |
 | `net_parse_screen_menu_common_fields` | `0x004D8C60` | high | Parses the fixed SScreenMenu header into a temporary view and retains the string16 content pointer and length. |
 | `net_parse_message_dialog_payload` | `0x004DAE10` | high | Parses common target and graphic fields, two navigation-enable bytes, and a string16 message. |
@@ -3293,8 +3293,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_message_server_packet` | `0x005F6D80` | high | Routes SMessage to the floating GameMessagePane, WindowMessageDialogPane, or ScorePane according to its type byte. |
 | `net_handle_enter_editing_mode_server_data` | `0x005F71C0` | high | WorldPane's raw opcode 0x1B branch allocates exact RTTI EditablePaperPane and constructs it in editable mode directly from the decoded body. |
 | `net_handle_show_paper_server_data` | `0x005F7250` | high | WorldPane's raw opcode 0x35 branch constructs the same EditablePaperPane in read-only mode. |
-| `net_handle_screen_menu_raw` | `0x005F72E0` | high | Raw SScreenMenu handler that constructs MerchantSession from the decoded body and reports the event consumed. |
-| `net_dispatch_server_message_dialog` | `0x005F7390` | high | Reads the message variant and constructs exact dialog classes for variants 0 through 6 and 9; other values are ignored. |
+| `net_handle_screen_menu_raw` | `0x005F72E0` | high | Dormant raw SScreenMenu handler that would construct MerchantSession and report the event consumed; it has no recovered code or data reference in version 741. |
+| `net_dispatch_server_message_dialog` | `0x005F7390` | high | Dormant raw pursuit-dialog dispatcher for variants 0 through 6 and 9; it has no recovered code or data reference, while the live typed SPursuitMessage path is owned by NPCSession. |
 | `net_send_check_time` | `0x005F7830` | high | Immediate response to SCheckTime opcode 0x68; builds CCheckTime as opcode 0x75, echoed u32 server_value, and one timeGetTime() u32 sample without local comparison or enforcement. |
 | `net_handle_bad_guy_server_packet` | `0x005F7900` | high | Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths. |
 | `net_handle_show_users` | `0x005F7B80` | high | Handles raw decoded server opcode 0x36, applies the replacement list, and opens the RTTI-backed ShowUsersPane. |

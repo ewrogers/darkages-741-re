@@ -54,20 +54,20 @@ Every confirmed nested-menu submitter asks `NPCSession` to enter response-pendin
 
 The current `NPCSession` family has separate builders for text menus, input, server items, local inventory, server skill/spell records, and local books. An older compiled `MerchantDialogPane` family produces the same normal, argumented, item-name, `0x004B`, and `0x004E` forms. This agreement is useful confirmation that they are protocol variants rather than accidental object layouts.
 
-The exact RTTI class `MerchantDialogPane::FaceMenuDialog` emits a distinct nine-byte form:
+The exact RTTI class `MerchantDialogPane::FaceMenuDialog` emits a distinct nine-byte appearance form:
 
 ```text
 record merchant_face_menu_body {
     u8  opcode                         // 0x39
     u8  target_type
     u32 target_id
-    u8  selector_b
-    u8  selector_a_class              // 1 if selector A is zero, otherwise 2
-    u8  selector_c
+    u8  hair_style
+    u8  gender                         // 1 male, 2 female
+    u8  hair_color
 }
 ```
 
-Its action handler lets the player adjust three word-sized selectors and a fourth visual value in five-step increments. Submission truncates three selector results to the bytes above and does not send the fourth value. The live server trigger and gameplay meanings have not been established. This body must not be parsed as the normal `u16 pursuit_id` header.
+Its action handler lets the player adjust gender, hair style, hair color, and a preview-only direction. Submission truncates the first three results to the bytes above and does not send the direction. The matching opener and the older raw merchant entry are both unreferenced in version 741, so no stock `SScreenMenu` parameter selects this form. The optional [Appearance editor runtime patch](../../appendix/runtime-patches/appearance-editor.md) supplies a private activation path and sample exchange. This body must not be parsed as the normal `u16 pursuit_id` header.
 
 ## Inner wrapper
 

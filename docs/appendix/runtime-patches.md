@@ -6,6 +6,7 @@ Patch pages use short names based on the visible behavior. In-place changes use 
 - [Multiple clients](runtime-patches/multiple-clients.md)
 - [Stuck modifiers](runtime-patches/stuck-modifiers.md)
 - [Stale pursuit](runtime-patches/stale-pursuit.md)
+- [Appearance editor](runtime-patches/appearance-editor.md)
 - [Minigame assets](runtime-patches/minigame-assets.md)
 - [Skip intro](runtime-patches/skip-intro.md)
 - [Ignore Bad Guy marker](runtime-patches/ignore-bad-guy-marker.md)

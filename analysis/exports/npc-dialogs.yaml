@@ -208,7 +208,7 @@ functions:
   - address: "0x004CD0F0"
     name: ui_merchant_session_ctor
     confidence: high
-    evidence: "Constructs exact RTTI MerchantSession, loads merchant layouts, registers the full-screen pane, and dispatches an initial SScreenMenu body."
+    evidence: "Constructs exact RTTI MerchantSession, loads merchant layouts, registers the full-screen pane, and dispatches an initial legacy raw SScreenMenu body; its only direct caller is the orphan raw-session allocator."
   - address: "0x004CD230"
     name: ui_merchant_session_dtor
     confidence: high
@@ -384,7 +384,7 @@ functions:
   - address: "0x004CF3E0"
     name: ui_open_merchant_face_menu
     confidence: high
-    evidence: "Constructs exact RTTI FaceMenuDialog with lmerd bounds and pushes it onto MerchantSession."
+    evidence: "Constructs exact RTTI FaceMenuDialog with lmerd bounds and pushes it onto MerchantSession; it has no recovered code or data reference and no legacy menu-type case selects it."
   - address: "0x004CF4A0"
     name: ui_text_menu_dialog_ex_ctor
     confidence: high
@@ -680,7 +680,7 @@ functions:
   - address: "0x004D5EB0"
     name: ui_merchant_face_menu_dialog_ctor
     confidence: high
-    evidence: "Constructs exact RTTI FaceMenuDialog, clamps the live look to parsed selector bounds, and builds its animated preview and controls."
+    evidence: "Constructs exact RTTI FaceMenuDialog, clamps live gender, hair style, and hair color to three parsed min/max pairs, and builds its animated UserShapeControlPane preview and controls."
   - address: "0x004D71B0"
     name: ui_merchant_face_menu_update_button_states
     confidence: high
@@ -688,7 +688,7 @@ functions:
   - address: "0x004D74E0"
     name: ui_merchant_face_menu_handle_action
     confidence: high
-    evidence: "Exact RTTI MerchantDialogPane::FaceMenuDialog handler adjusts three word selectors and one five-step visual value; action 0x0F submits its special CMerchant form."
+    evidence: "Adjusts gender, hair style, hair color, and a preview-only direction in five-step increments; action 0x0F submits the special CMerchant appearance form."
   - address: "0x004D77C8"
     name: debug_breakpoint_stub_4d77c8
     confidence: high
@@ -696,7 +696,7 @@ functions:
   - address: "0x004D77D0"
     name: net_send_merchant_face_menu_selection
     confidence: high
-    evidence: "Sends opcode 0x39, target type, target ID, selector B, 1 if selector A is zero else 2, and selector C; this nine-byte body has no u16 pursuit ID."
+    evidence: "Sends opcode 0x39, target type, target ID, hair style, one-based gender, and hair color; this nine-byte body has no u16 pursuit ID."
   - address: "0x004D790F"
     name: ui_merchant_face_menu_ctor_unwind_cleanup
     confidence: high
@@ -1628,7 +1628,7 @@ functions:
   - address: "0x005F72E0"
     name: net_handle_screen_menu_raw
     confidence: high
-    evidence: "Raw SScreenMenu handler that constructs MerchantSession from the decoded body and reports the event consumed."
+    evidence: "Dormant raw SScreenMenu handler that would construct MerchantSession and report the event consumed; it has no recovered code or data reference in version 741."
   - address: "0x005F7300"
     name: ui_create_merchant_session
     confidence: high
@@ -1636,8 +1636,14 @@ functions:
   - address: "0x005F7390"
     name: net_dispatch_server_message_dialog
     confidence: high
-    evidence: "Reads the message variant and constructs exact dialog classes for variants 0 through 6 and 9; other values are ignored."
+    evidence: "Dormant raw pursuit-dialog dispatcher for variants 0 through 6 and 9; it has no recovered code or data reference, while the live typed SPursuitMessage path is owned by NPCSession."
 comments:
+  - address: "0x004CF3E0"
+    text: "Dormant in version 741: this FaceMenuDialog opener has no recovered reference, and the legacy type-0-through-11 dispatcher never selects it."
+  - address: "0x004D5EB0"
+    text: "Parse one-based gender bounds, direct hair-style and hair-color bounds, and build the animated UserShapeControlPane preview."
+  - address: "0x004D77D0"
+    text: "Send the special nine-byte CMerchant appearance body: target identity, hair style, one-based gender, and hair color; preview direction is omitted."
   - address: "0x0052C98A"
     text: "SPursuitMessage type 10 has no remaining fields and closes the NPC session immediately."
   - address: "0x0052DE0D"
@@ -1674,3 +1680,7 @@ comments:
     text: "Skip one common-header byte. The 7.41 client does not interpret it."
   - address: "0x0059B788"
     text: "Skip four common-header bytes as one opaque block. External implementations split this block, but the 7.41 client does not."
+  - address: "0x005F72E0"
+    text: "Dormant in version 741: no recovered reference reaches this older raw SScreenMenu-to-MerchantSession entry."
+  - address: "0x005F7390"
+    text: "Dormant in version 741: no recovered reference reaches this older raw pursuit-dialog dispatcher; NPCSession owns the live typed path."
