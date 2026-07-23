@@ -161,6 +161,201 @@ Server spell and skill records use these locally confirmed graphic selectors:
 
 Other values use the blank or fallback path.
 
+## Example decoded bodies
+
+These examples are complete decoded packet bodies. They do not include the frame header, sequence, trailer, or session-key transform. A server must apply the ordinary derived transform for opcode `0x2F` before framing the packet.
+
+Every example uses target type `1`, target ID `0x12345678`, speaker sprite `0x401E`, speaker name `Guide`, and content `Choose.`. `show_graphic` is zero so the examples do not depend on a matching local illustration. The skipped common-header bytes are also zero.
+
+The response shown after each server body is the meaningful `CMerchant` body before the client applies the dialog-response inner wrapper, derived transform, and frame. The examples select `Buy`, submit `hello`, select the named server record, or select local slot 1 as appropriate.
+
+### Type 0: text menu
+
+```text
+2F 00 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 02
+03 42 75 79 01 01 05 4C 65 61 76 65 01 02
+```
+
+Decoded body length: 46 bytes. Selecting `Buy` returns:
+
+```text
+39 01 12 34 56 78 01 01
+```
+
+### Type 1: argumented text menu
+
+```text
+2F 01 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 05
+74 6F 6B 65 6E 02 03 42 75 79 01 01 05 4C 65 61
+76 65 01 02
+```
+
+Decoded body length: 52 bytes. Selecting `Buy` echoes the opaque argument `token`:
+
+```text
+39 01 12 34 56 78 01 01 05 74 6F 6B 65 6E
+```
+
+### Type 2: text input
+
+```text
+2F 02 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 02
+01
+```
+
+Decoded body length: 33 bytes. Submitting `hello` returns:
+
+```text
+39 01 12 34 56 78 02 01 05 68 65 6C 6C 6F
+```
+
+### Type 3: argumented text input
+
+```text
+2F 03 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 05
+74 6F 6B 65 6E 02 02
+```
+
+Decoded body length: 39 bytes. Submitting `hello` echoes `token` first:
+
+```text
+39 01 12 34 56 78 02 02 05 74 6F 6B 65 6E 05 68
+65 6C 6C 6F
+```
+
+### Type 4: ordinary server item
+
+```text
+2F 04 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 03
+01 00 01 00 01 00 00 00 00 64 06 50 6F 74 69 6F
+6E 0B 52 65 73 74 6F 72 65 73 20 48 50
+```
+
+Decoded body length: 61 bytes. Selecting `Potion` returns its name:
+
+```text
+39 01 12 34 56 78 03 01 06 50 6F 74 69 6F 6E
+```
+
+### Type 5: local inventory
+
+```text
+2F 05 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 03
+02 02 01 02
+```
+
+Decoded body length: 36 bytes. Selecting inventory slot 1 returns:
+
+```text
+39 01 12 34 56 78 03 02 01
+```
+
+The row appears only when the client currently has an active item in that slot.
+
+### Type 6: server spell
+
+```text
+2F 06 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 04
+01 00 01 02 00 01 00 04 48 65 61 6C
+```
+
+Decoded body length: 44 bytes. Selecting `Heal` returns:
+
+```text
+39 01 12 34 56 78 04 01 04 48 65 61 6C
+```
+
+### Type 7: server skill
+
+```text
+2F 07 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 04
+02 00 01 03 00 01 00 06 41 73 73 61 69 6C
+```
+
+Decoded body length: 46 bytes. Selecting `Assail` returns:
+
+```text
+39 01 12 34 56 78 04 02 06 41 73 73 61 69 6C
+```
+
+### Type 8: local spell book
+
+```text
+2F 08 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 04
+03 02 01 02
+```
+
+Decoded body length: 36 bytes. Selecting spell-book slot 1 returns:
+
+```text
+39 01 12 34 56 78 04 03 01
+```
+
+The row appears only when that client slot contains a learned spell.
+
+### Type 9: local skill book
+
+```text
+2F 09 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 04
+04 02 01 02
+```
+
+Decoded body length: 36 bytes. Selecting skill-book slot 1 returns:
+
+```text
+39 01 12 34 56 78 04 04 01
+```
+
+The row appears only when that client slot contains a learned skill.
+
+### Type 10: quantity-aware server item
+
+This example uses special pursuit ID `0x004B`, one record with ID `0x01020304`, and an available quantity of 5.
+
+```text
+2F 0A 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 00
+4B 00 01 01 02 03 04 00 01 00 00 00 00 64 05 06
+50 6F 74 69 6F 6E 01 0B 52 65 73 74 6F 72 65 73
+20 48 50 00 00 00 00 FF FF FF FF
+```
+
+Decoded body length: 75 bytes. Selecting quantity 2 returns:
+
+```text
+39 01 12 34 56 78 00 4B 01 01 02 03 04 02
+```
+
+Types 4 and 10 can both use the ordinary or `0x004B` item layout. The examples show one form of each.
+
+### Type 11: valued local inventory
+
+This example uses special pursuit ID `0x004E`, slot 1, and display value 100.
+
+```text
+2F 0B 01 12 34 56 78 00 40 1E 00 00 00 00 00 00
+05 47 75 69 64 65 00 07 43 68 6F 6F 73 65 2E 00
+4E 01 01 00 00 00 64
+```
+
+Decoded body length: 39 bytes. Selecting slot 1 returns:
+
+```text
+39 01 12 34 56 78 00 4E 01 01 01
+```
+
+Types 5 and 11 can both use the ordinary or `0x004E` local-inventory layout. The examples show one form of each.
+
 ## UI flow
 
 `net_deserialize_screen_menu_server_packet` reads the common fields and keeps the remaining bytes in an owned reader. `ui_npc_session_open_screen_menu` copies the packet state into `NPCSession`, refreshes the speaker art, and creates the exact RTTI class `NPC_Merchant_MessageDialog`. `ui_npc_dispatch_screen_menu_type` then constructs the subtype-specific model and controls.

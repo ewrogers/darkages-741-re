@@ -75,6 +75,139 @@ The client skips the same one-byte and four-byte common-header groups as `SScree
 
 Types 1 and 3 are real client branches. Type 5 behaves as a simple text-input message. Values 7 and 8 do not construct a known subtype in this path.
 
+## Example decoded bodies
+
+These examples are complete decoded packet bodies. They do not include the frame header, sequence, trailer, or session-key transform. A server must apply the ordinary derived transform for opcode `0x30` before framing the packet.
+
+Every non-close example uses target type `1`, target ID `0x12345678`, pursuit ID `0x0500`, current step 5, speaker sprite `0x401E`, and speaker name `Guide`. Previous and Next are enabled. `show_graphic` is zero so the examples do not depend on a matching local illustration. The skipped common-header bytes are also zero.
+
+The response shown after each server body is the meaningful `CPursuit` body before the client applies the dialog-response inner wrapper, static transform, and frame. Types 0 and 1 demonstrate Next, question types select the first row, and text types submit `Bob`.
+
+### Type 0: plain message
+
+```text
+30 00 01 12 34 56 78 00 40 1E 00 00 00 00 00 05
+00 00 05 01 01 00 05 47 75 69 64 65 00 09 43 6F
+6E 74 69 6E 75 65 3F
+```
+
+Decoded body length: 39 bytes. Pressing Next increments step 5 to 6:
+
+```text
+3A 01 12 34 56 78 05 00 00 06
+```
+
+### Type 1: simple popup
+
+```text
+30 01 01 12 34 56 78 00 40 1E 00 00 00 00 00 05
+00 00 05 01 01 00 05 47 75 69 64 65
+```
+
+Decoded body length: 28 bytes. Pressing Next produces the same no-argument step response:
+
+```text
+3A 01 12 34 56 78 05 00 00 06
+```
+
+### Type 2: menu question
+
+```text
+30 02 01 12 34 56 78 00 40 1E 00 00 00 00 00 05
+00 00 05 01 01 00 05 47 75 69 64 65 00 09 43 6F
+6E 74 69 6E 75 65 3F 02 03 59 65 73 02 4E 6F
+```
+
+Decoded body length: 47 bytes. Selecting the first row, `Yes`, advances to step 6 and returns one-based choice 1:
+
+```text
+3A 01 12 34 56 78 05 00 00 06 01 01
+```
+
+### Type 3: simple menu question
+
+```text
+30 03 01 12 34 56 78 00 40 1E 00 00 00 00 00 05
+00 00 05 01 01 00 05 47 75 69 64 65 02 03 59 65
+73 02 4E 6F
+```
+
+Decoded body length: 36 bytes. Selecting `Yes` first sends a `CSay` containing `Yes`, then sends:
+
+```text
+3A 01 12 34 56 78 05 00 00 06 01 01
+```
+
+### Type 4: text input
+
+```text
+30 04 01 12 34 56 78 00 40 1E 00 00 00 00 00 05
+00 00 05 01 01 00 05 47 75 69 64 65 00 09 43 6F
+6E 74 69 6E 75 65 3F 05 4E 61 6D 65 3A 0D 01 2E
+```
+
+Decoded body length: 48 bytes. Submitting `Bob` advances to step 6 with argument type 2:
+
+```text
+3A 01 12 34 56 78 05 00 00 06 02 03 42 6F 62
+```
+
+### Type 5: simple text input
+
+```text
+30 05 01 12 34 56 78 00 40 1E 00 00 00 00 00 05
+00 00 05 01 01 00 05 47 75 69 64 65 07 41 6E 73
+77 65 72 3A 0D 01 2E
+```
+
+Decoded body length: 39 bytes. Submitting `Bob` first sends a `CSay` containing `Answer: Bob .`, then sends:
+
+```text
+3A 01 12 34 56 78 05 00 00 06 02 03 42 6F 62
+```
+
+### Type 6: face question
+
+```text
+30 06 01 12 34 56 78 00 40 1E 00 00 00 00 00 05
+00 00 05 01 01 00 05 47 75 69 64 65 00 09 43 6F
+6E 74 69 6E 75 65 3F 02 03 59 65 73 02 4E 6F
+```
+
+Decoded body length: 47 bytes. Selecting `Yes` returns:
+
+```text
+3A 01 12 34 56 78 05 00 00 06 01 01
+```
+
+This subtype skips the normal speaker-art refresh even though its body retains the common speaker fields.
+
+### Type 9: protected ID/password
+
+```text
+30 09 01 12 34 56 78 00 40 1E 00 00 00 00 00 05
+00 00 05 01 01 00 05 47 75 69 64 65 00 09 43 6F
+6E 74 69 6E 75 65 3F 07 41 63 63 6F 75 6E 74 0D
+06 53 75 62 6D 69 74
+```
+
+Decoded body length: 55 bytes. The server packet cannot force a response. The regional account manager must accept the form. If it produces the example result `approved`, the client sends:
+
+```text
+3A 01 12 34 56 78 05 00 00 06 02 08 61 70 70 72
+6F 76 65 64
+```
+
+### Type 10: close command
+
+```text
+30 0A
+```
+
+Decoded body length: 2 bytes. The client closes the NPC session and sends no response.
+
+Types 7 and 8 have no example because this client does not construct a known dialog subtype for them.
+
 ## Navigation and input
 
 `has_previous` and `has_next` independently enable the corresponding buttons. Their response step rules are:
