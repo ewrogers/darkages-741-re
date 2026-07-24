@@ -2772,20 +2772,27 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_world_pane_set_blinded` | `0x005C7600` | high | Forwards the SStatus-derived blinded state from WorldPane to the world renderer. |
 | `ui_world_show_speech` | `0x005CBF90` | high | Attaches a timed speech pane to a world object for the requested speech mode and duration. |
 | `ui_world_pane_draw_to_target` | `0x005CE350` | high | Copies WorldPane output to its target and applies the ambient-color and 8-bit light-mask blend when lighting is active below intensity 0x20. |
+| `ui_world_pane_handle_pointer_event` | `0x005CE4E0` | high | WorldPane primary-vtable pointer handler that offers the unchanged pointer event to the live world-object list before the ground path handles it. |
 | `ui_world_controller_handle_object_message` | `0x005CE990` | high | Updates world indexes and rendering state for object messages, answers ground-attribute query selector 5, and invokes the object position-refresh virtual after movement. |
 | `ui_world_object_name_pane_ctor` | `0x005E3F00` | high | Constructs the 0x1DC-byte RTTI WorldObject_Name_Pane and retains at most 63 text bytes plus a NUL at +0x198. |
-| `ui_world_pane_handle_living_object_message` | `0x005EF120` | high | Handles RTTI-backed WORLD_LIVING_OBJECT_MESSAGE traffic; give event 2 rejects the local character and dispatches TimerHandler event 1 with the target object ID to the source InvItemPane. |
+| `ui_world_pane_handle_self_move_message` | `0x005EED20` | medium | On the local object's position-change message, advances an active queued path or clears an exhausted route while preserving the pursuit generation. |
+| `ui_world_pane_handle_living_object_message` | `0x005EF120` | high | Routes living-object action 6 for another object with a nonzero ID into entity pursuit; other branches handle giving, local object actions, object information, and the Ctrl user popup. |
 | `ui_world_pane_handle_inventory_drop` | `0x005EF620` | high | Converts a dragged inventory item's pointer position to a bounded map tile and dispatches it to InvItemPane; it does not compare the tile with the player's position. |
 | `ui_world_pane_handle_drop_event` | `0x005EF790` | high | Rejects the drop while SUserAppearance action-state bit 0 is set; otherwise routes it through eligible child panes and handles an unconsumed inventory-item drop against the world map. |
+| `ui_world_pane_handle_timer_event` | `0x005EF850` | high | WorldPane TimerHandler callback; timer ID 10 compares its saved generation with WorldPane +0x2C8 and re-enters pursuit with the saved target ID. |
+| `ui_world_pane_handle_ground_pointer_event` | `0x005EFBE0` | high | Converts a right-button-down point to a map tile, resets older movement state, builds an exact-tile path when Ctrl and Shift are clear, and starts its first step. |
 | `ui_world_pane_request_change_direction` | `0x005F0900` | high | Applies the requested direction to the local WorldObject_User immediately, then sends CChangeDirection. |
-| `ui_world_pane_attack_from_keyboard` | `0x005F0BF0` | high | Handles the Space-key attack path and submits only when the previous accepted Space attack was absent or more than 100 ms ago. |
-| `ui_world_pane_handle_direction_input` | `0x005F0C40` | high | Turns with CChangeDirection when requested facing differs; otherwise attempts one tile of movement. |
+| `ui_world_pane_attack_from_keyboard` | `0x005F0BF0` | high | Fully resets queued movement before sending the throttled Space-key CAttack. |
+| `ui_world_pane_handle_direction_input` | `0x005F0C40` | high | Fully resets queued movement, then turns or attempts one cardinal step for keyboard and Shift+right input. |
 | `ui_world_pane_handle_keyboard_event` | `0x005F0D20` | high | Handles WorldPane keyboard commands; the Tab map-overlay path gives character class 2 the zoom-enabled configuration observed for Rogues. |
 | `ui_open_object_info_from_server_body` | `0x005F1590` | high | Resolves the body u32 entity ID to an existing living object before opening UserInfoPane_ForOthers. |
 | `ui_world_handle_mini_game_server_packet` | `0x005F2350` | high | Handles SMiniGame action 8 subtype 1 as a world/map interaction, then forwards the packet to the common mini-game action handler. |
 | `ui_world_pane_draw_content` | `0x005F27A0` | high | WorldPane content hook that draws the world when ready or clears the pane. |
-| `ui_world_pane_reset_movement_state` | `0x005F4900` | medium | Resets WorldPane movement and queued-path state after authoritative position changes and the SMove direction-4 path. |
-| `ui_world_pane_attack_target` | `0x005F4A70` | high | Faces and attacks an adjacent selected target through CAttack without using the Space-key throttle. |
+| `ui_world_pane_reset_movement_state` | `0x005F4900` | high | Clears the target ID, queued route, remaining path, and active flag; argument 0 also increments the generation so pending pursuit timers become stale, while argument 1 preserves it. |
+| `ui_world_pane_advance_queued_path` | `0x005F4990` | high | Pops the next 12-byte path record, verifies its saved source coordinates against the local object, and attempts its direction through normal movement. |
+| `ui_world_pane_pursue_and_auto_attack_target` | `0x005F4A70` | high | Resolves a target ID, faces or attacks it when adjacent, otherwise builds a path to one of four adjacent tiles, then unconditionally schedules timer ID 10 after 100 ms while the target and self still resolve. |
+| `ui_world_pane_build_path_to_tile` | `0x005F4DE0` | high | Wraps the shared multi-goal search with the same exact destination in all four goal slots for ground click-to-move. |
+| `ui_world_pane_build_breadth_first_path` | `0x005F4E30` | high | Runs a FIFO breadth-first search over four cardinal moves, records each first-visit direction in a 400 by 400 byte grid, and reconstructs a shortest queued route to the first reached goal. |
 | `ui_capture_self_portrait_to_album` | `0x005F5200` | high | Renders the local player to 48 by 56 pixels, enforces the 0xE10-second normal cooldown, captions the first free record with ctime, and saves album.dat. |
 | `ui_has_map_loading_pane` | `0x005F6470` | high | Reports whether the global MapLoadingPane pointer is non-null. |
 | `ui_get_map_loading_pane` | `0x005F6490` | high | Returns the current global MapLoadingPane pointer used by SMapPart progress handling. |
@@ -3271,8 +3278,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_map_part` | `0x005F2A60` | high | Consumes one raw SMapPart row into memory, creates MapLoadingPane on the first accepted row, updates row-index progress, and treats height minus one as completion without tracking earlier rows. |
 | `net_handle_request_crc_server_body` | `0x005F2CF0` | high | Reads the raw u16 SRequestCRC challenge, feeds low then high byte through crc16_update from zero, and sends the resulting byte swap as CReplyCRC opcode 0x45. |
 | `net_handle_user_appearance_server_packet` | `0x005F2E90` | high | Refreshes self identity on full SUserAppearance updates and always forwards the packet to WorldUserFunc for action-state storage. |
-| `net_handle_user_position_server_packet` | `0x005F2F00` | high | Sign-extends SUserPosition x and y, updates and reindexes WorldObject_User when present, and recenters the WorldPane view. |
-| `net_handle_move_server_packet` | `0x005F2FC0` | high | Uses SMove direction and previous coordinates to advance or correct the view, requests CRefreshUser on a direction-4 coordinate mismatch, and reports latency only for the current step echo. |
+| `net_handle_user_position_server_packet` | `0x005F2F00` | high | Fully resets movement and pursuit before installing the authoritative SUserPosition coordinates. |
+| `net_handle_move_server_packet` | `0x005F2FC0` | high | Applies accepted movement; direction 4 is the rejection or refresh path and fully resets queued movement before restoring the supplied position. |
 | `net_handle_draw_objects_server_packet` | `0x005F3150` | high | Walks every SDrawObjects record, replaces matching IDs, creates WorldObject_Monster or WorldObject_Item by tagged sprite range, applies creature palette selectors and names, and ignores unsupported ranges. |
 | `net_handle_draw_human_objects_server_packet` | `0x005F3340` | high | Creates or refreshes WorldObject_User for the saved self ID and WorldObject_Human otherwise, applies normal or disguised appearance, updates names and optional group ads, and handles Darkness object lights. |
 | `net_handle_change_direction_server_packet` | `0x005F3BB0` | high | Finds SChangeDirection.user_id, requests CRequestObject when absent, and applies direction only after an RTTI cast to WorldObject_Living. |
@@ -3283,9 +3290,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_get` | `0x005F4200` | high | Builds CGet as opcode 0x07, u8 destination slot, u16 X, and u16 Y. |
 | `net_send_group_recruit_view` | `0x005F4340` | high | Builds CGroup action 5 with the selected recruitment name; the paired SGroup action 4 opens GroupAdInfoDialogPane. |
 | `net_send_request_object` | `0x005F4430` | high | Builds CRequestObject as opcode 0x0C plus one u32 object ID; confirmed callers use it after a lookup misses or an expected living-object cast fails. |
-| `net_send_attack` | `0x005F44B0` | high | Builds CAttack as opcode 0x13 with no payload and submits the complete one-byte plaintext body. |
+| `net_send_attack` | `0x005F44B0` | high | Submits the opcode-only CAttack body used by both Space and the adjacent pursuit terminal action. |
 | `net_send_change_direction` | `0x005F4510` | high | Builds CChangeDirection as opcode 0x11 plus one direction byte after WorldPane turns the local object optimistically. |
-| `net_send_move` | `0x005F4580` | high | Builds CMove as opcode, direction, and an incremented rolling u8 step, then records the send time used by a matching SMove reply. |
+| `net_send_move` | `0x005F4580` | high | Submits one CMove direction and rolling step byte for each path step. |
 | `net_send_refresh_user` | `0x005F4640` | high | WorldPane paths call this opcode-only 0x38 builder. |
 | `net_send_emotion` | `0x005F46C0` | high | Builds CEmotion as opcode 0x1D followed by one caller-supplied u8 emotion request code. |
 | `net_handle_bounce_server_packet` | `0x005F6A80` | high | Submits SBounce's counted embedded bytes directly as an ordinary opcode-first client body and performs no other game or UI action. |
@@ -4271,7 +4278,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_refresh_collision_cache` | `0x005D8B90` | high | Refreshes dirty cells in the map's width-by-height byte collision cache with map_get_collision_level. |
 | `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds and the saved appearance action lock, lets privilege levels 1 and 2 bypass the remaining dynamic-object and direction-specific SOTP collision checks, and otherwise applies CreatureType behavior and SOTP masks. |
 | `map_has_special_movement_permission` | `0x005F0980` | high | Grants permission for any nonzero SStatus privilege; otherwise scans the 89 retained skill names for localized message slot 0x77. |
-| `map_try_move_local_player` | `0x005F09E0` | high | Applies the special-state privilege-or-skill permission check, then the saved appearance action lock, dynamic occupants, and direction-specific SOTP collision before selecting the local walk sequence and sending CMove. |
+| `map_try_move_local_player` | `0x005F09E0` | high | Starts one accepted local movement step and submits CMove; a special-state rejection also performs a full movement-state reset. |
 | `map_apply_weather_mode` | `0x005F26C0` | high | Creates Snow for mode 1, performs no local setup for project-named Rain mode 2, and enables black ambient plus object light masks for Darkness mode 3. |
 | `map_finish_transfer` | `0x005F2DE0` | high | Destroys MapLoadingPane, advances the WorldPane map generation, and either applies prepared map storage immediately or schedules the alternate completion path. |
 | `map_interface_apply_world_layout` | `0x005F9B20` | high | MapInterface virtual wrapper that adjusts the interface pointer to its containing WorldPane_Impl and calls render_world_apply_view_layout. |
@@ -5116,13 +5123,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `user_info_load_friend_list` | `0x00592800` | high | Clears twenty 40-byte UserInfo friend slots, then loads up to twenty lines from the per-character Friendlist.cfg file. |
 | `user_info_save_friend_list` | `0x00592920` | high | Writes all twenty 40-byte UserInfo friend slots as lines in the per-character Friendlist.cfg file. |
 | `crc16_update` | `0x005B8F30` | high | Updates the custom CRC16 with table[crc high byte] XOR crc shifted left XOR input byte. |
-| `world_direction_to_delta` | `0x005BE580` | high | Maps directions 0 through 3 to up, right, down, and left coordinate deltas; values above 3 have no defined result. |
-| `world_step_coordinates` | `0x005BE600` | high | Applies the direction delta to a coordinate pair used by local movement and collision checks. |
+| `world_direction_to_delta` | `0x005BE580` | high | Maps direction values 0 through 3 to the four cardinal coordinate deltas used by movement and the path search. |
+| `world_step_coordinates` | `0x005BE600` | high | Applies one cardinal direction to a tile coordinate pair. |
+| `world_step_coordinates_reverse` | `0x005BE650` | high | Subtracts one direction delta from a tile coordinate pair while reconstructing a path from the reached goal back to its start. |
 | `world_object_list_create` | `0x005C7700` | high | Allocates the 0x68-byte WorldObjectList, constructs width times height 0x60-byte cells, and installs it at WorldPane +0x194. |
 | `world_apply_map_cells` | `0x005C7970` | high | Installs prepared map-cell storage into WorldPane and dependent world views, rebuilds a ready view at its current position, and invalidates world and lighting output. |
 | `world_rebuild_view_at_position` | `0x005C7DF0` | high | Stores WorldPane view Y and X, updates the world renderer, rebuilds visible static objects and lighting, and invalidates the view. |
 | `world_insert_object` | `0x005C8EA0` | high | Inserts one reference-counted WorldObject into WorldObjectList, coordinate, render, and observer state. |
-| `world_reindex_object` | `0x005C92C0` | high | Updates a world object's spatial index entry after its tile coordinates change and refreshes dependent overlay state. |
+| `world_reindex_object` | `0x005C92C0` | high | Removes a moved world object from its old spatial cell and inserts it at the live tile_y and tile_x used by later collision queries. |
 | `world_find_object_by_id` | `0x005C9810` | high | Resolves a 32-bit server entity ID through the WorldPane-owned WorldObjectList at object offset +0x194. |
 | `world_find_object_at_tile_by_category` | `0x005C9880` | high | Searches one world tile for the first object whose broad category at +0x2C matches the requested value; B-key pickup requests category 8 ground items. |
 | `world_get_static_object_at_tile_side` | `0x005C9DE0` | high | Resolves one of the two static slots at a coordinate and requires exact RTTI WorldObject_Static; packet side 0 maps to left slot 1 and nonzero maps to right slot 0. |
@@ -5135,6 +5143,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_create_object_name_pane` | `0x005CC670` | high | Finds a world object by ID, constructs RTTI WorldObject_Name_Pane from bounded text and style bytes, and attaches it to the object. |
 | `world_show_damage_effect` | `0x005CCD40` | high | Resolves the target object, removes its existing type-7 overlay, constructs exact RTTI WorldObject_Damage, and starts the replacement at the requested stage for 2000 ms. |
 | `ground_attribute_table_get` | `0x005CFA70` | high | Returns the interned gndattr.tbl entry for one ground tile ID, extending the indexed table in 1024-entry blocks when needed. |
+| `world_object_list_dispatch_pointer_event` | `0x005D4820` | high | Hit-tests live world objects back to front, translates the point into object-local coordinates, and calls the first eligible object's pointer handler with the unchanged event. |
 | `world_object_ctor` | `0x005DB3F0` | high | Constructs the 0x7C-byte common WorldObject prefix, including identity, render offsets, tile coordinates, attached panes, object lighting, and ground-paint state. |
 | `world_object_set_ground_paint` | `0x005DB6D0` | high | Replaces the WorldObject ground-paint record and publishes a change only when its flag, color, alpha, or depth fields differ. |
 | `world_object_set_name_pane` | `0x005DBA80` | high | Replaces the reference-counted WorldObject_Name_Pane pointer at common WorldObject offset +0x58. |

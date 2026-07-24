@@ -3797,8 +3797,8 @@ functions:
     evidence: "Builds CEmotion as opcode 0x1D followed by one caller-supplied u8 emotion request code."
   - address: "0x005F4900"
     name: ui_world_pane_reset_movement_state
-    confidence: medium
-    evidence: "Resets WorldPane movement and queued-path state after authoritative position changes and the SMove direction-4 path."
+    confidence: high
+    evidence: "Clears WorldPane target and queued-path state; argument 0 increments the pursuit generation to invalidate pending timers, while argument 1 preserves it for route exhaustion."
   - address: "0x005F6470"
     name: ui_has_map_loading_pane
     confidence: high

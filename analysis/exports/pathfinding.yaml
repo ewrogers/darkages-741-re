@@ -1,0 +1,154 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x00466DC0"
+    name: input_post_right_button_up
+    confidence: high
+    evidence: "Clears EventMan's right-button state and emits pointer event type 6, which the hit-tested living-object path uses to start pursuit."
+  - address: "0x005BE580"
+    name: world_direction_to_delta
+    confidence: high
+    evidence: "Maps direction values 0 through 3 to the four cardinal coordinate deltas used by movement and the path search."
+  - address: "0x005BE600"
+    name: world_step_coordinates
+    confidence: high
+    evidence: "Applies one cardinal direction to a tile coordinate pair."
+  - address: "0x005BE650"
+    name: world_step_coordinates_reverse
+    confidence: high
+    evidence: "Subtracts one direction delta from a tile coordinate pair while reconstructing a path from the reached goal back to its start."
+  - address: "0x005C92C0"
+    name: world_reindex_object
+    confidence: high
+    evidence: "Removes a moved world object from its old spatial cell and inserts it at the live tile_y and tile_x used by later collision queries."
+  - address: "0x005CE4E0"
+    name: ui_world_pane_handle_pointer_event
+    confidence: high
+    evidence: "WorldPane primary-vtable pointer handler that offers the unchanged pointer event to the live world-object list before the ground path handles it."
+  - address: "0x005CF4A0"
+    name: map_get_sotp_collision_flags
+    confidence: high
+    evidence: "Returns the low-nibble collision flags for the caller-supplied live static tile ID."
+  - address: "0x005D4820"
+    name: world_object_list_dispatch_pointer_event
+    confidence: high
+    evidence: "Hit-tests live world objects back to front, translates the point into object-local coordinates, and calls the first eligible object's pointer handler with the unchanged event."
+  - address: "0x005E4900"
+    name: world_static_set_tile_id
+    confidence: high
+    evidence: "Replaces a static object's live tile ID, reloads its art and bounds, and invalidates it; later movement and path searches use the replacement ID's SOTP collision flags."
+  - address: "0x005EED20"
+    name: ui_world_pane_handle_self_move_message
+    confidence: medium
+    evidence: "On the local object's position-change message, advances an active queued path or clears an exhausted route while preserving the pursuit generation."
+  - address: "0x005EF120"
+    name: ui_world_pane_handle_living_object_message
+    confidence: high
+    evidence: "Routes living-object action 6 for another object with a nonzero ID into entity pursuit; other branches handle giving, local object actions, object information, and the Ctrl user popup."
+  - address: "0x005EF850"
+    name: ui_world_pane_handle_timer_event
+    confidence: high
+    evidence: "WorldPane TimerHandler callback; timer ID 10 compares its saved generation with WorldPane +0x2C8 and re-enters pursuit with the saved target ID."
+  - address: "0x005EFBE0"
+    name: ui_world_pane_handle_ground_pointer_event
+    confidence: high
+    evidence: "Converts a right-button-down point to a map tile, resets older movement state, builds an exact-tile path when Ctrl and Shift are clear, and starts its first step."
+  - address: "0x005EFEC0"
+    name: world_get_static_tile_id_from_object
+    confidence: high
+    evidence: "RTTI-casts a live world object to WorldObject_Static and returns its current tile ID, or sentinel 10000 when the object is not static."
+  - address: "0x005EFFE0"
+    name: map_can_move_direction
+    confidence: high
+    evidence: "Checks bounds, map state, the destination cell's live human and monster occupants, special passability, and current direction-specific SOTP collision for both normal movement and path expansion."
+  - address: "0x005F09E0"
+    name: map_try_move_local_player
+    confidence: high
+    evidence: "Starts one accepted local movement step and submits CMove; a special-state rejection also performs a full movement-state reset."
+  - address: "0x005F0BF0"
+    name: ui_world_pane_attack_from_keyboard
+    confidence: high
+    evidence: "Fully resets queued movement before sending the throttled Space-key CAttack."
+  - address: "0x005F0C40"
+    name: ui_world_pane_handle_direction_input
+    confidence: high
+    evidence: "Fully resets queued movement, then turns or attempts one cardinal step for keyboard and Shift+right input."
+  - address: "0x005F2F00"
+    name: net_handle_user_position_server_packet
+    confidence: high
+    evidence: "Fully resets movement and pursuit before installing the authoritative SUserPosition coordinates."
+  - address: "0x005F2FC0"
+    name: net_handle_move_server_packet
+    confidence: high
+    evidence: "Applies accepted movement; direction 4 is the rejection or refresh path and fully resets queued movement before restoring the supplied position."
+  - address: "0x005F44B0"
+    name: net_send_attack
+    confidence: high
+    evidence: "Submits the opcode-only CAttack body used by both Space and the adjacent pursuit terminal action."
+  - address: "0x005F4580"
+    name: net_send_move
+    confidence: high
+    evidence: "Submits one CMove direction and rolling step byte for each path step."
+  - address: "0x005F4900"
+    name: ui_world_pane_reset_movement_state
+    confidence: high
+    evidence: "Clears the target ID, queued route, remaining path, and active flag; argument 0 also increments the generation so pending pursuit timers become stale, while argument 1 preserves it."
+  - address: "0x005F4990"
+    name: ui_world_pane_advance_queued_path
+    confidence: high
+    evidence: "Pops the next 12-byte path record, verifies its saved source coordinates against the local object, and attempts its direction through normal movement."
+  - address: "0x005F4A70"
+    rva: "0x001F4A70"
+    name: ui_world_pane_pursue_and_auto_attack_target
+    prototype: "void __thiscall ui_world_pane_pursue_and_auto_attack_target(WorldPane *world, u32 target_id)"
+    confidence: high
+    evidence: "Resolves a target ID, faces or attacks it when adjacent, otherwise builds a path to one of four adjacent tiles, then unconditionally schedules timer ID 10 after 100 ms while the target and self still resolve. The function must run on the main game thread with the complete WorldPane pointer in ECX."
+  - address: "0x005F4DE0"
+    name: ui_world_pane_build_path_to_tile
+    confidence: high
+    evidence: "Wraps the shared multi-goal search with the same exact destination in all four goal slots for ground click-to-move."
+  - address: "0x005F4E30"
+    name: ui_world_pane_build_breadth_first_path
+    confidence: high
+    evidence: "Runs a FIFO breadth-first search over four cardinal moves, records each first-visit direction in a 400 by 400 byte grid, and reconstructs a shortest queued route to the first reached goal."
+data_symbols:
+  - address: "0x0085BD68"
+    name: pathfinding_predecessor_direction_grid
+    confidence: high
+    evidence: "Fixed 0x27100-byte, 400 by 400 grid filled with sentinel 5 for each search; visited cells store the direction used to first reach them."
+comments:
+  - address: "0x005EF33A"
+    text: "Living-object action 6 passes another object's nonzero u32 ID into native pursue-and-attack behavior."
+  - address: "0x005EF9CB"
+    text: "Timer ID 10 is the entity-pursuit retry. The callback's target ID is used only when its saved generation still equals WorldPane +0x2C8."
+  - address: "0x005EFDC9"
+    text: "A plain right-button ground action fully resets the previous route and pursuit before building an exact-tile path."
+  - address: "0x005F0184"
+    text: "Query the destination cell's current world-object list. Live human and monster passability is evaluated for every path expansion and every attempted queued step."
+  - address: "0x005F04AF"
+    text: "Read live static objects in the current and destination cells, obtain their replacement tile IDs, and apply direction-specific SOTP collision flags."
+  - address: "0x005F4920"
+    text: "Argument 0 increments the pursuit generation and invalidates outstanding timer callbacks. Argument 1 deliberately preserves the generation."
+  - address: "0x005F4D0E"
+    text: "Adjacency sends CAttack only when the local character already faces the target. Both the turn and attack branches continue to the common 100 ms pursuit-timer schedule."
+  - address: "0x005F4D64"
+    text: "Retain the target by u32 object ID, followed by its last resolved tile_y and tile_x at WorldPane +0x2C0 and +0x2C4."
+  - address: "0x005F4D88"
+    text: "Advance the generation for this pursuit attempt; the value accompanies timer ID 10 so callbacks from replaced paths are ignored."
+  - address: "0x005F4DAF"
+    text: "Unconditionally schedule one-shot pursuit timer ID 10 after 100 ms with target_id and generation callback values after any resolved-target branch, including turn, attack, failed path, and blocked movement. A later invocation requeues the chain."
+  - address: "0x005F4F07"
+    text: "Reset the fixed 400 by 400 predecessor-direction grid to unseen sentinel 5 before the breadth-first search."
+  - address: "0x005F5034"
+    text: "Expand cardinal neighbors in Direction order 0 through 3: Up, Right, Down, Left."
+  - address: "0x005F50BC"
+    text: "First visit records the direction from the current tile to this neighbor, then appends the neighbor to the FIFO queue."
+  - address: "0x005F5127"
+    text: "Walk predecessor directions backward from the reached goal to the start and append 12-byte direction plus source-coordinate records for reverse replay."
+runtime_patches: []

@@ -36,6 +36,6 @@ The comparison is strictly greater than 100 ms. There is no 1,000 ms attack thro
 
 ## Other attack path
 
-`ui_world_pane_attack_target` can face and attack an adjacent selected target. It calls the same opcode-only builder without the Space-key throttle.
+`ui_world_pane_pursue_and_auto_attack_target` resolves a selected object ID, paths to an adjacent tile, and repeats its face-or-attack check every 100 ms. Once adjacent and already facing the target, it calls the same opcode-only builder without the Space-key throttle. See [Pathfinding and entity pursuit](../../systems/pathfinding-and-pursuit.md).
 
 These are client-side submission rules. They do not establish the server's combat cooldown or prove that every submitted attack succeeds.

@@ -339,9 +339,9 @@ functions:
     evidence: Builds CAttack as opcode 0x13 with no payload and submits the complete one-byte plaintext body.
   - address: "0x005F4A70"
     end_address: "0x005F4DDA"
-    name: ui_world_pane_attack_target
+    name: ui_world_pane_pursue_and_auto_attack_target
     confidence: high
-    evidence: Faces and attacks an adjacent selected target through CAttack without using the Space-key throttle.
+    evidence: Resolves a selected target by object ID, paths to one of its four adjacent tiles, and repeats its face-or-attack action through a 100 ms timer chain.
   - address: "0x005F7B80"
     end_address: "0x005F7BAD"
     name: net_handle_show_users

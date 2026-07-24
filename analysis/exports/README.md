@@ -12,6 +12,8 @@ This directory contains deterministic Binary Ninja exports such as user symbols,
 
 [`ui-pane-lifecycle.yaml`](ui-pane-lifecycle.yaml) records exact RTTI pane destructors, MSVC scalar-deleting destructors, and the adjusted-`this` TimerHandler thunks that reach them.
 
+[`pathfinding.yaml`](pathfinding.yaml) records right-click ground movement, living-object pursuit, the breadth-first route search, its 100 ms retarget timer, queued-step replay, and cancellation generations.
+
 Use [`sync_user_analysis.py`](../../binaryninja/scripts/sync_user_analysis.py) from Binary Ninja's Python console to import or refresh tracked names and comments and to normalize packet records. The script requires [PyYAML](https://pyyaml.org/). Pass `client/Darkages.exe` as `binary_path` so the script fails before changing analysis when the private input does not match.
 
 Do not copy legacy exports here without revalidation.
