@@ -99,4 +99,4 @@ The `SStatus` parser preserves flag `0x02` in the temporary packet object, but n
 
 The project protocol may still call that server-side state Swimming. In the 7.41 client, the confirmed pieces are the unused `SStatus` bit, the `SUserAppearance` action lock, the ground-derived skill-name check, and the `SDrawHumanObjects` body variant. Their exact server-side coordination still needs a water-entry capture.
 
-For the client-side route search that feeds these same movement checks, see [Pathfinding and entity pursuit](pathfinding-and-pursuit.md).
+For the client-side route search that feeds these same movement checks, see [Pathfinding and following](pathfinding-and-pursuit.md).

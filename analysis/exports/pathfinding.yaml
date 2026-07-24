@@ -7,10 +7,18 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
-  - address: "0x00466DC0"
-    name: input_post_right_button_up
+  - address: "0x00466D80"
+    name: input_post_right_button_down
     confidence: high
-    evidence: "Clears EventMan's right-button state and emits pointer event type 6, which the hit-tested living-object path uses to start pursuit."
+    evidence: "Sets EventMan's right-button state and enters the pointer-event builder used by living-object right-click handling."
+  - address: "0x00467790"
+    name: input_emit_right_button_down
+    confidence: high
+    evidence: "Builds right-button pointer event type 4 or 5 and copies EventMan's current modifier byte into Event +0x18. The type-5 living-object path keeps Shift as bit 0x04."
+  - address: "0x00468300"
+    name: input_compute_modifier_flags
+    confidence: high
+    evidence: "Builds EventMan's four-bit modifier mask. Shift is bit 0x04, Ctrl is bit 0x02, and Alt is bit 0x01 in the paths used by world pointer handling."
   - address: "0x005BE580"
     name: world_direction_to_delta
     confidence: high
@@ -39,6 +47,14 @@ functions:
     name: world_object_list_dispatch_pointer_event
     confidence: high
     evidence: "Hit-tests live world objects back to front, translates the point into object-local coordinates, and calls the first eligible object's pointer handler with the unchanged event."
+  - address: "0x005E1A70"
+    name: world_living_handle_pointer_event
+    confidence: high
+    evidence: "Hit-tests a WorldObject_Living and routes pointer type 5 to the right-click action builder with coordinates, timestamp, and Event +0x18 modifier flags."
+  - address: "0x005E2270"
+    name: world_living_dispatch_right_click_action
+    confidence: high
+    evidence: "Builds living-object action 6 for the object's ID, copies the pointer modifier byte to message +0x2C, and dispatches the message to registered handlers."
   - address: "0x005E4900"
     name: world_static_set_tile_id
     confidence: high
@@ -123,10 +139,18 @@ data_symbols:
     confidence: high
     evidence: "Fixed 0x27100-byte, 400 by 400 grid filled with sentinel 5 for each search; visited cells store the direction used to first reach them."
 comments:
+  - address: "0x00467912"
+    text: "Copy the current modifier mask into pointer event type 5 at Event +0x18. WorldObject_Living later copies this byte to living-object action 6 at message +0x2C."
+  - address: "0x005E1BDA"
+    text: "Pointer event type 5 becomes living-object action 6. Pass its coordinates, timestamp, and Event +0x18 modifier byte into the message builder."
+  - address: "0x005E22F1"
+    text: "Store the pointer modifier byte at living-object message +0x2C. Shift remains bit 0x04 when WorldPane handles action 6."
   - address: "0x005EF33A"
-    text: "Living-object action 6 passes another object's nonzero u32 ID into native pursue-and-attack behavior."
+    text: "Living-object action 6 passes another object's nonzero u32 ID into native pursue-and-attack behavior. The same message keeps modifier flags at +0x2C, including Shift bit 0x04."
   - address: "0x005EF9CB"
     text: "Timer ID 10 is the entity-pursuit retry. The callback's target ID is used only when its saved generation still equals WorldPane +0x2C8."
+  - address: "0x005EFD29"
+    text: "A ground right-click starts an exact-tile path only when Ctrl bit 0x02 and Shift bit 0x04 are both clear. Shift+right instead reaches the later one-step direction branch with modifier mask 0x24."
   - address: "0x005EFDC9"
     text: "A plain right-button ground action fully resets the previous route and pursuit before building an exact-tile path."
   - address: "0x005F0184"
@@ -135,6 +159,10 @@ comments:
     text: "Read live static objects in the current and destination cells, obtain their replacement tile IDs, and apply direction-specific SOTP collision flags."
   - address: "0x005F4920"
     text: "Argument 0 increments the pursuit generation and invalidates outstanding timer callbacks. Argument 1 deliberately preserves the generation."
+  - address: "0x005F49E5"
+    text: "For an entity-pursuit route, remaining_steps counts moves still needed to reach a tile beside the target. Before the next step is consumed, remaining_steps + 1 is the current route distance to the target."
+  - address: "0x005F4AA2"
+    text: "The full reset has just advanced WorldPane +0x2C8. This is the current pursuit tick's generation; the common tail advances it once more before scheduling timer ID 10."
   - address: "0x005F4D0E"
     text: "Adjacency sends CAttack only when the local character already faces the target. Both the turn and attack branches continue to the common 100 ms pursuit-timer schedule."
   - address: "0x005F4D64"
@@ -151,4 +179,32 @@ comments:
     text: "First visit records the direction from the current tile to this neighbor, then appends the neighbor to the FIFO queue."
   - address: "0x005F5127"
     text: "Walk predecessor directions backward from the reached goal to the start and append 12-byte direction plus source-coordinate records for reverse replay."
-runtime_patches: []
+runtime_patches:
+  - id: auto-follow-pathfinding-select-shift
+    rva: "0x001EF33A"
+    static_address: "0x005EF33A"
+    file_offset_for_reference_only: "0x001EE73A"
+    original_bytes: E8 31 57 00 00
+    replacement_template: E8 <rel32 to allocated stub + 0x000>
+    effect: "Route Shift+right-click living-object pursuit through the auto-follow option selector while leaving normal right-click on the native path."
+  - id: auto-follow-pathfinding-stop-distance
+    rva: "0x001F49E5"
+    static_address: "0x005F49E5"
+    file_offset_for_reference_only: "0x001F3DE5"
+    original_bytes: 8B 45 E0 83 B8 B8 02 00 00 00
+    replacement_template: E9 <rel32 to allocated stub + 0x0A8> 90 90 90 90 90
+    effect: "Before consuming another entity-route step, clear only the route when remaining_steps + 1 is within the configured follow distance."
+  - id: auto-follow-pathfinding-track-generation
+    rva: "0x001F4AA2"
+    static_address: "0x005F4AA2"
+    file_offset_for_reference_only: "0x001F3EA2"
+    original_bytes: 83 7D 08 00 75 05
+    replacement_template: E9 <rel32 to allocated stub + 0x072> 90
+    effect: "Remember the follow tick's generation after the native full reset, then replay the overwritten target-ID comparison."
+  - id: auto-follow-pathfinding-filter-attack
+    rva: "0x001F4D0E"
+    static_address: "0x005F4D0E"
+    file_offset_for_reference_only: "0x001F410E"
+    original_bytes: E8 9D F7 FF FF
+    replacement_template: E8 <rel32 to allocated stub + 0x044>
+    effect: "Return without calling net_send_attack when the active follow options disable attacks; otherwise tail-call the native sender."

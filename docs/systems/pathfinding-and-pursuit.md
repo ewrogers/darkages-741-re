@@ -1,171 +1,58 @@
-# Pathfinding and entity pursuit
+# Pathfinding and following
 
-Right-clicking a living world object starts a client-side pursuit and auto-attack loop. The client finds a shortest walk to a tile beside the target, follows that route with ordinary movement packets, and attempts another attack every 100 ms while it remains beside and facing the target. There is no special follow packet and no server-side path request.
+Right-clicking a player or monster tells the client to walk beside that target and attack it. The client finds the route itself. It does not ask the server for a path.
 
-This behavior is better described as pursuit than passive following. Its terminal action is an attack, and the native entity helper does not offer a walk-only option.
+This page calls that action **pursuit** because the built-in version always ends in an attack. The client has no normal follow-only button.
 
-## From right-click to attack
+## What right-click does
 
-The input manager emits pointer event type `6` for a right-button release. A hit-tested `WorldObject_Living` forwards that action to `ui_world_pane_handle_living_object_message`, which rejects the local character and passes the other object's `u32` ID to `ui_world_pane_pursue_and_auto_attack_target`.
+When a right-click lands on a living object, meaning a player or monster, `world_living_dispatch_right_click_action` builds living-object action `6`. `ui_world_pane_handle_living_object_message` then passes the object's ID to `ui_world_pane_pursue_and_auto_attack_target`.
 
 ```text
 right-button release
-  -> hit-tested WorldObject_Living
-  -> living-object action 6
-  -> resolve target by object ID
-  -> already adjacent?
-       yes: face the target or send CAttack
-       no:  find a shortest route to an adjacent tile
-            send ordinary CMove steps
-  -> check the target again after 100 ms
+  -> find the clicked living object
+  -> remember its object ID
+  -> target is beside the local character?
+       yes: turn toward it or attack
+       no:  find a route to a tile beside it
+            send normal movement steps
+  -> check the same target again after 100 ms
 ```
 
-The helper resolves the object ID again on every check. It does not retain a world-object pointer across timer callbacks. This lets it notice the target's new tile or stop safely after the object leaves the local object list.
+The target ID matters more than the saved coordinates. On each new check, the client looks up that ID again and reads the target's current tile.
 
-The adjacent path is also a loop. A facing mismatch sends `CChangeDirection`, then the next timer check can attack. An already-facing character sends `CAttack` immediately and still schedules the next check. This produces repeated attack requests at the 100 ms pursuit cadence without using the Space key's separate throttle.
+Movement, turning, and attacking use the ordinary [`CMove`](../network/client/006-0x06-move.md), [`CChangeDirection`](../network/client/017-0x11-change-direction.md), and [`CAttack`](../network/client/019-0x13-attack.md) senders.
 
-The client reuses [`CMove`](../network/client/006-0x06-move.md), [`CChangeDirection`](../network/client/017-0x11-change-direction.md), and [`CAttack`](../network/client/019-0x13-attack.md). The server therefore sees the same commands that keyboard movement and the Space attack key produce.
+## The route search
 
-## The path search
+The client uses **breadth-first search**, usually shortened to **BFS**. It does not use A*.
 
-`ui_world_pane_build_breadth_first_path` is a breadth-first search, not A*. Every edge is one cardinal tile and has the same cost, so the first reached goal has the fewest steps under the current collision state.
-
-```c
-fill(predecessor_direction, 5);       // 5 means unseen
-queue.push(start);
-
-while (!queue.empty()) {
-    Tile here = queue.pop_front();
-
-    if (here is any requested goal)
-        return rebuild_path(here, start);
-
-    for (direction = Up; direction <= Left; direction++) {
-        Tile next = step(here, direction);
-
-        if (can_move(here, direction) &&
-            predecessor_direction[next] == 5) {
-            predecessor_direction[next] = direction;
-            queue.push_back(next);
-        }
-    }
-}
-```
-
-The search expands directions in `Up`, `Right`, `Down`, `Left` order. `map_can_move_direction` supplies the same bounds, dynamic-object, special-state, and SOTP static-collision checks used by normal local movement.
-
-Ground click-to-move supplies one exact goal tile. Entity pursuit supplies the target's four adjacent tiles, so the occupied target tile does not need to be passable. The route stores a direction and its source coordinates for each step. `ui_world_pane_advance_queued_path` replays the records in forward movement order and verifies that the local character is still at the expected source tile before sending the next step.
-
-The predecessor array is a fixed 400 by 400 byte grid. The search queue reserves the current map's tile count plus 128 entries. The start tile is enqueued before it is marked, so one neighbor can enqueue it once more. Already-marked neighbors prevent that quirk from becoming a loop.
-
-## Moving objects and doors
-
-The search reads the live world state. `map_can_move_direction` queries the destination cell's current object list and applies the class-specific passability state for humans and monsters. When an object moves, `world_reindex_object` removes it from its old spatial cell and inserts it at its new coordinates. The next search therefore sees the new occupied and vacated tiles.
-
-The client also validates every queued step again through `map_try_move_local_player`. A human or creature that enters a previously planned route can block the next step even before the following 100 ms search. The pursuit timer then discards that route and tries another.
-
-Static collision is live as well. `world_static_set_tile_id` changes a static object's current tile ID. `map_can_move_direction` reads the current and destination cells' live static IDs and looks up their current [SOTP collision flags](../file-formats/sotp.md). A door transition that replaces a closed tile ID with an open one therefore changes the next movement check and path search without rebuilding the map.
-
-These world updates do not call the pathfinder directly. The only callers of the shared search are ground click-to-move and entity pursuit. The only callers of entity pursuit are the living-object action and timer ID `10`.
-
-This creates two different behaviors:
-
-- Entity pursuit rebuilds from current object and door state on its next nominal 100 ms timer check.
-- Ground click-to-move builds once. Every step is still revalidated, but a newly blocked step has no pursuit timer to rebuild or resume the route after the obstacle moves away. New input must start another ground path.
-
-The search itself is synchronous on the main thread, so it sees one consistent snapshot. It does not predict where another player, creature, or door will be when a later step runs.
-
-## Cost compared with A*
-
-Let `V` be the number of map cells. [`SMapSize`](../network/server/021-0x15-map-size.md) supplies one-byte width and height values, so a 255 by 255 map has at most 65,025 cells. With four cardinal directions, one full breadth-first search dequeues at most 65,025 cells and tests at most 260,100 directed neighbors.
-
-Breadth-first search runs in `O(V + E)`, which is `O(V)` on this four-neighbor grid. Its queue operations and predecessor lookup are constant time. The client also avoids the priority queue, distance scores, and heuristic calculations required by a usual A* implementation.
-
-A* with a binary heap is `O(E log V)` in the worst case, but a Manhattan-distance heuristic usually visits far fewer cells before reaching a distant target. For pursuit, the admissible heuristic is the smallest distance to any adjacent goal:
+BFS keeps a line of tiles to check. It checks the oldest tile first, then adds each new tile that can be reached from it. This spreads across the map one step at a time.
 
 ```c
-h = minimum(
-    abs(tile.x - goal[i].x) +
-    abs(tile.y - goal[i].y)
-);
-```
-
-Both algorithms return a shortest cardinal route when A* uses that admissible heuristic. Both can still explore nearly every reachable cell when the target is enclosed or unreachable. A* also does not predict moving obstacles. It needs the same per-step validation and replanning policy.
-
-At the pursuit cadence, an unreachable target could cause up to about 650,250 cell dequeues and 2,601,000 directional checks per second before timer delays and other main-loop work are considered. This is a bound, not a measured frame cost. `map_can_move_direction` is more expensive than an array lookup because it inspects dynamic objects and live static collision.
-
-The client choice is reasonable for one bounded local search. BFS is simple, allocation-friendly, and guarantees the fewest tile steps. A custom system should prefer A* when searches are commonly long, several agents plan at once, or profiling shows the repeated collision checks matter.
-
-## A bounded C-like implementation
-
-A cleaner implementation can keep the same behavior while marking the start tile immediately. Store this workspace on the world system rather than placing the large arrays on the stack.
-
-```c
-enum {
-    MAP_LIMIT = 255,
-    MAX_TILES = MAP_LIMIT * MAP_LIMIT,
-    DIR_START = 4,
-    DIR_UNSEEN = 5
-};
-
-struct Tile {
-    s32 y;
-    s32 x;
-};
-
-struct PathStep {
-    u8 direction;
-    s32 source_y;
-    s32 source_x;
-};
-
-struct PathWorkspace {
-    u8 came_from[MAX_TILES];
-    Tile queue[MAX_TILES];
-    PathStep reverse_steps[MAX_TILES];
-};
-```
-
-The FIFO search uses the live movement check. `world_can_move` must test the move from `here`, not only whether `next` looks empty, because SOTP collision is direction-specific.
-
-```c
-bool build_shortest_path(
-    World *world,
-    Tile start,
-    Tile goals[],
-    u32 goal_count,
-    Path *out,
-    PathWorkspace *work)
+bool find_path(Tile start, Tile goals[4], Path *path)
 {
-    u32 head = 0;
-    u32 tail = 0;
-    u32 direction;
+    clear_seen_tiles();
+    queue.push(start);
+    seen[start] = START;
 
-    fill(work->came_from, world->width * world->height, DIR_UNSEEN);
-    work->came_from[tile_index(world, start)] = DIR_START;
-    work->queue[tail++] = start;
+    while (!queue.empty()) {
+        Tile here = queue.pop_front();
 
-    while (head < tail) {
-        Tile here = work->queue[head++];
+        if (is_one_of_goals(here, goals))
+            return build_path_back_to_start(here, start, path);
 
-        if (tile_is_any_goal(here, goals, goal_count))
-            return rebuild_path(world, start, here, out, work);
-
-        for (direction = 0; direction < 4; direction++) {
-            Tile next;
-            u32 index;
-
-            if (!world_can_move(world, here, direction))
+        for (u8 direction = UP; direction <= LEFT; direction++) {
+            if (!map_can_move_direction(here, direction))
                 continue;
 
-            next = step_tile(here, direction);
-            index = tile_index(world, next);
+            Tile next = step_tile(here, direction);
 
-            if (work->came_from[index] != DIR_UNSEEN)
+            if (seen[next] != UNSEEN)
                 continue;
 
-            work->came_from[index] = (u8)direction;
-            work->queue[tail++] = next;
+            seen[next] = direction;
+            queue.push(next);
         }
     }
 
@@ -173,146 +60,150 @@ bool build_shortest_path(
 }
 ```
 
-Reconstruction walks backward, then reverses the temporary records so the first stored step leaves `start`:
+Directions are checked in this order:
 
-```c
-bool rebuild_path(
-    World *world,
-    Tile start,
-    Tile reached,
-    Path *out,
-    PathWorkspace *work)
-{
-    u32 count = 0;
+1. Up
+2. Right
+3. Down
+4. Left
 
-    while (!same_tile(reached, start)) {
-        u8 direction = work->came_from[tile_index(world, reached)];
-        Tile source = step_tile_reverse(reached, direction);
+The first goal found has the fewest movement steps. When several shortest routes exist, that direction order helps decide which one wins.
 
-        work->reverse_steps[count].direction = direction;
-        work->reverse_steps[count].source_y = source.y;
-        work->reverse_steps[count].source_x = source.x;
-        count++;
-        reached = source;
-    }
+Ground click-to-move uses one goal tile. Target pursuit uses the four tiles beside the target. The target's own occupied tile does not need to be walkable.
 
-    path_clear(out);
+The client remembers which direction first reached each tile. When it finds a goal, it walks those records backward to the start, then stores the movement steps in the order they must run.
 
-    while (count != 0)
-        path_push(out, work->reverse_steps[--count]);
+The seen-tile storage is a fixed 400 by 400 byte array. Version 741 map width and height are one byte each, so a normal map is at most 255 by 255 tiles.
 
-    return true;
-}
+## Moving players and monsters
+
+The route search reads the current map state.
+
+When another player or monster moves, `world_reindex_object` moves it between the world's tile lists. The next route search sees its new location.
+
+The client also checks each saved movement step again before using it. If somebody walks into the route, that step can be blocked even though it was open when the route was built.
+
+Entity pursuit checks the target again every 100 ms. A blocked pursuit can therefore build a different route on a later check.
+
+## Opening and closing doors
+
+A door change replaces the live static tile ID. Movement then reads the collision flags for that new tile ID from [`SOTP.DAT`](../file-formats/sotp.md).
+
+Opening or closing a door does not directly call the pathfinder. Instead, the change is noticed by:
+
+- the safety check before the next movement step; or
+- the next 100 ms pursuit check.
+
+Ground click-to-move is different. It builds one route and has no 100 ms target timer. If a door blocks that route, opening it later does not make the old ground path restart. Another click is needed.
+
+## BFS compared with A*
+
+[`SMapSize`](../network/server/021-0x15-map-size.md) stores one-byte width and height values. The largest normal map therefore contains:
+
+```text
+255 * 255 = 65,025 tiles
 ```
 
-## How following stays current
+On a four-direction map, one full BFS can check at most 65,025 tiles and about 260,100 possible moves.
 
-Pursuit uses timer ID `10` with a 100 ms delay. Timer entries are one-shot. Each successful pursuit check schedules the next entry with two callback values:
+BFS is simple:
 
-- the target object ID;
-- the current pursuit generation.
+- each tile enters the queue at most once;
+- queue work is cheap;
+- it always finds a route with the fewest tile steps.
 
-The timer callback runs through `WorldPane`'s `TimerHandler` secondary base at `WorldPane + 0x11C`. It subtracts that adjustment, compares the callback generation with the live generation, and calls `ui_world_pane_pursue_and_auto_attack_target` again only when they match.
-
-Each new check discards the old route, resolves the current target coordinates, and searches again. A temporarily blocked target or a failed path search is not terminal. As long as the target still resolves, the client retries at 100 ms intervals.
-
-Successful movement is still acknowledgement-driven. A local position-change message advances the next queued step. Exhausting the current route clears its steps without changing the pursuit generation, which deliberately leaves the pending target check valid.
-
-A small main-thread controller can reproduce that policy without holding object pointers. Starting pursuit should increment the generation before the first call. Cancellation should increment it again so an older timer cannot resume the controller.
+A* adds an estimate of how far each tile is from the goal. A common estimate is:
 
 ```c
-void pursuit_tick(WorldPane *world, u32 target_id, u32 generation)
-{
-    WorldObject_Living *target;
-    WorldObject_User *self;
-    Tile goals[4];
-
-    if (generation != world->pursuit.generation)
-        return;
-
-    path_clear(&world->pursuit.route);
-    target = world_find_living_by_id(world, target_id);
-    self = world_get_self_user_object(world);
-
-    if (target == 0 || self == 0) {
-        cancel_pursuit(world);
-        return;
-    }
-
-    if (tiles_are_adjacent(self->tile, target->tile)) {
-        u8 direction = direction_to(self->tile, target->tile);
-
-        if (self->direction != direction)
-            request_change_direction(world, direction);
-        else
-            net_send_attack();
-    } else {
-        make_adjacent_goals(target->tile, goals);
-
-        if (build_shortest_path(
-                world, self->tile, goals, 4,
-                &world->pursuit.route, &world->path_work)) {
-            advance_queued_path(world);
-        }
-    }
-
-    schedule_pursuit_timer(world, 100, target_id, generation);
-}
+estimate = abs(tile.x - goal.x) + abs(tile.y - goal.y);
 ```
 
-## Pursuit state
+That estimate often lets A* ignore much of the map. A* will usually do less work on a long route, but its priority queue costs more per checked tile.
 
-The useful fields form one compact state group inside `WorldPane`:
+Both algorithms can still check most of the map when a target cannot be reached. Neither predicts where a moving player will go. Both still need to check saved steps and build new routes when the world changes.
+
+At the client's 100 ms pursuit rate, the worst theoretical case is about 650,250 checked tiles per second. This is a limit calculated from map size, not a measured frame cost.
+
+For one character on these small maps, the client's BFS is a reasonable choice. A* becomes more useful when many characters plan routes or long searches happen often.
+
+## How the client keeps following
+
+Timer ID `10` runs 100 ms after each pursuit check. It carries:
+
+- the target object ID; and
+- a pursuit run number.
+
+The run number prevents an old timer from restarting a pursuit that has already been replaced or cancelled.
+
+Each valid timer check:
+
+1. clears the old route;
+2. finds the target by ID;
+3. reads the target's new tile;
+4. turns, attacks, or builds a new route;
+5. schedules another check.
+
+A failed route is not a cancellation. If the target still exists, the timer keeps trying.
+
+Movement steps wait for local position updates. After the client learns that one step succeeded, it sends the next saved step. Reaching the end of a route clears those steps but keeps the pending target timer alive.
+
+## Why it keeps attacking
+
+When the target is beside the local character:
+
+- a different facing direction sends `CChangeDirection`;
+- the correct facing direction sends `CAttack`.
+
+Both paths schedule another 100 ms check. That is why the client keeps trying to attack.
+
+This path does not use the separate delay used by the Space-key attack handler. The server may still reject attacks according to its own combat rules.
+
+## What stops it
+
+`ui_world_pane_reset_movement_state(world, 0)` is the full stop operation. It:
+
+- clears the target ID;
+- clears the saved route;
+- clears the active-route flag; and
+- changes the pursuit run number so old timers are ignored.
+
+Passing `1` clears the route but keeps the same run number. The client uses that form when the current route is finished but following should continue.
+
+| Event | Result |
+|---|---|
+| Target disappears | Stop because its ID can no longer be found. |
+| No route exists | Keep trying every 100 ms. |
+| Target moves | Find its new tile and build another route. |
+| Current route ends | Clear the route, but keep following. |
+| New ground click or new target | Replace the old pursuit. |
+| Arrow movement, Shift+right movement, Space, or an emotion shortcut | Fully stop the pursuit. |
+| Position reset, rejected movement, map change, or world restart | Fully stop the pursuit. |
+
+## Calling it manually
+
+The built-in entry point is:
 
 ```c
-struct WorldPanePursuitState {
-    bool path_active;             // WorldPane +0x294
-    PathStepVector route;         // WorldPane +0x2A8
-    s32 remaining_steps;          // WorldPane +0x2B8
-    u32 target_id;                // WorldPane +0x2BC
-    s32 target_tile_y;            // WorldPane +0x2C0
-    s32 target_tile_x;            // WorldPane +0x2C4
-    u32 generation;               // WorldPane +0x2C8
-};
+void __thiscall ui_world_pane_pursue_and_auto_attack_target(
+    WorldPane *world,
+    u32 target_id);
 ```
 
-The stored target coordinates describe the last resolved position. The object ID is the durable lookup key. A live `WorldObject` stores that ID at `+0x24`, `tile_y` at `+0x40`, and `tile_x` at `+0x44`.
+Its RVA is `0x001F4A70`.
 
-## Stop and cancellation rules
+Call it only from the main game thread. `ECX` must contain the live, complete `WorldPane` pointer. The target ID must belong to a current living object.
 
-`ui_world_pane_reset_movement_state(world, 0)` is the full cancellation primitive. It increments the generation, clears the target ID, clears the queued route, and clears the active-path flag. Old timer entries are not removed immediately, but their generation check makes them inert.
+This function has no options. It always means:
 
-Passing `1` is different. It clears the route while preserving the generation. The client uses that form when a route has run out but the scheduled entity check should continue. It is not a reliable way to cancel pursuit.
-
-| Condition | Result |
-| --- | --- |
-| Target is adjacent and the character already faces it | Send `CAttack` and schedule the next 100 ms pursuit check. |
-| Target is adjacent but facing differs | Send `CChangeDirection` and schedule the next check, which can then attack. |
-| Target ID no longer resolves | Stop after the initial reset; no timer is requeued. |
-| No route exists or a step is temporarily blocked | Keep the target and retry after 100 ms. |
-| Target moves | Re-resolve its ID and rebuild the path on the next timer check. |
-| Current route reaches its end | Clear the route but preserve the generation so pursuit can continue. |
-| New ground click or new entity pursuit | Fully reset and replace the older path and target. |
-| Keyboard direction, Shift+right movement, Space attack, or an emotion shortcut | Fully reset the current pursuit. |
-| `SUserPosition`, rejected `SMove` direction `4`, map-size change, or world reinitialization | Fully reset the current pursuit. |
-| Special movement state rejects a queued step | Show the normal movement error and fully reset. |
-
-## Invoking it manually
-
-The direct native entry point is `ui_world_pane_pursue_and_auto_attack_target`:
-
-```c
-void start_pursuit(WorldPane *world, u32 target_id)
-{
-    ui_world_pane_pursue_and_auto_attack_target(world, target_id);
-}
+```text
+follow until beside target
+then turn and attack
+repeat every 100 ms
 ```
 
-Call it on the main game thread with the live `WorldPane` as the x86 `__thiscall` receiver. A hook already running in a `WorldPane` event, timer, or packet callback can retain that call's complete-object `this` for the duration of the dispatch. Do not hardcode a heap pointer or call through the adjusted `TimerHandler` pointer.
+There is no confirmed native entry for "follow but do not attack" or "stop three tiles away."
 
-The ordinary UI path supplies only another live `WorldObject_Living`. The helper itself performs an ID lookup but does not repeat that RTTI check before reading the object's coordinates. A manual caller should resolve and validate the ID first. External commands should be queued and applied from the main-thread dispatcher rather than calling pane, movement, timer, or packet code from an IPC thread.
-
-For a fixed tile without an attack, use the ground path:
+For one fixed tile without an attack, the ground route helpers can be used:
 
 ```c
 ui_world_pane_reset_movement_state(world, 0);
@@ -323,6 +214,19 @@ if (ui_world_pane_build_path_to_tile(
 }
 ```
 
-That path does not track an entity. A walk-only follower needs a small controller that re-resolves the target ID, chooses an adjacent goal, and invokes the lower path helpers without entering the terminal attack branch. The native entity entry point intentionally couples following and attacking.
+That fixed-tile route does not keep following a moving object.
 
-Static addresses, the module-relative entry point, function roles, state-write comments, and the global predecessor grid are recorded in [`pathfinding.yaml`](../../analysis/exports/pathfinding.yaml).
+## Adding follow-only mode
+
+A small launcher-installed runtime patch can reuse the native path search while adding:
+
+- follow without attacking;
+- a stop distance from 1 through 255 tiles;
+- Shift+right-click as a follow-only gesture; and
+- main-thread start and cancel entry points for another extension.
+
+The default example makes Shift+right-click follow without attacking and stop at a shortest-path distance of three tiles. It keeps the normal 100 ms target checks, so walking starts again when the target moves away.
+
+It does not need a DLL, but it still adds executable code to the running process. The exact hook bytes and stub are documented in [Auto-follow pathfinding](../appendix/runtime-patches/auto-follow-pathfinding.md).
+
+The detailed Binary Ninja addresses and evidence are in [`analysis/exports/pathfinding.yaml`](../../analysis/exports/pathfinding.yaml).

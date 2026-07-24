@@ -5175,6 +5175,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_living_adjust_render_offset_for_direction` | `0x005E16C0` | high | Applies direction-table deltas to the signed WorldObject render-displacement pair at +0x38 and +0x3C. |
 | `world_living_set_render_offset` | `0x005E1770` | high | Replaces the signed render-displacement pair at WorldObject +0x38 and +0x3C independently of tile Y and X. |
 | `world_living_handle_timer_event` | `0x005E1800` | high | For motion timer 0x02000001, advances the living animation only when the scheduled generation matches the current motion, so an older timer cannot interrupt a newer motion. |
+| `world_living_handle_pointer_event` | `0x005E1A70` | high | Hit-tests a WorldObject_Living and routes pointer type 5 to the right-click action builder with coordinates, timestamp, and Event +0x18 modifier flags. |
+| `world_living_dispatch_right_click_action` | `0x005E2270` | high | Builds living-object action 6 for the object's ID, copies the pointer modifier byte to message +0x2C, and dispatches the message to registered handlers. |
 | `world_living_refresh_ground_paint` | `0x005E2340` | high | Queries current gndattr color and depth fields and updates the living object's ground-paint record. |
 | `world_monster_object_ctor` | `0x005E2630` | high | Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level. |
 | `world_moving_effect_ctor` | `0x005E2770` | high | Constructs the exact RTTI WorldObject_MovingEffect and builds its client-timed path between source and target world positions. |
