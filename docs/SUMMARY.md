@@ -9,6 +9,7 @@
   - [Crash reporting](application/crash-reporting.md)
   - [Configuration](application/configuration.md)
   - [Distribution markers](application/distribution-markers.md)
+  - [Program Files and administrator mode](application/program-files-and-administrator.md)
   - [Game loop](application/game-loop.md)
 
 - [Game systems](systems/README.md)

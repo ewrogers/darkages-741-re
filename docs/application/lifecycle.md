@@ -49,6 +49,8 @@ The lobby can notify this client about an update through [`SVersionCheck`](../ne
 
 Startup provides a recovery path for a handoff that has progressed far enough to contain both `Patch/Info` and `Patch/Script`. When both files exist, `startup_run_pending_patcher` launches `Patcher2.exe` and exits before the normal client starts. If only one marker exists, the client deletes both and continues. The patcher's own download and update behavior is outside this analysis.
 
+The handoff assumes that the installation directory is writable. It also starts a `highestAvailable` patcher through `CreateProcessA`, which cannot show the required UAC prompt from a normal client. The resulting failure message is the source of the game's advice to run as administrator. See [Program Files and administrator mode](program-files-and-administrator.md).
+
 ## Startup logo
 
 `LogoPane` displays the startup splash before handing control back to the intro-state flow. It first tries `logo<distribution>.dat`, falling back to `logo.dat`. If that path cannot produce an image, it tries the legacy `logo.epf` image with the separate 768-byte `logo.pal` RGB palette. Both paths read into a temporary 512 KiB buffer.

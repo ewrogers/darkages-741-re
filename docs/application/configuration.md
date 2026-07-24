@@ -4,11 +4,13 @@ The client chooses most startup settings internally. The command line is much sm
 
 ## Installation configuration
 
-The configuration constructor calls `app_load_config_file`. A successful read keeps the parsed values. A missing or rejected file calls `app_set_default_config`. The constructor then saves the active configuration in either case, so an old file is normalized to the current layout.
+The configuration constructor calls `app_load_config_file`. A successful read keeps the parsed values without rewriting the file. A missing or rejected file calls `app_set_default_config`, then tries to save those defaults beside the executable.
 
 `Darkages.cfg` is a versioned text file. Its fixed labels cover the transport selector, keyboard mode, telephone text, Korean and English font choices, four quoted endpoint pairs, chat mode, ground animation, and audio levels. Later game options are present only when the stored version is new enough. This is installation-wide state, not the per-character files described below.
 
 The default builder selects the same distribution-specific endpoint tables used by startup and initializes the three saved audio levels to `3`.
+
+Because the client makes the executable directory its working directory, this save and the per-character files below require a writable installation. See [Program Files and administrator mode](program-files-and-administrator.md).
 
 ## Active command line
 

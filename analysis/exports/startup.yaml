@@ -333,7 +333,7 @@ functions:
     end_address: "0x005287A8"
     name: app_write_patch_info_and_launch_patcher
     confidence: high
-    evidence: "Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client."
+    evidence: "Creates Patch/Info beside Darkages.exe, writes the fixed handoff, and launches Patcher2.exe through CreateProcessA. A file-open failure exits with Cannot access file; a process-launch failure tells the user to run Dark Ages as administrator."
   - address: "0x005287B0"
     end_address: "0x005287E5"
     name: app_quit_after_patcher_launch
@@ -358,12 +358,12 @@ functions:
     end_address: "0x0057A453"
     name: startup_run_pending_patcher
     confidence: high
-    evidence: "Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe; otherwise deletes both markers and continues."
+    evidence: "Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe through CreateProcessA and exit; otherwise deletes both markers and continues."
   - address: "0x0057A710"
     end_address: "0x0057AAA5"
     name: app_winmain
     confidence: high
-    evidence: Called by the CRT startup wrapper with the WinMain argument set.
+    evidence: "Called by the CRT startup wrapper with the WinMain argument set. Reads and writes DisplayMode under the per-user HKCU\\Software\\KRU\\Dark Ages key."
 data_symbols:
   - address: "0x006DA3A0"
     name: ui_intro_video_pane
@@ -410,10 +410,14 @@ comments:
     text: "SVersionCheck subtype 2 patch notice: u16be required version, followed by u8 file count and repeated u8-length file names."
   - address: "0x005284B3"
     text: "Copy each u8-length patch file name into its own 256-byte slot in the Patch/Info handoff."
+  - address: "0x00528650"
+    text: "Patch/Info must be writable beside Darkages.exe. If the open fails, show Cannot access file and terminate before Patcher2.exe is launched."
   - address: "0x005286C4"
     text: "Write the 0x10606-byte Patch/Info handoff containing local and required versions, file slots, command line, executable name, and data filename."
   - address: "0x00528740"
     text: "Launch Patcher2.exe without a command line; the patcher consumes Patch/Info. The client exits immediately afterward."
+  - address: "0x00528745"
+    text: "CreateProcessA cannot broker the higher level requested by Patcher2.exe. A non-elevated failure reaches the client message that tells the user to run Dark Ages as administrator."
   - address: "0x0057A385"
     text: "Startup patch recovery requires both Patch/Info and Patch/Script. An incomplete pair is deleted instead of launching Patcher2.exe."
   - address: "0x0057A7C3"
@@ -422,6 +426,10 @@ comments:
     text: ERROR_ALREADY_EXISTS (0xB7) means another client already owns the named mutex.
   - address: "0x0057A7D9"
     text: Single-instance gate. Original JNE +7 continues only when the mutex was newly created; a one-byte 0x75 to 0xEB patch always takes the normal startup path.
+  - address: "0x0057A811"
+    text: "Open HKCU\\Software\\KRU\\Dark Ages for DisplayMode. This per-user registry path does not require administrator rights."
+  - address: "0x0057A8C3"
+    text: "Reopen the same HKCU configuration key with write access before saving DisplayMode; failure is ignored."
   - address: "0x0057A9F7"
     text: "After normal app_shutdown completes, attempt the deferred advertisement launch only when the saved argument length is greater than zero."
   - address: "0x0057AA12"

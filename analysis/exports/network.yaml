@@ -26,7 +26,7 @@ functions:
     end_address: "0x004322FA"
     name: app_config_ctor
     confidence: high
-    evidence: Constructs Config, loads Darkages.cfg, selects a distribution mode, and dispatches endpoint initialization.
+    evidence: "Constructs Config, loads Darkages.cfg, and dispatches endpoint initialization. A valid file is kept without a write; a missing or rejected file is replaced with saved defaults."
   - address: "0x00433010"
     end_address: "0x00433376"
     name: net_parse_endpoint_override
@@ -397,6 +397,8 @@ comments:
     text: Mscfg.dll exists. Set app_config +0x668 so the soft-ban behavior persists for this launch. The documented Good Guy runtime patch replaces this complete seven-byte write of 1 with a write of 0, preserving initialization while ignoring the marker.
   - address: "0x004320BF"
     text: This build caches distribution mode 1. The compiled marker scanner is not called by the active selector.
+  - address: "0x00432132"
+    text: "A valid Darkages.cfg skips both default construction and app_save_config. Only a missing or rejected file writes startup defaults beside the executable."
   - address: "0x00432155"
     text: Dispatch the cached distribution mode to country- or ISP-specific configuration code. Most alternate modes are dormant because the selector is hardcoded to 1.
   - address: "0x00432253"
@@ -420,7 +422,7 @@ comments:
   - address: "0x00433401"
     text: "Mscfg.dll marker present: replace the normal port 2610 with 2601."
   - address: "0x00433478"
-    text: "Open HKCR\\NXKRI.Ctrl.1 and load or create the REG_DWORD CLSID used as the persistent 32-bit installation identifier."
+    text: "Best-effort HKCR\\NXKRI.Ctrl.1 installation ID. If key creation fails, startup continues with the 0xFF00FF00 sentinel and a derived in-memory ID; elevation is not required for this path."
   - address: "0x004335F9"
     text: "Open HKCR\\KRIHC.Ctrl.1 and load or create the disguised derivative of the installation identifier."
   - address: "0x00434EF7"
