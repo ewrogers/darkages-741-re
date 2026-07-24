@@ -1,15 +1,15 @@
 # Pathfinding and following
 
-Right-clicking a player or monster tells the client to walk beside that target and attack it. The client finds the route itself. It does not ask the server for a path.
+Double-right-clicking a player or monster tells the client to walk beside that target and attack it. The client finds the route itself. It does not ask the server for a path.
 
 This page calls that action **pursuit** because the built-in version always ends in an attack. The client has no normal follow-only button.
 
-## What right-click does
+## What double-right-click does
 
-When a right-click lands on a living object, meaning a player or monster, `world_living_dispatch_right_click_action` builds living-object action `6`. `ui_world_pane_handle_living_object_message` then passes the object's ID to `ui_world_pane_pursue_and_auto_attack_target`.
+The input manager turns the second nearby right-button press into pointer event type `5`. When that event lands on a living object, meaning a player or monster, `world_living_dispatch_right_click_action` builds living-object action `6`. `ui_world_pane_handle_living_object_message` then passes the object's ID to `ui_world_pane_pursue_and_auto_attack_target`.
 
 ```text
-right-button release
+second right-button press
   -> find the clicked living object
   -> remember its object ID
   -> target is beside the local character?
@@ -222,10 +222,12 @@ A small launcher-installed runtime patch can reuse the native path search while 
 
 - follow without attacking;
 - a stop distance from 1 through 255 tiles;
-- Shift+right-click as a follow-only gesture; and
+- Shift+double-right-click as a follow-only gesture; and
 - main-thread start and cancel entry points for another extension.
 
-The default example makes Shift+right-click follow without attacking and stop at a shortest-path distance of three tiles. It keeps the normal 100 ms target checks, so walking starts again when the target moves away.
+The unmodified client normally skips players and monsters while Shift is held, causing this gesture to fall through to its ground turn-or-step action. The patch adds a narrow exception for pointer type `5` and living-object categories `1` and `2`. Other Shift pointer actions keep their original behavior.
+
+The default example makes Shift+double-right-click follow without attacking and stop at a shortest-path distance of three tiles. It keeps the normal 100 ms target checks, so walking starts again when the target moves away.
 
 It does not need a DLL, but it still adds executable code to the running process. The exact hook bytes and stub are documented in [Auto-follow pathfinding](../appendix/runtime-patches/auto-follow-pathfinding.md).
 

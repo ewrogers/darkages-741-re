@@ -14,7 +14,7 @@ functions:
   - address: "0x00467790"
     name: input_emit_right_button_down
     confidence: high
-    evidence: "Builds right-button pointer event type 4 or 5 and copies EventMan's current modifier byte into Event +0x18. The type-5 living-object path keeps Shift as bit 0x04."
+    evidence: "Classifies a right-button press as type 4 or, for a nearby second press within the saved time window, type 5; both copy EventMan's current modifier byte into Event +0x18."
   - address: "0x00468300"
     name: input_compute_modifier_flags
     confidence: high
@@ -46,7 +46,7 @@ functions:
   - address: "0x005D4820"
     name: world_object_list_dispatch_pointer_event
     confidence: high
-    evidence: "Hit-tests live world objects back to front, translates the point into object-local coordinates, and calls the first eligible object's pointer handler with the unchanged event."
+    evidence: "Hit-tests live world objects back to front, translates the point into object-local coordinates, and calls the first eligible object's pointer handler with the unchanged event. While Shift bit 0x04 is set, the native filter skips every broad category except category 8 ground items."
   - address: "0x005E1A70"
     name: world_living_handle_pointer_event
     confidence: high
@@ -140,13 +140,15 @@ data_symbols:
     evidence: "Fixed 0x27100-byte, 400 by 400 grid filled with sentinel 5 for each search; visited cells store the direction used to first reach them."
 comments:
   - address: "0x00467912"
-    text: "Copy the current modifier mask into pointer event type 5 at Event +0x18. WorldObject_Living later copies this byte to living-object action 6 at message +0x2C."
+    text: "Copy the current modifier mask into double-right-click pointer event type 5 at Event +0x18."
+  - address: "0x005D48E5"
+    text: "When Shift is held, skip every hit object whose broad category is not 8. Humans use category 1 and monsters or Mundanes use category 2, so their type-5 event normally falls through to the ground turn-or-step path."
   - address: "0x005E1BDA"
     text: "Pointer event type 5 becomes living-object action 6. Pass its coordinates, timestamp, and Event +0x18 modifier byte into the message builder."
   - address: "0x005E22F1"
     text: "Store the pointer modifier byte at living-object message +0x2C. Shift remains bit 0x04 when WorldPane handles action 6."
   - address: "0x005EF33A"
-    text: "Living-object action 6 passes another object's nonzero u32 ID into native pursue-and-attack behavior. The same message keeps modifier flags at +0x2C, including Shift bit 0x04."
+    text: "Living-object action 6 passes another object's nonzero u32 ID into native pursue-and-attack behavior. A dispatcher extension can admit Shift type 5 for living categories, after which Shift bit 0x04 remains available at message +0x2C."
   - address: "0x005EF9CB"
     text: "Timer ID 10 is the entity-pursuit retry. The callback's target ID is used only when its saved generation still equals WorldPane +0x2C8."
   - address: "0x005EFD29"
@@ -162,7 +164,7 @@ comments:
   - address: "0x005F49E5"
     text: "For an entity-pursuit route, remaining_steps counts moves still needed to reach a tile beside the target. Before the next step is consumed, remaining_steps + 1 is the current route distance to the target."
   - address: "0x005F4AA2"
-    text: "The full reset has just advanced WorldPane +0x2C8. This is the current pursuit tick's generation; the common tail advances it once more before scheduling timer ID 10."
+    text: "The full reset has just advanced WorldPane +0x2C8. Target ID zero branches to 0x005F4AA8; a nonzero target branches to 0x005F4AAD. A hook replacing the six bytes through 0x005F4AA7 must replay this comparison and reach those untouched destinations without jumping into its own replacement bytes."
   - address: "0x005F4D0E"
     text: "Adjacency sends CAttack only when the local character already faces the target. Both the turn and attack branches continue to the common 100 ms pursuit-timer schedule."
   - address: "0x005F4D64"
@@ -180,13 +182,20 @@ comments:
   - address: "0x005F5127"
     text: "Walk predecessor directions backward from the reached goal to the start and append 12-byte direction plus source-coordinate records for reverse replay."
 runtime_patches:
+  - id: auto-follow-pathfinding-admit-shift-living
+    rva: "0x001D48E5"
+    static_address: "0x005D48E5"
+    file_offset_for_reference_only: "0x001D3CE5"
+    original_bytes: 0F B6 4D C3 85 C9 0F 85 BA 00 00 00
+    replacement_template: E9 <rel32 to allocated stub + 0x1B0> 90 90 90 90 90 90 90
+    effect: "Preserve the native no-Shift and category-8 item paths, while admitting Shift pointer type 5 for human category 1 and monster or Mundane category 2."
   - id: auto-follow-pathfinding-select-shift
     rva: "0x001EF33A"
     static_address: "0x005EF33A"
     file_offset_for_reference_only: "0x001EE73A"
     original_bytes: E8 31 57 00 00
     replacement_template: E8 <rel32 to allocated stub + 0x000>
-    effect: "Route Shift+right-click living-object pursuit through the auto-follow option selector while leaving normal right-click on the native path."
+    effect: "Route an admitted Shift+double-right-click living-object pursuit through the auto-follow option selector while leaving normal double-right-click on the native path."
   - id: auto-follow-pathfinding-stop-distance
     rva: "0x001F49E5"
     static_address: "0x005F49E5"
@@ -200,7 +209,14 @@ runtime_patches:
     file_offset_for_reference_only: "0x001F3EA2"
     original_bytes: 83 7D 08 00 75 05
     replacement_template: E9 <rel32 to allocated stub + 0x072> 90
-    effect: "Remember the follow tick's generation after the native full reset, then replay the overwritten target-ID comparison."
+    continuations:
+      - condition: "target_id == 0"
+        rva: "0x001F4AA8"
+        static_address: "0x005F4AA8"
+      - condition: "target_id != 0"
+        rva: "0x001F4AAD"
+        static_address: "0x005F4AAD"
+    effect: "Remember the follow tick's generation after the native full reset, replay the overwritten target-ID comparison, preserve its flags through a local trampoline, and branch to one of the two untouched native destinations."
   - id: auto-follow-pathfinding-filter-attack
     rva: "0x001F4D0E"
     static_address: "0x005F4D0E"

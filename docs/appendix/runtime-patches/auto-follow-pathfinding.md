@@ -1,16 +1,32 @@
 # Auto-follow pathfinding
 
-This runtime patch turns Shift+right-click on a player or monster into follow-only mode. By default, the local character stops when the shortest known path is three tiles long. The client keeps checking the target every 100 ms, so walking starts again when the target moves farther away.
+This runtime patch turns Shift+double-right-click on a player or monster into follow-only mode. By default, the local character stops when the shortest known path is three tiles long. The client keeps checking the target every 100 ms, so walking starts again when the target moves farther away.
 
-Normal right-click keeps the original follow-and-attack behavior.
+Normal double-right-click keeps the original follow-and-attack behavior. Shift+single-right-click keeps the original turn-or-step behavior.
 
-The patch does not load a DLL. A launcher allocates one small block of memory in the suspended client, writes the code below, and redirects four instructions to it. This is still an in-memory code patch. There is no configuration-only way to add these options to version 741.
+The patch does not load a DLL. A launcher allocates one small block of memory in the suspended client, writes the code below, and redirects five instructions to it. This is still an in-memory code patch. There is no configuration-only way to add these options to version 741.
 
 See [Pathfinding and following](../../systems/pathfinding-and-pursuit.md) for the normal client behavior.
 
 ## Behavior
 
-Shift is already present in the living-object click message as bit `0x04`. The patch uses that bit to select a different set of follow options:
+The client normally blocks Shift pointer events from reaching players and monsters. It treats those objects as transparent and sends the click to the ground handler, where Shift+right-click means turn or step toward the cursor. This is why an earlier version of this patch only made the character face the target.
+
+The new dispatcher hook admits one narrow extra case:
+
+```c
+if (shift &&
+    event->type == 5 &&             /* double-right-click */
+    (object->broad_category == 1 || /* human */
+     object->broad_category == 2))  /* monster or Mundane */
+{
+    dispatch_to_object = true;
+}
+```
+
+Ground items keep their native category-`8` exception. Every other Shift event follows the original filter.
+
+Once the event reaches the living object, Shift is copied into its action message as bit `0x04`. The option selector uses that bit to choose a different set of follow options:
 
 ```c
 shift_follow.distance = 3;
@@ -44,6 +60,7 @@ The preferred image base is `0x00400000`. File offsets are reference information
 
 | Purpose | Static address | RVA | File offset | Verified original bytes | Stub entry |
 |---|---:|---:|---:|---|---:|
+| Admit Shift double-right-click for living objects | `0x005D48E5` | `0x001D48E5` | `0x001D3CE5` | `0F B6 4D C3 85 C9 0F 85 BA 00 00 00` | `stub + 0x1B0` |
 | Select Shift follow at the living-object call | `0x005EF33A` | `0x001EF33A` | `0x001EE73A` | `E8 31 57 00 00` | `stub + 0x000` |
 | Stop consuming a route at the requested distance | `0x005F49E5` | `0x001F49E5` | `0x001F3DE5` | `8B 45 E0 83 B8 B8 02 00 00 00` | `stub + 0x0A8` |
 | Record the run number after the pursuit reset | `0x005F4AA2` | `0x001F4AA2` | `0x001F3EA2` | `83 7D 08 00 75 05` | `stub + 0x072` |
@@ -62,9 +79,13 @@ For each call, write:
 rel32 = stub_entry - (module_base + site_rva + 5)
 ```
 
-The two jump replacements are:
+The three jump replacements are:
 
 ```diff
+# 0x005D48E5
+- 0F B6 4D C3 85 C9 0F 85 BA 00 00 00
++ E9 00 00 00 00 90 90 90 90 90 90 90
+
 # 0x005F49E5
 - 8B 45 E0 83 B8 B8 02 00 00 00
 + E9 00 00 00 00 90 90 90 90 90
@@ -78,7 +99,7 @@ Use the same `rel32` formula with the matching stub entry. The extra `90` bytes 
 
 ## Injected stub template
 
-Allocate and write at least `0x1B0` bytes. Code occupies `stub + 0x000` through `stub + 0x18B`. Four padding bytes follow. State begins at `stub + 0x190`.
+Allocate and write at least `0x1E0` bytes. The follow code occupies `stub + 0x000` through `stub + 0x18B`, state begins at `stub + 0x190`, the Shift dispatcher entry occupies `stub + 0x1B0` through `stub + 0x1D3`, and the generation branch trampoline ends at `stub + 0x1DF`.
 
 All zeroed `abs32` and external `rel32` operands below are relocation placeholders. Local branches are already complete.
 
@@ -123,7 +144,7 @@ All zeroed `abs32` and external `rel32` operands below are relocation placeholde
 094: 8B 80 C8 02 00 00          | mov eax,[eax+0x2C8]
 09A: A3 00 00 00 00             | mov [state.tick_generation],eax
 09F: 83 7D 08 00                | generation_replay: cmp dword [ebp+0x08],0
-0A3: E9 00 00 00 00             | jmp native_generation_continue
+0A3: E9 2C 01 00 00             | jmp generation_flag_trampoline
 
 0A8: 80 3D 00 00 00 00 00       | cmp byte [state.active],0
 0AF: 74 5E                      | je advance_replay
@@ -198,7 +219,26 @@ All zeroed `abs32` and external `rel32` operands below are relocation placeholde
 1A5: 00                         | state.allow_attack
 1A6: 00                         | state.shift_allow_attack
 1A7: 00                         | padding
+1A8: 00 00 00 00 00 00 00 00    | padding
+
+1B0: 80 7D C3 00                | cmp byte [ebp-0x3D],0          ; native Shift flag
+1B4: 74 19                      | je dispatch_living
+1B6: 8B 45 0C                   | mov eax,[ebp+0x0C]             ; pointer event
+1B9: 80 78 0C 05                | cmp byte [eax+0x0C],5          ; double-right-click?
+1BD: 75 0B                      | jne skip_object
+1BF: 8B 45 A0                   | mov eax,[ebp-0x60]             ; broad category
+1C2: 83 E8 01                   | sub eax,1
+1C5: 83 F8 01                   | cmp eax,1                      ; category 1 or 2?
+1C8: 76 05                      | jbe dispatch_living
+1CA: E9 00 00 00 00             | skip_object: jmp native_skip_object
+1CF: E9 00 00 00 00             | dispatch_living: jmp native_dispatch_object
+
+1D4: 75 05                      | generation_flag_trampoline: jne target_nonzero
+1D6: E9 00 00 00 00             | jmp native_target_zero
+1DB: E9 00 00 00 00             | target_nonzero: jmp native_target_nonzero
 ```
+
+The generation hook replaces both the native compare at `0x005F4AA2` and its conditional jump at `0x005F4AA6`. The latter address is therefore inside the six patched bytes and is not a valid continuation. The local jump from `stub + 0x0A3` preserves the flags produced by the replayed compare. The trampoline then sends a zero target ID to untouched address `0x005F4AA8`, or a nonzero target ID to untouched address `0x005F4AAD`.
 
 ## Stub relocations
 
@@ -220,10 +260,13 @@ rel32 = target - (stub + O + 4)
 | `0x023` | `abs32` | `stub + 0x1A6` (`state.shift_allow_attack`) |
 | `0x034`, `0x040`, `0x16D` | `rel32` | `module_base + 0x001F4A70` (`ui_world_pane_pursue_and_auto_attack_target`) |
 | `0x06E` | `rel32` | `module_base + 0x001F44B0` (`net_send_attack`) |
-| `0x0A4` | `rel32` | `module_base + 0x001F4AA6` (generation-check continuation) |
 | `0x106`, `0x185` | `rel32` | `module_base + 0x001F4900` (`ui_world_pane_reset_movement_state`) |
 | `0x10B` | `rel32` | `module_base + 0x001F4A5B` (queued-step epilogue) |
 | `0x11A` | `rel32` | `module_base + 0x001F49EF` (queued-step continuation) |
+| `0x1CB` | `rel32` | `module_base + 0x001D49AB` (native skip-object path) |
+| `0x1D0` | `rel32` | `module_base + 0x001D48F1` (native object-dispatch path) |
+| `0x1D7` | `rel32` | `module_base + 0x001F4AA8` (native zero-target path) |
+| `0x1DC` | `rel32` | `module_base + 0x001F4AAD` (native nonzero-target path) |
 
 ## Options and manual entry points
 
@@ -252,27 +295,29 @@ The wrapper clamps `stop_distance` to `1..255`, saves the options, and calls the
 void __stdcall auto_follow_cancel(WorldPane *world);
 ```
 
-An external process must not call either entry through a remote worker thread. Supporting arbitrary external target IDs would also need a small command slot drained from a game-thread hook. That queue is outside this patch. Shift+right-click is the included no-DLL trigger.
+An external process must not call either entry through a remote worker thread. Supporting arbitrary external target IDs would also need a small command slot drained from a game-thread hook. That queue is outside this patch. Shift+double-right-click is the included no-DLL trigger.
 
 ## Installation and removal
 
-Use the [safe launcher](safe-launcher.md). Require the exact version-741 fingerprint and verify all four original byte sequences before writing.
+Use the [safe launcher](safe-launcher.md). Require the exact version-741 fingerprint and verify all five original byte sequences before writing.
 
 1. Start the process suspended.
-2. Allocate at least `0x1B0` readable, writable, and executable bytes.
+2. Allocate at least `0x1E0` readable, writable, and executable bytes.
 3. Copy the stub template and apply every relocation.
-4. Write the four hook replacements.
+4. Write the five hook replacements.
 5. Restore page protections and flush the instruction cache for the stub and hook sites.
 6. Resume only after every check and write succeeds.
 
-If any step fails, restore all changed hook bytes before resuming or terminate the suspended process. Removal restores the four original byte ranges, flushes the instruction cache, and releases the stub allocation.
+If any step fails, restore all changed hook bytes before resuming or terminate the suspended process. Removal restores the five original byte ranges, flushes the instruction cache, and releases the stub allocation.
 
 Never rewrite `Darkages.exe`.
 
 ## Test checklist
 
-- Normal right-click still walks beside a living target and attacks.
-- Shift+right-click follows but sends no `CAttack`.
+- Test normal double-right-click first. It must still walk beside a living target and attack; this reaches the generation hook immediately and catches an invalid continuation before testing the new mode.
+- Shift+double-right-click follows but sends no `CAttack`.
+- Shift+single-right-click still turns or steps toward the cursor.
+- Shift pointer input on ground items keeps its native behavior.
 - The default route stops at a shortest-path distance of three tiles.
 - Moving the target farther away restarts walking on a later 100 ms check.
 - A closer target does not make the local character back away.
