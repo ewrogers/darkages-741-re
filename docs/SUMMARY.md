@@ -260,6 +260,7 @@
     - [Menu item quantities](appendix/runtime-patches/menu-item-quantities.md)
   - [Runtime structures](appendix/runtime-structures.md)
     - [Runtime state walking](appendix/runtime/state-walking.md)
+    - [Manual native actions](appendix/runtime/manual-actions.md)
     - [Network packet objects](appendix/runtime/network-objects.md)
     - [Session and character state](appendix/runtime/session.md)
     - [Inventory and character panes](appendix/runtime/inventory-ui.md)

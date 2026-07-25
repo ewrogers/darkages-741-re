@@ -65,6 +65,20 @@ Type 5 is the slot-only form, so it has no trailing fields. Type 8 is retained f
 | 6 | Two `u16` numeric values |
 | 7 | One `u16` numeric value |
 
+## Activation behavior
+
+The normal spell dispatcher turns these types into four player-facing interaction families:
+
+| Types | Interaction |
+| --- | --- |
+| `1` | Open a free-text prompt |
+| `2` | Begin entity-target selection |
+| `3`, `4`, `6`, `7` | Open a prompt for four, three, two, or one numeric values |
+| `5` | Start without a prompt or target |
+| `8` | No case in the normal activation switch |
+
+The entity selector produces the only confirmed target body. A second observed selector mode handles spell-icon drag and drop and does not establish another `CUseSpell` target format. Native call contracts and runtime safety checks are in [Manual native actions](../../appendix/runtime/manual-actions.md#start-a-spell).
+
 ## Why a generic reader is ambiguous
 
 The wire body alone cannot distinguish text from numeric or target arguments. A server normally resolves the slot against the character's spellbook and uses that spell definition to choose the correct interpretation.

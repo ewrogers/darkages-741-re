@@ -43,6 +43,8 @@ on event_dispatcher_tick
 
 Native producers such as `input_post_pointer_event`, `input_post_keyboard_event`, and `input_post_text_event` preserve the client's normal event construction and ownership rules.
 
+Commands that should not depend on pane visibility can resolve the live pane or world object and call its native producer from this same tick. The exact spell, skill, item, movement, casting-cancel, and unequip contracts are in [Manual native actions](../appendix/runtime/manual-actions.md).
+
 ## Packet commands
 
 For a client send, the controller supplies an opcode-first plaintext body. The proxy passes it to `net_submit_client_packet`; the normal client adds its sequence, transform, and TCP frame.

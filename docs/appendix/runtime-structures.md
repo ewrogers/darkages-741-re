@@ -7,6 +7,7 @@ The client keeps different kinds of runtime state in different owners. This inde
 | Group | Contents |
 | --- | --- |
 | [Runtime state walking](runtime/state-walking.md) | Stable roots, lifecycle tests, safe snapshot rules, character and map sources, entity traversal, and UI discovery |
+| [Manual native actions](runtime/manual-actions.md) | Main-thread invocation contracts for spells, skills, items, movement, casting cancellation, and unequip |
 | [Network packet objects](runtime/network-objects.md) | Decoded events, connection handshake fields, and parsed server packet objects |
 | [Session and character state](runtime/session.md) | Compact inventory, spell, skill, status, and local-user records owned by `WorldUserFunc` |
 | [Inventory and character panes](runtime/inventory-ui.md) | Inventory, spell, skill, equipment, status, mail, and casting UI objects |

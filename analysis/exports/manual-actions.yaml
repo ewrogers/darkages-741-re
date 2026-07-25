@@ -1,0 +1,137 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x0045FDA0"
+    rva: "0x0005FDA0"
+    name: ui_equip_pane_request_remove_slots_1_and_3
+    prototype: "void __thiscall ui_equip_pane_request_remove_slots_1_and_3(EquipPane *equip)"
+    confidence: high
+    evidence: "Uses the live EquipPane in ECX and submits CRemoveEquipment first for slot 1 and then for slot 3."
+  - address: "0x00460330"
+    rva: "0x00060330"
+    name: net_send_remove_equipment
+    prototype: "u32 __thiscall net_send_remove_equipment(EquipPane *equip, s16 equipment_slot)"
+    confidence: high
+    evidence: "Builds CRemoveEquipment opcode 0x44 with the low byte of the caller-supplied equipment slot; the current body does not dereference ECX or validate the slot."
+  - address: "0x00464180"
+    rva: "0x00064180"
+    name: event_dispatcher_tick
+    confidence: high
+    evidence: "Main-thread dispatcher tick suitable for draining a bounded external-command queue before running the original timer and event work."
+  - address: "0x00490960"
+    rva: "0x00090960"
+    name: ui_inventory_activate_slot
+    prototype: "void __thiscall ui_inventory_activate_slot(ItemInventoryPane *inventory, u8 slot)"
+    confidence: high
+    evidence: "Subtracts one from the slot, indexes the direct InvItemPane pointer table at +0x1A0, and activates a non-null entry without first validating the slot range."
+  - address: "0x00493620"
+    rva: "0x00093620"
+    name: ui_equip_pane_get
+    prototype: "EquipPane *__cdecl ui_equip_pane_get(void)"
+    confidence: high
+    evidence: "Returns the complete EquipPane singleton stored at static 0x006FC914; it can be null outside the in-game pane lifetime."
+  - address: "0x00493630"
+    rva: "0x00093630"
+    name: ui_spell_delay_control_pane_get
+    prototype: "SpellDelayControlPane *__cdecl ui_spell_delay_control_pane_get(void)"
+    confidence: high
+    evidence: "Returns the complete SpellDelayControlPane singleton stored at static 0x0073FD78."
+  - address: "0x004992F0"
+    rva: "0x000992F0"
+    name: ui_skill_inventory_activate
+    prototype: "void __thiscall ui_skill_inventory_activate(SkillInvItemPane *skill)"
+    confidence: high
+    evidence: "Checks action-delay and unresolved block bytes on the live skill entry, then sends configured skill text and CUseSkill."
+  - address: "0x0049A4E0"
+    rva: "0x0009A4E0"
+    name: ui_spell_begin_target_selection
+    confidence: high
+    evidence: "Normal argument type 2 activation passes mode 0 and creates the entity-target selector; the observed mode 1 caller belongs to spell-icon drag and drop."
+  - address: "0x0049A670"
+    rva: "0x0009A670"
+    name: ui_spell_inventory_activate
+    prototype: "void __thiscall ui_spell_inventory_activate(SpellInvItemPane *spell)"
+    confidence: high
+    evidence: "Checks the spell action-delay byte and dispatches retained argument types 1 through 7; type 5 reaches the no-argument CUseSpell builder."
+  - address: "0x0049A720"
+    rva: "0x0009A720"
+    name: ui_spell_open_string_input
+    confidence: high
+    evidence: "Handles argument type 1 by opening StringSpellInputPane with the prompt retained on the spell entry."
+  - address: "0x0049A950"
+    rva: "0x0009A950"
+    name: ui_spell_open_number_inputs
+    confidence: high
+    evidence: "Opens NumberArgsSpellInputPane for the one through four values selected by argument types 7, 6, 4, and 3."
+  - address: "0x0049AB60"
+    rva: "0x0009AB60"
+    name: net_build_use_spell_target
+    prototype: "void __thiscall net_build_use_spell_target(SpellInvItemPane *spell, u32 target_id, u16 target_y, u16 target_x)"
+    confidence: high
+    evidence: "Checks the denied-spell list, builds CUseSpell with target ID followed by X and Y, then starts the spell's retained cast-line sequence."
+  - address: "0x0049AC90"
+    rva: "0x0009AC90"
+    name: ui_spell_is_denied
+    confidence: high
+    evidence: "Looks up the spell name in DeniedItemList mode 2; a match suppresses every normal CUseSpell builder."
+  - address: "0x0049AD40"
+    rva: "0x0009AD40"
+    name: net_build_use_spell_no_args
+    prototype: "void __thiscall net_build_use_spell_no_args(SpellInvItemPane *spell)"
+    confidence: high
+    evidence: "Checks the denied-spell list, builds the slot-only CUseSpell form, and starts casting without checking the spell action-delay byte."
+  - address: "0x0049B190"
+    rva: "0x0009B190"
+    name: ui_spell_text_input_submit
+    confidence: high
+    evidence: "Reads a nonempty input of at most 0x64 requested bytes, appends the bytes without a length or terminator, checks denial, and starts the cast."
+  - address: "0x0049B380"
+    rva: "0x0009B380"
+    name: ui_spell_numeric_input_submit
+    confidence: high
+    evidence: "Parses the retained count of comma-separated values and appends exactly one through four big-endian u16 values before starting the cast."
+  - address: "0x0049B900"
+    rva: "0x0009B900"
+    name: ui_start_spell_cast
+    prototype: "void __thiscall ui_start_spell_cast(SpellDelayControlPane *control, const u8 *body, s16 body_length, u16 spell_icon, u8 cast_lines, const char *spell_name)"
+    confidence: high
+    evidence: "Overwrites the shared queued CUseSpell body, cancels the casting controller's existing timers, and either schedules cast lines or immediately submits a zero-line spell."
+  - address: "0x0049BA50"
+    rva: "0x0009BA50"
+    name: ui_cancel_spell_delay
+    prototype: "bool __thiscall ui_cancel_spell_delay(SpellDelayControlPane *control)"
+    confidence: high
+    evidence: "Clears cast_active and cancels every timer owned by the live SpellDelayControlPane without sending a client packet."
+  - address: "0x005A9C40"
+    rva: "0x001A9C40"
+    name: ui_get_gui_back_pane
+    prototype: "GUIBackPane *__cdecl ui_get_gui_back_pane(void)"
+    confidence: high
+    evidence: "Null-safe native accessor for the complete GUIBackPane used to resolve live item, skill, and spell pane children."
+  - address: "0x005F0C40"
+    rva: "0x001F0C40"
+    name: ui_world_pane_handle_direction_input
+    prototype: "bool __thiscall ui_world_pane_handle_direction_input(WorldPane *world, u8 direction)"
+    confidence: high
+    evidence: "Clears queued movement, then turns when facing differs or attempts one normal collision-checked step when facing already matches."
+data_symbols: []
+comments:
+  - address: "0x0045FDAC"
+    text: "The tilde-style helper sends CRemoveEquipment for slot 1, followed by slot 3 at 0x0045FDB6."
+  - address: "0x00490969"
+    text: "Caller must validate slot 1 through 60. This function subtracts one and indexes InventoryPane_A +0x1A0 without a bounds check."
+  - address: "0x0049ABFE"
+    text: "Write target_x from the fourth native argument, then write target_y from the third argument at 0x0049AC1D."
+  - address: "0x0049B9A8"
+    text: "Starting any spell cancels all existing SpellDelayControlPane timers before scheduling or immediately submitting the replacement cast."
+  - address: "0x005F0C49"
+    text: "Manual direction input uses the same full movement-state reset as keyboard and Shift-right input."
+  - address: "0x005F0C81"
+    text: "Matching facing reaches the movement path; a different facing reaches CChangeDirection instead."
+runtime_patches: []

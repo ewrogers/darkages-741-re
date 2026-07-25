@@ -14,6 +14,8 @@ This directory contains deterministic Binary Ninja exports such as user symbols,
 
 [`pathfinding.yaml`](pathfinding.yaml) records right-click ground movement, living-object pursuit, the breadth-first route search, its 100 ms retarget timer, queued-step replay, and cancellation generations.
 
+[`manual-actions.yaml`](manual-actions.yaml) records main-thread invocation contracts for item, skill, spell, movement, casting-cancel, and equipment producers, including the required x86 calling conventions and caller-side validation.
+
 Use [`sync_user_analysis.py`](../../binaryninja/scripts/sync_user_analysis.py) from Binary Ninja's Python console to import or refresh tracked names and comments and to normalize packet records. The script requires [PyYAML](https://pyyaml.org/). Pass `client/Darkages.exe` as `binary_path` so the script fails before changing analysis when the private input does not match.
 
 Do not copy legacy exports here without revalidation.

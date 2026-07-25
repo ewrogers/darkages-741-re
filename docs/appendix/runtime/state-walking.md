@@ -18,7 +18,7 @@ The table gives static Binary Ninja addresses and module-relative RVAs. At runti
 | Root | Static address | RVA | Stored value |
 | --- | ---: | ---: | --- |
 | Event dispatcher | `0x006D9220` | `0x002D9220` | `EventDispatcher *` |
-| Equipment pane | `0x006FC8EC` | `0x002FC8EC` | complete `EquipPane *` |
+| Equipment pane | `0x006FC914` | `0x002FC914` | complete `EquipPane *` |
 | Character name | `0x0073D910` | `0x0033D910` | 16-byte NUL-terminated buffer |
 | Application window | `0x0073D938` | `0x0033D938` | `HWND` |
 | Screen hierarchy | `0x0073D948` | `0x0033D948` | `HierList<Screen> *` |
@@ -165,6 +165,8 @@ struct { u32 max; u32 current; }
 ```
 
 The index is `equipment_slot - 1`. The singleton exists for the in-game session even when the equipment UI is not visible. See [Inventory and character panes](inventory-ui.md) for construction and replacement behavior.
+
+`ui_equip_pane_get` at static address `0x00493620`, RVA `0x00093620`, returns this pointer. The nearby static address `0x006FC8EC` belongs to `EmployeeDialogPane`; it is not an equipment root.
 
 ## Skills, spells, and cooldowns
 

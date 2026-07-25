@@ -2710,6 +2710,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_new_system_message_pane_handle_mouse_event` | `0x005A9890` | high | Handles the draggable history control and clamps the visible area to one through ten rows. |
 | `ui_new_system_message_pane_append_history` | `0x005A9A20` | high | Accepts at most 70 bytes, prefixes a newline, normalizes carriage returns, and appends to persistent history. |
 | `ui_new_system_message_pane_handle_message_packet` | `0x005A9B40` | high | Routes SMessage types 0x00 through 0x06, 0x0B, and 0x0C into persistent history. |
+| `ui_get_gui_back_pane` | `0x005A9C40` | high | Null-safe native accessor for the complete GUIBackPane used to resolve live item, skill, and spell pane children. |
 | `ui_report_movement_round_trip` | `0x005A9DA0` | high | Forwards one matching movement round-trip sample to the live GUIBackPane interface. |
 | `ui_user_info_pane_ctor` | `0x005ABA30` | high | Constructs UserInfoPane, initializes seven page-enable flags, and creates page children with action IDs 0x101 through 0x107 at offsets +0x584 through +0x59C. |
 | `ui_user_info_apply_portrait_body` | `0x005ACD10` | high | Decodes a portrait/profile body into UserInfoPane state and refreshes its portrait canvas and text. |
