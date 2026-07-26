@@ -225,7 +225,9 @@ Pointer press state retains the original control and zone until release. A click
 
 [`SMessage`](../../network/server/010-0x0a-message.md) types `0x08`, `0x09`, and `0x0A` create exact RTTI `WindowMessageDialogPane`. Types `0x08` and `0x09` use the standard scrollable presentation. Type `0x0A` uses the alternate `woodbk.epf` presentation. The class is not a singleton, so there is no one global popup pointer.
 
-Enumerate every open instance through the active `EventHandlerList`. Compare each entry's primary vtable with static address `0x00672A84`, RVA `0x00272A84`. A matching pane should also have the `LObject` cookie `0x79736F62` at `+0x04`, registration bit `0x02` set at `+0x188`, and `visible` set at `+0x130`.
+Enumerate every open instance through the active `EventHandlerList`. Compare each entry's primary vtable with static address `0x00672A84`, RVA `0x00272A84`. A matching open pane should have registration bit `0x02` set at `+0x188` and `visible` set at `+0x130`.
+
+Do not test `pane +0x04` for the `LObject` cookie. `WindowMessageDialogPane` inherits through `DialogPane`, `Pane`, and `Canvas`; it does not have `LObject` as its primary base. `render_canvas_ctor` initializes the byte at `Pane +0x04` to zero. The `0x79736F62` cookie described for `Event` above is a constructed-object marker for classes that actually inherit `LObject`, not a universal pane-liveness flag.
 
 ```c
 struct ListFields {
@@ -243,6 +245,8 @@ struct WindowMessageDialogRuntimeFields {
     ListFields *controls;       // +0x594, elements are ControlPane *
 };                              // complete object size 0x630
 ```
+
+The `live_cookie` in `ListFields` belongs to the separately allocated control-list object. It must not be read at the same offset from the enclosing pane.
 
 The content control is attachment index `1`. Both presentations expose their displayed text through the same pointer path:
 
