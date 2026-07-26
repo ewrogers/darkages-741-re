@@ -128,6 +128,40 @@ struct PaneFields {
 
 The dispatcher stores the captured pane at `+0x40` and the active minimum input priority at `+0x50`. The priority threshold provides modal-style input blocking without removing lower panes from the event tree.
 
+## Focused chat input
+
+The focused input pane provides a direct runtime test for whether typed text currently belongs to Say, Shout, or Tell. These temporary input panes are not singletons, so there is no separate global chat-open flag.
+
+The process-global `InputMan` pointer is stored at static address `0x006D9260`, RVA `0x002D9260`. Its focused pane pointer is at object offset `+0x444`:
+
+```text
+module base + 0x002D9260  -> InputMan *
+InputMan +0x444           -> focused Pane *
+focused Pane +0x130       -> visible
+focused Pane +0x000       -> primary vtable
+```
+
+Compare the primary vtable after subtracting the loaded module base:
+
+| Class | Static vtable | RVA | Active input |
+| --- | ---: | ---: | --- |
+| `ChatInputPane` | `0x00682FEC` | `0x00282FEC` | Say or Shout message |
+| `TellReceiverInputPane` | `0x0068306C` | `0x0028306C` | Tell recipient |
+| `TellInputPane` | `0x006830EC` | `0x002830EC` | Tell message |
+
+`ChatInputPane +0x19C` retains the one-byte speech mode. Interactive callers use `0` for Say and `1` for Shout. `TellInputPane +0x19C` instead begins the 256-byte retained target-name buffer. The same offset is class-specific and must not be interpreted before checking the vtable.
+
+For an additional lifetime check, read the `LObject` cookie in the `TimerHandler` secondary base:
+
+```text
+focused Pane +0x11C       -> TimerHandler
+focused Pane +0x120       -> 0x79736F62 while that base is live
+```
+
+This secondary-base check is the form used by `input_manager_set_focused_pane`. It is different from the invalid `pane +0x04` cookie test discussed below.
+
+The focused pointer answers whether keyboard text currently goes to chat. To detect a chat input pane that still exists but is not focused, enumerate the active `EventHandlerList` for the same three vtables and check `visible` separately. Read the pointer chain on the game thread when possible. An external reader should repeat the snapshot if the global manager or focused pointer changes during the read.
+
 ## Clock pane fields
 
 `ClockPane` is the animated wait cursor used by `SBlockInput`. It is a `Pane`, a `TimerHandler`, and a `Singleton<ClockPane>`. The empty singleton base begins at `+0x190` and overlaps the first concrete field without storing per-instance data.
