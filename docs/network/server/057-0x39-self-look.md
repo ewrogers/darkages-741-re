@@ -89,3 +89,5 @@ Both the older legend dialog and RTTI class `nui_LegendPane` rebuild their lists
 `BtmButtonsPane_A` treats this packet as the response to `CSelfLook`. It updates the group-button state, cancels the one-second request retry, and clears the pending-profile flag. After `CGroupToggle`, this response supplies the authoritative `is_group_open` value. The click path does not change the icon optimistically.
 
 The newer `UserInfoPane` keeps the same identity fields and nation value for its profile view. The packet object is large because it reserves room for all 255 possible legend records, not because every response is normally that large.
+
+The [runtime session layout](../../appendix/runtime/session.md#runtime-group-snapshot) shows how to reach the retained roster, decide empty versus grouped state, and copy every cached member name without depending on the group UI being open.

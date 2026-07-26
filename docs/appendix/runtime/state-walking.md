@@ -17,10 +17,11 @@ The table gives static Binary Ninja addresses and module-relative RVAs. At runti
 
 | Root | Static address | RVA | Stored value |
 | --- | ---: | ---: | --- |
-| Event dispatcher | `0x006D9220` | `0x002D9220` | `EventDispatcher *` |
+| Event dispatcher singleton | `0x006D9220` | `0x002D9220` | `EventDispatcher *` |
 | Equipment pane | `0x006FC914` | `0x002FC914` | complete `EquipPane *` |
 | Character name | `0x0073D910` | `0x0033D910` | 16-byte NUL-terminated buffer |
 | Application window | `0x0073D938` | `0x0033D938` | `HWND` |
+| Active event dispatcher | `0x0073D944` | `0x0033D944` | application-owned `EventDispatcher *` |
 | Screen hierarchy | `0x0073D948` | `0x0033D948` | `HierList<Screen> *` |
 | Screen root pane | `0x0073D94C` | `0x0033D94C` | root `Pane *` |
 | World map interface | `0x0073D960` | `0x0033D960` | `WorldPane + 0x2E8` |
@@ -111,6 +112,10 @@ The relevant `WorldPane` fields are `width +0x1C4`, `height +0x1C8`, `current_ma
 | Attack and defense elements | `ExtraStatusInfoPane + 0x4FC`, `+0x4FE`, `u16` |
 | Magic resistance units | `ExtraStatusInfoPane + 0x500`, `u16` |
 | Action locked | `(WorldUserFunc[0x15C88] & 0x01) != 0` |
+| Group membership | `WorldUserFunc + 0x1044`, zero is an empty roster and is operationally ungrouped after a current `SSelfLook` |
+| Group member names | up to 64 records at `WorldUserFunc + 0x0004`, stride `0x41` |
+
+The group records are the last roster supplied by `SSelfLook`, not a list of only the members currently visible on the map. Each record contains `char name[64]` followed by the source-line `starred` byte. Clamp the copied count to 64 and see [Session and character state](session.md#runtime-group-snapshot) for lifecycle and interpretation.
 
 The pane sources are reached through these `GUIBackPane` children:
 

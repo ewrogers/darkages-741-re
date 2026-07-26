@@ -73,6 +73,28 @@ The five aliases preserve the older analysis-view names while giving each one th
 
 `session_update_from_self_look_packet` parses the `SSelfLook.group_members` text into the 64 fixed records. A valid source line begins with `"* "` or two spaces. The parser removes that prefix, preserves whether the first byte was `*`, and uses `IsDBCSLeadByte` so a Korean double-byte character is not split. The world refresh path clamps its iteration to 64 and matches each cached name against live user objects. The parser itself does not separately clamp the record count or copied name length.
 
+### Runtime group snapshot
+
+The client has no separate confirmed `is_grouped` boolean. Its retained membership state is the most recently parsed `SSelfLook.group_members` roster:
+
+```c
+void *world_impl = *reloc_ptr(0x0033D964);
+WorldPane *world = world_impl
+    ? (WorldPane *)((u8 *)world_impl - 0x2EC)
+    : NULL;
+WorldUserFuncFields *session = world
+    ? *(WorldUserFuncFields **)((u8 *)world + 0x2CC)
+    : NULL;
+```
+
+When `session` is valid, `group_member_count == 0` means the cached roster is empty. After a current-session `SSelfLook` has been handled, use that as the operational ungrouped state. A nonzero count means the last self-look response supplied a group roster. Copy at most 64 entries from `group_members`, stop each name at its first NUL or 64 bytes, and decode non-ASCII bytes as code page 949.
+
+The `starred` byte only records whether that source line began with `"* "`. The popup-menu code gives the marker special meaning when the marked name equals the local character name, but the exact social role represented by the marker is not named by the client. Do not use it as the general grouped test.
+
+This roster is a cached server result, not a live reconstruction from nearby world objects. Members remain in the cache when they are off-screen, and the matching world-object pass is a separate presentation step. Conversely, the cache changes only when another `SSelfLook` body is handled. Take the snapshot after packet handling or on the next game-thread tick.
+
+`SSelfLook.is_group_open` is independent. It controls whether the character accepts group requests and drives the group-button skin; it does not mean the character currently belongs to a group.
+
 The `WorldPane` allocation site requests exactly `0x167D0` bytes. `session_world_user_func_ctor` installs the `WorldUserFunc` vtable, constructs exact RTTI class `UserInfo` at `+0x15C8C`, and clears the three slot arrays. This establishes the full object boundary and the embedded tail type.
 
 The three fields at `+0x15C74` through `+0x15C7C` come from consecutive `SSelfLook` bytes. The packet stores them as widened values in the order `show_master_metadata`, `show_ability_metadata`, then `character_class`.

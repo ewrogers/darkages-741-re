@@ -83,12 +83,24 @@ A true return value consumes the event and stops normal tree traversal.
 `EventHandlerList` stores a flattened preorder tree. The dispatcher owns it at offset `+0x60`.
 
 ```text
+struct EventHandlerListFields {
+    void **vtable               // +0x00
+    EventHandlerEntry *entries  // +0x04
+    s32 count                   // +0x08
+    s32 capacity                // +0x0C
+    u8 iterator_state[0x140]    // +0x10, includes 16 tracked iterator slots
+    s32 iterator_slot_count     // +0x150, initialized to 16
+    u32 mutation_generation     // +0x154
+}                               // size 0x158
+
 struct EventHandlerEntry {
     Pane *pane                  // +0x00
     u32 depth                   // +0x04
     u32 identity_or_generation  // +0x08, exact purpose uncertain
 }                               // size 0x0C
 ```
+
+The application-owned active dispatcher pointer is stored at static address `0x0073D944`, RVA `0x0033D944`. After resolving that pointer, the registration array is at `dispatcher +0x64` and its count is at `dispatcher +0x68`.
 
 Example storage:
 
@@ -208,6 +220,44 @@ struct DialogPaneFields {
 Control indexes follow attachment order. Enter and Space invoke `default_action_control_index`; Escape invokes `cancel_action_control_index`. Both shortcuts require an enabled target and use action code `8`. A value of `-1` disables the corresponding shortcut.
 
 Pointer press state retains the original control and zone until release. A click reaches the parent dialog action callback only when release hits that same pair. The hover pair drives visual-zone changes, while the pointer-target pair drives secondary enter/leave-style transition hooks.
+
+## Window message dialogs
+
+[`SMessage`](../../network/server/010-0x0a-message.md) types `0x08`, `0x09`, and `0x0A` create exact RTTI `WindowMessageDialogPane`. Types `0x08` and `0x09` use the standard scrollable presentation. Type `0x0A` uses the alternate `woodbk.epf` presentation. The class is not a singleton, so there is no one global popup pointer.
+
+Enumerate every open instance through the active `EventHandlerList`. Compare each entry's primary vtable with static address `0x00672A84`, RVA `0x00272A84`. A matching pane should also have the `LObject` cookie `0x79736F62` at `+0x04`, registration bit `0x02` set at `+0x188`, and `visible` set at `+0x130`.
+
+```c
+struct ListFields {
+    void **vtable;              // +0x00
+    u32 live_cookie;            // +0x04
+    u32 unobserved_08;          // +0x08
+    u32 element_size;           // +0x0C
+    u32 allocation_block;       // +0x10
+    u32 count;                  // +0x14
+    void *storage;              // +0x18
+};                              // size 0x1C
+
+struct WindowMessageDialogRuntimeFields {
+    // Pane and DialogPane fields precede these inherited values.
+    ListFields *controls;       // +0x594, elements are ControlPane *
+};                              // complete object size 0x630
+```
+
+The content control is attachment index `1`. Both presentations expose their displayed text through the same pointer path:
+
+```text
+pane +0x594                  -> control list
+control list +0x18          -> ControlPane * array
+control array[1] +0x19C     -> TextEditPane
+TextEditPane +0x1BC         -> byte List
+byte List +0x14             -> displayed byte count
+byte List +0x18             -> displayed bytes
+```
+
+Read the exact byte count instead of searching for a terminator. The bytes use the client's ANSI encoding; decode Korean text as Windows code page 949. Carriage returns are displayed line breaks. The formatted-text parser keeps color runs separately, so inline `{=<letter>` color markers are not present in this character list.
+
+Closing first unregisters and hides the pane, then queues deferred deletion. Event-tree membership is therefore a safer open test than retaining a heap pointer after a previous scan. Walk and copy this state on the game thread, or retry an external snapshot when the dispatcher pointer, entry pointer, or count changes during the read.
 
 ## User confirmation pane
 

@@ -72,6 +72,8 @@ SMessage
 
 Types `0x08`, `0x09`, and `0x0A` change tab bytes to carriage returns before opening the popup. Types `0x08` and `0x09` are behaviorally identical in this client. Their separate values may still matter to the server.
 
+The [runtime pane appendix](../../appendix/runtime/panes.md#window-message-dialogs) gives the active-event-tree walk, class vtable, open-state checks, and pointer path to the displayed text for every live popup instance.
+
 The exact channel names for `0x00`, `0x01`, `0x02`, `0x04` through `0x06`, `0x0B`, and `0x0C` are not present as client strings. Runtime captures are needed before calling any one of them whisper, guild, group, or world chat.
 
 ## User confirmation prompt
