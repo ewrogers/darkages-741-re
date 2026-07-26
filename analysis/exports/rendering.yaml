@@ -3074,7 +3074,7 @@ functions:
   - address: "0x00598210"
     name: net_decode_s_change_weather
     confidence: high
-    evidence: Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer.
+    evidence: Reads the one-byte SChangeWeather payload into derived-object offset 0x10; the main gameplay dispatcher has no opcode 0x1F consumer.
   - address: "0x00599F90"
     name: net_deserialize_map_size_server_packet
     confidence: high
@@ -3503,6 +3503,10 @@ functions:
     name: world_object_list_find_by_id
     confidence: high
     evidence: Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10.
+  - address: "0x005ED990"
+    name: net_dispatch_server_packet
+    confidence: high
+    evidence: Routes parsed server packet objects to gameplay handlers but omits opcode 0x1F even though the factory constructs and decodes SChangeWeather.
   - address: "0x005EE950"
     name: render_world_apply_view_layout
     confidence: high
@@ -3510,7 +3514,7 @@ functions:
   - address: "0x005EF360"
     name: world_update_map_lighting
     confidence: high
-    evidence: Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, and conditionally loads its HEA mask.
+    evidence: Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, conditionally loads its HEA mask, and restores normal lighting after Darkness is cleared.
   - address: "0x005EFFE0"
     name: map_can_move_direction
     confidence: high
@@ -3834,7 +3838,7 @@ comments:
   - address: "0x005942D0"
     text: Present the finished software canvas through DirectDraw or the window DC path.
   - address: "0x00598210"
-    text: Deserialize the one-byte SChangeWeather payload. No 0x1F consumer exists in the main gameplay dispatcher.
+    text: Deserialize the one-byte SChangeWeather payload to derived-object offset 0x10. No 0x1F consumer exists in the native gameplay dispatcher.
   - address: "0x0059DAC9"
     text: Read the selected GUI layout's MAP rectangle and derive the view center stored in its six-value WorldPane layout record.
   - address: "0x0059DCD5"
@@ -3993,6 +3997,8 @@ comments:
     text: Read WorldObjectList width from +0x5C; height is the adjacent s32 at +0x60.
   - address: "0x005E751B"
     text: A successful ID-tree lookup returns the reference-counted WorldObject pointer stored at tree node +0x10.
+  - address: "0x005ED9B9"
+    text: The native dispatcher has initialized its world and packet locals here but has no opcode 0x1F comparison. The weather-packet runtime patch detours this opaque branch and replays its EDX clear for every non-weather packet.
   - address: "0x005EEA91"
     text: Set the WorldPane rectangle around the layout MAP rectangle with 14-pixel vertical and 28-pixel horizontal isometric-tile margins.
   - address: "0x005EEABF"
@@ -4085,27 +4091,13 @@ runtime_patches:
     original_bytes: 74 05
     replacement_bytes: EB 00
     effect: Skip every WorldObject_Static draw through the function's existing normal epilogue; collision remains active.
-  - id: no-blind
-    rva: "0x001F1A2D"
-    static_address: "0x005F1A2D"
-    file_offset_for_reference_only: "0x001F0E2D"
-    original_bytes: 83 F8 08
-    replacement_bytes: 83 F8 FF
-    effect: Make the zero-extended SStatus blind code unable to compare equal while preserving the normal blinded-state setter and redraw path.
-  - id: no-darkness
-    rva: "0x0028A5F7"
-    static_address: "0x0068A5F7"
-    file_offset_for_reference_only: "0x002891F7"
-    original_bytes: "03"
-    replacement_bytes: FF
-    effect: Move the shared Darkness selector outside the SMapSize low-nibble range so black ambient setup, Darkness fallback lighting, and lantern-mask attachment remain inactive.
-  - id: allow-map
-    rva: "0x0028A5F1"
-    static_address: "0x0068A5F1"
-    file_offset_for_reference_only: "0x002891F1"
-    original_bytes: "40"
-    replacement_bytes: "00"
-    effect: Zero the shared NoMap mask so map setup does not close an existing overlay and the Tab handler does not reject a new one.
+  - id: weather-packet
+    rva: "0x001ED9B9"
+    static_address: "0x005ED9B9"
+    file_offset_for_reference_only: "0x001ECDB9"
+    original_bytes: 33 D2 74 05 E9 C3 07 00 00
+    replacement_template: E9 <rel32 to allocated 0x47-byte stub> 90 90 90 90
+    effect: Route decoded SChangeWeather through the existing map weather, pane invalidation, and lighting-refresh functions while preserving native dispatch for every other opcode.
   - id: map-zoom
     rva: "0x001F0EC3"
     static_address: "0x005F0EC3"
@@ -4113,3 +4105,24 @@ runtime_patches:
     original_bytes: 75 68
     replacement_bytes: 90 90
     effect: Remove the non-Rogue branch so every character class uses the existing zoom-enabled Tab-map configuration.
+  - id: no-blind
+    rva: "0x001F1A2D"
+    static_address: "0x005F1A2D"
+    file_offset_for_reference_only: "0x001F0E2D"
+    original_bytes: 83 F8 08
+    replacement_bytes: 83 F8 FF
+    effect: Make the zero-extended SStatus blind code unable to compare equal while preserving the normal blinded-state setter and redraw path.
+  - id: allow-map
+    rva: "0x0028A5F1"
+    static_address: "0x0068A5F1"
+    file_offset_for_reference_only: "0x002891F1"
+    original_bytes: "40"
+    replacement_bytes: "00"
+    effect: Zero the shared NoMap mask so map setup does not close an existing overlay and the Tab handler does not reject a new one.
+  - id: no-darkness
+    rva: "0x0028A5F7"
+    static_address: "0x0068A5F7"
+    file_offset_for_reference_only: "0x002891F7"
+    original_bytes: "03"
+    replacement_bytes: FF
+    effect: Move the shared Darkness selector outside the SMapSize low-nibble range so black ambient setup, Darkness fallback lighting, and lantern-mask attachment remain inactive.

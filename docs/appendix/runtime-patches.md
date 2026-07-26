@@ -21,6 +21,7 @@ Patch pages use short names based on the visible behavior. In-place changes use 
 - [Extended friend highlights](runtime-patches/extended-friend-highlights.md)
 - [No blind](runtime-patches/no-blind.md)
 - [No darkness](runtime-patches/no-darkness.md)
+- [Weather packet](runtime-patches/weather-packet.md)
 - [Allow map](runtime-patches/allow-map.md)
 - [Map zoom](runtime-patches/map-zoom.md)
 - [One-item exchange](runtime-patches/one-item-exchange.md)

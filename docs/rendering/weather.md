@@ -1,6 +1,6 @@
 # Snow and weather
 
-Snowy ground and falling snow are separate systems. The server can enable either one through the flags in `SMapSize`.
+Version 7.41 can create falling snow and dark-map lighting during map setup, but it drops later `SChangeWeather` updates. Snow-covered ground is a separate art choice.
 
 ```text
 SMapSize flags
@@ -43,4 +43,18 @@ Mode 3 writes the [world lighting state](lighting.md) directly by enabling the o
 
 The server can also create normal world effects with `SEffectLayer`. That path could display rain-like art, but no direct link to rain is confirmed.
 
-`SChangeWeather` exists as an RTTI-backed packet and contains one byte. The main gameplay dispatcher has no handler for its opcode in this client, so it does not control the active map weather path described above.
+## Why live weather changes are broken
+
+[`SChangeWeather`](../network/server/031-0x1f-change-weather.md) is only partly connected:
+
+1. The server packet factory registers opcode `0x1F`.
+2. `net_decode_s_change_weather` reads its one-byte value.
+3. `net_dispatch_server_packet` never checks for opcode `0x1F`.
+
+The decoded object therefore reaches the gameplay dispatcher and is discarded. The existing `map_apply_weather_mode` routine is called only from `SMapSize`, so its snow and Darkness behavior normally changes only with map setup.
+
+This looks like an incomplete packet integration, but the binary does not reveal why it shipped that way.
+
+The [Weather packet runtime patch](../appendix/runtime-patches/weather-packet.md) adds the missing dispatch step. It interprets values `0` through `3` as the same modes used by `SMapSize`, applies the native weather routine, redraws the world, and refreshes map lighting. The lighting refresh matters when leaving Darkness because the weather routine alone does not restore the normal ambient color.
+
+The patch does not add rain art. Value `2` still follows the client's native no-op branch.

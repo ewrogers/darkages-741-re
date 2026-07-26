@@ -150,6 +150,7 @@ def main() -> None:
         "    - [Extended friend highlights](appendix/runtime-patches/extended-friend-highlights.md)",
         "    - [No blind](appendix/runtime-patches/no-blind.md)",
         "    - [No darkness](appendix/runtime-patches/no-darkness.md)",
+        "    - [Weather packet](appendix/runtime-patches/weather-packet.md)",
         "    - [Allow map](appendix/runtime-patches/allow-map.md)",
         "    - [Map zoom](appendix/runtime-patches/map-zoom.md)",
         "    - [One-item exchange](appendix/runtime-patches/one-item-exchange.md)",

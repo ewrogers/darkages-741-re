@@ -282,7 +282,7 @@ functions:
   - address: "0x005ED990"
     name: net_dispatch_server_packet
     confidence: high
-    evidence: "Routes parsed server packet objects to gameplay handlers by opcode."
+    evidence: "Routes parsed server packet objects to gameplay handlers by opcode, but omits 0x1F even though the factory constructs and decodes SChangeWeather."
   - address: "0x00622873"
     name: crt_time
     confidence: high
