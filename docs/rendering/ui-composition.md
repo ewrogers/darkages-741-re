@@ -55,38 +55,59 @@ later UI panes and descendants
 
 This means the GUI can occlude world pixels, but those pixels only exist if the current `WorldPane` viewport asked the world renderer to produce them.
 
-## Compact and large layouts
+## Two GUI layouts
 
-`GUIBackPane` loads two layout records:
+`GUIBackPane` loads two top-level layout records. The state described in-game as the minimal UI is layout index 1. It gives more height to the world and reduces the lower inventory tray to one row.
 
-| Layout index | File | Client initialization |
-| ---: | --- | --- |
-| 0 | `_nbk_s.txt` | initial compact layout |
-| 1 | `_nbk_l.txt` | large layout |
+| Layout index | File | `MAP` rectangle | Lower inventory tray |
+| ---: | --- | --- | --- |
+| 0 | `_nbk_s.txt` | `RECT 3 3 619 311` | Three visible rows |
+| 1 | `_nbk_l.txt` | `RECT 3 3 619 427` | One row, with an expandable overlay |
 
-`BTN_CHANGELAYOUT` calls `ui_gui_back_toggle_layout`, which flips the index and enters `ui_gui_back_apply_layout`. That function reapplies the GUI background, buttons, inventory, chat, system-message, and other child-pane geometry.
+The client starts with index 0. `BTN_CHANGELAYOUT` calls `ui_gui_back_toggle_layout`, which flips the index and enters `ui_gui_back_apply_layout`. That function reapplies the GUI background, buttons, inventory, chat, system-message, and other child-pane geometry.
 
 The same function also calls the live `MapInterface` at virtual slot `0x4C`. In `WorldPane_Impl` that slot reaches `render_world_apply_view_layout`. Its input is the selected layout's six-value `MAP` record:
 
 ```c
 struct WorldViewLayout {
-    s32 top;
     s32 left;
-    s32 bottom;
+    s32 top;
     s32 right;
-    s32 view_center_y;
+    s32 bottom;
     s32 view_center_x;
+    s32 view_center_y;
 };
 ```
 
 `render_world_apply_view_layout` changes the actual `WorldPane` rectangle, stores a local content rectangle with 14-pixel vertical and 28-pixel horizontal margins, updates the renderer's view center, resets view-dependent state, invalidates the light mask, and invalidates the pane. The margins match half of the 27-pixel-high by 56-pixel-wide isometric ground tile footprint.
 
-## Does compact mode change visible tiles?
+## What the minimal tray shows
+
+The minimal tray uses a normal and an expanded layout record. `BTN_EXPAND` toggles `GUIBackPane::page_is_expanded`, then reapplies the currently selected lower-tray mode.
+
+| Selected mode | Normal minimal tray | Expanded overlay |
+| --- | --- | --- |
+| Item inventory | Slots 1 through 11, plus slot 60 in the final cell | Slots 1 through 60 |
+| Spell page 1 | Slots 1 through 12 | Slots 1 through 35 |
+| Spell page 2 | Slots 37 through 48 | Slots 37 through 71 |
+| Skill page 1 | Slots 1 through 12 | Slots 1 through 35 |
+| Skill page 2 | Slots 37 through 48 | Slots 37 through 71 |
+| Combined skill and spell | Slots 73 through 78 in each six-column pane | Slots 73 through 89 in each pane |
+
+The item tray deliberately reserves its final visible cell for slot 60. A one-row item tray therefore does not show slot 12. Expansion changes the item grid from 1 by 12 to 5 by 12, which makes all 60 item slots visible.
+
+Spell and skill expansion changes the active page from one row to three rows. It does not show every spell or skill page at once. The page setters use zero-based starts 0, 36, and 72. They cap the three groups at 35, 35, and 17 entries, so one-based slots 36, 72, and 90 are omitted. Slot-change requests also reject positions divisible by 36. The purpose of these omitted positions is not yet confirmed.
+
+Layout index 0 uses three rows without a separate expanded skill or spell overlay. `ui_gui_back_select_page_mode` forces `page_is_expanded` to false in that top-level layout. Switching to layout index 0 therefore collapses an expanded minimal tray.
+
+The functions named `ui_new_skill_inventory_pane_select_compact_mode` and `ui_new_spell_inventory_pane_select_compact_mode` describe the six-column combined mode for slots 73 through 89. That internal mode is separate from the top-level minimal tray.
+
+## Does the minimal UI change visible tiles?
 
 Yes. The layout switch is more than UI occlusion.
 
 `render_ground_layer` derives the visible isometric cells from the current world-view bounds. `render_collect_world_objects` performs matching viewport and screen-bound clipping before placing objects into the 32 render queues. Since the layout toggle changes those bounds and invalidates the world caches, the next draw can visit a different number of ground cells, statics, players, items, and effects.
 
-Visual occlusion still matters. A large GUI region can cover some world pixels after they are composed. But the client also changes the source viewport, so the extra tiles seen in the compact arrangement are not necessarily pixels that were already rendered behind the old UI.
+Visual occlusion still matters. A large GUI region can cover some world pixels after they are composed. But the client also changes the source viewport, so the extra tiles seen in the minimal arrangement are not necessarily pixels that were already rendered behind the old UI.
 
-The exact `_nbk_s.txt` and `_nbk_l.txt` `MAP` rectangles are asset data, not constants in `ui_gui_back_apply_layout`. Those private archive entries are absent from this checkout, so their pixel dimensions remain unrecorded. The executable's constructor fallback uses `top = 30`, `left = 30`, `bottom = 300`, `right = 500`, `center_y = 150`, and `center_x = 250`, but that does not prove the installed layout values.
+The exact rectangles and row counts above come from the matching local `setoa.dat` and are connected to the client through `ui_gui_back_init_nbk_s_layout`, `ui_gui_back_init_nbk_l_layout`, and `ui_gui_back_select_page_mode`. The private extracted layout text remains outside the repository.

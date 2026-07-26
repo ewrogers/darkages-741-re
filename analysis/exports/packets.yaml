@@ -1370,7 +1370,7 @@ functions:
   - address: "0x004902B0"
     name: ui_inventory_pane_get_slot_rect
     confidence: high
-    evidence: "Maps a zero-based slot to the active grid rectangle, with slot 59 forced to the final cell."
+    evidence: "Maps a zero-based item slot to the active grid. It withholds the last normal cell and forces logical slot 60 there, so a 1 by 12 tray shows slots 1 through 11 plus 60 while a 5 by 12 tray shows all slots."
   - address: "0x004903E0"
     name: ui_inventory_pane_hit_test_slot
     confidence: high
@@ -1434,11 +1434,11 @@ functions:
   - address: "0x00491160"
     name: ui_new_skill_inventory_pane_select_page
     confidence: high
-    evidence: "Selects one of two 12-column skill pages and clears compact mode."
+    evidence: "Selects zero-based start 0 or 36 in a 12-column skill layout and clears combined mode. One visible row shows slots 1 through 12 or 37 through 48; three rows cap at 35 entries and omit slots 36 or 72."
   - address: "0x00491240"
     name: ui_new_skill_inventory_pane_select_compact_mode
     confidence: high
-    evidence: "Selects the six-column compact skill layout."
+    evidence: "Selects the six-column skill layout used by combined skill/spell mode, starting at zero-based slot 72 and capping at 17 entries. It shows slots 73 through 78 with one row or 73 through 89 with three."
   - address: "0x004912C0"
     name: ui_new_skill_inventory_pane_handle_item_event
     confidence: high
@@ -1490,11 +1490,11 @@ functions:
   - address: "0x00491C00"
     name: ui_new_spell_inventory_pane_select_page
     confidence: high
-    evidence: "Selects one of two 12-column spell pages and clears compact mode."
+    evidence: "Selects zero-based start 0 or 36 in a 12-column spell layout and clears combined mode. One visible row shows slots 1 through 12 or 37 through 48; three rows cap at 35 entries and omit slots 36 or 72."
   - address: "0x00491CE0"
     name: ui_new_spell_inventory_pane_select_compact_mode
     confidence: high
-    evidence: "Selects the six-column compact spell layout."
+    evidence: "Selects the six-column spell layout used by combined skill/spell mode, starting at zero-based slot 72 and capping at 17 entries. It shows slots 73 through 78 with one row or 73 through 89 with three."
   - address: "0x00491D60"
     name: ui_new_spell_inventory_pane_handle_item_event
     confidence: high

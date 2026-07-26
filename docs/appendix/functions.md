@@ -1572,7 +1572,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_inventory_pane_handle_network_event` | `0x004900C0` | high | InventoryPane_A and derived ItemInventoryPane route SAddInventory, SRemoveInventory, and SStatus to their local update paths. |
 | `ui_inventory_pane_draw_content` | `0x00490160` | high | Draws the inventory background and a three-line outline around the selected slot. |
 | `ui_inventory_pane_close` | `0x00490270` | high | Hides InventoryPane_A and notifies its owning inventory manager. |
-| `ui_inventory_pane_get_slot_rect` | `0x004902B0` | high | Maps a zero-based slot to the active grid rectangle, with slot 59 forced to the final cell. |
+| `ui_inventory_pane_get_slot_rect` | `0x004902B0` | high | Maps a zero-based item slot to the active grid. |
 | `ui_inventory_pane_hit_test_slot` | `0x004903E0` | high | Maps pane coordinates to one of 60 inventory slots and confirms the point lies inside its rectangle. |
 | `ui_inventory_create_item` | `0x00490540` | high | Allocates a 0x248-byte RTTI InvItemPane, inserts it into one of 60 inventory slots, and passes all SAddInventory item fields to its constructor. |
 | `ui_inventory_remove_slot` | `0x004907A0` | high | Releases the live InvItemPane for a one-based inventory slot and clears its direct pointer entry. |
@@ -1587,8 +1587,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_inventory_update_gold_from_status_packet` | `0x00490F10` | high | Copies SStatus gold into the inventory pane and redraws its currency display. |
 | `ui_new_skill_inventory_pane_ctor` | `0x00491050` | high | Constructs exact RTTI class NewSkillInventoryPane with a 90-entry NewInventoryPane&lt;SkillInvItemPane&gt; base. |
 | `ui_new_skill_inventory_pane_dtor` | `0x00491130` | high | Restores NewSkillInventoryPane vtables and destroys its templated inventory base. |
-| `ui_new_skill_inventory_pane_select_page` | `0x00491160` | high | Selects one of two 12-column skill pages and clears compact mode. |
-| `ui_new_skill_inventory_pane_select_compact_mode` | `0x00491240` | high | Selects the six-column compact skill layout. |
+| `ui_new_skill_inventory_pane_select_page` | `0x00491160` | high | Selects zero-based start 0 or 36 in a 12-column skill layout and clears combined mode. |
+| `ui_new_skill_inventory_pane_select_compact_mode` | `0x00491240` | high | Selects the six-column skill layout used by combined skill/spell mode, starting at zero-based slot 72 and capping at 17 entries. |
 | `ui_new_skill_inventory_pane_handle_item_event` | `0x004912C0` | high | Handles SkillInvItemPane pointer activity, selection, and slot-change requests. |
 | `ui_new_skill_inventory_pane_handle_pointer_event` | `0x004913D0` | high | Updates the skill-description UI for the visible slot under the pointer. |
 | `ui_skill_inventory_action_delay_timer` | `0x004914B0` | high | NewSkillInventoryPane TimerHandler callback for ID 0; resolves the one-based slot payload and clears action_delay_active on the item currently occupying that slot. |
@@ -1603,8 +1603,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_new_spell_inventory_pane_ctor` | `0x004919E0` | high | Constructs exact RTTI class NewSpellInventoryPane and initializes its 90-entry spell-item pointer array. |
 | `ui_new_spell_inventory_pane_dtor` | `0x00491AC0` | high | Destroys the shared SpellDelayControlPane before releasing the templated spell inventory base. |
 | `ui_new_spell_inventory_pane_register_event_handler` | `0x00491B60` | high | Registers the spell inventory and lazily creates the shared SpellDelayControlPane. |
-| `ui_new_spell_inventory_pane_select_page` | `0x00491C00` | high | Selects one of two 12-column spell pages and clears compact mode. |
-| `ui_new_spell_inventory_pane_select_compact_mode` | `0x00491CE0` | high | Selects the six-column compact spell layout. |
+| `ui_new_spell_inventory_pane_select_page` | `0x00491C00` | high | Selects zero-based start 0 or 36 in a 12-column spell layout and clears combined mode. |
+| `ui_new_spell_inventory_pane_select_compact_mode` | `0x00491CE0` | high | Selects the six-column spell layout used by combined skill/spell mode, starting at zero-based slot 72 and capping at 17 entries. |
 | `ui_new_spell_inventory_pane_handle_item_event` | `0x00491D60` | high | Handles SpellInvItemPane pointer activity, selection, and slot-change requests. |
 | `ui_new_spell_inventory_pane_handle_pointer_event` | `0x00491E90` | high | Updates the spell-description UI for the visible slot under the pointer. |
 | `ui_spell_inventory_action_delay_timer` | `0x00491F70` | high | NewSpellInventoryPane TimerHandler callback for ID 0; resolves the one-based slot payload and clears action_delay_active on the current spell item. |
@@ -2689,19 +2689,30 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_gui_back_pane_apply_window_change` | `0x0059D370` | high | Maps SWindowChange codes 0 through 4 to Items, Skills, Spells, Chat, and Status while preserving GUIBackPane's expanded state. |
 | `ui_gui_back_pane_update_vitals_from_status_packet` | `0x0059D6C0` | high | Copies current and maximum health and mana from SStatus into GUIBackPane bar targets. |
 | `ui_gui_back_layout_init_common` | `0x0059D830` | high | Reads common named controls from one loaded GUIBackPane layout, including BTN_HELP and the other bottom actions. |
+| `ui_gui_back_init_nbk_l_layout` | `0x0059E7B0` | high | Loads _nbk_l.txt and builds its one-row normal and expanded lower-tray records. |
+| `ui_gui_back_init_nbk_s_layout` | `0x0059F320` | high | Loads _nbk_s.txt and builds its three-row lower-tray records. |
 | `ui_gui_back_pane_ctor` | `0x0059FB60` | high | Constructs the RTTI-backed GUIBackPane and its two size-specific layout records and child panes. |
 | `ui_gui_back_toggle_layout` | `0x005A0B40` | high | Flips GUIBackPane between layout indexes 0 and 1 and passes the result to ui_gui_back_apply_layout. |
 | `ui_gui_back_activate_action` | `0x005A0B70` | high | Dispatches GUIBackPane bottom-action IDs; action 0 creates HotKeyPane, while the other IDs open their normal panes or local actions. |
-| `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Hit-tests six bottom-action rectangles on a left-button event; BTN_HELP is slot 0 and is passed to ui_gui_back_activate_action after click debounce. |
+| `ui_gui_back_handle_pointer` | `0x005A0CF0` | high | Hit-tests lower-panel controls on pointer events. |
 | `ui_gui_back_pane_draw` | `0x005A2050` | high | Draws GUIBackPane state, including selection of the network indicator image from the latest movement round-trip value. |
 | `ui_gui_back_pane_set_network_latency` | `0x005A2B80` | high | Stores the latest matching CMove and SMove round-trip in GUIBackPane and invalidates the network-indicator region. |
 | `ui_gui_back_pane_request_show_users` | `0x005A2C60` | high | GUIBackPane interface method that requests the current world-user list through CWho. |
+| `ui_gui_back_get_page_mode` | `0x005A2CA0` | high | Returns the selected lower-tray page mode stored at GUIBackPane complete-object offset +0x4FA8. |
 | `ui_gui_back_get_page_expanded` | `0x005A2CC0` | high | Returns GUIBackPane's page_is_expanded flag at complete object offset +0x4FB0. |
 | `ui_game_interface_activate_number_key` | `0x005A2D90` | high | Routes number keys by the selected GUIBackPane mode; item mode maps keys 1 through 9 and 0 to inventory slots 1 through 10. |
-| `ui_gui_back_select_page_mode` | `0x005A2FB0` | high | Selects one GUIBackPane page, records its expanded flag, and applies normal or expanded geometry from the active small or large layout record. |
+| `ui_gui_back_select_page_mode` | `0x005A2FB0` | high | Selects item, spell, skill, chat, status, or combined skill/spell content and applies normal or expanded child geometry. |
 | `ui_gui_back_apply_layout` | `0x005A3900` | high | Reapplies the selected GUIBackPane and child-pane geometry, then sends the layout's MAP rectangle and view center through MapInterface to resize and invalidate WorldPane. |
 | `ui_skill_spell_book_find_current_level` | `0x005A4440` | high | Scans 89 live spell or skill slots by stripped base name and returns the parsed left suffix value for the first exact match. |
 | `ui_inventory_select_buttons_handle_action` | `0x005A5210` | high | Handles local lower-tray selection buttons through the same page-mode interface used by SWindowChange, with additional paired-page toggles and collapse. |
+| `ui_item_inventory_pane_apply_layout` | `0x005A7E70` | high | Applies one item-tray layout record and re-registers visible inventory items using its row and column counts. |
+| `ui_skill_spell_inventory_pane_ctor` | `0x005A7FE0` | high | Constructs exact RTTI SkillSpellInventoryPane and its owned NewSkillInventoryPane and NewSpellInventoryPane children. |
+| `ui_skill_spell_inventory_pane_apply_layout` | `0x005A8290` | high | Applies bounds, child positions, and a visible row count from the selected GUIBackPane skill/spell layout record. |
+| `ui_skill_spell_inventory_pane_show_skills` | `0x005A86B0` | high | Shows and positions the skill child, hides the spell child, and preserves the selected 12-column skill page when possible. |
+| `ui_skill_spell_inventory_pane_show_spells` | `0x005A8800` | high | Shows and positions the spell child, hides the skill child, and preserves the selected 12-column spell page when possible. |
+| `ui_skill_spell_inventory_pane_show_combined` | `0x005A8950` | high | Shows skill and spell children side by side in six-column layouts starting at zero-based slot 72. |
+| `ui_new_skill_inventory_pane_set_visible_rows` | `0x005A8CD0` | high | Stores the layout-supplied visible skill row count and recomputes the registered grid. |
+| `ui_new_spell_inventory_pane_set_visible_rows` | `0x005A8D30` | high | Stores the layout-supplied visible spell row count and recomputes the registered grid. |
 | `ui_new_system_message_text_pane_ctor` | `0x005A8FB0` | high | Constructs the TextEditPane child that stores and renders persistent message history. |
 | `ui_new_system_message_pane_handle_packet_event` | `0x005A9000` | high | Recognizes SMessage packet events and forwards them to the history type router. |
 | `ui_new_system_message_pane_ctor` | `0x005A9060` | high | Constructs NewSystemMessagePane with one visible row, a TextEditPane child, and ten initial blank lines. |

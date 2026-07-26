@@ -3083,6 +3083,14 @@ functions:
     name: ui_gui_back_layout_init_common
     confidence: high
     evidence: Reads common named controls from one loaded GUIBackPane layout, including BTN_HELP and the other bottom actions.
+  - address: "0x0059E7B0"
+    name: ui_gui_back_init_nbk_l_layout
+    confidence: high
+    evidence: "Loads _nbk_l.txt and builds its one-row normal and expanded lower-tray records. Item inventory expands from 1 by 12 to 5 by 12; skill and spell pages expand from 1 to 3 visible rows."
+  - address: "0x0059F320"
+    name: ui_gui_back_init_nbk_s_layout
+    confidence: high
+    evidence: "Loads _nbk_s.txt and builds its three-row lower-tray records. Normal page selection uses three visible item, skill, or spell rows in this top-level layout."
   - address: "0x0059FB60"
     name: ui_gui_back_pane_ctor
     confidence: high
@@ -3098,11 +3106,51 @@ functions:
   - address: "0x005A0CF0"
     name: ui_gui_back_handle_pointer
     confidence: high
-    evidence: Hit-tests six bottom-action rectangles on a left-button event; BTN_HELP is slot 0 and is passed to ui_gui_back_activate_action after click debounce.
+    evidence: "Hit-tests lower-panel controls on pointer events. A left click on BTN_EXPAND toggles the current page's expanded state; BTN_CHANGELAYOUT switches the top-level GUI layout."
+  - address: "0x005A2CA0"
+    name: ui_gui_back_get_page_mode
+    confidence: high
+    evidence: "Returns the selected lower-tray page mode stored at GUIBackPane complete-object offset +0x4FA8."
+  - address: "0x005A2FB0"
+    name: ui_gui_back_select_page_mode
+    confidence: high
+    evidence: "Selects item, spell, skill, chat, status, or combined skill/spell content and applies normal or expanded child geometry. Layout index 0 forces the expanded state off."
   - address: "0x005A3900"
     name: ui_gui_back_apply_layout
     confidence: high
     evidence: Reapplies the selected GUIBackPane and child-pane geometry, then sends the layout's MAP rectangle and view center through MapInterface to resize and invalidate WorldPane.
+  - address: "0x005A7E70"
+    name: ui_item_inventory_pane_apply_layout
+    confidence: high
+    evidence: "Applies one item-tray layout record and re-registers visible inventory items using its row and column counts."
+  - address: "0x005A7FE0"
+    name: ui_skill_spell_inventory_pane_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI SkillSpellInventoryPane and its owned NewSkillInventoryPane and NewSpellInventoryPane children."
+  - address: "0x005A8290"
+    name: ui_skill_spell_inventory_pane_apply_layout
+    confidence: high
+    evidence: "Applies bounds, child positions, and a visible row count from the selected GUIBackPane skill/spell layout record."
+  - address: "0x005A86B0"
+    name: ui_skill_spell_inventory_pane_show_skills
+    confidence: high
+    evidence: "Shows and positions the skill child, hides the spell child, and preserves the selected 12-column skill page when possible."
+  - address: "0x005A8800"
+    name: ui_skill_spell_inventory_pane_show_spells
+    confidence: high
+    evidence: "Shows and positions the spell child, hides the skill child, and preserves the selected 12-column spell page when possible."
+  - address: "0x005A8950"
+    name: ui_skill_spell_inventory_pane_show_combined
+    confidence: high
+    evidence: "Shows skill and spell children side by side in six-column layouts starting at zero-based slot 72."
+  - address: "0x005A8CD0"
+    name: ui_new_skill_inventory_pane_set_visible_rows
+    confidence: high
+    evidence: "Stores the layout-supplied visible skill row count and recomputes the registered grid."
+  - address: "0x005A8D30"
+    name: ui_new_spell_inventory_pane_set_visible_rows
+    confidence: high
+    evidence: "Stores the layout-supplied visible spell row count and recomputes the registered grid."
   - address: "0x005B8B50"
     name: render_fill_light_mask_rect
     confidence: high
@@ -3840,15 +3888,35 @@ comments:
   - address: "0x00598210"
     text: Deserialize the one-byte SChangeWeather payload to derived-object offset 0x10. No 0x1F consumer exists in the native gameplay dispatcher.
   - address: "0x0059DAC9"
-    text: Read the selected GUI layout's MAP rectangle and derive the view center stored in its six-value WorldPane layout record.
+    text: "Read the selected GUI layout's MAP rectangle in left, top, right, bottom order and derive the view center stored in its six-value WorldPane layout record."
   - address: "0x0059DCD5"
     text: Read BTN_HELP from the current GUIBackPane layout; ui_gui_back_apply_layout later copies this rectangle into action slot 0.
+  - address: "0x0059E954"
+    text: "_nbk_l.txt normal item inventory uses one visible row and twelve columns."
+  - address: "0x0059EA5C"
+    text: "_nbk_l.txt expanded item inventory uses five visible rows and twelve columns."
+  - address: "0x0059EB53"
+    text: "_nbk_l.txt provides a separate expanded skill/spell layout record."
+  - address: "0x0059ECBF"
+    text: "_nbk_l.txt normal skill and spell pages use one visible row."
+  - address: "0x0059ECDF"
+    text: "_nbk_l.txt expanded skill and spell pages use three visible rows."
+  - address: "0x0059F490"
+    text: "_nbk_s.txt normal item inventory uses three visible rows and twelve columns."
+  - address: "0x0059F6B2"
+    text: "_nbk_s.txt normal skill and spell pages use three visible rows."
   - address: "0x005A0B9E"
     text: GUIBackPane action 0 creates the RTTI-backed HotKeyPane through ui_create_hot_key_pane.
   - address: "0x005A0E16"
     text: Dispatch the left-clicked bottom action index after hit testing and debounce; index 0 is BTN_HELP.
+  - address: "0x005A0EBF"
+    text: "BTN_EXPAND reselects the current lower-tray page with the inverse page_is_expanded value."
   - address: "0x005A0FA2"
     text: BTN_HELP also participates in the pointer-move tooltip path, separately from its action-slot-0 left-click path.
+  - address: "0x005A303B"
+    text: "Force page_is_expanded off in top-level layout index 0, which is loaded from _nbk_s.txt."
+  - address: "0x005A34B6"
+    text: "In _nbk_l.txt, a true page_is_expanded value selects the alternate three-row skill/spell record."
   - address: "0x005A3AEC"
     text: Copy the active layout's BTN_HELP rectangle into GUIBackPane bottom action slot 0.
   - address: "0x005A3BED"
