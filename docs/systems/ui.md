@@ -150,7 +150,7 @@ Exact RTTI `HumanImageControlPane` is a smaller control used by character UI. It
 
 ## Equipment and character views
 
-Exact RTTI `EquipPane` owns 18 worn-equipment entries. Each entry keeps its sprite, dye byte, name, current durability, and maximum durability. The pane draws those entries with the local character profile and can send [`CRemoveEquipment`](../network/client/068-0x44-remove-equipment.md) for a selected one-byte slot.
+Exact RTTI `EquipPane` owns 18 worn-equipment entries. Each entry keeps its sprite, dye byte, name, current durability, and maximum durability. The durability values remain stored but are not drawn. The pane draws the equipment with the local character profile and can send [`CRemoveEquipment`](../network/client/068-0x44-remove-equipment.md) for a selected one-byte slot.
 
 An attached exact RTTI `GroupViewPane` is a small owner-relative panel. It draws `equip02.epf` or `equip03.epf` and advances its expand or collapse transition through a requeued timer callback. Group state and visibility remain separate from the transition state.
 

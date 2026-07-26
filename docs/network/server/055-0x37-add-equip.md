@@ -20,8 +20,8 @@ packet SAddEquip {
     u8      dye_color
     string8 name
     u8      ignored_after_name        // observed as 0x00
-    u32     durability
     u32     max_durability
+    u32     current_durability
 }
 ```
 
@@ -29,7 +29,7 @@ packet SAddEquip {
 
 The next byte is part of the parsed body. The client advances over it without checking its value. It was zero in every supplied login entry, so it may be a wire-level name terminator, but that meaning is not required by the parser.
 
-Some captured bodies have another zero after `max_durability`. That final byte is not consumed by this class. See [Receive-side zero bytes](../packet-transforms.md#receive-side-zero-bytes).
+Some captured bodies have another zero after `current_durability`. That final byte is not consumed by this class. See [Receive-side zero bytes](../packet-transforms.md#receive-side-zero-bytes).
 
 ## Equipment slots
 
@@ -39,9 +39,11 @@ Some captured bodies have another zero after `max_durability`. That final byte i
 
 `EquipPane` keeps 18 parallel entries for the sprite, dye, name, and durability pair. It converts the one-based wire slot to a zero-based index and redraws the pane after the update. The name is copied into a 128-byte UI buffer. The dye byte is retained unchanged; this path does not establish how the value maps to the shared rendering palette.
 
+The client reorders the two wire values into the same `current, maximum` memory order used by inventory items. The second wire value is stored at the start of the selected `EquipmentDurability` entry, and the first wire value is stored four bytes later. `EquipPane` retains both values but does not draw them.
+
 The add path only checks that the decremented index is at most 17. It does not reject the negative index produced by slot `0`, so the server must use slots `1` through `18` for this consumer.
 
-`UserInfoPane` uses a safer 19-entry mapping table. Slot `0` maps to `-1` and is ignored. Slots `1` through `18` select view entries `0` through `17`. Its child equipment view receives the sprite, dye, name, maximum durability, and current durability. The child's exact RTTI class remains unresolved.
+`UserInfoPane` uses a safer 19-entry mapping table. Slot `0` maps to `-1` and is ignored. Slots `1` through `18` select view entries `0` through `17`. Its child equipment view receives the sprite, dye, name, current durability, and maximum durability. The child's exact RTTI class remains unresolved.
 
 The mapped fields are in [Equipment panes](../../appendix/runtime/inventory-ui.md#equipment-panes).
 

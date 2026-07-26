@@ -9,7 +9,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
 | `app_detect_bad_guy_marker` | `0x00431ED0` | high | Reconstructs %SystemRoot%\System32\Mscfg.dll and sets config +0x668 from file existence alone. |
-| `app_config_ctor` | `0x00431FF0` | high | Constructs Config, loads Darkages.cfg, selects a distribution mode, and dispatches endpoint initialization. |
+| `app_config_ctor` | `0x00431FF0` | high | Constructs Config, loads Darkages.cfg, and dispatches endpoint initialization. |
 | `app_save_config` | `0x00432340` | high | Writes Darkages.cfg in text mode. |
 | `app_load_config_file` | `0x00432660` | high | Loads the versioned Darkages.cfg text fields, endpoint table, input mode, animation flag, and gated audio/game options. |
 | `app_set_default_config` | `0x00432D60` | high | Installs distribution-specific endpoint defaults, input settings, fonts, animation, and level-3 audio defaults. |
@@ -86,7 +86,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_has_exception_handler` | `0x004AE420` | high | Reports whether the process exception-handler singleton pointer is non-null. |
 | `app_has_language_manager` | `0x004AE440` | high | Reports whether the exact RTTI Language singleton pointer is non-null. |
 | `app_send_mail_via_mapi` | `0x004B6770` | high | Loads MAPI32.DLL, resolves MAPISendMail, sends a one-recipient message, and unloads the library. |
-| `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info, writes the fixed handoff structure, launches Patcher2.exe without arguments, and exits the client. |
+| `app_write_patch_info_and_launch_patcher` | `0x00528610` | high | Creates Patch/Info beside Darkages.exe, writes the fixed handoff, and launches Patcher2.exe through CreateProcessA. |
 | `app_quit_after_patcher_launch` | `0x005287B0` | high | Destroys NewPatchPane, posts WM_QUIT, and terminates after the patcher launch attempt. |
 | `app_stack_walker_from_thread_ctor` | `0x0056D4E0` | high | Constructs exact RTTI StackWalker and captures the supplied thread or current thread into an x86 CONTEXT. |
 | `app_stack_walker_from_context_ctor` | `0x0056D540` | high | Constructs exact RTTI StackWalker and copies the supplied 0x2CC-byte x86 CONTEXT. |
@@ -1166,7 +1166,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_equip_pane_apply_self_look` | `0x0045FDC0` | high | Copies SSelfLook identity, nation, group, class, and legend state into EquipPane and its dependent panes. |
 | `ui_equip_pane_apply_equipment_detail_body` | `0x0045FFA0` | high | Parses one equipment-detail body into the selected EquipPane slot and invalidates the pane. |
 | `ui_equip_pane_apply_remove_equipment_detail_body` | `0x00460130` | high | Parses an equipment-detail removal body and clears the corresponding EquipPane state. |
-| `ui_equip_pane_add_equipment_from_packet` | `0x004601D0` | high | Converts the SAddEquip slot to an index and stores sprite, dye, name, current durability, and maximum durability in EquipPane's 18-entry arrays. |
+| `ui_equip_pane_add_equipment_from_packet` | `0x004601D0` | high | Converts the SAddEquip slot to an index and stores sprite, dye, name, then current and maximum durability in EquipPane's 18-entry arrays. |
 | `ui_equip_pane_remove_equipment_from_packet` | `0x004602B0` | high | Clears the selected EquipPane sprite, name, and durability fields without clearing the retained dye byte. |
 | `ui_equip_pane_refresh_group_toggle_button` | `0x004603C0` | high | Refreshes the EquipPane group-toggle button from the current local group state. |
 | `ui_equip_pane_toggle_group` | `0x004604A0` | high | Sends the empty CGroupToggle body, flips local group state, and refreshes the button. |
@@ -1663,9 +1663,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_item_pane_draw_content` | `0x00495CD0` | high | Loads the item icon, selects the alternate icon bank above ID 0x8000, and blits it with the optional palette index. |
 | `ui_item_pane_get_display_name` | `0x00495DB0` | high | Copies the ItemPane display-name bytes from object offset 0x192 into the caller's bounded buffer. |
 | `ui_inventory_item_set_display_name` | `0x00495DE0` | high | Replaces the InvItemPane display name through the same bounded 128-byte copy used by its ItemPane base. |
-| `ui_inventory_item_ctor` | `0x00495E10` | high | Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, maximum durability, and current durability. |
+| `ui_inventory_item_ctor` | `0x00495E10` | high | Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, then current and maximum durability. |
 | `ui_inventory_item_dtor` | `0x00495F60` | high | Destroys exact RTTI class InvItemPane and closes DescPane when it currently describes this item. |
-| `ui_inventory_item_show_desc` | `0x00495FF0` | high | Builds an InvItemPane tooltip anchor, keeps it within 640 by 480, resolves the item's description provider, and opens the shared DescPane with the item as owner. |
+| `ui_inventory_item_show_desc` | `0x00495FF0` | high | Builds the InvItemPane tooltip, formats object +0x238 / +0x23C as current / maximum durability, keeps the pane within 640 by 480, and opens the shared DescPane. |
 | `ui_inventory_item_handle_pointer_event` | `0x004963C0` | high | InvItemPane pointer-event handler starts a DraggedInvItemPane from the selected inventory item and its one-based source slot. |
 | `ui_inventory_item_pointer_case_1_miss` | `0x0049653F` | high | Compiler-split pointer-event type 1 miss branch that forwards to the common false return. |
 | `ui_inventory_item_pointer_case_2_miss` | `0x004965AD` | high | Compiler-split pointer-event type 2 miss branch that forwards to the common false return. |
@@ -3097,16 +3097,17 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_packet_reader_skip` | `0x00595D60` | high | Advances the decoded server-packet reader by a caller-supplied byte count without validating the skipped values. |
 | `net_packet_reader_read_string8` | `0x00595DF0` | high | Reads a one-byte-length-prefixed byte string and appends a local NUL to the destination. |
 | `net_server_packet_factory_ctor` | `0x00595F00` | high | Registers 61 opcode-specific server packet constructors in a 256-entry factory. |
-| `net_deserialize_server_packet` | `0x005963F0` | high | Creates the registered server packet class and invokes its deserializer; it does not require the reader to consume the complete supplied body. |
+| `net_deserialize_server_packet` | `0x005963F0` | high | Takes an opcode-specific object from the factory cache or creates one, clears the cache slot while the object is active, and invokes its deserializer. |
+| `net_release_server_packet_to_factory` | `0x005964C0` | high | Returns a handled server packet object to its opcode-specific factory cache slot, or destroys it if that slot is already occupied. |
 | `net_create_server_packet` | `0x00596780` | high | Calls the registered constructor for a server opcode. |
 | `net_action_delay_server_packet_ctor` | `0x00597160` | high | Passes opcode 0x3F to the server packet base and installs the exact RTTI SActionDelay vtable. |
 | `net_deserialize_action_delay_server_packet` | `0x00597190` | high | Reads u8 selector at object +0x10, u8 one-based slot at +0x11, and big-endian u32 duration_seconds at +0x14. |
 | `net_create_add_equip_server_packet` | `0x00597210` | high | Allocates a 0x124-byte RTTI SAddEquip object and calls its concrete constructor. |
 | `net_add_equip_server_packet_ctor` | `0x00597290` | high | Passes opcode 0x37 to the server packet base and installs the exact SAddEquip vtable. |
-| `net_deserialize_add_equip_server_packet` | `0x005972C0` | high | Reads slot, u16 sprite, dye, string8 name, one skipped byte, and two u32 durability values into SAddEquip. |
+| `net_deserialize_add_equip_server_packet` | `0x005972C0` | high | Reads slot, u16 sprite, dye, string8 name, one skipped byte, u32 maximum durability, and u32 current durability into SAddEquip. |
 | `net_create_add_inventory_server_packet` | `0x00597380` | high | Allocates a 0x12C-byte RTTI SAddInventory object and calls its concrete constructor. |
 | `net_add_inventory_server_packet_ctor` | `0x00597400` | high | Passes opcode 0x0F to the server packet base and installs the exact SAddInventory vtable. |
-| `net_deserialize_add_inventory_server_packet` | `0x00597430` | high | Reads slot, u16 sprite, dye color, string8 name, u32 quantity, stack flag, current durability, and maximum durability into SAddInventory. |
+| `net_deserialize_add_inventory_server_packet` | `0x00597430` | high | Reads slot, u16 sprite, dye color, string8 name, u32 quantity, stack flag, maximum durability, and current durability into SAddInventory. |
 | `net_create_add_skill_server_packet` | `0x00597510` | high | Allocates a 0x118-byte RTTI SAddSkill object and calls its concrete constructor. |
 | `net_add_skill_server_packet_ctor` | `0x00597590` | high | Passes opcode 0x2C to the server packet base and installs the exact SAddSkill vtable. |
 | `net_deserialize_add_skill_server_packet` | `0x005975C0` | high | Reads u8 slot, u16 icon, and string8 name into SAddSkill. |
@@ -3135,7 +3136,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_create_change_hour_server_packet` | `0x00598050` | high | Allocates a 0x14-byte RTTI SChangeHour object and calls its concrete constructor. |
 | `net_change_hour_server_packet_ctor` | `0x005980D0` | high | Passes opcode 0x20 to the server packet base and installs the exact SChangeHour vtable. |
 | `net_deserialize_change_hour_server_packet` | `0x00598100` | high | Reads exactly one u8 time step into SChangeHour object offset +0x10 and leaves any remaining body bytes unread. |
-| `net_decode_s_change_weather` | `0x00598210` | high | Reads the one-byte SChangeWeather payload; the main gameplay dispatcher has no opcode 0x1F consumer. |
+| `net_decode_s_change_weather` | `0x00598210` | high | Reads the one-byte SChangeWeather payload into derived-object offset 0x10; the main gameplay dispatcher has no opcode 0x1F consumer. |
 | `net_create_check_time_server_packet` | `0x00598270` | high | Allocates a 0x14-byte SCheckTime object containing the packet base and one u32 server value. |
 | `net_check_time_server_packet_ctor` | `0x005982F0` | high | Passes opcode 0x68 to the server packet base and installs the exact SCheckTime vtable. |
 | `net_deserialize_check_time_server_packet` | `0x00598320` | high | Reads one big-endian u32 server_value into SCheckTime object offset +0x10. |
@@ -3263,7 +3264,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_deserialize_window_change_server_packet` | `0x0059D000` | high | Reads the complete SWindowChange payload as one u8 window_code into packet object offset +0x10. |
 | `net_send_who` | `0x0059D7D0` | high | Builds CWho as opcode 0x18 with no payload and submits the complete one-byte plaintext body. |
 | `net_send_portrait_profile` | `0x005B1160` | high | Calls net_build_send_portrait and submits the result through net_submit_client_packet. |
-| `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode. |
+| `net_dispatch_server_packet` | `0x005ED990` | high | Routes parsed server packet objects to gameplay handlers by opcode, but omits 0x1F even though the factory constructs and decodes SChangeWeather. |
 | `net_dispatch_server_packet` | `0x005ED9A0` | high | Checks decoded opcode 0x4F directly because SMercenary has no server-factory object, then calls the employee dialog opener. |
 | `net_handle_static_object_state_server_packet` | `0x005F1690` | high | Applies every record to the selected isometric static layer; state 0 targets pair column 1 and any nonzero state targets column 0. |
 | `net_handle_self_look_server_packet` | `0x005F1990` | high | Forwards SSelfLook to WorldUserFunc, then refreshes the live group-member matches immediately or after the existing one-second timer path. |
@@ -5118,7 +5119,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_parse_spell_skill_constraint` | `0x0055F890` | high | Parses the first six values of one SClass ability record into display and requirement fields. |
 | `metadata_spell_skill_requirements_met` | `0x005600B0` | high | Checks character level, ability and master flags, ability level, attributes, and two named learned-ability prerequisites. |
 | `crc16_buffer` | `0x00568870` | high | Applies the custom CRC16 update to a byte buffer starting from zero. |
-| `startup_run_pending_patcher` | `0x0057A330` | high | Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe; otherwise deletes both markers and continues. |
+| `startup_run_pending_patcher` | `0x0057A330` | high | Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe through CreateProcessA and exit; otherwise deletes both markers and continues. |
 | `user_info_load_family_list` | `0x00592560` | high | Clears twenty 40-byte UserInfo family slots, then loads up to twenty lines from the per-character Familylist.cfg file. |
 | `user_info_save_family_list` | `0x00592730` | high | Writes all twenty 40-byte UserInfo family slots as lines in the per-character Familylist.cfg file. |
 | `user_info_load_friend_list` | `0x00592800` | high | Clears twenty 40-byte UserInfo friend slots, then loads up to twenty lines from the per-character Friendlist.cfg file. |
@@ -5193,7 +5194,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_object_list_find_by_id` | `0x005E73B0` | high | Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10. |
 | `world_set_view_position` | `0x005EEC70` | high | Publishes a Y, X world-view position and optionally rebuilds the visible world and camera state around it. |
 | `world_get_self_user_object` | `0x005EEDB0` | high | Looks up the saved self object ID and RTTI-casts the result to WorldObject_User. |
-| `world_update_map_lighting` | `0x005EF360` | high | Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, and conditionally loads its HEA mask. |
+| `world_update_map_lighting` | `0x005EF360` | high | Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, conditionally loads its HEA mask, and restores normal lighting after Darkness is cleared. |
 | `world_get_static_tile_id_from_object` | `0x005EFEC0` | high | Requires WorldObject_Static and returns its current live tile ID for the movement collision path. |
 | `session_world_user_func_ctor` | `0x005FC5F0` | high | Constructs exact RTTI class WorldUserFunc, embeds exact RTTI UserInfo at +0x15C8C, and clears its fixed inventory, spell, and skill arrays; the allocation site requests 0x167D0 bytes. |
 | `session_find_first_empty_inventory_slot` | `0x005FC900` | high | Returns the first absent inventory record in slots 1 through 60, or 0 when every slot is occupied. |

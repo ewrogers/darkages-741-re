@@ -14,7 +14,7 @@ functions:
   - address: "0x00495FF0"
     name: ui_inventory_item_show_desc
     confidence: high
-    evidence: "Builds an InvItemPane tooltip anchor, keeps it within 640 by 480, resolves the item's description provider, and opens the shared DescPane with the item as owner."
+    evidence: "Builds the InvItemPane tooltip, formats object +0x238 / +0x23C as current / maximum durability, keeps the pane within 640 by 480, and opens the shared DescPane."
   - address: "0x00498B90"
     name: ui_skill_inventory_item_get_base_name
     confidence: high
@@ -301,6 +301,8 @@ functions:
     evidence: "Decodes the spell-or-skill inventory selection, resolves its definition, classifies learned and requirement state, constructs the detail pane, centers it, and opens it."
 data_symbols: []
 comments:
+  - address: "0x0049618D"
+    text: "Format durability as current / maximum. The first displayed value is InvItemPane +0x238 and the second is +0x23C."
   - address: "0x00499660"
     text: "The accepted suffix shape is space + parenthesized left/right values. The parser never compares the label with the literal Lev:."
   - address: "0x0053094C"

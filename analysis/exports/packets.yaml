@@ -930,7 +930,7 @@ functions:
   - address: "0x004601D0"
     name: ui_equip_pane_add_equipment_from_packet
     confidence: high
-    evidence: "Converts the SAddEquip slot to an index and stores sprite, dye, name, current durability, and maximum durability in EquipPane's 18-entry arrays."
+    evidence: "Converts the SAddEquip slot to an index and stores sprite, dye, name, then current and maximum durability in EquipPane's 18-entry arrays."
   - address: "0x004602B0"
     name: ui_equip_pane_remove_equipment_from_packet
     confidence: high
@@ -1722,7 +1722,7 @@ functions:
   - address: "0x00495E10"
     name: ui_inventory_item_ctor
     confidence: high
-    evidence: "Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, maximum durability, and current durability."
+    evidence: "Constructs exact RTTI class InvItemPane and retains slot, sprite, dye, display name, quantity, stack flag, then current and maximum durability."
   - address: "0x00495F60"
     name: ui_inventory_item_dtor
     confidence: high
@@ -2930,7 +2930,7 @@ functions:
   - address: "0x005972C0"
     name: net_deserialize_add_equip_server_packet
     confidence: high
-    evidence: "Reads slot, u16 sprite, dye, string8 name, one skipped byte, and two u32 durability values into SAddEquip."
+    evidence: "Reads slot, u16 sprite, dye, string8 name, one skipped byte, u32 maximum durability, and u32 current durability into SAddEquip."
   - address: "0x00597380"
     name: net_create_add_inventory_server_packet
     confidence: high
@@ -2942,7 +2942,7 @@ functions:
   - address: "0x00597430"
     name: net_deserialize_add_inventory_server_packet
     confidence: high
-    evidence: "Reads slot, u16 sprite, dye color, string8 name, u32 quantity, stack flag, current durability, and maximum durability into SAddInventory."
+    evidence: "Reads slot, u16 sprite, dye color, string8 name, u32 quantity, stack flag, maximum durability, and current durability into SAddInventory."
   - address: "0x00597510"
     name: net_create_add_skill_server_packet
     confidence: high
@@ -3175,6 +3175,10 @@ functions:
     name: net_map_size_server_packet_ctor
     confidence: high
     evidence: "Passes opcode 0x15 to the server packet base and installs the exact SMapSize vtable."
+  - address: "0x00599F90"
+    name: net_deserialize_map_size_server_packet
+    confidence: high
+    evidence: "Reads map number, byte-sized dimensions and flags, one unknown byte, u24 cache value, and string8 map name into an inline SMapSize buffer."
   - address: "0x0059A050"
     name: net_create_message_server_packet
     confidence: high
@@ -4102,7 +4106,7 @@ comments:
   - address: "0x00490120"
     text: "InventoryPane_A routes RTTI SRemoveInventory opcode 0x10 to its UI removal path."
   - address: "0x004905B0"
-    text: "Construct the 0x248-byte InvItemPane with slot, sprite, dye, name, quantity, stack flag, maximum durability, and current durability."
+    text: "Construct the 0x248-byte InvItemPane with slot, sprite, dye, name, quantity, stack flag, current durability, and maximum durability."
   - address: "0x004907A9"
     text: "Convert the one-based inventory slot to InventoryPane_A's direct pointer entry at +0x1A0."
   - address: "0x00490813"
@@ -4178,7 +4182,7 @@ comments:
   - address: "0x00495E6B"
     text: "A nonzero can_stack flag replaces the visible name with the bounded format name[ quantity ]."
   - address: "0x00495E9F"
-    text: "InvItemPane retains maximum durability at +0x238, current durability at +0x23C, quantity at +0x240, and can_stack at +0x244."
+    text: "InvItemPane retains current durability at +0x238, maximum durability at +0x23C, quantity at +0x240, and can_stack at +0x244."
   - address: "0x004965A1"
     text: "InvItemPane pointer event type 2 is the left-button double-click activation path and reaches CUse."
   - address: "0x0049667B"
@@ -4654,17 +4658,17 @@ comments:
   - address: "0x005962D3"
     text: "The factory installs no constructor for server opcode 0x1B, 0x1E, 0x58, or 0x67. They remain raw decoded bodies with a null packet-object slot."
   - address: "0x005972CA"
-    text: "SAddEquip body: u8 slot, u16 sprite, u8 dye, string8 name, one skipped byte, u32 current durability, u32 maximum durability."
+    text: "SAddEquip body: u8 slot, u16 sprite, u8 dye, string8 name, one skipped byte, u32 maximum durability, u32 current durability."
   - address: "0x00597311"
     text: "Skip the byte immediately after the name. Login captures consistently show 0x00 here, but the parser does not validate its value."
   - address: "0x00597319"
-    text: "Read current durability as u32 into packet object +0x11C."
+    text: "Read maximum durability as u32 into packet object +0x11C."
   - address: "0x0059732A"
-    text: "Read maximum durability as u32 into packet object +0x120."
+    text: "Read current durability as u32 into packet object +0x120."
   - address: "0x00597442"
     text: "SAddInventory begins with a one-byte slot followed by u16 sprite, dye color, and string8 name."
   - address: "0x00597482"
-    text: "Read quantity as u32, can_stack as u8, current durability as u32, and maximum durability as u32."
+    text: "Read quantity as u32, can_stack as u8, maximum durability as u32, and current durability as u32."
   - address: "0x005975D2"
     text: "SAddSkill body begins with a one-byte skill slot."
   - address: "0x005975E0"
@@ -4804,7 +4808,7 @@ comments:
   - address: "0x00599FE9"
     text: "Read the three-byte cache slot as u24. Observed values contain 00 followed by the CRC16, and the comparison requires that high byte to be zero."
   - address: "0x00599FFE"
-    text: "Read the map name as string8."
+    text: "Read the map name as string8 into the fixed buffer at SMapSize +0x1C. This field is inline, not a pointer."
   - address: "0x0059A112"
     text: "Read the SMessage type byte."
   - address: "0x0059A11F"
@@ -6100,7 +6104,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "RTTI constructor 0x00597400 binds opcode 0x0F. Deserializer 0x00597430 reads slot, sprite, dye, string8 name, quantity, stack flag, and two durability values. WorldUserFunc and InventoryPane_A consume the decoded object."
+        evidence: "RTTI constructor 0x00597400 binds opcode 0x0F. Deserializer 0x00597430 reads slot, sprite, dye, string8 name, quantity, stack flag, maximum durability, and current durability. WorldUserFunc and InventoryPane_A consume the decoded object."
         page: "docs/network/server/015-0x0f-add-inventory.md"
       - opcode: "0x10"
         friendly_name: "Remove Inventory"
@@ -6360,7 +6364,7 @@ packet_indexes:
         evidence_source: rtti
         opcode_confidence: high
         name_confidence: high
-        evidence: "Constructor 0x00597290 installs the SAddEquip vtable for opcode 0x37. Its deserializer reads slot, sprite, dye, name, an ignored byte, and two durability values; EquipPane and UserInfoPane consume the result."
+        evidence: "Constructor 0x00597290 installs the SAddEquip vtable for opcode 0x37. Its deserializer reads slot, sprite, dye, name, an ignored byte, maximum durability, and current durability; EquipPane and UserInfoPane consume the result."
         page: "docs/network/server/055-0x37-add-equip.md"
       - opcode: "0x38"
         friendly_name: "Remove Equip"

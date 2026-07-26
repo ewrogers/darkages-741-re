@@ -152,8 +152,8 @@ There are 60 pointers for one-based slots 1 through 60. For each non-null `InvIt
 | Display name | `+0x192`, bounded 128-byte buffer |
 | Dye color | `+0x212`, `u8` |
 | Slot | `+0x214`, `u8` |
-| Maximum durability | `+0x238`, `u32` |
-| Current durability | `+0x23C`, `u32` |
+| Current durability | `+0x238`, `u32` |
+| Maximum durability | `+0x23C`, `u32` |
 | Quantity | `+0x240`, `u32` |
 | Stackable | `+0x244`, `u8` |
 
@@ -165,11 +165,11 @@ Equipment uses the direct `EquipPane` singleton root. It owns 18 entries:
 u16 sprites[18];                  // +0x111C
 u8 dyes[18];                      // +0x1140
 char names[18][128];              // +0x1152
-struct { u32 max; u32 current; }
+struct { u32 current; u32 max; }
     durability[18];               // +0x1A54
 ```
 
-The index is `equipment_slot - 1`. The singleton exists for the in-game session even when the equipment UI is not visible. See [Inventory and character panes](inventory-ui.md) for construction and replacement behavior.
+The index is `equipment_slot - 1`. The singleton exists for the in-game session even when the equipment UI is not visible. It retains both durability values but does not draw them. See [Inventory and character panes](inventory-ui.md) for construction and replacement behavior.
 
 `ui_equip_pane_get` at static address `0x00493620`, RVA `0x00093620`, returns this pointer. The nearby static address `0x006FC8EC` belongs to `EmployeeDialogPane`; it is not an equipment root.
 
@@ -236,7 +236,7 @@ The durable map values are:
 | Map flags | `WorldPane + 0x260` |
 | Weather | `WorldPane + 0x264` |
 
-The [`SMapSize`](../../network/server/021-0x15-map-size.md) handler parses the map name but does not copy it into a durable `WorldPane` field. Keep the name from the latest accepted `SMapSize` packet and clear it when the world generation ends. This is the main packet-tracked exception to direct state walking.
+The [`SMapSize`](../../network/server/021-0x15-map-size.md) handler parses the map name but does not copy it into a durable `WorldPane` field. Keep an owned copy from the latest accepted `SMapSize` event and clear it when the world generation ends. Do not walk the cached packet object: its name is a temporary inline buffer at `SMapSize +0x1C`, and the packet factory later stores an `SMapSize *` in a separate opcode cache slot. This is the main packet-tracked exception to direct state walking.
 
 `WorldPane + 0x194` points to the shared `WorldObjectList`. Its ordered ID tree contains the client's current humans, creatures, NPC-style objects, and ground items. The exact node and object layouts are in [World objects](world.md#dynamic-object-index).
 

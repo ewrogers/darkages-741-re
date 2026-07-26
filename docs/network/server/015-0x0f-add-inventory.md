@@ -24,12 +24,14 @@ packet SAddInventory {
     string8 name                      // u8 byte length, then that many bytes
     u32     quantity
     u8      can_stack                 // protocol boolean, expected as 0 or 1
-    u32     durability
     u32     max_durability
+    u32     current_durability
 }
 ```
 
 The client deserializer reads these fields in exactly this order. `string8` permits up to 255 wire bytes and appends a local null terminator. The visible item keeps a bounded 128-byte name buffer.
+
+The durability pair is reordered when the visible item is built. The first wire value becomes `InvItemPane +0x23C`, while the second becomes `+0x238`. The item tooltip prints `+0x238` first and `+0x23C` second with the format `current / max`. This confirms the wire order above and the pane layout documented below.
 
 ## Client state
 

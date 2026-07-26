@@ -32,6 +32,14 @@ u16, u8, u8, u8, u8, u24, string8
 
 `net_handle_map_size_server_packet` zero-extends the first two dimension bytes and uses them as the width and height. The fourth byte is loaded but never used. The main world handler also does not read the parsed map name.
 
+## Map-name lifetime
+
+The packet object is a fixed `0x148`-byte allocation. `net_deserialize_map_size_server_packet` copies the `string8` bytes directly into its inline buffer at `SMapSize +0x1C` and appends a NUL. This is always a byte buffer. It is not a small-string field that changes into a heap pointer for longer names.
+
+After the network event finishes, the packet factory caches the complete `SMapSize` object for reuse by the next opcode `0x15` event. The factory cache slot then contains an `SMapSize *`, while the cached object's inline name can still contain the previous bytes. These are different locations with different types.
+
+The main handler does not copy the name into durable world state. A state reader that needs the active map name must capture it from the accepted packet event and own the copy. Reading a cached packet object or interpreting its factory slot as text can produce the apparent direct-buffer-to-pointer change seen in stale memory. See [Network packet objects](../../appendix/runtime/network-objects.md#typed-packet-object-lifetime).
+
 ## The unused byte and cache slot
 
 The byte after `flags` is real packet data, but its purpose is unresolved. The parser stores it at `SMapSize + 0x15`. The active handler copies it into a local variable and never reads that variable again. No change to map loading, rendering, weather, lighting, collision, or the Tab map depends on this byte in the traced client path.

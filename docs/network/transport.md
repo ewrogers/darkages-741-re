@@ -99,7 +99,9 @@ After the greeting, socket data is buffered and consumed by `net_receive_frames`
 
 ## Server packet classes
 
-The client contains RTTI for a server packet base, a packet factory, and 61 concrete server packet classes. `net_server_packet_factory_ctor` registers their constructors by command code. `net_deserialize_server_packet` builds the class and asks it to read the body.
+The client contains RTTI for a server packet base, a packet factory, and 61 concrete server packet classes. `net_server_packet_factory_ctor` registers their constructors by command code. `net_deserialize_server_packet` takes a reusable object from the opcode's cache slot or constructs one, then asks it to read the body. After main-thread dispatch, `net_release_server_packet_to_factory` returns the object to that slot.
+
+This cache is object storage, not durable game state. Inline packet fields can retain the last packet's bytes between events, while the cache slot itself contains a packet-object pointer. Code that needs a value after dispatch must copy it into owned state.
 
 Some packets skip this class factory. `SVersionCheck`, `SNewUserCheck`, `SLoginCheck`, and `SMetaData` remain decoded byte buffers and are handled by panes or managers. A missing factory class therefore does not mean a command is unused.
 

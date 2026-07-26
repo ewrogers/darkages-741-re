@@ -26,15 +26,17 @@ struct InvItemPaneFields {
     u32 unknown_230;                // initialized to zero
     u8 state_234;                   // initialized to one
     u8 padding_235[3];
-    u32 max_durability;             // +0x238
-    u32 durability;                 // +0x23C
+    u32 current_durability;         // +0x238
+    u32 max_durability;             // +0x23C
     u32 quantity;                   // +0x240
     u8 can_stack;                   // +0x244
     u8 padding_245[3];
 };                                  // size 0x248
 ```
 
-The item pane initially receives the wire name. If `can_stack` is nonzero, the constructor replaces the display buffer with `name[ quantity ]`. Adding to an occupied slot releases the old item before inserting the replacement. Removing a live item destroys it and writes null to the slot pointer. See [Inventory state](session.md#inventory-state) for the compact gameplay copy.
+The item pane initially receives the wire name. If `can_stack` is nonzero, the constructor replaces the display buffer with `name[ quantity ]`. Adding to an occupied slot releases the old item before inserting the replacement. Removing a live item destroys it and writes null to the slot pointer.
+
+The hover tooltip formats `current_durability / max_durability` from `+0x238` and `+0x23C`. This display order confirms the field meanings even though [`SAddInventory`](../../network/server/015-0x0f-add-inventory.md) sends maximum durability first. See [Inventory state](session.md#inventory-state) for the compact gameplay copy.
 
 ## Spell inventory panes
 
@@ -145,8 +147,8 @@ The RTTI class `EquipPane` keeps 18 parallel entries selected by `slot - 1`.
 
 ```c
 struct EquipmentDurability {
-    u32 maximum;                    // +0x00
-    u32 current;                    // +0x04
+    u32 current;                    // +0x00
+    u32 maximum;                    // +0x04
 };                                  // size 0x08
 
 struct EquipPaneSlotViewState {
@@ -225,7 +227,7 @@ struct UserInfoEquipmentFields {
 
 The equipment/status view is `pages[1]` at `+0x588`; it is not an embedded equipment record. `pages[2]` at `+0x58C` is the self-look/profile child. All seven page pointers are constructed with action IDs `0x101` through `0x107`. `visuals` contains two parallel arrays of seven `0x34`-byte animation or image-playback records, with two still-unresolved `0x70`-byte metadata blocks around them. The `+0x5A0` tail belongs to the larger local-user-derived form, not the common pane prefix.
 
-The static `equipment_slot_to_ui_index` table contains 19 signed entries. Slot `0` maps to `-1`; slots `1` through `18` map to indices `0` through `17`. The child view receives maximum durability before current durability, matching the order stored by `EquipPane` even though the wire packet sends current first.
+The static `equipment_slot_to_ui_index` table contains 19 signed entries. Slot `0` maps to `-1`; slots `1` through `18` map to indices `0` through `17`. The child view receives current durability before maximum durability, matching the order stored by `EquipPane` even though the wire packet sends maximum first.
 
 ## Status and mail panes
 

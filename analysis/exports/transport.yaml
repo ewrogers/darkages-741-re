@@ -274,7 +274,11 @@ functions:
   - address: "0x005963F0"
     name: net_deserialize_server_packet
     confidence: high
-    evidence: "Creates the registered server packet class and invokes its deserializer; it does not require the reader to consume the complete supplied body."
+    evidence: "Takes an opcode-specific object from the factory cache or creates one, clears the cache slot while the object is active, and invokes its deserializer."
+  - address: "0x005964C0"
+    name: net_release_server_packet_to_factory
+    confidence: high
+    evidence: "Returns a handled server packet object to its opcode-specific factory cache slot, or destroys it if that slot is already occupied."
   - address: "0x00596780"
     name: net_create_server_packet
     confidence: high
@@ -485,6 +489,8 @@ comments:
     text: "Register opcode-specific server packet constructors in the 256-entry factory. Derived server packet names are recoverable through RTTI."
   - address: "0x00596469"
     text: "Construct a packet reader over the decoded body and invoke the packet class deserializer at vtable slot +8."
+  - address: "0x005964FD"
+    text: "Call the packet cleanup slot, then cache the still-allocated object by opcode. Fixed inline packet buffers can retain their last bytes while cached."
   - address: "0x005ED9B3"
     text: "Dispatch the parsed server packet to gameplay handlers by the opcode stored in the server packet base object."
 runtime_patches: []

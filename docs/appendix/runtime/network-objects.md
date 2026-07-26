@@ -14,6 +14,42 @@ struct ServerEventFields {
 
 During the first TCP receive, the same event family can carry an owned copy of the complete wire bytes instead of a decoded body. `TerminalPane2` handles that raw form before the packet factory is active.
 
+## Typed packet object lifetime
+
+The packet factory keeps one reusable object slot for each opcode. Deserialization temporarily removes the object pointer from that slot, fills the object, and places the pointer in `ServerEventFields.parsed`. After pane-tree dispatch, the client returns the object to its opcode slot. The object is destroyed only when another object already occupies that slot.
+
+This makes packet objects useful during one network event, but not authoritative session state. Their inline buffers can keep bytes from the most recent packet while cached. A factory slot contains a packet-object pointer, not an alternate pointer representation for one of the object's string fields.
+
+The relevant pointer path is:
+
+```c
+ServerPacketFactory *factory;       // EventDispatcher +0x4C
+ServerPacket *cached[256];          // factory +0x1C
+
+SMapSize **map_size_cache_slot =
+    (SMapSize **)((u8 *)factory + 0x1C + 4 * 0x15); // factory +0x70
+```
+
+The opcode `0x15` slot is null while an `SMapSize` object is being dispatched. It holds the reusable object pointer after dispatch. The current event independently holds the same object at `Event +0x1C`.
+
+`SMapSize` is a clear example:
+
+```c
+struct SMapSizeFields {
+    u8 base[0x10];
+    u16 map_number;                  // +0x10
+    u8 width;                        // +0x12
+    u8 height;                       // +0x13
+    u8 flags;                        // +0x14
+    u8 unknown_after_flags;          // +0x15
+    u8 padding_16[2];
+    u32 cache_value;                 // +0x18, decoded from u24
+    char name[300];                  // +0x1C, string8 plus local NUL
+};                                   // allocated size 0x148
+```
+
+The name is always copied directly into `SMapSize +0x1C`. It never changes into a pointer to separately allocated name text. `net_handle_map_size_server_packet` does not read this field or copy it into `WorldPane`.
+
 ## Connection handshake fields
 
 These fields belong to the large socket object. Only the state needed to explain the welcome transition is shown.
