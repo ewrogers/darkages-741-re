@@ -402,9 +402,9 @@ comments:
   - address: "0x00432155"
     text: Dispatch the cached distribution mode to country- or ISP-specific configuration code. Most alternate modes are dormant because the selector is hardcoded to 1.
   - address: "0x00432253"
-    text: Original distribution-mode 1 endpoint initializer call. A verified runtime patch can retarget this five-byte CALL to net_parse_endpoint_override while preserving mode 1 for downstream behavior.
+    text: Original distribution-mode 1 initializer call. Retargeting this five-byte CALL to net_parse_endpoint_override preserves the mode field but skips the original initializer's registry-backed installation-ID setup; the zero-allocated fields at Config +0x424 and +0x428 then remain zero and later change CLogin.
   - address: "0x00433029"
-    text: "Dormant positional endpoint parser: reads the full command line as Darkages.exe <IPv4-or-hostname> [port]. Mode 1 never calls this function."
+    text: "Dormant positional endpoint parser: reads raw GetCommandLineA text as Darkages.exe <IPv4-or-hostname> [port]. It strips executable-path quotes only. Quoted host or port arguments remain quoted, and mode 1 never calls this function in the stock client."
   - address: "0x004330B3"
     text: First positional argument after the executable is treated as dotted IPv4 when it begins with a digit; otherwise it is resolved as a hostname.
   - address: "0x00433213"
@@ -635,7 +635,7 @@ runtime_patches:
     file_offset_for_reference_only: "0x00031653"
     original_bytes: E8 28 11 00 00
     replacement_bytes: E8 B8 0D 00 00
-    effect: Redirect mode 1 endpoint initialization to the existing positional IPv4-or-hostname and port parser while preserving mode 1 for downstream behavior.
+    effect: Redirect the mode-1 initializer call to the existing positional IPv4-or-hostname and port parser. The mode field remains 1, but the direct replacement skips registry-backed installation-ID initialization and leaves the zero-allocated Config +0x424 and +0x428 fields at zero for CLogin.
   - id: suppress-stipulation-cached-greeting
     rva: "0x000B897C"
     static_address: "0x004B897C"

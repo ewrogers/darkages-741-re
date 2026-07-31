@@ -19,8 +19,24 @@ The parser accepts:
 Darkages.exe <host-or-ip> [port]
 ```
 
-For predictable behavior, the launcher should resolve a host to dotted IPv4 before launch and pass an explicit port.
+The parser reads the raw `GetCommandLineA` text. It handles quotes around the executable path, but it does not remove quotes around the host or port. Only quote the executable when its path contains spaces:
 
-This patch changes only endpoint setup. It does not switch the whole distribution mode. Without the [official fallback patch](disable-endpoint-fallback.md), a failed connection can still retry `da0.kru.com`.
+```text
+"C:\Dark Ages\Darkages.exe" 127.0.0.1 2610
+```
+
+Do not pass `"127.0.0.1"` or `"2610"`. A quoted address begins with a quote instead of a digit, so the parser treats the complete quoted text as a hostname. When that lookup fails, it installs `210.101.85.25:2610`, clears the accepted-override flags, and returns false. The patched mode-1 call site does not inspect that return value. Missing positional input similarly installs `52.88.55.94:2610` and returns false.
+
+For predictable behavior, the launcher should resolve a host to dotted IPv4 before launch, pass an explicit unquoted port, and validate the exact command line before resuming the process.
+
+## Initialization limitation
+
+This five-byte replacement does not switch the distribution-mode field, but it skips more than the compiled endpoint. `net_configure_default_endpoint` also loads or creates the registry-backed installation ID and its derived value. The configuration object is initially zeroed, so the direct redirection leaves `app_config + 0x424` and `app_config + 0x428` at zero.
+
+Those values do not participate in [`CVersion`](../../network/client/000-0x00-version.md), the stipulation exchange, or the body of [`CTransferServer`](../../network/client/016-0x10-transfer-server.md). They are masked and sent later by [`CLogin`](../../network/client/003-0x03-login.md). The client produces a structurally consistent login block from zero values, but server acceptance of that identity is not known.
+
+Treat this direct-call patch as an endpoint experiment, not a stock-compatible startup patch. A complete implementation should preserve the original initializer and apply the validated endpoint afterward. A launcher-owned wrapper can call `net_configure_default_endpoint` first and then `net_parse_endpoint_override`; it should treat parser failure as launch failure instead of connecting to a compiled fallback.
+
+Without the [official fallback patch](disable-endpoint-fallback.md), a later connection failure can still retry `da0.kru.com` even after a valid positional override.
 
 Apply it with the [safe launcher workflow](safe-launcher.md).

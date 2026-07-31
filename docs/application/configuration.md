@@ -24,7 +24,15 @@ Darkages.exe <host-or-ip> [port]
 
 `net_parse_endpoint_override` can read this form, resolve a hostname, and store the address and port. The normal configuration path does not call it. The parser is dormant because `app_select_distribution_mode` always chooses distribution mode 1.
 
-Changing the whole distribution mode would affect more than networking. A launcher should instead redirect only the endpoint setup call. See [Enable the positional endpoint parser](../appendix/runtime-patches/command-line-endpoint.md).
+The parser operates on raw `GetCommandLineA` text. It removes quotes around the executable path but not around later arguments. A compatible command line quotes only an executable path that contains spaces:
+
+```text
+"C:\Dark Ages\Darkages.exe" 127.0.0.1 2610
+```
+
+Quoted host or port arguments are not compatible with this parser. For example, `"127.0.0.1"` is treated as a hostname including the quote characters and normally takes the hostname-failure fallback.
+
+Changing the whole distribution mode would affect more than networking. A launcher should preserve mode 1 and its initialization side effects, then apply the positional endpoint. The historical five-byte call redirection and its important limitation are documented under [Command-line endpoint](../appendix/runtime-patches/command-line-endpoint.md).
 
 The executable also contains an older `.nfo` marker scanner and country- and ISP-specific endpoint integrations. They are not reached by this build's hardcoded selector. See [Distribution markers](distribution-markers.md).
 
@@ -62,6 +70,8 @@ The default endpoint initializer also loads or creates a persistent 32-bit insta
 
 These values are separate from the `Mscfg.dll` marker. [`CLogin`](../network/client/003-0x03-login.md) masks both values with fresh random bytes and sends them in its installation block.
 
+The configuration object is allocated as zeroed memory. Redirecting the mode-1 call away from `net_configure_default_endpoint` therefore leaves both installation fields at zero unless replacement code initializes them. This does not change the earlier `CVersion` or stipulation flow. It changes the later `CLogin` installation block and may affect server-side login acceptance.
+
 ## Choosing an endpoint
 
 The normal path is:
@@ -76,7 +86,7 @@ The hostname and backup IP are two steps in one connection attempt. This is not 
 
 ## Launcher override
 
-For a custom server, the clean route is to enable the existing positional parser at launch. The launcher can resolve the requested host itself and pass a dotted IPv4 address plus port. This keeps address parsing inside a narrow startup change.
+For a custom server, the clean route is to preserve `net_configure_default_endpoint` for its non-endpoint initialization, then apply the existing positional parser at launch. The launcher can resolve the requested host itself and pass a dotted IPv4 address plus an unquoted port. Parser failure should stop the launch rather than accept either compiled parser fallback.
 
 Two policies are useful:
 
