@@ -2597,6 +2597,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_popup_menu_draw` | `0x0054C6F0` | high | Draws the target name, three action rectangles, hover highlight, and localized labels for PopupMenuPane. |
 | `ui_popup_menu_dispatch_action` | `0x0054C990` | high | Maps row 0 to CRequestObjectInfo subtype 1, row 1 to CGroup action 2, and row 2 to tell-target preparation. |
 | `ui_popup_menu_hit_test_action` | `0x0054CBD0` | high | Tests the pointer against exactly three action rectangles and returns index 0 through 2 or -1. |
+| `ui_reconnect_dialog_pane_ctor` | `0x0054E3A0` | high | Constructs exact RTTI ReconnectDialogPane over AlertPane using localized message entry 0x20, unless TerminalPane2 is already active. |
+| `ui_reconnect_dialog_choose_log_on_again` | `0x0054E460` | high | Handles the first reconnect-alert choice by tearing down current scene objects, recreating AppConfig, and constructing TerminalPane2. |
+| `ui_reconnect_dialog_choose_exit` | `0x0054E670` | high | Handles the second reconnect-alert choice by exiting the process with status zero. |
+| `ui_reconnect_dialog_pane_scalar_deleting_dtor` | `0x0054E690` | high | Runs the DialogPane destructor for exact RTTI ReconnectDialogPane and conditionally frees the complete object. |
 | `ui_create_user_dialog_get` | `0x0054E6C0` | high | Returns the current CreateUserDialogPane singleton pointer. |
 | `ui_create_user_dialog_exists` | `0x0054E720` | high | Reports whether the CreateUserDialogPane singleton slot is non-null. |
 | `ui_open_say_input` | `0x0054F840` | high | Creates ChatInputPane in Say mode 0 or Shout mode 1 and formats the local name prefix as colon-space or exclamation-space. |
@@ -2656,6 +2660,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_extra_status_info_format_values` | `0x00575AA0` | high | Formats attack and defense element names, magic resistance in ten-percent units, signed armor class, damage, and hit. |
 | `ui_extra_status_info_update_from_status_packet` | `0x00575FB0` | high | Copies the SStatus modifiers block into ExtraStatusInfoPane's compact combat-stat fields. |
 | `ui_extra_status_info_handle_network_event` | `0x00576040` | high | ExtraStatusInfoPane routes SStatus to its combat-stat updater. |
+| `ui_terminal_pane_2_ctor` | `0x00578A70` | high | Constructs exact RTTI TerminalPane2, registers its adjusted singleton and pane roots, and begins the bootstrap connection flow. |
 | `ui_terminal_pane_handle_server_data` | `0x00579090` | high | TerminalPane2 primary-vtable slot +0x50 scans initial wire bytes, handles ESC C and ESC S plus Telnet terminal negotiation, and queues CHello and CVersion. |
 | `ui_terminal_pane_2_register_adjusted` | `0x0057A2A0` | high | Registers exact RTTI TerminalPane2 from its Singleton secondary base. |
 | `ui_terminal_pane_2_unregister_adjusted` | `0x0057A2E0` | high | Clears the TerminalPane2 singleton from its adjusted secondary-base pointer. |
@@ -3069,6 +3074,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_socket_dispatch` | `0x005643D0` | high | Thread::Socket vtable method that dispatches open, close, reconnect, send, and receive operations. |
 | `net_open_transport` | `0x005645C0` | high | Selects the TCP connection path when the configured transport selector is 5. |
 | `net_close_transport` | `0x005646A0` | high | Closes the active socket and auxiliary transport handle when present. |
+| `net_handle_socket_close` | `0x005646E0` | high | Handles WSAAsyncSelect FD_CLOSE by closing active transports and constructing exact RTTI ReconnectDialogPane from localized message entry 0x20. |
 | `net_reconnect_transfer_endpoint` | `0x005647D0` | high | Disables old socket notifications, closes and resets transport state, connects to the supplied transfer endpoint, then sleeps for a fixed 1,000 ms. |
 | `net_receive_pending_data` | `0x00564870` | high | Selects the active TCP receiver for transport selector 5 and the serial/modem receiver for selectors 1 through 4. |
 | `net_send_client_packet` | `0x005648A0` | high | Selects the outbound opcode transform, then sends either an AA and u16be binary frame or printable records containing the same transformed body. |

@@ -24,10 +24,12 @@ The table gives static Binary Ninja addresses and module-relative RVAs. At runti
 | Active event dispatcher | `0x0073D944` | `0x0033D944` | application-owned `EventDispatcher *` |
 | Screen hierarchy | `0x0073D948` | `0x0033D948` | `HierList<Screen> *` |
 | Screen root pane | `0x0073D94C` | `0x0033D94C` | root `Pane *` |
+| Network manager | `0x0073D958` | `0x0033D958` | active network object pointer |
 | World map interface | `0x0073D960` | `0x0033D960` | `WorldPane + 0x2E8` |
 | World implementation interface | `0x0073D964` | `0x0033D964` | `WorldPane + 0x2EC` |
 | Main menu pane | `0x0073D968` | `0x0033D968` | complete `MainMenuPane *` |
 | Main thread ID | `0x00740400` | `0x00340400` | Win32 thread ID |
+| Terminal connection pane interface | `0x00750574` | `0x00350574` | `TerminalPane2 + 0x190` |
 | GUI back pane interface | `0x0082B768` | `0x0042B768` | `GUIBackPane + 0x190` |
 | Map-loading pane | `0x00851598` | `0x00451598` | complete `MapLoadingPane *` |
 
@@ -68,15 +70,29 @@ Packet tracking is useful for invalidation and for values the client does not re
 
 ## Lifecycle state
 
-Login state is not one permanent boolean. Pane construction and destruction create short transition windows.
+Login state is not one permanent boolean. Pane construction and deferred destruction create short transition windows. A connection-drop alert can also sit over an otherwise complete title or world tree, so classify that overlay before the underlying scene.
 
 | State | Useful test |
 | --- | --- |
-| Title | `MainMenuPane != NULL` and `WorldPane == NULL` |
+| Connection dropped | An active `ReconnectDialogPane` is present in the event pane list |
+| Connecting | the adjusted `TerminalPane2` singleton is non-null |
+| Title ready | `MainMenuPane != NULL`, `WorldPane == NULL`, and the main-menu pointer is registered and visible in the event pane list |
+| World stable | `MainMenuPane == NULL`, and the socket, world session, map, lower UI, and local user object are ready, with no connection-drop alert |
+| World loading | `MainMenuPane == NULL` and `WorldPane != NULL`, but the complete stable-world predicate below is false |
 | Entering or leaving | roots are changing, neither principal root is present, or both are briefly present |
-| In game | `WorldPane != NULL` and `WorldPane->world_user_func != NULL` |
 
-Use an enum with an unknown or transition value instead of forcing ambiguous frames into title or in-game.
+Use an enum with an unknown or transition value instead of forcing ambiguous frames into title or in-game. Test in the table's order. The reconnect choice constructs `TerminalPane2` before all deferred world and menu deletions have completed, so the connecting test must also precede the scene roots.
+
+```c
+GameState classify(const Snapshot *s) {
+    if (s->reconnect_dialog_open) return CONNECTION_DROPPED;
+    if (s->terminal_pane != NULL) return CONNECTING;
+    if (s->main_menu_open && s->world == NULL) return TITLE_READY;
+    if (s->main_menu == NULL && s->world_stable) return WORLD_STABLE;
+    if (s->main_menu == NULL && s->world != NULL) return WORLD_LOADING;
+    return TRANSITION;
+}
+```
 
 A map is ready for structure walking when all of these are true:
 
@@ -89,6 +105,50 @@ map_loading_pane == NULL
 ```
 
 The relevant `WorldPane` fields are `width +0x1C4`, `height +0x1C8`, `current_map_id +0x26C`, `map_transfer_active +0x275`, `map_cell_storage +0x27C`, and `world_user_func +0x2CC`.
+
+For a stronger "logged in and usable" test, also require:
+
+```c
+network != NULL
+network->tcp_socket != INVALID_SOCKET       // network +0x480CC
+main_menu == NULL
+gui_back != NULL
+world and gui_back are registered and visible
+world->world_user_func != NULL
+self_id = world->world_user_func->self_object_id  // +0x1050
+self = world_object_list_find(self_id)
+self != NULL && self->inserted != 0          // WorldObject +0x48
+reconnect_dialog_is_open() == false
+```
+
+This deliberately separates three milestones. `WorldPane` means a world generation exists. The map-ready test means its cell storage can be walked. The stronger predicate means the live transport, lower UI, and local user object are also present. Consumers that only need account or character fields can use the earlier `world_user_func` milestone; code that sends movement or acts on visible entities should wait for the stronger state.
+
+### Connection-drop overlay
+
+`ReconnectDialogPane` has no global instance pointer. Find it by scanning the flattened `EventHandlerList` described in [Pane and event layouts](panes.md#event-pane-tree). The active array is at `dispatcher +0x64` and its signed count is at `dispatcher +0x68`.
+
+The exact primary vtable is static `0x00682BF4`, RVA `0x00282BF4`. A matching pane is visibly open only while its event-registration bit and visibility byte are also set:
+
+```c
+bool reconnect_dialog_is_open(EventDispatcher *dispatcher) {
+    EventHandlerEntry *entries = *(void **)((u8 *)dispatcher + 0x64);
+    s32 count = *(s32 *)((u8 *)dispatcher + 0x68);
+    void **wanted_vtable = reloc_ptr(0x00282BF4);
+
+    for (s32 i = 0; i < count; i++) {
+        Pane *pane = entries[i].pane;
+        if (pane != NULL &&
+            pane->vtable == wanted_vtable &&
+            (pane->registration_flags & 0x02) != 0 && // +0x188
+            pane->visible) {                           // +0x130
+            return true;
+        }
+    }
+    return false;
+}
+```
+
+Scan the active list instead of retaining the heap pointer. Dismissal unregisters the pane before deferred deletion, so list membership disappears at the useful "no longer open" boundary. Perform this scan in the same main-thread snapshot pass as the lifecycle roots. An external reader should recheck the dispatcher pointer, array pointer, count, and mutation generation if it cannot arrange a game-thread callback.
 
 ## Character snapshot
 

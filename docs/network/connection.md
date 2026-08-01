@@ -95,4 +95,30 @@ On success, the socket is stored in the network object and packet state is initi
 
 On normal failure, `net_close_socket` closes the handle and stores `INVALID_SOCKET`. Packet code should treat that value as disconnected.
 
+## Dropped connection prompt
+
+Windows delivers an established socket close through the same `0x401` window message used for reads. `app_window_proc` reads the low word of `lParam`. Event `1` is `FD_READ`; event `0x20` is `FD_CLOSE`.
+
+The close event runs this path on the game and UI thread:
+
+```text
+app_window_proc
+  -> net_handle_socket_close
+       -> close the active TCP and auxiliary transports
+       -> app_get_message(0x20)
+       -> ui_reconnect_dialog_pane_ctor
+            -> AlertPane with two choices
+```
+
+The localized message is table entry `0x20`. English mode loads the table named `msgeng.h`; the sentence is not stored as an ASCII literal in the executable. The constructor allocates a `0x634`-byte exact RTTI `ReconnectDialogPane`. It attaches the alert to the active world screen when one is available, or to the root screen otherwise.
+
+`ReconnectDialogPane` is not a singleton. A second guard also matters: if `TerminalPane2` is already active, the constructor immediately unregisters and queues the new alert for deletion. A close during the terminal connection screen therefore does not leave this prompt visible.
+
+The inherited `AlertPane` action handler maps attachment action `0` to the first choice and action `2` to the second choice:
+
+- The first choice destroys the current world, lower UI, equipment, character-creation, and main-menu objects when present. It recreates `AppConfig`, then constructs `TerminalPane2` to begin the bootstrap and login connection flow again.
+- The second choice exits the process with status `0`.
+
+The alert's exact runtime visibility test and the larger title/loading/in-world classifier are in [Runtime state walking](../appendix/runtime/state-walking.md#connection-drop-overlay).
+
 Addresses and confidence notes are in the [function reference](../appendix/functions.md).

@@ -252,6 +252,11 @@ functions:
     name: net_close_transport
     confidence: high
     evidence: Closes the active socket and auxiliary transport handle when present.
+  - address: "0x005646E0"
+    end_address: "0x005647CD"
+    name: net_handle_socket_close
+    confidence: high
+    evidence: "Handles WSAAsyncSelect FD_CLOSE by closing active transports and constructing exact RTTI ReconnectDialogPane from localized message entry 0x20."
   - address: "0x005647D0"
     end_address: "0x00564866"
     name: net_reconnect_transfer_endpoint
@@ -503,6 +508,10 @@ comments:
     text: Communications event 7 changes raw-stream mode. The hello handler queues zero so later TCP receives use the normal frame parser.
   - address: "0x0056463D"
     text: Transport selector 5 opens the TCP path and begins the initial endpoint connection.
+  - address: "0x00564794"
+    text: "Localized message entry 0x20 supplies the dropped-connection prompt; English mode reads this slot from msgeng.h."
+  - address: "0x005647A0"
+    text: "Allocate and construct exact RTTI ReconnectDialogPane under the live world screen when available, otherwise under the root screen."
   - address: "0x005647D0"
     text: Transfer command 4 disables socket notifications, closes the old transport, resets packet state, reconnects, and then sleeps for a fixed 1,000 ms.
   - address: "0x00564855"
