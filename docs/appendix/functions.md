@@ -630,7 +630,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_article_list_find_article` | `0x004207A0` | high | Returns the row index matching a signed article ID, or -1. |
 | `ui_article_list_find_insert_position` | `0x00420800` | high | Finds the descending article-ID insertion point; an existing match returns its index with bit 31 set. |
 | `ui_article_list_handle_keyboard_event` | `0x00420880` | high | Delegates keyboard handling and requests an older page when navigation reaches the loaded end. |
-| `ui_article_list_handle_pointer_event` | `0x00420910` | high | Delegates pointer handling and requests an older page when the visible range reaches the loaded end. |
+| `ui_article_list_handle_pointer_event` | `0x00420910` | high | After any consumed base pointer event, requests an older page whenever current scroll position equals maximum; it has no transition or in-flight latch. |
 | `ui_article_list_activate_selected_article` | `0x00420970` | high | Resolves the owning ArticleListDialog and invokes its open-selected action. |
 | `ui_article_list_draw_row` | `0x004209B0` | high | Draws article rows and uses palette index 0x58 for privileged multi-selected rows. |
 | `ui_article_dialog_ctor` | `0x004211A0` | high | Loads _narti.txt and parses article navigation, author, date, title, and string16 content. |
@@ -676,7 +676,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_mail_list_select_mail` | `0x00424490` | high | Finds and selects a loaded mail row by ID. |
 | `ui_mail_list_reselect_current` | `0x004244D0` | high | Reapplies the pane's current list selection. |
 | `ui_mail_list_pane_handle_keyboard_event` | `0x00424500` | high | Delegates keyboard input and requests an older page when the loaded row count is below capacity. |
-| `ui_mail_list_pane_handle_pointer_event` | `0x00424560` | high | Delegates pointer input and requests an older page when scrolling reaches the loaded end. |
+| `ui_mail_list_pane_handle_pointer_event` | `0x00424560` | high | After any consumed base pointer event, requests an older page whenever current scroll position equals maximum; it has no transition or in-flight latch. |
 | `ui_mail_list_request_latest_page` | `0x004245C0` | high | Requests the newest mailbox page with the initial 0x7FFF cursor. |
 | `ui_mail_list_request_older_page` | `0x004245F0` | high | Requests the page before the final loaded mail ID. |
 | `ui_mail_list_copy_selected_sender` | `0x00424660` | high | Copies the selected row's sender into a caller buffer. |
@@ -724,7 +724,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_new_mail_dialog_scalar_deleting_dtor` | `0x00427110` | high | Destroys NewMailDialog and optionally frees its complete object. |
 | `ui_mail_transfer_reply_alert_scalar_deleting_dtor` | `0x00427170` | high | Destroys MailTransferReplyAlert and optionally frees its complete object. |
 | `ui_mail_confirm_delete_alert_scalar_deleting_dtor` | `0x004271B0` | high | Destroys ConfirmDeleteAlert and optionally frees its complete object. |
-| `ui_bulletin_session_singleton_register` | `0x004271E0` | high | Registers the containing BulletinSession singleton. |
+| `ui_bulletin_session_singleton_register` | `0x004271E0` | high | Subtracts the Singleton base adjustment and stores the complete BulletinSession in ui_bulletin_session_ptr. |
 | `ui_bulletin_session_singleton_unregister` | `0x00427220` | high | Clears the BulletinSession singleton when it matches the containing object. |
 | `ui_delete_reply_alert_singleton_register` | `0x00427260` | high | Registers the containing DeleteReplyAlert singleton. |
 | `ui_delete_reply_alert_singleton_unregister` | `0x004272A0` | high | Clears the DeleteReplyAlert singleton when it matches the containing object. |
@@ -2671,6 +2671,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_terminal_pane_2_unregister_adjusted` | `0x0057A2E0` | high | Clears the TerminalPane2 singleton from its adjusted secondary-base pointer. |
 | `ui_text_insert_formatted` | `0x0057B300` | high | Forwards a NUL-terminated string to the rich text insertion and markup path. |
 | `ui_text_copy_bytes` | `0x0057B420` | high | Copies the smaller of the requested byte count and current text length, appends a null terminator, and returns the copied length. |
+| `ui_text_pane_get_text_byte_length` | `0x0057BC00` | high | Returns the byte length of the text storage owned by a text pane. |
+| `ui_text_pane_get_text_bytes` | `0x0057C4A0` | high | Returns the byte pointer exposed by a text pane's underlying text storage. |
 | `ui_text_insert_color_markup` | `0x0057D310` | high | Recognizes lowercase three-byte {=a through {=x tokens and changes the following run's palette index. |
 | `ui_line_input_paste_clipboard` | `0x0057DD30` | high | Pastes clipboard text into LineInputPane only for distribution modes 1 or 15 or for any nonzero SStatus privilege. |
 | `ui_text_enforce_max_bytes` | `0x0057F530` | high | Trims oldest TextEditPane bytes from the front when its configured byte limit is exceeded, preserving DBCS boundaries. |

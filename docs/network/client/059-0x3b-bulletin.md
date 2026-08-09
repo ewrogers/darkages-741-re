@@ -84,7 +84,9 @@ Action `1` is the two-byte opening request:
 3B 01
 ```
 
-Action `2` serves both article lists and mail lists. An initial request uses `before_entry_id = 0x7FFF`. When the list needs an older page, the client uses one less than the last visible entry ID, clamped to `1..0x7FFF`. Every local action `2` caller writes `list_direction = 0xF0`.
+Action `2` serves both article lists and mail lists. An initial request uses `before_entry_id = 0x7FFF` as a newest-page sentinel. When the loaded list reaches its scroll maximum, the client uses one less than the final loaded row's signed 16-bit entry ID. It sends only when that result is greater than zero. Every local action `2` caller writes `list_direction = 0xF0`.
+
+The empty-list fallback is also `0x7FFF`. The pointer handler has no in-flight, end-of-list, scroll-transition, or repeated-cursor guard. Consequently, a consumed pointer event at the bottom of an empty list can send `3B 02 section_id 7F FF F0`; a zero-row reply leaves the same trigger armed. The full failure sequence and a safe controller policy are documented in [Bulletin boards and mail](../../systems/bulletin-and-mail.md#pagination-and-the-0x7fff-loop).
 
 Action `3` also shares one shape between articles and mail. Direct selection uses `navigation = 0`. Previous uses the current entry ID minus one and `navigation = 0xFF`; Next uses the ID plus one and `navigation = 1`. The requested ID is clamped to `1..0x7FFF`.
 

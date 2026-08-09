@@ -330,7 +330,7 @@ functions:
   - address: "0x00420910"
     name: ui_article_list_handle_pointer_event
     confidence: high
-    evidence: "Delegates pointer handling and requests an older page when the visible range reaches the loaded end."
+    evidence: "After any consumed base pointer event, requests an older page whenever current scroll position equals maximum; it has no transition or in-flight latch."
   - address: "0x00420970"
     name: ui_article_list_activate_selected_article
     confidence: high
@@ -542,7 +542,7 @@ functions:
   - address: "0x00424560"
     name: ui_mail_list_pane_handle_pointer_event
     confidence: high
-    evidence: "Delegates pointer input and requests an older page when scrolling reaches the loaded end."
+    evidence: "After any consumed base pointer event, requests an older page whenever current scroll position equals maximum; it has no transition or in-flight latch."
   - address: "0x004245C0"
     name: ui_mail_list_request_latest_page
     confidence: high
@@ -758,7 +758,7 @@ functions:
   - address: "0x004271E0"
     name: ui_bulletin_session_singleton_register
     confidence: high
-    evidence: "Registers the containing BulletinSession singleton."
+    evidence: "Subtracts the Singleton base adjustment and stores the complete BulletinSession in ui_bulletin_session_ptr."
   - address: "0x00427220"
     name: ui_bulletin_session_singleton_unregister
     confidence: high
@@ -1195,6 +1195,14 @@ functions:
     name: std_string_vector_dtor
     confidence: high
     evidence: "Destroys string elements, releases vector storage, and clears its pointers."
+  - address: "0x0057BC00"
+    name: ui_text_pane_get_text_byte_length
+    confidence: high
+    evidence: "Returns the byte length of the text storage owned by a text pane."
+  - address: "0x0057C4A0"
+    name: ui_text_pane_get_text_bytes
+    confidence: high
+    evidence: "Returns the byte pointer exposed by a text pane's underlying text storage."
   - address: "0x005F6CB0"
     name: net_handle_bulletin_server_body
     confidence: high
@@ -1203,26 +1211,57 @@ functions:
     name: ui_open_bulletin_session_from_server_body
     confidence: high
     evidence: "Creates BulletinSession for a direct SBulletin body when no conflicting session is active and the admission flag check passes."
+data_symbols:
+  - address: "0x006D9254"
+    name: ui_bulletin_session_ptr
+    confidence: high
+    evidence: "Singleton storage for the complete BulletinSession pointer; null when no bulletin session is registered."
 comments:
+  - address: "0x0041CA35"
+    text: "Returns BulletinSession history[index]; the current dialog uses signed index +0x191 and the ten-entry array at +0x194."
+  - address: "0x0041CB96"
+    text: "Stores the newly active BulletinDialogPane in the bounded history array."
   - address: "0x0041CBFD"
     text: "CBulletin action 1 requests the board list."
   - address: "0x0041CCAC"
     text: "SBulletin response codes 1 through 5 open BoardListDialog, ArticleListDialog, ArticleDialog, MailListDialog, and MailDialog."
+  - address: "0x0041D4BD"
+    text: "Retains the selected board ID at BulletinSession+0x1C2 before opening the article list."
+  - address: "0x0041D70D"
+    text: "Retains the selected mailbox ID at BulletinSession+0x1C2 before opening the mail list."
   - address: "0x0041E3AB"
     text: "CBulletin action 2 requests an initial article or mail list page."
   - address: "0x0041F48A"
     text: "SBulletin response 7 supplies an operation status and string8 message."
   - address: "0x0041F490"
     text: "SBulletin response 8 supplies a post status and refreshes the article list."
+  - address: "0x0041F60F"
+    text: "A zero-row article-list reply inserts nothing and records no end-of-list state, leaving an empty list eligible for another 0x7FFF request."
+  - address: "0x00420748"
+    text: "Runtime patch candidate 7E 21 to 7E 46 redirects item_count <= 0 to the epilogue instead of the article newest-page cursor fallback."
+  - address: "0x0042094A"
+    text: "Any consumed pointer event at maximum scroll requests another article page without an edge, in-flight, or end-of-list latch."
   - address: "0x00420FDB"
     text: "CBulletin action 7 applies the optional layout control spelled Hilight to an article."
   - address: "0x004210EB"
     text: "CBulletin action 5 deletes an article selected in the list."
+  - address: "0x004212A9"
+    text: "Stores the response type 3 current article ID at ArticleDialog+0x63C; the board ID is retained by BulletinSession."
   - address: "0x00422CF1"
     text: "CBulletin action 4 posts an article as board ID, string8 title, and string16 content."
+  - address: "0x00423EFF"
+    text: "A zero-row mail-list reply inserts nothing and records no end-of-list state, leaving an empty list eligible for another 0x7FFF request."
+  - address: "0x0042459A"
+    text: "Any consumed pointer event at maximum scroll requests another mail page without an edge, in-flight, or end-of-list latch."
+  - address: "0x00424608"
+    text: "Runtime patch candidate 7E 21 to 7E 46 redirects item_count <= 0 to the epilogue instead of the mail newest-page cursor fallback."
   - address: "0x00424D1B"
     text: "CBulletin action 5 deletes mail from the list and uniquely appends a zero byte."
+  - address: "0x00424F09"
+    text: "Stores the response type 5 current mail ID at MailDialog+0x63C; the mailbox ID is retained by BulletinSession."
   - address: "0x00426A2A"
     text: "CBulletin action 6 sends mail as mailbox ID, receiver, title, and content."
+  - address: "0x004271F7"
+    text: "Stores the complete BulletinSession pointer after undoing the Singleton<BulletinSession> base adjustment."
   - address: "0x005EDFB9"
     text: "Decoded opcode 0x31 bypasses the server packet factory and is handled directly as owner-named SBulletin."

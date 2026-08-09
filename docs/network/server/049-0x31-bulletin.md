@@ -46,8 +46,8 @@ packet SBulletin {
 
     if response_type == 3 {
         u8 navigation_flags
-        u8 unknown_before_board_id
-        u16 board_id
+        u8 unknown_before_article_id
+        u16 article_id
         string8 author
         u8 month
         u8 day
@@ -73,8 +73,8 @@ packet SBulletin {
 
     if response_type == 5 {
         u8 navigation_flags
-        u8 unknown_before_mailbox_id
-        u16 mailbox_id
+        u8 unknown_before_mail_id
+        u16 mail_id
         string8 author
         u8 month
         u8 day
@@ -93,7 +93,7 @@ packet SBulletin {
 }
 ```
 
-The field roles called `permissions`, `flags`, and `navigation_flags` are inferred from which controls they enable. Their bit meanings are not yet mapped.
+The field roles called `permissions`, `flags`, and `navigation_flags` are inferred from which controls they enable. Their bit meanings are not yet mapped. In detail responses, the `u16` is the article or mail entry ID retained by the detail dialog. The selected board or mailbox ID remains separately on `BulletinSession`.
 
 Response `7` is an operation reply accepted by article-list, article, mail-list, and mail dialogs. Each handler consumes `status` and displays `message`; the local branches do not use the status value to choose whether the message appears. Article and mail deletion reach this path. The parent mail UI can also accept it after a send, but the exact server-side action pairing is not proven by this client alone.
 
@@ -114,6 +114,8 @@ The decoded body bypasses the server packet factory. The world dispatcher create
 Responses `7` and `8` do not create another child dialog. They are delivered to the active article or mail dialog. Response `7` opens a reply alert from the supplied message. Response `8` refreshes the current article list by sending another [`CBulletin`](../client/059-0x3b-bulletin.md) action `2` request.
 
 `BulletinSession` keeps a bounded history of ten dialog pointers. Opening a board, article, mail, or compose view prunes any forward history, attaches the new dialog, and activates it. Back and forward actions close the current view before activating the adjacent entry. Network-backed actions place a mode-5 `ScreenDimmer` over the UI until the matching response removes it.
+
+The live state and control mappings used to detect the current board, list, detail, and compose view are documented in [Bulletin boards and mail](../../systems/bulletin-and-mail.md).
 
 The board chooser opens and closes through three vertical steps at 100 ms per step. Article and mail list panes keep their rows ordered by signed identifier and request older pages from the final loaded identifier minus one. Article lists also maintain a fixed-capacity integer selection set for privileged multi-select delete and highlight operations.
 
