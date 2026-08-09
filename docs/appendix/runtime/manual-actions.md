@@ -457,6 +457,52 @@ Pass action `1` to Cancel. The event byte is ignored for both actions. Cancel on
 
 The packet-only Accept producer is not a complete action because it omits `local_accept_sent`. The packet-only Cancel producer is locally equivalent to action `1`, but using one action-level wrapper keeps the calling contract consistent. See [Player exchange](../../systems/player-exchange.md#invoking-an-action-without-pointer-input) for the server-driven quantity and closure flow.
 
+## Request or accept a group
+
+### Send an ordinary request
+
+When the controller has a character name, use the value-oriented producer directly:
+
+```c
+u32 __cdecl net_send_group_request(const char *name);
+```
+
+Require 1 through 28 name bytes. The builder uses a fixed 32-byte local body buffer for opcode, action `2`, `string8` name, and its terminating byte. It does not validate the target, change the roster, or open a local pane. When starting from an entity ID, resolve a current living user and copy its name during the main-thread command tick.
+
+`CGroup` action `2` is state-dependent. The player popup uses the same body for a group request and for its grouped-target row, so the server can interpret or reject it according to current membership. A direct wrapper should not report success until later server-owned group state changes.
+
+### Find an incoming prompt
+
+Walk `EventDispatcher + 0x60` and collect currently registered, presented panes with exact RTTI `_temp_::GroupAlertPane`. One prompt stores:
+
+```c
+struct GroupInviteAlertFields {
+    char *requester_name;    // +0x634, heap-owned
+    s32 requester_name_len;  // +0x638
+};
+```
+
+Match `requester_name` when the command names a sender. Different names can have simultaneous prompts; duplicate requests from the same name are suppressed. Do not keep the pane or string pointer between ticks.
+
+The invite registry returned by `ui_group_invite_registry_get` tracks names added by prompt construction and removed by destruction. It is useful for diagnostics, but it is not sufficient authority for invocation because an unregistered pane can remain queued for deferred deletion briefly. The live event-handler registration is the required check.
+
+If `AppConfig +0x548` `GroupAnswer` is nonzero, `SGroup` action `1` calls `net_send_group_accept` immediately and never constructs or registers a prompt.
+
+### Accept or decline
+
+Invoke the inherited alert action handler on the matched live pane:
+
+```c
+u32 __thiscall ui_alert_pane_handle_action(
+    GroupAlertPane *invite, s32 action_id, u8 event_code);
+```
+
+Pass action `0` to accept. The handler calls `ui_group_invite_alert_accept`, which submits `CGroup` action `3` for the retained requester, then unregisters and queues the prompt for deletion. Pass action `2` to decline. It sends no packet, but performs the same local close and lets the destructor remove the registry entry. The event byte is ignored.
+
+Do not call `net_send_group_accept` for a visible prompt. That lower-level producer queues the correct packet but leaves the prompt registered and visible. It is appropriate only when no prompt exists, as in the native automatic-response path.
+
+The complete packet and server conversation is in [Group conversations](../../network/interaction-flows.md#ordinary-group-request).
+
 ## Why `CreateRemoteThread` is unsafe
 
 `CreateRemoteThread` starts a `DWORD WINAPI thread_proc(void *)`. It supplies one stack argument and does not install a C++ `this` pointer in `ECX`. The functions above expect `__thiscall` register state, live pane objects, and sometimes several stack arguments.

@@ -2829,7 +2829,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_open_npc_session_from_pursuit_message` | `0x005F7790` | high | Live server-packet dispatch allocates exact RTTI NPCSession for non-close typed SPursuitMessage; type 10 needs no new pane. |
 | `ui_apply_block_input_server_packet` | `0x005F7AA0` | high | Maps SBlockInput state 0 to held-button release plus ClockPane creation and state 1 to ClockPane removal; other states are ignored. |
 | `ui_open_manufacture_dialog_from_manual_packet` | `0x005F7AE0` | high | Creates the singleton ManufactureDialogPane only for SManual RecipeCount and ignores Recipe detail messages when no pane exists. |
+| `ui_group_invite_registry_contains` | `0x005F7F20` | high | Checks the active-invite requester registry; the SGroup action-1 handler uses it to suppress duplicate prompts from the same name. |
+| `ui_group_invite_registry_remove` | `0x005F80A0` | high | Removes the requester retained by a closing GroupAlertPane from the active-invite registry. |
+| `ui_group_invite_registry_add` | `0x005F8250` | high | Adds the requester retained by a new GroupAlertPane to the active-invite registry. |
+| `ui_group_invite_alert_ctor` | `0x005F8430` | high | Constructs exact RTTI _temp_::GroupAlertPane and retains requester pointer +0x634 plus byte length +0x638. |
+| `ui_group_invite_alert_dtor` | `0x005F8540` | high | Unregisters the retained requester name, frees it, and destroys GroupAlertPane. |
+| `ui_group_invite_alert_accept` | `0x005F85F0` | high | GroupAlertPane's accept callback sends CGroup action 3 for its retained requester. |
 | `ui_create_field_map_pane` | `0x005F88B0` | high | Allocates a 640 by 480 FieldMapPane, initializes it from decoded SFieldMap values, registers it with the screen root, and retains it in WorldPane. |
+| `ui_group_invite_registry_get` | `0x005F9100` | high | Returns the process-local registry used to track requester names retained by active GroupAlertPane instances. |
 | `ui_world_capture_self_portrait_to_album` | `0x005F9B00` | high | WorldPane_Impl wrapper that invokes the album capture with zero, selecting the normal cooldown path. |
 | `ui_world_pane_is_privileged` | `0x005F9D90` | high | MapUserInterface virtual getter returns whether WorldUserFunc privilege_level is nonzero; bulletin, line-input, and dormant screenshot branches consume it. |
 | `ui_world_pane_get_privilege_level` | `0x005F9DC0` | high | MapUserInterface virtual getter returns raw WorldUserFunc privilege_level 0 through 3; the event dispatcher compares it exactly with 1 in a dormant timeout path. |
@@ -3334,8 +3341,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_bad_guy_server_packet` | `0x005F7900` | high | Validates the SBadGuy mode and guard, creates and extends Mscfg.dll when possible, then forces client termination on both creation-success and creation-failure paths. |
 | `net_handle_show_users` | `0x005F7B80` | high | Handles raw decoded server opcode 0x36, applies the replacement list, and opens the RTTI-backed ShowUsersPane. |
 | `net_handle_world_transfer_server_packet` | `0x005F7BB0` | high | Handles in-world STransferServer, reconnects, sends CTransferServer, then attempts the saved LCrash.nfo upload. |
-| `net_send_group_automatic_response` | `0x005F8620` | high | Builds CGroup opcode 0x2E, action 3, and a length-prefixed user string for the GroupAnswer automatic path. |
-| `net_handle_group_server_packet` | `0x005F8720` | high | Handles SGroup by either opening the normal prompt or immediately sending CGroup action 3 according to AppConfig GroupAnswer. |
+| `net_send_group_accept` | `0x005F8620` | high | Builds CGroup opcode 0x2E, action 3, and a length-prefixed requester string for both visible-prompt and GroupAnswer automatic acceptance; it does not close a prompt. |
+| `net_handle_group_server_packet` | `0x005F8720` | high | Handles SGroup action 1 by suppressing duplicate requesters and either opening GroupAlertPane or immediately sending CGroup action 3 according to AppConfig GroupAnswer. |
 | `net_handle_field_map_server_data` | `0x005F8A10` | high | WorldPane's raw opcode 0x2E branch reparses the decoded SFieldMap body and creates the field-map pane instead of consuming the factory-built packet object. |
 | `net_send_change_user_state` | `0x005FC790` | high | Normalizes UserState to 0 through 7, builds opcode 0x79 plus the state byte, and stores the same normalized local value. |
 | `net_register_bad_guy_server_packet_factory` | `0x00667B20` | high | Registers the RTTI-backed SBadGuy constructor with the server_packet_factory startup path. |

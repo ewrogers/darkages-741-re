@@ -3859,14 +3859,38 @@ functions:
     name: ui_apply_block_input_server_packet
     confidence: high
     evidence: "Maps SBlockInput state 0 to held-button release plus ClockPane creation and state 1 to ClockPane removal; other states are ignored."
-  - address: "0x005F8620"
-    name: net_send_group_automatic_response
+  - address: "0x005F7F20"
+    name: ui_group_invite_registry_contains
     confidence: high
-    evidence: "Builds CGroup opcode 0x2E, action 3, and a length-prefixed user string for the GroupAnswer automatic path."
+    evidence: "Checks the active-invite requester registry; the SGroup action-1 handler uses it to suppress duplicate prompts from the same name."
+  - address: "0x005F80A0"
+    name: ui_group_invite_registry_remove
+    confidence: high
+    evidence: "Removes the requester retained by a closing GroupAlertPane from the active-invite registry."
+  - address: "0x005F8250"
+    name: ui_group_invite_registry_add
+    confidence: high
+    evidence: "Adds the requester retained by a new GroupAlertPane to the active-invite registry."
+  - address: "0x005F8430"
+    name: ui_group_invite_alert_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI _temp_::GroupAlertPane and retains requester pointer +0x634 plus byte length +0x638."
+  - address: "0x005F8540"
+    name: ui_group_invite_alert_dtor
+    confidence: high
+    evidence: "Unregisters the retained requester name, frees it, and destroys GroupAlertPane."
+  - address: "0x005F85F0"
+    name: ui_group_invite_alert_accept
+    confidence: high
+    evidence: "GroupAlertPane's accept callback sends CGroup action 3 for its retained requester."
+  - address: "0x005F8620"
+    name: net_send_group_accept
+    confidence: high
+    evidence: "Builds CGroup opcode 0x2E, action 3, and a length-prefixed requester string for both visible-prompt and GroupAnswer automatic acceptance; it does not close a prompt."
   - address: "0x005F8720"
     name: net_handle_group_server_packet
     confidence: high
-    evidence: "Handles SGroup by either opening the normal prompt or immediately sending CGroup action 3 according to AppConfig GroupAnswer."
+    evidence: "Handles SGroup action 1 by suppressing duplicate requesters and either opening GroupAlertPane or immediately sending CGroup action 3 according to AppConfig GroupAnswer."
   - address: "0x005F88B0"
     name: ui_create_field_map_pane
     confidence: high
@@ -5340,9 +5364,9 @@ comments:
   - address: "0x005F8616"
     text: "The normal group prompt's accept action sends CGroup action 3 for the saved requester name."
   - address: "0x005F8620"
-    text: "Build CGroup as opcode 0x2E, action 3, and a length-prefixed user string for the automatic GroupAnswer path."
+    text: "Build CGroup as opcode 0x2E, action 3, and a length-prefixed requester string for visible-prompt or automatic GroupAnswer acceptance."
   - address: "0x005F87C9"
-    text: "A nonzero AppConfig GroupAnswer skips the prompt dialog and immediately sends CGroup action 3."
+    text: "A nonzero AppConfig GroupAnswer skips GroupAlertPane construction and the invite registry, then immediately sends CGroup action 3."
   - address: "0x005F8862"
     text: "SGroup action 4 opens GroupAdInfoDialogPane from the recruitment model."
   - address: "0x005F887C"

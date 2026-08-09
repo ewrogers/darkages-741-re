@@ -57,6 +57,8 @@ The group row chooses one of three labels without changing its packet body:
 
 The server decides what action `2` means for the current group state. The popup does not edit the roster locally.
 
+For a direct request by character name, the popup can be bypassed. `net_send_group_request` queues the same `CGroup` action `2` and has no local lifecycle to reproduce. Resolve the current user name again from the live entity when the external command starts with an object ID, require 1 through 28 name bytes, and leave group membership changes to later server state.
+
 ## Extending it
 
 Changing `lpopup.txt` can reskin, resize, or reposition the existing header and three rows. It cannot add behavior by itself. The constructor, draw loop, hit test, and action dispatcher all use a fixed count of three.

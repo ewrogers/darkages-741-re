@@ -27,6 +27,12 @@ The action names are project-owner protocol vocabulary. The matching client conf
 | `6` | `RecruitStop` | Stops the local character's recruiting listing. |
 | `7` | `RecruitJoin` | Requests to join the leader shown in `GroupAdInfoDialogPane`. |
 
+## Direct ordinary requests and acceptance
+
+`net_send_group_request` is the useful direct producer for an ordinary request. It accepts a character name, writes action `2`, and changes no local UI or roster state. Its fixed local body buffer safely holds at most 28 name bytes. A controller starting with an entity ID should resolve the current living user and copy its current name on the main thread before calling it. The server still decides whether action `2` requests, disbands, or is rejected for current group state.
+
+For a visible incoming prompt, use `ui_alert_pane_handle_action` on the matching exact RTTI `_temp_::GroupAlertPane`. Action `0` sends Accept and closes the prompt coherently. The lower-level `net_send_group_accept` accepts an explicit name and length, but it does not unregister or close a prompt. It is the native producer used when `GroupAnswer` bypasses the UI.
+
 ## Body
 
 ```text

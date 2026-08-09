@@ -309,6 +309,16 @@ target_name = string8("Ari")
 
 Only the accept send is confirmed. This client does not provide an ordinary reject action in the recovered `CGroup` builders. It also does not use `SGroup` action `2` to populate a member list: the deserializer stops after that action byte and the handler does nothing.
 
+#### Prompt lifecycle and direct response
+
+With `GroupAnswer` set to zero, `SGroup` action `1` constructs exact RTTI `_temp_::GroupAlertPane`. The alert retains a heap copy of the requester name at `+0x634` and its byte length at `+0x638`. Its constructor adds that name to an active-invite registry, and its destructor removes it. The server handler checks the registry first, so another request from the same name does not open a duplicate prompt. Requests from different names can produce multiple prompts.
+
+The reliable test for a prompt that can still be answered is a currently registered, presented `_temp_::GroupAlertPane` in the runtime event-handler tree. Match the retained name when a particular requester is expected. Registry membership is useful supporting state, but it can remain true briefly after the pane unregisters while deferred deletion runs.
+
+The inherited `ui_alert_pane_handle_action` is the complete response entry point. Action `0` invokes the group-specific accept callback, queues `CGroup` action `3`, unregisters the alert, and queues it for deletion. Action `2` invokes the inherited no-op rejection callback and performs the same local close without sending a packet. Calling `net_send_group_accept` alone is appropriate for automatic response, but it leaves a visible prompt open if one already exists.
+
+When `GroupAnswer` is nonzero, the server handler skips the alert and registry entirely and calls `net_send_group_accept` immediately. There is no invite pane to find in that path.
+
 ### Recruiting group details and join
 
 Publishing a recruiting box sends action `4`. The leader's own name is followed by the form values:

@@ -7,6 +7,12 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x00448770"
+    rva: "0x00048770"
+    name: ui_alert_pane_handle_action
+    prototype: "u32 __thiscall ui_alert_pane_handle_action(GroupAlertPane *invite, s32 action_id, u8 event_code)"
+    confidence: high
+    evidence: "For GroupAlertPane, action 0 invokes the CGroup Accept callback and action 2 invokes the no-op decline callback; both unregister and queue the pane for deferred deletion."
   - address: "0x0045F260"
     rva: "0x0005F260"
     name: ui_equip_pane_handle_action
@@ -167,6 +173,12 @@ functions:
     prototype: "bool __thiscall ui_cancel_spell_delay(SpellDelayControlPane *control)"
     confidence: high
     evidence: "Clears cast_active and cancels every timer owned by the live SpellDelayControlPane without sending a client packet."
+  - address: "0x00513960"
+    rva: "0x00113960"
+    name: net_send_group_request
+    prototype: "u32 __cdecl net_send_group_request(const char *name)"
+    confidence: high
+    evidence: "Queues CGroup action 0x02 for a caller-supplied string8 character name and changes no local UI state; the fixed local packet buffer safely holds at most 28 name bytes."
   - address: "0x0052C050"
     rva: "0x0012C050"
     name: ui_npc_session_close
@@ -293,6 +305,54 @@ functions:
     prototype: "bool __thiscall ui_world_pane_handle_direction_input(WorldPane *world, u8 direction)"
     confidence: high
     evidence: "Clears queued movement, then turns when facing differs or attempts one normal collision-checked step when facing already matches."
+  - address: "0x005F7F20"
+    rva: "0x001F7F20"
+    name: ui_group_invite_registry_contains
+    prototype: "bool __thiscall ui_group_invite_registry_contains(void *registry, const char *name)"
+    confidence: high
+    evidence: "Checks whether an active group-invite alert has registered the supplied requester name; the SGroup handler uses it to suppress duplicate prompts."
+  - address: "0x005F80A0"
+    rva: "0x001F80A0"
+    name: ui_group_invite_registry_remove
+    confidence: high
+    evidence: "Removes the supplied requester name from the active-invite registry; GroupAlertPane destruction calls it before freeing the retained name."
+  - address: "0x005F8250"
+    rva: "0x001F8250"
+    name: ui_group_invite_registry_add
+    confidence: high
+    evidence: "Adds a requester name unless it already exists; GroupAlertPane construction calls it after retaining the name."
+  - address: "0x005F8430"
+    rva: "0x001F8430"
+    name: ui_group_invite_alert_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI _temp_::GroupAlertPane, stores a heap-owned requester at +0x634 and byte length at +0x638, and registers the requester name."
+  - address: "0x005F8540"
+    rva: "0x001F8540"
+    name: ui_group_invite_alert_dtor
+    confidence: high
+    evidence: "Removes the requester from the invite registry, frees the retained name, and destroys the AlertPane base."
+  - address: "0x005F85F0"
+    rva: "0x001F85F0"
+    name: ui_group_invite_alert_accept
+    confidence: high
+    evidence: "GroupAlertPane's first-choice callback submits CGroup action 0x03 using retained requester pointer +0x634 and length +0x638."
+  - address: "0x005F8620"
+    rva: "0x001F8620"
+    name: net_send_group_accept
+    prototype: "u32 __cdecl net_send_group_accept(const char *name, u8 name_length)"
+    confidence: high
+    evidence: "Queues CGroup action 0x03 for an explicit name and length; it performs no prompt unregistration or closure and is shared by manual and GroupAnswer automatic acceptance."
+  - address: "0x005F8720"
+    rva: "0x001F8720"
+    name: net_handle_group_server_packet
+    confidence: high
+    evidence: "For SGroup action 1, suppresses duplicate requester prompts and either constructs GroupAlertPane or immediately sends Accept according to AppConfig GroupAnswer."
+  - address: "0x005F9100"
+    rva: "0x001F9100"
+    name: ui_group_invite_registry_get
+    prototype: "void *__cdecl ui_group_invite_registry_get(void)"
+    confidence: high
+    evidence: "Returns the process-local registry used to track requester names retained by active GroupAlertPane instances."
 data_symbols:
   - address: "0x0073D958"
     name: net_socket_ptr
