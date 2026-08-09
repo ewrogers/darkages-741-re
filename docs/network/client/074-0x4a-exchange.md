@@ -57,4 +57,8 @@ Dragging an inventory item into the local exchange list first sends action `0x01
 
 Gold is sent through action `0x03`. Accept and Cancel do not close the pane locally. The client waits for the matching server event, so the server remains the owner of the final exchange state.
 
+For direct invocation, do not skip the action `0x01` request even when the caller already knows a stack quantity. Action `0x02` is a continuation of the server's quantity-request event and its native producer reads the staged slot from `AddItemWithCountDialog`, not `ExchangeDialog`.
+
+The AddItem and SetGold producers are useful value-oriented entry points, but they do not validate the inventory slot or gold amount. SetGold also omits the dialog's `gold_was_sent` update. The bare Accept producer omits `local_accept_sent`, so direct confirmation should use the dialog action handler. Cancel may use either route, but the pane must remain open until `SExchange` closes it.
+
 See [Player exchange](../../systems/player-exchange.md) for the pane, acknowledgement state, and UI hook points.

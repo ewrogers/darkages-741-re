@@ -30,6 +30,23 @@ These addresses apply only to the documented version 741 executable. Resolve eve
 | `ui_spell_numeric_input_submit` | `0x0049B380` | `0x0009B380` | Submit the active numeric prompt |
 | `ui_start_spell_cast` | `0x0049B900` | `0x0009B900` | Queue a completed `CUseSpell` body and start cast timing |
 | `ui_cancel_spell_delay` | `0x0049BA50` | `0x0009BA50` | Cancel the pending local cast |
+| `ui_npc_session_close` | `0x0052C050` | `0x0012C050` | Close the complete live NPC session locally |
+| `ui_npc_message_dialog_close` | `0x0052D950` | `0x0012D950` | Close an NPC message pane through its owning session |
+| `ui_npc_merchant_message_handle_action` | `0x00534B70` | `0x00134B70` | Perform merchant Top or local Close actions |
+| `net_send_merchant_text_menu_selection` | `0x00535590` | `0x00135590` | Return one displayed text-menu row |
+| `net_send_merchant_text_input` | `0x005359D0` | `0x001359D0` | Return supplied merchant text |
+| `net_send_merchant_inventory_item_selection` | `0x005362A0` | `0x001362A0` | Return one displayed local-item row |
+| `net_send_merchant_server_skill_spell_selection` | `0x00536620` | `0x00136620` | Return one displayed server ability row |
+| `net_send_merchant_client_skill_spell_selection` | `0x00536D60` | `0x00136D60` | Return one displayed local ability row |
+| `net_send_merchant_server_item_selection` | `0x00538710` | `0x00138710` | Return one displayed server-item row |
+| `ui_npc_pursuit_message_handle_action` | `0x0053CD90` | `0x0013CD90` | Perform pursuit Previous, Next, or Close actions |
+| `net_send_pursuit_previous` | `0x0053D940` | `0x0013D940` | Request the previous pursuit step |
+| `net_send_pursuit_next` | `0x0053D9D0` | `0x0013D9D0` | Request the next pursuit step |
+| `net_send_pursuit_close_current` | `0x0053DA90` | `0x0013DA90` | Queue the pursuit close response without local close |
+| `net_send_pursuit_menu_selection` | `0x0053DC30` | `0x0013DC30` | Return one ordinary pursuit choice |
+| `net_send_pursuit_say_and_menu_selection` | `0x0053DE00` | `0x0013DE00` | Return a simple pursuit choice with `CSay` echo |
+| `net_send_pursuit_text_input` | `0x0053E070` | `0x0013E070` | Return ordinary pursuit text |
+| `net_send_pursuit_say_and_text_input` | `0x0053E270` | `0x0013E270` | Return simple pursuit text with `CSay` echo |
 | `net_submit_client_packet` | `0x00563E00` | `0x00163E00` | Copy and queue a supplied opcode-first body |
 | `ui_gui_back_get_inventory_item` | `0x005A2F90` | `0x001A2F90` | Resolve one live item entry through `GUIBackPane` |
 | `ui_get_gui_back_pane` | `0x005A9C40` | `0x001A9C40` | Get the live lower-tray owner |
@@ -298,6 +315,147 @@ void __thiscall ui_equip_pane_request_remove_slots_1_and_3(
 ```
 
 The helper unconditionally submits `CRemoveEquipment` for slot `1`, then slot `3`. The tilde binding was supplied as project-owner behavior; the local helper body confirms the two-slot request.
+
+## Respond to an NPC dialog
+
+Walk `EventDispatcher + 0x60` on the main thread and resolve the currently presented exact RTTI `NPCSession`. Require one live session and resolve every descendant again for each command:
+
+```c
+u32 state = *(u32 *)((u8 *)session + 0x190);
+NPCMessageDialog *outer =
+    *(NPCMessageDialog **)((u8 *)session + 0x3BC);
+void *model = *(void **)((u8 *)outer + 0x634);
+NPCMenuDialog *answer =
+    *(NPCMenuDialog **)((u8 *)outer + 0x638);
+```
+
+State `1` is `SScreenMenu`; its menu type is at `session + 0x194`. State `2` is `SPursuitMessage`; its dialog type is at `+0x2A0`, `has_previous` at `+0x2B0`, and `has_next` at `+0x2B1`. Reject a command when the expected pane or model is absent, hidden, unregistered, inactive, or already response-pending.
+
+### Merchant choices and input
+
+All row arguments below are zero-based displayed rows. Validate them against the current model count; row models expose that count through primary-vtable offset `+0x04`. If the controller starts with an inventory slot, book slot, or server record ID, find its row in the current model first.
+
+```c
+u32 __thiscall net_send_merchant_text_menu_selection(
+    void *model, u8 row);
+u32 __thiscall net_send_merchant_text_input(
+    void *model, const char *text);
+u32 __thiscall net_send_merchant_inventory_item_selection(
+    void *model, u8 row);
+u32 __thiscall net_send_merchant_server_skill_spell_selection(
+    void *model, u8 row);
+u32 __thiscall net_send_merchant_client_skill_spell_selection(
+    void *model, u8 row);
+u32 __thiscall net_send_merchant_server_item_selection(
+    void *model, u8 row, u8 quantity);
+```
+
+Use them for screen-menu types `0/1`, `2/3`, `5/11`, `6/7`, `8/9`, and `4/10`, respectively. Bound supplied text to 255 bytes. Default an omitted quantity to `1`. The special item form with pursuit ID `0x004B` requires a nonzero quantity no greater than the selected record's available quantity. Other server-item forms ignore the quantity argument and return the retained name.
+
+Each producer reads target identity, pursuit ID, optional server argument, and selected row data from the live model. It then queues `CMerchant` and enters response-pending. Do not call `ui_npc_session_set_response_pending` a second time.
+
+Merchant Close sends no packet. Use outer action `5`:
+
+```c
+u32 __thiscall ui_npc_merchant_message_handle_action(
+    NPCMessageDialog *outer, s32 action_id, u8 event_code);
+```
+
+The event byte is ignored for action `5`. Action `4` is Top and sends `CRequestObjectInfo` before closing.
+
+### Pursuit navigation, choices, and input
+
+Use the outer pane for navigation and the current model for answers:
+
+```c
+u32 __thiscall net_send_pursuit_previous(
+    NPCMessageDialog *outer);
+u32 __thiscall net_send_pursuit_next(
+    NPCMessageDialog *outer);
+u32 __thiscall net_send_pursuit_menu_selection(
+    void *model, u8 row);
+u32 __thiscall net_send_pursuit_say_and_menu_selection(
+    void *model, u8 row);
+u32 __thiscall net_send_pursuit_text_input(
+    void *model, const char *text);
+u32 __thiscall net_send_pursuit_say_and_text_input(
+    void *model, const char *text);
+```
+
+Require the matching navigation flag before Previous or Next. Choice rows are zero-based and are sent as one-based choice numbers. For text, require `strlen(text) <= *(u8 *)((u8 *)model + 0x108)`.
+
+Use ordinary menu selection for pursuit types `2` and `6`, and the `CSay` form for simple type `3`. Use ordinary text for type `4`, and the `CSay` form for simple type `5`. Protected type `9` must remain on `ui_npc_pursuit_protected_handle_action` and its regional account-manager flow.
+
+For Close, invoke outer action `6` so the client both queues the current-step `CPursuit` and closes the session locally:
+
+```c
+u32 __thiscall ui_npc_pursuit_message_handle_action(
+    NPCMessageDialog *outer, s32 action_id, u8 event_code);
+```
+
+Calling `net_send_pursuit_close_current` alone only queues the packet and response-pending transition. It leaves the local pane open.
+
+These native producers are preferable to a handcrafted `net_submit_client_packet` body. They preserve the server-owned conversation fields, displayed-row mapping, simple-dialog speech echo, and UI lifecycle. The system-level flow is in [NPC dialogs](../../systems/npc-dialogs.md#invoking-a-response-without-pointer-input).
+
+## Act in a player exchange
+
+Resolve the one live, presented exact RTTI `ExchangeDialog` from `EventDispatcher + 0x60` on the main thread. Recheck it for every command. Its action state is:
+
+```c
+struct ExchangeActionState {
+    u32 exchange_id;        // ExchangeDialog +0x630
+    u8 local_accept_sent;   // +0x634
+    u8 local_accepted;      // +0x635
+    u8 other_accepted;      // +0x636
+    u8 gold_was_sent;       // +0x637
+};
+```
+
+### Add an item
+
+Validate a live one-based inventory slot in the range `1` through `60`, then begin with:
+
+```c
+u32 __thiscall net_send_exchange_add_item(
+    ExchangeDialog *exchange, u8 slot);
+```
+
+This producer accepts the supplied slot directly and is preferable to the inventory-drop handler, which expects an `InvItemPane` drag object. It does not validate range, occupancy, or acknowledgement state. Reject a new offer after either party has accepted.
+
+Use this first stage for both ordinary and stackable items. If the server replies with the quantity-request `SExchange` event, it creates exact RTTI `AddItemWithCountDialog`. Resolve that temporary pane and require that its `+0x630` exchange ID and `+0x634` staged slot still match the request, then call:
+
+```c
+u32 __thiscall net_send_exchange_add_stackable_item(
+    AddItemWithCountDialog *count_dialog, u8 quantity);
+```
+
+Default an omitted quantity to `1` and require `1` through `255`. After submission, queue `count_dialog` through the normal pane-removal path. Do not pass `ExchangeDialog` to this function. At the same `+0x634` offset it stores `local_accept_sent`, not an item slot.
+
+### Add gold
+
+Require that no acknowledgement flag is set and that gold has not already been sent. Validate the desired amount against live character state, then use:
+
+```c
+u32 __thiscall net_send_exchange_set_gold(
+    ExchangeDialog *exchange, u32 amount);
+```
+
+The producer queues the value but does not update the dialog. Mirror the native focus-change path by writing `gold_was_sent = 1` after the call. The authoritative displayed value arrives later in `SExchange` event `0x03`.
+
+### Accept or cancel
+
+Use the dialog action handler so confirmation preserves its local pending state:
+
+```c
+u32 __thiscall ui_exchange_dialog_handle_action(
+    ExchangeDialog *exchange, s32 action_id, u8 event_code);
+```
+
+Pass action `0` to Accept. It queues `CExchange` action `0x05` and sets `local_accept_sent = 1`; then call `ui_exchange_dialog_refresh_controls(exchange)`, whose return type is `void`. Require `local_accept_sent == 0` and `local_accepted == 0` before invoking it.
+
+Pass action `1` to Cancel. The event byte is ignored for both actions. Cancel only queues `CExchange` action `0x04`, so do not destroy the dialog. Wait for `SExchange` event `0x04`, and use a controller-side pending latch if duplicate cancel commands are possible.
+
+The packet-only Accept producer is not a complete action because it omits `local_accept_sent`. The packet-only Cancel producer is locally equivalent to action `1`, but using one action-level wrapper keeps the calling contract consistent. See [Player exchange](../../systems/player-exchange.md#invoking-an-action-without-pointer-input) for the server-driven quantity and closure flow.
 
 ## Why `CreateRemoteThread` is unsafe
 

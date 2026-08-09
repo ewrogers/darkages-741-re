@@ -1205,9 +1205,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_exchange_dialog_ctor` | `0x00469560` | high | Constructs the exact RTTI ExchangeDialog from _nexch.txt, attaches its offer controls, registers it under GUIBackPane, and stores the Started event ID at +0x630. |
 | `ui_exchange_dialog_dtor` | `0x00469E70` | high | Decrements the modal count, unregisters ExchangeDialog from event and screen routing, and runs the DialogPane destructor. |
 | `ui_exchange_dialog_draw` | `0x00469F10` | high | Draws ExchangeDialog and the active accepted or unaccepted overlay pixmap at its configured position. |
-| `ui_exchange_dialog_handle_action` | `0x00469FF0` | high | Maps attachment-order action 0 to CExchange Accept 0x05 and action 1 to Cancel 0x04. |
+| `ui_exchange_dialog_handle_action` | `0x00469FF0` | high | Action 0 queues CExchange Accept and sets ExchangeDialog +0x634 local_accept_sent; action 1 queues Cancel and leaves closure to SExchange. |
 | `ui_exchange_dialog_handle_inventory_drop` | `0x0046A030` | high | Reads the source InvItemPane one-based slot and sends CExchange AddItem 0x01. |
-| `ui_exchange_dialog_refresh_controls` | `0x0046A080` | high | Enables or disables the exchange offer, accept, and gold controls from the dialog's three acknowledgement flags. |
+| `ui_exchange_dialog_refresh_controls` | `0x0046A080` | high | Refreshes Accept, Cancel, and local-gold control availability from local_accept_sent, local_accepted, and other_accepted. |
 | `ui_exchange_dialog_handle_network_event` | `0x0046A1E0` | high | Consumes decoded opcode 0x42 and forwards it to the ExchangeDialog server-event dispatcher. |
 | `ui_exchange_dialog_dispatch_server_event` | `0x0046A240` | high | Routes SExchange events 0x01 through 0x05 to quantity, item, gold, cancelled, and accepted handlers. |
 | `ui_exchange_handle_count_request` | `0x0046A690` | high | Reads SExchange event 0x01 slot and creates AddItemWithCountDialog with that slot and the active exchange ID. |
@@ -1215,7 +1215,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_exchange_handle_gold_added` | `0x0046A900` | high | Reads event 0x03 party and big-endian u32 gold, then updates MyMoney for party zero or YourMoney otherwise. |
 | `ui_exchange_handle_cancelled` | `0x0046A9E0` | high | Skips the party byte, opens the supplied string8 message in a one-button alert, and removes ExchangeDialog immediately. |
 | `ui_exchange_handle_accepted` | `0x0046AB20` | high | Marks the indicated party accepted and opens the final message alert only when both local and other acknowledgement flags are set. |
-| `ui_exchange_dialog_set_focused_control` | `0x0046AD00` | high | When focus leaves the edited gold field, validates decimal text, sends CExchange SetGold, and then updates dialog focus. |
+| `ui_exchange_dialog_set_focused_control` | `0x0046AD00` | high | When focus leaves the edited gold field, validates decimal text, sends CExchange SetGold, sets +0x637 gold_was_sent, and then updates dialog focus. |
 | `ui_exchange_dialog_handle_keyboard_event` | `0x0046AE20` | high | Consumes Space and Enter and delegates other keyboard events to DialogPane. |
 | `ui_exchange_item_list_pane_ctor` | `0x0046AE60` | high | Constructs exact RTTI ExchangeItemListPane as an eight-row ListPane. |
 | `ui_exchange_item_list_set_item` | `0x0046AEA0` | high | Replaces or appends an exchange item record by ID with sprite, name, and dye. |
@@ -1232,7 +1232,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_exchange_my_item_list_draw_item` | `0x0046B900` | high | Draws one local inventory icon, selected-row background, palette mapping, and DBCS-safe truncated name. |
 | `ui_exchange_count_dialog_load_layout` | `0x0046BB00` | high | Lazily loads litemex.txt and caches the AddItemWithCountDialog background and control rectangles. |
 | `ui_exchange_count_dialog_ctor` | `0x0046BC70` | high | Constructs exact RTTI AddItemWithCountDialog with OK, Cancel, title, and quantity text controls. |
-| `ui_exchange_count_dialog_handle_action` | `0x0046C060` | high | On confirmation, parses and clamps the quantity to u8, sends CExchange action 2, and closes; cancellation only closes. |
+| `ui_exchange_count_dialog_handle_action` | `0x0046C060` | high | On confirmation, parses and clamps the quantity to u8, sends CExchange action 2 through the count dialog, and closes the temporary pane; cancellation only closes. |
 | `ui_exchange_count_dialog_refresh_confirm` | `0x0046C170` | high | Enables the confirmation control only while the quantity text field is nonempty. |
 | `ui_exchange_count_dialog_handle_network_event` | `0x0046C1F0` | high | Consumes decoded SExchange bodies and forwards them to the count-dialog handler. |
 | `ui_exchange_count_dialog_apply_server_event` | `0x0046C250` | high | Closes AddItemWithCountDialog when SExchange reports event 4 Cancelled. |
@@ -2500,7 +2500,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_nexonclub_dialog_position_and_activate` | `0x0052AB20` | high | Sets submit as the default action, centers the dialog, and applies inherited pane activation. |
 | `ui_nexonclub_dialog_scalar_deleting_dtor` | `0x0052AC40` | high | Implements the complete-object MSVC scalar-deleting destructor contract for NexonclubDialog. |
 | `ui_nexonclub_dialog_timer_scalar_deleting_dtor_thunk` | `0x0052AC70` | high | Adjusts TimerHandler this by -0x11C before tail-calling the complete-object deleting destructor. |
+| `ui_npc_session_screen_menu_ctor` | `0x0052B9F0` | high | Constructs and registers exact RTTI NPCSession from a typed SScreenMenu, retaining state 1 and the current outer pane at +0x3BC. |
+| `ui_npc_session_pursuit_message_ctor` | `0x0052BC90` | high | Constructs and registers exact RTTI NPCSession from a typed SPursuitMessage, retaining state 2 and the current outer pane at +0x3BC. |
 | `ui_npc_session_set_response_pending` | `0x0052C020` | high | Invokes the active NPC message pane's response-pending virtual after a merchant or pursuit response is queued; the pursuit implementation deactivates its nested answer pane, disables Previous and Next, and leaves Close available. |
+| `ui_npc_session_close` | `0x0052C050` | high | Queues the complete NPCSession pane for deferred local removal without sending a merchant or pursuit response. |
 | `ui_npc_session_update_speaker_art` | `0x0052C480` | high | Loads the NPC illustration for the active packet fields or switches to NPCTilePane when lookup or decoding fails. |
 | `ui_npc_session_handle_network_event` | `0x0052C730` | high | Routes SScreenMenu 0x2F and SPursuitMessage 0x30 packet objects into their NPCSession update paths. |
 | `ui_npc_session_open_screen_menu` | `0x0052C7B0` | high | Copies SScreenMenu state into NPCSession state 1, refreshes speaker art, and constructs exact RTTI NPC_Merchant_MessageDialog. |
@@ -2509,6 +2512,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_illustration_pane_set_image` | `0x0052CBE0` | high | Resolves the NPC name and illustration index, sizes the pane to the loaded frame, and invalidates it for redraw. |
 | `ui_npc_illustration_pane_draw` | `0x0052CC90` | high | Draws the selected illustration pixmap through the transparent software blitter. |
 | `ui_npc_message_dialog_ctor` | `0x0052D460` | high | Constructs the shared lnpcd.txt-backed outer speaker name, content, and scrolling pane used by screen-menu and pursuit dialogs. |
+| `ui_npc_message_dialog_set_response_pending` | `0x0052D730` | high | Forwards response-pending to the current nested answer pane retained at outer message-dialog offset +0x638. |
 | `ui_npc_message_dialog_close` | `0x0052D950` | high | Closes the owning NPCSession when present, or destroys a standalone NPC message pane, without sending a merchant or pursuit response. |
 | `ui_npc_menu_dialog_ctor` | `0x0052DCB0` | high | Constructs the shared NPCMenuDialog base used by choice, input, item, skill, and spell subpanes. |
 | `ui_npc_menu_dialog_handle_keyboard_event` | `0x0052DDF0` | high | Returns false for Escape so the outer NPC message dialog can handle its cancel action; all other keyboard events use the inherited DialogPane handler. |
@@ -2821,6 +2825,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_open_employee_dialog_from_server_body` | `0x005F6BF0` | high | Creates EmployeeDialogPane only for an SMercenary category 1 Open body. |
 | `ui_open_bulletin_session_from_server_body` | `0x005F6CD0` | high | Creates BulletinSession for a direct SBulletin body when no conflicting session is active and the admission flag check passes. |
 | `ui_create_merchant_session` | `0x005F7300` | high | Allocates exact RTTI MerchantSession and passes the decoded SScreenMenu body to its constructor. |
+| `ui_open_npc_session_from_screen_menu` | `0x005F7700` | high | Live server-packet dispatch allocates exact RTTI NPCSession and constructs it from typed SScreenMenu. |
+| `ui_open_npc_session_from_pursuit_message` | `0x005F7790` | high | Live server-packet dispatch allocates exact RTTI NPCSession for non-close typed SPursuitMessage; type 10 needs no new pane. |
 | `ui_apply_block_input_server_packet` | `0x005F7AA0` | high | Maps SBlockInput state 0 to held-button release plus ClockPane creation and state 1 to ClockPane removal; other states are ignored. |
 | `ui_open_manufacture_dialog_from_manual_packet` | `0x005F7AE0` | high | Creates the singleton ManufactureDialogPane only for SManual RecipeCount and ignores Recipe detail messages when no pane exists. |
 | `ui_create_field_map_pane` | `0x005F88B0` | high | Allocates a 640 by 480 FieldMapPane, initializes it from decoded SFieldMap values, registers it with the screen root, and retains it in WorldPane. |
@@ -2905,11 +2911,11 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_upload_and_delete_saved_crash_report` | `0x00468B40` | high | Reads at most 4096 text bytes from LCrash.nfo, conditionally sends CException report kind 1, and always attempts DeleteFileA. |
 | `net_send_exception_report_text` | `0x00468D30` | high | Sends a 1..4095-byte in-memory diagnostic through the same CException report-kind-1 body used by saved crash reports. |
 | `net_send_exchange_start` | `0x0046A2F0` | medium | Builds CExchange as opcode 0x4A, action 0x00, and a big-endian u32 argument; no live static caller was recovered. |
-| `net_send_exchange_accept` | `0x0046A390` | high | Builds opcode 0x4A, action 0x05, and ExchangeDialog +0x630. |
-| `net_send_exchange_cancel` | `0x0046A440` | high | Builds opcode 0x4A, action 0x04, and the supplied target or exchange ID. |
-| `net_send_exchange_set_gold` | `0x0046A4F0` | high | Builds opcode 0x4A, action 0x03, exchange ID, and big-endian u32 gold amount. |
-| `net_send_exchange_add_item` | `0x0046A5C0` | high | Builds opcode 0x4A, action 0x01, exchange ID, and one-based u8 inventory slot. |
-| `net_send_exchange_add_stackable_item` | `0x0046C2A0` | high | Builds opcode 0x4A, action 0x02, exchange ID, staged slot, and u8 quantity. |
+| `net_send_exchange_accept` | `0x0046A390` | high | Queues CExchange action 0x05 from +0x630 but does not set +0x634 local_accept_sent, so it is not a complete direct confirmation action. |
+| `net_send_exchange_cancel` | `0x0046A440` | high | Queues CExchange action 0x04 from +0x630 and performs no local close or pending-state transition. |
+| `net_send_exchange_set_gold` | `0x0046A4F0` | high | Queues CExchange action 0x03 from +0x630 and caller-supplied gold, but does not set +0x637 gold_was_sent or update the control text. |
+| `net_send_exchange_add_item` | `0x0046A5C0` | high | Queues first-stage CExchange action 0x01 from +0x630 and a caller-supplied one-based slot without validating range, occupancy, or acknowledgement state. |
+| `net_send_exchange_add_stackable_item` | `0x0046C2A0` | high | Queues second-stage CExchange action 0x02 from count-dialog +0x630 exchange ID, +0x634 staged slot, and caller quantity; ExchangeDialog is not a compatible receiver. |
 | `net_request_family_name` | `0x004719B0` | high | Builds and submits the opcode-only CRequestFamilyName body 7A. |
 | `net_send_field_map_selection` | `0x00476390` | high | Normal field-map UI builder writes opcode 0x3F followed by the selected node's checksum, map ID, X, and Y words. |
 | `net_send_inventory_change_slot` | `0x00490F40` | high | Writes CChangeSlot category 0 for item inventory, followed by one-based source and destination slots; it excludes slot 60 and suppresses this category while SUserAppearance action-state bit 0 is set. |
@@ -3019,25 +3025,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_nexonclub_dialog_step` | `0x0052A760` | high | Sends CPursuit 0x3A for an explicit NexonclubDialog step without an argument. |
 | `net_build_merchant_response_header` | `0x0052C1C0` | high | Writes CMerchant opcode 0x39, target type, big-endian target ID, and big-endian pursuit ID as the common eight-byte body. |
 | `net_build_pursuit_response_header` | `0x0052C270` | high | Writes CPursuit opcode 0x3A, target type, target ID, pursuit ID, and step ID as the common ten-byte body. |
-| `net_send_merchant_text_menu_selection` | `0x00535590` | high | Sends the selected row's pursuit ID and echoes the optional type-1 server argument in CMerchant. |
+| `net_send_merchant_text_menu_selection` | `0x00535590` | high | Maps a zero-based displayed row to its pursuit ID, echoes the optional type-1 server argument, queues CMerchant, and enters response-pending. |
 | `net_parse_merchant_text_menu` | `0x00535750` | high | Parses optional type-1 string8 argument, u8 row count, and repeated string8 text plus u16 pursuit ID. |
-| `net_send_merchant_text_input` | `0x005359D0` | high | Sends CMerchant with optional type-3 server argument followed by the entered string8 text. |
+| `net_send_merchant_text_input` | `0x005359D0` | high | Sends CMerchant with the retained type-3 server argument and supplied string8 text, then enters response-pending. |
 | `net_parse_merchant_text_input_menu` | `0x00535BA0` | high | Parses the optional type-3 string8 server argument and the common u16 pursuit ID for a merchant text input. |
-| `net_send_merchant_inventory_item_selection` | `0x005362A0` | high | Sends a selected local inventory slot; pursuit 0x004E uses the alternate literal-1, slot, literal-1 tail. |
+| `net_send_merchant_inventory_item_selection` | `0x005362A0` | high | Maps a displayed row to its server-whitelisted local inventory slot and sends it; pursuit 0x004E uses the alternate literal-1, slot, literal-1 tail. |
 | `net_parse_merchant_client_item_menu` | `0x00536390` | high | Parses pursuit ID and a u8 count of one-based local inventory slots, with one extra u32 per row for pursuit 0x004E. |
-| `net_send_merchant_server_skill_spell_selection` | `0x00536620` | high | Sends the selected server-supplied skill or spell name as string8 after the CMerchant common header. |
+| `net_send_merchant_server_skill_spell_selection` | `0x00536620` | high | Maps a displayed row to its retained server-supplied skill or spell name, queues CMerchant, and enters response-pending. |
 | `net_parse_merchant_server_skill_spell_menu` | `0x00536AD0` | high | Parses pursuit ID and u16-counted graphic type, sprite, color, and string8 name records. |
-| `net_send_merchant_client_skill_spell_selection` | `0x00536D60` | high | Sends one selected local spell-book or skill-book slot after the CMerchant common header. |
+| `net_send_merchant_client_skill_spell_selection` | `0x00536D60` | high | Maps a displayed row to its whitelisted local spell-book or skill-book slot, queues CMerchant, and enters response-pending. |
 | `net_parse_merchant_client_skill_spell_menu` | `0x00536E00` | high | Parses pursuit ID and an optional u8-counted slot whitelist; absent or zero count enumerates all learned slots 1 through 89. |
-| `net_send_merchant_server_item_selection` | `0x00538710` | high | Sends an ordinary selected item name or the pursuit-0x004B marker, u32 record ID, and u8 quantity tail. |
+| `net_send_merchant_server_item_selection` | `0x00538710` | high | Maps a displayed row to an ordinary retained item name or the pursuit-0x004B marker, u32 record ID, and supplied u8 quantity tail. |
 | `net_parse_merchant_server_item_menu` | `0x005388F0` | high | Parses ordinary server item records or the larger pursuit-0x004B record with ID, quantity, optional description, and two counters. |
-| `net_send_pursuit_previous` | `0x0053D940` | high | Sends a no-argument CPursuit with current step minus one. |
-| `net_send_pursuit_next` | `0x0053D9D0` | high | Sends a no-argument CPursuit with current step plus one. |
-| `net_send_pursuit_close_current` | `0x0053DA90` | high | Sends a no-argument CPursuit with the current step before the pane closes locally. |
-| `net_send_pursuit_menu_selection` | `0x0053DC30` | high | Sends current step plus one, argument type 1, and a one-based menu choice. |
+| `net_send_pursuit_previous` | `0x0053D940` | high | Sends a no-argument CPursuit with current step minus one and enters response-pending without checking has_previous. |
+| `net_send_pursuit_next` | `0x0053D9D0` | high | Sends a no-argument CPursuit with current step plus one and enters response-pending without checking has_next. |
+| `net_send_pursuit_close_current` | `0x0053DA90` | high | Sends a no-argument CPursuit with the current step and enters response-pending; the outer action handler separately closes the session locally. |
+| `net_send_pursuit_menu_selection` | `0x0053DC30` | high | Sends current step plus one, argument type 1, and displayed row plus one, then enters response-pending without validating the row. |
 | `net_parse_pursuit_menu_choices` | `0x0053DD00` | high | Parses a u8 choice count followed by that many string8 choices for pursuit types 2, 3, and 6. |
 | `net_send_pursuit_say_and_menu_selection` | `0x0053DE00` | high | Sends CSay with the selected simple-menu text, then sends the normal type-1 CPursuit answer. |
-| `net_send_pursuit_text_input` | `0x0053E070` | high | Sends current step plus one, argument type 2, and the entered string8 text. |
+| `net_send_pursuit_text_input` | `0x0053E070` | high | Sends current step plus one, argument type 2, and supplied string8 text, then enters response-pending; the caller must honor model +0x108 maximum_input_bytes. |
 | `net_parse_pursuit_text_prompt` | `0x0053E1D0` | high | Parses string8 prolog, u8 maximum input bytes, and string8 epilog for pursuit types 4, 5, and 9. |
 | `net_send_pursuit_say_and_text_input` | `0x0053E270` | high | Sends CSay with prolog, input, and epilog separated by spaces, then sends the normal type-2 CPursuit answer. |
 | `net_send_pursuit_protected_text_result` | `0x0053F060` | high | Sends argument type 2 with the manager-produced nonempty string at protected dialog offset +0x638, rather than directly serializing both edit controls. |

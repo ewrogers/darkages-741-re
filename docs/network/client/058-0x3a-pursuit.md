@@ -57,6 +57,8 @@ The server's `has_previous` and `has_next` bytes only enable the two buttons. Th
 
 Every confirmed navigation and answer builder asks `NPCSession` to enter response-pending after queuing `CPursuit`. The client deactivates the nested answer pane, disables Previous and Next, and clears the default action while leaving Close available. The server continues the conversation by sending the requested `SPursuitMessage` step.
 
+For automation, use the live outer pane's navigation methods or the current response model's choice and text producers. These methods preserve the current target, pursuit ID, step, simple-dialog `CSay` echo, and response-pending transition. See [Invoking an NPC response](../../systems/npc-dialogs.md#invoking-a-response-without-pointer-input).
+
 The outer pursuit pane registers Close as both attachment-order action 6 and its Escape cancel action. Either input sends the no-argument current-step body, then closes the NPC session locally. Nested menu and input panes return false for Escape so the outer pane can handle it.
 
 ## Simple-dialog speech echo

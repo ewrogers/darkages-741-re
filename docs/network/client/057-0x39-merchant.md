@@ -50,6 +50,8 @@ Argumented menus treat `server_argument` as opaque. The client does not display 
 
 Every confirmed nested-menu submitter asks `NPCSession` to enter response-pending after queuing `CMerchant`. This deactivates the current nested menu. A continuing interaction needs another server packet to refresh the session and pane.
 
+For supplied choices or text, call the current response model's subtype-specific native producer instead of constructing this contextual body directly. The model resolves a displayed row to its retained pursuit value, name, record ID, or local slot and preserves the optional server argument. See [Invoking an NPC response](../../systems/npc-dialogs.md#invoking-a-response-without-pointer-input).
+
 ## UI producers
 
 The current `NPCSession` family has separate builders for text menus, input, server items, local inventory, server skill/spell records, and local books. An older compiled `MerchantDialogPane` family produces the same normal, argumented, item-name, `0x004B`, and `0x004E` forms. This agreement is useful confirmation that they are protocol variants rather than accidental object layouts.

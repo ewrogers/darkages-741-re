@@ -222,6 +222,64 @@ For `NPC_Merchant_MessageDialog`, action 4 is Top and action 5 is Close. Top sen
 
 The protected type-9 dialog has separate ID and masked-password edit controls. Its submit handler first calls the regional account manager and may wait, show a local error, or continue. Only the accepted state sends `CPursuit`, using a manager-produced nonempty result string. The two visible input buffers are not copied directly into the packet builder.
 
+## Invoking a response without pointer input
+
+Use the live response model's native builder. This is narrower than replaying pointer or keyboard events, but still preserves the server-issued conversation context and the client's response-pending transition.
+
+Resolve the exact RTTI `NPCSession` from the main-thread event-handler list for every command. Do not retain these pointers across ticks:
+
+```c
+struct NPCDialogContext {
+    u32 state;                    // NPCSession +0x190: 1 screen menu, 2 pursuit
+    NPCMessageDialog *outer;      // NPCSession +0x3BC
+    void *response_model;         // outer +0x634
+    NPCMenuDialog *answer_pane;   // outer +0x638
+};
+```
+
+Require the expected state, a presented outer pane, a non-null current model when the action needs one, and an answer pane that has not already entered response-pending. Every successful value builder calls `ui_npc_session_set_response_pending` after queuing its packet. A continuing server response updates or replaces the current pane. `SPursuitMessage` type 10 closes the session.
+
+### Screen-menu actions
+
+The builder argument is a zero-based displayed row. It is not necessarily an inventory, spell, skill, or server-record ID.
+
+| Menu type | Supplied action | Native producer |
+| ---: | --- | --- |
+| `0`, `1` | Displayed row | `net_send_merchant_text_menu_selection` |
+| `2`, `3` | Text bytes | `net_send_merchant_text_input` |
+| `4`, `10` | Displayed row and quantity | `net_send_merchant_server_item_selection` |
+| `5`, `11` | Displayed row | `net_send_merchant_inventory_item_selection` |
+| `6`, `7` | Displayed row | `net_send_merchant_server_skill_spell_selection` |
+| `8`, `9` | Displayed row | `net_send_merchant_client_skill_spell_selection` |
+
+When a controller starts with a local slot or server record ID, find that value in the current model and pass its displayed row. This preserves the server's whitelist and attached `pursuit_id`. Validate the row against the current model count. Text is a `string8`, so bound it to 255 bytes. Default an omitted quantity to `1`. For the `0x004B` item form, require `1 <= quantity <= available_quantity`; ordinary item menus ignore the quantity argument and return the retained name.
+
+Merchant Close is not a packet response. Invoke outer action 5, or `ui_npc_message_dialog_close`, to close locally without sending `CMerchant`. Top is outer action 4 and sends `CRequestObjectInfo` before closing.
+
+### Pursuit actions
+
+| Current action | Native producer |
+| --- | --- |
+| Previous | `net_send_pursuit_previous` on the outer pane |
+| Next | `net_send_pursuit_next` on the outer pane |
+| Choice for types `2` and `6` | `net_send_pursuit_menu_selection` on the response model |
+| Choice for type `3` | `net_send_pursuit_say_and_menu_selection` on the response model |
+| Text for type `4` | `net_send_pursuit_text_input` on the response model |
+| Text for type `5` | `net_send_pursuit_say_and_text_input` on the response model |
+| Close | Outer action 6 |
+
+Require the server's `has_previous` or `has_next` flag before navigation. Choice arguments are zero-based displayed rows; the builder sends row plus one. Text must not exceed the model's server-supplied `maximum_input_bytes` at model offset `+0x108`.
+
+Use the simple type-3 and type-5 producers where required. They send the extra `CSay` before the ordinary `CPursuit` answer. Outer action 6 is also important: it sends the current-step close response and then closes the session locally. Calling only `net_send_pursuit_close_current` would leave the local pane open.
+
+Do not bypass protected type 9. Its result comes from the regional account manager, not directly from the visible ID or password controls.
+
+### Why not submit a body directly
+
+`net_submit_client_packet` would apply the special inner wrapper for opcodes `0x39` and `0x3A`, but that is only the transport step. A handcrafted body would still need the current target ID, pursuit ID, step, opaque argument, displayed-row mapping, subtype-specific speech echo, navigation checks, and correct local close or response-pending behavior. The live model builders already own those rules.
+
+The exact x86 contracts and RVAs are in [Manual native actions](../appendix/runtime/manual-actions.md#respond-to-an-npc-dialog).
+
 ## Server and client round trips
 
 ### Screen menu

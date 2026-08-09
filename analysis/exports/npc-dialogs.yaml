@@ -1389,10 +1389,22 @@ functions:
     name: ui_nexonclub_dialog_timer_scalar_deleting_dtor_thunk
     confidence: high
     evidence: "Adjusts TimerHandler this by -0x11C before tail-calling the complete-object deleting destructor."
+  - address: "0x0052B9F0"
+    name: ui_npc_session_screen_menu_ctor
+    confidence: high
+    evidence: "Constructs and registers exact RTTI NPCSession from a typed SScreenMenu, retaining state 1 and the current outer pane at +0x3BC."
+  - address: "0x0052BC90"
+    name: ui_npc_session_pursuit_message_ctor
+    confidence: high
+    evidence: "Constructs and registers exact RTTI NPCSession from a typed SPursuitMessage, retaining state 2 and the current outer pane at +0x3BC."
   - address: "0x0052C020"
     name: ui_npc_session_set_response_pending
     confidence: high
     evidence: "Invokes the active NPC message pane's response-pending virtual after a merchant or pursuit response is queued; the pursuit implementation deactivates its nested answer pane, disables Previous and Next, and leaves Close available."
+  - address: "0x0052C050"
+    name: ui_npc_session_close
+    confidence: high
+    evidence: "Queues the complete NPCSession pane for deferred local removal without sending a merchant or pursuit response."
   - address: "0x0052C1C0"
     name: net_build_merchant_response_header
     confidence: high
@@ -1413,6 +1425,10 @@ functions:
     name: ui_npc_message_dialog_ctor
     confidence: high
     evidence: "Constructs the shared lnpcd.txt-backed outer speaker name, content, and scrolling pane used by screen-menu and pursuit dialogs."
+  - address: "0x0052D730"
+    name: ui_npc_message_dialog_set_response_pending
+    confidence: high
+    evidence: "Forwards response-pending to the current nested answer pane retained at outer message-dialog offset +0x638."
   - address: "0x0052D950"
     name: ui_npc_message_dialog_close
     confidence: high
@@ -1459,16 +1475,18 @@ functions:
     evidence: "Constructs the type-specific list model for SScreenMenu types 5 through 9 and 11, then embeds it in NPCListMenuDialog."
   - address: "0x00535590"
     name: net_send_merchant_text_menu_selection
+    prototype: "u32 __thiscall net_send_merchant_text_menu_selection(void *model, u8 displayed_row)"
     confidence: high
-    evidence: "Sends the selected row's pursuit ID and echoes the optional type-1 server argument in CMerchant."
+    evidence: "Maps a zero-based displayed row to its pursuit ID, echoes the optional type-1 server argument, queues CMerchant, and enters response-pending."
   - address: "0x00535750"
     name: net_parse_merchant_text_menu
     confidence: high
     evidence: "Parses optional type-1 string8 argument, u8 row count, and repeated string8 text plus u16 pursuit ID."
   - address: "0x005359D0"
     name: net_send_merchant_text_input
+    prototype: "u32 __thiscall net_send_merchant_text_input(void *model, const char *text)"
     confidence: high
-    evidence: "Sends CMerchant with optional type-3 server argument followed by the entered string8 text."
+    evidence: "Sends CMerchant with the retained type-3 server argument and supplied string8 text, then enters response-pending."
   - address: "0x00535BA0"
     name: net_parse_merchant_text_input_menu
     confidence: high
@@ -1487,16 +1505,18 @@ functions:
     evidence: "Resolves one server-supplied slot against the live inventory and builds an active row from its local icon and name, plus the optional display value."
   - address: "0x005362A0"
     name: net_send_merchant_inventory_item_selection
+    prototype: "u32 __thiscall net_send_merchant_inventory_item_selection(void *model, u8 displayed_row)"
     confidence: high
-    evidence: "Sends a selected local inventory slot; pursuit 0x004E uses the alternate literal-1, slot, literal-1 tail."
+    evidence: "Maps a displayed row to its server-whitelisted local inventory slot and sends it; pursuit 0x004E uses the alternate literal-1, slot, literal-1 tail."
   - address: "0x00536390"
     name: net_parse_merchant_client_item_menu
     confidence: high
     evidence: "Parses pursuit ID and a u8 count of one-based local inventory slots, with one extra u32 per row for pursuit 0x004E."
   - address: "0x00536620"
     name: net_send_merchant_server_skill_spell_selection
+    prototype: "u32 __thiscall net_send_merchant_server_skill_spell_selection(void *model, u8 displayed_row)"
     confidence: high
-    evidence: "Sends the selected server-supplied skill or spell name as string8 after the CMerchant common header."
+    evidence: "Maps a displayed row to its retained server-supplied skill or spell name, queues CMerchant, and enters response-pending."
   - address: "0x00536AD0"
     name: net_parse_merchant_server_skill_spell_menu
     confidence: high
@@ -1507,8 +1527,9 @@ functions:
     evidence: "Constructs the shared local skill and spell list model before the exact derived type is installed."
   - address: "0x00536D60"
     name: net_send_merchant_client_skill_spell_selection
+    prototype: "u32 __thiscall net_send_merchant_client_skill_spell_selection(void *model, u8 displayed_row)"
     confidence: high
-    evidence: "Sends one selected local spell-book or skill-book slot after the CMerchant common header."
+    evidence: "Maps a displayed row to its whitelisted local spell-book or skill-book slot, queues CMerchant, and enters response-pending."
   - address: "0x00536E00"
     name: net_parse_merchant_client_skill_spell_menu
     confidence: high
@@ -1539,8 +1560,9 @@ functions:
     evidence: "Collects active learned spell slots 1 through 89 when the server supplies no nonzero whitelist."
   - address: "0x00538710"
     name: net_send_merchant_server_item_selection
+    prototype: "u32 __thiscall net_send_merchant_server_item_selection(void *model, u8 displayed_row, u8 quantity)"
     confidence: high
-    evidence: "Sends an ordinary selected item name or the pursuit-0x004B marker, u32 record ID, and u8 quantity tail."
+    evidence: "Maps a displayed row to an ordinary retained item name or the pursuit-0x004B marker, u32 record ID, and supplied u8 quantity tail."
   - address: "0x005388F0"
     name: net_parse_merchant_server_item_menu
     confidence: high
@@ -1563,38 +1585,45 @@ functions:
     evidence: "Applies speaker content and navigation flags, then constructs pursuit models for types 2, 3, 4, 5, 6, and 9."
   - address: "0x0053D940"
     name: net_send_pursuit_previous
+    prototype: "u32 __thiscall net_send_pursuit_previous(NPCMessageDialog *dialog)"
     confidence: high
-    evidence: "Sends a no-argument CPursuit with current step minus one."
+    evidence: "Sends a no-argument CPursuit with current step minus one and enters response-pending without checking has_previous."
   - address: "0x0053D9D0"
     name: net_send_pursuit_next
+    prototype: "u32 __thiscall net_send_pursuit_next(NPCMessageDialog *dialog)"
     confidence: high
-    evidence: "Sends a no-argument CPursuit with current step plus one."
+    evidence: "Sends a no-argument CPursuit with current step plus one and enters response-pending without checking has_next."
   - address: "0x0053DA90"
     name: net_send_pursuit_close_current
+    prototype: "u32 __thiscall net_send_pursuit_close_current(NPCMessageDialog *dialog)"
     confidence: high
-    evidence: "Sends a no-argument CPursuit with the current step before the pane closes locally."
+    evidence: "Sends a no-argument CPursuit with the current step and enters response-pending; the outer action handler separately closes the session locally."
   - address: "0x0053DC30"
     name: net_send_pursuit_menu_selection
+    prototype: "u32 __thiscall net_send_pursuit_menu_selection(void *model, u8 displayed_row)"
     confidence: high
-    evidence: "Sends current step plus one, argument type 1, and a one-based menu choice."
+    evidence: "Sends current step plus one, argument type 1, and displayed row plus one, then enters response-pending without validating the row."
   - address: "0x0053DD00"
     name: net_parse_pursuit_menu_choices
     confidence: high
     evidence: "Parses a u8 choice count followed by that many string8 choices for pursuit types 2, 3, and 6."
   - address: "0x0053DE00"
     name: net_send_pursuit_say_and_menu_selection
+    prototype: "u32 __thiscall net_send_pursuit_say_and_menu_selection(void *model, u8 displayed_row)"
     confidence: high
     evidence: "Sends CSay with the selected simple-menu text, then sends the normal type-1 CPursuit answer."
   - address: "0x0053E070"
     name: net_send_pursuit_text_input
+    prototype: "u32 __thiscall net_send_pursuit_text_input(void *model, const char *text)"
     confidence: high
-    evidence: "Sends current step plus one, argument type 2, and the entered string8 text."
+    evidence: "Sends current step plus one, argument type 2, and supplied string8 text, then enters response-pending; the caller must honor model +0x108 maximum_input_bytes."
   - address: "0x0053E1D0"
     name: net_parse_pursuit_text_prompt
     confidence: high
     evidence: "Parses string8 prolog, u8 maximum input bytes, and string8 epilog for pursuit types 4, 5, and 9."
   - address: "0x0053E270"
     name: net_send_pursuit_say_and_text_input
+    prototype: "u32 __thiscall net_send_pursuit_say_and_text_input(void *model, const char *text)"
     confidence: high
     evidence: "Sends CSay with prolog, input, and epilog separated by spaces, then sends the normal type-2 CPursuit answer."
   - address: "0x0053EBA0"
@@ -1637,6 +1666,14 @@ functions:
     name: net_dispatch_server_message_dialog
     confidence: high
     evidence: "Dormant raw pursuit-dialog dispatcher for variants 0 through 6 and 9; it has no recovered code or data reference, while the live typed SPursuitMessage path is owned by NPCSession."
+  - address: "0x005F7700"
+    name: ui_open_npc_session_from_screen_menu
+    confidence: high
+    evidence: "Live server-packet dispatch allocates exact RTTI NPCSession and constructs it from typed SScreenMenu."
+  - address: "0x005F7790"
+    name: ui_open_npc_session_from_pursuit_message
+    confidence: high
+    evidence: "Live server-packet dispatch allocates exact RTTI NPCSession for non-close typed SPursuitMessage; type 10 needs no new pane."
 comments:
   - address: "0x004CF3E0"
     text: "Dormant in version 741: this FaceMenuDialog opener has no recovered reference, and the legacy type-0-through-11 dispatcher never selects it."
@@ -1644,12 +1681,22 @@ comments:
     text: "Parse one-based gender bounds, direct hair-style and hair-color bounds, and build the animated UserShapeControlPane preview."
   - address: "0x004D77D0"
     text: "Send the special nine-byte CMerchant appearance body: target identity, hair style, one-based gender, and hair color; preview direction is omitted."
+  - address: "0x0052C817"
+    text: "NPCSession state 1 stores the live SScreenMenu context beginning at +0x194: menu type +0x194, target type +0x195, and u32 target ID +0x198."
+  - address: "0x0052C8AC"
+    text: "NPCSession +0x3BC retains the current outer NPC_Merchant_MessageDialog."
   - address: "0x0052C98A"
     text: "SPursuitMessage type 10 has no remaining fields and closes the NPC session immediately."
+  - address: "0x0052C9D8"
+    text: "NPCSession state 2 stores the live pursuit context beginning at +0x2A0, including pursuit ID +0x2AC, step +0x2AE, Previous +0x2B0, and Next +0x2B1."
+  - address: "0x0052CA89"
+    text: "NPCSession +0x3BC retains the current outer NPC_Pursuit_MessageDialog."
   - address: "0x0052DE0D"
     text: "Return false for Escape so the outer NPC_Pursuit_MessageDialog can run its cancel action and send CPursuit Close."
   - address: "0x00534C40"
     text: "Dispatch SScreenMenu types: 0/1 text, 2/3 input, 4/10 server items, 5/11 local items, 6/7 server spell-skill, 8/9 local spell-skill."
+  - address: "0x00534F4A"
+    text: "The outer NPC message pane retains the current response model at +0x634 and its nested interactive pane at +0x638."
   - address: "0x005350EE"
     text: "SScreenMenu types 5 and 11 build NPCClientItemMenu from server-selected local inventory slots."
   - address: "0x005351EA"
@@ -1672,6 +1719,10 @@ comments:
     text: "Attachment-order actions 4, 5, and 6 are Previous, Next, and Close. Actions 0 through 3 belong to the base name/content controls."
   - address: "0x0053CDE1"
     text: "Close action: send the current-step no-argument CPursuit before closing the NPC session locally."
+  - address: "0x0053D229"
+    text: "The outer pursuit pane retains the choice response model at +0x634 and its nested choice pane at +0x638."
+  - address: "0x0053D65C"
+    text: "The outer pursuit pane retains the text response model at +0x634 and its nested text-input pane at +0x638."
   - address: "0x0059AA8E"
     text: "Dialog type 10 is CloseDialog and has no fields after the type byte."
   - address: "0x0059AB43"

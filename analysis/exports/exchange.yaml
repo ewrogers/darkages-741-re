@@ -26,7 +26,7 @@ functions:
   - address: "0x00469FF0"
     name: ui_exchange_dialog_handle_action
     confidence: high
-    evidence: "Maps attachment-order action 0 to CExchange Accept 0x05 and action 1 to Cancel 0x04."
+    evidence: "Maps attachment-order action 0 to CExchange Accept 0x05 and then sets +0x634 local_accept_sent; action 1 sends Cancel 0x04 without closing locally."
   - address: "0x0046A030"
     name: ui_exchange_dialog_handle_inventory_drop
     confidence: high
@@ -50,7 +50,7 @@ functions:
   - address: "0x0046A390"
     name: net_send_exchange_accept
     confidence: high
-    evidence: "Builds opcode 0x4A, action 0x05, and ExchangeDialog +0x630."
+    evidence: "Builds opcode 0x4A, action 0x05, and ExchangeDialog +0x630; it does not set +0x634 local_accept_sent."
   - address: "0x0046A440"
     name: net_send_exchange_cancel
     confidence: high
@@ -58,11 +58,11 @@ functions:
   - address: "0x0046A4F0"
     name: net_send_exchange_set_gold
     confidence: high
-    evidence: "Builds opcode 0x4A, action 0x03, exchange ID, and big-endian u32 gold amount."
+    evidence: "Builds opcode 0x4A, action 0x03, exchange ID, and big-endian u32 gold amount; it does not set +0x637 gold_was_sent."
   - address: "0x0046A5C0"
     name: net_send_exchange_add_item
     confidence: high
-    evidence: "Builds opcode 0x4A, action 0x01, exchange ID, and one-based u8 inventory slot."
+    evidence: "Builds first-stage opcode 0x4A action 0x01 from ExchangeDialog +0x630 and a caller-supplied one-based u8 slot without validating it."
   - address: "0x0046A690"
     name: ui_exchange_handle_count_request
     confidence: high
@@ -86,7 +86,7 @@ functions:
   - address: "0x0046AD00"
     name: ui_exchange_dialog_set_focused_control
     confidence: high
-    evidence: "When focus leaves the edited gold field, validates decimal text, sends CExchange SetGold, and then updates dialog focus."
+    evidence: "When focus leaves the edited gold field, validates decimal text, sends CExchange SetGold, sets +0x637 gold_was_sent, and then updates dialog focus."
   - address: "0x0046AE20"
     name: ui_exchange_dialog_handle_keyboard_event
     confidence: high
@@ -154,7 +154,7 @@ functions:
   - address: "0x0046C060"
     name: ui_exchange_count_dialog_handle_action
     confidence: high
-    evidence: "On confirmation, parses and clamps the quantity to u8, sends CExchange action 2, and closes; cancellation only closes."
+    evidence: "On confirmation, parses and clamps the quantity to u8, sends CExchange action 2 through the count dialog, and closes the temporary pane; cancellation only closes."
   - address: "0x0046C170"
     name: ui_exchange_count_dialog_refresh_confirm
     confidence: high
@@ -170,7 +170,7 @@ functions:
   - address: "0x0046C2A0"
     name: net_send_exchange_add_stackable_item
     confidence: high
-    evidence: "Builds opcode 0x4A, action 0x02, exchange ID, staged slot, and u8 quantity."
+    evidence: "Builds opcode 0x4A action 0x02 from AddItemWithCountDialog +0x630 exchange ID, +0x634 staged slot, and a caller-supplied u8 quantity; ExchangeDialog is not a compatible receiver."
   - address: "0x0046C390"
     name: ui_exchange_dialog_scalar_deleting_dtor
     confidence: high

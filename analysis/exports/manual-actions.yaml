@@ -29,6 +29,48 @@ functions:
     name: event_dispatcher_tick
     confidence: high
     evidence: "Main-thread dispatcher tick suitable for draining a bounded external-command queue before running the original timer and event work."
+  - address: "0x00469FF0"
+    rva: "0x00069FF0"
+    name: ui_exchange_dialog_handle_action
+    prototype: "u32 __thiscall ui_exchange_dialog_handle_action(ExchangeDialog *exchange, s32 action_id, u8 event_code)"
+    confidence: high
+    evidence: "Action 0 queues CExchange Accept and sets ExchangeDialog +0x634 local_accept_sent; action 1 queues Cancel and leaves closure to SExchange."
+  - address: "0x0046A080"
+    rva: "0x0006A080"
+    name: ui_exchange_dialog_refresh_controls
+    prototype: "void __thiscall ui_exchange_dialog_refresh_controls(ExchangeDialog *exchange)"
+    confidence: high
+    evidence: "Refreshes Accept, Cancel, and local-gold control availability from local_accept_sent, local_accepted, and other_accepted."
+  - address: "0x0046A390"
+    rva: "0x0006A390"
+    name: net_send_exchange_accept
+    prototype: "u32 __thiscall net_send_exchange_accept(ExchangeDialog *exchange)"
+    confidence: high
+    evidence: "Queues CExchange action 0x05 from +0x630 but does not set +0x634 local_accept_sent, so it is not a complete direct confirmation action."
+  - address: "0x0046A440"
+    rva: "0x0006A440"
+    name: net_send_exchange_cancel
+    prototype: "u32 __thiscall net_send_exchange_cancel(ExchangeDialog *exchange)"
+    confidence: high
+    evidence: "Queues CExchange action 0x04 from +0x630 and performs no local close or pending-state transition."
+  - address: "0x0046A4F0"
+    rva: "0x0006A4F0"
+    name: net_send_exchange_set_gold
+    prototype: "u32 __thiscall net_send_exchange_set_gold(ExchangeDialog *exchange, u32 amount)"
+    confidence: high
+    evidence: "Queues CExchange action 0x03 from +0x630 and caller-supplied gold, but does not set +0x637 gold_was_sent or update the control text."
+  - address: "0x0046A5C0"
+    rva: "0x0006A5C0"
+    name: net_send_exchange_add_item
+    prototype: "u32 __thiscall net_send_exchange_add_item(ExchangeDialog *exchange, u8 slot)"
+    confidence: high
+    evidence: "Queues first-stage CExchange action 0x01 from +0x630 and a caller-supplied one-based slot without validating range, occupancy, or acknowledgement state."
+  - address: "0x0046C2A0"
+    rva: "0x0006C2A0"
+    name: net_send_exchange_add_stackable_item
+    prototype: "u32 __thiscall net_send_exchange_add_stackable_item(AddItemWithCountDialog *count_dialog, u8 quantity)"
+    confidence: high
+    evidence: "Queues second-stage CExchange action 0x02 from count-dialog +0x630 exchange ID, +0x634 staged slot, and caller quantity; ExchangeDialog is not a compatible receiver."
   - address: "0x00490960"
     rva: "0x00090960"
     name: ui_inventory_activate_slot
@@ -125,6 +167,108 @@ functions:
     prototype: "bool __thiscall ui_cancel_spell_delay(SpellDelayControlPane *control)"
     confidence: high
     evidence: "Clears cast_active and cancels every timer owned by the live SpellDelayControlPane without sending a client packet."
+  - address: "0x0052C050"
+    rva: "0x0012C050"
+    name: ui_npc_session_close
+    prototype: "u32 __thiscall ui_npc_session_close(NPCSession *session)"
+    confidence: high
+    evidence: "Queues the complete NPCSession pane for deferred removal; no merchant or pursuit response is sent by this function."
+  - address: "0x0052D950"
+    rva: "0x0012D950"
+    name: ui_npc_message_dialog_close
+    prototype: "u32 __thiscall ui_npc_message_dialog_close(NPCMessageDialog *dialog)"
+    confidence: high
+    evidence: "Closes through the owning NPCSession at dialog offset +0x630, or destroys a standalone message dialog locally."
+  - address: "0x00534B70"
+    rva: "0x00134B70"
+    name: ui_npc_merchant_message_handle_action
+    prototype: "u32 __thiscall ui_npc_merchant_message_handle_action(NPCMessageDialog *dialog, s32 action_id, u8 event_code)"
+    confidence: high
+    evidence: "Action 4 requests target information and closes; action 5 closes locally without CMerchant."
+  - address: "0x00535590"
+    rva: "0x00135590"
+    name: net_send_merchant_text_menu_selection
+    prototype: "u32 __thiscall net_send_merchant_text_menu_selection(void *model, u8 displayed_row)"
+    confidence: high
+    evidence: "Maps a zero-based displayed row to its server pursuit ID, preserves the optional type-1 argument, queues CMerchant, and enters response-pending."
+  - address: "0x005359D0"
+    rva: "0x001359D0"
+    name: net_send_merchant_text_input
+    prototype: "u32 __thiscall net_send_merchant_text_input(void *model, const char *text)"
+    confidence: high
+    evidence: "Preserves the optional type-3 server argument, appends supplied string8 text, queues CMerchant, and enters response-pending."
+  - address: "0x005362A0"
+    rva: "0x001362A0"
+    name: net_send_merchant_inventory_item_selection
+    prototype: "u32 __thiscall net_send_merchant_inventory_item_selection(void *model, u8 displayed_row)"
+    confidence: high
+    evidence: "Maps a zero-based displayed row to the server-whitelisted one-based local inventory slot, queues CMerchant, and enters response-pending."
+  - address: "0x00536620"
+    rva: "0x00136620"
+    name: net_send_merchant_server_skill_spell_selection
+    prototype: "u32 __thiscall net_send_merchant_server_skill_spell_selection(void *model, u8 displayed_row)"
+    confidence: high
+    evidence: "Maps a zero-based displayed row to its retained server skill or spell name, queues CMerchant, and enters response-pending."
+  - address: "0x00536D60"
+    rva: "0x00136D60"
+    name: net_send_merchant_client_skill_spell_selection
+    prototype: "u32 __thiscall net_send_merchant_client_skill_spell_selection(void *model, u8 displayed_row)"
+    confidence: high
+    evidence: "Maps a zero-based displayed row to the current whitelisted local book slot, queues CMerchant, and enters response-pending."
+  - address: "0x00538710"
+    rva: "0x00138710"
+    name: net_send_merchant_server_item_selection
+    prototype: "u32 __thiscall net_send_merchant_server_item_selection(void *model, u8 displayed_row, u8 quantity)"
+    confidence: high
+    evidence: "Maps a displayed server-item row to its retained name or pursuit-0x004B record ID and quantity, queues CMerchant, and enters response-pending."
+  - address: "0x0053CD90"
+    rva: "0x0013CD90"
+    name: ui_npc_pursuit_message_handle_action
+    prototype: "u32 __thiscall ui_npc_pursuit_message_handle_action(NPCMessageDialog *dialog, s32 action_id, u8 event_code)"
+    confidence: high
+    evidence: "Actions 4 and 5 request Previous and Next; action 6 queues current-step CPursuit and closes the NPCSession locally."
+  - address: "0x0053D940"
+    rva: "0x0013D940"
+    name: net_send_pursuit_previous
+    prototype: "u32 __thiscall net_send_pursuit_previous(NPCMessageDialog *dialog)"
+    confidence: high
+    evidence: "Reads current pursuit context through dialog +0x630, sends the previous step, and enters response-pending without checking has_previous."
+  - address: "0x0053D9D0"
+    rva: "0x0013D9D0"
+    name: net_send_pursuit_next
+    prototype: "u32 __thiscall net_send_pursuit_next(NPCMessageDialog *dialog)"
+    confidence: high
+    evidence: "Reads current pursuit context through dialog +0x630, sends the next step, and enters response-pending without checking has_next."
+  - address: "0x0053DA90"
+    rva: "0x0013DA90"
+    name: net_send_pursuit_close_current
+    prototype: "u32 __thiscall net_send_pursuit_close_current(NPCMessageDialog *dialog)"
+    confidence: high
+    evidence: "Queues current-step CPursuit and enters response-pending but does not close the local NPCSession by itself."
+  - address: "0x0053DC30"
+    rva: "0x0013DC30"
+    name: net_send_pursuit_menu_selection
+    prototype: "u32 __thiscall net_send_pursuit_menu_selection(void *model, u8 displayed_row)"
+    confidence: high
+    evidence: "Sends step plus one, argument type 1, and displayed row plus one, then enters response-pending; it does not validate the row."
+  - address: "0x0053DE00"
+    rva: "0x0013DE00"
+    name: net_send_pursuit_say_and_menu_selection
+    prototype: "u32 __thiscall net_send_pursuit_say_and_menu_selection(void *model, u8 displayed_row)"
+    confidence: high
+    evidence: "For simple type 3, sends CSay with the displayed choice before delegating to the ordinary pursuit menu response."
+  - address: "0x0053E070"
+    rva: "0x0013E070"
+    name: net_send_pursuit_text_input
+    prototype: "u32 __thiscall net_send_pursuit_text_input(void *model, const char *text)"
+    confidence: high
+    evidence: "Sends step plus one, argument type 2, and supplied string8 text, then enters response-pending; the caller must honor model +0x108 maximum_input_bytes."
+  - address: "0x0053E270"
+    rva: "0x0013E270"
+    name: net_send_pursuit_say_and_text_input
+    prototype: "u32 __thiscall net_send_pursuit_say_and_text_input(void *model, const char *text)"
+    confidence: high
+    evidence: "For simple type 5, sends CSay with prolog, text, and epilog before delegating to the ordinary pursuit text response."
   - address: "0x00563E00"
     rva: "0x00163E00"
     name: net_submit_client_packet

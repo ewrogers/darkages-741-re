@@ -69,6 +69,26 @@ If the server requests a quantity, exact RTTI `AddItemWithCountDialog` loads `li
 
 Exact RTTI `ExchangeItemListPane` owns the eight-row offer view used by the main dialog. Adding a server-supplied item replaces the row with the same item ID or appends a new row, then draws its icon, palette selection, and shortened name.
 
+## Invoking an action without pointer input
+
+Use a main-thread action wrapper around the live, presented `ExchangeDialog`. Do not choose UI simulation or bare packet construction for every operation. The useful boundary differs by action:
+
+| Requested action | Native entry point | Required local behavior |
+| --- | --- | --- |
+| Add item by slot | `net_send_exchange_add_item` | Validate a live one-based inventory slot and send action `0x01` first |
+| Supply stack quantity | `net_send_exchange_add_stackable_item` | Wait for the server quantity request, use its live `AddItemWithCountDialog`, then close that temporary pane |
+| Add gold | `net_send_exchange_set_gold` | Set `gold_was_sent` after submission and let the server update the displayed offer |
+| Accept | `ui_exchange_dialog_handle_action` action `0` | This sends action `0x05` and sets `local_accept_sent`; refresh the controls afterward |
+| Cancel | `ui_exchange_dialog_handle_action` action `1` | This sends action `0x04`; do not close the main dialog locally |
+
+The inventory-drop UI handler is a poor slot-based API because it expects an `InvItemPane` drag source. The packet producer already accepts a one-based slot, but it performs no range or occupancy check. A wrapper should resolve the live inventory entry again, require slot `1` through `60`, and reject an item change once either party has accepted.
+
+Stackable items keep their two-stage server handshake even when the desired quantity is already known. Send action `0x01`, wait for `SExchange` event `0x01`, then resolve the resulting `AddItemWithCountDialog`. That temporary dialog stores its exchange ID at `+0x630` and staged slot at `+0x634`. The main `ExchangeDialog` uses `+0x634` for `local_accept_sent`, so passing the main dialog to the stackable-item sender would put the wrong byte on the wire. Default an omitted quantity to `1`, require `1` through `255`, and close the temporary count pane after action `0x02` is queued.
+
+The gold packet producer accepts the desired `u32` directly, but the normal focus-change path also sets `gold_was_sent` at `+0x637`. Mirror that write so the local field cannot be edited and submitted again. The accept packet producer similarly omits the `local_accept_sent` write, which is why the dialog action handler is the better direct entry point for confirmation.
+
+Cancel is the simplest operation. Its dialog action and network producer have the same local effect: queue the request and wait. Keep a controller-side pending latch if duplicate external commands are possible, because the client does not mark Cancel pending or remove the pane until the server responds.
+
 ## Completion and cancellation popups
 
 The Cancelled handler reads its `string8` message, creates a one-button alert pane, and removes the exchange. The Accepted handler updates the indicated party first. It creates the same alert and removes the exchange only when both acknowledgement flags are one.
