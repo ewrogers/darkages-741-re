@@ -2799,7 +2799,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_world_controller_handle_object_message` | `0x005CE990` | high | Updates world indexes and rendering state for object messages, answers ground-attribute query selector 5, and invokes the object position-refresh virtual after movement. |
 | `ui_world_object_name_pane_ctor` | `0x005E3F00` | high | Constructs the 0x1DC-byte RTTI WorldObject_Name_Pane and retains at most 63 text bytes plus a NUL at +0x198. |
 | `ui_world_pane_handle_self_move_message` | `0x005EED20` | medium | On the local object's position-change message, advances an active queued path or clears an exhausted route while preserving the pursuit generation. |
-| `ui_world_pane_handle_living_object_message` | `0x005EF120` | high | Routes living-object action 6 for another object with a nonzero ID into entity pursuit; other branches handle giving, local object actions, object information, and the Ctrl user popup. |
+| `ui_world_pane_handle_world_object_message` | `0x005EEFA0` | high | Routes static-object message 0x50001 into the opcode 0x43 subtype-3 world sender, with other branches handling group-ad views and ground-item pickup. |
+| `ui_world_pane_handle_living_object_message` | `0x005EF120` | high | Routes living-object action 4 into Ctrl user-popup or ordinary subtype-1 entity interaction behavior, and action 6 into entity pursuit; other branches handle giving and local object actions. |
 | `ui_world_pane_handle_inventory_drop` | `0x005EF620` | high | Converts a dragged inventory item's pointer position to a bounded map tile and dispatches it to InvItemPane; it does not compare the tile with the player's position. |
 | `ui_world_pane_handle_drop_event` | `0x005EF790` | high | Rejects the drop while SUserAppearance action-state bit 0 is set; otherwise routes it through eligible child panes and handles an unconsumed inventory-item drop against the world map. |
 | `ui_world_pane_handle_timer_event` | `0x005EF850` | high | WorldPane TimerHandler callback; timer ID 10 compares its saved generation with WorldPane +0x2C8 and re-enters pursuit with the saved target ID. |
@@ -2972,7 +2973,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_handle_input_server_block_raw` | `0x004C2DC0` | high | Reads the raw input-block state byte, ending the event manager's server block when nonzero or beginning it after consuming the zero-state's extra byte. |
 | `net_read_manual_length_prefixed_text` | `0x004C3E50` | high | Reads 1-, 2-, 3-, or 4-byte big-endian lengths, copies a bounded prefix, terminates it, and advances over the full declared value. |
 | `net_parse_server_item_menu_dialog3_items` | `0x004CC270` | high | Parses the newer merchant payload into fixed 0x224-byte item records; menu type 0x4B uses the extended record form. |
-| `net_request_object_info` | `0x004CD350` | high | Merchant menu paths call this opcode 0x43 object information request. |
+| `net_request_object_info` | `0x004CD350` | high | Merchant target-info paths call this opcode 0x43 subtype-1 entity interaction producer; its retained ECX context is not dereferenced. |
 | `net_parse_merchant_dialog_common_header` | `0x004CE250` | high | Parses merchant target type, target ID, pursuit ID, content, seller text, and an optional derived-dialog string. |
 | `net_parse_text_menu_dialog_ex` | `0x004CF590` | high | Parses the common header and rows, sizes the segmented lmerc body, and attaches title, monster, description, controls, and row buttons. |
 | `net_send_merchant_selection` | `0x004CFE60` | high | MerchantDialogPane::TextMenuDialogEx virtual method that builds and sends CMerchant opcode 0x39. |
@@ -3330,6 +3331,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_send_move` | `0x005F4580` | high | Submits one CMove direction and rolling step byte for each path step. |
 | `net_send_refresh_user` | `0x005F4640` | high | WorldPane paths call this opcode-only 0x38 builder. |
 | `net_send_emotion` | `0x005F46C0` | high | Builds CEmotion as opcode 0x1D followed by one caller-supplied u8 emotion request code. |
+| `net_send_world_entity_interaction` | `0x005F4730` | high | While WorldPane +0x258 is zero, submits opcode 0x43 subtype 1 followed by the big-endian entity ID used by ordinary living-object click interaction. |
+| `net_send_world_static_interaction` | `0x005F47F0` | high | While WorldPane +0x258 is zero, submits opcode 0x43 subtype 3, big-endian tile X/Y, and the inverse of the clicked object's internal static side. |
 | `net_handle_bounce_server_packet` | `0x005F6A80` | high | Submits SBounce's counted embedded bytes directly as an ordinary opcode-first client body and performs no other game or UI action. |
 | `net_handle_bulletin_server_body` | `0x005F6CB0` | high | Forwards raw decoded opcode 0x31 to the BulletinSession opener. |
 | `net_handle_message_server_packet` | `0x005F6D80` | high | Routes SMessage to the floating GameMessagePane, WindowMessageDialogPane, or ScorePane according to its type byte. |
@@ -5210,13 +5213,15 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_living_adjust_render_offset_for_direction` | `0x005E16C0` | high | Applies direction-table deltas to the signed WorldObject render-displacement pair at +0x38 and +0x3C. |
 | `world_living_set_render_offset` | `0x005E1770` | high | Replaces the signed render-displacement pair at WorldObject +0x38 and +0x3C independently of tile Y and X. |
 | `world_living_handle_timer_event` | `0x005E1800` | high | For motion timer 0x02000001, advances the living animation only when the scheduled generation matches the current motion, so an older timer cannot interrupt a newer motion. |
-| `world_living_handle_pointer_event` | `0x005E1A70` | high | Hit-tests a WorldObject_Living and routes pointer type 5 to the right-click action builder with coordinates, timestamp, and Event +0x18 modifier flags. |
+| `world_living_handle_pointer_event` | `0x005E1A70` | high | Hit-tests a WorldObject_Living, routes pointer types 1 and 2 to ordinary left-click action 4, and routes pointer type 5 to the right-click action builder. |
+| `world_living_dispatch_left_click_action` | `0x005E20D0` | high | Builds living-object action 4 from the object's u32 ID and the pointer coordinates, timestamp, and modifier flags. |
 | `world_living_dispatch_right_click_action` | `0x005E2270` | high | Builds living-object action 6 for the object's ID, copies the pointer modifier byte to message +0x2C, and dispatches the message to registered handlers. |
 | `world_living_refresh_ground_paint` | `0x005E2340` | high | Queries current gndattr color and depth fields and updates the living object's ground-paint record. |
 | `world_monster_object_ctor` | `0x005E2630` | high | Constructs the 0x1F0-byte RTTI WorldObject_Monster, retains creature_type at +0x1EC, and selects a type-dependent common collision level. |
 | `world_moving_effect_ctor` | `0x005E2770` | high | Constructs the exact RTTI WorldObject_MovingEffect and builds its client-timed path between source and target world positions. |
 | `world_moving_effect_start` | `0x005E3710` | high | Schedules a moving effect's path timer using the step interval computed from client effect data. |
 | `world_static_set_tile_id` | `0x005E4900` | high | Writes the WorldObject_Static live tile ID, reloads its static image and bounds, and invalidates the object for drawing. |
+| `world_static_handle_pointer_event` | `0x005E4930` | high | Consumes a left press on visible static art and dispatches tile X/Y plus the inverse of internal side +0x80 for the subtype-3 interaction path. |
 | `world_static_handle_state_transition_message` | `0x005E4A30` | high | Handles scheduled message 0x01000001 by advancing the static state transition. |
 | `world_static_transition_to_pair_column_1` | `0x005E4B20` | high | Finds the live tile ID in the 66-row pair table and starts a transition toward column 1. |
 | `world_static_transition_to_pair_column_0` | `0x005E4BD0` | high | Finds the live tile ID in the 66-row pair table and starts a transition toward column 0. |

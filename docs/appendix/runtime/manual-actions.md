@@ -289,6 +289,32 @@ The values are Up `0`, Right `1`, Down `2`, and Left `3`. This helper first clea
 
 One invocation can therefore turn without moving. This matches ordinary directional input.
 
+## Interact with a world entity or static
+
+For an ordinary NPC, monster, or player interaction, resolve a current non-self `WorldObject_Living` by ID and call:
+
+```c
+u32 __thiscall net_send_world_entity_interaction(
+    WorldPane *world, u32 entity_id);
+```
+
+Static address `0x005F4730`, RVA `0x001F4730`. It queues opcode `0x43` subtype `1` only while `WorldPane +0x258` is zero. A direct call intentionally bypasses the Ctrl player popup. Reproduce the player-only `UserClickMode` suppression if the command must match an ordinary UI click exactly.
+
+Do not prefer `net_request_object_info` for this world action. It builds the same subtype-1 body, but its native caller supplies a merchant target context in `ECX` and it omits the WorldPane state gate.
+
+For a live static object such as a door, call:
+
+```c
+u32 __thiscall net_send_world_static_interaction(
+    WorldPane *world, u16 tile_x, u16 tile_y, u8 internal_side);
+```
+
+Static address `0x005F47F0`, RVA `0x001F47F0`. Internal side `1` means the left static slot and `0` means the right slot. The function writes the inverted wire value, where `0` is left and `1` is right.
+
+A tile can contain both static slots. Resolve each candidate with `world_get_static_object_at_tile_side`, whose selector uses the wire convention. If one live `WorldObject_Static` exists, pass its `+0x80` internal side to the sender. If both exist, require the controller command to identify a side instead of guessing. Follow the resolver's reference-count ownership and do not retain the object across ticks.
+
+An empty tile has no ordinary left-click interaction sender. Right-clicking empty ground is movement, and double-right-clicking a living entity is pursue-and-auto-attack. The full distinction is in [World interactions](../../systems/world-interactions.md).
+
 ## Unequip by equipment slot
 
 The ordinary equipment-control path receives a zero-based UI action from `0` through `17`, adds one, and calls `net_send_remove_equipment`. The packet therefore uses one-based equipment slots `1` through `18`.

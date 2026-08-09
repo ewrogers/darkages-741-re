@@ -1,6 +1,6 @@
 # Pathfinding and following
 
-Double-right-clicking a player or monster tells the client to walk beside that target and attack it. The client finds the route itself. It does not ask the server for a path.
+Double-right-clicking a player or monster tells the client to walk beside that target and attack it. The client finds the route itself. It does not ask the server for a path. Ordinary left-click interaction is documented separately in [World interactions](world-interactions.md).
 
 This page calls that action **pursuit** because the built-in version always ends in an attack. The client has no normal follow-only button.
 
@@ -86,6 +86,8 @@ The client also checks each saved movement step again before using it. If somebo
 Entity pursuit checks the target again every 100 ms. A blocked pursuit can therefore build a different route on a later check.
 
 ## Opening and closing doors
+
+A left click on a door first hits its live static world object, then sends the tile and static side through opcode `0x43` subtype `3`. It is not the empty-ground pathfinding action. See [World interactions](world-interactions.md#interacting-with-a-static-tile) for the input and direct-call flow.
 
 A door change replaces the live static tile ID. Movement then reads the collision flags for that new tile ID from [`SOTP.DAT`](../file-formats/sotp.md).
 

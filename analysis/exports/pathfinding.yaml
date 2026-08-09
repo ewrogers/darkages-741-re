@@ -50,7 +50,11 @@ functions:
   - address: "0x005E1A70"
     name: world_living_handle_pointer_event
     confidence: high
-    evidence: "Hit-tests a WorldObject_Living and routes pointer type 5 to the right-click action builder with coordinates, timestamp, and Event +0x18 modifier flags."
+    evidence: "Hit-tests a WorldObject_Living, routes pointer types 1 and 2 to ordinary left-click action 4, and routes pointer type 5 to the right-click action builder."
+  - address: "0x005E20D0"
+    name: world_living_dispatch_left_click_action
+    confidence: high
+    evidence: "Builds living-object action 4 from the object's u32 ID and the pointer coordinates, timestamp, and modifier flags."
   - address: "0x005E2270"
     name: world_living_dispatch_right_click_action
     confidence: high
@@ -59,14 +63,22 @@ functions:
     name: world_static_set_tile_id
     confidence: high
     evidence: "Replaces a static object's live tile ID, reloads its art and bounds, and invalidates it; later movement and path searches use the replacement ID's SOTP collision flags."
+  - address: "0x005E4930"
+    name: world_static_handle_pointer_event
+    confidence: high
+    evidence: "Consumes a left press that hits visible WorldObject_Static art and dispatches message 0x50001 with tile X/Y and the inverse of internal side +0x80."
   - address: "0x005EED20"
     name: ui_world_pane_handle_self_move_message
     confidence: medium
     evidence: "On the local object's position-change message, advances an active queued path or clears an exhausted route while preserving the pursuit generation."
+  - address: "0x005EEFA0"
+    name: ui_world_pane_handle_world_object_message
+    confidence: high
+    evidence: "Routes static-object message 0x50001 into the opcode 0x43 subtype-3 world sender, with other branches handling group-ad views and ground-item pickup."
   - address: "0x005EF120"
     name: ui_world_pane_handle_living_object_message
     confidence: high
-    evidence: "Routes living-object action 6 for another object with a nonzero ID into entity pursuit; other branches handle giving, local object actions, object information, and the Ctrl user popup."
+    evidence: "Routes living-object action 4 into Ctrl user-popup or ordinary subtype-1 entity interaction behavior, and action 6 into entity pursuit; other branches handle giving and local object actions."
   - address: "0x005EF850"
     name: ui_world_pane_handle_timer_event
     confidence: high
@@ -111,6 +123,16 @@ functions:
     name: net_send_move
     confidence: high
     evidence: "Submits one CMove direction and rolling step byte for each path step."
+  - address: "0x005F4730"
+    name: net_send_world_entity_interaction
+    prototype: "u32 __thiscall net_send_world_entity_interaction(WorldPane *world, u32 entity_id)"
+    confidence: high
+    evidence: "While WorldPane +0x258 is zero, submits opcode 0x43 subtype 1 followed by the big-endian entity ID used by ordinary living-object click interaction."
+  - address: "0x005F47F0"
+    name: net_send_world_static_interaction
+    prototype: "u32 __thiscall net_send_world_static_interaction(WorldPane *world, u16 tile_x, u16 tile_y, u8 internal_side)"
+    confidence: high
+    evidence: "While WorldPane +0x258 is zero, submits opcode 0x43 subtype 3, big-endian tile X/Y, and the inverse of the clicked object's internal static side."
   - address: "0x005F4900"
     name: ui_world_pane_reset_movement_state
     confidence: high
@@ -143,10 +165,18 @@ comments:
     text: "Copy the current modifier mask into double-right-click pointer event type 5 at Event +0x18."
   - address: "0x005D48E5"
     text: "When Shift is held, skip every hit object whose broad category is not 8. Humans use category 1 and monsters or Mundanes use category 2, so their type-5 event normally falls through to the ground turn-or-step path."
+  - address: "0x005E1B94"
+    text: "Pointer types 1 and 2 both become ordinary living-object action 4; double-left has no distinct packet behavior."
   - address: "0x005E1BDA"
     text: "Pointer event type 5 becomes living-object action 6. Pass its coordinates, timestamp, and Event +0x18 modifier byte into the message builder."
   - address: "0x005E22F1"
     text: "Store the pointer modifier byte at living-object message +0x2C. Shift remains bit 0x04 when WorldPane handles action 6."
+  - address: "0x005E49FC"
+    text: "Static internal side 1 is the left layer and becomes wire side 0; internal side 0 is the right layer and becomes wire side 1."
+  - address: "0x005EF0C6"
+    text: "World-object message 0x50001 is a clicked static object, not an empty-ground click."
+  - address: "0x005EF2C6"
+    text: "UserClickMode suppresses ordinary category-1 player interaction only; NPC and monster categories are not gated here."
   - address: "0x005EF33A"
     text: "Living-object action 6 passes another object's nonzero u32 ID into native pursue-and-attack behavior. A dispatcher extension can admit Shift type 5 for living categories, after which Shift bit 0x04 remains available at message +0x2C."
   - address: "0x005EF9CB"
@@ -159,6 +189,8 @@ comments:
     text: "Query the destination cell's current world-object list. Live human and monster passability is evaluated for every path expansion and every attempted queued step."
   - address: "0x005F04AF"
     text: "Read live static objects in the current and destination cells, obtain their replacement tile IDs, and apply direction-specific SOTP collision flags."
+  - address: "0x005F484C"
+    text: "Opcode 0x43 subtype 3 writes u16 tile X, u16 tile Y, and one static-side byte."
   - address: "0x005F4920"
     text: "Argument 0 increments the pursuit generation and invalidates outstanding timer callbacks. Argument 1 deliberately preserves the generation."
   - address: "0x005F49E5"

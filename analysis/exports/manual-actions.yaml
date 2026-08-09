@@ -173,6 +173,11 @@ functions:
     prototype: "bool __thiscall ui_cancel_spell_delay(SpellDelayControlPane *control)"
     confidence: high
     evidence: "Clears cast_active and cancels every timer owned by the live SpellDelayControlPane without sending a client packet."
+  - address: "0x004CD350"
+    rva: "0x000CD350"
+    name: net_request_object_info
+    confidence: high
+    evidence: "Builds opcode 0x43 subtype 1 with a caller-supplied entity ID for a merchant target context; it lacks the WorldPane state gate and its retained ECX is not dereferenced."
   - address: "0x00513960"
     rva: "0x00113960"
     name: net_send_group_request
@@ -299,12 +304,34 @@ functions:
     prototype: "GUIBackPane *__cdecl ui_get_gui_back_pane(void)"
     confidence: high
     evidence: "Null-safe native accessor for the complete GUIBackPane used to resolve live item, skill, and spell pane children."
+  - address: "0x005C9810"
+    rva: "0x001C9810"
+    name: world_find_object_by_id
+    confidence: high
+    evidence: "Resolves a live reference-counted WorldObject by u32 server entity ID through the WorldPane-owned object list."
+  - address: "0x005C9DE0"
+    rva: "0x001C9DE0"
+    name: world_get_static_object_at_tile_side
+    confidence: high
+    evidence: "Resolves exact RTTI WorldObject_Static at tile X/Y; selector 0 chooses the left wire side and nonzero chooses the right wire side."
   - address: "0x005F0C40"
     rva: "0x001F0C40"
     name: ui_world_pane_handle_direction_input
     prototype: "bool __thiscall ui_world_pane_handle_direction_input(WorldPane *world, u8 direction)"
     confidence: high
     evidence: "Clears queued movement, then turns when facing differs or attempts one normal collision-checked step when facing already matches."
+  - address: "0x005F4730"
+    rva: "0x001F4730"
+    name: net_send_world_entity_interaction
+    prototype: "u32 __thiscall net_send_world_entity_interaction(WorldPane *world, u32 entity_id)"
+    confidence: high
+    evidence: "Queues opcode 0x43 subtype 1 and the big-endian entity ID only while WorldPane +0x258 is zero; it is the ordinary world-click producer after local UI gates."
+  - address: "0x005F47F0"
+    rva: "0x001F47F0"
+    name: net_send_world_static_interaction
+    prototype: "u32 __thiscall net_send_world_static_interaction(WorldPane *world, u16 tile_x, u16 tile_y, u8 internal_side)"
+    confidence: high
+    evidence: "Queues opcode 0x43 subtype 3 with big-endian tile X/Y and !internal_side only while WorldPane +0x258 is zero."
   - address: "0x005F7F20"
     rva: "0x001F7F20"
     name: ui_group_invite_registry_contains
@@ -371,4 +398,14 @@ comments:
     text: "Manual direction input uses the same full movement-state reset as keyboard and Shift-right input."
   - address: "0x005F0C81"
     text: "Matching facing reaches the movement path; a different facing reaches CChangeDirection instead."
+  - address: "0x005F4748"
+    text: "Suppress entity interaction while unresolved WorldPane +0x258 is nonzero."
+  - address: "0x005F4789"
+    text: "Opcode 0x43 subtype 1 writes one big-endian u32 entity ID."
+  - address: "0x005F4808"
+    text: "Suppress static interaction through the same unresolved WorldPane +0x258 gate."
+  - address: "0x005F484C"
+    text: "Opcode 0x43 subtype 3 writes u16 tile X, u16 tile Y, and one static-side byte."
+  - address: "0x005F48AA"
+    text: "Invert internal static side for the wire: 1 left becomes 0 and 0 right becomes 1."
 runtime_patches: []

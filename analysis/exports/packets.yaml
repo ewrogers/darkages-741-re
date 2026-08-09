@@ -2414,7 +2414,7 @@ functions:
   - address: "0x004CD350"
     name: net_request_object_info
     confidence: high
-    evidence: "Merchant menu paths call this opcode 0x43 object information request."
+    evidence: "Merchant target-info paths call this opcode 0x43 subtype-1 entity interaction producer; its retained ECX context is not dereferenced."
   - address: "0x004CFE60"
     name: net_send_merchant_selection
     confidence: high
@@ -3659,6 +3659,10 @@ functions:
     name: world_get_self_user_object
     confidence: high
     evidence: "Looks up the saved self object ID and RTTI-casts the result to WorldObject_User."
+  - address: "0x005EEFA0"
+    name: ui_world_pane_handle_world_object_message
+    confidence: high
+    evidence: "Routes static-object click message 0x50001 into the opcode 0x43 subtype-3 sender, with other branches handling group-ad views and ground-item pickup."
   - address: "0x005EF120"
     name: ui_world_pane_handle_living_object_message
     confidence: high
@@ -3807,6 +3811,14 @@ functions:
     name: net_send_emotion
     confidence: high
     evidence: "Builds CEmotion as opcode 0x1D followed by one caller-supplied u8 emotion request code."
+  - address: "0x005F4730"
+    name: net_send_world_entity_interaction
+    confidence: high
+    evidence: "WorldPane-gated builder for opcode 0x43 subtype 1 followed by one big-endian u32 entity ID."
+  - address: "0x005F47F0"
+    name: net_send_world_static_interaction
+    confidence: high
+    evidence: "WorldPane-gated builder for opcode 0x43 subtype 3, big-endian tile X/Y, and an inverted internal static-side byte."
   - address: "0x005F4900"
     name: ui_world_pane_reset_movement_state
     confidence: high
@@ -5805,7 +5817,7 @@ packet_indexes:
         builder: "0x004CD350"
         opcode_confidence: high
         name_confidence: high
-        evidence: "CRequestObjectInfo is project-owner protocol vocabulary paired with provisional SObjectInfo. Builders 0x004CD350 and 0x005F4730 write opcode 0x43, subtype 1, and a u32 object ID. UserClickMode can suppress the WorldPane user-click path."
+        evidence: "CRequestObjectInfo is project-owner protocol vocabulary. Builders 0x004CD350 and 0x005F4730 write subtype 1 plus a u32 entity ID; builder 0x005F47F0 writes subtype 3 plus u16 tile X/Y and a left/right static selector. UserClickMode can suppress the WorldPane player-click path."
         page: "docs/network/client/067-0x43-request-object-info.md"
       - opcode: "0x44"
         friendly_name: "Remove Equipment"

@@ -21,6 +21,8 @@ The target must not be the local player's object ID. The test checks only the Ct
 
 The popup stores the target's `u32` object ID at `+0x364`, not a pointer to the world object. Drawing and actions resolve the current name from that ID. This avoids keeping a stale object pointer when a player leaves the map.
 
+Without Ctrl, an ordinary player click uses the shared living-entity interaction path. It can be suppressed by `UserClickMode`; otherwise it sends opcode `0x43` subtype `1`. NPCs and monsters use that same entity packet without the player-only setting gate. See [World interactions](world-interactions.md).
+
 ## Pane and layout
 
 `PopupMenuPane` loads `lpopup.txt` from `setoa.dat`. The local layout is 82 by 68 pixels:

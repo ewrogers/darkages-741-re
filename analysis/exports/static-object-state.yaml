@@ -19,10 +19,6 @@ functions:
     name: net_deserialize_static_object_state_server_packet
     confidence: high
     evidence: "Reads a u8 count followed by four u8 fields per record: x, y, state, and side."
-  - address: "0x005BB720"
-    name: map_static_map_ctor
-    confidence: high
-    evidence: "Builds the static-object spatial index, inserting each left map static with internal side 1 and each right map static with internal side 0."
   - address: "0x005B9370"
     name: map_get_left_static_tile
     confidence: high
@@ -31,6 +27,10 @@ functions:
     name: map_get_right_static_tile
     confidence: high
     evidence: "Returns the u16 right static tile ID at map-cell offset 4."
+  - address: "0x005BB720"
+    name: map_static_map_ctor
+    confidence: high
+    evidence: "Builds the static-object spatial index, inserting each left map static with internal side 1 and each right map static with internal side 0."
   - address: "0x005C9DE0"
     name: world_get_static_object_at_tile_side
     confidence: high
@@ -39,6 +39,10 @@ functions:
     name: world_static_set_tile_id
     confidence: high
     evidence: "Writes the WorldObject_Static live tile ID, reloads its static image and bounds, and invalidates the object for drawing."
+  - address: "0x005E4930"
+    name: world_static_handle_pointer_event
+    confidence: high
+    evidence: "Consumes a left press on visible static art and dispatches tile X/Y plus the inverse of internal side +0x80 for the subtype-3 interaction path."
   - address: "0x005E4A30"
     name: world_static_handle_state_transition_message
     confidence: high
@@ -69,10 +73,6 @@ data_symbols:
     confidence: high
     evidence: "A 66-row by two-column table of u16 static tile IDs used only by the packet-driven state transition path."
 comments:
-  - address: "0x005BB9C2"
-    text: "Insert the map cell's left static tile with internal side 1."
-  - address: "0x005BBA65"
-    text: "Insert the map cell's right static tile with internal side 0."
   - address: "0x0059C2A1"
     text: "Record count is a u8. The packet object has room for all 255 possible records."
   - address: "0x0059C2DB"
@@ -83,6 +83,10 @@ comments:
     text: "Record byte 2: state selector. The handler distinguishes zero from any nonzero value."
   - address: "0x0059C311"
     text: "Record byte 3: left/right isometric side selector. The handler distinguishes zero from any nonzero value."
+  - address: "0x005BB9C2"
+    text: "Insert the map cell's left static tile with internal side 1."
+  - address: "0x005BBA65"
+    text: "Insert the map cell's right static tile with internal side 0."
   - address: "0x005E490E"
     text: "The live tile ID is the shared key for both rendered static art and later SOTP.DAT collision checks."
   - address: "0x005F0684"
