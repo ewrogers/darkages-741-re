@@ -15,6 +15,7 @@
 - [Game systems](systems/README.md)
   - [Event system](systems/events.md)
   - [UI and panes](systems/ui.md)
+  - [Inventory drag actions](systems/inventory-drag-actions.md)
   - [Native UI controls](systems/ui-controls.md)
   - [UI layout files](systems/ui-layouts.md)
   - [Asset loading and lifetime](systems/asset-loading.md)

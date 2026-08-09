@@ -7,6 +7,11 @@ target:
   sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
   size: 3112960
 functions:
+  - address: "0x0045F260"
+    rva: "0x0005F260"
+    name: ui_equip_pane_handle_action
+    confidence: high
+    evidence: "Maps equipment-control action indices 0 through 17 to one-based wire slots 1 through 18 and calls net_send_remove_equipment."
   - address: "0x0045FDA0"
     rva: "0x0005FDA0"
     name: ui_equip_pane_request_remove_slots_1_and_3
@@ -18,7 +23,7 @@ functions:
     name: net_send_remove_equipment
     prototype: "u32 __thiscall net_send_remove_equipment(EquipPane *equip, s16 equipment_slot)"
     confidence: high
-    evidence: "Builds CRemoveEquipment opcode 0x44 with the low byte of the caller-supplied equipment slot; the current body does not dereference ECX or validate the slot."
+    evidence: "Builds and queues the two-byte CRemoveEquipment body from the low byte of the caller-supplied equipment slot; the current body does not dereference ECX, validate the slot, or inspect occupancy."
   - address: "0x00464180"
     rva: "0x00064180"
     name: event_dispatcher_tick
@@ -42,6 +47,18 @@ functions:
     prototype: "SpellDelayControlPane *__cdecl ui_spell_delay_control_pane_get(void)"
     confidence: high
     evidence: "Returns the complete SpellDelayControlPane singleton stored at static 0x0073FD78."
+  - address: "0x00496C90"
+    rva: "0x00096C90"
+    name: net_send_drop
+    prototype: "u32 __thiscall net_send_drop(InvItemPane *item, u16 target_y, u16 target_x, u32 quantity)"
+    confidence: high
+    evidence: "Reads the one-based slot from the live InvItemPane, builds CDrop as opcode 0x08, slot, X, Y, and u32 quantity, then enters the shared client packet queue."
+  - address: "0x00496D90"
+    rva: "0x00096D90"
+    name: net_send_give
+    prototype: "u32 __thiscall net_send_give(InvItemPane *item, u32 object_id, u32 quantity)"
+    confidence: high
+    evidence: "Reads the one-based slot from the live InvItemPane, builds CGive as opcode 0x29, slot, living object ID, and u32 quantity, then enters the shared client packet queue."
   - address: "0x004992F0"
     rva: "0x000992F0"
     name: ui_skill_inventory_activate
@@ -108,6 +125,18 @@ functions:
     prototype: "bool __thiscall ui_cancel_spell_delay(SpellDelayControlPane *control)"
     confidence: high
     evidence: "Clears cast_active and cancels every timer owned by the live SpellDelayControlPane without sending a client packet."
+  - address: "0x00563E00"
+    rva: "0x00163E00"
+    name: net_submit_client_packet
+    prototype: "u32 __thiscall net_submit_client_packet(Socket *socket, const u8 *body, s16 body_length)"
+    confidence: high
+    evidence: "Copies an opcode-first body, appends the ordinary transmitted zero, queues communications command 6, and wakes the network worker; opcodes 0x39 and 0x3A take their documented special wrapper instead."
+  - address: "0x005A2F90"
+    rva: "0x001A2F90"
+    name: ui_gui_back_get_inventory_item
+    prototype: "InvItemPane *__thiscall ui_gui_back_get_inventory_item(GUIBackPane_Interface *interface, u8 slot)"
+    confidence: high
+    evidence: "Returns slot 1 through 60 from the InventoryPane_A owned at interface offset +0x4DF8; invalid slots return null."
   - address: "0x005A9C40"
     rva: "0x001A9C40"
     name: ui_get_gui_back_pane
@@ -120,7 +149,11 @@ functions:
     prototype: "bool __thiscall ui_world_pane_handle_direction_input(WorldPane *world, u8 direction)"
     confidence: high
     evidence: "Clears queued movement, then turns when facing differs or attempts one normal collision-checked step when facing already matches."
-data_symbols: []
+data_symbols:
+  - address: "0x0073D958"
+    name: net_socket_ptr
+    confidence: high
+    evidence: "Points to the active Socket object used as ECX by every traced net_submit_client_packet call. Resolve it again on each main-thread command."
 comments:
   - address: "0x0045FDAC"
     text: "The tilde-style helper sends CRemoveEquipment for slot 1, followed by slot 3 at 0x0045FDB6."

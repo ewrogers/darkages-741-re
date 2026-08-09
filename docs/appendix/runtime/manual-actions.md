@@ -1,6 +1,6 @@
 # Manual native actions
 
-The client already has native action producers for spells, skills, items, movement, and equipment. Calling these producers on the game thread avoids UI hit testing and does not require the matching lower-tray page to be visible.
+The client already has native action producers for spells, skills, inventory transfers, movement, and equipment. Calling these producers on the game thread avoids UI hit testing and does not require the matching lower-tray page to be visible.
 
 These functions are not safe `CreateRemoteThread` entry points. Most are x86 `__thiscall` members that require a live object in `ECX`. All of them reach client state that is owned and mutated by the main game thread.
 
@@ -16,6 +16,8 @@ These addresses apply only to the documented version 741 executable. Resolve eve
 | `ui_inventory_activate_slot` | `0x00490960` | `0x00090960` | Use one item slot |
 | `ui_equip_pane_get` | `0x00493620` | `0x00093620` | Get the live `EquipPane` |
 | `ui_spell_delay_control_pane_get` | `0x00493630` | `0x00093630` | Get the casting controller |
+| `net_send_drop` | `0x00496C90` | `0x00096C90` | Drop a live inventory item on a tile |
+| `net_send_give` | `0x00496D90` | `0x00096D90` | Give a live inventory item to an object |
 | `ui_skill_inventory_activate` | `0x004992F0` | `0x000992F0` | Use a live skill entry |
 | `ui_spell_begin_target_selection` | `0x0049A4E0` | `0x0009A4E0` | Open the entity-target selector |
 | `ui_spell_inventory_activate` | `0x0049A670` | `0x0009A670` | Activate a spell through its normal argument dispatcher |
@@ -28,10 +30,14 @@ These addresses apply only to the documented version 741 executable. Resolve eve
 | `ui_spell_numeric_input_submit` | `0x0049B380` | `0x0009B380` | Submit the active numeric prompt |
 | `ui_start_spell_cast` | `0x0049B900` | `0x0009B900` | Queue a completed `CUseSpell` body and start cast timing |
 | `ui_cancel_spell_delay` | `0x0049BA50` | `0x0009BA50` | Cancel the pending local cast |
+| `net_submit_client_packet` | `0x00563E00` | `0x00163E00` | Copy and queue a supplied opcode-first body |
+| `ui_gui_back_get_inventory_item` | `0x005A2F90` | `0x001A2F90` | Resolve one live item entry through `GUIBackPane` |
 | `ui_get_gui_back_pane` | `0x005A9C40` | `0x001A9C40` | Get the live lower-tray owner |
 | `ui_world_pane_handle_direction_input` | `0x005F0C40` | `0x001F0C40` | Perform the normal turn-or-step direction action |
 
 The injected proxy should compare `GetCurrentThreadId()` with the thread ID stored at RVA `0x00340400`. Resolve client objects again when each queued command runs. Do not retain pane, item, skill, spell, or world-object pointers across ticks.
+
+Prefer the narrowest native producer that already accepts the supplied values. It preserves packet construction, client-side guards, and the normal queue handoff without replaying pointer input or dialog behavior. Submit a body directly through `net_submit_client_packet` only when the native producer is bound to UI state, as with the two gold amount dialogs. A direct wrapper must reproduce any useful validation that the skipped UI would have performed.
 
 ## Main-thread command queue
 
@@ -71,6 +77,16 @@ NewSpellInventoryPane *spells =
     *(NewSpellInventoryPane **)((u8 *)books + 0x228);
 ```
 
+The checked inventory accessor uses the `GUIBackPane_Interface` secondary base at complete-object offset `+0x190`:
+
+```c
+InvItemPane *item = ui_gui_back_get_inventory_item(
+    (GUIBackPane_Interface *)((u8 *)gui + 0x190),
+    slot);
+```
+
+It returns null unless the slot is in the inclusive range `1` through `60`.
+
 The item pane has 60 direct pointers at `+0x1A0`. Each skill or spell pane has a capacity at `+0x190` and a pointer to its item array at `+0x194`. Validate `1 <= slot <= capacity`, require a non-null entry, and confirm that the entry's retained slot matches the requested slot.
 
 The complete object layouts are in [Inventory and character panes](inventory-ui.md). The root lifetimes are in [Runtime state walking](state-walking.md).
@@ -86,6 +102,64 @@ void __thiscall ui_inventory_activate_slot(
 ```
 
 The caller must enforce `1 <= slot <= 60`. This function subtracts one and indexes `inventory + 0x1A0` without checking the range. It does check that the selected pointer is non-null, then reaches the normal denial-list check and `CUse` builder.
+
+## Drop or give an inventory item
+
+Resolve `InvItemPane *item = inventory->items[slot - 1]` at execution time. For an ordinary item, require slot `1` through `59`, a non-null pointer, and `item->slot == slot`. The complete item stores its one-based slot at `+0x214`, quantity at `+0x240`, and stackable flag at `+0x244`.
+
+Use quantity `1` when the command omits a quantity. Reject zero. For a non-stackable item, require exactly `1`. For a stackable item, require `1 <= quantity <= item->quantity`.
+
+To drop the item on a map tile, validate X and Y against the current map and call:
+
+```c
+u32 __thiscall net_send_drop(
+    InvItemPane *item,
+    u16 target_y,
+    u16 target_x,
+    u32 quantity);
+```
+
+The native argument order is Y followed by X. The packet body is still `opcode, slot, X, Y, quantity`. The function reads the slot from `item + 0x214`, builds [`CDrop`](../../network/client/008-0x08-drop.md), and enters the normal packet submission queue.
+
+To give the item to another living object, reject the local character's own ID and call:
+
+```c
+u32 __thiscall net_send_give(
+    InvItemPane *item,
+    u32 object_id,
+    u32 quantity);
+```
+
+This builds [`CGive`](../../network/client/041-0x29-give.md). The normal version 741 drag path always supplies quantity `1`, even for a stackable item. The builder and packet accept a full `u32` quantity, but server acceptance of a manually supplied larger quantity has not been exercised.
+
+Both native builders preserve the client's local manufacture-mode guard. Their return value does not provide a reliable server outcome. Success or rejection arrives later as server traffic.
+
+## Drop or give gold
+
+Slot `60` selects gold in the UI, but gold packets do not contain a slot. `net_send_drop_gold` and `net_send_give_gold` are dialog-bound methods that read `_nmoney.txt` controls, so they are not useful when the amount and target are already supplied.
+
+Build the opcode-first body in a bounded main-thread wrapper and call:
+
+```c
+u32 __thiscall net_submit_client_packet(
+    Socket *socket,
+    const u8 *body,
+    s16 body_length);
+```
+
+Resolve `socket` from the pointer at RVA `0x0033D958` for the current invocation. The function copies the body before returning, appends the ordinary transmitted zero, queues communications command `6`, and wakes the network worker.
+
+```text
+CDropGold body, 9 bytes:
+24 amount:u32be x:u16be y:u16be
+
+CGiveGold body, 9 bytes:
+2A amount:u32be object_id:u32be
+```
+
+Require a nonzero amount. The normal client does not compare a gold amount with the current balance before submission. For `CDropGold`, validate the requested tile locally even though observed server behavior places accepted gold beneath the character.
+
+The same submission boundary can produce `CDrop` and `CGive` from numeric inputs alone, but doing so bypasses the item builders' live-item lookup and local manufacture-mode guard. Prefer the native item builders when a matching `InvItemPane` exists.
 
 ## Use a skill
 
@@ -198,7 +272,23 @@ The values are Up `0`, Right `1`, Down `2`, and Left `3`. This helper first clea
 
 One invocation can therefore turn without moving. This matches ordinary directional input.
 
-## Unequip with the tilde action
+## Unequip by equipment slot
+
+The ordinary equipment-control path receives a zero-based UI action from `0` through `17`, adds one, and calls `net_send_remove_equipment`. The packet therefore uses one-based equipment slots `1` through `18`.
+
+To request one specific equipment slot, validate `1 <= slot <= 18`, resolve the current pane through `ui_equip_pane_get()`, and call:
+
+```c
+u32 __thiscall net_send_remove_equipment(
+    EquipPane *equip,
+    s16 slot);
+```
+
+The builder emits the two-byte body `{ 0x44, slot }` through `net_submit_client_packet`. It uses only the low byte of `slot`. It does not validate the range, inspect whether the slot is occupied, or dereference `equip` in this build. Pass the live pane in `ECX` anyway so the call follows the native contract and remains robust if nearby client versions differ.
+
+The return value reports local queue submission, not server acceptance. Local equipment state changes later when the server sends `SRemoveEquip`.
+
+### Tilde action
 
 Get the complete pane through `ui_equip_pane_get()` and require a non-null result:
 
@@ -208,16 +298,6 @@ void __thiscall ui_equip_pane_request_remove_slots_1_and_3(
 ```
 
 The helper unconditionally submits `CRemoveEquipment` for slot `1`, then slot `3`. The tilde binding was supplied as project-owner behavior; the local helper body confirms the two-slot request.
-
-To request one specific equipment slot, validate `1 <= slot <= 18` and call:
-
-```c
-u32 __thiscall net_send_remove_equipment(
-    EquipPane *equip,
-    s16 slot);
-```
-
-The builder uses only the low byte and does not validate the slot or inspect the equipment entry.
 
 ## Why `CreateRemoteThread` is unsafe
 

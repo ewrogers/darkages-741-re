@@ -2263,6 +2263,10 @@ functions:
     name: ui_terminal_pane_2_unregister_adjusted
     confidence: high
     evidence: "Clears the TerminalPane2 singleton from its adjusted secondary-base pointer."
+  - address: "0x0058ECE0"
+    name: event_schedule_timer_if_available
+    confidence: high
+    evidence: "Checks for the global EventDispatcher and queues a TimerHandler event with caller-supplied ID and payload; inventory drag delivery uses event 0 for packed X/Y and event 1 for a living object ID."
   - address: "0x00591F20"
     name: ui_transfer_server_progress_register_adjusted
     confidence: high

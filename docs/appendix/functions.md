@@ -178,6 +178,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `event_scalar_deleting_dtor` | `0x004689D0` | high | Calls event_dtor and frees the Event when the MSVC deleting-destructor flag requests it. |
 | `event_dispatcher_is_available` | `0x00468AB0` | high | Returns whether the application-wide EventDispatcher singleton currently exists. |
 | `event_handle_intro_state` | `0x004ACA50` | high | Dispatches intro states 0, 1, and 2 around Bink playback. |
+| `event_schedule_timer_if_available` | `0x0058ECE0` | high | Checks for the global EventDispatcher and queues a TimerHandler event with caller-supplied ID and payload; inventory drag delivery uses event 0 for packed X/Y and event 1 for a living object ID. |
 
 ## Input
 
@@ -1158,7 +1159,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_equip_pane_ctor` | `0x0045DA10` | high | Constructs exact RTTI class EquipPane over a 0x630-byte DialogPane base, 18 contiguous 0x34-byte slot-view records, profile text, named layout rectangles, and the worn-equipment arrays. |
 | `ui_equip_pane_dtor` | `0x0045EEE0` | high | Destroys exact RTTI EquipPane, its equipment views and dependent panes, then the DialogPane base. |
 | `ui_equip_pane_handle_pointer_event` | `0x0045F000` | high | Handles EquipPane equipment hover and selection before delegating ordinary dialog pointer behavior. |
-| `ui_equip_pane_handle_action` | `0x0045F260` | high | EquipPane action 0x19 allocates the exact RTTI FamilyListDialogPane. |
+| `ui_equip_pane_handle_action` | `0x0045F260` | high | Maps equipment-control action indices 0 through 17 to one-based CRemoveEquipment slots 1 through 18. |
 | `ui_equip_pane_draw` | `0x0045F3B0` | high | Draws EquipPane identity, equipment slots, profile state, controls, and optional character preview. |
 | `ui_equip_pane_draw_emoticon` | `0x0045FBD0` | high | Draws the selected HumanState image and right-hand emoticon option label in EquipPane. |
 | `ui_equip_pane_set_character_preview_state` | `0x0045FD50` | high | Marks the EquipPane character preview ready, copies the 0x30-byte human appearance state, and invalidates the visible pane. |
@@ -2706,6 +2707,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_gui_back_get_page_mode` | `0x005A2CA0` | high | Returns the selected lower-tray page mode stored at GUIBackPane complete-object offset +0x4FA8. |
 | `ui_gui_back_get_page_expanded` | `0x005A2CC0` | high | Returns GUIBackPane's page_is_expanded flag at complete object offset +0x4FB0. |
 | `ui_game_interface_activate_number_key` | `0x005A2D90` | high | Routes number keys by the selected GUIBackPane mode; item mode maps keys 1 through 9 and 0 to inventory slots 1 through 10. |
+| `ui_gui_back_get_inventory_item` | `0x005A2F90` | high | Returns inventory slot 1 through 60 through GUIBackPane's InventoryPane_A; invalid slots return null and slot 60 is the synthetic gold entry. |
 | `ui_gui_back_select_page_mode` | `0x005A2FB0` | high | Selects item, spell, skill, chat, status, or combined skill/spell content and applies normal or expanded child geometry. |
 | `ui_gui_back_apply_layout` | `0x005A3900` | high | Reapplies the selected GUIBackPane and child-pane geometry, then sends the layout's MAP rectangle and view center through MapInterface to resize and invalidate WorldPane. |
 | `ui_skill_spell_book_find_current_level` | `0x005A4440` | high | Scans 89 live spell or skill slots by stripped base name and returns the parsed left suffix value for the first exact match. |
@@ -2894,7 +2896,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_read_employee_item_record` | `0x0045D1B0` | high | Reads employee item ID, sprite, color, name, optional description, unknown byte, quantity, sell price, and buy price. |
 | `net_read_employee_trade_record` | `0x0045D380` | high | Reads the previous item ID and nonzero replacement item record used by StartTrade. |
 | `net_init_mercenary_packet` | `0x0045D550` | high | Initializes the shared CMercenary header as opcode 0x54, category 1, employee ID, and action. |
-| `net_send_remove_equipment` | `0x00460330` | high | Builds CRemoveEquipment opcode 0x44 followed by the one-byte equipment slot. |
+| `net_send_remove_equipment` | `0x00460330` | high | Builds and queues CRemoveEquipment opcode 0x44 followed by the low byte of the supplied equipment slot; it performs no range or occupancy check. |
 | `net_send_group` | `0x00462DC0` | high | UserLookPane calls this opcode 0x2E builder with a length-prefixed user name. |
 | `net_post_raw_server_bytes_event` | `0x00467000` | high | Copies a Winsock receive buffer without frame parsing and posts it through the network event family during initial raw-stream mode. |
 | `net_post_decoded_server_packet_event` | `0x00467060` | high | Copies a decoded opcode-first server body and queues it as network packet event type 0x13. |
@@ -3102,6 +3104,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_build_seed_xor_table` | `0x00568650` | high | Builds one of ten deterministic 256-entry repeated-byte XOR tables for selectors 0 through 9; selector 0 is the compiled default. |
 | `net_send_add_stat` | `0x005755C0` | high | Validates the selected StatusInfoPane control index, writes opcode 0x47 plus its constructor-defined selector, and submits the two-byte CAddStat body. |
 | `net_wait_for_command_completion` | `0x00586100` | high | Waits indefinitely for a queued communications command, then removes and destroys its completion record. |
+| `net_queue_communications_command` | `0x00586210` | high | Copies a 24-byte command record into the Socket FIFO and releases its worker semaphore; client packet submission uses command 6 with an owned body buffer. |
 | `net_send_confirm` | `0x005922A0` | high | Builds CConfirm as opcode 0x31, the first server byte, button choice, second server byte, and echoed string8 context. |
 | `net_server_packet_base_ctor` | `0x005959D0` | high | Constructs the base server packet object and stores its opcode. |
 | `net_get_server_packet_opcode` | `0x00595A00` | high | Returns the opcode stored in a server packet base object. |

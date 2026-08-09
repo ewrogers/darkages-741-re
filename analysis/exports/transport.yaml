@@ -251,6 +251,10 @@ functions:
     name: net_wait_for_command_completion
     confidence: high
     evidence: "Waits indefinitely for a queued communications command, then removes and destroys its completion record."
+  - address: "0x00586210"
+    name: net_queue_communications_command
+    confidence: high
+    evidence: "Copies a 24-byte command record into the Socket FIFO and releases its worker semaphore; client packet submission uses command 6 with an owned body buffer."
   - address: "0x005959D0"
     name: net_server_packet_base_ctor
     confidence: high
@@ -312,6 +316,10 @@ data_symbols:
     name: session_character_name
     confidence: high
     evidence: "Active character name persisted by the login sender and passed to net_build_md5_salt_source during session setup."
+  - address: "0x0073D958"
+    name: net_socket_ptr
+    confidence: high
+    evidence: "Points to the active Socket object used by client packet builders and net_submit_client_packet."
   - address: "0x007AA840"
     name: net_md5_salt_source
     confidence: high
@@ -409,6 +417,8 @@ comments:
     text: "Append a zero byte after the builder-provided body."
   - address: "0x00564045"
     text: "Increase the queued body length so the appended zero is transmitted and, for transformed opcodes, encrypted with the payload."
+  - address: "0x00564057"
+    text: "Queue communications command 6 with the owned body copy and transmitted length, then release the network-worker semaphore."
   - address: "0x00564638"
     text: "Transport selector 5 enters Winsock TCP. Selectors 1 through 4 enter the compiled serial/modem COM-port opener."
   - address: "0x00564884"

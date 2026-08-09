@@ -899,6 +899,10 @@ functions:
     name: ui_equip_pane_handle_pointer_event
     confidence: high
     evidence: "Handles EquipPane equipment hover and selection before delegating ordinary dialog pointer behavior."
+  - address: "0x0045F260"
+    name: ui_equip_pane_handle_action
+    confidence: high
+    evidence: "Maps equipment-control action indices 0 through 17 to one-based CRemoveEquipment slots 1 through 18."
   - address: "0x0045F3B0"
     name: ui_equip_pane_draw
     confidence: high
@@ -938,7 +942,7 @@ functions:
   - address: "0x00460330"
     name: net_send_remove_equipment
     confidence: high
-    evidence: "Builds CRemoveEquipment opcode 0x44 followed by the one-byte equipment slot."
+    evidence: "Builds and queues CRemoveEquipment opcode 0x44 followed by the low byte of the supplied equipment slot; it performs no range or occupancy check."
   - address: "0x004603C0"
     name: ui_equip_pane_refresh_group_toggle_button
     confidence: high
@@ -3483,6 +3487,10 @@ functions:
     name: ui_game_interface_activate_number_key
     confidence: high
     evidence: "Routes number keys by the selected GUIBackPane mode; item mode maps keys 1 through 9 and 0 to inventory slots 1 through 10."
+  - address: "0x005A2F90"
+    name: ui_gui_back_get_inventory_item
+    confidence: high
+    evidence: "Returns inventory slot 1 through 60 through GUIBackPane's InventoryPane_A; invalid slots return null and slot 60 is the synthetic gold entry."
   - address: "0x005A5210"
     name: ui_inventory_select_buttons_handle_action
     confidence: high
@@ -4004,6 +4012,26 @@ data_symbols:
     name: equipment_slot_to_ui_index
     confidence: high
     evidence: "Nineteen signed entries map wire slot 0 to -1 and slots 1 through 18 to UI indices 0 through 17."
+  - address: "0x0073FE40"
+    name: ui_inventory_quantity_item_ptr
+    confidence: high
+    evidence: "Retains the complete InvItemPane while the drop quantity input is active."
+  - address: "0x0073FE44"
+    name: ui_inventory_quantity_value
+    confidence: high
+    evidence: "Receives the numeric input callback's nonzero u32 quantity before CDrop or the dormant CGive quantity path."
+  - address: "0x0073FE48"
+    name: ui_inventory_drop_target_y
+    confidence: high
+    evidence: "Retains the drag-selected target Y while the CDrop quantity input is active."
+  - address: "0x0073FE4C"
+    name: ui_inventory_drop_target_x
+    confidence: high
+    evidence: "Retains the drag-selected target X while the CDrop quantity input is active."
+  - address: "0x0073FE50"
+    name: ui_inventory_give_target_object_id
+    confidence: high
+    evidence: "Retains the living target object ID used by the dormant CGive quantity callback."
 comments:
   - address: "0x004160C0"
     text: "Build the two-byte CWebBoard dialog request as opcode 0x73, action 0."
@@ -4194,7 +4222,7 @@ comments:
   - address: "0x0049695A"
     text: "Inventory slot 60 takes the separate DropGoldDialogPane path instead of CDrop."
   - address: "0x004969E0"
-    text: "Open quantity input only when the source item's stored quantity is greater than one."
+    text: "Open quantity input only when complete InvItemPane can_stack at +0x244 is set and stored quantity at +0x240 exceeds one; the callback receives the TimerHandler subobject at +0x11C."
   - address: "0x00496B90"
     text: "A source quantity of zero or one takes the direct CDrop path with quantity one."
   - address: "0x00496C64"
