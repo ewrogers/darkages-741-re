@@ -15,6 +15,14 @@ functions:
     name: ui_friend_list_dialog_handle_action
     confidence: high
     evidence: "Handles OK and Cancel; OK copies controls 2 through 21 into the twenty UserInfo friend slots and saves Friendlist.cfg."
+  - address: "0x00592470"
+    name: user_info_ctor
+    confidence: high
+    evidence: "Constructs the 0xB44-byte UserInfo, creates the active character directory, and loads the per-character friend and family arrays."
+  - address: "0x00592520"
+    name: user_info_dtor
+    confidence: high
+    evidence: "Saves the complete friend and family arrays, tears down the remaining UserInfo state, and decrements the live-instance count."
   - address: "0x00592560"
     name: user_info_load_family_list
     confidence: high
@@ -22,7 +30,7 @@ functions:
   - address: "0x00592680"
     name: file_read_dbcs_line
     confidence: high
-    evidence: "Reads until LF, EOF, or the caller-supplied byte count, tracks DBCS lead-byte state so an LF-valued trail byte does not end the line, then appends NUL."
+    evidence: "Reads until LF, EOF, or the caller-supplied byte count, tracks DBCS lead-byte state so an LF-valued trail byte does not end the line, then appends NUL at the final index."
   - address: "0x00592730"
     name: user_info_save_family_list
     confidence: high
@@ -35,12 +43,20 @@ functions:
     name: user_info_save_friend_list
     confidence: high
     evidence: "Writes all twenty 40-byte UserInfo friend slots as lines in the per-character Friendlist.cfg file."
+  - address: "0x00627DB7"
+    name: crt_stricmp
+    confidence: high
+    evidence: "Compares zero-terminated byte strings without ASCII case; uses direct A-through-Z folding in the C locale and the active CRT locale mapping otherwise."
 data_symbols: []
 comments:
   - address: "0x0054388C"
     text: "Build friend edit controls 2 through 11 from UserInfo friend slots 0 through 9. A second loop builds controls 12 through 21 for slots 10 through 19."
   - address: "0x00543CB8"
     text: "Action 0 copies dialog controls 2 through 21 into all twenty UserInfo friend slots, then saves Friendlist.cfg."
+  - address: "0x005924F1"
+    text: "Load Friendlist.cfg during UserInfo construction, after creating the active character directory and initializing the preceding local state."
+  - address: "0x0059253B"
+    text: "UserInfo destruction writes Friendlist.cfg and Familylist.cfg even when their dialogs were not opened."
   - address: "0x00592616"
     text: "Familylist.cfg loading is capped at twenty fixed 40-byte UserInfo slots."
   - address: "0x005926FA"
@@ -49,6 +65,10 @@ comments:
     text: "Familylist.cfg serialization always writes exactly twenty lines."
   - address: "0x005928B6"
     text: "Friendlist.cfg loading is capped at twenty fixed 40-byte UserInfo slots."
+  - address: "0x005928DF"
+    text: "Pass capacity 40 to file_read_dbcs_line. A 40-byte payload writes its NUL into the next slot and leaves the following newline for the next read; 39 payload bytes are safe."
   - address: "0x005929A2"
     text: "Friendlist.cfg serialization always writes exactly twenty lines."
+  - address: "0x005929C1"
+    text: "Write each friend slot with format %s followed by LF; C text mode produces CRLF on Windows."
 runtime_patches: []

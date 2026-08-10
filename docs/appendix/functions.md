@@ -2641,9 +2641,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_screen_pane_set_cursor_mode` | `0x00554330` | high | Stores the cursor image and hotspot table selector at root ScreenPane +0x27C and redraws the cursor state. |
 | `ui_server_select_dialog_handle_server_event` | `0x00559DC0` | high | ServerSelectDialogPane primary-vtable slot 0x50 accepts an event packet only when its opcode is 0x56, then forwards the exact SMulti object to the dedicated handler. |
 | `ui_server_select_dialog_handle_multi` | `0x00559E80` | high | Applies the SMulti replacement list, auto-selects row zero when exactly one record exists, and refreshes the ServerSelectDialogPane controls. |
+| `ui_show_users_list_pane_ctor` | `0x0055AEE0` | high | Constructs ShowUsersListPane with 0x50-byte visible rows, a 0x80 allocation-block parameter, and a 12-pixel row height. |
 | `ui_show_users_list_draw_row` | `0x0055AF60` | high | Draws one ShowUsersListPane row, resolves its final color through palette slot 0, and clamps the eight-state selector before choosing its visual. |
 | `ui_show_users_pane_ctor` | `0x0055B2B0` | high | Constructs the RTTI-backed ShowUsers pane from _nusers.txt and attaches its controls. |
+| `ui_show_users_pane_handle_action` | `0x0055BD20` | high | Closes on action 0 or maps button actions 1 through 9 to filter collections 0 through 8 and rebuilds the visible list. |
 | `ui_show_users_pane_open` | `0x0055BFA0` | high | Opens or reveals ShowUsersPane after a response and schedules its 100 ms pane timer. |
+| `ui_show_users_pane_draw_content` | `0x0055C130` | high | Draws the nine filter buttons, total world count, per-filter dynamic row counts, and the shared dialog content. |
 | `ui_show_users_rebuild_visible_list` | `0x0055C3E0` | high | Builds visible user-list rows and overrides the server palette index with 0x80 for Friendlist.cfg or 0x24 for Familylist.cfg matches. |
 | `ui_show_users_clear_lists` | `0x0055C760` | high | Clears the master and filtered ShowUsers row collections before a replacement list is applied. |
 | `ui_show_users_pane_register_adjusted` | `0x0055D5A0` | high | Registers exact RTTI ShowUsersPane from its Singleton secondary base. |
@@ -4314,7 +4317,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_parse_ground_attribute_table` | `0x0058B930` | high | Parses the structured set_attr records and applies each attribute set to its listed tile IDs and inclusive ranges. |
 | `file_apply_ground_attribute_record` | `0x0058B9B0` | high | Interns one parsed attribute set and assigns it to each ground tile ID covered by the record's apply_to list. |
 | `file_intern_ground_attribute_set` | `0x0058BA80` | high | Converts ATTR_gnd_paint height 1 and 2 into separate flags while retaining larger heights as color-and-depth paint records. |
-| `file_read_dbcs_line` | `0x00592680` | high | Reads until LF, EOF, or the caller-supplied byte count, tracks DBCS lead-byte state so an LF-valued trail byte does not end the line, then appends NUL. |
+| `file_read_dbcs_line` | `0x00592680` | high | Reads until LF, EOF, or the caller-supplied byte count, tracks DBCS lead-byte state so an LF-valued trail byte does not end the line, then appends NUL at the final index. |
 | `file_build_character_path` | `0x00592DE0` | high | Builds .\&lt;character&gt;\.\&lt;filename&gt; from the active character name and supplied local filename. |
 | `file_load_character_profile` | `0x005B13E0` | high | Reads at most 0x172 bytes from the current character's profile.txt into the editor buffer. |
 | `file_save_portrait_dialog_profile` | `0x005B15C0` | high | Writes the dialog profile buffer to profile.txt after the 0x172-byte DBCS-safe cap. |
@@ -5180,6 +5183,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `metadata_spell_skill_requirements_met` | `0x005600B0` | high | Checks character level, ability and master flags, ability level, attributes, and two named learned-ability prerequisites. |
 | `crc16_buffer` | `0x00568870` | high | Applies the custom CRC16 update to a byte buffer starting from zero. |
 | `startup_run_pending_patcher` | `0x0057A330` | high | Before normal startup, requires both Patch/Info and Patch/Script to relaunch Patcher2.exe through CreateProcessA and exit; otherwise deletes both markers and continues. |
+| `user_info_ctor` | `0x00592470` | high | Constructs the 0xB44-byte UserInfo, creates the active character directory, and loads the per-character friend and family arrays. |
+| `user_info_dtor` | `0x00592520` | high | Saves the complete friend and family arrays, tears down the remaining UserInfo state, and decrements the live-instance count. |
 | `user_info_load_family_list` | `0x00592560` | high | Clears twenty 40-byte UserInfo family slots, then loads up to twenty lines from the per-character Familylist.cfg file. |
 | `user_info_save_family_list` | `0x00592730` | high | Writes all twenty 40-byte UserInfo family slots as lines in the per-character Familylist.cfg file. |
 | `user_info_load_friend_list` | `0x00592800` | high | Clears twenty 40-byte UserInfo friend slots, then loads up to twenty lines from the per-character Friendlist.cfg file. |
@@ -5282,3 +5287,4 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `crt_time` | `0x00622873` | high | Reads the current Windows FILETIME and converts it to Unix-epoch seconds; CLogin passes the result to crt_srand. |
 | `crt_srand` | `0x006275DE` | high | Stores the seed used by the client runtime random-number state. |
 | `crt_rand` | `0x006275F0` | high | Implements the Microsoft runtime linear-congruential update and returns a 15-bit value. |
+| `crt_stricmp` | `0x00627DB7` | high | Compares zero-terminated byte strings without ASCII case; uses direct A-through-Z folding in the C locale and the active CRT locale mapping otherwise. |

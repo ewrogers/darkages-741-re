@@ -42,7 +42,9 @@ The client exposes several different limits:
 | Safe `Friendlist.cfg` or `Familylist.cfg` line payload | 39 bytes |
 | Runtime slot including its terminating zero | 40 bytes |
 | Family dialog value retained on commit | 30 DBCS-safe bytes |
-| Name retained by `SShowUsers` | 24 bytes |
+| Source-row name available to the `SShowUsers` matcher | 24 bytes |
+| Nonempty visible-row name after its safe copy | 23 bytes |
+| Name bytes drawn by `ShowUsersListPane` | 15 bytes |
 | Playable character name reported by the project owner | Effectively 13 characters |
 | Row palette index | `0x00` through `0xFF` |
 
@@ -52,7 +54,7 @@ The stock friend dialog has a related mismatch. Its commit handler asks a text f
 
 The family dialog is more conservative but still fixed. Its commit path applies a DBCS-safe 30-byte truncation to each of exactly twenty fields before calling `user_info_save_family_list`. It cannot preserve packed data beyond that limit.
 
-The 24-byte Show Users limit is a parser boundary, not evidence that the game permits a 24-character playable name. The extension table should still use 24-byte name storage so it matches the row representation. Keep names as the client's original bytes, including code page 949 bytes when present. Do not convert them to UTF-8 inside the lookup table.
+The 24-byte Show Users limit is a source-row parser and matcher boundary, not evidence that the game permits a 24-character playable name. The later visible-row copy has a 24-byte destination and requires room for NUL, so an exact 24-byte source name clears that destination. The row drawer displays only the first 15 stored bytes. The extension table should still use 24-byte name storage because its lookup runs against the source row before either display limit. Keep names as the client's original bytes, including code page 949 bytes when present. Do not convert them to UTF-8 inside the lookup table.
 
 The renderer consumes the low byte of the selected palette value. Every byte value fits structurally, but not every `legend.pal` entry is guaranteed to be readable against the pane background.
 

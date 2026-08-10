@@ -162,13 +162,39 @@ The lookup strips the trailing parenthesized level pair from the live skill name
 
 ### Family and friend lists
 
-`Familylist.cfg` and `Friendlist.cfg` each contain exactly twenty lines. Each line is one character name, and unused entries are blank. The client keeps each entry in a 40-byte runtime slot, so a compatible file should keep a name within 39 bytes plus its terminating zero.
+`Familylist.cfg` and `Friendlist.cfg` are plain text lists with no header. The reader accepts at most twenty physical lines. The writer always emits twenty lines, including blank lines for unused entries.
 
-The stock reader does not split a line on commas and does not recognize a color suffix. A line such as `CharacterA,CharacterB` or `CharacterA#4` is one literal name and therefore will not match either character. The stock friend dialog also exposes exactly twenty text fields. Its commit path requests as many as 64 bytes from each field while writing into one of the 40-byte slots, so manually edited or pasted values must still remain within the 39-byte payload limit.
+```text
+FirstName
+SecondName
+
+FourthName
+... sixteen more lines ...
+```
+
+Each complete line is one name slot. The reader does not trim spaces, split on commas, or recognize a color suffix. `CharacterA,CharacterB` and `CharacterA#4` are each one literal name.
+
+The names are inline arrays at the end of the current `UserInfo` object:
+
+```c
+partial struct UserInfo {
+    u8 other[0x504];
+    char friend_names[20][40];  // +0x504 through +0x823
+    char family_names[20][40];  // +0x824 through +0xB43
+};                              // size 0xB44
+```
+
+`UserInfo` construction creates the character directory, clears the first byte of every slot, and loads both files. Destruction writes both complete arrays again. The Friend List dialog also saves `Friendlist.cfg` immediately after OK copies controls 2 through 21 into slots 0 through 19. Cancel leaves the arrays and file unchanged.
+
+The file reader receives a capacity of 40 and appends its zero byte at the final index. A newline after 39 payload bytes is consumed and replaced by that zero. A 40-byte payload fills the slot, writes the zero into the following slot, and leaves the newline for the next read. A compatible line must therefore contain at most 39 bytes. The final short line may omit its newline.
+
+The stock Friend List dialog has a separate unsafe boundary. It asks each text control to copy as many as 64 bytes into a 40-byte destination slot. Manually edited or pasted values must still remain within the 39-byte payload limit.
+
+The Who-list matcher skips empty slots and uses the client's CRT case-insensitive comparison. In the normal C-locale path this folds ASCII `A` through `Z`; when a CRT locale is active, the locale's byte-wise lowercase table is used. There is no Unicode normalization. Leading and trailing spaces remain part of the compared name, and Korean text remains in its original code-page bytes.
 
 The project owner reports that playable character names are effectively limited to 13 characters. Separately, the Show Users packet path accepts a name of at most 24 bytes before discarding the row. These are different limits, and configuration storage is byte-oriented rather than Unicode-character-oriented.
 
-These lists change how matching names appear in the online-user pane. A friend match uses palette index `0x80`; a family or guild match uses `0x24`. See [Show Users (`SShowUsers`)](../network/server/054-0x36-show-users.md) for the row-building behavior.
+These arrays are not Who-list row storage. They are local classification names consulted whenever `ShowUsersPane` rebuilds its visible rows. A friend match uses palette index `0x80`; a family or guild match uses `0x24`. The family scan runs second and wins when both arrays contain the name. See [Show Users (`SShowUsers`)](../network/server/054-0x36-show-users.md) for the row and filter storage.
 
 The fixed arrays cannot be enlarged by changing the loop bound. The family array begins immediately after the friend array, and the family array ends at the end of the containing `UserInfo` storage. The safe extension design keeps the stock files and dialog intact and adds a separate launcher-owned table. See [Extended friend highlights](../appendix/runtime-patches/extended-friend-highlights.md).
 
@@ -192,7 +218,7 @@ Each macro has a 128-byte runtime slot. The reader looks for the next opening qu
 
 All five files contain ordinary byte strings. There is no binary header, encryption, or checksum. The Korean client expects ANSI text and treats Korean text as DBCS data, which normally means Windows code page 949 in its original environment.
 
-The family, friend, and macro files use C text mode. Their writers therefore produce CRLF line endings on Windows. They are loaded when their shared manager is created and all records are written again when that manager is destroyed.
+The family, friend, and macro files use C text mode. Their writers therefore produce CRLF line endings on Windows. Family and friend records are loaded when `UserInfo` is created and written again when it is destroyed. The macros follow their own manager lifetime.
 
 The spell and skill editors use binary mode and write LF line endings. They preserve other ability sections by copying the file through a working-directory `tmp.cfg`, deleting the old file, and renaming the temporary file. Their editor-side `%s` parsing also makes whitespace inside spell names, skill names, or configured lines unreliable. Manual changes are safest while the client is closed.
 
