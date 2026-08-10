@@ -978,7 +978,7 @@ functions:
   - address: "0x004554D0"
     name: render_canvas_fill_diamond_palette
     confidence: high
-    evidence: "Fills a clipped diamond marker with a palette-resolved color and optional dither mode."
+    evidence: "Fills a clipped 2 to 1 diamond with a palette-resolved color; optional spatial dither writes x parity equal to floor(y / 2) parity instead of using alpha."
   - address: "0x00455710"
     name: render_canvas_set_pixel_palette_color
     confidence: high
@@ -3367,10 +3367,98 @@ functions:
     name: render_ground_tile
     confidence: high
     evidence: Copies one decoded isometric tile diamond into the ground cache canvas.
+  - address: "0x005D86A0"
+    name: ui_world_minimap_create_interface
+    confidence: high
+    evidence: Allocates WorldMinimapPane_Impl and returns its WorldMinimapInterface secondary-base pointer.
+  - address: "0x005D8770"
+    name: ui_world_minimap_pane_ctor
+    confidence: high
+    evidence: Constructs the Tab wireframe-map pane, its fixed 256 by 256 caches, collision-level palette table, scale state, and Pane interfaces.
+  - address: "0x005D89B0"
+    name: ui_world_minimap_pane_dtor
+    confidence: high
+    evidence: Releases the visibility-region collection, map provider, cell cache, visibility mask, and Pane bases owned by WorldMinimapPane_Impl.
+  - address: "0x005D8AC0"
+    name: ui_world_minimap_set_bounds
+    confidence: high
+    evidence: Applies the live WorldPane rectangle to the minimap Pane so its canvas follows the current UI layout.
+  - address: "0x005D8AF0"
+    name: ui_world_minimap_set_scale
+    confidence: high
+    evidence: Stores the integer isometric scale and invalidates the minimap when it changes.
+  - address: "0x005D8B50"
+    name: ui_world_minimap_set_scale_thunk
+    confidence: high
+    evidence: Adjusts the WorldMinimapInterface pointer and delegates to ui_world_minimap_set_scale.
+  - address: "0x005D8B70"
+    name: ui_world_minimap_set_zoom_enabled
+    confidence: high
+    evidence: Stores whether the two minimap zoom keys may change the integer scale.
   - address: "0x005D8B90"
     name: map_refresh_collision_cache
     confidence: high
-    evidence: Refreshes dirty cells in the map's width-by-height byte collision cache with map_get_collision_level.
+    evidence: Refreshes dirty cells in the map's width-by-height three-byte collision cache with map_get_collision_level and marks each rebuilt cell for redraw.
+  - address: "0x005D8C70"
+    name: ui_world_minimap_is_visible
+    confidence: high
+    evidence: Returns the minimap pane's active visibility byte.
+  - address: "0x005D8C90"
+    name: ui_world_minimap_set_visible
+    confidence: high
+    evidence: Shows or hides the minimap pane and invalidates it when the visibility state changes.
+  - address: "0x005D8CF0"
+    name: render_world_minimap
+    confidence: high
+    evidence: Projects the collision cache as 2 to 1 diamonds, incrementally paints cell fills, draws wall-transition edges, and applies restricted visibility.
+  - address: "0x005D93D0"
+    name: render_minimap_draw_northwest_wall_edge
+    confidence: high
+    evidence: Draws the shared northwest half-edge of a wall-transition diamond with palette index 0xFF.
+  - address: "0x005D9460"
+    name: render_minimap_draw_northeast_wall_edge
+    confidence: high
+    evidence: Draws the shared northeast half-edge of a wall-transition diamond with palette index 0xFF.
+  - address: "0x005D94F0"
+    name: ui_world_minimap_handle_keyboard_event
+    confidence: high
+    evidence: Consumes the two internal minimap zoom keys and changes scale only when class-dependent zoom is enabled.
+  - address: "0x005D9590"
+    name: ui_world_minimap_get_pane
+    confidence: high
+    evidence: Returns the WorldMinimapPane_Impl primary Pane pointer from its interface pointer.
+  - address: "0x005D95B0"
+    name: ui_world_minimap_mark_cell_dirty
+    confidence: high
+    evidence: Marks one in-bounds collision-cache cell for refresh and invalidates the visible pane.
+  - address: "0x005D9610"
+    name: ui_world_minimap_set_map_size
+    confidence: high
+    evidence: Clamps each map dimension to 0 through 256, stores it, and requests a complete cache refresh.
+  - address: "0x005D96A0"
+    name: ui_world_minimap_request_full_refresh
+    confidence: high
+    evidence: Sets the force-refresh byte and invalidates the visible minimap pane.
+  - address: "0x005D96D0"
+    name: ui_world_minimap_set_center
+    confidence: high
+    evidence: Stores the tile-space X and Y projected at the minimap canvas midpoint and invalidates on change.
+  - address: "0x005D9700"
+    name: render_minimap_rebuild_visibility_mask
+    confidence: high
+    evidence: Clears the dirty part of the 256 by 256 restricted-visibility mask and unions active keyed rectangles into it.
+  - address: "0x005D9D30"
+    name: render_minimap_update_visibility_region
+    confidence: high
+    evidence: Adds, changes, or removes a keyed rectangular visibility region and expands the mask's dirty tile rectangle.
+  - address: "0x005D9DF0"
+    name: render_minimap_set_visibility_mask_enabled
+    confidence: high
+    evidence: Enables the restricted-visibility path only when requested and invalidates the minimap on a mode change.
+  - address: "0x005D9E30"
+    name: ui_world_minimap_pane_deleting_dtor
+    confidence: high
+    evidence: Runs the WorldMinimapPane_Impl destructor and conditionally frees the complete object.
   - address: "0x005DB3F0"
     name: world_object_ctor
     confidence: high
@@ -3411,6 +3499,10 @@ functions:
     name: world_human_object_ctor
     confidence: high
     evidence: Constructs exact RTTI WorldObject_Human, installs the Human vtables, selects draw layer 7, and clears ground-tile state byte +0x1ED.
+  - address: "0x005DE0B0"
+    name: world_human_update_collision_level
+    confidence: high
+    evidence: Assigns minimap level 100 to a visible remote human and resets it to 0 when a human-appearance record has body sprite 0.
   - address: "0x005DE110"
     name: world_human_start_motion
     confidence: high
@@ -3535,6 +3627,10 @@ functions:
     name: render_static_object
     confidence: high
     evidence: Draws a fixed world object with its SOTP-selected software blend mode.
+  - address: "0x005E4E60"
+    name: world_user_object_ctor
+    confidence: high
+    evidence: Constructs the local WorldObject_User and assigns its always-visible minimap collision level 180.
   - address: "0x005E4FC0"
     name: world_user_start_move
     confidence: high
@@ -3833,6 +3929,8 @@ comments:
     text: Blit a one-bit glyph or mask into the 16-bit software Canvas. The selected mode controls foreground, background, transparency, and averaging.
   - address: "0x00453EFC"
     text: Apply ordered palette mappings during indexed PixMap drawing. Each mapping covers one source-index range and selects a replacement palette family and selector.
+  - address: "0x004554D0"
+    text: "For radius r, rasterize rows from the one-pixel north tip through the 4r+1-pixel center, then taper to a three-pixel south tip; clip every inclusive horizontal span to the Canvas."
   - address: "0x00455BBE"
     text: Split the ANSI byte string with IsDBCSLeadByte. A DBCS pair becomes one 16-bit key with the lead byte in the high half.
   - address: "0x00456F87"
@@ -3989,8 +4087,30 @@ comments:
     text: Draw two optional projected diamond tile markers after the map backgrounds and before collecting world objects.
   - address: "0x005D43D7"
     text: Replay the recorded self after the ordinary world layers. The normal non-blinded state supplies selector 1, making render_living_object choose blend mode 3; the blinded state supplies zero.
+  - address: "0x005D88EB"
+    text: "Collision-level palette table: 0 to 0x00, 1 to 0x16, 100 to 0x58, 120 to 0x28, 130 to 0xFF, 140 to 0x80, 150 to 0x28, and 180 to 0x45. Every other entry remains 0."
   - address: "0x005D8C36"
-    text: Rebuild the cached byte for this map cell with map_get_collision_level after the cell or whole collision grid is marked dirty.
+    text: Rebuild this cell's cached collision-level byte with map_get_collision_level after the cell or whole grid is marked dirty, then set its redraw-pending byte.
+  - address: "0x005D8D47"
+    text: Projection arithmetic uses the complete signed integer scale. The later diamond fill receives only the low byte as its radius.
+  - address: "0x005D8E65"
+    text: "Projected center x is canvas_width / 2 + 2 * scale * ((tile_x - center_x) - (tile_y - center_y))."
+  - address: "0x005D8E6E"
+    text: "Projected center y is canvas_height / 2 + scale * ((tile_x - center_x) + (tile_y - center_y))."
+  - address: "0x005D8F27"
+    text: Collision level 1 is a solid palette-index 0x16 diamond whose radius equals scale.
+  - address: "0x005D8F51"
+    text: Every other nonzero mapped level uses a spatially dithered diamond whose radius is scale minus 1.
+  - address: "0x005D8FF3"
+    text: Draw the northwest palette-index 0xFF half-edge when this cell and its left neighbor disagree about collision level 1.
+  - address: "0x005D904F"
+    text: Draw the northeast palette-index 0xFF half-edge when this cell and its upper neighbor disagree about collision level 1.
+  - address: "0x005D91CE"
+    text: Restricted visibility erases an unmasked non-self cell with a transparent dithered diamond. Local-player level 180 bypasses the mask.
+  - address: "0x005D950F"
+    text: Internal key 0x93 increments the integer minimap scale only when class-dependent zoom is enabled.
+  - address: "0x005D9541"
+    text: Internal key 0x94 decrements scale only when zoom is enabled and the current scale is greater than 1.
   - address: "0x005DBAAF"
     text: WorldObject +0x58 owns the reference-counted WorldObject_Name_Pane used for visible creature and human labels.
   - address: "0x005DD1C0"
@@ -4001,6 +4121,8 @@ comments:
     text: Advance the effect frame through the sequence loaded from Effect.tbl and request the matching cached image.
   - address: "0x005DDFEB"
     text: WorldObject_Human writes draw layer 7 after the shared WorldObject_Living constructor; WorldObject_Monster later overrides its layer with 10.
+  - address: "0x005DE0D0"
+    text: A visible remote human uses minimap collision level 100; human appearance with body sprite 0 resets that level to 0.
   - address: "0x005DE123"
     text: While WorldObject_Human +0x1ED is nonzero, return without starting the common living-object motion sequence.
   - address: "0x005DE171"
@@ -4041,6 +4163,14 @@ comments:
     text: Pass WorldObject +0x98 and the ScrollLevel boolean into the class-specific movement animation selector.
   - address: "0x005E2665"
     text: Retain creature_type at WorldObject_Monster +0x1EC; values 1, 2, and 3 also select distinct common-object collision levels.
+  - address: "0x005E267A"
+    text: Monster CreatureType 1 maps to minimap collision level 150.
+  - address: "0x005E268F"
+    text: Monster CreatureType 2 maps to minimap collision level 140.
+  - address: "0x005E26A4"
+    text: Monster CreatureType 3 maps to minimap collision level 130.
+  - address: "0x005E26AD"
+    text: Every other monster CreatureType maps to minimap collision level 120.
   - address: "0x005E3710"
     text: Start a moving effect using its client-computed path step interval; SEffectLayer's packet timer is not used on this path.
   - address: "0x005E3F73"
@@ -4057,6 +4187,8 @@ comments:
     text: Original JE skips mode 0x6D when SOTP flag 0x80 is clear.
   - address: "0x005E4ED4"
     text: Mark WorldObject_User at +0x98 so its HumanObjectImageSession can choose a local-player walk sequence. Ordinary WorldObject_Human construction leaves this byte clear.
+  - address: "0x005E4EE8"
+    text: The local WorldObject_User uses minimap collision level 180.
   - address: "0x005E5B1C"
     text: Insert entity_id and its reference-counted WorldObject pointer into the ordered ID tree at WorldObjectList +0x1C.
   - address: "0x005E5E14"
@@ -4105,6 +4237,8 @@ comments:
     text: Project-named Rain mode 2 deliberately performs no local setup in this client.
   - address: "0x005F2732"
     text: Darkness mode 3 enables the overall light mask and object-light merge flags, then forces black ambient lighting at intensity zero.
+  - address: "0x005F275E"
+    text: Enable the minimap's restricted visibility mask only for map mode 3; every other map mode disables it.
   - address: "0x005FD910"
     text: Suppress the pants part when an overcoat sprite is present; otherwise use the normalized pants sprite, which SDrawHumanObjects sets to 0 or 1.
   - address: "0x005FD939"

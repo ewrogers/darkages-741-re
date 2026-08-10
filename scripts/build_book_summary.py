@@ -78,6 +78,7 @@ def main() -> None:
         "  - [Renderer lifecycle](rendering/lifecycle.md)",
         "  - [Text and fonts](rendering/text.md)",
         "  - [World rendering](rendering/world.md)",
+        "  - [Tab wireframe map](rendering/tab-map.md)",
         "  - [Player rendering](rendering/players.md)",
         "  - [UI composition and compact layout](rendering/ui-composition.md)",
         "  - [Map lighting](rendering/lighting.md)",

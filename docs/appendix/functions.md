@@ -2799,6 +2799,22 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_world_pane_draw_to_target` | `0x005CE350` | high | Copies WorldPane output to its target and applies the ambient-color and 8-bit light-mask blend when lighting is active below intensity 0x20. |
 | `ui_world_pane_handle_pointer_event` | `0x005CE4E0` | high | WorldPane primary-vtable pointer handler that offers the unchanged pointer event to the live world-object list before the ground path handles it. |
 | `ui_world_controller_handle_object_message` | `0x005CE990` | high | Updates world indexes and rendering state for object messages, answers ground-attribute query selector 5, and invokes the object position-refresh virtual after movement. |
+| `ui_world_minimap_create_interface` | `0x005D86A0` | high | Allocates WorldMinimapPane_Impl and returns its WorldMinimapInterface secondary-base pointer. |
+| `ui_world_minimap_pane_ctor` | `0x005D8770` | high | Constructs the Tab wireframe-map pane, its fixed 256 by 256 caches, collision-level palette table, scale state, and Pane interfaces. |
+| `ui_world_minimap_pane_dtor` | `0x005D89B0` | high | Releases the visibility-region collection, map provider, cell cache, visibility mask, and Pane bases owned by WorldMinimapPane_Impl. |
+| `ui_world_minimap_set_bounds` | `0x005D8AC0` | high | Applies the live WorldPane rectangle to the minimap Pane so its canvas follows the current UI layout. |
+| `ui_world_minimap_set_scale` | `0x005D8AF0` | high | Stores the integer isometric scale and invalidates the minimap when it changes. |
+| `ui_world_minimap_set_scale_thunk` | `0x005D8B50` | high | Adjusts the WorldMinimapInterface pointer and delegates to ui_world_minimap_set_scale. |
+| `ui_world_minimap_set_zoom_enabled` | `0x005D8B70` | high | Stores whether the two minimap zoom keys may change the integer scale. |
+| `ui_world_minimap_is_visible` | `0x005D8C70` | high | Returns the minimap pane's active visibility byte. |
+| `ui_world_minimap_set_visible` | `0x005D8C90` | high | Shows or hides the minimap pane and invalidates it when the visibility state changes. |
+| `ui_world_minimap_handle_keyboard_event` | `0x005D94F0` | high | Consumes the two internal minimap zoom keys and changes scale only when class-dependent zoom is enabled. |
+| `ui_world_minimap_get_pane` | `0x005D9590` | high | Returns the WorldMinimapPane_Impl primary Pane pointer from its interface pointer. |
+| `ui_world_minimap_mark_cell_dirty` | `0x005D95B0` | high | Marks one in-bounds collision-cache cell for refresh and invalidates the visible pane. |
+| `ui_world_minimap_set_map_size` | `0x005D9610` | high | Clamps each map dimension to 0 through 256, stores it, and requests a complete cache refresh. |
+| `ui_world_minimap_request_full_refresh` | `0x005D96A0` | high | Sets the force-refresh byte and invalidates the visible minimap pane. |
+| `ui_world_minimap_set_center` | `0x005D96D0` | high | Stores the tile-space X and Y projected at the minimap canvas midpoint and invalidates on change. |
+| `ui_world_minimap_pane_deleting_dtor` | `0x005D9E30` | high | Runs the WorldMinimapPane_Impl destructor and conditionally frees the complete object. |
 | `ui_world_object_name_pane_ctor` | `0x005E3F00` | high | Constructs the 0x1DC-byte RTTI WorldObject_Name_Pane and retains at most 63 text bytes plus a NUL at +0x198. |
 | `ui_world_pane_handle_self_move_message` | `0x005EED20` | medium | On the local object's position-change message, advances an active queued path or clears an exhausted route while preserving the pursuit generation. |
 | `ui_world_pane_handle_world_object_message` | `0x005EEFA0` | high | Routes static-object message 0x50001 into the opcode 0x43 subtype-3 world sender, with other branches handling group-ad views and ground-item pickup. |
@@ -3573,7 +3589,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_canvas_draw_line_to` | `0x00455160` | high | Draws from the current Canvas position to an absolute point and stores the new position. |
 | `render_canvas_draw_horizontal_span_draw_color` | `0x004551C0` | high | Draws a horizontal span from the current position with the Canvas primary draw color. |
 | `render_canvas_draw_horizontal_span` | `0x004551F0` | high | Draws a colored horizontal span under the Canvas copy, transparency, blend, and dither modes. |
-| `render_canvas_fill_diamond_palette` | `0x004554D0` | high | Fills a clipped diamond marker with a palette-resolved color and optional dither mode. |
+| `render_canvas_fill_diamond_palette` | `0x004554D0` | high | Fills a clipped 2 to 1 diamond with a palette-resolved color; optional spatial dither writes x parity equal to floor(y / 2) parity instead of using alpha. |
 | `render_canvas_set_pixel_palette_color` | `0x00455710` | high | Resolves a palette index and writes it to one clipped Canvas pixel. |
 | `render_measure_fixed_width_text` | `0x004558F0` | high | Returns the six-pixel-cell width for a supplied byte count. |
 | `render_canvas_draw_glyph` | `0x00455910` | high | Resolves one 16-bit byte-code key through FontImageLib, blits its one-bit mask, and advances the Canvas cursor. |
@@ -3890,6 +3906,12 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_ground_layer` | `0x005D6A50` | high | Updates and draws the cached visible ground-tile layer. |
 | `render_set_ground_bank` | `0x005D7410` | high | Stores the active ground-bank selector and clears the cached ground layer. |
 | `render_ground_tile` | `0x005D7690` | high | Copies one decoded isometric tile diamond into the ground cache canvas. |
+| `render_world_minimap` | `0x005D8CF0` | high | Projects the collision cache as 2 to 1 diamonds, incrementally paints cell fills, draws wall-transition edges, and applies restricted visibility. |
+| `render_minimap_draw_northwest_wall_edge` | `0x005D93D0` | high | Draws the shared northwest half-edge of a wall-transition diamond with palette index 0xFF. |
+| `render_minimap_draw_northeast_wall_edge` | `0x005D9460` | high | Draws the shared northeast half-edge of a wall-transition diamond with palette index 0xFF. |
+| `render_minimap_rebuild_visibility_mask` | `0x005D9700` | high | Clears the dirty part of the 256 by 256 restricted-visibility mask and unions active keyed rectangles into it. |
+| `render_minimap_update_visibility_region` | `0x005D9D30` | high | Adds, changes, or removes a keyed rectangular visibility region and expands the mask's dirty tile rectangle. |
+| `render_minimap_set_visibility_mask_enabled` | `0x005D9DF0` | high | Enables the restricted-visibility path only when requested and invalidates the minimap on a mode change. |
 | `render_world_damage_object` | `0x005DC5A0` | high | Draws the selected generated damage-meter frame at its target-relative world position. |
 | `render_effect_object` | `0x005DD380` | high | Draws a world effect frame with its selected software blend mode. |
 | `render_update_effect_frame` | `0x005DD470` | high | Advances a world effect through its Effect.tbl frame sequence. |
@@ -4315,7 +4337,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_load_sotp_collision_flags` | `0x005CF4F0` | high | Loads SOTP.DAT into a one-based low-nibble collision table. |
 | `map_get_collision_level` | `0x005CF5E0` | high | Retains the highest WorldObject +0x31 collision level at one map cell, with fully blocked static SOTP supplying level 1 when no dynamic level does. |
 | `map_get_tile_pixels` | `0x005D7610` | high | Gets one decoded ground-tile diamond from MapTileImageLib. |
-| `map_refresh_collision_cache` | `0x005D8B90` | high | Refreshes dirty cells in the map's width-by-height byte collision cache with map_get_collision_level. |
+| `map_refresh_collision_cache` | `0x005D8B90` | high | Refreshes dirty cells in the map's width-by-height three-byte collision cache with map_get_collision_level and marks each rebuilt cell for redraw. |
 | `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds and the saved appearance action lock, lets privilege levels 1 and 2 bypass the remaining dynamic-object and direction-specific SOTP collision checks, and otherwise applies CreatureType behavior and SOTP masks. |
 | `map_has_special_movement_permission` | `0x005F0980` | high | Grants permission for any nonzero SStatus privilege; otherwise scans the 89 retained skill names for localized message slot 0x77. |
 | `map_try_move_local_player` | `0x005F09E0` | high | Starts one accepted local movement step and submits CMove; a special-state rejection also performs a full movement-state reset. |
@@ -5196,6 +5218,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_object_effect_ctor` | `0x005DD620` | high | Constructs the exact RTTI WorldObject_ObjectEffect with an Effect.tbl resource index, fallback frame interval, and owning object's facing direction. |
 | `world_static_effect_ctor` | `0x005DD6D0` | high | Constructs the exact RTTI WorldObject_StaticEffect and retains its tile Y and X coordinates. |
 | `world_human_object_ctor` | `0x005DDFC0` | high | Constructs exact RTTI WorldObject_Human, installs the Human vtables, selects draw layer 7, and clears ground-tile state byte +0x1ED. |
+| `world_human_update_collision_level` | `0x005DE0B0` | high | Assigns minimap level 100 to a visible remote human and resets it to 0 when a human-appearance record has body sprite 0. |
 | `world_human_start_motion` | `0x005DE110` | high | Suppresses ordinary living-object motion starts while the gndattr.tbl height-1 state is active; otherwise delegates to world_living_start_motion. |
 | `world_human_set_ground_tile_state` | `0x005DE150` | high | Caches the gndattr.tbl height-1 marker at WorldObject_Human +0x1ED and selects or clears a cloned human image-session snapshot when it changes. |
 | `world_human_refresh_ground_tile_state` | `0x005DE1E0` | high | Queries current ground attributes, updates the Human height-1 state, and refreshes direction, motion, and ground paint after a position change. |
@@ -5228,6 +5251,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_static_transition_to_pair_column_1` | `0x005E4B20` | high | Finds the live tile ID in the 66-row pair table and starts a transition toward column 1. |
 | `world_static_transition_to_pair_column_0` | `0x005E4BD0` | high | Finds the live tile ID in the 66-row pair table and starts a transition toward column 0. |
 | `world_static_advance_state_transition` | `0x005E4C80` | high | Moves the pair column toward its requested endpoint, applies that tile ID, and reschedules after 150 ms only if another step remains. |
+| `world_user_object_ctor` | `0x005E4E60` | high | Constructs the local WorldObject_User and assigns its always-visible minimap collision level 180. |
 | `world_user_start_move` | `0x005E4FC0` | high | Refreshes WorldObject_User appearance state, then starts the common living-object move with the supplied ScrollLevel flag. |
 | `world_object_list_ctor` | `0x005E5290` | high | Constructs the 0x68-byte object list, its ordered entity-ID tree and secondary indexes, and width times height spatial cells of 0x60 bytes each. |
 | `world_object_list_insert` | `0x005E5D40` | high | Inserts an object into its 0x60-byte coordinate cell and the ordered entity-ID index, then marks WorldObject +0x48 inserted. |
