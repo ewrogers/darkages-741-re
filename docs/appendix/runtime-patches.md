@@ -7,6 +7,7 @@ Patch pages use short names based on the visible behavior. In-place changes use 
 - [Stuck modifiers](runtime-patches/stuck-modifiers.md)
 - [Stale pursuit](runtime-patches/stale-pursuit.md)
 - [Bulletin pagination](runtime-patches/bulletin-pagination.md)
+- [Walk-route collision](runtime-patches/walk-route-collision.md)
 - [Auto-follow pathfinding](runtime-patches/auto-follow-pathfinding.md)
 - [Appearance editor](runtime-patches/appearance-editor.md)
 - [Minigame assets](runtime-patches/minigame-assets.md)

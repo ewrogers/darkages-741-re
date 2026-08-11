@@ -55,6 +55,10 @@ The index is `y * 256 + x`. A cell refresh recomputes its level and sets `redraw
 
 If no object supplies a positive level, the client reads both static tile IDs. Tile ID 10000 is treated as empty. It ORs the two low-nibble collision masks from [SOTP.DAT](../file-formats/sotp.md). The cell becomes level 1 only when the result is exactly `0x0F`, meaning that all four movement-direction bits are set. Otherwise it remains level 0.
 
+This raw-cell fallback differs from the active walk-route collision mode. The Tab overlay can show an off-screen wall that the native BFS temporarily treats as empty because no live `WorldObject_Static` exists for it yet. See [Pathfinding and following](../systems/pathfinding-and-pursuit.md#why-a-distant-route-can-cross-a-wall).
+
+The project owner observed that doors appear in their default open state on the Tab overlay and that opening or closing them does not update it. This matches the code. `WorldObject_Static` starts with minimap collision level zero, so `map_get_collision_level` falls through to the original map cell rather than using the object's packet-replaced live tile ID.
+
 This produces the following priority from greatest to least:
 
 | Level | Source |

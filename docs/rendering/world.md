@@ -54,6 +54,8 @@ A separate loader understands loose `.\\maps\\lodN.mbl` text and `.\\bottom\\btm
 
 `render_collect_world_objects` gathers objects that overlap the visible cells. It clips their screen bounds and places them into one of 32 draw queues.
 
+`StaticMap` retains records for the complete map, but `render_build_static_objects` materializes `WorldObject_Static` instances only for records overlapping the current projected viewport. It inserts those instances into the live world-object list and removes old fixed objects after the visible generation changes. The native route planner also queries this live list, so an off-screen static can be absent from pathfinding collision until the camera approaches it. See [Pathfinding and following](../systems/pathfinding-and-pursuit.md#why-a-distant-route-can-cross-a-wall).
+
 `render_world_layer_queue` walks the queues from 0 through 31. Objects within one queue retain the visible-object collection order. `render_world_object` then calls the object's virtual draw method. RTTI confirms distinct object types for static map objects, humans, monsters, items, effects, and moving effects.
 
 The confirmed constructor-assigned layers are:

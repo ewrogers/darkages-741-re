@@ -242,6 +242,7 @@
     - [Stuck modifiers](appendix/runtime-patches/stuck-modifiers.md)
     - [Stale pursuit](appendix/runtime-patches/stale-pursuit.md)
     - [Bulletin pagination](appendix/runtime-patches/bulletin-pagination.md)
+    - [Walk-route collision](appendix/runtime-patches/walk-route-collision.md)
     - [Auto-follow pathfinding](appendix/runtime-patches/auto-follow-pathfinding.md)
     - [Appearance editor](appendix/runtime-patches/appearance-editor.md)
     - [Minigame assets](appendix/runtime-patches/minigame-assets.md)

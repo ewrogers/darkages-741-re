@@ -3187,6 +3187,10 @@ functions:
     name: render_set_static_tile_bank
     confidence: high
     evidence: Selects base stc or alternate sts static art and clears the static image cache on change.
+  - address: "0x005BBB80"
+    name: map_static_map_collect_visible_records
+    confidence: high
+    evidence: Collects StaticMap records whose projected bounds overlap a supplied viewport rectangle into the caller's fixed-record output buffer.
   - address: "0x005BD710"
     name: ui_snow_particle_pane_ctor
     confidence: high
@@ -3282,7 +3286,7 @@ functions:
   - address: "0x005CD730"
     name: render_build_static_objects
     confidence: high
-    evidence: Builds WorldObject_Static instances from the two static tile IDs in visible map cells.
+    evidence: Builds WorldObject_Static instances only for StaticMap records overlapping the current projected viewport, inserts them into the live object list, and removes fixed objects not touched by the new visible generation.
   - address: "0x005CE280"
     name: render_world_pane_content
     confidence: high
@@ -3314,7 +3318,7 @@ functions:
   - address: "0x005CF5E0"
     name: map_get_collision_level
     confidence: high
-    evidence: Retains the highest WorldObject +0x31 collision level at one map cell, with fully blocked static SOTP supplying level 1 when no dynamic level does.
+    evidence: Retains the highest WorldObject +0x31 collision level at one map cell, then reads both static IDs from the original raw map cell when no object supplies a level. Packet-replaced live static tile IDs are not used by this fallback.
   - address: "0x005CFA70"
     name: ground_attribute_table_get
     confidence: high
@@ -3622,7 +3626,7 @@ functions:
   - address: "0x005E42F0"
     name: render_static_object_ctor
     confidence: high
-    evidence: Stores the static tile ID, side, image cache, SOTP render flags, and draw state.
+    evidence: Constructs the WorldObject base with minimap collision level zero, then stores the static tile ID, side, image cache, SOTP render flags, and draw state.
   - address: "0x005E47E0"
     name: render_static_object
     confidence: high
@@ -4039,6 +4043,8 @@ comments:
     text: Write the complete contiguous map buffer once. The write count is not checked, and the caller ignores this function's result.
   - address: "0x005B9761"
     text: fclose flushes any buffered map bytes and releases the exclusive handle before map activation continues.
+  - address: "0x005BBB9D"
+    text: Restrict StaticMap collection to projection strips and horizontal bounds overlapping the supplied viewport rectangle.
   - address: "0x005C67E2"
     text: Load gndattr.tbl at WorldControllerPane construction; current map ground tile IDs later index this table.
   - address: "0x005C789E"
@@ -4051,6 +4057,8 @@ comments:
     text: Remove any existing shared world object with the same entity ID before creating the replacement WorldObject_Monster.
   - address: "0x005CAC94"
     text: Remove any existing shared world object with the same entity ID before creating the replacement WorldObject_Item.
+  - address: "0x005CD831"
+    text: Collect only StaticMap records overlapping the current projected viewport. Off-screen statics remain absent from the live WorldObjectList queried by native route collision.
   - address: "0x005CE280"
     text: The validated launcher patch wraps the complete WorldPane draw here, clears a bounded item-entry buffer before the original call, then replays captured items in temporary blend mode 3 when native Alt modifier bit 0x01 is set.
   - address: "0x005CE2DA"
@@ -4071,6 +4079,8 @@ comments:
     text: Build a one-based static-tile collision table from the low nibble of each SOTP.DAT byte.
   - address: "0x005CF6D6"
     text: For this map cell, retain the highest WorldObject +0x31 collision level; fully blocked static SOTP can supply level 1 when dynamic objects do not.
+  - address: "0x005CF70F"
+    text: When no live object supplies a minimap level, read both static IDs from the complete original map cell. This is why Tab can show an off-screen wall that native BFS mode 1 misses.
   - address: "0x005D3190"
     text: Dispatch the WorldObject draw method through primary vtable slot 0x18.
   - address: "0x005D3740"
@@ -4175,6 +4185,8 @@ comments:
     text: Start a moving effect using its client-computed path step interval; SEffectLayer's packet timer is not used on this path.
   - address: "0x005E3F73"
     text: Copy at most 64 bytes including the NUL into WorldObject_Name_Pane +0x198. SDrawObjects attaches this pane instead of filling the living-name buffer.
+  - address: "0x005E431F"
+    text: Construct WorldObject_Static through the base with minimap collision level zero. Tab collision therefore falls back to the original raw map cell rather than this object's packet-replaced live tile ID.
   - address: "0x005E4396"
     text: WorldObject_Static uses draw layer 16, after items at layer 4 and living objects at layer 7.
   - address: "0x005E47FF"

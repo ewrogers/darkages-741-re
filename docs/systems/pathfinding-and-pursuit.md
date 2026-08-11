@@ -1,6 +1,6 @@
 # Pathfinding and following
 
-Double-right-clicking a player or monster tells the client to walk beside that target and attack it. The client finds the route itself. It does not ask the server for a path. Ordinary left-click interaction is documented separately in [World interactions](world-interactions.md).
+Right-clicking empty ground asks the client to walk to that tile. Double-right-clicking a player or monster asks it to walk beside that target and attack. The client plans both routes locally. It does not ask the server for a path. Ordinary left-click interaction is documented separately in [World interactions](world-interactions.md).
 
 This page calls that action **pursuit** because the built-in version always ends in an attack. The client has no normal follow-only button.
 
@@ -75,15 +75,53 @@ The client remembers which direction first reached each tile. When it finds a go
 
 The seen-tile storage is a fixed 400 by 400 byte array. Version 741 map width and height are one byte each, so a normal map is at most 255 by 255 tiles.
 
+## Why a distant route can cross a wall
+
+The route search has no practical distance limit inside a normal map. Its collision view is the problem.
+
+The client keeps the complete static map in `StaticMap`, but `render_build_static_objects` creates live `WorldObject_Static` objects only for map art overlapping the current viewport. Both the BFS and the safety check before a local step call `map_can_move_direction` in live-object mode. In that mode, a static slot with no live object is treated as empty.
+
+```text
+complete map cells
+  -> visible static records
+  -> live WorldObject_Static list
+  -> route collision test
+```
+
+This makes rendering distance part of route correctness. BFS may plan through an off-screen wall because its static object does not exist yet. As the camera moves, `render_build_static_objects` creates that wall. The safety check for the saved step then sees it and refuses the move.
+
+`lod600.map` provides a concrete example. It is a 25 by 25 map. On row 8, tile `(19,8)` contains left static tile ID `1`, whose matching `SOTP.DAT` collision value is `0x0F`.
+
+- From `(11,8)` to `(24,8)`, treating unseen statics as open produces 13 moves directly right. That route enters `(19,8)`.
+- Reading collision from the complete map produces a 15-move shortest route: up to row 7, right to column 23, down, then right to the goal.
+
+The boundary is not a fixed number such as eight or ten tiles. It depends on the projected viewport, camera position, static art bounds, and UI layout. A route can be long and correct when its useful corridor is already materialized, or shorter and wrong when BFS explores through an unseen wall.
+
+The [Tab map](../rendering/tab-map.md) can still show that wall. Its collision cache first checks live objects, then falls back to the two static tile IDs in the complete raw map cell. The walk planner does not make that fallback in its active mode. The two views can therefore disagree even while the Tab overlay is visibly correct.
+
+## Why ground click-to-move stays stuck
+
+`ui_world_pane_advance_queued_path` removes the next saved record before it calls `map_try_move_local_player`. If the new collision check rejects that move, the function ignores the failure. No local position update occurs, so nothing asks for the next record. The route remains marked active with its unused tail still present.
+
+The client is stranded rather than repeatedly sending the blocked move. A new ground click, keyboard movement, attack, position reset, or map change performs the full movement reset.
+
+Entity pursuit behaves better because its separate 100 ms timer clears and rebuilds the route. An ordinary ground route has no retry or replan timer.
+
+The safe player workaround is to use shorter right-clicks and click again after the camera moves. A runtime fix can combine raw map collision with current live static states and cancel a ground route when a saved step becomes blocked. The patch choices are described in [Walk-route collision](../appendix/runtime-patches/walk-route-collision.md).
+
 ## Moving players and monsters
 
-The route search reads the current map state.
+The route search reads the current live object state. Static map art outside the current materialized window is the exception described above.
 
 When another player or monster moves, `world_reindex_object` moves it between the world's tile lists. The next route search sees its new location.
 
-The client also checks each saved movement step again before using it. If somebody walks into the route, that step can be blocked even though it was open when the route was built.
+The planner cannot include a player, monster, or NPC that the server has not sent and the live world list does not contain. Reading the complete raw map fixes static walls, not unknown dynamic occupants.
+
+The client also checks each saved movement step again before using it. If somebody walks into the route or first appears as the camera approaches, that step can be blocked even though it was open when the route was built. An ordinary ground route then strands. It does not automatically search around the new occupant.
 
 Entity pursuit checks the target again every 100 ms. A blocked pursuit can therefore build a different route on a later check.
+
+The preferred ground-route extension retains the clicked goal, treats either live collision or raw-map collision as solid during planning, and queues a new search when the step safety check rejects a stale route. This preserves native movement while allowing a newly visible blocker to be routed around.
 
 ## Opening and closing doors
 
@@ -233,4 +271,4 @@ The default example makes Shift+double-right-click follow without attacking and 
 
 It does not need a DLL, but it still adds executable code to the running process. The exact hook bytes and stub are documented in [Auto-follow pathfinding](../appendix/runtime-patches/auto-follow-pathfinding.md).
 
-The detailed Binary Ninja addresses and evidence are in [`analysis/exports/pathfinding.yaml`](../../analysis/exports/pathfinding.yaml).
+The detailed Binary Ninja addresses and evidence are in [`analysis/exports/pathfinding.yaml`](../../analysis/exports/pathfinding.yaml) and [`analysis/exports/rendering.yaml`](../../analysis/exports/rendering.yaml).

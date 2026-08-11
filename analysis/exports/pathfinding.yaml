@@ -67,6 +67,10 @@ functions:
     name: world_static_handle_pointer_event
     confidence: high
     evidence: "Consumes a left press that hits visible WorldObject_Static art and dispatches message 0x50001 with tile X/Y and the inverse of internal side +0x80."
+  - address: "0x005E64A0"
+    name: world_object_list_get_tile_slot
+    confidence: high
+    evidence: "Returns one of four live object slots at a map coordinate. Static route collision uses slots 0 and 1; an off-screen static that has not been materialized returns no object."
   - address: "0x005EED20"
     name: ui_world_pane_handle_self_move_message
     confidence: medium
@@ -94,7 +98,7 @@ functions:
   - address: "0x005EFFE0"
     name: map_can_move_direction
     confidence: high
-    evidence: "Checks bounds, map state, the destination cell's live human and monster occupants, special passability, and current direction-specific SOTP collision for both normal movement and path expansion."
+    evidence: "Checks bounds, map state, known dynamic occupants, special passability, and static SOTP collision for both normal movement and path expansion. Mode 1 reads live source and destination statics; mode 0 reads the complete raw destination cell. Both active callers select mode 1."
   - address: "0x005F09E0"
     name: map_try_move_local_player
     confidence: high
@@ -185,20 +189,30 @@ comments:
     text: "A ground right-click starts an exact-tile path only when Ctrl bit 0x02 and Shift bit 0x04 are both clear. Shift+right instead reaches the later one-step direction branch with modifier mask 0x24."
   - address: "0x005EFDC9"
     text: "A plain right-button ground action fully resets the previous route and pursuit before building an exact-tile path."
+  - address: "0x005EFDCE"
+    text: "Ground click-to-move hardcodes collision mode 1 for BFS. That mode queries viewport-materialized live statics rather than falling back to complete raw map cells."
   - address: "0x005F0184"
     text: "Query the destination cell's current world-object list. Live human and monster passability is evaluated for every path expansion and every attempted queued step."
   - address: "0x005F04AF"
-    text: "Read live static objects in the current and destination cells, obtain their replacement tile IDs, and apply direction-specific SOTP collision flags."
+    text: "Mode 1 reads live static objects in the current and destination cells, obtains their replacement tile IDs, and applies direction-specific SOTP collision flags. Missing off-screen objects resolve to sentinel 0x2710 and are treated as empty."
+  - address: "0x005F07A5"
+    text: "Mode 0 reads the complete raw destination map cell and rejects it only when the two SOTP low nibbles combine to 0x0F. All current BFS and local-step call sites pass mode 1."
   - address: "0x005F484C"
     text: "Opcode 0x43 subtype 3 writes u16 tile X, u16 tile Y, and one static-side byte."
   - address: "0x005F4920"
     text: "Argument 0 increments the pursuit generation and invalidates outstanding timer callbacks. Argument 1 deliberately preserves the generation."
   - address: "0x005F49E5"
     text: "For an entity-pursuit route, remaining_steps counts moves still needed to reach a tile beside the target. Before the next step is consumed, remaining_steps + 1 is the current route distance to the target."
+  - address: "0x005F4A00"
+    text: "Consume one queued record before validating its saved source and attempting movement. An ordinary collision failure does not restore the count or reset the route."
+  - address: "0x005F4A46"
+    text: "Ignore map_try_move_local_player's result. If the saved step is now blocked, no position-change message follows, so ground click-to-move remains active without advancing or cancelling itself."
   - address: "0x005F4AA2"
     text: "The full reset has just advanced WorldPane +0x2C8. Target ID zero branches to 0x005F4AA8; a nonzero target branches to 0x005F4AAD. A hook replacing the six bytes through 0x005F4AA7 must replay this comparison and reach those untouched destinations without jumping into its own replacement bytes."
   - address: "0x005F4D0E"
     text: "Adjacency sends CAttack only when the local character already faces the target. Both the turn and attack branches continue to the common 100 ms pursuit-timer schedule."
+  - address: "0x005F4D15"
+    text: "Entity pursuit hardcodes collision mode 1 for BFS. Its separate 100 ms timer can later clear and replan a route that becomes blocked."
   - address: "0x005F4D64"
     text: "Retain the target by u32 object ID, followed by its last resolved tile_y and tile_x at WorldPane +0x2C0 and +0x2C4."
   - address: "0x005F4D88"
@@ -228,6 +242,20 @@ runtime_patches:
     original_bytes: E8 31 57 00 00
     replacement_template: E8 <rel32 to allocated stub + 0x000>
     effect: "Route an admitted Shift+double-right-click living-object pursuit through the auto-follow option selector while leaving normal double-right-click on the native path."
+  - id: walk-route-ground-use-raw-map
+    rva: "0x001EFDCE"
+    static_address: "0x005EFDCE"
+    file_offset_for_reference_only: "0x001EF1CE"
+    original_bytes: 6A 01
+    replacement_template: 6A 00
+    effect: "Diagnostic workaround: make ground click-to-move BFS use complete raw destination map cells instead of viewport-materialized live statics. Bounds, state, and known dynamic-occupant checks remain active, but live static door states are replaced rather than combined."
+  - id: walk-route-best-capture-ground-goal
+    rva: "0x001EFDE3"
+    static_address: "0x005EFDE3"
+    file_offset_for_reference_only: "0x001EF1E3"
+    original_bytes: E8 F8 4F 00 00
+    replacement_template: E8 <rel32 to injected ground-goal capture helper>
+    effect: "Capture the clicked fixed goal and extension generation, then forward the original call to ui_world_pane_build_path_to_tile. This is one of three hooks required by the best-practical reactive ground planner."
   - id: auto-follow-pathfinding-stop-distance
     rva: "0x001F49E5"
     static_address: "0x005F49E5"
@@ -235,6 +263,13 @@ runtime_patches:
     original_bytes: 8B 45 E0 83 B8 B8 02 00 00 00
     replacement_template: E9 <rel32 to allocated stub + 0x0A8> 90 90 90 90 90
     effect: "Before consuming another entity-route step, clear only the route when remaining_steps + 1 is within the configured follow distance."
+  - id: walk-route-best-handle-blocked-step
+    rva: "0x001F4A46"
+    static_address: "0x005F4A46"
+    file_offset_for_reference_only: "0x001F3E46"
+    original_bytes: E8 95 BF FF FF
+    replacement_template: E8 <rel32 to injected queued-step wrapper>
+    effect: "On a failed saved ground step, mark a replan pending and clear the stale route without recursively running BFS. This is one of three hooks required by the best-practical reactive ground planner."
   - id: auto-follow-pathfinding-track-generation
     rva: "0x001F4AA2"
     static_address: "0x005F4AA2"
@@ -256,3 +291,17 @@ runtime_patches:
     original_bytes: E8 9D F7 FF FF
     replacement_template: E8 <rel32 to allocated stub + 0x044>
     effect: "Return without calling net_send_attack when the active follow options disable attacks; otherwise tail-call the native sender."
+  - id: walk-route-pursuit-use-raw-map
+    rva: "0x001F4D15"
+    static_address: "0x005F4D15"
+    file_offset_for_reference_only: "0x001F4115"
+    original_bytes: 6A 01
+    replacement_template: 6A 00
+    effect: "Optionally make entity-pursuit BFS use complete raw destination map cells. This has the same live-door limitation as the ground-route workaround."
+  - id: walk-route-best-combine-live-and-raw
+    rva: "0x001F5068"
+    static_address: "0x005F5068"
+    file_offset_for_reference_only: "0x001F4468"
+    original_bytes: E8 73 AF FF FF
+    replacement_template: E8 <rel32 to injected live-and-raw collision helper>
+    effect: "Allow a BFS edge only when native collision modes 1 and 0 both allow it, producing live-solid OR raw-map-solid planning. This is one of three hooks required by the best-practical reactive ground planner."
