@@ -149,6 +149,7 @@ def main() -> None:
         "    - [Ignore Bad Guy marker](appendix/runtime-patches/ignore-bad-guy-marker.md)",
         "    - [Command-line endpoint](appendix/runtime-patches/command-line-endpoint.md)",
         "    - [Disable endpoint fallback](appendix/runtime-patches/disable-endpoint-fallback.md)",
+        "    - [Bootstrap sequence race](appendix/runtime-patches/bootstrap-sequence-race.md)",
         "    - [Hide stipulation](appendix/runtime-patches/hide-stipulation.md)",
         "    - [Early Continue](appendix/runtime-patches/early-continue.md)",
         "    - [Fast server transfer](appendix/runtime-patches/fast-server-transfer.md)",

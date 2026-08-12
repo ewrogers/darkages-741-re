@@ -27,6 +27,8 @@ server welcome
 
 Both outgoing bodies are queued for the communications worker. The sequence reset occurs immediately before `CVersion` is built. Because `CVersion` is raw, it contains no sequence byte and does not advance the encrypted-packet sequence.
 
+The reset is therefore ordered after the asynchronous `CHello` submission, not necessarily after `CHello` has been encrypted. If the worker advances the counter first, the reset makes the next encrypted packet reuse sequence `0` and the server closes the connection. The [bootstrap sequence race patch](../../appendix/runtime-patches/bootstrap-sequence-race.md) moves the reset before submission.
+
 ## Body
 
 ```text

@@ -622,9 +622,9 @@ comments:
   - address: "0x00579832"
     text: "Format the five ASCII CHello builder bytes baram; the common submission layer later appends the transmitted zero byte."
   - address: "0x00579849"
-    text: "The builder supplies ASCII baram. net_submit_client_packet appends a transmitted zero, so CHello plaintext is 62 61 72 61 6D 00 before static-key transformation."
+    text: "Queue CHello asynchronously. The builder supplies ASCII baram and net_submit_client_packet appends a transmitted zero. The later sequence reset can race this worker submission, causing CHello and CMulti to both use sequence 0."
   - address: "0x0057993A"
-    text: Reset the client-to-server encrypted-packet sequence immediately before building CVersion. CVersion itself is raw and does not consume a sequence value.
+    text: Reset the client-to-server encrypted-packet sequence after CHello was queued but not necessarily encrypted. A captured failure let the worker advance CHello first, then this reset caused CMulti to reuse sequence 0. CVersion itself is raw and does not consume a sequence value.
   - address: "0x0057993F"
     text: Begin the five-byte CVersion plaintext body with raw opcode 0x00.
   - address: "0x00579977"

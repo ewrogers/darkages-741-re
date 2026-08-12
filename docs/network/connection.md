@@ -35,6 +35,14 @@ The live 7.41 exchange reaches the main create-or-login screen in two connection
 
 This table shows the complete plaintext bodies queued by the 7.41 client. It omits the `AA + u16be size` frame and transform sequence or trailer bytes. Most builders do not count the final zero themselves; `net_submit_client_packet` appends it and includes it in the sent length. The supplied decoded trace strips this common terminator from some transformed packets, while the raw `CHello` frame preserves enough length information to prove it is present.
 
+### Why the first transfer can disconnect immediately
+
+The client contains a race before step 5. It queues `CHello` to the communications worker and then resets the outgoing encrypted-packet sequence on the game thread. If the worker sends `CHello` first, it advances the counter to `1`, after which the game thread resets it to `0`. The later `CMulti` then reuses sequence `0` instead of using `1`.
+
+The server accepts the TCP bytes but closes the bootstrap connection without sending `STransferServer`. This makes the failure appear to occur during the first transfer even though no transfer packet arrived. A proxy can hide the bug when it maintains its own correctly ordered upstream sequence.
+
+A first run after a reboot may work because cold-start conditions change which thread wins. That observation is consistent with the race, but the exact scheduling bias has not been isolated. See [Bootstrap sequence race](../appendix/runtime-patches/bootstrap-sequence-race.md) for the captured evidence and runtime patch.
+
 ## Lobby role
 
 The destination of the bootstrap transfer is the lobby or login server. It owns the main menu and account work rather than the live game world. Confirmed client paths on this connection include character creation, login, password changes, the stipulation check, and homepage discovery. A successful login can use another `STransferServer` and `CTransferServer` exchange to move the authenticated character to a game server.

@@ -15,6 +15,7 @@ Patch pages use short names based on the visible behavior. In-place changes use 
 - [Ignore Bad Guy marker](runtime-patches/ignore-bad-guy-marker.md)
 - [Command-line endpoint](runtime-patches/command-line-endpoint.md)
 - [Disable endpoint fallback](runtime-patches/disable-endpoint-fallback.md)
+- [Bootstrap sequence race](runtime-patches/bootstrap-sequence-race.md)
 - [Hide stipulation](runtime-patches/hide-stipulation.md)
 - [Early Continue](runtime-patches/early-continue.md)
 - [Fast server transfer](runtime-patches/fast-server-transfer.md)

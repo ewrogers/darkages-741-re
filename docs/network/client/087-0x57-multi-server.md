@@ -20,6 +20,8 @@ The client has no derived packet RTTI for `CMulti` itself. The paired names are 
 
 Operation `0` submits a selection. The dialog sends it when the player chooses a row. [`SVersionCheck`](../server/000-0x00-version-check.md) and [`SMulti`](../server/086-0x56-multi.md) also reach the same path automatically when the active server list contains exactly one record.
 
+During the version-741 bootstrap race, this is the first encrypted packet after raw `CVersion`. A failing client sends it with sequence `0`, reusing the value already consumed by `CHello`, and the server closes the bootstrap connection. See [Bootstrap sequence race](../../appendix/runtime-patches/bootstrap-sequence-race.md).
+
 Operation `1` requests the replacement list carried by `SMulti`. `SVersionCheck` constructs the dialog in this mode when the local list is empty or its CRC differs from the server's value.
 
 ## Body

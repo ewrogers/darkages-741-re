@@ -193,6 +193,8 @@ Each endpoint still owns its own local state for a stream. For client-to-server 
 
 Raw packets do not pass through the encryption function, so they do not advance this sequence. The sequence is also separate from the seed-table selector described above.
 
+The version-741 bootstrap path resets the client counter after asynchronously queuing `CHello`. On a losing thread schedule, `CHello` advances the counter before that reset and the later `CMulti` reuses sequence `0`. This timing bug and its patch are documented under [Bootstrap sequence race](../appendix/runtime-patches/bootstrap-sequence-race.md).
+
 ## Outgoing transformed body
 
 ```text
