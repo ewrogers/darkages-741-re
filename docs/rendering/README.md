@@ -53,6 +53,7 @@ The manager is process-wide. `render_get_image_cache_manager` supplies the same 
 - [Text and fonts](text.md) covers bitmap glyphs, ANSI and DBCS decoding, IME input, and regional font selection.
 - [World rendering](world.md) covers tiles, sprites, layers, and effects.
 - [Tab wireframe map](tab-map.md) gives the exact cell levels, projection, diamond rasterization, colors, wall edges, and Darkness mask needed to reproduce the overlay.
+- [Town map overlay](town-map.md) covers the static SPF artwork, coordinate tables, live player projection, replacement constraints, and additional markers.
 - [Player rendering](players.md) covers aisling body parts, equipment, palettes, directions, and mirroring.
 - [UI composition and compact layout](ui-composition.md) covers pane draw order and the layout-dependent world viewport.
 - [Map lighting](lighting.md) covers server time steps, ambient light profiles, and HEA masks.

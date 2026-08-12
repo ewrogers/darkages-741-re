@@ -48,6 +48,7 @@
   - [Text and fonts](rendering/text.md)
   - [World rendering](rendering/world.md)
   - [Tab wireframe map](rendering/tab-map.md)
+  - [Town map overlay](rendering/town-map.md)
   - [Player rendering](rendering/players.md)
   - [UI composition and compact layout](rendering/ui-composition.md)
   - [Map lighting](rendering/lighting.md)

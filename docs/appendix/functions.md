@@ -2695,6 +2695,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_town_map_handle_pointer_event` | `0x00590990` | high | Arms on pointer press and closes TownMapPane on the matching release. |
 | `ui_town_map_handle_keyboard_event` | `0x005909E0` | high | Handles TownMapPane close commands and the ordinary local screenshot keyboard command; packet receipt does not invoke the screenshot branch. |
 | `ui_town_map_timer_callback` | `0x00590AD0` | high | Advances the marker frame modulo seven, requeues timer 0 every 50 ms after the initial 100 ms delay, and closes on timer ID 0x4D2. |
+| `ui_town_map_project_position` | `0x00590C60` | high | Projects live map tile X/Y onto the selected SPF's isometric diamond using its pixel bounds and the coordinate table's logical map width and height; returns pane Y in EAX and pane X in EDX. |
 | `ui_transfer_server_progress_register_adjusted` | `0x00591F20` | high | Registers TransferServerProgress from its Singleton secondary base. |
 | `ui_transfer_server_progress_unregister_adjusted` | `0x00591F60` | high | Clears TransferServerProgress from its adjusted secondary-base pointer. |
 | `ui_user_confirm_pane_ctor` | `0x005921C0` | high | Constructs the 0x73C-byte exact RTTI UserConfirmPane and stores the SMessage reply context at +0x634 through +0x738. |

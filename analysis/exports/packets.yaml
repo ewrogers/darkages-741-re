@@ -2883,6 +2883,10 @@ functions:
     name: ui_town_map_timer_callback
     confidence: high
     evidence: "Advances the marker frame modulo seven, requeues timer 0 every 50 ms after the initial 100 ms delay, and closes on timer ID 0x4D2."
+  - address: "0x00590C60"
+    name: ui_town_map_project_position
+    confidence: high
+    evidence: "Projects live map tile X/Y onto the selected SPF's isometric diamond using its pixel bounds and the coordinate table's logical map width and height; returns pane Y in EAX and pane X in EDX."
   - address: "0x005921C0"
     name: ui_user_confirm_pane_ctor
     confidence: high
@@ -4695,6 +4699,8 @@ comments:
     text: "After the initial tick, requeue TownMapPane timer 0 every 50 ms."
   - address: "0x00590BE3"
     text: "When the phase-zero marker counter exceeds 5, enter the second animation phase and restart the index at zero."
+  - address: "0x00590C60"
+    text: "Project a tile coordinate onto the town-map image. Each signed integer division truncates independently; the result is returned as pane Y in EAX and pane X in EDX."
   - address: "0x005921E0"
     text: "Construct the AlertPane base with the server's main SMessage text and two buttons."
   - address: "0x005921FE"
