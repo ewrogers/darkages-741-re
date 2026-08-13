@@ -77,6 +77,29 @@ This is a workaround, not the best general fix. Raw map cells do not contain a p
 
 The best practical option is the preferred design for version 741. It changes the collision source and stale-route behavior without replacing the proven native route format, movement sender, acknowledgement pacing, or pursuit timer.
 
+## Per-map tile exclusions
+
+The collision wrapper at `RVA 0x001F5068` is also the narrowest place to stop native BFS from crossing a known warp or another policy-blocked tile. It sees the source Y, source X, and direction for every candidate edge. After both native collision modes accept the edge, derive the destination and consult a bounded immutable rule snapshot:
+
+```c
+destination = step(source_x, source_y, direction);
+
+if (!map_can_move_direction(world, source_y, source_x, direction, 1))
+    return false;
+if (!map_can_move_direction(world, source_y, source_x, direction, 0))
+    return false;
+
+rules = current_tile_rules;
+if (rules.map_id == world->map_id && rules.blocked[destination.y][destination.x])
+    return false;
+
+return true;
+```
+
+A dense bit set needs at most 65,025 bits, about 8 KiB, for a normal version-741 map. Publish it as an immutable, versioned snapshot from the main-thread dispatcher. The hook may read the last complete snapshot but must not allocate, parse configuration, wait for IPC, or edit it.
+
+This hook changes both ground click-to-move and entity-pursuit planning because both use the shared BFS. It does not change manual steps or the final live safety check. If an intentional route must enter a warp, either publish a request-scoped terminal exception or submit that exact segment through the route-vector path below.
+
 No client algorithm can avoid a truly unknown entity. If the server has not sent a player, monster, or NPC, the live world list has no record to plan around. The best practical option handles that limit by keeping the native safety check on every step and replanning after the entity becomes known.
 
 ## Best-practical implementation
@@ -238,6 +261,78 @@ Run the replan from the main-thread dispatcher. A failed step hook should only c
 
 If the replan finds no route, cancel cleanly. An optional bounded timer can retry a temporarily occupied goal, but it should not run an unbounded full-map search every frame.
 
+## Injecting an externally planned route
+
+The client route vector can accept a path produced by an external A*, waypoint system, or other policy engine. Directly replacing its three pointers is unnecessary and unsafe. Use the client's own vector helpers on the main thread so allocation and capacity remain owned by the same runtime.
+
+| Purpose | Static address | RVA |
+|---|---:|---:|
+| Full movement reset | `0x005F4900` | `0x001F4900` |
+| Start the next queued step | `0x005F4990` | `0x001F4990` |
+| Append one 12-byte route record | `0x005F59A0` | `0x001F59A0` |
+| Clear route records while retaining capacity | `0x005F5A80` | `0x001F5A80` |
+
+The vector begins at `WorldPane +0x2A8`. Its `start`, `end`, and capacity-end pointers occupy `+0x2A8`, `+0x2AC`, and `+0x2B0`. `+0x2B8` is the remaining-record count, and byte `+0x294` is the active-route flag.
+
+```c
+struct path_route_step {
+    u8 direction;       // +0x00
+    u8 reserved[3];
+    s32 source_y;       // +0x04
+    s32 source_x;       // +0x08
+};
+```
+
+The native builder reconstructs from goal to start and appends each edge in that order. The replay function consumes `records[--remaining]`. Given forward absolute tiles `p[0]` through `p[n]`, append records for edges `n - 1` through `0`. Each record contains the direction from `p[i]` to `p[i + 1]` and the source coordinates from `p[i]`.
+
+```c
+bool install_exact_route(WorldPane *world, u32 map_id, Tile *p, u32 tile_count)
+{
+    validate_world_map_and_tiles(world, map_id, p, tile_count);
+    require(p[0] == current_player_tile(world));
+    require_each_edge_is_cardinal_and_allowed(p);
+
+    if (tile_count == 1)
+        return true;
+
+    ui_world_pane_reset_movement_state(world, 0);
+
+    for (i = tile_count - 1; i > 0; --i) {
+        path_route_step step;
+        step.direction = direction_from_to(p[i - 1], p[i]);
+        step.source_y = p[i - 1].y;
+        step.source_x = p[i - 1].x;
+        path_route_step_vector_push_back(&world->route, &step);
+    }
+
+    world->remaining_route_steps = tile_count - 1;
+    world->route_active = 1;
+    return ui_world_pane_advance_queued_path(world) != 0;
+}
+```
+
+Bound the request to a simple current-map path, at most `width * height` tiles. A one-tile path is an immediate no-op. Validate the exact executable, live complete `WorldPane`, current map ID, map-ready state, coordinates, and every edge before the reset. The full reset already clears the vector through the native erase helper. Recheck the first native step result. If it fails, perform another full reset and report the blocked edge.
+
+Do not run this from an IPC worker. Queue a pointer-free route command and perform validation and mutation in the normal main-thread dispatcher tick. Keep an extension generation and expected map ID so user input, a map change, a server correction, or a newer route makes queued work stale.
+
+An exact route should not silently replan with native BFS after a blocked step because that can violate its requested tile sequence. The failed-step hook can cancel and publish the failed source, destination, and reason. A controller may submit a new externally planned route, use bounded exact-route retries for a temporary occupant, or explicitly request native fallback.
+
+This sequence is confirmed by static Binary Ninja analysis of vector construction and replay. It has not yet been live-tested as an injector. Start with a two- or three-edge route on an open map. Verify the captured absolute route, one-step-per-position-update pacing, ordinary input cancellation, blocked-first-step reset, and clean unload before trying a warp segment.
+
+## Crossing maps
+
+Never place tiles from two maps in one native vector. A warp is a server-owned transition, and the old route becomes invalid when the new map and position arrive.
+
+Represent a trip as map-tagged segments:
+
+```text
+segment 1: map A, current tile ... warp tile
+wait:      confirmed map B and entry position
+segment 2: map B, entry tile ... next warp or goal
+```
+
+For daRPC, publish the new vector through its existing route observer after installation, then wait for its atomic `location.changed` publication at a warp. That event pairs the staged map identity with the following position. Validate the expected map and optional entry region, then submit the next segment with a new revision. A timeout, unexpected map, manual movement, disconnect, or authoritative correction cancels or returns control to the external planner.
+
 ## Replacing BFS with A*
 
 A DLL can replace the planner without replacing movement transport. The clean boundary is `ui_world_pane_build_breadth_first_path` or its two native callers.
@@ -248,8 +343,8 @@ The replacement can read the complete map dimensions and cells, overlay live sta
 struct RouteStep {
     u8 direction;
     u8 padding[3];
-    s32 source_x;
     s32 source_y;
+    s32 source_x;
 };
 ```
 

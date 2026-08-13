@@ -159,6 +159,18 @@ functions:
     name: ui_world_pane_build_breadth_first_path
     confidence: high
     evidence: "Runs a FIFO breadth-first search over four cardinal moves, records each first-visit direction in a 400 by 400 byte grid, and reconstructs a shortest queued route to the first reached goal."
+  - address: "0x005F59A0"
+    name: path_route_step_vector_push_back
+    confidence: high
+    evidence: "The BFS reconstruction calls this vector helper once per 12-byte route record. It grows the allocation when end equals capacity, copies one record at the old end, and advances the end pointer by 12 bytes."
+  - address: "0x005F5A80"
+    name: path_route_step_vector_clear
+    confidence: high
+    evidence: "Erases the route vector's complete start-to-end range without releasing its capacity. The BFS calls it before every search."
+  - address: "0x005F5D00"
+    name: path_route_step_vector_erase_range
+    confidence: high
+    evidence: "Moves later 12-byte records over an erased range, destroys the old tail, and updates the vector end pointer. Reset and the route-vector clear wrapper use it to remove all queued records."
 data_symbols:
   - address: "0x0085BD68"
     name: pathfinding_predecessor_direction_grid
@@ -219,14 +231,22 @@ comments:
     text: "Advance the generation for this pursuit attempt; the value accompanies timer ID 10 so callbacks from replaced paths are ignored."
   - address: "0x005F4DAF"
     text: "Unconditionally schedule one-shot pursuit timer ID 10 after 100 ms with target_id and generation callback values after any resolved-target branch, including turn, attack, failed path, and blocked movement. A later invocation requeues the chain."
+  - address: "0x005F4E55"
+    text: "Clear the prior 12-byte route records while retaining vector capacity, then clear the active-route flag before starting a new search."
   - address: "0x005F4F07"
     text: "Reset the fixed 400 by 400 predecessor-direction grid to unseen sentinel 5 before the breadth-first search."
   - address: "0x005F5034"
     text: "Expand cardinal neighbors in Direction order 0 through 3: Up, Right, Down, Left."
+  - address: "0x005F5068"
+    text: "Every BFS candidate edge reaches this map_can_move_direction call with source Y, source X, direction, and mode. A route-policy hook can derive the destination here and combine live collision, raw-map collision, and an immutable per-map tile exclusion set without changing manual steps."
   - address: "0x005F50BC"
     text: "First visit records the direction from the current tile to this neighbor, then appends the neighbor to the FIFO queue."
   - address: "0x005F5127"
     text: "Walk predecessor directions backward from the reached goal to the start and append 12-byte direction plus source-coordinate records for reverse replay."
+  - address: "0x005F5198"
+    text: "Append one 12-byte record in goal-to-start order: direction at +0x00, source_y at +0x04, and source_x at +0x08. The replay function consumes the vector from its end."
+  - address: "0x005F51A8"
+    text: "A successful build sets WorldPane +0x294 active and writes (route_end - route_start) / 12 to remaining_steps at +0x2B8. External route injection must establish both fields before calling the normal advance helper."
 runtime_patches:
   - id: auto-follow-pathfinding-admit-shift-living
     rva: "0x001D48E5"

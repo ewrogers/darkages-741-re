@@ -5266,6 +5266,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_get_self_user_object` | `0x005EEDB0` | high | Looks up the saved self object ID and RTTI-casts the result to WorldObject_User. |
 | `world_update_map_lighting` | `0x005EF360` | high | Scales the stored SChangeHour time step, resolves the current map's Light metadata, updates ambient color and intensity, conditionally loads its HEA mask, and restores normal lighting after Darkness is cleared. |
 | `world_get_static_tile_id_from_object` | `0x005EFEC0` | high | Requires WorldObject_Static and returns its current live tile ID for the movement collision path. |
+| `path_route_step_vector_push_back` | `0x005F59A0` | high | The BFS reconstruction calls this vector helper once per 12-byte route record. |
+| `path_route_step_vector_clear` | `0x005F5A80` | high | Erases the route vector's complete start-to-end range without releasing its capacity. |
+| `path_route_step_vector_erase_range` | `0x005F5D00` | high | Moves later 12-byte records over an erased range, destroys the old tail, and updates the vector end pointer. |
 | `session_world_user_func_ctor` | `0x005FC5F0` | high | Constructs exact RTTI class WorldUserFunc, embeds exact RTTI UserInfo at +0x15C8C, and clears its fixed inventory, spell, and skill arrays; the allocation site requests 0x167D0 bytes. |
 | `session_find_first_empty_inventory_slot` | `0x005FC900` | high | Returns the first absent inventory record in slots 1 through 60, or 0 when every slot is occupied. |
 | `session_store_inventory_entry` | `0x005FCBB0` | high | Stores one compact 0x106-byte inventory record at WorldUserFunc + 0x1092 + (slot - 1) * 0x106. |

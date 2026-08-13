@@ -12,7 +12,7 @@ This directory contains deterministic Binary Ninja exports such as user symbols,
 
 [`ui-pane-lifecycle.yaml`](ui-pane-lifecycle.yaml) records exact RTTI pane destructors, MSVC scalar-deleting destructors, and the adjusted-`this` TimerHandler thunks that reach them.
 
-[`pathfinding.yaml`](pathfinding.yaml) records right-click ground movement, living-object pursuit, the breadth-first route search, its 100 ms retarget timer, queued-step replay, and cancellation generations.
+[`pathfinding.yaml`](pathfinding.yaml) records right-click ground movement, living-object pursuit, the breadth-first route search, its 100 ms retarget timer, queued-step replay, cancellation generations, and the native route-vector helpers needed for safe external path injection.
 
 [`manual-actions.yaml`](manual-actions.yaml) records main-thread invocation contracts for item use, item and gold transfers, skill, spell, movement, casting-cancel, and equipment producers, including the required x86 calling conventions and caller-side validation.
 

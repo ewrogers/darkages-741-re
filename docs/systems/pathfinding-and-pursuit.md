@@ -71,9 +71,20 @@ The first goal found has the fewest movement steps. When several shortest routes
 
 Ground click-to-move uses one goal tile. Target pursuit uses the four tiles beside the target. The target's own occupied tile does not need to be walkable.
 
-The client remembers which direction first reached each tile. When it finds a goal, it walks those records backward to the start, then stores the movement steps in the order they must run.
+The client remembers which direction first reached each tile. When it finds a goal, it walks those records backward to the start and appends each step in goal-to-start order. The movement code reads that vector from the end, so the character still walks start to goal.
 
 The seen-tile storage is a fixed 400 by 400 byte array. Version 741 map width and height are one byte each, so a normal map is at most 255 by 255 tiles.
+
+## Warp tiles are not client obstacles
+
+A map exit looks like an ordinary passable tile to this pathfinder. The server decides that stepping on it changes maps. No warp or exit marker is present in the collision information used by the client BFS.
+
+This has two consequences:
+
+- a same-map route can cross an unwanted warp tile because the client sees no obstacle there; and
+- one native route cannot continue across the map change because the old map and its queued movement state are replaced.
+
+An extension that knows warp locations can add them to the planner as per-map excluded tiles. An intentional cross-map trip should be split into one route per map. The first segment ends on the warp tile. The controller then waits for the server-supplied new map and position before starting the next segment.
 
 ## Why a distant route can cross a wall
 
@@ -255,6 +266,54 @@ if (ui_world_pane_build_path_to_tile(
 ```
 
 That fixed-tile route does not keep following a moving object.
+
+## Supplying an external route
+
+An extension can reuse the client's queued walker without using its BFS. This gives an external A*, waypoint system, or map heuristic control over the exact tiles while preserving the client's normal step validation, movement packet, animation, and position-update pacing.
+
+The static client code supports this design. The exact-route installation sequence has not yet been exercised in a live client during this investigation, so the first implementation should be treated as a guarded runtime trial.
+
+The queued walker consumes this 12-byte record:
+
+```c
+struct path_route_step {
+    u8 direction;
+    u8 reserved[3];
+    s32 source_y;
+    s32 source_x;
+};
+```
+
+The field order matters. `source_y` is at `+0x04` and `source_x` is at `+0x08`. The native vector stores the last edge first and the first edge last because `ui_world_pane_advance_queued_path` consumes records from the end.
+
+A safe route submission accepts absolute tiles ordered from the character's current tile to the goal. It validates the map ID, bounds, first tile, and cardinal adjacency. On the client main thread it then:
+
+1. performs a full native movement reset;
+2. appends one native record per edge in reverse edge order;
+3. sets the normal remaining-step count and active-route flag; and
+4. calls `ui_world_pane_advance_queued_path` once.
+
+Later confirmed position updates drive the rest of the route exactly as they do for a native BFS route. The injected DLL should use the client's vector clear and append helpers. An external process must not replace the vector pointers or write into an allocation owned by the client.
+
+The same failed-step problem still applies. A route controller should use the queued-step result hook to cancel and report the blocked edge. It may retry the exact route for a short time, ask the external planner for a replacement, or deliberately fall back to native BFS. Falling back silently is wrong when the caller required an exact path.
+
+For a smaller change, a per-map tile exclusion layer can keep the native BFS. The existing collision-call hook has the source tile and direction, so it can derive the candidate destination and reject a tile in an immutable per-map exclusion set after the normal live and raw collision checks pass. This changes route planning only. Manual arrow movement remains available, and an intentional external route can explicitly allow its final warp step.
+
+All rule publication, route validation, vector mutation, and native calls must follow the normal injected-command rules: bounded data crosses IPC, the game-thread dispatcher owns client changes, and hooks never wait for IPC or logging.
+
+## How daRPC handles routes today
+
+The local daRPC source reviewed at commit `8dfa057d73d12807f5763cbad3b4d76fcb84b651` does not inject a caller-supplied tile list. Its destination command still performs a full reset, calls `ui_world_pane_build_path_to_tile`, and starts the first native step.
+
+Its `path_control` hook improves that native route in three places:
+
+- the BFS collision call requires both live collision and complete raw-map collision to accept an edge;
+- the queued-step call checks the movement result that the stock client ignores; and
+- the BFS entry hook captures the completed native vector for route telemetry.
+
+For daRPC-owned destination walks, it retains the requested goal, replans after a blocked step or authoritative position correction, treats 1.2 seconds without confirmed progress as stalled, and retries `no_path` results for at most five seconds with delays from 250 ms through one second. Map changes clear that retained single-map destination.
+
+The best extension is therefore additive: keep the current destination command for ordinary native planning, add a per-map exclusion snapshot to the existing collision wrapper, and add a separate exact-route command that builds the same native vector on the main thread. A higher-level controller can sequence those exact routes across confirmed map changes.
 
 ## Adding follow-only mode
 
