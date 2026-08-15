@@ -52,9 +52,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_language_manager_unbind_singleton` | `0x004A4E00` | high | Clears the Language singleton only when it still references this adjusted complete object. |
 | `app_initialize_speedhack_clock_baselines` | `0x004A9690` | high | Captures four local clock baselines and formats the legacy Windows-version label. |
 | `app_check_speedhack_clocks` | `0x004A98A0` | high | Compares several local time sources, counts differences greater than five seconds, and sends one SpeedHack CException report per process after repeated mismatches. |
-| `app_apply_process_priority_override` | `0x004A9B40` | high | Saves the current process priority once and applies the configured override. |
+| `app_apply_process_priority_override` | `0x004A9B40` | high | Can save the current process priority and apply a stored override after its enable flag is set; normal construction clears that flag and the sole activation caller passes zero. |
 | `app_restore_process_priority` | `0x004A9BE0` | high | Restores the saved process-priority class and clears its saved-state flag. |
-| `app_state_ctor` | `0x004A9EA0` | high | Registers and initializes the fixed 0x00740408 application-state object. |
+| `app_state_ctor` | `0x004A9EA0` | high | Registers and initializes the fixed 0x00740408 application-state object, including clearing both process-priority override state flags. |
 | `app_state_dtor` | `0x004A9F10` | high | Unregisters the fixed application-state object during CRT shutdown. |
 | `app_post_window_message` | `0x004A9F30` | high | Posts one Win32 message to the saved main-window handle. |
 | `app_initialize` | `0x004A9F80` | high | Starts Winsock, creates the window, opens required archives, and constructs core managers and panes. |
@@ -62,7 +62,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `app_shutdown` | `0x004AC060` | high | Tears down runtime managers and panes, then closes and destroys the DAT archive singletons before window cleanup. |
 | `app_acquire_main_window_dc` | `0x004AC8C0` | high | Caches GetDC for the saved main-window handle. |
 | `app_release_main_window_dc` | `0x004AC910` | high | Releases the cached main-window device context. |
-| `app_set_active` | `0x004AC950` | high | Synchronizes process priority, video active state, and root-pane invalidation with Win32 activation. |
+| `app_set_active` | `0x004AC950` | high | Records Win32 activation, forwards it to the video system, and forces a root redraw on reactivation; the compiled priority helper remains disabled in normal version 741 state. |
 | `app_deactivate_video` | `0x004AC9D0` | high | Marks the initialized video system inactive for WM_CLOSE and WM_DESTROY. |
 | `app_update_windowed_render_origin` | `0x004ACA00` | high | Updates the DirectDraw presentation origin after WM_MOVE or WM_SIZE in windowed mode. |
 | `app_set_post_exit_advertisement` | `0x004ACE00` | high | Copies the SAdvertisement string into a 65,536-byte application buffer, terminates it, and saves its length plus three numeric arguments for app_winmain. |
@@ -100,7 +100,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | Function | Static address | Confidence | Role |
 | --- | --- | --- | --- |
 | `event_dispatcher_tick` | `0x00464180` | high | Drains queued events, samples timeGetTime for ordered due timers, yields 5 ms when the next timer is more than 20 ms away, and invokes at most 0x28 due callbacks. |
-| `app_window_proc` | `0x004A9C30` | high | Window procedure that sends messages through the input translator before application-specific handling. |
+| `app_window_proc` | `0x004A9C30` | high | Translates input, handles WM_ACTIVATE without a separate minimized state, queues WSAAsyncSelect reads, and updates windowed presentation origin for WM_MOVE and WM_SIZE. |
 | `app_run_message_loop` | `0x004AC750` | high | Records the main thread, drains PeekMessageA, runs the EventDispatcher tick, performs an auxiliary clock check after more than 100 ms, and yields 1 ms after 402 tight passes. |
 
 ## Events
@@ -3098,6 +3098,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_socket_ctor` | `0x00563910` | high | Constructs the Socket object and initializes packet-transform state. |
 | `net_queue_seed_table_barrier` | `0x00563D70` | high | Queues communications command 10 with a one-byte seed selector and returns its waitable completion handle. |
 | `net_queue_transfer_endpoint` | `0x00563DA0` | high | Queues communications command 4 with the IPv4 address and port supplied by STransferServer. |
+| `net_queue_receive_command` | `0x00563DC0` | high | Queues communications command 5 for the socket worker after the window procedure receives WSAAsyncSelect FD_READ. |
 | `net_reset_client_packet_sequence` | `0x00563DE0` | high | Resets the client-to-server encrypted-packet sequence to zero. |
 | `net_submit_client_packet` | `0x00563E00` | high | Ordinary bodies gain a transmitted zero. |
 | `net_queue_raw_stream_mode` | `0x00564070` | high | Queues communications command 7, whose worker-side case writes the socket raw-stream-mode byte. |
@@ -3862,7 +3863,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_palette_family_get_or_create` | `0x00548AB0` | high | Grows one palette-family vector in blocks of 16 and allocates a 0x200-byte packed table for a missing palette number. |
 | `render_write_screenshot_bmp` | `0x005537F0` | high | Writes the completed client canvas as the first missing uncompressed 16-bit lod001.bmp through lod999.bmp name. |
 | `render_screen_tree_frame` | `0x00554040` | high | Walks the dirty root screen tree and presents only when a dirty entry or forced redraw marks the root for output. |
-| `render_screen_timer_tick` | `0x00554270` | high | Runs the root ScreenPane redraw check and requeues timer ID 0 from the current time using the compiled 10 ms interval. |
+| `render_screen_timer_tick` | `0x00554270` | high | Checks the video-active flag, runs the root ScreenPane redraw only while active, and always requeues timer ID 0 from the current time using the compiled 10 ms interval. |
 | `render_screen_subtree` | `0x00555560` | high | Clips and draws one pane subtree through the vtable draw-to-target slot. |
 | `render_probe_display_capabilities` | `0x0057A640` | high | Accepts 16-bit or 32-bit desktop color and selects 2x presentation at 1280 by 960 or larger, otherwise 1x on a supported smaller desktop. |
 | `render_free_blend_tables` | `0x005933C0` | high | Frees both software component-blend lookup tables. |
@@ -3875,6 +3876,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_video_system_initialize` | `0x00593F30` | high | Creates presentation state, canvases, conversion helpers, and software blend tables. |
 | `render_video_system_shutdown` | `0x00594250` | high | Releases the main canvas and renderer lookup helpers before VideoSystem deletion. |
 | `render_present_frame` | `0x005942D0` | high | Presents the completed canvas through the DirectDraw or window DC path. |
+| `render_video_system_is_active` | `0x00594600` | high | Returns the VideoSystem active flag at object offset 0x14. |
+| `render_video_system_set_active` | `0x00594620` | high | Mode 0 changes the active flag and enters or leaves exclusive DirectDraw mode; nonzero modes accept activation but ignore deactivation. |
 | `render_convert_rgb565_to_xrgb8888` | `0x005949A0` | high | Converts RGB565 pixels to 32-bit output with optional 2x nearest-neighbor scaling. |
 | `render_scale_2x_u16` | `0x005950F0` | high | Doubles a 16-bit image in both axes with nearest-neighbor copies. |
 | `render_scale_2x_u32` | `0x005953A0` | high | Doubles a 32-bit image in both axes with nearest-neighbor copies. |
@@ -3896,8 +3899,8 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_set_object_light_mask` | `0x005CCA80` | high | Attaches or removes a mask1%02d.epf LightBitmap for a world object ID and invalidates its affected region. |
 | `render_invalidate_object_light_region` | `0x005CD000` | high | Resolves an object's attached LightBitmap bounds and invalidates that region while object-light merging is active. |
 | `render_invalidate_removed_object_light_region` | `0x005CD200` | high | Invalidates the last bounds of a removed object's light image while the world light mask is active. |
-| `render_build_static_objects` | `0x005CD730` | high | Builds WorldObject_Static instances from the two static tile IDs in visible map cells. |
-| `render_world_pane_content` | `0x005CE280` | high | Advances the visual frame and draws the world into the WorldPane canvas. |
+| `render_build_static_objects` | `0x005CD730` | high | Builds WorldObject_Static instances only for StaticMap records overlapping the current projected viewport, inserts them into the live object list, and removes fixed objects not touched by the new visible generation. |
+| `render_world_pane_content` | `0x005CE280` | high | Increments a draw-owned visual frame counter and draws the world into the WorldPane canvas; skipped full-screen draws therefore pause this visual counter. |
 | `render_use_base_ground_bank` | `0x005D2B70` | high | Selects tilea.bmp for the ground cache. |
 | `render_use_alternate_ground_bank` | `0x005D2B90` | high | Selects tileas.bmp with tilea.bmp fallback for the ground cache. |
 | `render_world_set_blinded` | `0x005D2DC0` | high | Stores the world-renderer blinded boolean and schedules the affected view for redraw. |
@@ -3926,7 +3929,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_human_apply_appearance` | `0x005E0070` | high | Copies the packet-owned appearance record and forwards it to the live human object. |
 | `render_human_apply_appearance_record` | `0x005E00C0` | high | Copies HumanAppearanceRecord to WorldObject_Human +0xA4, derives nonblocking and translucent state, creates the 0x918-byte HumanObjectImageSession, and refreshes direction and motion. |
 | `render_monster_apply_appearance` | `0x005E0370` | high | Resolves the untagged monster sprite, creates MonsterObjectImageSession, applies Direction and up to four palette selectors, and refreshes motion. |
-| `render_static_object_ctor` | `0x005E42F0` | high | Stores the static tile ID, side, image cache, SOTP render flags, and draw state. |
+| `render_static_object_ctor` | `0x005E42F0` | high | Constructs the WorldObject base with minimap collision level zero, then stores the static tile ID, side, image cache, SOTP render flags, and draw state. |
 | `render_static_object` | `0x005E47E0` | high | Draws a fixed world object with its SOTP-selected software blend mode. |
 | `render_world_apply_view_layout` | `0x005EE950` | high | Applies a six-value GUI MAP rectangle and view center to WorldPane, resets view-dependent state, invalidates lighting, and schedules a redraw. |
 | `render_select_human_part_sprite` | `0x005FD8D0` | high | Selects the sprite ID for each of 21 human body and equipment categories; an overcoat suppresses ordinary pants, armor, and arms, but the body-form selector does not independently suppress equipment. |
@@ -4333,13 +4336,14 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `file_format_map_path` | `0x005B9660` | high | Formats the path maps backslash lod map-id dot map. |
 | `file_write_map_cells` | `0x005B9680` | high | Opens the cache with wb and no Windows sharing, writes the complete contiguous map array without checking the write count, then closes the exclusive handle. |
 | `map_static_map_ctor` | `0x005BB720` | high | Builds the static-object spatial index, inserting each left map static with internal side 1 and each right map static with internal side 0. |
+| `map_static_map_collect_visible_records` | `0x005BBB80` | high | Collects StaticMap records whose projected bounds overlap a supplied viewport rectangle into the caller's fixed-record output buffer. |
 | `map_apply_seasonal_tile_mode` | `0x005C7660` | high | Applies the SMapSize 0x80 flag to both ground and static tile storage. |
 | `map_load_hea_resource` | `0x005C7870` | high | Opens the current map ID as a six-digit HEA resource and enables the WorldPane spatial light mask on success. |
 | `map_get_sotp_render_flags` | `0x005CF360` | high | Returns the high-nibble SOTP render flags for one static tile ID. |
 | `map_load_sotp_render_flags` | `0x005CF3B0` | high | Loads SOTP.DAT into a one-based high-nibble render-flag table. |
 | `map_get_sotp_collision_flags` | `0x005CF4A0` | high | Returns the low-nibble SOTP direction mask for one static tile ID. |
 | `map_load_sotp_collision_flags` | `0x005CF4F0` | high | Loads SOTP.DAT into a one-based low-nibble collision table. |
-| `map_get_collision_level` | `0x005CF5E0` | high | Retains the highest WorldObject +0x31 collision level at one map cell, with fully blocked static SOTP supplying level 1 when no dynamic level does. |
+| `map_get_collision_level` | `0x005CF5E0` | high | Retains the highest WorldObject +0x31 collision level at one map cell, then reads both static IDs from the original raw map cell when no object supplies a level. |
 | `map_get_tile_pixels` | `0x005D7610` | high | Gets one decoded ground-tile diamond from MapTileImageLib. |
 | `map_refresh_collision_cache` | `0x005D8B90` | high | Refreshes dirty cells in the map's width-by-height three-byte collision cache with map_get_collision_level and marks each rebuilt cell for redraw. |
 | `map_can_move_direction` | `0x005EFFE0` | high | Checks bounds and the saved appearance action lock, lets privilege levels 1 and 2 bypass the remaining dynamic-object and direction-specific SOTP collision checks, and otherwise applies CreatureType behavior and SOTP masks. |
@@ -5261,6 +5265,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_user_start_move` | `0x005E4FC0` | high | Refreshes WorldObject_User appearance state, then starts the common living-object move with the supplied ScrollLevel flag. |
 | `world_object_list_ctor` | `0x005E5290` | high | Constructs the 0x68-byte object list, its ordered entity-ID tree and secondary indexes, and width times height spatial cells of 0x60 bytes each. |
 | `world_object_list_insert` | `0x005E5D40` | high | Inserts an object into its 0x60-byte coordinate cell and the ordered entity-ID index, then marks WorldObject +0x48 inserted. |
+| `world_object_list_get_tile_slot` | `0x005E64A0` | high | Returns one of four live object slots at a map coordinate. |
 | `world_object_list_find_by_id` | `0x005E73B0` | high | Searches the ordered ID tree beginning at WorldObjectList +0x1C and returns the reference-counted object pointer from node +0x10. |
 | `world_set_view_position` | `0x005EEC70` | high | Publishes a Y, X world-view position and optionally rebuilds the visible world and camera state around it. |
 | `world_get_self_user_object` | `0x005EEDB0` | high | Looks up the saved self object ID and RTTI-casts the result to WorldObject_User. |

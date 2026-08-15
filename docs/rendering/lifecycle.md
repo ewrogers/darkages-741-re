@@ -44,11 +44,13 @@ The opacity mask groups transparent and nonzero pixels into runs of at most 126.
 
 ## Redraw and presentation cadence
 
-The root `ScreenPane` starts timer ID `0` during application setup. `render_screen_timer_tick` calls `render_screen_tree_frame`, then requeues itself for 10 ms after the current `timeGetTime()` value.
+The root `ScreenPane` starts timer ID `0` during application setup. `render_screen_timer_tick` checks the video-active flag, calls `render_screen_tree_frame` only while that flag is set, then requeues itself for 10 ms after the current `timeGetTime()` value.
 
 Each check walks the screen hierarchy, but drawing remains dirty-region based. A forced redraw or dirty pane-tree entry marks the root screen for presentation. If nothing changed, the client does not send an identical completed canvas to the output backend.
 
 This makes 100 Hz the maximum scheduled redraw-check rate, not a fixed visible frame rate. The timer is requeued after the callback rather than from its previous due time, so a delayed callback shifts the following check instead of producing catch-up redraws.
+
+Only exclusive full-screen mode clears the video-active flag when the window loses activation. Its redraw timer keeps its 10 ms schedule but skips the complete pane-tree draw until activation returns. This also pauses the world pane's draw-owned visual-frame counter, while dispatcher-timed animation continues. The nonexclusive DirectDraw and GDI modes ignore the inactive request and continue their normal dirty-tree work, including while minimized. Reactivation forces a root redraw in every mode. See [Foreground and minimized windows](../application/game-loop.md#foreground-and-minimized-windows) for the timer and network consequences.
 
 ## Presenting a frame
 

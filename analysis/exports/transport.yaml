@@ -135,6 +135,10 @@ functions:
     name: net_queue_transfer_endpoint
     confidence: high
     evidence: "Queues communications command 4 with the IPv4 address and port supplied by STransferServer."
+  - address: "0x00563DC0"
+    name: net_queue_receive_command
+    confidence: high
+    evidence: "Queues communications command 5 for the socket worker after the window procedure receives WSAAsyncSelect FD_READ."
   - address: "0x00563DE0"
     name: net_reset_client_packet_sequence
     confidence: high
@@ -405,6 +409,8 @@ comments:
     text: "Restore the readable source buffer only after the working key has been copied; the expanded key retains bytes E5 and A3."
   - address: "0x00563D70"
     text: "Queue command 10 with one selector byte and request a waitable completion record. STransferServer uses its FIFO position as a reconnect barrier."
+  - address: "0x00563DC7"
+    text: "Queue socket command 5 after WSAAsyncSelect FD_READ; the network worker performs the receive independently of foreground state."
   - address: "0x00563E00"
     text: "Submit an opcode-first client packet to socket event command 6. Ordinary bodies gain an appended zero that is included in the queued length before framing and transformation."
   - address: "0x00563E2C"

@@ -2966,7 +2966,7 @@ functions:
   - address: "0x00554270"
     name: render_screen_timer_tick
     confidence: high
-    evidence: Runs the root ScreenPane redraw check and requeues timer ID 0 from the current time using the compiled 10 ms interval.
+    evidence: Checks the video-active flag, runs the root ScreenPane redraw only while active, and always requeues timer ID 0 from the current time using the compiled 10 ms interval.
   - address: "0x00555560"
     name: render_screen_subtree
     confidence: high
@@ -3059,6 +3059,14 @@ functions:
     name: render_present_frame
     confidence: high
     evidence: Presents the completed canvas through the DirectDraw or window DC path.
+  - address: "0x00594600"
+    name: render_video_system_is_active
+    confidence: high
+    evidence: Returns the VideoSystem active flag at object offset 0x14.
+  - address: "0x00594620"
+    name: render_video_system_set_active
+    confidence: high
+    evidence: "Mode 0 changes the active flag and enters or leaves exclusive DirectDraw mode; nonzero modes accept activation but ignore deactivation."
   - address: "0x005949A0"
     name: render_convert_rgb565_to_xrgb8888
     confidence: high
@@ -3290,7 +3298,7 @@ functions:
   - address: "0x005CE280"
     name: render_world_pane_content
     confidence: high
-    evidence: Advances the visual frame and draws the world into the WorldPane canvas.
+    evidence: Increments a draw-owned visual frame counter and draws the world into the WorldPane canvas; skipped full-screen draws therefore pause this visual counter.
   - address: "0x005CE350"
     name: ui_world_pane_draw_to_target
     confidence: high
@@ -3957,6 +3965,8 @@ comments:
     text: Apply ground animation first. In alternate mode, try tileas.bmp and fall back to tilea.bmp when the requested alternate record is unavailable.
   - address: "0x00554173"
     text: Present the completed root canvas only when a dirty entry marked the root or a forced redraw is active.
+  - address: "0x00554287"
+    text: "Skip the complete screen-tree draw when the VideoSystem active flag is zero. The callback still reaches the common 10 ms reschedule path."
   - address: "0x005542C7"
     text: Load the compiled 10 ms screen interval and use current-time scheduling, so a late callback shifts the next check instead of creating catch-up redraw callbacks.
   - address: "0x00555560"
@@ -3987,6 +3997,10 @@ comments:
     text: Release canvas and software renderer helpers. DirectDraw is released later by the VideoSystem destructor.
   - address: "0x005942D0"
     text: Present the finished software canvas through DirectDraw or the window DC path.
+  - address: "0x0059462A"
+    text: "Video mode 0 owns the exclusive DirectDraw activation transition. Losing activation clears VideoSystem +0x14 and leaves exclusive mode; regaining it reverses both operations."
+  - address: "0x00594696"
+    text: "Nonzero video modes update VideoSystem +0x14 only for an active request. An inactive request returns without clearing the flag, so windowed redraw checks continue."
   - address: "0x00598210"
     text: Deserialize the one-byte SChangeWeather payload to derived-object offset 0x10. No 0x1F consumer exists in the native gameplay dispatcher.
   - address: "0x0059DAC9"
@@ -4061,6 +4075,8 @@ comments:
     text: Collect only StaticMap records overlapping the current projected viewport. Off-screen statics remain absent from the live WorldObjectList queried by native route collision.
   - address: "0x005CE280"
     text: The validated launcher patch wraps the complete WorldPane draw here, clears a bounded item-entry buffer before the original call, then replays captured items in temporary blend mode 3 when native Alt modifier bit 0x01 is set.
+  - address: "0x005CE2A2"
+    text: "Increment the WorldPane draw-owned visual frame. This value is passed into object rendering queues, not the traced movement or packet state."
   - address: "0x005CE2DA"
     text: "Draw the ordinary world frame first: ground, background images, tile markers, and ascending object queues."
   - address: "0x005CE305"

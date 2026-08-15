@@ -31,7 +31,7 @@ The large `app_initialize` routine owns step 6. It starts Winsock, registers and
 
 `Config` follows the same process-wide singleton model. `app_config_singleton_register` installs it during startup, and `app_get_config` is the common accessor used by later version, distribution, and connection setup paths.
 
-Win32 activation remains separate from construction. `app_set_active` applies the configured process-priority override while inactive, restores the saved priority when active, forwards the state to the video system, and invalidates the root pane after reactivation. Window move and size messages update the DirectDraw presentation origin only in windowed mode.
+Win32 activation remains separate from construction. `app_set_active` forwards foreground state to the video system and invalidates the root pane after reactivation. The compiled process-priority override is dormant in the matching client: construction clears its enable flag, and activation never supplies a nonzero priority class. Window move and size messages update the DirectDraw presentation origin only in windowed mode. See [Foreground and minimized windows](game-loop.md#foreground-and-minimized-windows) for the rendering, timer, and network effects.
 
 The mutex is named `Nexon.SingleInstance`. If Windows reports that it already exists, the original client exits. This is only a local guard. It does not change any account or server rules.
 

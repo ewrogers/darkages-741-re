@@ -208,7 +208,7 @@ functions:
   - address: "0x004A9B40"
     name: app_apply_process_priority_override
     confidence: high
-    evidence: "Saves the current process priority once and applies the configured override."
+    evidence: "Can save the current process priority and apply a stored override after its enable flag is set; normal construction clears that flag and the sole activation caller passes zero."
   - address: "0x004A9BE0"
     name: app_restore_process_priority
     confidence: high
@@ -216,7 +216,7 @@ functions:
   - address: "0x004A9EA0"
     name: app_state_ctor
     confidence: high
-    evidence: "Registers and initializes the fixed 0x00740408 application-state object."
+    evidence: "Registers and initializes the fixed 0x00740408 application-state object, including clearing both process-priority override state flags."
   - address: "0x004A9F10"
     name: app_state_dtor
     confidence: high
@@ -248,7 +248,7 @@ functions:
   - address: "0x004AC950"
     name: app_set_active
     confidence: high
-    evidence: "Synchronizes process priority, video active state, and root-pane invalidation with Win32 activation."
+    evidence: "Records Win32 activation, forwards it to the video system, and forces a root redraw on reactivation; the compiled priority helper remains disabled in normal version 741 state."
   - address: "0x004AC9D0"
     name: app_deactivate_video
     confidence: high
@@ -396,6 +396,8 @@ data_symbols:
 comments:
   - address: "0x0042E600"
     text: Bink frame timer. Advances from the first clip to the second, then posts intro state 2 after both clips finish.
+  - address: "0x004AC96B"
+    text: "The active path calls the priority helper with zero, which can only reapply an override configured earlier. Construction clears the enable flag, and no local caller supplies a nonzero priority class."
   - address: "0x004ACA85"
     text: Intro state transition. Original push 1 enters Bink playback; changing the immediate to 2 reuses the normal post-video state and skips allocation/playback safely.
   - address: "0x004ACAF1"

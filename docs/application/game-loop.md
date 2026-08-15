@@ -27,6 +27,34 @@ The root `ScreenPane` owns the recurring redraw service. Timer ID `0` calls `ren
 
 Ten milliseconds is therefore a 100 Hz redraw check, not a promise of 100 visible frames per second. An unchanged tree is not presented, and the active DirectDraw or window output path can further constrain presentation. See [Renderer lifecycle](../rendering/lifecycle.md#redraw-and-presentation-cadence).
 
+## Foreground and minimized windows
+
+Losing the foreground does not pause the game loop. `WM_ACTIVATE` tells `app_window_proc` whether the window is inactive, active, or click-active. The handler records that state and forwards it to the video system, but `app_run_message_loop` continues draining Windows messages and running `event_dispatcher_tick` in every state.
+
+The rendering result depends on the selected output mode:
+
+| State | Exclusive full-screen mode | Nonexclusive window modes |
+| --- | --- | --- |
+| Inactive | Leave exclusive DirectDraw mode, mark video inactive, and minimize the window | Keep the video-active flag set |
+| Redraw timer | Requeue every 10 ms but skip the screen-tree draw while video is inactive | Continue normal dirty-tree checks and presentation |
+| Active again | Re-enter exclusive mode and force a root redraw | Force a root redraw |
+
+The skipped full-screen work is scene composition and presentation, including one draw-owned time source. `render_world_pane_content` increments the world pane's visual frame once per draw, so world sprite phases stop while exclusive full-screen rendering is inactive and resume from that frame after restoration. The counter is passed into the object rendering queues; no traced movement, packet, or world-state update consumes it.
+
+Dispatcher-owned work does not pause. Timer-driven pane and moving-effect animation, audio timers, action-delay expiry, held-pointer repeat, spell-cast sequencing, and periodic keepalive work still use the normal dispatcher clock. They do not switch to a slower background interval. Restoring the window can therefore show the current timer-driven state while draw-driven world animation resumes from its earlier visual frame.
+
+Minimization has no separate client state. The `WM_SIZE` handler does not inspect `SIZE_MINIMIZED`; it treats size and move messages alike and only refreshes the windowed presentation origin. The executable does not import `IsIconic`, `GetForegroundWindow`, or `GetActiveWindow`. A minimized window usually also loses activation, but only exclusive full-screen mode turns that activation loss into a rendering suspension. A minimized nonexclusive window can therefore keep doing dirty software draws and output calls.
+
+Network work also continues. A Winsock `FD_READ` window notification queues receive command `5` to the socket worker. Outgoing packet command `6` uses the same worker queue, and decoded server packets return to the always-running main-thread event dispatcher. Foreground loss does not pause packet sequences, receives, sends, or keepalive timers.
+
+The client contains helpers that could temporarily apply a process priority class, but normal version 741 startup leaves that feature disabled. The application-state constructor clears its enable flag, and the only activation caller passes zero rather than configuring an override. Normal foreground changes therefore do not reach `SetPriorityClass` or deliberately lower background priority.
+
+The practical consequences are:
+
+- Exclusive full-screen backgrounding saves the expensive screen-tree draw and presentation work without pausing game or network state.
+- Windowed minimization has no equivalent optimization and can waste CPU on animations, dirty-region composition, and presentation attempts that cannot be seen.
+- No client-owned background optimization slows gameplay timers or packet handling, so there is no built-in sync penalty. An external scheduler stall can still delay the main thread and socket notification handling, but that is not a state-dependent policy requested by this client.
+
 ## Clock changes and speed hacks
 
 A traditional speed utility does not make the processor or connection faster. It changes the time reported to one process. A typical virtual clock keeps a real and virtual baseline, then returns a scaled elapsed time:
