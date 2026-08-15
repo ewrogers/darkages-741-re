@@ -4244,7 +4244,7 @@ comments:
   - address: "0x005F02AB"
     text: Creature type 1, project-named Passable, never blocks the proposed destination tile.
   - address: "0x005F0320"
-    text: For non-Passable creatures, movement normally blocks. Type 3, project-named Solid, is the sole exception if inherited WorldObject_Living +0xD4 is already nonblocking.
+    text: For non-Passable creatures, movement normally blocks. Creature type 3 is the sole exception if inherited WorldObject_Living +0xD4 is already nonblocking; its friendly name remains unresolved.
   - address: "0x005F0676"
     text: Direction values 0 through 3 select collision masks 0x01, 0x02, 0x04, and 0x08 for left, down, right, and up.
   - address: "0x005F0A13"

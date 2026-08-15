@@ -73,7 +73,7 @@ Extra packet selectors remain consumed but have no visible effect for that sprit
 
 The byte after `direction` is read into the temporary record and never used by the handler. It does not survive in `WorldObject_Monster` or its image session.
 
-The shared [`CreatureType`](../protocol-types.md#creaturetype) table records all five project names and the behavior this client confirms. Most importantly, value `1`, Passable, is explicitly ignored by the destination-object blocking check. Value `2`, Mundane, identifies an NPC and is the only value followed by `name`. Values `1`, `2`, and `3` also select distinct per-object collision levels; values `0` and `4` share the default.
+The shared [`CreatureType`](../protocol-types.md#creaturetype) table records the behavior this client confirms and keeps uncertain value names separate from related-source aliases. Most importantly, value `1`, Passable, is explicitly ignored by the destination-object blocking check. Value `2`, Mundane, identifies an NPC and is the only value followed by `name`. Values `1`, `2`, and `3` also select distinct per-object collision levels; values `0` and `4` share the default.
 
 Project-owner observation identifies Bubble Block, Bubble Shield, Mud Wall, and Fortress as visible examples of this distinction. Their server-created monster objects use sprite IDs `451` and `452` with `creature_type` value `1`, so the player can walk and pathfind through them. The sprite ID does not make an object passable. Sending the same sprite with type `0` would create an ordinary blocking monster object, while another monster sprite sent with type `1` would receive the same passable treatment.
 

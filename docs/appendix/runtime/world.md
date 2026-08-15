@@ -340,7 +340,7 @@ struct WorldObjectNamePaneFields {
 
 Creature type is retained at `+0x1EC`. Construction maps types `1`, `2`, and `3` to `collision_level` values `0x96`, `0x8C`, and `0x82`; other values receive `0x78`. The map collision cache scans a tile's objects and keeps the highest value. Proposed movement also checks [`CreatureType`](../../network/protocol-types.md#creaturetype) directly: Passable value `1` never blocks, while normal instances of the other types do.
 
-The inherited living-object byte at `+0xD4` is a separate nonblocking state. The living constructor clears it, and normal monster creation does not set it. Type `3`, project-named Solid, has a special movement branch that permits it only if this state has already become true. The client path that would set the state on a monster remains unresolved.
+The inherited living-object byte at `+0xD4` is a separate nonblocking state. The living constructor clears it, and normal monster creation does not set it. Creature type `3` has a special movement branch that permits it only if this state has already become true. The client path that would set the state on a monster remains unresolved, as does the friendly name for type `3`.
 
 Living objects also own four timed motion slots at `+0x194`. Each slot records a channel, motion value, 16-bit parameter, and optional expiration tick. A zero expiration means the slot has no timeout; otherwise the client stores the current tick plus the supplied duration.
 

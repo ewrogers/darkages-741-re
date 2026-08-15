@@ -33,19 +33,21 @@ Used by [`CSay`](client/014-0x0e-say.md) and [`SSay`](server/013-0x0d-say.md). S
 
 ## CreatureType
 
-`CreatureType` describes the kind of `WorldObject_Monster` carried by `SDrawObjects`. The names are project-owner protocol vocabulary. The client confirms several value-specific behaviors, but it does not contain a friendly enum table.
+`CreatureType` describes the kind of `WorldObject_Monster` carried by `SDrawObjects`. The client confirms several value-specific behaviors, but it does not contain a friendly enum table. Names remain behavioral labels unless their provenance is stated explicitly.
 
 | Value | Name | Client 7.41 evidence |
 | ---: | --- | --- |
 | `0` | Monster | Uses the default collision level and normally blocks movement |
 | `1` | Passable | The destination-object check explicitly skips blocking for this value |
 | `2` | Mundane | An NPC; the only value followed by a `string8` name, which becomes a visible name pane |
-| `3` | Solid | Blocks normally and uses Tab-map level `130`; if inherited nonblocking state is set, this is the only non-Passable type allowed through |
-| `4` | Aisling | Always follows the default blocking branch and uses Tab-map level `120` |
+| `3` | Unknown, teal | Blocks normally and uses Tab-map level `130`; if inherited nonblocking state is set, this is the only non-Passable type allowed through |
+| `4` | Unknown, default | Always follows the default blocking branch and uses Tab-map level `120`; live-server use is not confirmed |
 
 Construction stores the type on `WorldObject_Monster` and selects collision levels `0x96`, `0x8C`, and `0x82` for values `1`, `2`, and `3`. Other values, including `4`, use `0x78`. These become levels `150`, `140`, `130`, and `120` on the [Tab map](../rendering/tab-map.md#choosing-one-level). Level `130` draws a teal marker and level `120` draws a red marker. This display classification is separate from the proposed-movement decision.
 
-Living objects have a separate nonblocking state at `+0xD4`. Normal monster construction clears it. With that state clear, types `3` and `4` both block direct movement and pathfinding. If another runtime path sets it, type `3` becomes passable through a special branch, while type `4` still blocks. No active packet path that sets this state on a monster has been confirmed, so the practical in-game difference currently confirmed is their Tab-map marker classification. The names Solid and Aisling remain project-owner vocabulary rather than client-recovered meanings.
+Living objects have a separate nonblocking state at `+0xD4`. Normal monster construction clears it. With that state clear, types `3` and `4` both block direct movement and pathfinding. If another runtime path sets it, type `3` becomes passable through a special branch, while type `4` still blocks. No active packet path that sets this state on a monster has been confirmed, so the practical in-game difference currently confirmed is their Tab-map marker classification.
+
+Related implementations call type `3` either `Solid` or `WhiteSquare` and type `4` `Aisling`. Those names are not recovered from this client and do not fit the local Tab-map colors cleanly. Normal players arrive through `SDrawHumanObjects`, not this field, and use light-blue level `100`; type `3` is a separate teal level `130`. Until a matching-server packet capture establishes how values `3` and `4` are produced, both names remain unresolved.
 
 Used by [`SDrawObjects`](server/007-0x07-draw-objects.md).
 
