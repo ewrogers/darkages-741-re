@@ -75,6 +75,10 @@ The byte after `direction` is read into the temporary record and never used by t
 
 The shared [`CreatureType`](../protocol-types.md#creaturetype) table records all five project names and the behavior this client confirms. Most importantly, value `1`, Passable, is explicitly ignored by the destination-object blocking check. Value `2`, Mundane, identifies an NPC and is the only value followed by `name`. Values `1`, `2`, and `3` also select distinct per-object collision levels; values `0` and `4` share the default.
 
+Project-owner observation identifies Bubble Block, Bubble Shield, Mud Wall, and Fortress as visible examples of this distinction. Their server-created monster objects use sprite IDs `451` and `452` with `creature_type` value `1`, so the player can walk and pathfind through them. The sprite ID does not make an object passable. Sending the same sprite with type `0` would create an ordinary blocking monster object, while another monster sprite sent with type `1` would receive the same passable treatment.
+
+Types `3` and `4` both block under normal construction. Type `3` receives a distinct teal Tab-map marker and has a conditional pass-through branch if a separate inherited nonblocking state is set. Type `4` receives the default red monster marker and remains blocking even if that state is set. The client clears the state when constructing a monster, and no active packet path that sets it later has been confirmed.
+
 The optional name is not copied into the living object's `+0x112` character buffer. Instead, the client creates an RTTI `WorldObject_Name_Pane`, retains up to 63 name bytes plus a NUL, and attaches that pane at the common world-object `+0x58` field. This is the reliable place to read an NPC-style label in memory.
 
 ## Ground-item records

@@ -40,12 +40,12 @@ Used by [`CSay`](client/014-0x0e-say.md) and [`SSay`](server/013-0x0d-say.md). S
 | `0` | Monster | Uses the default collision level and normally blocks movement |
 | `1` | Passable | The destination-object check explicitly skips blocking for this value |
 | `2` | Mundane | An NPC; the only value followed by a `string8` name, which becomes a visible name pane |
-| `3` | Solid | Uses a distinct collision level and normally blocks movement; the friendly name is not independently recovered |
-| `4` | Aisling | Uses the default client branches; the friendly name is not independently recovered |
+| `3` | Solid | Blocks normally and uses Tab-map level `130`; if inherited nonblocking state is set, this is the only non-Passable type allowed through |
+| `4` | Aisling | Always follows the default blocking branch and uses Tab-map level `120` |
 
-Construction stores the type on `WorldObject_Monster` and selects collision levels `0x96`, `0x8C`, and `0x82` for values `1`, `2`, and `3`. Other values use `0x78`. The map's collision cache retains the highest object level in each tile, but the proposed-movement check also tests `creature_type` directly.
+Construction stores the type on `WorldObject_Monster` and selects collision levels `0x96`, `0x8C`, and `0x82` for values `1`, `2`, and `3`. Other values, including `4`, use `0x78`. These become levels `150`, `140`, `130`, and `120` on the [Tab map](../rendering/tab-map.md#choosing-one-level). Level `130` draws a teal marker and level `120` draws a red marker. This display classification is separate from the proposed-movement decision.
 
-Living objects have a separate nonblocking state at `+0xD4`. Normal monster construction clears it. If another runtime path sets it, type `3` is the only non-Passable creature allowed through that special branch. No active packet path that sets this state on a monster has been confirmed.
+Living objects have a separate nonblocking state at `+0xD4`. Normal monster construction clears it. With that state clear, types `3` and `4` both block direct movement and pathfinding. If another runtime path sets it, type `3` becomes passable through a special branch, while type `4` still blocks. No active packet path that sets this state on a monster has been confirmed, so the practical in-game difference currently confirmed is their Tab-map marker classification. The names Solid and Aisling remain project-owner vocabulary rather than client-recovered meanings.
 
 Used by [`SDrawObjects`](server/007-0x07-draw-objects.md).
 
