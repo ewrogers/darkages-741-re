@@ -19,6 +19,7 @@
   - [Native UI controls](systems/ui-controls.md)
   - [UI layout files](systems/ui-layouts.md)
   - [Asset loading and lifetime](systems/asset-loading.md)
+  - [Random number generation](systems/randomness.md)
   - [Movement and swimming](systems/movement-and-swimming.md)
   - [World interactions](systems/world-interactions.md)
   - [Pathfinding and following](systems/pathfinding-and-pursuit.md)

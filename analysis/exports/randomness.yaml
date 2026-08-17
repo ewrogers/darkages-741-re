@@ -1,0 +1,42 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: "0x00400000"
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: "0x00622873"
+    name: crt_time
+    confidence: high
+    evidence: "Reads Windows FILETIME and returns Unix-epoch seconds. Four client seed sites pass this result directly to crt_srand; fishing adds timeGetTime()."
+  - address: "0x006275DE"
+    name: crt_srand
+    confidence: high
+    evidence: "Overwrites the calling thread's CRT random state at per-thread-data offset 0x14."
+  - address: "0x006275F0"
+    name: crt_rand
+    confidence: high
+    evidence: "Updates the calling thread's 32-bit state with state * 0x343FD + 0x269EC3 and returns bits 16 through 30."
+  - address: "0x0062A256"
+    name: crt_rand_s
+    confidence: high
+    evidence: "Clears a u32 output, dynamically resolves ADVAPI32 SystemFunction036, and asks it to fill four bytes."
+notes:
+  - address: "0x00433444"
+    text: "net_configure_default_endpoint seeds crt_rand with Unix time in seconds before reading or creating the persistent installation registry values."
+  - address: "0x004796E0"
+    text: "ui_fishing_dialog_ctor seeds crt_rand with Unix time in seconds plus timeGetTime before starting its 50 ms updates."
+  - address: "0x004BABEA"
+    text: "net_send_login_request reseeds crt_rand with Unix time in seconds immediately before generating login block masks and its four-byte nonce."
+  - address: "0x0050E891"
+    text: "file_load_motion_effect_table seeds crt_rand with Unix time in seconds on its guarded first-initialization path."
+  - address: "0x00563960"
+    text: "net_socket_ctor seeds the calling thread's crt_rand state with Unix time in seconds."
+  - address: "0x0056801D"
+    text: "net_encrypt_client_packet calls crt_rand_s for a 32-bit value and does not check its return code before deriving packet seed values."
+  - address: "0x006275E3"
+    text: "crt_srand resolves the calling thread's CRT data block and stores the supplied seed at offset 0x14."
+  - address: "0x006275F0"
+    text: "Direct cross-references contain 46 crt_rand call instructions in 24 functions. Consumers include installation setup, login masking, the CMerchant and CPursuit inner wrapper, an SK endpoint branch, fishing, pane timers, logo palettes, moving effects, motion effects, and other visual helpers."

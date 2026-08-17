@@ -5297,3 +5297,4 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `crt_srand` | `0x006275DE` | high | Stores the seed used by the client runtime random-number state. |
 | `crt_rand` | `0x006275F0` | high | Implements the Microsoft runtime linear-congruential update and returns a 15-bit value. |
 | `crt_stricmp` | `0x00627DB7` | high | Compares zero-terminated byte strings without ASCII case; uses direct A-through-Z folding in the C locale and the active CRT locale mapping otherwise. |
+| `crt_rand_s` | `0x0062A256` | high | Clears a u32 output, dynamically resolves ADVAPI32 SystemFunction036, and asks it to fill four bytes. |
