@@ -179,10 +179,18 @@ The transient RTTI packet object is 0x264 bytes. Normal appearance fields are re
 
 The object ID remains at world-object offset `+0x24`; Y and X remain at `+0x40` and `+0x44`. The full layouts are in [World objects](../../appendix/runtime/world.md#human-appearance).
 
+## Current-user hide refresh during movement
+
+An instant Hide or unhide update can race the acknowledgement of a local step. In a captured failure, the current-user record carried position `(9, 16)`, direction west, entity ID `641862`, and packed body `0x50` (`MaleInvisible`). The following movement acknowledgement committed the local object at `(10, 16)`. The screen kept the old appearance and tile until an F5 refresh, which then showed the translucent player at `(10, 16)`.
+
+This establishes a coordinate race: the mid-step `SDrawHumanObjects` record describes the pre-step tile, while the acknowledgement completes the move to the next tile. The client does not reliably retain the simultaneous appearance transition. The same failure occurs when Hide wears off during a step. Stationary Hide changes work normally, and equipment-only refreshes observed during movement finish the animation and snap to the correct tile.
+
+The tested runtime mitigation defers only a current-user record whose hidden or translucent state differs from native state. After walking becomes idle and the native position advances away from the packet position, it rewrites the copied record to the committed coordinates and replays it. See [Translucent walk refresh](../../appendix/runtime-patches/translucent-walk-refresh.md).
+
 ## Supplied login trace
 
 The supplied login record decodes completely with this layout. It places the local player at `(43, 40)`, facing down, with packed body `0x10`. That selects the M-prefix body sprite `1`, pants color zero, no translucency, no group advertisement, and light-mask selector zero. The two strings consume the remainder exactly, with no unexplained bytes.
 
 ## Known limits
 
-The six monster-form bytes remain unresolved. The client confirms that `rest_position` changes standing-motion setup, but the value names still need runtime examples. Palette indexes are recorded as indexes because their final colors depend on the active palette.
+The six monster-form bytes remain unresolved. The client confirms that `rest_position` changes standing-motion setup, but the value names still need runtime examples. Palette indexes are recorded as indexes because their final colors depend on the active palette. The capture proves the stale-coordinate ordering in the Hide failure, but the exact native branch that loses the appearance transition is not yet established statically.

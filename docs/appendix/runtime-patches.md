@@ -6,6 +6,7 @@ Patch pages use short names based on the visible behavior. In-place changes use 
 - [Multiple clients](runtime-patches/multiple-clients.md)
 - [Stuck modifiers](runtime-patches/stuck-modifiers.md)
 - [Stale pursuit](runtime-patches/stale-pursuit.md)
+- [Translucent walk refresh](runtime-patches/translucent-walk-refresh.md)
 - [Bulletin pagination](runtime-patches/bulletin-pagination.md)
 - [Walk-route collision](runtime-patches/walk-route-collision.md)
 - [Auto-follow pathfinding](runtime-patches/auto-follow-pathfinding.md)

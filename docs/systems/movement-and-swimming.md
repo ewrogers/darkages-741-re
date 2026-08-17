@@ -75,6 +75,12 @@ The local `ScrollLevel` preference changes only how the accepted tile step is an
 
 `CMove` is sent immediately after the animation sequence is selected. The preference does not change its body, step counter, send path, or the server's movement validation. See [Game settings](game-settings.md#scroll-level-and-movement-timing) for the frame and pixel-step tables.
 
+## Appearance refresh during a step
+
+An instant Hide or unhide can make [`SDrawHumanObjects`](../network/server/051-0x33-draw-human-objects.md#current-user-hide-refresh-during-movement) arrive with the local player's pre-step coordinates before the movement acknowledgement commits the next tile. The client can then retain the old appearance and tile until an F5 refresh. Equipment-only appearance changes observed during a step do not show this failure.
+
+The tested [Translucent walk refresh](../appendix/runtime-patches/translucent-walk-refresh.md) mitigation waits for the step to commit, substitutes the native coordinates into a bounded copy of the appearance record, and replays that record on the main thread.
+
 ## Visible swimming form
 
 [`SDrawHumanObjects`](../network/server/051-0x33-draw-human-objects.md) carries a packed appearance byte. The project protocol calls high-nibble forms `0x80` and `0x90` `MaleHead` and `FemaleHead`. They select body resource `5` with M and W resource prefixes.
