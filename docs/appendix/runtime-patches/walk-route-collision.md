@@ -331,7 +331,7 @@ wait:      confirmed map B and entry position
 segment 2: map B, entry tile ... next warp or goal
 ```
 
-For daRPC, publish the new vector through its existing route observer after installation, then wait for its atomic `location.changed` publication at a warp. That event pairs the staged map identity with the following position. Validate the expected map and optional entry region, then submit the next segment with a new revision. A timeout, unexpected map, manual movement, disconnect, or authoritative correction cancels or returns control to the external planner.
+After installing a segment, wait for the confirmed map and entry position before submitting the next one. Validate the expected map and optional entry region. A timeout, unexpected map, manual movement, disconnect, or authoritative correction should cancel the pending trip or return control to the external planner.
 
 ## Replacing BFS with A*
 

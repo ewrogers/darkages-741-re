@@ -52,7 +52,7 @@ The implementation validates the client fingerprint and runs on the main thread.
 
 ## Verification
 
-The project owner reproduced the failure and confirmed the mitigation in a live Eidolon session. The implementation is in da-rpc commit [`fe548f366acc780d44e237a747f600f6c2d17c5e`](https://github.com/ewrogers/da-rpc/commit/fe548f366acc780d44e237a747f600f6c2d17c5e). Its workspace tests, Clippy checks, mdBook build, focused 32-bit Windows tests, and hook harness passed. The optimized idle path averaged zero microseconds over about 309,000 calls, with a measured maximum of 398 microseconds.
+The project owner reproduced the failure and confirmed the mitigation in a live Eidolon session.
 
 ## Rejected instruction patch
 

@@ -322,20 +322,6 @@ For a smaller change, a per-map tile exclusion layer can keep the native BFS. Th
 
 All rule publication, route validation, vector mutation, and native calls must follow the normal injected-command rules: bounded data crosses IPC, the game-thread dispatcher owns client changes, and hooks never wait for IPC or logging.
 
-## How daRPC handles routes today
-
-The local daRPC source reviewed at commit `8dfa057d73d12807f5763cbad3b4d76fcb84b651` does not inject a caller-supplied tile list. Its destination command still performs a full reset, calls `ui_world_pane_build_path_to_tile`, and starts the first native step.
-
-Its `path_control` hook improves that native route in three places:
-
-- the BFS collision call requires both live collision and complete raw-map collision to accept an edge;
-- the queued-step call checks the movement result that the stock client ignores; and
-- the BFS entry hook captures the completed native vector for route telemetry.
-
-For daRPC-owned destination walks, it retains the requested goal, replans after a blocked step or authoritative position correction, treats 1.2 seconds without confirmed progress as stalled, and retries `no_path` results for at most five seconds with delays from 250 ms through one second. Map changes clear that retained single-map destination.
-
-The best extension is therefore additive: keep the current destination command for ordinary native planning, add a per-map exclusion snapshot to the existing collision wrapper, and add a separate exact-route command that builds the same native vector on the main thread. A higher-level controller can sequence those exact routes across confirmed map changes.
-
 ## Adding follow-only mode
 
 A small launcher-installed runtime patch can reuse the native path search while adding:
