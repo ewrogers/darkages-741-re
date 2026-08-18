@@ -82,6 +82,10 @@ The image-button path has two stages. `ui_layout_prepare_image_button` reads the
 
 Some older UI images also pass through `ui_layout_get_legacy_palette_for_image`. That helper uses a hardcoded filename and prefix table for assets such as `album.epf`, `legends.epf`, and `staff.epf`; the selector is not stored in the layout grammar. Unknown filenames receive selector zero.
 
+The two character-legend layouts, `llegends.txt` and `llegend2.txt`, both give their `LegendImage` control `legends.epf`. `LegendListPane` loads frames 0 through 7 when it is constructed. Its item draw callback selects one of those frames from the first byte of the legend record, then sends that indexed pixmap to the normal renderer.
+
+`legends.epf` is the explicit exception that receives legacy palette number `3`. The ordinary UI image loader combines that number with the UI palette-family selector, producing `0x05000003`. That selector resolves to `gui03.pal` in `setoa.dat`, not to the startup `legend.pal`. Pixel index zero remains the transparent key on this draw path. The second byte of a legend record is separate: it selects the row text color rather than the icon palette. See [EPF images](../file-formats/epf.md) and [PAL color palettes](../file-formats/pal.md).
+
 The matching archive contains 46 underscore-prefixed text layouts with 525 control definitions. Only `TYPE` values 0, 3, and 7 appear in those files. Type 0 is normally the window background. Type 7 is the common named region. Type 3 appears on two agreement buttons. Use a nearby working control as the model instead of assigning a new type from its number alone.
 
 ## Names and action IDs

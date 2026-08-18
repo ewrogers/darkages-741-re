@@ -40,6 +40,12 @@ Pixel data starts at file offset `0x0C`. The frame table starts at:
 
 `file_read_image_metadata` returns the header's frame count, width, and height. `file_load_image_frame` uses the selected record to build the pixmap passed to `render_blit_pixmap`.
 
+## Character legend badges
+
+The character-legend list uses `legends.epf` from `setoa.dat`. Both of its dialog layouts name that asset as `LegendImage`, and `LegendListPane` loads its first eight frames. The legend record's first byte chooses the frame during `ui_legend_list_draw_item`.
+
+The general EPF loader recognizes this filename and assigns legacy palette number `3`. It combines that number with the standard UI palette family, so the renderer resolves selector `0x05000003` through `gui03.pal` in `setoa.dat`. This is distinct from profile EPFs, whose decoder explicitly uses `legend.pal`. Indexed pixel zero is transparent for the legend badge blit.
+
 The loader also reads `data_offset_a` from the next 16-byte table position when it calculates the selected frame's second byte range. Of 35,324 local EPF entries, 9,992 store a terminal frame-shaped record for this final boundary. The other 25,332 end after the declared frame records. A final-frame load on the shorter form can therefore read beyond the archive entry even when the drawing path does not use that range. Preserve the source variant when rebuilding a container.
 
 The lighting compositor also uses the ordinary EPF reader. In Darkness map mode, a server-supplied human light selector `N` loads frame zero from `mask1%02d.epf`, then treats its indexed pixels as a light mask centered on that human. See [Map lighting](../rendering/lighting.md).
