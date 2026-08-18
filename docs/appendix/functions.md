@@ -5244,6 +5244,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_living_start_move_animation` | `0x005E0610` | high | Starts the current image session's movement sequence and passes the local ScrollLevel boolean to its class-specific selector. |
 | `world_living_start_motion` | `0x005E0750` | high | Stores the facing direction, asks the current image session to select a body motion, and schedules its timer using the selector's final duration in milliseconds. |
 | `world_living_object_set_direction` | `0x005E0880` | high | When facing changes, invokes the living-object transition hook, stores direction at +0x192, and refreshes the directional motion or image state. |
+| `world_living_stage_transition_position` | `0x005E0B40` | high | Sets WorldObject_Living transition_active at +0x105 and saves the pending tile Y and X at +0x108 and +0x10C without replacing the committed tile. |
+| `world_living_commit_transition_position` | `0x005E0B90` | high | Copies a staged tile into the committed +0x40 and +0x44 fields, publishes the position change, and clears transition_active. |
+| `world_living_finish_position_transition` | `0x005E0DD0` | high | Clears the render displacement and commits the staged position for object classes whose +0x110 policy byte is zero, including WorldObject_User. |
 | `world_living_update_motion_slot` | `0x005E10B0` | high | Creates or updates one of four 0x14-byte motion slots and stores zero or current tick plus duration as its expiry time. |
 | `world_living_adjust_render_offset_for_direction` | `0x005E16C0` | high | Applies direction-table deltas to the signed WorldObject render-displacement pair at +0x38 and +0x3C. |
 | `world_living_set_render_offset` | `0x005E1770` | high | Replaces the signed render-displacement pair at WorldObject +0x38 and +0x3C independently of tile Y and X. |

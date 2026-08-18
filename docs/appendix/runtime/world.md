@@ -271,7 +271,9 @@ struct WorldObjectMonsterLayout {
     u32 motion_generation;            // +0x100
     bool uses_human_appearance;       // +0x104
     bool transition_active;           // +0x105
-    u8 unknown_106[0x0A];
+    u8 pad_106[2];
+    s32 staged_tile_y;                // +0x108
+    s32 staged_tile_x;                // +0x10C
     bool image_enabled;               // +0x110, constructor writes 1
     bool unknown_111;
     char living_name[0x80];           // +0x112, not filled by SDrawObjects
@@ -438,7 +440,9 @@ struct WorldObjectHumanLayout {
     u32 motion_generation;            // +0x100
     bool uses_human_appearance;      // +0x104, false for monster disguise
     bool transition_active;           // +0x105
-    u8 unknown_106[0x0A];
+    u8 pad_106[2];
+    s32 staged_tile_y;                // +0x108
+    s32 staged_tile_x;                // +0x10C
     bool image_enabled;               // +0x110
     bool unknown_111;
     char name[0x80];                 // +0x112, other players

@@ -75,6 +75,27 @@ The client remembers which direction first reached each tile. When it finds a go
 
 The seen-tile storage is a fixed 400 by 400 byte array. Version 741 map width and height are one byte each, so a normal map is at most 255 by 255 tiles.
 
+## Replacing a ground route during a step
+
+The stock ground-click handler preserves an in-progress step when a new destination is selected. If the local `WorldObject_User` has `transition_active` set, the handler builds the replacement route from the staged destination rather than the still-committed tile.
+
+It also asks the active image session whether another step may start immediately. Human walking motion is constructed with motion flag value `2`, while this readiness check tests bit `0x01`, so an ordinary walk returns false. The new route remains queued. When the current animation commits its staged tile, the local position-change notification advances the replacement route from that tile.
+
+```c
+origin = self->transition_active
+    ? self->staged_tile
+    : self->tile;
+
+reset_old_route();
+build_path(origin, clicked_tile);
+
+if (movement_sequence_is_ready())
+    advance_queued_path();
+// Otherwise the current step's completion advances it.
+```
+
+An external movement producer must preserve both parts of this behavior. Building from the committed tile and immediately calling `ui_world_pane_advance_queued_path` can start a second predicted step before the first one commits. The packet remains valid, but the local object can end one tile away from the server-confirmed position until [`SUserPosition`](../network/server/004-0x04-user-position.md) restores it.
+
 ## Warp tiles are not client obstacles
 
 A map exit looks like an ordinary passable tile to this pathfinder. The server decides that stepping on it changes maps. No warp or exit marker is present in the collision information used by the client BFS.

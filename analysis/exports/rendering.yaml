@@ -3595,6 +3595,18 @@ functions:
     name: world_living_start_motion
     confidence: high
     evidence: Stores the facing direction, asks the current image session to select a body motion, and schedules its timer using the selector's final duration in milliseconds.
+  - address: "0x005E0B40"
+    name: world_living_stage_transition_position
+    confidence: high
+    evidence: Sets WorldObject_Living transition_active at +0x105 and saves the pending tile Y and X at +0x108 and +0x10C without replacing the committed tile.
+  - address: "0x005E0B90"
+    name: world_living_commit_transition_position
+    confidence: high
+    evidence: Copies a staged tile into the committed +0x40 and +0x44 fields, publishes the position change, and clears transition_active.
+  - address: "0x005E0DD0"
+    name: world_living_finish_position_transition
+    confidence: high
+    evidence: Clears the render displacement and commits the staged position for object classes whose +0x110 policy byte is zero, including WorldObject_User.
   - address: "0x005E10B0"
     name: world_living_update_motion_slot
     confidence: high

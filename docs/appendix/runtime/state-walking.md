@@ -189,6 +189,42 @@ NewExtraStatusInfoPane  *extra_status; // GUIBackPane +0x4FA4
 
 The status objects are session models even when their page is not selected. They are created with `GUIBackPane`, updated from `SStatus`, and remain useful while another lower-tray page is active. Their complete layouts are in [Status and mail panes](inventory-ui.md#status-and-mail-panes).
 
+### Local movement transition
+
+The local `WorldObject_User` owns the flag that separates a committed tile from an in-progress visual step. Resolve the complete `WorldPane`, then resolve the local user on the game thread:
+
+```c
+WorldPane *world = (WorldPane *)(
+    *(u8 **)(module_base + 0x0033D964) - 0x2EC
+);
+
+// Static 0x005EEDB0, RVA 0x001EEDB0, x86 __thiscall.
+WorldObject_User *self = world_get_self_user_object(world);
+```
+
+The subtraction is byte-based. The global stores the adjusted `WorldPane + 0x2EC` interface, not the complete object pointer. The native helper is appropriate only on the game thread. A read-only walker can instead resolve `WorldUserFunc +0x1050` as the self object ID and look it up in the `WorldObjectList` ID tree.
+
+| Field | Offset | Type | Meaning |
+| --- | ---: | --- | --- |
+| Render displacement Y, X | `+0x038`, `+0x03C` | `s32`, `s32` | Pixel offset used while drawing between tiles |
+| Committed tile Y, X | `+0x040`, `+0x044` | `s32`, `s32` | Tile currently present in the world object index |
+| Motion generation | `+0x100` | `u32` | Changes when a new timed motion replaces the old one |
+| Transition active | `+0x105` | `u8` boolean | The staged tile has not yet been committed |
+| Staged tile Y, X | `+0x108`, `+0x10C` | `s32`, `s32` | Destination of the current visual step |
+
+Use the staged pair as the effective route origin while the flag is set:
+
+```c
+Tile committed = { self->tile_y, self->tile_x };
+Tile effective = self->transition_active
+    ? (Tile){ self->staged_tile_y, self->staged_tile_x }
+    : committed;
+```
+
+`WorldPane +0x294` is the separate queued-route active flag. Neither flag is the server-confirmed position. Packet-driven state should retain the position from accepted [`SMove`](../../network/server/011-0x0b-move.md) and authoritative [`SUserPosition`](../../network/server/004-0x04-user-position.md) independently.
+
+Commands that start or replace movement must run on the game thread. For a read-only cross-process snapshot, read the object pointer, `motion_generation`, `transition_active`, the coordinate fields, and then the same three markers again. Discard and retry the sample if the pointer, generation, or transition flag changed. This only makes observation safer; it does not make off-thread mutation valid.
+
 ### Hidden and translucent appearance
 
 There is no confirmed authoritative `self_is_hidden` field. Find the local world object by looking up `WorldUserFunc + 0x1050` in the world object's ID tree. A `WorldObject_Human` stores `is_translucent` at `+0xD5`.

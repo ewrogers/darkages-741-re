@@ -61,6 +61,29 @@ The action-state bit rejects the move before ordinary collision checks and befor
 
 The static collision step examines the two live `WorldObject_Static` tile IDs on the source and destination edges. Ground tile IDs are not part of that collision test. They are consulted earlier through the cached height-1 state. A packet-driven door change therefore takes effect immediately because [`SStaticObjectState`](../network/server/050-0x32-static-object-state.md) replaces the live static tile ID that this check sends to `SOTP.DAT`. See [SOTP static tile flags](../file-formats/sotp.md).
 
+## Predicted position during a step
+
+The local player does not replace its tile coordinates when a step starts. It keeps the committed tile in `tile_y` and `tile_x`, sets `transition_active`, and saves the destination in a second coordinate pair. The render displacement moves the character between those tiles during the 456 ms animation.
+
+```c
+struct local_step_state {
+    s32 render_offset_y;       // WorldObject_User +0x038
+    s32 render_offset_x;       // WorldObject_User +0x03C
+    s32 tile_y;                // +0x040, last committed tile
+    s32 tile_x;                // +0x044
+    u32 motion_generation;     // +0x100
+    bool transition_active;    // +0x105
+    s32 staged_tile_y;         // +0x108
+    s32 staged_tile_x;         // +0x10C
+};
+```
+
+`world_living_stage_transition_position` sets the flag and staged coordinates. Animation ticks change the render displacement without changing the committed tile. At the end, `world_living_finish_position_transition` clears the displacement, and `world_living_commit_transition_position` copies the staged coordinates into `tile_y` and `tile_x`, reindexes the object, and clears the flag. The local user's completion notification then lets `ui_world_pane_handle_self_move_message` consume the next queued path step.
+
+Starting another predicted step from `tile_y` and `tile_x` while the flag is set is unsafe. If `O` is the committed tile, `A` is the staged tile, and `d` is the new direction, the client can stage `O + d` while the server applies the packet from `A` and reaches `A + d`. The two positions then differ by the previous one-tile step. An integration must either wait for the transition to commit or use the staged coordinates as the replacement route's origin and leave execution queued until the current walk completes.
+
+This flag is not a server acknowledgement flag and is not the queued-route flag. The exact runtime access path is in [Runtime state walking](../appendix/runtime/state-walking.md#local-movement-transition).
+
 ## Server acknowledgement and correction
 
 Each accepted local step sends [`CMove`](../network/client/006-0x06-move.md) with a rolling byte counter. [`SMove`](../network/server/011-0x0b-move.md) echoes that counter and the server's previous position.
