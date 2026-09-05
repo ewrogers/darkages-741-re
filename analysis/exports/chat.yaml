@@ -67,3 +67,7 @@ functions:
     name: ui_chatting_pane_timer_scalar_deleting_dtor_thunk
     confidence: high
     evidence: "Adjusts TimerHandler this and enters ChattingPane's scalar deleting destructor."
+  - address: "0x005F9A10"
+    name: map_interface_is_monster_object
+    confidence: high
+    evidence: "MapInterface vtable 0x0068BFE4 slot +0x3C; adjusts this by -0x2E8 and calls world_find_object_by_id. Disassembly returns true only for an existing object with u32 category +0x2C == 2, including monsters and Mundanes regardless of creature subtype. Missing IDs return false. ChattingPane skips such SSay senders when MonsterSayRecordMode is zero."

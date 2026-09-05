@@ -48,6 +48,12 @@ The embedded `NewSystemMessageTextPane` supplies the scrollable text behavior. E
 
 The chat pane consumes both [`SSay`](../network/server/013-0x0d-say.md) and [`SMessage`](../network/server/010-0x0a-message.md). It retains Say and Shout speech but ignores Chant. For `SMessage`, it accepts types `0x00`, `0x0B`, and `0x0C` with palette indexes `0x58`, `0x77`, and `0x54` respectively.
 
+The Say and Shout copy is subject to [setting 12](game-settings.md), `MonsterSayRecordMode`, which defaults to off. In `ui_chatting_pane_handle_say_packet`, off applies a sender-ID filter when the world interface is available; a true filter result skips the chat append. On bypasses that filter. Chant is rejected before this setting is checked. This changes the chat copy, not the three-second world display or `NewSystemMessagePane` history. Neither `SMessage` consumer checks setting 12.
+
+The project owner reports the setting label as "record mundane chat". Despite appearing alongside server-managed settings, row 12 is client-managed: toggling it changes local configuration without sending `CUserSetting`.
+
+The filter is `map_interface_is_monster_object`, listed in the [function reference](../appendix/functions.md). It looks up `SSay.sender_id` in the current world and returns true only when the object exists and its broad category is `2`. This includes both monsters and Mundanes, which share `WorldObject_Monster`; it does not check the narrower creature subtype. Players and missing sender IDs return false, so this filter permits their chat copy even with setting 12 off. It does not inspect the text, sprite, name, or an ID range.
+
 Text passes through the client's formatted-text parser, which preserves inline palette changes. The pane begins with seven blank rows and scrolls as new lines arrive.
 
 Alt+J toggles a local plain-text transcript. The filename is `<character><month><day><hour><minute>.txt`, using two digits for every time field and no year. The client uses local time, writes start and end markers, and closes an open transcript when the pane is destroyed.
@@ -61,7 +67,7 @@ Say and Shout use the framed `World::BalloonPane` with palette indexes `0xFF` an
 `SMessage` has no independent history flag either. Its type byte is the selector. This gives the server a simple way to choose the result:
 
 ```text
-SSay Say or Shout only    -> temporary object balloon plus chat-window text
+SSay Say or Shout only    -> temporary object balloon plus chat text if the sender filter permits
 SSay Chant only           -> temporary text over the object
 history SMessage only     -> saved message
 SSay plus SMessage        -> world display, chat text, and saved history when accepted

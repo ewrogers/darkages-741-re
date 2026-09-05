@@ -4351,6 +4351,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `map_try_move_local_player` | `0x005F09E0` | high | Starts one accepted local movement step and submits CMove; a special-state rejection also performs a full movement-state reset. |
 | `map_apply_weather_mode` | `0x005F26C0` | high | Creates Snow for mode 1, performs no local setup for project-named Rain mode 2, and enables black ambient plus object light masks for Darkness mode 3. |
 | `map_finish_transfer` | `0x005F2DE0` | high | Destroys MapLoadingPane, advances the WorldPane map generation, and either applies prepared map storage immediately or schedules the alternate completion path. |
+| `map_interface_is_monster_object` | `0x005F9A10` | high | MapInterface vtable 0x0068BFE4 slot +0x3C; adjusts this by -0x2E8 and calls world_find_object_by_id. |
 | `map_interface_apply_world_layout` | `0x005F9B20` | high | MapInterface virtual wrapper that adjusts the interface pointer to its containing WorldPane_Impl and calls render_world_apply_view_layout. |
 | `file_load_static_tile_pixmap` | `0x005FD500` | high | Opens and decodes one base or alternate static HPF resource into a pixmap view. |
 | `file_open_static_tile` | `0x005FD700` | high | Opens stsNNNNN.hpf in alternate mode and falls back to stcNNNNN.hpf when missing. |

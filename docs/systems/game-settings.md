@@ -99,7 +99,7 @@ These choices belong to the client installation, not a character record. Another
 | `9` | `ScrollLevel` | `0` | Selects four-step or eight-step interpolation for the local player's walk animation. It does not change the `CMove` body or server movement rules. |
 | `10` | `SkillSpellSelectByToggle` | `0` | Changes repeated skill and spell selection commands from fixed pane choices to toggling between the paired choices. It does not alter casting delay or animation timing. |
 | `11` | `UserClickMode` | `0` | A nonzero value suppresses the normal [`CRequestObjectInfo`](../network/client/067-0x43-request-object-info.md) subtype `1` request when the clicked world object is another user. Monster and item click paths are unchanged. |
-| `12` | `MonsterSayRecordMode` | `0` | A nonzero value bypasses the normal sender filter before monster speech is added to the local message-recording path. It does not change the speech balloon lifetime. |
+| `12` | `MonsterSayRecordMode` | `0` | Allows Say and Shout from world-object category `2`, including monsters and Mundanes, into chat. When off, an existing sender in that category is excluded. Missing sender IDs pass the filter. Chant remains excluded. See [Messages and history](messages-and-history.md#chat-window-and-transcript). It does not change speech balloon lifetime or `SMessage` history. |
 | `13` | `GroupObjectOption` | `1` | Allows the optional group-advertisement object created from [`SDrawHumanObjects`](../network/server/051-0x33-draw-human-objects.md). Disabling it removes or omits that local overlay. |
 
 These are local behavior switches. None changes a server-owned setting, and only the group-answer option sends a packet as a consequence of later gameplay traffic.
