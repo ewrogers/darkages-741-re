@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x4B` (75) |
-| Transform | derived |
+| Transform | `derived` |
 | Session owner | `WorldUserFunc` |
 | Handler | `net_handle_bounce_server_packet` |
 | Name provenance | Microsoft C++ RTTI in the target |

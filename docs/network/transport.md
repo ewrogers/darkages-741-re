@@ -75,7 +75,7 @@ Most builders create an opcode-first plaintext body and pass it to `net_submit_c
 
 This outgoing convention should not be applied to server packets. The receive path adds its own zero after the decoded body in memory, outside the reported packet length. It does not verify a decrypted packet by checking for a trailing zero. See [Packet transforms](packet-transforms.md#receive-side-zero-bytes) for the distinction.
 
-`net_send_client_packet` chooses no transform, the startup key, or the session key. The final TCP frame is added after that choice.
+`net_send_client_packet` chooses the `raw`, `static`, or `derived` transform mode. The final TCP frame is added after that choice.
 
 Encrypted client packets use a one-byte outgoing sequence. The client writes the current value and increments it for the next encrypted packet. The server tracks those packets with its own receive counter, which advances in step but is separate state. Incoming encrypted server packets use the other direction's sequence, so receive traffic does not advance the client send counter. Raw packets advance neither encrypted sequence.
 

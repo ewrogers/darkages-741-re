@@ -1,15 +1,15 @@
 # Change Password (`CChangePassword`)
 
+<a id="purpose"></a>
+
+The lobby client sends this request after the player enters an account name, the existing password, and a new password. The confirmation field is checked locally and is not sent.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x26` (38) |
 | Transform | `static` |
 | Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
-
-## Purpose
-
-The lobby client sends this request after the player enters an account name, the existing password, and a new password. The confirmation field is checked locally and is not sent.
 
 ## Sent by
 

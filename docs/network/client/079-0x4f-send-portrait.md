@@ -1,23 +1,21 @@
 # Send Portrait (`CSendPortrait`)
 
+<a id="purpose"></a>
+
+The client sends its local portrait and profile text after the server asks for them with `SRequestPortrait`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x4F` (79) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | Verified project protocol name, matched to the local portrait builder. |
-
-## Purpose
-
-The client sends its local portrait and profile text after the server asks for them with `SRequestPortrait`.
 
 `net_send_portrait_profile` calls `net_build_send_portrait`, then submits the completed buffer through the normal client packet path.
 
 ## Sent by
 
-Known static callers lead to:
-
-- `UserInfoPane::UserInfoPane_ForUser`
+Static callers reach `UserInfoPane::UserInfoPane_ForUser`.
 
 `ui_user_info_handle_server_packet` is the confirmed sender. Its `0x49` branch answers the request immediately. Saving the local profile only refreshes the local preview. It does not send this packet on its own.
 

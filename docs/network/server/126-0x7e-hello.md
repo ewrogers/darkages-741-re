@@ -39,7 +39,7 @@ After the next byte completes the transition, the client clears raw-stream mode.
 
 ## Timeout when the client does not reply
 
-The live server has been observed to wait about five seconds for the client's reply to this greeting. If no reply arrives, it sends a startup-key [`0x02` lobby result](002-0x02-login-check.md) with status `0x1E`, then closes the connection. Its declared 65-byte message is:
+The live server has been observed to wait about five seconds for the client's reply to this greeting. If no reply arrives, it sends a `static` [`0x02` lobby result](002-0x02-login-check.md) with status `0x1E`, then closes the connection. Its declared 65-byte message is:
 
 ```text
 You have been idle for too long. Your connection has been closed.

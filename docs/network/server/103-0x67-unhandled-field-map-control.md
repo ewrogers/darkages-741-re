@@ -1,4 +1,6 @@
-# Unhandled Field/Map Control (0x67)
+# Unhandled Field/Map Control
+
+<a id="unhandled-fieldmap-control-0x67"></a>
 
 The live server sends this small control around field-map presentation and map transfer, but the 7.41 client does not assign it a packet class or act on it.
 
@@ -20,7 +22,7 @@ packet ServerControl67 {
 }
 ```
 
-Two captures now show different payload shapes:
+Two supplied captures show different payload shapes:
 
 ```text
 67 00
@@ -31,7 +33,7 @@ The longer form appears once after `SFieldMap` creates the navigation pane and a
 
 ## What the client does
 
-Opcode `0x67` uses the derived session-key transform. It has no entry in `server_packet_factory`, so no RTTI packet object is constructed. The decoded body still enters the pane event path, but none of the target's RTTI-backed pane handlers checks for `0x67`. The world dispatcher returns it unconsumed.
+Opcode `0x67` uses the `derived` transform. It has no entry in `server_packet_factory`, so no RTTI packet object is constructed. The decoded body still enters the pane event path, but none of the target's RTTI-backed pane handlers checks for `0x67`. The world dispatcher returns it unconsumed.
 
 It therefore has no confirmed state, rendering, field-map, map, or loading-pane effect in this client. [`SFieldMap`](046-0x2e-field-map.md) creates the navigation pane. [`SMapPart`](060-0x3c-map-part.md) creates `MapLoadingPane`, advances its percentage, and closes it after the final part.
 

@@ -1,5 +1,9 @@
 # New User Check Alias (`SNewUserCheck`)
 
+<a id="purpose"></a>
+
+This is a compiled alias for the character-creation result. The live lobby captures use opcode `0x02`, but `CreateUserDialogPane` explicitly accepts opcode `0x01` and routes it through the same two stage handlers.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
@@ -7,10 +11,6 @@
 | Transform | `static` |
 | Packet class | None found |
 | Internal name provenance | Project-owner protocol knowledge, supported by the local create-user handler |
-
-## Purpose
-
-This is a compiled alias for the character-creation result. The live lobby captures use opcode `0x02`, but `CreateUserDialogPane` explicitly accepts opcode `0x01` and routes it through the same two stage handlers.
 
 The body is handled directly as a decoded byte buffer. There is no concrete RTTI packet class.
 

@@ -1,15 +1,15 @@
 # Request Homepage (`CRequestHomepage`)
 
+<a id="purpose"></a>
+
+The client asks the server for the homepage URL used by the main menu.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x68` (104) |
 | Transform | `static` |
 | Name provenance | Verified project protocol name; the command and local builder are confirmed. |
-
-## Purpose
-
-The client asks the server for the homepage URL used by the main menu.
 
 ## Sent by
 

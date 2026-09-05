@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x2C` (44) |
-| Transform | derived |
+| Transform | `derived` |
 | Session owner | RTTI class `WorldUserFunc` |
 | UI owner | RTTI classes `NewSkillInventoryPane` and `SkillInvItemPane` |
 | Name provenance | Microsoft C++ RTTI in the target |

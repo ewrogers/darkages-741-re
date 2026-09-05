@@ -1,21 +1,19 @@
 # Remove Equipment (`CRemoveEquipment`)
 
+<a id="purpose"></a>
+
+`CRemoveEquipment` asks the server to remove equipment from one slot. The equipment pane sends it for an ordinary unequip action and for the tilde-key shortcut.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x44` (68) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
-
-## Purpose
-
-The client sends this message for **remove equipment**.
 
 ## Sent by
 
-Known static callers lead to:
-
-- `DialogPane::EquipPane`
+Static callers reach `DialogPane::EquipPane`.
 
 The ordinary equipment action handler accepts UI indices `0` through `17`, adds one, and calls `net_send_remove_equipment`. Wire slots are therefore one-based values `1` through `18`.
 

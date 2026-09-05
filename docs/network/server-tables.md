@@ -45,8 +45,8 @@ Applying the transform again restores the original text. The local table contain
 
 The server has two `SStipulation` modes:
 
-- Mode 0 sends a `u32be` CRC32 for the current decoded greeting. A match displays the local text. A mismatch sends an empty `CStipulation` request.
-- Mode 1 sends a `u16be` zlib size followed by compressed replacement text. The client inflates at most 10,000 bytes, updates `mServer.tbl`, and displays the new greeting.
+- Mode 0 sends a `u32` CRC32 for the current decoded greeting. A match displays the local text. A mismatch sends an empty `CStipulation` request.
+- Mode 1 sends a `u16` zlib size followed by compressed replacement text. The client inflates at most 10,000 bytes, updates `mServer.tbl`, and displays the new greeting.
 
 ```text
 receive greeting CRC
@@ -62,10 +62,12 @@ CRC32 covers the decoded greeting bytes up to the first NUL. It does not cover t
 
 ## Evidence
 
-- `net_load_server_table` at `0x0055A240`
-- `net_save_server_table` at `0x0055A490`
-- `net_transform_server_table_text` at `0x0055A650`
-- `net_apply_multi_server_list` at `0x0055AAD0`
-- `ui_server_select_dialog_handle_multi` at `0x00559E80`
-- `net_handle_stipulation_raw` at `0x004B8570`
-- `net_handle_stipulation` at `0x004B8890`
+- `net_load_server_table`
+- `net_save_server_table`
+- `net_transform_server_table_text`
+- `net_apply_multi_server_list`
+- `ui_server_select_dialog_handle_multi`
+- `net_handle_stipulation_raw`
+- `net_handle_stipulation`
+
+Addresses are collected in the [function reference](../appendix/functions.md).

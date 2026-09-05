@@ -1,17 +1,15 @@
 # Sound Effect (`SSoundEffect`)
 
+<a id="purpose"></a>
+
+The server uses this packet either to play one sound effect or to select background music. The first body byte chooses the form.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x19` (25) |
-| Encoding | derived |
+| Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-The server uses this packet either to play one sound effect or to select background music. The first body byte chooses the form.
-
-The constructor passes opcode `0x19` to the server packet base and installs the exact `SSoundEffect` vtable.
 
 ## Body
 
@@ -41,3 +39,7 @@ The music file callback changes the logical `.mp3` extension to `.mus` when it o
 Track `100` is a no-op, not a stop command. The client has separate functions for stopping music and sound effects, but this packet handler does not call them. No other stop sentinel appears in this path.
 
 See [Audio system](../../audio/README.md) for asset lookup, mixing, and fades. No paired client packet is required.
+
+## Name evidence
+
+The constructor passes opcode `0x19` to the server packet base and installs the exact `SSoundEffect` vtable.

@@ -9,6 +9,7 @@ on:
       - "docs/**"
       - "analysis/**"
       - "binaryninja/scripts/**"
+      - "scripts/**"
       - "book.toml"
       - "README.md"
       - "AGENTS.md"
@@ -40,6 +41,9 @@ jobs:
           tar -xzf mdbook.tar.gz
           chmod +x mdbook
           echo "$PWD" >> "$GITHUB_PATH"
+
+      - name: Check navigation and packet indexes
+        run: python3 scripts/build_book_summary.py --check
 
       - name: Build mdBook
         run: mdbook build

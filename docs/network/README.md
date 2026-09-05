@@ -14,13 +14,15 @@ TCP socket
 
 Keeping these layers separate makes packet work much easier. A gameplay packet page can describe fields without repeating socket or encryption details.
 
-## Start here
+<a id="start-here"></a>
+
+## Read next
 
 - [Initial connection](connection.md) explains how the host, port, and socket are chosen.
 - [Transport](transport.md) follows packets between game code and TCP.
 - [Packet body notation](packet-body-notation.md) defines the field lists used on packet pages.
 - [Shared protocol types](protocol-types.md) centralizes enums and bit flags used by several packets.
-- [Packet transforms](packet-transforms.md) explains the startup key, session key, seed table, and the `CMerchant`/`CPursuit` inner wrapper.
+- [Packet transforms](packet-transforms.md) explains `raw`, `static`, and `derived` modes, their key and sequence state, and the `CMerchant`/`CPursuit` inner wrapper.
 - [Checksums](checksums.md) documents the custom CRC16 and standard CRC32.
 - [Server list and greeting](server-tables.md) covers `mServer.tbl` and stipulation updates.
 - [Packet interaction flows](interaction-flows.md) follows bulletin, exchange, group, and NPC screen-menu conversations in both directions.

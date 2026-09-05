@@ -6,11 +6,13 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x11` (17) |
-| Transform | derived |
+| Transform | `derived` |
 | Runtime owner | `WorldPane` |
 | Name provenance | Microsoft C++ RTTI in the target |
 
-## Plaintext body
+<a id="plaintext-body"></a>
+
+## Body
 
 ```text
 packet SChangeDirection {

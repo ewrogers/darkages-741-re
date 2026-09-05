@@ -1,15 +1,15 @@
 # Self Look (`SSelfLook`)
 
+<a id="purpose"></a>
+
+The server uses this packet to fill the local character profile. One response supplies the visible nation, guild and title text, group settings, recruiting advertisement, character class, and legend marks.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x39` (57) |
-| Encoding | derived |
+| Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-The server uses this packet to fill the local character profile. One response supplies the visible nation, guild and title text, group settings, recruiting advertisement, character class, and legend marks.
 
 It normally answers the empty [Self Look (`CSelfLook`)](../../network/client/045-0x2d-self-look.md) request. During login, the client can request it before the rest of the character UI has finished opening.
 

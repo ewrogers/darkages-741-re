@@ -1,15 +1,15 @@
 # Change Slot (`CChangeSlot`)
 
+<a id="purpose"></a>
+
+The client sends this message when an item, spell, or skill is dragged from one slot to another. A category byte selects which of the three slot collections the server should change.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x30` (48) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
-
-## Purpose
-
-The client sends this message when an item, spell, or skill is dragged from one slot to another. A category byte selects which of the three slot collections the server should change.
 
 ## Sent by
 

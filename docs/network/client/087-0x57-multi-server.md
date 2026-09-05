@@ -1,5 +1,9 @@
 # Multi Server (`CMulti`)
 
+<a id="purpose"></a>
+
+This packet either requests a replacement server list or submits the server ID selected in `ServerSelectDialogPane`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
@@ -7,10 +11,6 @@
 | Transform | `static` |
 | Behavioral alias | `CMultiServer` |
 | Name provenance | Project-owner protocol name; server-selection behavior confirmed locally |
-
-## Purpose
-
-This packet either requests a replacement server list or submits the server ID selected in `ServerSelectDialogPane`.
 
 The exact client protocol name is `CMulti`. The more descriptive `CMultiServer` alias is supported by the caller, which selects a server record from configuration, and by the `ServerSelectDialogPane` RTTI owner. Server opcode `0x56` has the exact RTTI name [`SMulti`](../server/086-0x56-multi.md).
 

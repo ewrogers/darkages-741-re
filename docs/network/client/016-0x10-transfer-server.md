@@ -1,15 +1,15 @@
 # Transfer Server (`CTransferServer`)
 
+<a id="purpose"></a>
+
+The client sends this message after reconnecting to the endpoint in [`STransferServer`](../server/003-0x03-transfer-server.md). It proves possession of the handoff token by returning it unchanged to the new server.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x10` (16) |
 | Transform | `raw` |
 | Name provenance | The class name comes from related class vocabulary matched to the locally confirmed builder behavior. |
-
-## Purpose
-
-The client sends this message after reconnecting to the endpoint in [`STransferServer`](../server/003-0x03-transfer-server.md). It proves possession of the handoff token by returning it unchanged to the new server.
 
 ## Sent by
 

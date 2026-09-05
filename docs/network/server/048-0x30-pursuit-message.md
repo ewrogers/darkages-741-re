@@ -77,7 +77,7 @@ Types 1 and 3 are real client branches. Type 5 behaves as a simple text-input me
 
 ## Example decoded bodies
 
-These examples are complete decoded packet bodies. They do not include the frame header, sequence, trailer, or session-key transform. A server must apply the ordinary derived transform for opcode `0x30` before framing the packet.
+These examples are complete decoded packet bodies. They do not include the frame header, sequence, trailer, or `derived` transform. A server must apply the ordinary derived transform for opcode `0x30` before framing the packet.
 
 Every non-close example uses target type `1`, target ID `0x12345678`, pursuit ID `0x0500`, current step 5, speaker sprite `0x401E`, and speaker name `Guide`. Previous and Next are enabled. `show_graphic` is zero so the examples do not depend on a matching local illustration. The skipped common-header bytes are also zero.
 

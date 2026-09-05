@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x48` (72) |
-| Transform | derived |
+| Transform | `derived` |
 | UI owner | `SpellDelayControlPane` |
 | Handler | `ui_spell_delay_control_pane_handle_network_event` |
 | Name provenance | Microsoft C++ RTTI in the target |

@@ -6,12 +6,14 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x0B` (11) |
-| Transform | static |
+| Transform | `static` |
 | Runtime owners | `OptionPane`, `SafeQuitAlert`, `MainMenuPane`, and `AgreementDialogPane` |
 | Paired packet | [`SQuit`](../server/076-0x4c-quit.md) |
 | Name provenance | Project-owner protocol name matched to the locally confirmed builders |
 
-## Plaintext body
+<a id="plaintext-body"></a>
+
+## Body
 
 ```text
 packet CQuit {

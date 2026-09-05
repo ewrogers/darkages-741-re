@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x07` (7) |
-| Encoding | derived |
+| Transform | `derived` |
 | Runtime classes | `WorldObject_Monster`, `WorldObject_Item`, `MonsterObjectImageSession`, and `WorldObject_Name_Pane` |
 | Name provenance | `SDrawObjects` is exact Microsoft C++ RTTI from the target |
 

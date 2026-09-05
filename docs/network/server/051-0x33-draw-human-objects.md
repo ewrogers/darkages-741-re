@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x33` (51) |
-| Transform | derived |
+| Transform | `derived` |
 | Runtime classes | `WorldObject_User`, `WorldObject_Human`, `HumanObjectImageSession`, and `MonsterObjectImageSession` |
 | Name provenance | `SDrawHumanObjects` is exact Microsoft C++ RTTI from the target |
 

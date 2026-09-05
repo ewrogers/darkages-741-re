@@ -1,17 +1,15 @@
 # Browser (`SBrowser`)
 
+<a id="purpose"></a>
+
+This packet carries browser-related data. Subtype `3` supplies the homepage URL requested by [`CRequestHomepage`](../client/104-0x68-request-homepage.md).
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x66` (102) |
 | Transform | `static` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-This packet carries browser-related data. Subtype `3` supplies the homepage URL requested by [`CRequestHomepage`](../client/104-0x68-request-homepage.md).
-
-The constructor calls `net_server_packet_base_ctor` with opcode `0x66` and installs the `SBrowser` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
 
 `SBrowser` is the exact RTTI name. “Homepage URL” is the narrower behavioral name for subtype `3`; it does not replace the class name.
 
@@ -44,3 +42,7 @@ For subtype `3`, the handler copies the URL into a 256-byte global buffer and ma
 ```
 
 The handler caches this value; it does not immediately launch a browser.
+
+## Name evidence
+
+The constructor calls `net_server_packet_base_ctor` with opcode `0x66` and installs the `SBrowser` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.

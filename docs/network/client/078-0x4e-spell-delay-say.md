@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x4E` (78) |
-| Transform | derived |
+| Transform | `derived` |
 | UI owner | RTTI class `SpellDelayControlPane`; `SkillInvItemPane` activation path |
 | Name provenance | Project protocol vocabulary matched to the locally confirmed builder |
 

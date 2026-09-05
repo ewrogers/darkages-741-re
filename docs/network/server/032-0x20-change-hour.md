@@ -1,17 +1,15 @@
 # Change Hour (`SChangeHour`)
 
+<a id="purpose"></a>
+
+The server sends a coarse time step that selects the current map-lighting profile. The client changes ambient color and darkness immediately, then enables or disables the map's HEA spatial light mask as needed.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x20` (32) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-The server sends a coarse time step that selects the current map-lighting profile. The client changes ambient color and darkness immediately, then enables or disables the map's HEA spatial light mask as needed.
-
-The constructor calls `net_server_packet_base_ctor` with opcode `0x20` and installs the `SChangeHour` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
 
 ## Body
 
@@ -44,3 +42,7 @@ The same update runs after [`SMapSize`](021-0x15-map-size.md), so a newly loaded
 No current sundial update was found. The RTTI-backed `ClockPane` loads `lodclk.epf` and advances it on its own timer as a loading animation. It is not called by this packet. The older sundial behavior is useful historical context, but it is not present in the traced 7.41 path.
 
 See [Map lighting](../../rendering/lighting.md), [HEA light masks](../../file-formats/hea.md), the mapped [world lighting state](../../appendix/runtime/world.md#world-lighting-state), and the related unhandled [`SChangeDay`](030-0x1e-change-day.md).
+
+## Name evidence
+
+The constructor calls `net_server_packet_base_ctor` with opcode `0x20` and installs the `SChangeHour` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.

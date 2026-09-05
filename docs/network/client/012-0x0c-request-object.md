@@ -6,12 +6,14 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x0C` (12) |
-| Transform | derived |
+| Transform | `derived` |
 | Runtime owner | `WorldPane` |
 | Response | `SDrawObjects` or `SDrawHumanObjects` |
 | Name provenance | Project-owner protocol name, confirmed against the local builder |
 
-## Purpose
+<a id="purpose"></a>
+
+## Recovery triggers
 
 The builder writes opcode `0x0C`, a four-byte big-endian object ID, and submits a five-byte body. Confirmed callers send it after a world-object lookup misses or the found object cannot be treated as the expected living object.
 
@@ -19,7 +21,9 @@ One confirmed recovery path is [`SChangeDirection`](../server/017-0x11-change-di
 
 The client has no derived packet RTTI for this name.
 
-## Plaintext body
+<a id="plaintext-body"></a>
+
+## Body
 
 ```text
 packet CRequestObject {

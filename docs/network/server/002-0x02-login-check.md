@@ -1,5 +1,9 @@
 # Lobby Account Result (`SLoginCheck` / `SNewUserCheck`)
 
+<a id="purpose"></a>
+
+Opcode `0x02` is a lobby result whose meaning depends on the active UI. `MainMenuPane` handles it as `SLoginCheck`, `CreateUserDialogPane` handles it as `SNewUserCheck`, and `ChangePasswordDialogPane` handles it as the result of `CChangePassword`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
@@ -7,10 +11,6 @@
 | Transform | `static` |
 | Packet class | None found |
 | Internal name provenance | Project-owner login and creation names; password-change use confirmed by its pane handler |
-
-## Purpose
-
-Opcode `0x02` is a lobby result whose meaning depends on the active UI. `MainMenuPane` handles it as `SLoginCheck`, `CreateUserDialogPane` handles it as `SNewUserCheck`, and `ChangePasswordDialogPane` handles it as the result of `CChangePassword`.
 
 These panes route the decoded body directly, without constructing an RTTI packet object. Supplied live captures confirm its character-creation and password-change uses.
 

@@ -1,15 +1,15 @@
 # Add Stat (`CAddStat`)
 
+<a id="purpose"></a>
+
+`StatusInfoPane` sends this packet when the player activates one of its five stat-increase controls. The client identifies the chosen control with one selector byte.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x47` (71) |
-| Encoding | derived |
+| Transform | `derived` |
 | Name provenance | Verified project protocol name; the command and local builder are confirmed. |
-
-## Purpose
-
-`StatusInfoPane` sends this packet when the player activates one of its five stat-increase controls. The client identifies the chosen control with one selector byte.
 
 ## Body
 

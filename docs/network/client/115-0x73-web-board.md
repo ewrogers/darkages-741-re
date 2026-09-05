@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x73` (115) |
-| Encoding | startup key |
+| Transform | `static` |
 | Name provenance | Related class vocabulary matched to locally confirmed builder behavior |
 
 ## Body

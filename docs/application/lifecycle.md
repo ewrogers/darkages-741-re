@@ -35,6 +35,8 @@ Win32 activation remains separate from construction. `app_set_active` forwards f
 
 The mutex is named `Nexon.SingleInstance`. If Windows reports that it already exists, the original client exits. This is only a local guard. It does not change any account or server rules.
 
+The matching executable does not set process affinity. A local `cnc-ddraw` wrapper can apply CPU 0 when the video system first calls `DirectDrawCreate`, after the client has opened its Miles audio driver. See [CPU affinity](cpu-affinity.md) for the complete order and configuration.
+
 ## Memory manager
 
 `app_initialize` constructs the RTTI-backed `MemoryMan` singleton before the other core managers. It wraps allocation, zeroed allocation, resize, free, copy, and fill operations. Allocation failures become `Win32Error` objects instead of returning a null pointer to ordinary callers.

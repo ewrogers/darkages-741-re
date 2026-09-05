@@ -48,9 +48,9 @@ CRC32 covers inflated metadata bytes, decoded server greeting text, and other ve
 
 ## Evidence
 
-- `crc16_update` at `0x005B8F30`
-- `crc16_buffer` at `0x00568870`
-- `map_update_crc16` at `0x005B9180`
-- CRC16 tables at `0x006D15E8` and `0x006D2D98`
-- `crc32_update` at `0x00604530`
-- CRC32 table at `0x0068C884`
+- `crc16_update`
+- `crc16_buffer`
+- `map_update_crc16`
+- `crc32_update`
+
+Addresses are collected in the [function reference](../appendix/functions.md). The two CRC16 table addresses and the CRC32 table address are retained in the [file-format export](../../analysis/exports/file-formats.yaml).

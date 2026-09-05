@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x08` (8) |
-| Transform | derived |
+| Transform | `derived` |
 | Session owner | RTTI class `WorldUserFunc` |
 | UI owners | `StatusInfoPane`, `ExtraStatusInfoPane`, `GUIBackPane`, inventory and menu panes, and `BtmButtonsPane_A` |
 | Name provenance | Microsoft C++ RTTI in the target |

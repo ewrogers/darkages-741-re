@@ -9,15 +9,15 @@ Map parts carry an uncached map to the client one complete row at a time and dri
 | Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
 
-## Purpose
+<a id="purpose"></a>
+
+## Row transfer and progress
 
 The server sends each row with its zero-based Y coordinate. `net_handle_map_part` applies exactly the current map width in cells and calculates progress against the current map height.
 
 One row is the packet's transfer unit, not a confirmed standalone row-update operation. Supplied runtime observations show `SMapPart` being sent as the complete set of rows needed to save an entire map after a cache miss. No isolated partial-update use has been observed.
 
 The implementation would accept one non-final row while a transfer is active, but it would only change the prepared in-memory grid and leave the transfer unfinished. Outside an active transfer it is ignored. A final-index row is the only completion signal, so sending that row without the preceding rows would make the client commit an incomplete grid rather than perform a well-defined partial update.
-
-The constructor calls `net_server_packet_base_ctor` with opcode `0x3C` and installs the `SMapPart` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
 
 The world dispatcher still gives the raw decoded body to `net_handle_map_part`. The handler ignores it unless [`SMapSize`](021-0x15-map-size.md) previously marked a cache-miss transfer active. On the first accepted part, it constructs `MapLoadingPane`. Its constructor loads `_nloadm.txt` and registers the pane as a visible screen pane.
 
@@ -52,6 +52,10 @@ Completion is based only on receiving the final row index. The client has no rec
 
 [`SMap`](006-0x06-map.md) can also write map cells during an active transfer, but it carries an arbitrary rectangle and has no corresponding progress or completion step.
 
-This behavior is separate from the observed [`0x58`](088-0x58-unhandled-control.md) and [`0x67`](103-0x67-unhandled-map-transfer-control.md) controls. This client does not use either of those messages to show or hide the loading pane.
+This behavior is separate from the observed [`0x58`](088-0x58-unhandled-control.md) and [`0x67`](103-0x67-unhandled-field-map-control.md) controls. This client does not use either of those messages to show or hide the loading pane.
 
 See [Map loading and cache](../../systems/map-loading.md) for the complete cache and pane lifecycle.
+
+## Name evidence
+
+The constructor calls `net_server_packet_base_ctor` with opcode `0x3C` and installs the `SMapPart` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.

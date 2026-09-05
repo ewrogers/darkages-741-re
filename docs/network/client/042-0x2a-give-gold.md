@@ -6,11 +6,13 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x2A` (42) |
-| Transform | derived |
+| Transform | `derived` |
 | Runtime owners | `InvItemPane`, `GiveGoldDialogPane`, and `WorldPane` |
 | Name provenance | Project-owner protocol name, confirmed against the local builder |
 
-## Plaintext body
+<a id="plaintext-body"></a>
+
+## Body
 
 ```text
 packet CGiveGold {

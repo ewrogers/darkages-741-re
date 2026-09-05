@@ -1,15 +1,15 @@
 # Attack (`CAttack`)
 
+<a id="purpose"></a>
+
+The client sends `CAttack` when the player attacks. The packet is only the opcode and carries no target, direction, or timing value.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x13` (19) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | Project protocol vocabulary, confirmed against the local builder and its attack input paths. |
-
-## Purpose
-
-The client sends `CAttack` when the player attacks. The packet is only the opcode and carries no target, direction, or timing value.
 
 ## Body
 

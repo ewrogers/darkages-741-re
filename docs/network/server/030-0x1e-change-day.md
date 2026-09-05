@@ -1,15 +1,15 @@
 # Change Day (`SChangeDay`)
 
+<a id="purpose"></a>
+
+The server sends this message as a day or clock update, but no 7.41 consumer was found. The packet remains useful as a compatibility clue because older clients reportedly used this update for a sundial-style clock.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x1E` (30) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | Project-owner protocol vocabulary; no RTTI class exists in this client |
-
-## Purpose
-
-The server sends this message as a day or clock update, but no 7.41 consumer was found. The packet remains useful as a compatibility clue because older clients reportedly used this update for a sundial-style clock.
 
 ## Observed body
 

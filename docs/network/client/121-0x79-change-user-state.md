@@ -1,15 +1,15 @@
 # Change User State (`CChangeUserState`)
 
+<a id="purpose"></a>
+
+The client sends `CChangeUserState` when the player chooses a new presence or group-seeking state in the UI.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x79` (121) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | Project protocol vocabulary, confirmed against the local builder and the shared world-list state domain. |
-
-## Purpose
-
-The client sends `CChangeUserState` when the player chooses a new presence or group-seeking state in the UI.
 
 ## Body
 

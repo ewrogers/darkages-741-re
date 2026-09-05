@@ -1,8 +1,12 @@
 # Bulletin boards and mail
 
-The board and mailbox UI can be inspected without replaying mouse input. A live `BulletinSession` owns the current dialog, each list dialog owns a native list pane, and article or mail detail dialogs expose their displayed fields through attached controls. Observing the decoded `SBulletin` body as it enters the session preserves the exact server text and date fields.
+Bulletin boards and mail share a session that manages lists, message details, and compose dialogs. The session keeps a short view history and blocks interaction while an action waits for a server reply. Article and mail lists also share the same pagination behavior.
 
-## Detect the active view
+The [packet interaction flow](../network/interaction-flows.md) follows the requests and replies. The sections below connect those messages to the active dialog, its displayed fields, and its unsent edit state.
+
+<a id="detect-the-active-view"></a>
+
+## Active view and history
 
 `ui_bulletin_session_ptr` is null when no bulletin session exists. A live session keeps a history of at most ten `BulletinDialogPane` pointers:
 
@@ -30,7 +34,9 @@ Read `history[current_index]` on the client main thread, then identify the compl
 
 A nonnull `pending_dimmer` means a network-backed action is waiting for its reply and the bulletin UI is blocked. History membership alone is not proof that an older retained dialog is visible. Use the current history entry and normal pane registration or presentation state.
 
-## Read board and message lists
+<a id="read-board-and-message-lists"></a>
+
+## Board and message lists
 
 The dialog control collection begins at `dialog + 0x594`. Its native indexed lookup returns the attached control; a scrollable control contains its list pane at control offset `+0x19C`.
 
@@ -86,7 +92,9 @@ An external controller should not copy this behavior literally. Keep one in-flig
 
 The [bulletin pagination runtime patch](../appendix/runtime-patches/bulletin-pagination.md) provides a narrow two-byte fix for each empty-list helper. It preserves initial list loading but does not add a general no-progress latch for nonempty lists.
 
-## Read the current detail
+<a id="read-the-current-detail"></a>
+
+## Article and mail details
 
 `ArticleDialog + 0x63C` is the current article ID. `MailDialog + 0x63C` is the current mail ID. The board or mailbox ID remains separately in `BulletinSession + 0x1C2`.
 

@@ -84,7 +84,7 @@ This second implementation confirms the argument values and step rules. See [NPC
 
 ## Inner wrapper
 
-`CPursuit` and `CMerchant` are the only opcodes selected by the special branch in `net_submit_client_packet`. The client first builds the [dialog-response inner wrapper](../packet-transforms.md#dialog-response-inner-wrapper), then applies the ordinary startup-key transform selected for opcode `0x3A`.
+`CPursuit` and `CMerchant` are the only opcodes selected by the special branch in `net_submit_client_packet`. The client first builds the [dialog-response inner wrapper](../packet-transforms.md#dialog-response-inner-wrapper), then applies the ordinary `static` transform selected for opcode `0x3A`.
 
 ```text
 CPursuit body

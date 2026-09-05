@@ -143,8 +143,10 @@ A generated writer can split each pixel scanline into runs of at most 255 pixels
 ## Evidence
 
 - RTTI class `HEASession`
-- `file_hea_open` at `0x004875B0`
-- `file_hea_project_map_position` at `0x004876D0`
-- `file_hea_build_row_views` at `0x00487380`
-- `map_load_hea_resource` at `0x005C7870`
-- `render_hea_decode_mask` at `0x005C8540`
+- `file_hea_open`
+- `file_hea_project_map_position`
+- `file_hea_build_row_views`
+- `map_load_hea_resource`
+- `render_hea_decode_mask`
+
+Addresses are collected in the [function reference](../appendix/functions.md).

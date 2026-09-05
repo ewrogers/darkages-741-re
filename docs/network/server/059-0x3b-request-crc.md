@@ -1,15 +1,15 @@
 # Request CRC (`SRequestCRC`)
 
+<a id="purpose"></a>
+
+The server sends a two-byte challenge and expects an immediate [`CReplyCRC`](../client/069-0x45-reply-crc.md) response. Despite the packet names, this exchange does not make the client checksum its executable, files, memory, or session state.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x3B` (59) |
-| Encoding | derived |
+| Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-The server sends a two-byte challenge and expects an immediate [`CReplyCRC`](../client/069-0x45-reply-crc.md) response. Despite the packet names, this exchange does not make the client checksum its executable, files, memory, or session state.
 
 The RTTI-backed class confirms the body layout. The active global handler independently reparses the same value from the decoded byte buffer before constructing the reply.
 

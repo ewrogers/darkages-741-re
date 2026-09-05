@@ -163,7 +163,7 @@ Other values use the blank or fallback path.
 
 ## Example decoded bodies
 
-These examples are complete decoded packet bodies. They do not include the frame header, sequence, trailer, or session-key transform. A server must apply the ordinary derived transform for opcode `0x2F` before framing the packet.
+These examples are complete decoded packet bodies. They do not include the frame header, sequence, trailer, or `derived` transform. A server must apply the ordinary derived transform for opcode `0x2F` before framing the packet.
 
 Every example uses target type `1`, target ID `0x12345678`, speaker sprite `0x401E`, speaker name `Guide`, and content `Choose.`. `show_graphic` is zero so the examples do not depend on a matching local illustration. The skipped common-header bytes are also zero.
 

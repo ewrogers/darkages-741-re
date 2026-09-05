@@ -2,6 +2,16 @@
 
 Network events carry either decoded packet bodies or an early connection greeting. Once normal packet parsing begins, RTTI-backed server packet objects retain fields needed by their handlers. Packet wire layouts remain on the individual packet pages.
 
+## Client send sites
+
+These static call-site addresses supplement the named function entries in the [function reference](../functions.md). They preserve the call-site evidence recorded on the packet pages. They are image addresses, not runtime pointers; resolve them against the loaded module base when inspecting a running client.
+
+| Packet | Containing function | Static call-site address |
+| --- | --- | --- |
+| [`CStipulation`](../../network/client/075-0x4b-stipulation.md) | `net_handle_stipulation_raw` | `0x004B8739` |
+| [`CStipulation`](../../network/client/075-0x4b-stipulation.md) | `net_handle_stipulation` | `0x004B8A2F` |
+| [`CMetaData`](../../network/client/123-0x7b-meta-data.md) | `net_request_metadata` | `0x004E54D9` |
+
 ## Decoded server event
 
 ```text

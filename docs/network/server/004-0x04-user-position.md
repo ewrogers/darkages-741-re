@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x04` (4) |
-| Transform | derived |
+| Transform | `derived` |
 | Runtime owner | `WorldPane` and `WorldObject_User` |
 | Name provenance | Microsoft C++ RTTI in the target |
 

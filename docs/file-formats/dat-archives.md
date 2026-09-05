@@ -100,10 +100,10 @@ record ExtendedDatNameRecord {
 
 ## Evidence
 
-- `file_archive_open` at `0x00471E00`
-- `file_archive_xor_words` at `0x00471DC0`
-- `file_archive_find_entry` at `0x00472470`
-- `file_archive_get_entry_data` at `0x00472900`
-- `file_zlib_uncompress` at `0x006043B0`
+- `file_archive_open`
+- `file_archive_xor_words`
+- `file_archive_find_entry`
+- `file_archive_get_entry_data`
+- `file_zlib_uncompress`
 
 Addresses are collected in the [function reference](../appendix/functions.md).

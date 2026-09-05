@@ -1,15 +1,15 @@
 # Spelled (`SSpelled`)
 
+<a id="purpose"></a>
+
+The server uses this packet to maintain the small spell indicators shown beside the game view. These icons can represent buffs, debuffs, bonuses, and other timed spell effects.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x3A` (58) |
-| Encoding | derived |
+| Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-The server uses this packet to maintain the small spell indicators shown beside the game view. These icons can represent buffs, debuffs, bonuses, and other timed spell effects.
 
 The packet does not contain an exact duration or a slot number. It identifies an icon and supplies one discrete duration stage. The client chooses a local display slot and redraws the indicator at that stage.
 

@@ -22,16 +22,7 @@ The local player's ghostly foreground view is different. `render_collect_world_o
 
 ## Hide static art with a launcher patch
 
-The simplest runtime patch hides every `WorldObject_Static` draw:
-
-| Item | Value |
-| --- | --- |
-| Static address | `0x005E47FF` |
-| RVA | `0x001E47FF` |
-| Verify | `74 05` |
-| Write | `EB 00` |
-
-The replacement takes an existing jump to the function's normal epilogue. Stack cleanup and the security-cookie check still run.
+The [Hide walls](../appendix/runtime-patches/hide-walls.md) runtime patch hides every `WorldObject_Static` draw. It takes an existing jump to the function's normal epilogue, so stack cleanup and the security-cookie check still run. The appendix records the target address and replacement bytes.
 
 This hides walls, trees, and all other static map art. Characters, items, effects, ground tiles, and collision remain active. Use the normal [safe launcher workflow](../appendix/runtime-patches/safe-launcher.md).
 
@@ -51,20 +42,7 @@ BTN_HELP rectangle
 
 `ui_gui_back_layout_init_common` reads `BTN_HELP` from each GUI layout. `ui_gui_back_apply_layout` copies the active rectangle into action slot 0. On a left-button event, `ui_gui_back_handle_pointer` performs the hit test, applies the normal click debounce, and calls `ui_gui_back_activate_action`. Action 0 allocates the RTTI-backed `HotKeyPane`, whose constructor loads the two hot-key layouts and registers the pane with the screen and event trees.
 
-The action dispatcher is the narrow hook if that button ever becomes a live toggle. A hook can consume action 0, toggle private state, and skip the original call. Every other action should pass through unchanged. The Alt-held launcher patch below does not need this hook or a DLL.
-
-```c
-if (action_id == 0) {
-    item_overlay_enabled = !item_overlay_enabled;
-    return;
-}
-
-original(gui_back, action_id);
-```
-
-| Hook | Static address | RVA | Whole bytes available at entry |
-| --- | --- | --- | --- |
-| `ui_gui_back_activate_action` | `0x005A0B70` | `0x001A0B70` | `55 8B EC 6A FF` |
+Replacing that help action with an item-hint toggle is a separate extension. The [optional help-button control](../appendix/runtime-patches/ground-item-hints.md#optional-help-button-control) records its proposed hook. The Alt-held launcher patch below does not need that hook or a DLL.
 
 ## Make occluded items visible
 
@@ -88,11 +66,4 @@ Two more wrappers surround `input_emit_key_down` and `input_emit_key_up`. After 
 
 See [Hold Alt to show translucent ground-item hints](../appendix/runtime-patches/ground-item-hints.md) for the allocated state, bounded collector, replay flow, bytes, and rollback rules.
 
-| Hook | Static address | RVA |
-| --- | --- | --- |
-| `input_emit_key_down` | `0x00467C10` | `0x00067C10` |
-| `input_emit_key_up` | `0x00467E30` | `0x00067E30` |
-| `render_world_pane_content` | `0x005CE280` | `0x001CE280` |
-| `render_collect_world_objects` | `0x005D3740` | `0x001D3740` |
-
-The frame hook replaces six whole prologue bytes. The other hooks replace five. The launcher also verifies the original static mode selector at `0x005E487D` without changing it, so normal SOTP and jungle-tree rendering remain intact.
+The [hook-site reference](../appendix/runtime-patches/ground-item-hints.md#hook-sites) records addresses and displaced instruction sizes. The launcher also verifies the original static mode selector without changing it, so normal SOTP and jungle-tree rendering remain intact.

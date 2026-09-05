@@ -19,6 +19,8 @@ Audio starts with the other core game systems and shuts down in the reverse orde
 
 The Bink video player also passes this digital driver to `BinkOpenMiles`. Intro video sound therefore joins the same Miles output instead of opening a second game mixer.
 
+The driver is open before the video system calls `DirectDrawCreate`. In the local installation, that later call is where the optional DirectDraw wrapper applies its configured CPU affinity. See [CPU affinity](../application/cpu-affinity.md) for why an early external mask can be overwritten and why a failed audio open is a separate condition.
+
 ## Normal shutdown
 
 `audio_sound_manager_dtor` calls `audio_destroy_players` before releasing Miles:

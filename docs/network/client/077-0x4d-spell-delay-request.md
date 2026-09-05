@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x4D` (77) |
-| Transform | derived |
+| Transform | `derived` |
 | UI owner | RTTI class `SpellDelayControlPane` |
 | Name provenance | Project protocol vocabulary matched to the locally confirmed builder |
 

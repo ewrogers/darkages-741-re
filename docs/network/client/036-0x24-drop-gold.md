@@ -6,13 +6,15 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x24` (36) |
-| Transform | derived |
+| Transform | `derived` |
 | Runtime owner | `DropGoldDialogPane` |
 | Success | `SDrawObjects` ground item beneath the character |
 | Rejection | `SMessage` for a distant target or insufficient gold |
 | Name provenance | Project-owner protocol name, confirmed against the local builder |
 
-## Plaintext body
+<a id="plaintext-body"></a>
+
+## Body
 
 ```text
 packet CDropGold {

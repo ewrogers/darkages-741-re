@@ -94,11 +94,13 @@ The palette comes from `stcpal.tbl`. In the common sprite path, palette index 0 
 
 ## Evidence
 
-- `file_hpf_compressor_ctor` at `0x00431730`
-- `file_hpf_decode_strict_allocating` at `0x00431860`
-- `file_hpf_decode` at `0x004319B0`
-- `file_hpf_tree_initialize` at `0x00431B80`
-- `file_hpf_decode_symbol` at `0x00431C40`
-- `file_hpf_rotate_tree` at `0x00431D20`
-- `file_load_static_tile_pixmap` at `0x005FD500`
-- `file_open_static_tile` at `0x005FD700`
+- `file_hpf_compressor_ctor`
+- `file_hpf_decode_strict_allocating`
+- `file_hpf_decode`
+- `file_hpf_tree_initialize`
+- `file_hpf_decode_symbol`
+- `file_hpf_rotate_tree`
+- `file_load_static_tile_pixmap`
+- `file_open_static_tile`
+
+Addresses are collected in the [function reference](../appendix/functions.md).

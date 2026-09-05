@@ -1,6 +1,6 @@
 # Game loop
 
-The game loop gives Windows messages and client events a turn on every pass. Think of it as the stage manager: it clears the outside mail, then lets the game process its own inbox and timers.
+The game loop drains Windows messages, dispatches queued client events, and runs due timers. This keeps input, network updates, animation, and other scheduled work moving through the same main thread.
 
 ```text
 repeat until quit

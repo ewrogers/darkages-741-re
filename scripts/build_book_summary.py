@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""Build mdBook navigation from the stable section list and packet pages."""
+"""Build mdBook navigation and packet indexes from their page titles and metadata."""
 
+import argparse
+import re
 from pathlib import Path
 
 
@@ -27,7 +29,35 @@ def packet_lines(directory: str, indent: str) -> list[str]:
     return lines
 
 
+def packet_index(directory: str) -> tuple[Path, str]:
+    base = DOCS / "network" / directory
+    path = base / "README.md"
+    text = path.read_text(encoding="utf-8")
+    rows = ["| Packet | Transform |", "| --- | --- |"]
+    for packet in sorted(base.glob("*.md")):
+        if packet.name == "README.md":
+            continue
+        metadata = packet.read_text(encoding="utf-8")
+        modes = re.findall(r"^\| Transform \| (.+) \|$", metadata, re.MULTILINE)
+        if len(modes) != 1:
+            raise ValueError(f"{packet.relative_to(ROOT)} must have one Transform row")
+        opcode = "0x" + packet.stem.split("-", 2)[1][2:].upper()
+        rows.append(f"| [{opcode} - {title(packet)}]({packet.name}) | {modes[0]} |")
+    text, count = re.subn(
+        r"^\| Packet \| Transform \|\n(?:\|[^\n]*\n)+",
+        "\n".join(rows) + "\n",
+        text,
+        flags=re.MULTILINE,
+    )
+    if count != 1:
+        raise ValueError(f"{path.relative_to(ROOT)} must have one packet index")
+    return path, text
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true", help="report stale output without writing")
+    args = parser.parse_args()
     lines = [
         "# Summary",
         "",
@@ -37,29 +67,32 @@ def main() -> None:
         "",
         "- [Application](application/README.md)",
         "  - [Application lifecycle](application/lifecycle.md)",
-        "  - [Crash reporting](application/crash-reporting.md)",
         "  - [Configuration](application/configuration.md)",
         "  - [Distribution markers](application/distribution-markers.md)",
         "  - [Program Files and administrator mode](application/program-files-and-administrator.md)",
-        "  - [Game loop](application/game-loop.md)",
+        "  - [CPU affinity](application/cpu-affinity.md)",
+        "  - [Crash reporting](application/crash-reporting.md)",
+        "",
+        "- [Game loop](application/game-loop.md)",
         "",
         "- [Game systems](systems/README.md)",
         "  - [Event system](systems/events.md)",
         "  - [UI and panes](systems/ui.md)",
-        "  - [Inventory drag actions](systems/inventory-drag-actions.md)",
         "  - [Native UI controls](systems/ui-controls.md)",
         "  - [UI layout files](systems/ui-layouts.md)",
         "  - [Asset loading and lifetime](systems/asset-loading.md)",
         "  - [Random number generation](systems/randomness.md)",
+        "  - [Map loading and cache](systems/map-loading.md)",
         "  - [Movement and swimming](systems/movement-and-swimming.md)",
         "  - [World interactions](systems/world-interactions.md)",
         "  - [Pathfinding and following](systems/pathfinding-and-pursuit.md)",
+        "  - [Inventory drag actions](systems/inventory-drag-actions.md)",
+        "  - [Skill and spell action delays](systems/action-delays.md)",
         "  - [Fishing minigame](systems/fishing.md)",
         "  - [Player popup menu](systems/player-popup-menu.md)",
         "  - [Player exchange](systems/player-exchange.md)",
         "  - [Bulletin boards and mail](systems/bulletin-and-mail.md)",
         "  - [Manufacturing manuals](systems/manufacturing.md)",
-        "  - [Skill and spell action delays](systems/action-delays.md)",
         "  - [Item and ability descriptions](systems/item-and-ability-descriptions.md)",
         "  - [Messages and history](systems/messages-and-history.md)",
         "  - [Local command dispatcher](systems/local-command-dispatcher.md)",
@@ -181,8 +214,29 @@ def main() -> None:
         "  - [UI layout registry](appendix/ui-layout-registry.md)",
     ])
 
-    OUTPUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"wrote {OUTPUT.relative_to(ROOT)}")
+    summary = "\n".join(lines) + "\n"
+    linked = re.findall(r"\]\(([^)#]+\.md)\)", summary)
+    pages = {path.relative_to(DOCS).as_posix() for path in DOCS.rglob("*.md")}
+    pages.remove("SUMMARY.md")
+    if set(linked) != pages or len(linked) != len(set(linked)):
+        raise ValueError(
+            f"Navigation mismatch: unlisted={sorted(pages - set(linked))}, "
+            f"missing={sorted(set(linked) - pages)}, duplicates={len(linked) - len(set(linked))}"
+        )
+
+    outputs = [(OUTPUT, summary), packet_index("client"), packet_index("server")]
+    stale = [path for path, text in outputs if path.read_text(encoding="utf-8") != text]
+    if args.check:
+        if stale:
+            for path in stale:
+                print(f"stale: {path.relative_to(ROOT)}")
+            raise SystemExit(1)
+        print("Navigation and packet indexes are current; every book page is listed once.")
+        return
+    for path, text in outputs:
+        if path in stale:
+            path.write_text(text, encoding="utf-8")
+            print(f"wrote {path.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

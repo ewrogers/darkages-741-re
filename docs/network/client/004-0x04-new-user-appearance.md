@@ -1,5 +1,9 @@
 # New User Appearance (`CNewUserAppearance`)
 
+<a id="purpose"></a>
+
+This packet finalizes character creation with the appearance already selected in `CreateUserDialogPane`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
@@ -7,17 +11,13 @@
 | Transform | `static` |
 | Name provenance | Project-owner protocol name, confirmed against the accepted character-creation path |
 
-## Purpose
-
-This packet finalizes character creation with the appearance already selected in `CreateUserDialogPane`.
-
 After the first `SNewUserCheck` returns status `0`, `net_handle_new_user_validation_result` calls `net_send_new_user_appearance`. The pane then waits for a second result before closing.
 
 The client has no derived packet RTTI for this name.
 
 ## Sent by
 
-- `CreateUserDialogPane`
+`CreateUserDialogPane` owns the appearance selection and the creation flow.
 
 ## Body
 

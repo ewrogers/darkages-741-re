@@ -73,7 +73,7 @@ Its action handler lets the player adjust gender, hair style, hair color, and a 
 
 ## Inner wrapper
 
-Before the ordinary session-key transform, `net_submit_client_packet` replaces the body with the random-header, CRC16, and incrementing-XOR wrapper shared only with `CPursuit`. The CRC covers the original bytes after the opcode. See [Dialog-response inner wrapper](../packet-transforms.md#dialog-response-inner-wrapper) for the exact byte layout.
+Before the ordinary `derived` transform, `net_submit_client_packet` replaces the body with the random-header, CRC16, and incrementing-XOR wrapper shared only with `CPursuit`. The CRC covers the original bytes after the opcode. See [Dialog-response inner wrapper](../packet-transforms.md#dialog-response-inner-wrapper) for the exact byte layout.
 
 The order is important:
 

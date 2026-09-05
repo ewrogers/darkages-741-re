@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x5B` (91) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | Exact Microsoft C++ RTTI class `SAdvertisement` |
 | Owner | `MainMenuPane` |
 | Client response | None |
@@ -27,7 +27,7 @@ The three numeric fields are stored as nonnegative integers and later formatted 
 
 ## When it is handled
 
-`net_dispatch_main_menu_events` routes this packet beside login, stipulation, server transfer, and browser messages. This makes it a front-end or login-session message, even though it uses the derived session-key transform. The in-game `WorldPane` dispatcher has no `0x5B` branch.
+`net_dispatch_main_menu_events` routes this packet beside login, stipulation, server transfer, and browser messages. This makes it a front-end or login-session message, even though it uses the `derived` transform. The in-game `WorldPane` dispatcher has no `0x5B` branch.
 
 The most likely intended timing is during the login or server-transfer flow while `MainMenuPane` is still registered. The client does not prove the server's exact sending moment. A packet sent after the in-game pane has replaced the main menu can still be decoded into an `SAdvertisement` object, but there is no active in-game consumer for it.
 

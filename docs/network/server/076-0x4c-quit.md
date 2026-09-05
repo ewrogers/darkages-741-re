@@ -6,12 +6,14 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x4C` (76) |
-| Transform | derived |
+| Transform | `derived` |
 | Runtime owner | `SafeQuitAlert` |
 | Paired packet | [`CQuit`](../client/011-0x0b-quit.md) |
 | Name provenance | Microsoft C++ RTTI in the target |
 
-## Plaintext body
+<a id="plaintext-body"></a>
+
+## Body
 
 ```text
 packet SQuit {

@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x11` (17) |
-| Transform | derived |
+| Transform | `derived` |
 | Runtime owner | `WorldPane` |
 | Name provenance | Project-owner protocol name, confirmed against the world input path |
 
@@ -20,7 +20,9 @@ Keyboard and pointer input produce only the four cardinal [`Direction`](../proto
 
 The client has no derived packet RTTI for this name. The builder writes opcode `0x11` followed by one direction byte and submits the two-byte plaintext body.
 
-## Plaintext body
+<a id="plaintext-body"></a>
+
+## Body
 
 ```text
 packet CChangeDirection {

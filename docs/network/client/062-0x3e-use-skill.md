@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x3E` (62) |
-| Transform | derived |
+| Transform | `derived` |
 | UI owner | RTTI class `SkillInvItemPane` |
 | Name provenance | Project-owner protocol vocabulary, confirmed by the local builder |
 

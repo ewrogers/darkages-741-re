@@ -55,6 +55,8 @@ create_moving_effect(source_id, target_id, effect_index);
 
 The client computes the path from the two objects' current world positions. In this mode it ignores `source_animation` and the packet's `frame_interval`; client effect data supplies the movement style and step timing. The moving object uses the separate timer event `0x00010001` and schedules it with the path step interval stored on the object.
 
+<a id="animation-timing"></a>
+
 ## Timing and special values
 
 For ordinary static and attached effects, `frame_interval` is read as a signed 16-bit timer value. It is not the total effect duration. When the chosen effect resource has a nonzero client-side interval, `world_effect_start_animation` replaces the packet value with that resource interval. The packet value remains in use only when the resource interval is zero.

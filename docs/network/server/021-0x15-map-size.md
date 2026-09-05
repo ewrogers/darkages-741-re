@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x15` (21) |
-| Transform | derived |
+| Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
 
 ## Body as parsed by client 7.41

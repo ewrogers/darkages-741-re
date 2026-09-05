@@ -1,15 +1,15 @@
 # New User (`CNewUser`)
 
+<a id="purpose"></a>
+
+This packet asks the lobby server to validate the account fields for a new character. It is the first half of the [character-creation flow](../../systems/character-creation.md).
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x02` (2) |
 | Transform | `static` |
 | Name provenance | Related class vocabulary matched to the locally confirmed builder and live creation flow |
-
-## Purpose
-
-This packet asks the lobby server to validate the account fields for a new character. It is the first half of the [character-creation flow](../../systems/character-creation.md).
 
 `CreateUserDialogPane` reads the form, checks that the two password controls match, and schedules a short timer. `net_send_new_user_request` then builds and submits the request. The confirmation password is never transmitted.
 

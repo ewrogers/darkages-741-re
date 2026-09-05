@@ -1,16 +1,16 @@
 # Manual (`SManual`)
 
+<a id="purpose"></a>
+
+The server uses this packet to open and feed the manufacturing recipe window. A `RecipeCount` message starts a session. The client then asks for one recipe at a time with [`CManual`](../client/085-0x55-manual.md), and a `Recipe` message fills the window.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x50` (80) |
-| Transform | derived |
+| Transform | `derived` |
 | Internal name | Exact RTTI class `SManual` |
 | UI owner | Exact RTTI class `ManufactureDialogPane` |
-
-## Purpose
-
-The server uses this packet to open and feed the manufacturing recipe window. A `RecipeCount` message starts a session. The client then asks for one recipe at a time with [`CManual`](../client/085-0x55-manual.md), and a `Recipe` message fills the window.
 
 The `SManual` deserializer and the manufacture pane both branch on the same values:
 

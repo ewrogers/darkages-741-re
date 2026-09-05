@@ -6,7 +6,7 @@ The client sends `CMapRequest` when the map announced by `SMapSize` is missing o
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x05` (5) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | Project-owner protocol name, confirmed against the local builder behavior |
 
 ## Body

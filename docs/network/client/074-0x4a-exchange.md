@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x4A` (74) |
-| Transform | derived |
+| Transform | `derived` |
 | Name provenance | Related protocol vocabulary matched to the local builders |
 
 ## Body

@@ -1,15 +1,15 @@
 # Level Point (`SLevelPoint`)
 
+<a id="purpose"></a>
+
+The server uses this packet to update the available level-up points in `StatusInfoPane` and make the related controls flash. It is a focused version of two fields that also appear in [`SStatus`](008-0x08-status.md).
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x3D` (61) |
-| Encoding | derived |
+| Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-The server uses this packet to update the available level-up points in `StatusInfoPane` and make the related controls flash. It is a focused version of two fields that also appear in [`SStatus`](008-0x08-status.md).
 
 The class and its UI handler are both live in this client. Whether the matching server still sends it during normal play remains a runtime question.
 

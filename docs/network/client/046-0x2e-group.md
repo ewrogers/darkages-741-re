@@ -1,15 +1,15 @@
 # Group (`CGroup`)
 
+<a id="purpose"></a>
+
+The client uses this packet for ordinary group requests and for the recruiting group box. The action chooses the operation. Every confirmed form carries a character name, and `RecruitStart` appends the settings entered in `GroupAdDialogPane`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x2E` (46) |
-| Encoding | derived |
+| Transform | `derived` |
 | Name provenance | Project-owner protocol name, checked against the matching client builders |
-
-## Purpose
-
-The client uses this packet for ordinary group requests and for the recruiting group box. The action chooses the operation. Every confirmed form carries a character name, and `RecruitStart` appends the settings entered in `GroupAdDialogPane`.
 
 The client has no derived packet RTTI for this name.
 

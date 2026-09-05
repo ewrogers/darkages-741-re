@@ -1,4 +1,6 @@
-# Unhandled Control (0x58)
+# Unhandled Control
+
+<a id="unhandled-control-0x58"></a>
 
 The live server sends this small control during login, but the 7.41 client does not assign it a packet class or act on it.
 
@@ -24,7 +26,7 @@ The zero byte cannot establish a field meaning. No client handler reads it, and 
 
 ## What the client does
 
-Opcode `0x58` is not in the raw or static-key inbound sets, so the transport decodes it with the derived session key and posts the opcode-first body to the event system.
+Opcode `0x58` is not in the raw or static-key inbound sets, so the transport decodes it with a per-packet derived key and posts the opcode-first body to the event system.
 
 There is no `0x58` entry in `server_packet_factory`. Packet-object construction therefore returns null, while the raw decoded body remains available to pane event handlers. None of the target's RTTI-backed pane handlers checks for `0x58`, including the world dispatcher. The event falls through unconsumed and changes no known client state.
 

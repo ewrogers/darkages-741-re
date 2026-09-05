@@ -1,17 +1,17 @@
 # Add User (`SAddUser`)
 
+<a id="result"></a>
+
+`SAddUser` is an opcode-only message that has no gameplay effect in this client. The packet factory can construct it, but its deserializer reads no fields and no active pane, world, session, or UI handler checks opcode `0x44`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x44` (68) |
-| Transform | derived |
+| Transform | `derived` |
 | Class name | `SAddUser` |
 | Name provenance | Microsoft C++ RTTI in the target |
 | Active consumer | None found |
-
-## Result
-
-`SAddUser` is an opcode-only message that has no gameplay effect in this client. The packet factory can construct it, but its deserializer reads no fields and no active pane, world, session, or UI handler checks opcode `0x44`.
 
 The RTTI name is therefore stronger evidence for intended protocol vocabulary than for live behavior. In version 741, receiving it creates a temporary packet object, dispatches the network event through the pane system, and then leaves all observed game state unchanged.
 

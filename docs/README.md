@@ -9,7 +9,11 @@ Start with behavior. Use the appendices when you need an address or proof detail
 ```text
 Application
   +-- startup and configuration
-  +-- game loop and shutdown
+  +-- lifecycle and shutdown
+
+Game loop
+  +-- Windows messages and queued events
+  +-- timers and redraw checks
 
 Game systems
   +-- events and input
@@ -54,6 +58,6 @@ The [function reference](appendix/functions.md) is an address book, not required
 
 The matching client is the source of truth. Binary Ninja names, comments, and types are exported as reviewable YAML under [`analysis/exports/`](../analysis/exports/README.md).
 
-The main pages explain what the game does. Appendices and exports keep the addresses, instruction bytes, confidence, and detailed provenance. Uncertain names end in `?` in the book or start with `maybe_` in Binary Ninja.
+The main pages explain what the game does. Appendices and exports keep the addresses, instruction bytes, confidence, and detailed provenance. An uncertain reconstructed class or field name can end in `?` in the book or start with `maybe_` in Binary Ninja. Verified packet names keep their spelling; their pages state any uncertainty about fields or behavior separately.
 
 See [How we study the client](methodology.md) for the full workflow.

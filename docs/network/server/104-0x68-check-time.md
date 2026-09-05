@@ -1,17 +1,17 @@
 # Check Time (`SCheckTime`)
 
+<a id="purpose"></a>
+
+`SCheckTime` asks the client for its current Windows multimedia tick count. The client immediately answers with [`CCheckTime`](../client/117-0x75-check-time.md), echoes the server's value, and appends `timeGetTime()`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x68` (104) |
-| Transform | derived |
+| Transform | `derived` |
 | Class name | `SCheckTime` |
 | Name provenance | Microsoft C++ RTTI in the target |
 | Owner | Main world packet dispatcher |
-
-## Purpose
-
-`SCheckTime` asks the client for its current Windows multimedia tick count. The client immediately answers with [`CCheckTime`](../client/117-0x75-check-time.md), echoes the server's value, and appends `timeGetTime()`.
 
 This exchange can let a server compare client-clock progress with server-observed elapsed time. Speed-hack or tick-rate validation is therefore a plausible server-side use, but the trigger policy is not present in the client. The server could send the request periodically, after suspicious movement, or for another timing purpose. The client cannot distinguish those cases.
 

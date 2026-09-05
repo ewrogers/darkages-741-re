@@ -1,7 +1,7 @@
 [book]
 title = "Dark Ages 7.41 Reverse Engineering"
 authors = ["Erik Rogers", "Dark Ages RE contributors"]
-description = "Binary Ninja-based reverse-engineering notes for the matching Dark Ages client."
+description = "An evidence-based guide to the Dark Ages client: its lifecycle, game systems, rendering, audio, file formats, and network protocol."
 language = "en"
 src = "docs"
 

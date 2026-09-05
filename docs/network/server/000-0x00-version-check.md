@@ -1,5 +1,9 @@
 # Version Check (`SVersionCheck`)
 
+<a id="purpose"></a>
+
+`SVersionCheck` controls the lobby version handshake. Its subtype can supply connection-transform settings, display an error, or hand off to the external patcher.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
@@ -7,10 +11,6 @@
 | Transform | `raw` |
 | Packet class | None found |
 | Internal name provenance | Project-owner protocol knowledge, supported by the local version/bootstrap handler |
-
-## Purpose
-
-The server sends this message for **version check**.
 
 `net_dispatch_main_menu_events` routes decoded opcode `0x00` directly to `net_handle_version_check`. It does not construct an RTTI packet object. Subtype `0` checks configuration state and installs the session seed-table selector and static key.
 

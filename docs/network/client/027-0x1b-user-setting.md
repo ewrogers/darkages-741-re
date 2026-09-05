@@ -1,15 +1,15 @@
 # User Setting (`CUserSetting`)
 
+<a id="purpose"></a>
+
+The Game Settings dialog uses this packet to request the server's settings list and toggle a server-managed setting. The body always has the same two-byte format. Only the meaning of `setting_id` changes.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x1B` (27) |
-| Encoding | `derived` |
+| Transform | `derived` |
 | Name provenance | Project-owner protocol name, confirmed by the `GameSettingDialog` call sites |
-
-## Purpose
-
-The Game Settings dialog uses this packet to request the server's settings list and toggle a server-managed setting. The body always has the same two-byte format. Only the meaning of `setting_id` changes.
 
 The dialog also contains six client-managed settings. Those choices update `AppConfig` and do not send this packet.
 

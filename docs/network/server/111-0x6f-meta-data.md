@@ -1,16 +1,16 @@
 # Meta Data (`SMetaData`)
 
+<a id="purpose"></a>
+
+`SMetaData` keeps the local metadata cache synchronized with the server. It supplies either one compressed table or an inventory of table names and checksums that lets the client request missing or stale data.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x6F` (111) |
-| Encoding | startup key |
+| Transform | `static` |
 | Packet class | None found |
 | Internal name provenance | Project-owner protocol knowledge, confirmed by `MetaTableManager` behavior |
-
-## Purpose
-
-The server sends this message for **meta data**.
 
 `MetaTableManager` compares the decoded command with `0x6F` and routes the body directly. Metadata processing needs manager state and custom blob validation, so this command bypasses the general server packet factory.
 

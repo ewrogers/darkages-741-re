@@ -98,6 +98,27 @@ For either code, the wrapper loads the last saved `WorldPane *` and calls `ui_pa
 
 Enabling this option also enables the [stuck-modifier cleanup](stuck-modifiers.md), so a lost Alt key-up during a focus change cannot leave the overlay active.
 
+## Optional help-button control
+
+The native `?` button opens `HotKeyPane`, as described in [Walls and occlusion](../../rendering/walls-and-occlusion.md#what-the--button-opens). Replacing that action with an item-hint toggle is a proposed alternative to the working Alt-held control above.
+
+The action dispatcher is the narrow hook for this alternative. A hook can consume action `0`, toggle private state, and skip the original call. Every other action should pass through unchanged:
+
+```c
+if (action_id == 0) {
+    item_overlay_enabled = !item_overlay_enabled;
+    return;
+}
+
+original(gui_back, action_id);
+```
+
+| Hook | Static address | RVA | Whole bytes available at entry |
+| --- | --- | --- | --- |
+| `ui_gui_back_activate_action` | `0x005A0B70` | `0x001A0B70` | `55 8B EC 6A FF` |
+
+Resolve the target as the loaded module base plus the RVA. This snippet only describes the action decision; it is not a complete hook or replacement for the installation and rollback procedure below. The working Alt-held implementation needs neither this extra hook nor a DLL.
+
 ## Hook sites
 
 | Hook | Static address | RVA | File offset, reference only | Continuation |

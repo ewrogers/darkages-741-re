@@ -1,16 +1,16 @@
 # Manual (`CManual`)
 
+<a id="purpose"></a>
+
+The manufacturing window sends this packet for two actions. It requests one recipe by zero-based index, or it asks the server to craft the recipe currently displayed.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x55` (85) |
-| Transform | derived |
+| Transform | `derived` |
 | Name provenance | Project-owner protocol name, confirmed by `ManufactureDialogPane` and `SManual` |
 | UI owner | Exact RTTI class `ManufactureDialogPane` |
-
-## Purpose
-
-The manufacturing window sends this packet for two actions. It requests one recipe by zero-based index, or it asks the server to craft the recipe currently displayed.
 
 | `action` | Name | Meaning |
 | --- | --- | --- |

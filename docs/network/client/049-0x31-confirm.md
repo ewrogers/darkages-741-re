@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x31` (49) |
-| Transform | derived |
+| Transform | `derived` |
 | UI owner | `UserConfirmPane` |
 | Builder | `net_send_confirm` |
 | Name provenance | Project-owner protocol name, confirmed against `UserConfirmPane` |

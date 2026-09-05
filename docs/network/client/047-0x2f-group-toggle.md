@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x2F` (47) |
-| Encoding | derived |
+| Transform | `derived` |
 | UI owner | RTTI class `BtmButtonsPane_A` |
 | Builder | `net_send_group_toggle` |
 | Name provenance | Project-owner protocol name, checked against the matching client builder and UI flow |

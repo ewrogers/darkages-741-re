@@ -82,13 +82,15 @@ Keep comments, ordering, numeric bases, and unknown columns from a compatible so
 
 ## Evidence
 
-- `file_palette_table_parse_ranges` at `0x00547810`
-- palette table loaders at `0x00546440`, `0x00546980`, `0x00546C30`, `0x00546EE0`, and `0x00547210`
-- `file_load_ground_attribute_table` at `0x0058B8C0`
-- `file_load_color_table` at `0x0044CD50`
-- `file_load_motion_effect_table` at `0x0050E840`
-- `expression_context_compile` at `0x0046D020`
-- `expression_context_evaluate` at `0x0046E4F0`
-- `file_parse_skill_table` at `0x00561840`
-- `file_load_message_table` at `0x004A4AA0`
-- `file_load_npc_info_table` at `0x005322A0`
+- `file_palette_table_parse_ranges`
+- `file_load_field_palette_table`, `file_load_item_palette_table`, `file_load_effect_palette_table`, `file_load_static_palette_table`, and `file_load_map_tile_palette_table`
+- `file_load_ground_attribute_table`
+- `file_load_color_table`
+- `file_load_motion_effect_table`
+- `expression_context_compile`
+- `expression_context_evaluate`
+- `file_parse_skill_table`
+- `file_load_message_table`
+- `file_load_npc_info_table`
+
+Addresses are collected in the [function reference](../appendix/functions.md).

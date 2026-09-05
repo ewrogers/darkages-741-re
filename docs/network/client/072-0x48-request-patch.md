@@ -1,15 +1,15 @@
 # Request Patch (`CRequestPatch`)
 
+<a id="purpose"></a>
+
+`CRequestPatch` is the protocol name for a raw command whose builder and send sites remain unresolved. Its name suggests a patch request, but that exchange has not been traced in this client.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x48` (72) |
-| Encoding | none |
+| Transform | `raw` |
 | Name provenance | Project-owner protocol name; local evidence currently confirms the raw opcode policy |
-
-## Purpose
-
-The client sends this message for **request patch**.
 
 `net_send_client_packet` includes opcode `0x48` in its raw-policy branch. A fixed local builder and its send sites have not yet been isolated. Server opcode `0x40`, [`SSendPatch`](../server/064-0x40-send-patch.md), is the expected counterpart, but the request/response flow still needs a local control-flow trace.
 

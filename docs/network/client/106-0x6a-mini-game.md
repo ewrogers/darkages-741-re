@@ -1,15 +1,15 @@
 # Mini Game (`CMiniGame`)
 
+<a id="purpose"></a>
+
+The client sends this packet for mini-game lifecycle and interaction traffic. The locally confirmed builders emit actions `5`, `6`, `7`, and `8`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x6A` (106) |
-| Encoding | derived |
+| Transform | `derived` |
 | Name provenance | Related class vocabulary matched to locally confirmed builders and mini-game RTTI |
-
-## Purpose
-
-The client sends this packet for mini-game lifecycle and interaction traffic. The locally confirmed builders emit actions `5`, `6`, `7`, and `8`.
 
 ## Actions
 

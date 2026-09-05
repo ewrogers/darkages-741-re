@@ -1,15 +1,15 @@
 # Block Input (`SBlockInput`)
 
+<a id="purpose"></a>
+
+`SBlockInput` lets the server temporarily replace the normal cursor with an animated wait cursor and prevent ordinary pointer and keyboard input from reaching the rest of the UI.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x51` (81) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-`SBlockInput` lets the server temporarily replace the normal cursor with an animated wait cursor and prevent ordinary pointer and keyboard input from reaching the rest of the UI.
 
 This is a modal UI overlay, not a pause command. Network packets, timers, rendering, and the game loop continue while input is blocked.
 

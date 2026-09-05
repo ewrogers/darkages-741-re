@@ -6,12 +6,14 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x2D` (45) |
-| Transform | static |
+| Transform | `static` |
 | Runtime owner | `BtmButtonsPane_A` |
 | Response | [`SSelfLook`](../server/057-0x39-self-look.md) |
 | Name provenance | Project-owner protocol name, confirmed against the local builder and paired response handler |
 
-## Plaintext body
+<a id="plaintext-body"></a>
+
+## Body
 
 ```text
 packet CSelfLook {

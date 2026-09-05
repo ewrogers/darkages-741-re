@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x4A` (74) |
-| Encoding | session key |
+| Transform | `derived` |
 | Packet class | RTTI class `SBadGuy` |
 | Name provenance | Microsoft C++ RTTI in the target |
 

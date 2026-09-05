@@ -6,10 +6,8 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x42` (66) |
-| Transform | derived |
+| Transform | `derived` |
 | Name provenance | Exact Microsoft C++ RTTI in the target |
-
-The constructor binds opcode `0x42`, and the packet factory registers the same concrete class. The deserializer stores the event at object offset `+0x10` and reads only the fields belonging to that event.
 
 ## Body
 
@@ -85,3 +83,7 @@ Event `0x01` is also the required continuation point for a stackable item. It su
 The RTTI-backed `DescPane` also watches the raw decoded opcode. Any `0x42` event closes the current description pane, but that auxiliary route reads no exchange fields. The packet factory and exchange handlers remain the owners of the body layout above.
 
 See [Player exchange](../../systems/player-exchange.md) for the complete UI flow and popup behavior.
+
+## Name evidence
+
+The constructor binds opcode `0x42`, and the packet factory registers the same concrete class. The deserializer stores the event at object offset `+0x10` and reads only the fields belonging to that event.

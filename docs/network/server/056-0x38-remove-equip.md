@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x38` (56) |
-| Transform | derived |
+| Transform | `derived` |
 | UI owners | RTTI classes `EquipPane` and `UserInfoPane` |
 | Name provenance | Microsoft C++ RTTI in the target |
 

@@ -292,7 +292,7 @@ That fixed-tile route does not keep following a moving object.
 
 An extension can reuse the client's queued walker without using its BFS. This gives an external A*, waypoint system, or map heuristic control over the exact tiles while preserving the client's normal step validation, movement packet, animation, and position-update pacing.
 
-The static client code supports this design. The exact-route installation sequence has not yet been exercised in a live client during this investigation, so the first implementation should be treated as a guarded runtime trial.
+The static client code supports this design, but the exact-route installation sequence has not been validated in a live client. The first implementation therefore remains a guarded runtime trial.
 
 The queued walker consumes this 12-byte record:
 

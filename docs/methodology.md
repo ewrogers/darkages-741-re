@@ -31,7 +31,7 @@ Use short subsystem names:
 
 Use `maybe_` when a useful function name is still uncertain. Documentation may place `?` after a reconstructed class or field name.
 
-RTTI proves a class spelling and inheritance relationship. It does not prove the purpose of every method. Behavior still needs to be traced.
+Runtime type information (RTTI) is compiler-generated data that records class names and inheritance. It proves a class spelling and inheritance relationship, but not the purpose of every method. Behavior still needs to be traced.
 
 ## Main pages and lookup pages
 
@@ -52,6 +52,14 @@ Object offsets may stay beside a small structure when they are needed to underst
 Keep client and server command codes separate. The same byte can mean something different in each direction.
 
 For each packet, record the name source, transform mode, known body fields, trigger or handler, visible effect, paired messages, and unknowns. Do not invent a field name just to make a layout look complete.
+
+## Writing a consistent page
+
+Open with what the client does and why the behavior matters. Follow with the flow, the named functions or objects involved, and the details a reader needs to use the result. Keep reconstructed behavior, observed captures, proposed extensions, and unresolved questions distinguishable.
+
+Packet pages put that purpose before the metadata table. Use `Transform` with `raw`, `static`, or `derived`, then describe the body in the shared [packet notation](network/packet-body-notation.md). Keep fragmentary or observed bodies labeled as such. Use behavior-specific headings for the remaining sections and `Known limits` when a separate uncertainty section is useful.
+
+Overview pages explain how a section fits together and link to its focused topics. Keep long lookup material in the appendices, preserve useful timing values and provenance, and update the [navigation generator](../scripts/README.md) when a page is added. An editorial change should not make an uncertain finding sound established.
 
 ## Text and localization
 

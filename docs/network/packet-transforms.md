@@ -2,13 +2,15 @@
 
 Packets use one of three modes. The command code selects the mode, and the client and server directions have different command lists.
 
-| Book name | Internal name | Meaning |
-| --- | --- | --- |
-| None | Raw | Body is sent as written |
-| Startup key | Static | Uses the current shared key |
-| Session key | Derived | Builds a 9-byte key for this packet |
+| Mode | Meaning |
+| --- | --- |
+| `raw` | Body is sent as written |
+| `static` | Uses the current shared static key |
+| `derived` | Builds a 9-byte key for this packet |
 
-The startup key, session key, MD5 source, seed table, and sequence are separate pieces. They should not be treated as one generic encryption key.
+Packet pages and indexes name the transform mode separately from its key material. The static key can be replaced during the connection handshake; it is not necessarily the compiled startup default.
+
+The static key, per-packet derived key, 1024-byte MD5 source, 256-entry seed XOR table, and sequence are separate pieces. The sections below explain each one's role.
 
 ## Client submission terminator
 
@@ -98,21 +100,23 @@ Length-prefixed strings do not depend on either kind of trailing byte. The packe
 
 | Mode | Command codes |
 | --- | --- |
-| None | `0x00`, `0x10`, `0x48` |
-| Startup key | `0x02`, `0x03`, `0x04`, `0x0B`, `0x26`, `0x2D`, `0x3A`, `0x42`, `0x43`, `0x4B`, `0x57`, `0x62`, `0x68`, `0x71`, `0x73`, `0x7B` |
-| Session key | Every other command reaching `net_send_client_packet` |
+| `raw` | `0x00`, `0x10`, `0x48` |
+| `static` | `0x02`, `0x03`, `0x04`, `0x0B`, `0x26`, `0x2D`, `0x3A`, `0x42`, `0x43`, `0x4B`, `0x57`, `0x62`, `0x68`, `0x71`, `0x73`, `0x7B` |
+| `derived` | Every other command reaching `net_send_client_packet` |
 
 ### Server to client
 
 | Mode | Command codes |
 | --- | --- |
-| None | `0x00`, `0x03`, `0x40` |
-| Startup key | `0x01`, `0x02`, `0x0A`, `0x56`, `0x60`, `0x62`, `0x66`, `0x6F` |
-| Session key | Every other command reaching `net_receive_frames` |
+| `raw` | `0x00`, `0x03`, `0x40` |
+| `static` | `0x01`, `0x02`, `0x0A`, `0x56`, `0x60`, `0x62`, `0x66`, `0x6F` |
+| `derived` | Every other command reaching `net_receive_frames` |
 
 These are transport rules. They do not prove that every command has a packet class.
 
-## Startup key
+<a id="startup-key"></a>
+
+## Static key
 
 The built-in 9-byte key is:
 
@@ -131,24 +135,15 @@ working:  55 72 6B E5 6E 49 74 A3 49
 XOR:      00 00 00 86 00 00 00 CD 00
 ```
 
-A supplied pre-login timeout capture had readable ASCII except for bytes altered by the repeating `0x86` and `0xCD` difference. Decoding it with the working key recovers `You have been idle for too long. Your connection has been closed.` exactly. This is a wrong-startup-key artifact, not a regional text encoding.
+A supplied pre-login timeout capture had readable ASCII except for bytes altered by the repeating `0x86` and `0xCD` difference. Decoding it with the working key recovers `You have been idle for too long. Your connection has been closed.` exactly. The garbled text comes from using the wrong static key, not from a regional text encoding.
 
-The server can replace both the startup key and seed-table selector in an `SVersionCheck` subtype 0 message:
+The server can replace both the static key and seed-table selector in an [`SVersionCheck`](server/000-0x00-version-check.md) subtype `0` message. That packet page defines the body, including the server-list CRC, selector, key length, and key bytes. Valid selectors are `0` through `9`.
 
-```text
-packet SVersionCheckKeyUpdate {
-    u8 opcode                    // 0x00
-    u8 subtype                   // 0
-    u32be configuration_crc
-    u8 seed_table_selector       // 0 through 9
-    u8 key_length
-    u8 key[key_length]
-}
-```
+<a id="session-key"></a>
 
-## Session key
+## Derived key and MD5 source
 
-The session-key path starts with the active character name. The client repeatedly expands lowercase MD5 text into a 1024-byte source. A packet then selects nine bytes from that source:
+The derived-key path starts with the active character name. The client repeatedly expands lowercase MD5 text into a 1024-byte source. A packet then selects nine bytes from that source:
 
 ```text
 for i from 0 through 8

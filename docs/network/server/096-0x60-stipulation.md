@@ -1,15 +1,15 @@
 # Stipulation (`SStipulation`)
 
+<a id="purpose"></a>
+
+This packet keeps the selected server greeting in sync. The local greeting is stored in `mServer.tbl`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x60` (96) |
 | Transform | `static` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-This packet keeps the selected server greeting in sync. The local greeting is stored in `mServer.tbl`.
 
 Before either handler processes the greeting, it checks whether the homepage URL is cached. If not, it sends [`CRequestHomepage`](../client/104-0x68-request-homepage.md). This is why the observed mode-0 stipulation is followed immediately by `68 01`.
 
@@ -49,7 +49,9 @@ The separate [Early Continue](../../appendix/runtime-patches/early-continue.md) 
 
 ## Handlers
 
-- `net_handle_stipulation_raw` at `0x004B8570` parses a decoded packet buffer directly.
-- `net_handle_stipulation` at `0x004B8890` handles the RTTI-backed packet object.
+- `net_handle_stipulation_raw` parses a decoded packet buffer directly.
+- `net_handle_stipulation` handles the RTTI-backed packet object.
+
+Static addresses are in the [function reference](../../appendix/functions.md).
 
 The constructor and packet factory also confirm opcode `0x60` for the `SStipulation` class. See [Server list and greeting](../server-tables.md).

@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x62` (98) |
-| Encoding | startup key |
+| Transform | `static` |
 | Name provenance | Exact Microsoft C++ RTTI class `SWebBoard` |
 | Known owners | `BrowserDialogPane`, `MiniGame::BrowserGameControlPane` |
 | Client response | None after the response is applied |

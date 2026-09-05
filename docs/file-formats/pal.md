@@ -39,5 +39,7 @@ Palette lookup tables such as `itempal.tbl`, `stcpal.tbl`, and `mptpal.tbl` choo
 
 ## Evidence
 
-- `file_palette_load_rgb` at `0x00548650`
-- `render_palette_pack_16bit` at `0x00593B00`
+- `file_palette_load_rgb`
+- `render_palette_pack_16bit`
+
+Addresses are collected in the [function reference](../appendix/functions.md).

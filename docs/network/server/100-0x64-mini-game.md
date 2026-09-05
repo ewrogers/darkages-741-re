@@ -1,15 +1,15 @@
 # Mini Game (`SMiniGame`)
 
+<a id="purpose"></a>
+
+This packet can open one of the client's built-in mini games, including the separate fishing dialog. It also carries updates for games that are already open.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x64` (100) |
-| Encoding | derived |
+| Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-This packet can open one of the client's built-in mini games, including the separate fishing dialog. It also carries updates for games that are already open.
 
 The path is live in this client. The server packet factory constructs `SMiniGame`, `net_deserialize_mini_game_server_packet` reads its action-dependent body, and the normal server packet dispatcher reaches `ui_world_handle_mini_game_server_packet`. Action `4` continues through `ui_apply_mini_game_server_packet` and calls `ui_launch_mini_game`. Action `8`, subtype `1`, instead takes the world pane's dedicated [fishing](../../systems/fishing.md) path.
 

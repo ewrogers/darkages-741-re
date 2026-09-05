@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x0A` (10) |
-| Transform | static |
+| Transform | `static` |
 | Name provenance | Microsoft C++ RTTI in the target |
 
 ## Body

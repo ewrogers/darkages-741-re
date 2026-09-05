@@ -1,17 +1,17 @@
 # Action Delay (`SActionDelay`)
 
+<a id="purpose"></a>
+
+The server uses this packet to place one spell or skill inventory slot on a client-side action delay. The selected icon is tinted and its normal pointer actions are blocked until a local timer expires.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x3F` (63) |
-| Transform | derived |
+| Transform | `derived` |
 | Class name | `SActionDelay` |
 | Name provenance | Microsoft C++ RTTI in the target |
 | UI owners | `NewSkillInventoryPane`, `NewSpellInventoryPane` |
-
-## Purpose
-
-The server uses this packet to place one spell or skill inventory slot on a client-side action delay. The selected icon is tinted and its normal pointer actions are blocked until a local timer expires.
 
 This is separate from the spell cast-line system. [`CSpellDelayRequest`](../client/077-0x4d-spell-delay-request.md), [`CSpellDelaySay`](../client/078-0x4e-spell-delay-say.md), and [`SSpellDelayCancel`](072-0x48-spell-delay-cancel.md) coordinate multi-line spell chanting. `SActionDelay` is a server-selected cooldown applied after or independently of that process.
 

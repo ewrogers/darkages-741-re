@@ -236,9 +236,11 @@ The inspected cache contains 170 groups and 26 distinct SPF filenames. Every gro
 
 ## Evidence
 
-- `net_handle_metadata` at `0x004E4EA0`
-- `net_metadata_uncompress` at `0x004E54F0`
-- `file_load_metadata_compressed` at `0x004E5570`
-- `file_save_metadata_compressed` at `0x004E56E0`
-- `net_metadata_crc32` at `0x004E5790`
-- `net_parse_metadata_table` at `0x004E57C0`
+- `net_handle_metadata`
+- `net_metadata_uncompress`
+- `file_load_metadata_compressed`
+- `file_save_metadata_compressed`
+- `net_metadata_crc32`
+- `net_parse_metadata_table`
+
+Addresses are collected in the [function reference](../appendix/functions.md).

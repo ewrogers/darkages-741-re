@@ -1,15 +1,15 @@
 # Show Users (`SShowUsers`)
 
+<a id="purpose"></a>
+
+`SShowUsers` supplies the rows shown by the world-user list. It is the response to [`CWho`](../client/024-0x18-who.md). The handler replaces the current lists, rebuilds their filters, and opens or reveals `ShowUsersPane`.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x36` (54) |
-| Encoding | session key |
+| Transform | `derived` |
 | Name provenance | Project protocol vocabulary, confirmed against the local raw opcode handler and `ShowUsersPane` behavior. |
-
-## Purpose
-
-`SShowUsers` supplies the rows shown by the world-user list. It is the response to [`CWho`](../client/024-0x18-who.md). The handler replaces the current lists, rebuilds their filters, and opens or reveals `ShowUsersPane`.
 
 Opcode `0x36` is handled directly from the decoded body. It does not have a server packet-factory class in this client.
 

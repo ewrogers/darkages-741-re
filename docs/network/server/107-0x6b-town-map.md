@@ -1,15 +1,15 @@
 # Town Map (`SScreenShot`)
 
+<a id="purpose"></a>
+
+The server uses this packet to open `TownMapPane` for a table entry chosen by the server. It does not capture, save, or upload a screenshot.
+
 | Item | Value |
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x6B` (107) |
-| Encoding | derived |
+| Transform | `derived` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-## Purpose
-
-The server uses this packet to open `TownMapPane` for a table entry chosen by the server. It does not capture, save, or upload a screenshot.
 
 `SScreenShot` is nevertheless the exact RTTI class name in this client. The name is misleading when read as an operating-system screenshot command, so this page uses Town Map as the behavioral label while preserving the concrete class name.
 

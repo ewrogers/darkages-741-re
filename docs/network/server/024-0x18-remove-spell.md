@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x18` (24) |
-| Transform | derived |
+| Transform | `derived` |
 | Session owner | RTTI class `WorldUserFunc` |
 | UI owner | RTTI class `NewSpellInventoryPane` |
 | Name provenance | Microsoft C++ RTTI in the target |

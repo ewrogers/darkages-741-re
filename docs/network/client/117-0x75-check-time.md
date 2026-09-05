@@ -1,16 +1,16 @@
 # Check Time (`CCheckTime`)
 
+<a id="purpose"></a>
+
+The client sends `CCheckTime` only as the immediate response to [`SCheckTime`](../server/104-0x68-check-time.md). It returns the server's four-byte value unchanged and reports the current `timeGetTime()` tick count.
+
 | Item | Value |
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x75` (117) |
-| Transform | derived |
+| Transform | `derived` |
 | Name provenance | Project-owner protocol vocabulary, confirmed by direct pairing with RTTI-backed `SCheckTime` |
 | Builder | `net_send_check_time` |
-
-## Purpose
-
-The client sends `CCheckTime` only as the immediate response to [`SCheckTime`](../server/104-0x68-check-time.md). It returns the server's four-byte value unchanged and reports the current `timeGetTime()` tick count.
 
 The `CCheckTime` handler does not decide whether this sampled value is advancing correctly. It supplies the measurement; any comparison, tolerance, or retry for this exchange belongs to the server.
 

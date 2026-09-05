@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x10` (16) |
-| Transform | derived |
+| Transform | `derived` |
 | State owners | RTTI classes `WorldUserFunc`, `InventoryPane_A`, and `ItemInventoryPane` |
 | Name provenance | Microsoft C++ RTTI in the target |
 

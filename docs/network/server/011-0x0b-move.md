@@ -6,11 +6,9 @@
 | --- | --- |
 | Direction | Server to client |
 | Command | `0x0B` (11) |
-| Transform | derived |
+| Transform | `derived` |
 | Runtime owner | `WorldPane` and `GUIBackPane` |
 | Name provenance | Microsoft C++ RTTI in the target |
-
-The constructor calls `net_server_packet_base_ctor` with opcode `0x0B` and installs the `SMove` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.
 
 ## Body
 
@@ -76,3 +74,7 @@ round_trip_ms = timeGetTime() - last_move_send_time;
 | `450 ms or more` | 4 |
 
 There is no moving average or other smoothing calculation in this path. The indicator can appear steadier because stale step replies are excluded and the raw result is reduced to four broad bands. Each new `CMove` replaces the one saved timestamp, so only a reply echoing the latest step can update the display.
+
+## Name evidence
+
+The constructor calls `net_server_packet_base_ctor` with opcode `0x0B` and installs the `SMove` vtable. `net_server_packet_factory_ctor` registers the same opcode with this constructor.

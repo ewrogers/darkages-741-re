@@ -6,7 +6,7 @@
 | --- | --- |
 | Direction | Client to server |
 | Command | `0x0F` (15) |
-| Transform | derived |
+| Transform | `derived` |
 | UI owner | RTTI class `SpellInvItemPane` |
 | Name provenance | Project-owner protocol vocabulary, confirmed by the local builders |
 
