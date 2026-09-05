@@ -3920,6 +3920,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_minimap_update_visibility_region` | `0x005D9D30` | high | Adds, changes, or removes a keyed rectangular visibility region and expands the mask's dirty tile rectangle. |
 | `render_minimap_set_visibility_mask_enabled` | `0x005D9DF0` | high | Enables the restricted-visibility path only when requested and invalidates the minimap on a mode change. |
 | `render_world_damage_object` | `0x005DC5A0` | high | Draws the selected generated damage-meter frame at its target-relative world position. |
+| `render_effect_prepare_frame_geometry` | `0x005DCFC0` | high | Resolves the effect crop, pivot and image; flag bit 0 enables captured-direction X/Y flips. |
 | `render_effect_object` | `0x005DD380` | high | Draws a world effect frame with its selected software blend mode. |
 | `render_update_effect_frame` | `0x005DD470` | high | Advances a world effect through its Effect.tbl frame sequence. |
 | `render_item_object_get_bounds` | `0x005DE5A0` | high | Returns the item's draw rectangle and its fixed -16 to +16 tile-relative bounds through WorldObject_Item primary-vtable slot 0x14. |
@@ -3944,6 +3945,9 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_human_direction_is_mirrored` | `0x005FF020` | high | Returns true for right and up so those directions mirror the paired stored human view. |
 | `render_human_frame_apply_direction` | `0x005FF550` | high | Applies the current direction selection to a cached human-frame descriptor. |
 | `render_human_walk_sequence_ctor` | `0x005FFCD0` | high | Builds a four-step or eight-step human walk interpolation sequence from fixed pixel, frame, and per-step delay tables. |
+| `render_human_walk_get_interval` | `0x005FFF30` | high | Returns the selected walk sample delay; out-of-range and negative samples return zero. |
+| `render_human_walk_build_frame` | `0x005FFF70` | high | Copies the shared 21-category descriptor for one finite walk sample, then applies the stored-view direction offset and horizontal mirror flag. |
+| `render_human_walk_get_displacement` | `0x005FFFE0` | high | Returns the accumulated vertical then horizontal displacement for one walk sample; rejects samples outside the finite sequence. |
 | `render_human_stand_motion_data_ctor` | `0x006000D0` | high | Constructs standing-motion data and resolves up to 21 body and equipment sprite parts from HumanAppearanceRecord. |
 | `render_human_stand_build_frame` | `0x00600150` | high | Builds one standing human frame from the initialized part resources and current direction. |
 | `render_human_stand_initialize_parts` | `0x006002F0` | high | Initializes categories 0 through 20 for every human body, including Ghost, Jester, Head, and Blank forms; zero selectors omit individual resources. |
@@ -3953,8 +3957,10 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `render_monster_select_motion_sequence` | `0x00601DD0` | high | Accepts motion IDs 0x01, 0x83, 0x84, and 0x85, selects one of three cached monster motion resources, and leaves the caller's duration unchanged. |
 | `render_human_image_session_ctor` | `0x00602240` | high | Constructs the 0x918-byte RTTI-backed HumanObjectImageSession with HumanAppearanceRecord, a 21-part frame cache, 21 0x50-byte render states, and animation state. |
 | `render_human_image_session_draw` | `0x006023E0` | high | Draws the image session's current cached human layers into the caller's composite canvas. |
+| `render_human_advance_or_return_to_stand` | `0x00602640` | high | Advances the active motion; on exhaustion selects standing, resets the counter, and immediately builds standing sample zero. |
 | `render_human_image_session_advance_frame` | `0x006026D0` | high | Advances the active human motion and rebuilds direction-dependent frame state when needed. |
 | `render_human_image_session_cache_frame_layers` | `0x00602940` | high | Caches the current motion's ordered human-part descriptors for the final draw. |
+| `render_human_select_stand_sequence` | `0x006029E0` | high | Selects the appearance-specific standing motion, resets sample counter and direction, and returns a 300 ms interval. |
 | `render_human_select_motion_sequence` | `0x00602A40` | high | Selects fixed, table-driven, or appearance-dependent human body motions; normal table motions replace the caller duration with 500, 1000, or 1500 ms. |
 | `render_human_select_walk_sequence` | `0x00602CA0` | high | Selects the remote-human, local coarse, or local smooth walk sequence; ScrollLevel chooses four 114 ms steps or eight 57 ms steps for WorldObject_User. |
 | `render_merge_light_mask_max` | `0x006036B0` | high | Merges a rectangular 8-bit light image into the viewport mask by retaining the greater value at each pixel. |
@@ -5248,6 +5254,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `world_living_stage_transition_position` | `0x005E0B40` | high | Sets WorldObject_Living transition_active at +0x105 and saves the pending tile Y and X at +0x108 and +0x10C without replacing the committed tile. |
 | `world_living_commit_transition_position` | `0x005E0B90` | high | Copies a staged tile into the committed +0x40 and +0x44 fields, publishes the position change, and clears transition_active. |
 | `world_living_finish_position_transition` | `0x005E0DD0` | high | Clears the render displacement and commits the staged position for object classes whose +0x110 policy byte is zero, including WorldObject_User. |
+| `world_living_advance_animation_timer` | `0x005E0E20` | high | Advances one actor animation sample, requeues timer 0x02000001 with its revision and returned interval (80 ms fallback), rebuilds dirty pixels, and applies the motion displacement. |
 | `world_living_update_motion_slot` | `0x005E10B0` | high | Creates or updates one of four 0x14-byte motion slots and stores zero or current tick plus duration as its expiry time. |
 | `world_living_adjust_render_offset_for_direction` | `0x005E16C0` | high | Applies direction-table deltas to the signed WorldObject render-displacement pair at +0x38 and +0x3C. |
 | `world_living_set_render_offset` | `0x005E1770` | high | Replaces the signed render-displacement pair at WorldObject +0x38 and +0x3C independently of tile Y and X. |

@@ -14,10 +14,10 @@ file Epf {
     bytes pixel_data[header.table_displacement]
     repeat header.frame_count {
         record frame {
-            u16le bound_0       // +0x00
-            u16le bound_1       // +0x02
-            u16le bound_2       // +0x04
-            u16le bound_3       // +0x06
+            s16le top           // +0x00, also called bound_0
+            s16le left          // +0x02, also called bound_1
+            s16le bottom        // +0x04, also called bound_2, exclusive
+            s16le right         // +0x06, also called bound_3, exclusive
             u32le data_offset_a // +0x08
             u32le data_offset_b // +0x0C
         }                        // 0x10 bytes
@@ -39,6 +39,25 @@ Pixel data starts at file offset `0x0C`. The frame table starts at:
 ```
 
 `file_read_image_metadata` returns the header's frame count, width, and height. `file_load_image_frame` uses the selected record to build the pixmap passed to `render_blit_pixmap`.
+
+The frame reader sign-extends all four bounds. They are placement coordinates, not unsigned dimensions. The primary pixmap pitch is `right - left`, and the cropped height is `bottom - top`. Negative coordinates and empty rectangles occur in the installed character art. The header dimensions do not bound those placement coordinates: local `MM00101.epf` reports 27 by 54 while frame 1 reaches right 40 and bottom 76.
+
+## Character position companions
+
+The human part loader looks for a same-stem `.tbl` in the same character archive. This is a binary position array, distinct from the text tables described elsewhere in the book. It has no header or count in this reader:
+
+```text
+record position {       // selected at file offset frame_index * 4
+    u16le anchor_x
+    u16le anchor_y
+}
+```
+
+The index is the final EPF frame index, including the selected view group. The loader reads X into the pixmap's horizontal anchor and Y into its vertical anchor. It subtracts these anchors from the signed bounds before horizontal mirroring and composition. When the table is missing, the human category supplies `(28, 70)` or `(55, 70)` as documented in [Player rendering](../rendering/players.md#part-categories).
+
+This path writes only two bytes into each 32-bit runtime anchor field. It does not sign-extend a negative 16-bit value or validate a companion-record count. Fresh pixmaps start with zero anchors, but the short writes do not establish a general signed-offset format for reused descriptors. Preserve the stored words, check table lengths in an external reader, and do not claim negative companion anchors work like signed EPF bounds. The inspected split M/W character archives contain no such tables, so this installation exercises the category defaults for its human parts.
+
+The general EPF reader also probes a same-stem position table for `Efct` and `Mefc` resources. Those effect pixmaps start with zero anchors rather than the human category defaults. A raw EPF header does not carry this anchor.
 
 ## Character legend badges
 
@@ -67,7 +86,9 @@ read_epf_frame(file, index):
     return image_view(frame.bounds, primary, secondary, second_size)
 ```
 
-The loader checks the frame index but does not prove that these offsets remain inside the archive entry. The meaning of both payload ranges and the full pixel stream encoding are not yet proven. A container writer could reproduce an existing file while preserving those streams, but creating new image payloads is not documented as safe yet.
+The ordinary indexed drawing path reads the primary payload as row-major, one-byte palette indexes with pitch `right - left`. It advances one byte per pixel and one pitch per row; normal human-part drawing skips index zero. The EPF effect conversion uses the same primary bytes. This path needs no decompression or row-run decoder.
+
+The loader checks the frame index but does not prove that these offsets remain inside the archive entry. Validate the primary rectangle's byte count against the pixel blob in an external reader. The secondary range is still not fully classified, so a complete compatible writer must preserve it rather than assuming it is empty or disposable.
 
 ## Portrait-sized EPF
 

@@ -237,6 +237,7 @@
 
 - [Appendices](appendix/README.md)
   - [Function reference](appendix/functions.md)
+  - [Player rendering evidence](appendix/player-rendering.md)
   - [Executable-page integrity records](appendix/executable-page-integrity.md)
   - [Runtime patches](appendix/runtime-patches.md)
     - [Safe launcher](appendix/runtime-patches/safe-launcher.md)
