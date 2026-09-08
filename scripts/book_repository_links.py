@@ -37,6 +37,31 @@ def rewrite(content: str, chapter: Path, docs: Path, root: Path, tracked: set[st
             raise ValueError(f"{chapter.name}: outside-book link is not a tracked file: {url}")
         return urlsplit(base + quote(relative))._replace(query=parsed.query, fragment=parsed.fragment).geturl()
 
+    return map_markdown_links(content, target)
+
+
+def markdown_lines(content: str):
+    """Yield source lines and whether they are outside fenced/indented examples."""
+    fence = None
+    for line in content.splitlines(keepends=True):
+        marker = re.match(r'^ {0,3}(`{3,}|~{3,})', line)
+        if marker:
+            run = marker[1]
+            if fence is None:
+                fence = run
+            elif run[0] == fence[0] and len(run) >= len(fence):
+                fence = None
+            yield line, False
+        else:
+            yield line, not fence and not line.startswith(("    ", "\t"))
+
+
+def map_markdown_links(content: str, target) -> str:
+    """Visit the Markdown/reference/HTML destinations used by repository guides.
+
+    This deliberately shares the publisher's scanner, rather than treating every
+    path-looking string in examples as a link.
+    """
     # Restrict rewriting to actual link destinations. Fenced and inline code are
     # left alone so examples of repository paths remain literal examples.
     inline = re.compile(r'(`+)(.*?)(\1)|(?P<link>!?\[[^\]\n]*\]\()(?P<url>[^\s)]+)(?P<end>\))|(?P<attr>\bhref=["\x27])(?P<htmlurl>[^"\x27]+)(?P<quote>["\x27])')
@@ -49,18 +74,9 @@ def rewrite(content: str, chapter: Path, docs: Path, root: Path, tracked: set[st
             return match.group("attr") + target(match.group("htmlurl")) + match.group("quote")
         return match.group(0)
 
-    output, fence = [], None
-    for line in content.splitlines(keepends=True):
-        marker = re.match(r'^ {0,3}(`{3,}|~{3,})', line)
-        if marker:
-            run = marker[1]
-            if fence is None:
-                fence = run
-            elif run[0] == fence[0] and len(run) >= len(fence):
-                fence = None
-            output.append(line)
-            continue
-        if fence or line.startswith(("    ", "\t")):
+    output = []
+    for line, prose in markdown_lines(content):
+        if not prose:
             output.append(line)
             continue
         ref = reference.match(line.rstrip("\n"))
@@ -69,6 +85,17 @@ def rewrite(content: str, chapter: Path, docs: Path, root: Path, tracked: set[st
         else:
             output.append(inline.sub(replace, line))
     return "".join(output)
+
+
+def markdown_links(content: str) -> list[str]:
+    links = []
+
+    def collect(url):
+        links.append(unescape(url))
+        return url
+
+    map_markdown_links(content, collect)
+    return links
 
 
 def main() -> None:

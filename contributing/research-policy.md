@@ -1,0 +1,309 @@
+# Research policy
+
+These are the project’s evidence and subsystem requirements. Start with the [contributor handbook](../CONTRIBUTING.md) for the workflow, then use the sections below for the behavior being studied. All paths in code spans are relative to the repository root.
+
+General rules: [target](#project-goal), [legacy material](#clean-slate-rule), [source precedence](#source-of-truth-rules), [investigation](#reverse-engineering-workflow), [naming](#binary-ninja-naming-and-comments), and [addresses](#address-and-evidence-requirements). Export requirements live in [analysis policy](../analysis/README.md#export-requirements).
+
+Subsystem checks: [UI and events](#ui-and-event-documentation), [timing](#timing-and-animation-documentation), [UI layouts](#ui-layout-documentation), [portraits and text](#portrait-profile-and-formatted-text-documentation), [proxies](#injected-event-and-network-proxies), [rendering](#rendering-and-file-format-documentation), [audio](#audio-documentation), [localization](#text-encoding-and-localization), [maps](#map-and-rendering-documentation), [runtime patches](#runtime-patch-documentation), [packets](#packet-documentation), and [file formats](#file-format-documentation).
+
+## Project goal
+
+This project documents the Dark Ages client that reports version `741`. The new book is a clean Binary Ninja-based analysis. Its goal is to build a clear, evidence-based understanding of the client, server protocol, packet encryption, CRC routines, runtime memory structures, UI behavior, and file formats.
+
+The target client is the local source of truth. Related games, leaked names, packet captures, external implementations, and archived prior work can provide context, but they do not override what this binary does.
+
+Target executable fingerprint:
+
+```text
+File: Darkages.exe
+Size: 3,112,960 bytes
+SHA-256: 054A5D6ADC56099C6BFD9D2A58675AFF62DC788B63209A3D906492F5B89E96C6
+Reported client version: 741
+Architecture: 32-bit x86 Windows PE
+```
+
+Do not commit the executable, original game assets, `.bndb` files, or other client-derived binary workspace state.
+
+## Clean-slate rule
+
+`legacy/` contains the previous project. Treat it only as a collection of leads.
+
+- Do not copy a legacy conclusion into the new book without rechecking it in Binary Ninja.
+- Do not import old friendly names in bulk.
+- When a legacy page points to useful evidence, follow the evidence from the matching binary again.
+- If new evidence contradicts legacy material, document the new result and leave the archive unchanged.
+- Keep new documentation outside `legacy/`.
+
+## Reverse-engineering workflow
+
+1. Confirm that the opened file matches the target fingerprint.
+2. Search the new docs, committed analysis exports, Binary Ninja user symbols, and comments before naming anything.
+3. Search `legacy/` separately for possible leads. Treat every result as unverified.
+4. Start from direct evidence such as an opcode comparison, packet reader call, string, import, vtable, caller, or runtime observation.
+5. Trace callers and callees. Check cross-references and nearby branches.
+6. Use HLIL and decompiled C as conveniences. Verify important layouts, constants, register use, stack behavior, and control flow against MLIL, LLIL, or disassembly.
+7. Apply useful user symbols, types, and comments in Binary Ninja when confidence is sufficient.
+8. Export durable analysis into `analysis/exports/` with a checked-in script when an export format exists.
+9. Update the matching Markdown documentation in the same task.
+10. Record uncertainty, contradictory evidence, and provenance.
+11. Validate links, exports, scripts, and the mdBook build before finishing.
+
+When command-line or regional behavior is involved, identify the active build or distribution selector before presenting a parser as usable. Document dormant parsers separately. For connection analysis, distinguish configuration-time endpoint fallbacks from connect-time retries, and record whether each failure returns, reports an error, retries, or terminates the process.
+
+If the binary and any related source disagree, keep the local behavior. Record the related name or behavior only as context with its provenance.
+
+Ask the project owner for tribal knowledge when in-game behavior would resolve an ambiguity. Treat the answer as behavioral evidence and still connect it to the local code where possible.
+
+## Binary Ninja naming and comments
+
+- Use lowercase `snake_case`.
+- Prefix network functions with `net_`.
+- Use clear subsystem prefixes such as `ui_`, `input_`, `render_`, `audio_`, `file_`, or `map_` after the subsystem is established.
+- Reserve `app_` for application-wide lifecycle or configuration state. Use `session_`, `game_`, or `character_` for state owned by those narrower lifetimes or subsystems.
+- Use `maybe_` for useful but uncertain Binary Ninja names.
+- Documentation may use a trailing `?` for an uncertain non-packet class or field name.
+- Do not add `?` to a verified packet name. Record uncertainty about packet behavior, fields, or provenance in prose instead.
+- Preserve a useful existing name unless stronger evidence improves it.
+- Do not rename a function from a legacy or related-game name alone.
+- Add comments at important opcode checks, packet field reads, loop boundaries, mode branches, key derivation, and state writes.
+- Comments should explain intent and evidence, not restate the instruction.
+
+When scripting Binary Ninja changes, prefer user symbols, user types, and other `_user_` APIs for human conclusions that must survive reanalysis. Auto-analysis results can be replaced when analysis is rerun or upgraded.
+
+## UI and event documentation
+
+Treat the UI as several connected mechanisms instead of assuming one universal scene graph.
+
+- Distinguish the spatial `HierList<Screen>`, the runtime `EventHandlerList` pane tree, a `DialogPane` local control collection, and `Singleton<T>` access wrappers.
+- Record an exact RTTI class name separately from a reconstructed method or field name. RTTI proves the class spelling, not the method's purpose.
+- For a pane event handler, record the primary-vtable slot, event family, consumed return behavior, coordinate space, and base implementation being overridden.
+- Track registration, visibility, input priority, mouse capture, control focus, and object validity as separate states.
+- Record secondary-base offsets. `Pane` uses a `TimerHandler` subobject at `this + 0x11C`, so a timer callback may receive an adjusted `this` pointer.
+- When documenting propagation, state whether traversal is child-first or parent-first and where a true return stops it.
+- For dialogs, preserve control attachment order when the collection index becomes the action or focus ID.
+- Do not infer the live pane tree from the static RTTI inventory. Use registration code or runtime observation to establish live parent, sibling, and visibility state.
+- Distinguish vtable name-search results from distinct complete-object RTTI classes. Derive inheritance from the MSVC Class Hierarchy Descriptor and Base Class Array, not from a qualified vtable display name alone.
+
+## Timing and animation documentation
+
+Treat timing values as behavior evidence. When an in-scope investigation exposes an animation constant, timer delay, interval, duration, or threshold, preserve it instead of treating it as incidental.
+
+- Record the exact value and unit, such as 500 ms, 30 ticks, or 4 frames. Distinguish a code constant from a runtime measurement or project-owner observation.
+- Record the timer owner, timer ID when meaningful, callback, time source, and whether it repeats automatically or is requeued by its callback.
+- Record the conditions that start, reschedule, cancel, pause, resume, and reset the timer. State whether hiding or destroying the owner also stops it.
+- Identify the state fields changed on each tick, including frame indexes, phases, counters, visibility flags, palette choices, and progress values.
+- For animations, record frame or phase order, transition rule, cadence, loop behavior, terminal frame, and any input or packet that interrupts or restarts it.
+- Distinguish update cadence from total duration. A 500 ms flash interval, a ten-second effect lifetime, and a server-supplied duration threshold are separate facts.
+- Separate client-owned timing from server-driven updates and asset metadata. State plainly when the client only displays stages supplied by the server.
+- Put useful timing behavior on the relevant packet or system page and retain lookup-heavy addresses, offsets, and confidence evidence in the matching appendix or YAML export.
+
+## UI layout documentation
+
+- Treat the underscore-prefixed text layouts in `setoa.dat` as named geometry and skin data, not as a complete scene tree.
+- Record the layout filename and the RTTI-backed pane class that loads it. Keep an asset with no proven filename reference marked unresolved.
+- Keep layout definition order separate from `DialogPane` attachment order. Numeric action IDs come from `ui_dialog_add_control` order in the constructor.
+- Treat `NAME` as the code-to-asset contract. A missing layout or named control takes a fatal invalid-layout path in this client.
+- Record `TYPE`, `RECT`, repeated `IMAGE`, `VALUE`, and `COLOR` fields independently. Do not infer a runtime control class from `TYPE` alone.
+- Preserve the order of repeated image, value, and color entries. Image-button construction can consume up to three ordered image states.
+- When describing custom UI work, separate reskinning or repositioning existing controls from adding new behavior. A new interactive control also needs code to construct, attach, handle, and clean it up.
+- Keep private extracted layout text and game art out of the repository. Commit only grammar notes, sanitized examples, and deterministic metadata.
+
+## Portrait, profile, and formatted text documentation
+
+- Keep the empty `SRequestPortrait` request separate from the `CSendPortrait` response body.
+- Record portrait filename lookup order, image validation, exact size limits, and the independent zero-length image and profile cases.
+- Describe `Face.epf` as a wildcard fallback, not a hardcoded client filename.
+- Treat profile limits as bytes. Preserve the DBCS-safe truncation behavior and do not call the packet text Unicode.
+- Separate saving `profile.txt`, refreshing the local preview, and uploading after a server request.
+- Record inline `{=<letter>` codes as palette indexes. Do not invent fixed RGB values when the renderer resolves the final color through a palette.
+
+## Injected event and network proxies
+
+For injected event or network proxies:
+
+- Verify the executable fingerprint and resolve static targets as module-base-relative RVAs.
+- Keep IPC and configuration parsing outside hooks. Hooks may consult local bounded state but must not wait for another process.
+- Queue external commands and invoke client event or packet producers from the main-thread dispatcher tick.
+- Prefer native `EventMan` producers for pointer, keyboard, text, and IME events so client state and ownership rules remain intact.
+- Treat pointer-bearing event variants as unsafe for generic IPC until construction and cleanup are fully verified.
+- Make rule failure fail-open, bound command and telemetry queues, and drop telemetry rather than blocking the client.
+- Keep persistent proxy rules in YAML. A compact fixed binary IPC format is acceptable when the controller owns YAML parsing.
+- Give every proxy rule a stable ID, explicit enabled state, and deterministic priority.
+- Queue rule add, edit, remove, enable, disable, list, and reset commands from IPC. Apply mutations from the main-thread dispatcher tick.
+- Publish runtime rule changes as immutable versioned snapshots. Hooks read the last valid snapshot without waiting or modifying it.
+- Require an expected revision for rule mutations so stale controller edits are rejected without changing the active rules.
+- Keep runtime edits in memory. Persistence is an explicit controller action that writes YAML outside the injected DLL.
+
+## Rendering and file-format documentation
+
+- Separate renderer behavior from the file format that supplies its data.
+- Explain the live frame path from pane or world draw through canvas composition and presentation.
+- Distinguish software drawing and blending from the final DirectDraw or GDI presentation step.
+- For each format, record byte order, header size, record size, offsets, counts, alignment, compression, palettes, and unknown fields when known.
+- Use one main page per confirmed format. Keep internal storage class names separate from unproven file extensions.
+- State whether writing is client-confirmed, a generated inverse of the reader, or still incomplete.
+- Do not call an encoder compatible until a decode, encode, decode round trip preserves the meaningful fields and pixels.
+- Preserve unknown fields from a compatible source when showing a generated writer. Do not silently fill them with guessed constants.
+- Keep pseudocode short. Show the smallest read or write loop that makes the layout usable.
+- Put large mode tables, address lists, and deeper structure layouts in appendices or deterministic YAML exports.
+
+## Audio documentation
+
+- Separate the game-owned playback rules from the codec and mixer supplied by middleware.
+- Record the requested output format, source codec, sample rate, channel count, bitrate range, storage path, and naming convention when local assets confirm them.
+- Check file headers instead of treating an extension as proof of a codec.
+- Keep music streams, sound-effect samples, video sound, and dormant MIDI code as separate paths.
+- For volume, record the user-facing range, internal conversion, default, clamp behavior, and where the value is applied.
+- For fades, record the timer interval, step rule, stream lifetime, and whether two tracks overlap.
+- Distinguish compiled codec or MIDI support from a path reached by the matching game flow and assets.
+- Link packet-driven audio behavior from both the packet page and the audio system page.
+
+## Text encoding and localization
+
+The client originated in the Korean market and may contain untranslated or incorrectly rendered Korean text. Treat text shown as `????`, especially near `MessageBoxA`, as an encoding question rather than assuming the literal text is known.
+
+- Inspect and preserve the raw bytes and their static address before interpreting the string.
+- Test non-ASCII byte strings as Windows code page 949, also called Unified Hangul Code, when the byte sequence supports it.
+- Distinguish Binary Ninja display behavior, Windows active-ANSI-code-page behavior, dynamic conversion loss, and literal `0x3F` bytes stored in the executable.
+- Remember that `MessageBoxA` interprets text through the process environment's active ANSI code page, so the same bytes may render differently under another Windows system locale.
+- Trace string-building and conversion calls when the message is produced dynamically.
+- If the text is recoverable, document the original Korean, an English translation, the encoding, and the translation provenance. Do not present a speculative decoding as confirmed.
+- If the executable contains literal replacement question marks, state that the original text is not recoverable from that string alone.
+
+## Map and rendering documentation
+
+- Treat `tilea.bmp` and `tileas.bmp` as raw fixed-record tile banks, not Windows BMP files.
+- Keep alternate map art separate from weather particles. `SMapSize` bit `0x80` selects alternate ground and static art, while its low nibble selects local weather behavior.
+- Describe `SOTP.DAT` as two independent flag groups: collision in the low nibble and static render behavior in the high nibble.
+- State whether a wall-visibility change hides all `WorldObject_Static` art, only render-flagged occluders, or collision-bearing statics. These choices are not equivalent.
+- Keep table-driven ground and static animation separate from server-driven map state. The client advances `gndani.tbl` and `stcani.tbl` locally on a timer.
+
+## Runtime patch documentation
+
+Do not patch executable bytes unless the user explicitly asks to apply a patch. A request to find, explain, or document a patch authorizes analysis and documentation only. It does not authorize Binary Ninja byte patching, saving a modified executable, or creating a patched copy. Renaming, typing, and commenting the local analysis database are normal project work.
+
+When a finding is intended for a launcher that patches process memory:
+
+- Record the static Binary Ninja address, preferred image base, module-relative RVA, original bytes, and replacement bytes.
+- Treat file offsets as reference information only. A launcher must use the actual loaded module base plus the RVA because ASLR can relocate the image.
+- Verify the exact target fingerprint and original instruction bytes before writing.
+- Prefer a same-size instruction change that follows an existing valid control-flow or state-machine path.
+- Explain why the chosen patch is narrower and safer than nearby alternatives.
+- Require a suspended launch, temporary page protection change, instruction-cache flush, protection restoration, and fail-closed cleanup.
+- Never write the original executable as part of runtime-patch research.
+
+## Address and evidence requirements
+
+Keep the main book focused on named functions and behavior. Put static addresses, RVAs, bytes, confidence, and long lookup tables in the matching appendix or YAML export.
+
+Object-relative field offsets may stay beside a compact structure when they are needed to explain the layout. Packet field positions may stay on packet pages when they define the wire format.
+
+For a function or global, record:
+
+- Current Binary Ninja user symbol, if one exists
+- Static virtual address, such as `0x567DE0`
+- Role in the control flow
+- Important callers or callees when relevant
+- Confidence and provenance
+
+For runtime pointers, distinguish clearly between:
+
+- Static image addresses
+- Globals that contain pointers
+- Object-relative offsets such as `this + 0x638`
+- Values that move because of ASLR or allocation
+
+Do not present a static Binary Ninja address as a stable runtime address without explaining the image base or relocation requirement. Main prose should link the function reference once and use function names after that.
+
+## Packet documentation
+
+`SPacket` means server-to-client. `CPacket` means client-to-server.
+
+Write the word `packet` in full in documentation and user-defined symbols. Do not abbreviate it. Quote a compiler-recovered abbreviation only when the exact spelling is necessary evidence.
+
+Use `SPacket` and `CPacket` only as generic direction terms. Concrete display names omit the redundant `Packet` suffix, even when related material includes it. Write `SUserPosition`, `CVersion`, and `CRefresh`, not their suffixed forms. Packet page and navigation titles use the friendly name followed by the concrete class name, such as `User Position (SUserPosition)` or `Version (CVersion)`.
+
+Preserve exact server class names recovered through RTTI even when a friendlier behavioral label is useful. Client packet names supplied by the project owner are protocol vocabulary, not compiler-recovered RTTI. Record that provenance and keep descriptive aliases separate when the names differ. Do not force paired client and server names to match.
+
+Verified concrete packet names do not use a trailing `?`. If part of a packet remains uncertain, keep the verified name and state the specific unknown in its page rather than making the whole packet name look tentative.
+
+Some control bodies may resemble an opcode-first packet without representing a normal packet class. Document their exact bytes, framing path, and sequence effects instead of forcing them into the ordinary packet model.
+
+Every client packet page should include known UI pane or subsystem owners when they can be reached reliably. Keep exact call addresses and unnamed containing functions in YAML exports or an address appendix. State when the owner is unresolved, and do not imply that static cross-references cover indirect or queued runtime calls.
+
+Packet body definitions use the field-list notation documented in `docs/network/packet-body-notation.md`, not C structs.
+
+Use the book's [packet body notation](../docs/network/packet-body-notation.md) and [shared protocol types](../docs/network/protocol-types.md) as the canonical wire references.
+
+- Begin a complete plaintext body with `packet CName {` or `packet SName {`, and put the opcode first.
+- List fields in exact wire order without semicolons, C declarators, compiler padding, or runtime object offsets.
+- All multibyte packet integers are big-endian. Write `u16`, `u24`, and `u32` in packet schemas instead of repeating a `be` suffix.
+- Use `string8` for a one-byte length followed by text bytes and `bytes name[count]` for fixed or counted opaque bytes.
+- Write conditional fields as `if condition { ... }` and counted groups as `repeat count { ... }`, with indentation showing the exact scope.
+- Use `record name { ... }` only for a nested or separately explained wire group. Place an inline record at the exact point where its fields are consumed. A record does not describe runtime memory.
+- Keep consumed-but-unused fields and observed-but-unconsumed trailing bytes distinct in names and comments.
+
+Shared packet enums and bit flags use `docs/network/protocol-types.md` as their single value reference.
+
+- Move a type there when it is used by multiple packets or is shared with another documented system.
+- Link the packet field to the shared type instead of repeating its value table.
+- Keep packet-specific status, subtype, and operation values on their packet page.
+- Preserve name provenance, unknown values, sentinels, valid ranges, and client range-check behavior in the shared entry.
+- Do not promote a palette index, asset selector, or unresolved byte into a named enum without direct client evidence.
+
+Packet filenames use a zero-padded decimal prefix followed by lowercase hexadecimal:
+
+```text
+027-0x1b-enter-editing-mode.md
+053-0x35-show-paper.md
+```
+
+Each packet page should include as much of the following as is known:
+
+- Direction and opcode
+- Internal name, behavioral alias, and name provenance
+- Framing and transform mode
+- Plaintext body layout beginning with the opcode
+- Field types, byte order, variants, counts, and nested loops
+- Parser, handler, builder, or sender names, with addresses kept in the lookup material
+- State changes and UI effects
+- Paired request or response packets
+- Unknown fields and the reason they remain unknown
+
+Keep master indexes synchronized with packet pages.
+
+Client and server packet indexes and sidebar entries use a zero-padded uppercase hexadecimal label followed by the friendly and concrete names, such as `0x0E - Say (CSay)`.
+
+Keep client and server opcode evidence separate. The server direction may have RTTI-backed concrete class names. The client direction has no recovered derived packet RTTI classes, so each friendly client name must cite builder behavior or related-name provenance.
+
+Do not treat absence from the server packet factory as proof that an opcode is unused. Search decoded-body event consumers in UI panes, session state, and manager classes. An RTTI-backed owner may handle a raw decoded buffer without constructing a concrete RTTI packet object. Record the packet name provenance separately from the owner class RTTI.
+
+Record the common transform as `raw`, `static`, or `derived` on each packet page. Do not infer one direction's opcode policy from the other direction.
+
+When documenting common packet encryption, distinguish the static key, the per-packet 9-byte derived key, the 1024-byte MD5 salt source, the 256-entry seed XOR table, the sequence, and direction-specific trailers. Do not collapse these into a single generic salt or key.
+
+Use `sequence` for the byte that advances on every encrypted packet. Keep client-to-server and server-to-client sequence streams separate, and do not confuse either sequence with the negotiated seed-table selector. Raw packets do not advance an encrypted-packet sequence.
+
+Treat the sender and receiver as separate owners of local sequence state. For client-to-server traffic, the client's send counter and the server's receive counter advance in step but are not one shared counter. The reverse direction has its own pair.
+
+## File format documentation
+
+- Treat an extension as a naming convention, not proof of one shared layout. Document the reader that selects the format.
+- Keep the container, compression, byte encoding, pixel encoding, palette choice, and render blend as separate layers.
+- Use a compact C-like structure for fixed layouts and short pseudocode for variable records or codecs.
+- State byte order, offset base, count units, terminators, size limits, and alignment when each is known.
+- Distinguish compression from obfuscation and checksums. Name the exact algorithm when confirmed.
+- Preserve unknown fields and opaque byte strings. Do not assign text or alpha meaning from appearance alone.
+- For generated writers, say whether the client contains a writer, the inverse is only derived, or a decode, encode, decode round trip passed.
+- Validate a format across several local samples when possible. Record useful sample counts without committing private asset content.
+- Treat palette index transparency and destination-dependent blending as render behavior unless the file itself carries verified alpha.
+
+## Source-of-truth rules
+
+- Derive encryption, CRC, packet layouts, and memory mappings from this client unless the user explicitly asks for an external comparison.
+- Do not silently copy algorithms or field names from `legacy/` or online implementations.
+- Leaked or related-engine names can improve terminology, but mark their provenance.
+- Runtime captures can confirm behavior, sizes, sequencing, and encryption state.
+- For negotiated protocol state, document the compiled default separately from values selected or supplied by the server.
+- Treat seed-table selectors outside the locally handled range `0` through `9` as invalid, even if the client reaches an undefined implementation path.
+- Preserve contradictory evidence instead of forcing an early conclusion.

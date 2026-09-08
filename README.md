@@ -10,7 +10,9 @@ The writing is aimed at game and network programmers. Main pages explain behavio
 - [Choose a reading route](docs/README.md#choose-a-route) for a client turn, NPC conversation, asset reader, or exact reference.
 - [Look up a client opcode](docs/network/client/README.md#packet-index) or [server opcode](docs/network/server/README.md#packet-index).
 
-To contribute research, [set up Binary Ninja and MCP](docs/getting-started.md), then follow the [analysis method](docs/methodology.md). Reading the book does not require the analysis tools.
+To contribute, start with the [contributor handbook](CONTRIBUTING.md) for writing, research, examples, and local checks. Editing explanations and diagrams does not require Binary Ninja. The handbook links to the private analysis setup when new evidence is needed.
+
+After installing the handbook's prerequisites, run `python3 scripts/check_docs.py` to validate the documentation with the same workflow as CI.
 
 ## Target client
 
@@ -33,7 +35,9 @@ Share findings through:
 - `docs/` for the readable book
 - `analysis/exports/` for deterministic YAML evidence
 - `binaryninja/scripts/` for Binary Ninja import, export, and analysis helpers
-- `scripts/` for generated book navigation and lookup pages
+- `scripts/` for documentation generation and validation
+- `generated/` for versioned function-reference includes and lookup data
+- `contributing/` for maintained authoring and research guidance
 
 Do not commit the executable, original game assets, `.bndb` files, credentials, character data, or private captures.
 

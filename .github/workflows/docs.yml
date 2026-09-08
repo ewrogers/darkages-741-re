@@ -14,6 +14,8 @@ on:
       - "theme/**"
       - "book.toml"
       - "README.md"
+      - "CONTRIBUTING.md"
+      - "contributing/**"
       - "AGENTS.md"
       - "CLAUDE.md"
       - ".github/workflows/docs.yml"
@@ -44,22 +46,8 @@ jobs:
           chmod +x mdbook
           echo "$PWD" >> "$GITHUB_PATH"
 
-      - name: Test reference generation and publishing links
-        run: |
-          python3 -m unittest discover -s scripts/tests -p 'test_*.py'
-          node --test scripts/tests/test_function_lookup.cjs
-
-      - name: Check function references and exact lookup
-        run: python3 scripts/build_function_reference.py --check
-
-      - name: Check navigation and packet indexes
-        run: python3 scripts/build_book_summary.py --check
-
-      - name: Build mdBook
-        run: mdbook build
-
-      - name: Check rendered links and evidence targets
-        run: python3 scripts/check_book_links.py book
+      - name: Check documentation and build the preview
+        run: python3 scripts/check_docs.py --book-dir book
 
       - name: Configure GitHub Pages
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

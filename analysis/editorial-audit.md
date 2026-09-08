@@ -163,3 +163,70 @@ Validation against the starting working tree:
 The working reference intentionally reflects the owner's two uncommitted manual-action records. When committing Task 4 separately from those records, regenerate the staged artifacts against committed exports in an isolated checkout; retain the working-tree reference and source edits. The independent validation above exercised that exact source state.
 
 Task 4 is complete. Tasks 5 and 6 remain pending. Full contributor guidance and the earthy spellbook theme retain their separate scopes.
+
+### Task 5: contributor handbook and repository guidance
+
+Task 4 was committed as `294faa2` before this work began. The [contributor handbook](../CONTRIBUTING.md) now provides the entry for prose, diagrams, binary findings, packets, formats, and tooling. It connects each contribution to its source files, regeneration step, automated checks, and human review. Contributors can improve explanations without installing Binary Ninja or obtaining private client data.
+
+The [authoring guide](../contributing/authoring.md) owns voice, reading depth, worked examples, and diagrams. The [research policy](../contributing/research-policy.md) owns evidence and subsystem requirements. [Analysis policy](README.md) remains the home for export requirements. `AGENTS.md` now routes to those mandatory instructions in seventeen lines while retaining the core source-of-truth, preservation, privacy, patch-authorization, and completion requirements. `CLAUDE.md` continues to route through `AGENTS.md`.
+
+The book's methodology now explains the reader's evidence model and links to contributor guidance. Its former authoring anchors remain valid. Contributor guides stay outside `docs/` and outside the reader's chapter sequence. The historical audit remains a record of completed work, not the source of current policy.
+
+#### Rule-preservation checklist
+
+Every section of the former `AGENTS.md` was mapped before replacing it. Twenty-three sections retain their substantive text verbatim in the destinations below. The remaining three received the explicit checks listed after the table.
+
+| Former section | Maintained home | Check |
+| --- | --- | --- |
+| Project goal | [Research policy](../contributing/research-policy.md#project-goal) | Preserved |
+| Clean-slate rule | [Research policy](../contributing/research-policy.md#clean-slate-rule) | Preserved |
+| Book audience and voice | [Authoring guide](../contributing/authoring.md#book-audience-and-voice) | Preserved |
+| Book organization | [Authoring guide](../contributing/authoring.md#book-organization) | Preserved |
+| Book authoring style | [Authoring guide](../contributing/authoring.md#book-authoring-style) | Preserved |
+| Code and pseudocode style | [Authoring guide](../contributing/authoring.md#code-and-pseudocode-style) | Packet exception clarified |
+| Binary Ninja and MCP setup | [Getting started](../docs/getting-started.md) | Every prerequisite and setup action mapped |
+| Repository map | [Handbook](../CONTRIBUTING.md#choose-the-existing-home) | All responsibilities retained; current paths added |
+| Reverse-engineering workflow | [Research policy](../contributing/research-policy.md#reverse-engineering-workflow) | Preserved |
+| Binary Ninja naming and comments | [Research policy](../contributing/research-policy.md#binary-ninja-naming-and-comments) | Preserved |
+| UI and event documentation | [Research policy](../contributing/research-policy.md#ui-and-event-documentation) | Preserved |
+| Timing and animation documentation | [Research policy](../contributing/research-policy.md#timing-and-animation-documentation) | Preserved |
+| UI layout documentation | [Research policy](../contributing/research-policy.md#ui-layout-documentation) | Preserved |
+| Portrait, profile, and formatted text documentation | [Research policy](../contributing/research-policy.md#portrait-profile-and-formatted-text-documentation) | Preserved; proxy rules receive their own heading |
+| Rendering and file-format documentation | [Research policy](../contributing/research-policy.md#rendering-and-file-format-documentation) | Preserved |
+| Audio documentation | [Research policy](../contributing/research-policy.md#audio-documentation) | Preserved |
+| Text encoding and localization | [Research policy](../contributing/research-policy.md#text-encoding-and-localization) | Preserved; patch-authorization paragraph moved to runtime patches |
+| Map and rendering documentation | [Research policy](../contributing/research-policy.md#map-and-rendering-documentation) | Preserved |
+| Runtime patch documentation | [Research policy](../contributing/research-policy.md#runtime-patch-documentation) | Preserved |
+| Version-controlled analysis | [Analysis policy](README.md#durable-function-records) | Preserved |
+| Address and evidence requirements | [Research policy](../contributing/research-policy.md#address-and-evidence-requirements) | Preserved |
+| Packet documentation | [Research policy](../contributing/research-policy.md#packet-documentation) | Preserved |
+| File format documentation | [Research policy](../contributing/research-policy.md#file-format-documentation) | Preserved |
+| Source-of-truth rules | [Research policy](../contributing/research-policy.md#source-of-truth-rules) | Preserved |
+| Repository hygiene | [Handbook](../CONTRIBUTING.md#repository-hygiene) | Preserved, including the reviewed sanitized-fixture exception |
+| Completion standard | [Handbook](../CONTRIBUTING.md#research-or-correct-a-finding) | Preserved |
+
+The pseudocode guidance now explicitly applies C-like structures to runtime memory and fixed file layouts. Packet wire layouts follow the existing field-list rule, resolving the old generic sentence that also suggested C structs for packets. No wire convention changed.
+
+Setup retains the supported analysis platforms, legally obtained matching client, size and hash check, paid plugin-capable license, GUI/headless distinction, Python and MCP prerequisites, local database path, plugin installation and start, first read-only request, and private configuration requirement. The repository map retains every former responsibility and adds the contributor guides, generated references, and presentation sources.
+
+All moved methodology authoring text remains in the authoring guide, with relative links rebased. Its final build-output instruction now points to the common workflow's temporary build and ignored preview directory. This keeps output out of authored sources while matching the existing mdBook build directory. Existing examples, schemas, figures, timing values, and evidence were not changed.
+
+#### One validation and review workflow
+
+`python3 scripts/check_docs.py` runs the same sequence locally and in CI: both generator freshness checks, the Python and JavaScript suites, the pinned mdBook `0.5.4` build, and rendered-link validation. It checks without regeneration, stops at the first failure, and removes its temporary build. An explicit preview destination can be retained; authored repository directories are rejected. The README and script guide point to this command, and contributor-guide changes trigger documentation CI.
+
+The handbook distinguishes structural failures from human review. Incompatible metadata for one function identity fails generation; the seven existing name/address disagreements remain visible warnings. Reviewers follow a novice reading path and an implementer lookup path and check that simplification preserves conditions, exceptions, units, provenance, and uncertainty. The handbook also records how to validate an intended commit when unrelated source edits remain in the working tree.
+
+The link checker now covers the contributor and repository guides outside the book, including relative paths, tracked targets, heading fragments, and explicit anchors. Published book links to repository Markdown receive the same fragment check. The publisher and checker share the existing Markdown destination scanner, so fenced and inline examples remain literal. Heading recognition covers the repository's conventions; external websites and arbitrary Markdown extensions are outside the check. Source-line counts remain cached when thousands of evidence links reach the same export.
+
+Validation:
+
+- All 23 tests pass: sixteen Python tests and seven JavaScript tests. Five new tests exercise broken guide paths and fragments, explicit anchors, code examples, published Markdown targets, and source-line caching.
+- The common workflow passes with mdBook `0.5.4`: 14,892 book/guide links and assets checked, including 114 contributor-guide links, with zero failures.
+- An isolated checkout containing only the intended Task 5 changes also passes all tests, freshness checks, the pinned build, and 14,890 link/asset checks. Its temporary build is removed after validation. The two-link difference comes from the owner's existing manual-action records, which remain outside the intended commit.
+- The runner rejects the installed `0.5.2` executable, a missing executable, and destinations that would overwrite the repository root or authored documentation. A stale generated-file fixture stops before tests or build and remains unmodified. These failure checks ran without changing the user's source files or system installation.
+- All 288 reader navigation entries remain current, and the rendered table of contents is unchanged. All old anchors on methodology and setup survive. The browser confirms the old reading-depth link reaches the contributor handoff, links use the configured repository reference, and the page fits a 360 px viewport. No browser errors were observed.
+- The prose-review route reaches the authoring guide and existing worked examples without private tooling. The research route reaches the target check, subsystem requirements, durable exports, exact reference, and shared checks. No client-behavior chapter, packet page, packet index, figure, or export changed; all 40 export files match the starting snapshot.
+- Whitespace and independent link-tool review pass. No client binary or analysis database was changed, nothing was pushed or published, and the owner's unrelated source and generated-reference edits remain intact.
+
+Task 5 is complete. Task 6, the earthy old-spellbook theme, remains next.

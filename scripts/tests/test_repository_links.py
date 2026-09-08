@@ -6,11 +6,12 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCRIPTS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPTS))
 from book_repository_links import repository_base, rewrite
-from check_book_links import audit
+from check_book_links import audit, audit_guides, markdown_anchors, repository_target_error
 
 
 class RepositoryLinkTests(unittest.TestCase):
@@ -76,6 +77,74 @@ class RepositoryLinkTests(unittest.TestCase):
         self.assertEqual(3, len(errors))
         self.assertTrue(any("missing heading" in error for error in errors))
         self.assertTrue(any("invalid source line" in error for error in errors))
+
+    def test_guide_paths_must_be_existing_tracked_repository_files(self):
+        guide = self.root / "CONTRIBUTING.md"
+        guide.write_text("# Contributing\n[Evidence](analysis/exports/evidence.yaml#L1)\n")
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(["git", "add", "CONTRIBUTING.md", "analysis/exports/evidence.yaml"], cwd=self.root, check=True)
+        self.assertEqual((1, []), audit_guides(self.root))
+        (self.root / "private.md").write_text("# Untracked\n")
+        guide.write_text("[Missing](missing.md)\n[Private](private.md)\n[Escape](../outside.md)\n[Absolute](/CONTRIBUTING.md)\n")
+        checked, errors = audit_guides(self.root)
+        self.assertEqual(4, checked)
+        self.assertEqual(4, len(errors))
+        self.assertTrue(any("must be relative" in error for error in errors))
+        self.assertTrue(all("CONTRIBUTING.md:" in error for error in errors))
+
+    def test_guide_fragments_include_headings_explicit_ids_and_duplicate_suffixes(self):
+        guide = self.root / "README.md"
+        guide.write_text("# Start\n## Source *and* `data`\n## Source *and* `data`\n"
+                         "Setext title\n------------\n<a id=\"stable\"></a><a name=\"legacy\"></a>\n"
+                         "[First](#source-and-data) [Second](#source-and-data-1)\n"
+                         "[Setext](#setext-title) [Explicit](#stable) [Legacy](#legacy)\n")
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(["git", "add", "README.md"], cwd=self.root, check=True)
+        self.assertEqual((5, []), audit_guides(self.root))
+        guide.write_text(guide.read_text() + "[Absent](#missing) [Wrong duplicate](#source-and-data-2)\n")
+        self.assertEqual(2, len(audit_guides(self.root)[1]))
+
+    def test_code_examples_cannot_create_links_or_anchor_targets(self):
+        source = ("# Guide\n`[Inline](missing-inline.md)`\n``[Nested `code`](missing-nested.md)``\n"
+                  "```md\n[Example](missing-fenced.md)\n## Fake heading\n<a id=\"fake-id\"></a>\n```\n"
+                  "~~~md\n[Example](missing-tilde.md)\n~~~\n"
+                  "    [Indented](missing-indented.md)\n"
+                  "`<a id=\"inline-id\"></a>`\n"
+                  "[Remote](https://example.invalid/missing#fragment)\n")
+        (self.root / "AGENTS.md").write_text(source)
+        (self.root / "contributing").mkdir()
+        (self.root / "contributing/review.md").write_text("[Guide](../AGENTS.md#guide)\n")
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(["git", "add", "AGENTS.md", "contributing/review.md"], cwd=self.root, check=True)
+        self.assertEqual((1, []), audit_guides(self.root))
+        self.assertEqual({"guide"}, markdown_anchors(source))
+        (self.root / "contributing/review.md").write_text("[guide]: ../AGENTS.md#fake-heading\n<a href=\"../AGENTS.md#fake-id\">Fake</a>\n")
+        self.assertEqual(2, len(audit_guides(self.root)[1]))
+
+    def test_rendered_repository_markdown_fragments_and_source_guides_are_audited(self):
+        (self.root / "book.toml").write_text('[book]\nsrc="docs"\n[output.html]\nedit-url-template="https://github.com/example/client/edit/main/docs/{path}"\n')
+        (self.root / "CONTRIBUTING.md").write_text("# Contributing\n## Review the result\n<a id=\"stable\"></a>\n")
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(["git", "add", "CONTRIBUTING.md"], cwd=self.root, check=True)
+        book = self.root / "book"
+        book.mkdir()
+        index = book / "index.html"
+        index.write_text(f'<a href="{self.base}CONTRIBUTING.md#review-the-result">Heading</a><a href="{self.base}CONTRIBUTING.md#stable">Anchor</a>')
+        self.assertEqual((2, []), audit(book, self.root))
+        index.write_text(f'<a href="{self.base}CONTRIBUTING.md#missing">Bad heading</a>')
+        (self.root / "CONTRIBUTING.md").write_text("# Contributing\n[Missing](missing.md)\n")
+        checked, errors = audit(book, self.root)
+        self.assertEqual(2, checked)
+        self.assertEqual(2, len(errors))
+        self.assertTrue(any("missing repository Markdown heading" in error for error in errors))
+        self.assertTrue(any(error.startswith("CONTRIBUTING.md:") for error in errors))
+
+    def test_many_source_line_links_read_each_evidence_file_once(self):
+        cache = {}
+        with patch.object(Path, "read_text", return_value="first\nsecond\n") as read:
+            for fragment in ("L1", "L2", "L1-L2"):
+                self.assertIsNone(repository_target_error(self.source, fragment, self.root, self.tracked, cache))
+            read.assert_called_once()
 
 
 if __name__ == "__main__":

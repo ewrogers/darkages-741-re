@@ -1,10 +1,12 @@
 # Getting started
 
-You need Binary Ninja, its MCP plugin, and your own copy of the matching game client. The client and Binary Ninja database stay private on your machine.
+To study the binary, you need Binary Ninja, its MCP plugin, and your own copy of the matching game client. The client and Binary Ninja database stay private on your machine. The analysis workstation may run Windows, macOS, or Linux even though the target is a 32-bit Windows client.
+
+For prose, diagrams, and book tooling, start with the [contributor handbook](../CONTRIBUTING.md). Those changes do not require the private analysis workspace.
 
 ## Requirements
 
-- Binary Ninja with plugin support
+- [Binary Ninja](https://binary.ninja/) installed for the local platform, with plugin support
 - [`binary_ninja_mcp`](https://github.com/fosdickio/binary_ninja_mcp)
 - Python 3.12 or newer
 - An MCP-capable editor or agent
@@ -20,6 +22,7 @@ Place the full private client under `client/`, then confirm:
 File: Darkages.exe
 Size: 3,112,960 bytes
 SHA-256: 054A5D6ADC56099C6BFD9D2A58675AFF62DC788B63209A3D906492F5B89E96C6
+Reported client version: 741
 Architecture: 32-bit x86 Windows PE
 ```
 
@@ -31,7 +34,7 @@ Do not commit the executable, game assets, captures with private data, or saved 
 2. Let initial analysis finish.
 3. Save the database as `binaryninja/workspace/Darkages.exe.bndb`.
 4. Install `binary_ninja_mcp` from Binary Ninja's Plugin Manager or its repository instructions.
-5. Start the MCP plugin from the Binary Ninja window.
+5. Start the MCP plugin with its button in the lower-left corner of the Binary Ninja window.
 6. Configure Codex or another MCP client with the connection details shown by the plugin.
 
 Machine-specific paths and credentials stay in local configuration, not the repository.
@@ -57,4 +60,4 @@ If that works, ask for callers, callees, or pseudocode for one focused function.
 | `analysis/exports/` | Reviewable Binary Ninja findings | Yes |
 | `docs/` | The book | Yes |
 
-Continue with [How we study the client](methodology.md).
+Continue with [How we study the client](methodology.md) for the evidence model, then follow the [contribution workflow](../CONTRIBUTING.md#research-or-correct-a-finding).
