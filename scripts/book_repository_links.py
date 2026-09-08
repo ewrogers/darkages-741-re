@@ -16,9 +16,11 @@ from urllib.parse import quote, unquote, urlsplit
 
 def repository_base(config: dict) -> str:
     template = config["output"]["html"]["edit-url-template"]
-    suffix = "/" + config["book"]["src"].strip("/") + "/{path}"
+    # mdBook 0.5 supplies a repository-relative {path}, including book.src.
+    # Everything before it identifies the repository/ref, even refs with slashes.
+    suffix = "/{path}"
     if "/edit/" not in template or not template.endswith(suffix):
-        raise ValueError("edit-url-template must identify the repository ref and book source")
+        raise ValueError("edit-url-template must identify the repository ref and end with /{path}")
     return template[:-len(suffix)].replace("/edit/", "/blob/", 1) + "/"
 
 

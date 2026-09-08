@@ -229,4 +229,26 @@ Validation:
 - The prose-review route reaches the authoring guide and existing worked examples without private tooling. The research route reaches the target check, subsystem requirements, durable exports, exact reference, and shared checks. No client-behavior chapter, packet page, packet index, figure, or export changed; all 40 export files match the starting snapshot.
 - Whitespace and independent link-tool review pass. No client binary or analysis database was changed, nothing was pushed or published, and the owner's unrelated source and generated-reference edits remain intact.
 
-Task 5 is complete. Task 6, the earthy old-spellbook theme, remains next.
+Task 5 is complete and committed as `b97c8f6`.
+
+### Task 6: earthy grimoire presentation
+
+The reader-facing title is now **The Dark Ages Grimoire**. The existing homepage heading and technical chapter names remain intact. Parchment provides warm paper and brown ink; Lamplight provides a dark brown reading surface. Both use a brown binding, quiet gold accents, serif headings, readable body text, and monospaced exact data. The original bookplate is decorative SVG; there is no game art, remote font service, or ambient animation.
+
+mdBook remains the publishing engine. Its chapter navigation, search, saved theme preferences, copy controls, and print renderer remain in use. The older theme IDs are retained as palette aliases. A small enhancement script adds the book-home link, skip navigation, an outline based on existing headings, and keyboard access to wide code and tables. At wide desktop sizes the outline occupies the right margin; smaller screens use a native collapsible control after the introduction. The native sidebar outline remains a fallback when the enhancement is unavailable. The combined print page skips these additions.
+
+The print styles use white paper, dark ink, wrapping examples, and no navigation or decoration. Palette selectors also override mdBook's more specific no-JavaScript fallback, which otherwise leaked dark table colors into print. Syntax tokens and visited binding links have explicit readable colors. The common workflow now checks every theme JavaScript file's syntax, and the theme maintenance guide records ownership and the browser review procedure.
+
+The usability pass also corrected the native edit link. In mdBook `0.5.4`, `{path}` already includes the book source directory. Removing the extra `docs/` prevents links such as `docs/docs/README.md`; repository evidence links still resolve under `blob/main/`. Focused tests cover the revised contract and reject unsupported templates.
+
+Validation:
+
+- All 25 tests pass: eighteen Python tests and seven JavaScript tests. Navigation and reference freshness, all theme syntax checks, the pinned mdBook build, and 15,485 book/guide link and asset checks pass.
+- An isolated checkout of the intended changes passes the same workflow with 15,483 link and asset checks. The two-link difference belongs to the owner's unrelated manual-action records. All 288 native edit links point to existing repository sources.
+- Browser review covers Parchment and Lamplight, the homepage, walking explanation and figure, packet notation, general search, exact lookup, a function permalink, and its evidence citation. Phone layouts fit 375 CSS pixels without page-wide overflow; 640 CSS pixels exercise the reflow expected when a 1280 px view is magnified to 200%. Wide desktop review checks the margin outline and reading measure.
+- Tab and Enter operate the skip link, outline, theme choice, and reference links. Arrow keys scroll wide code without changing chapters, and Tab exits the region. Copy activation displays mdBook's success feedback. The browser automation's clipboard bridge returns no text, so an independent clipboard round trip remains unverified.
+- A browser proof of the print declarations shows dark text on white, readable tables, wrapped packet schemas, and hidden search/navigation controls. This proof does not establish real printer pagination. Native browser zoom and actual print pagination remain manual release checks; they are not claimed as tested here.
+- Palette calculations meet 4.5:1 for normal text, links, muted text, and syntax tokens. Main text contrast is 11.87:1 on Parchment and 11.10:1 on Lamplight; the weakest assigned syntax color is 4.98:1. Reduced-motion rules remove transitions and animation.
+- Only the homepage changes among existing reader Markdown files, adding the decorative opening and updating its contributor handoff. Technical chapters, packet pages and indexes, code examples, figures, and all 40 source exports remain unchanged. The owner's source and generated-reference edits remain intact.
+
+Task 6 implementation is ready for review. mdBook supports this design without a platform migration. The final browser-only release checks above remain documented in the theme maintenance guide.

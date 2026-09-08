@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GUIDES = (
     "README.md", "AGENTS.md", "CLAUDE.md", "CONTRIBUTING.md",
     "analysis/README.md", "analysis/exports/README.md",
-    "binaryninja/README.md", "scripts/README.md",
+    "binaryninja/README.md", "scripts/README.md", "theme/README.md",
 )
 
 

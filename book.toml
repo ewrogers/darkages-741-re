@@ -1,5 +1,5 @@
 [book]
-title = "Dark Ages 7.41 Reverse Engineering"
+title = "The Dark Ages Grimoire"
 authors = ["Erik Rogers", "Dark Ages RE contributors"]
 description = "An evidence-based guide to the Dark Ages client: its lifecycle, game systems, rendering, audio, file formats, and network protocol."
 language = "en"
@@ -16,14 +16,14 @@ renderers = ["html"]
 
 [output.html]
 site-url = "/darkages-741-re/"
-default-theme = "navy"
+default-theme = "light"
 preferred-dark-theme = "navy"
 git-repository-url = "https://github.com/ewrogers/darkages-741-re"
 git-repository-icon = "fab-github"
-edit-url-template = "https://github.com/ewrogers/darkages-741-re/edit/main/docs/{path}"
+edit-url-template = "https://github.com/ewrogers/darkages-741-re/edit/main/{path}"
 no-section-label = true
-additional-css = ["theme/diagrams.css", "theme/function-lookup.css"]
-additional-js = ["theme/diagrams.js", "theme/function-lookup.js"]
+additional-css = ["theme/diagrams.css", "theme/function-lookup.css", "theme/grimoire.css"]
+additional-js = ["theme/diagrams.js", "theme/function-lookup.js", "theme/grimoire.js"]
 
 [output.html.fold]
 enable = true

@@ -1,3 +1,8 @@
+<div class="book-frontispiece" aria-hidden="true">
+<img src="assets/ornaments/bookplate.svg" alt="" width="96" height="96">
+<span>The Dark Ages Grimoire</span>
+</div>
+
 # Inside the Dark Ages client
 
 This book explains how the game client starts, runs, draws its UI, handles events, and talks to the server. It is written for programmers who know common game and network ideas but may be new to older Windows clients.
@@ -46,7 +51,7 @@ The [function reference](appendix/functions.md) is available whenever a chapter'
 
 ## Study the binary or contribute
 
-[Getting started](getting-started.md) sets up the matching private client, Binary Ninja, and MCP. [How we study the client](methodology.md) explains the evidence workflow and how to write a finding. These pages support research work; the behavior chapters above are the reading entry point.
+[Getting started](getting-started.md) sets up the matching private client, Binary Ninja, and MCP. [How we study the client](methodology.md) explains the evidence model; the [contributor handbook](../CONTRIBUTING.md) covers writing and research work. The behavior chapters above are the reading entry point.
 
 ## How facts are recorded
 

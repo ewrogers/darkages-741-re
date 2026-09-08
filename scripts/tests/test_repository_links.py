@@ -50,7 +50,7 @@ class RepositoryLinkTests(unittest.TestCase):
 
     def test_preprocessor_protocol_and_edit_ref(self):
         config = {"book": {"src": "docs"}, "output": {"html": {
-            "edit-url-template": "https://github.com/example/client/edit/review/docs/{path}",
+            "edit-url-template": "https://github.com/example/client/edit/review/{path}",
         }}}
         self.assertEqual("https://github.com/example/client/blob/review/", repository_base(config))
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
@@ -61,8 +61,24 @@ class RepositoryLinkTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("/blob/review/analysis/exports/evidence.yaml#L1", json.loads(result.stdout)["items"][0]["Chapter"]["content"])
 
+    def test_repository_base_keeps_the_full_ref_independently_of_book_source(self):
+        for source in ("docs", "handbook/source"):
+            template = "https://github.com/example/client/edit/review/docs/{path}"
+            config = {"book": {"src": source}, "output": {"html": {"edit-url-template": template}}}
+            # Here docs is part of the branch name, not an extra source prefix.
+            self.assertEqual("https://github.com/example/client/blob/review/docs/", repository_base(config))
+            self.assertEqual(f"https://github.com/example/client/edit/review/docs/{source}/README.md",
+                             template.format(path=f"{source}/README.md"))
+
+    def test_repository_base_requires_an_edit_template_with_a_terminal_path(self):
+        for template in ("https://github.com/example/client/blob/main/{path}",
+                         "https://github.com/example/client/edit/main/{path}/extra"):
+            config = {"book": {"src": "docs"}, "output": {"html": {"edit-url-template": template}}}
+            with self.subTest(template=template), self.assertRaises(ValueError):
+                repository_base(config)
+
     def test_rendered_audit_checks_alias_fragments_assets_and_source_lines(self):
-        (self.root / "book.toml").write_text('[book]\nsrc="docs"\n[output.html]\nsite-url="/book/"\nedit-url-template="https://github.com/example/client/edit/main/docs/{path}"\n')
+        (self.root / "book.toml").write_text('[book]\nsrc="docs"\n[output.html]\nsite-url="/book/"\nedit-url-template="https://github.com/example/client/edit/main/{path}"\n')
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
         subprocess.run(["git", "add", "analysis/exports/evidence.yaml"], cwd=self.root, check=True)
         book = self.root / "book"
@@ -122,7 +138,7 @@ class RepositoryLinkTests(unittest.TestCase):
         self.assertEqual(2, len(audit_guides(self.root)[1]))
 
     def test_rendered_repository_markdown_fragments_and_source_guides_are_audited(self):
-        (self.root / "book.toml").write_text('[book]\nsrc="docs"\n[output.html]\nedit-url-template="https://github.com/example/client/edit/main/docs/{path}"\n')
+        (self.root / "book.toml").write_text('[book]\nsrc="docs"\n[output.html]\nedit-url-template="https://github.com/example/client/edit/main/{path}"\n')
         (self.root / "CONTRIBUTING.md").write_text("# Contributing\n## Review the result\n<a id=\"stable\"></a>\n")
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
         subprocess.run(["git", "add", "CONTRIBUTING.md"], cwd=self.root, check=True)

@@ -23,6 +23,8 @@ def validate(mdbook, destination):
     run("Check function references", [sys.executable, "scripts/build_function_reference.py", "--check"])
     run("Test generation and repository links", [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-p", "test_*.py"])
     run("Test exact function lookup", ["node", "--test", "scripts/tests/test_function_lookup.cjs"])
+    for script in sorted((ROOT / "theme").glob("*.js")):
+        run(f"Check theme syntax: {script.name}", ["node", "--check", str(script)])
     run("Build the book", [mdbook, "build", "--dest-dir", str(destination)])
     run("Check rendered links and assets", [sys.executable, "scripts/check_book_links.py", str(destination)])
 
