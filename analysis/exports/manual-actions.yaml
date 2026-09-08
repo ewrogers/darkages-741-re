@@ -235,7 +235,7 @@ functions:
   - address: "0x00538710"
     rva: "0x00138710"
     name: net_send_merchant_server_item_selection
-    prototype: "u32 __thiscall net_send_merchant_server_item_selection(void *model, u8 displayed_row, u8 quantity)"
+    prototype: "u32 __thiscall net_send_merchant_server_item_selection(void *model, u16 model_row, u8 quantity)"
     confidence: high
     evidence: "Maps a displayed server-item row to its retained name or pursuit-0x004B record ID and quantity, queues CMerchant, and enters response-pending."
   - address: "0x0053CD90"

@@ -152,6 +152,39 @@ NPCMessageDialog
 
 The type model parses the remaining packet bytes. The visible dialog then builds rows or controls from that model. This is why the common server-packet deserializer can keep the subtype tail opaque.
 
+### Item categories and complete lists
+
+The category tabs in `NPCServerItemMenuDialog` group the items supplied by the current server conversation. All groups and their members are retained locally. The four visible tabs and four visible item rows are only a window onto that data, so a program can enumerate the complete dialog without changing pages.
+
+`ui_npc_server_item_menu_rebuild_categories` visits the server item model in packet order. It looks up each item's exact name in [`ItemInfo` metadata](../file-formats/metadata.md#item-information-table) and uses the record's `label` text as the category name. This is optional metadata value 3, not the separate numeric `category` field. A missing metadata singleton or failed name lookup uses localized message 100. A successful lookup with an empty label keeps that empty label.
+
+Category labels are compared as case-sensitive byte strings. A new label appends a category; every item appends its zero-based model row to that category. Category order is therefore first appearance in the server list, and member order remains packet order. There is no fixed category enum and no inventory scan in this path.
+
+For a live reader, resolve the current `NPCSession`, its outer dialog, and the nested `NPCServerItemMenuDialog`. Copy the category labels, each category's model-row indexes, and the corresponding server item records on the main thread. The [runtime walking reference](../appendix/runtime/state-walking.md#npc-item-categories) gives the pointer chain, exact layouts, bounds, and enumeration pseudocode.
+
+For a packet-based reader, parse [`SScreenMenu`](../network/server/047-0x2f-screen-menu.md) types 4 and 10, then reproduce the same name lookup using the client's `ItemInfo` table and localized fallback. The packet carries item records, not category tabs. Metadata alone describes possible item names; it does not reveal which items the server offered in a particular banking or shop conversation. Use the metadata state from dialog construction when matching an existing dialog exactly.
+
+When selecting an item programmatically, pass the category's stored **model row** to `net_send_merchant_server_item_selection`. Its row argument is `u16`. A visible position from 0 through 3 must first be translated through the selected category and page. The model row is separate from an inventory slot or the extended item's server record ID.
+
+This mapping applies to server-item menus. Banking is a gameplay use supplied by the project owner, not a unique packet subtype proved by these routines. A bank conversation can also use text menus or local-inventory selection lists; classify the current screen-menu model before reading these fields.
+
+### From an item click to a packet
+
+Category selection and item activation are separate actions:
+
+| Interaction in the categorized server-item dialog | Result |
+| --- | --- |
+| Category tab or category paging button | Changes the local category view; sends no dialog response |
+| Item paging button | Rebuilds four visible rows from the retained category; sends no dialog response |
+| Single left click on an item | Selects and highlights that row; sends no dialog response |
+| Left double click or the activation button | Activates the selected original model row, possibly asking for quantity first |
+
+The shared list handles the pointer events. A double click queues a one-shot, zero-delay callback to the owning dialog's timer ID `1`, with mode `1`. `ui_npc_server_item_menu_timer_callback` then invokes `ui_npc_server_item_menu_activate_selected_row`. The activation button reaches the same function directly. Each visible list entry retains the model pointer and original `u16` row, so category and page changes do not turn a visible position into a different server identity.
+
+`ui_npc_server_item_menu_activate_model_row` calls `net_send_merchant_server_item_selection` immediately for ordinary menus. Pursuit `0x004B` also sends immediately with quantity `1` when the available quantity is at most one; otherwise it opens a local quantity prompt. The quantity-result callback uses timer ID `2` and passes the retained model row and chosen quantity to the same builder.
+
+The result is [`CMerchant`](../network/client/057-0x39-merchant.md#categorized-item-activation), opcode `0x39`. Ordinary menus return the retained item name. Pursuit `0x004B` returns a literal marker, the server record ID, and quantity. Neither form sends the category label, category index, page number, or model row. The common header preserves the current target and pursuit. The builder queues the packet and marks the NPC session response-pending.
+
 The server-item family has a zero-delay queued hover path into the shared `DescPane`. The local-inventory list is a different control family and should not be assumed to use the same producer. See [Item and ability descriptions](item-and-ability-descriptions.md) for the confirmed paths and remaining shop and bank mapping limit.
 
 ### Player-owned selection lists
@@ -241,13 +274,13 @@ Require the expected state, a presented outer pane, a non-null current model whe
 
 ### Screen-menu actions
 
-The builder argument is a zero-based displayed row. It is not necessarily an inventory, spell, skill, or server-record ID.
+The builder argument is a zero-based model row. It is not necessarily an inventory, spell, skill, or server-record ID. Categorized server-item menus map visible rows back to the original model through their category's item-index list.
 
 | Menu type | Supplied action | Native producer |
 | ---: | --- | --- |
 | `0`, `1` | Displayed row | `net_send_merchant_text_menu_selection` |
 | `2`, `3` | Text bytes | `net_send_merchant_text_input` |
-| `4`, `10` | Displayed row and quantity | `net_send_merchant_server_item_selection` |
+| `4`, `10` | Original model row (`u16`) and quantity | `net_send_merchant_server_item_selection` |
 | `5`, `11` | Displayed row | `net_send_merchant_inventory_item_selection` |
 | `6`, `7` | Displayed row | `net_send_merchant_server_skill_spell_selection` |
 | `8`, `9` | Displayed row | `net_send_merchant_client_skill_spell_selection` |

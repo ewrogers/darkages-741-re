@@ -52,6 +52,44 @@ Every confirmed nested-menu submitter asks `NPCSession` to enter response-pendin
 
 For supplied choices or text, call the current response model's subtype-specific native producer instead of constructing this contextual body directly. The model resolves a displayed row to its retained pursuit value, name, record ID, or local slot and preserves the optional server argument. See [Invoking an NPC response](../../systems/npc-dialogs.md#invoking-a-response-without-pointer-input).
 
+### Categorized item activation
+
+The active `NPCServerItemMenuDialog` handles category and item-page changes locally. A single left click selects an item. Double clicking it or pressing the activation button resolves the selected visible entry back to its original `u16` model row and calls `net_send_merchant_server_item_selection`, after a quantity prompt when required. See [From an item click to a packet](../../systems/npc-dialogs.md#from-an-item-click-to-a-packet).
+
+For an ordinary server-item menu, the complete meaningful plaintext is:
+
+```text
+packet CMerchant {
+    u8      opcode                     // 0x39
+    u8      target_type
+    u32     target_id
+    u16     pursuit_id                 // not 0x004B
+    string8 selected_item_name
+}
+```
+
+Its builder length is `9 + name_byte_count`. The name comes from the selected retained server record, not from a category label or a new inventory lookup. An ordinary item response contains no quantity field.
+
+For pursuit `0x004B`, the complete meaningful plaintext is 14 bytes:
+
+```text
+packet CMerchant {
+    u8  opcode                         // 0x39
+    u8  target_type
+    u32 target_id
+    u16 pursuit_id                     // 0x004B
+    u8  marker                         // literal 1
+    u32 record_id
+    u8  quantity
+}
+```
+
+The builder takes `record_id` from the selected model row. It does not send the item name, displayed price, category, page, or row index in this form. The target fields come from the current `NPCSession`, and the pursuit comes from the current model. The server's conversation gives the selection its banking or shop meaning.
+
+For programmatic observation, the input to `net_submit_client_packet` is the useful boundary for copying these meaningful fields. The outgoing network bytes have additional protection: submission applies the dialog-response inner wrapper and queues communications command `6`; `net_send_client_packet` takes the `derived` branch for opcode `0x39`, then builds the binary TCP frame as `0xAA`, a big-endian transformed-body length, and the transformed body before calling Winsock `send`. The negotiated printable-framing alternative is described in [Transport](../transport.md). The body schemas above are not already-encrypted wire bytes.
+
+The selection builder enters response-pending after submission. That is a local state transition, not proof that the server accepted the item action. This trace is confirmed from the matching binary; a particular bank's target, pursuit, selected name or record ID, and resulting server response require that live conversation.
+
 ## UI producers
 
 The current `NPCSession` family has separate builders for text menus, input, server items, local inventory, server skill/spell records, and local books. An older compiled `MerchantDialogPane` family produces the same normal, argumented, item-name, `0x004B`, and `0x004E` forms. This agreement is useful confirmation that they are protocol variants rather than accidental object layouts.

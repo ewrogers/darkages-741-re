@@ -201,6 +201,8 @@ struct ItemInfoRecord {
 
 Inventory and item-description panes query this index by the item's display name. The category is range-checked to `0..5` before it selects localized text. The two range fields are displayed as a single value or a minimum-to-maximum range, while the remaining number and strings populate other description fields.
 
+The active NPC server-item dialog groups its rows by `label`, the optional fourth metadata value. Its category tabs do not use the numeric `category` field. See [Item categories and complete lists](../systems/npc-dialogs.md#item-categories-and-complete-lists) for membership, ordering, and missing-name behavior.
+
 ## Item, skill, and spell denial tables
 
 The RTTI-backed `DeniedItemList` is one consumer of this metadata system. It creates three empty runtime lookup containers and subscribes to these hardcoded table names:

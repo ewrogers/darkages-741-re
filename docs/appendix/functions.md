@@ -2521,6 +2521,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_list_menu_submit_selected_row` | `0x00530450` | high | Reads the scroll control's selected row and calls the model's contextual CMerchant selection builder. |
 | `ui_npc_item_list_row_queue_hover` | `0x005308F0` | high | Resolves a valid row and schedules the owner TimerHandler with its timer ID, a zero-millisecond delay, subtype 2, and the row's u16 index. |
 | `ui_npc_item_list_row_queue_hover_close` | `0x00530960` | high | Schedules the owner TimerHandler with a zero-millisecond delay, subtype 3, and a zero payload when the row hover ends. |
+| `ui_npc_list_menu_queue_activation` | `0x005309A0` | high | NPCListMenuPane primary-vtable slot +0xA0. |
 | `ui_npc_illustration_load_pixmap` | `0x00531B30` | high | Resolves an NPC name and illustration index, then loads frame zero of the mapped image from npcbase.dat. |
 | `ui_npc_illustration_asset_at` | `0x00531C40` | high | Returns one illustration filename from an NPC name record by zero-based index. |
 | `ui_npc_illustration_file_manager_ctor` | `0x00531E10` | high | Opens npc/npcbase.dat, initializes the name map, and loads its npci.tbl fallback mapping. |
@@ -2534,6 +2535,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_merchant_request_object_info` | `0x00534A90` | high | Top sends CRequestObjectInfo opcode 0x43 subtype 1 with the SScreenMenu target ID, then closes the active NPC session. |
 | `ui_npc_merchant_message_handle_action` | `0x00534B70` | high | Routes base actions 0 through 3 to content handling, action 4 to Top object-info request, and action 5 to local close. |
 | `ui_npc_dispatch_screen_menu_type` | `0x00534C40` | high | Maps SScreenMenu values 0 through 11 to text, input, server item, local item, server skill-spell, and local skill-spell models. |
+| `ui_npc_build_server_item_menu_dialog` | `0x00534F80` | high | Constructs the active NPCServerItemMenu response model at outer +0x634 and a 0x674-byte NPCServerItemMenuDialog at outer +0x638 for SScreenMenu types 4 and 10. |
 | `ui_npc_build_screen_menu_list` | `0x00535080` | high | Constructs the type-specific list model for SScreenMenu types 5 through 9 and 11, then embeds it in NPCListMenuDialog. |
 | `ui_npc_client_item_menu_ctor` | `0x00535C70` | high | Constructs NPCClientItemMenu for SScreenMenu types 5 and 11 and selects the pursuit-0x004E row variant when applicable. |
 | `ui_npc_client_item_menu_count` | `0x00535D90` | high | Returns the server-supplied local inventory slot count used to build the scrollable list. |
@@ -2545,12 +2547,25 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `ui_npc_client_spell_menu_build_row` | `0x00537400` | high | Resolves one local spell slot and builds an active row from the learned spell's icon and retained name. |
 | `ui_npc_client_spell_menu_initialize` | `0x00537680` | high | Parses the type-8 slot whitelist and falls back to enumerating the local spell book when the count is zero. |
 | `ui_npc_client_spell_menu_enumerate_all` | `0x005376B0` | high | Collects active learned spell slots 1 through 89 when the server supplies no nonzero whitelist. |
+| `ui_npc_server_item_menu_model_ctor` | `0x00538140` | high | Constructs exact RTTI NPCServerItemMenu, initializes its counted item array, and calls net_parse_merchant_server_item_menu. |
+| `ui_npc_server_item_menu_get_item_name` | `0x00538C40` | high | Returns the model row name at items + row * 0x218 + 0x0D, checking the u16 row against item_count at model +0x12. |
+| `ui_npc_server_item_menu_dialog_ctor` | `0x00538D00` | high | Constructs exact RTTI NPCServerItemMenuDialog with primary vtable 0x0068149C and TimerHandler secondary base +0x11C; builds all categories and initializes four-tab and four-row paging. |
+| `ui_npc_server_item_menu_handle_control_action` | `0x00538FE0` | high | Routes action 1 to selected-row activation, actions 2 through 5 to category selection, 6/7 to category paging, and 12/13 to item paging. |
+| `ui_npc_server_item_menu_activate_model_row` | `0x005390F0` | high | Activates the original u16 model row. |
+| `ui_npc_server_item_menu_activate_selected_row` | `0x00539290` | high | Reads the selected eight-byte NPCListMenuPane entry and passes its original u16 model row at entry +4 to dialog primary-vtable slot +0x84, ui_npc_server_item_menu_activate_model_row. |
 | `ui_npc_server_item_menu_timer_callback` | `0x00539340` | high | NPCServerItemMenuDialog TimerHandler callback; timer ID 1 routes subtype 2 to the row tooltip update and subtype 3 to tooltip close. |
 | `ui_npc_server_item_menu_handle_pointer_event` | `0x005393F0` | high | Stores pointer coordinates on move, closes the tooltip outside the visible client bounds, and then delegates to DialogPane pointer handling. |
 | `ui_npc_server_item_menu_show_hover_desc` | `0x00539600` | high | Resolves a changed server-item row by name, opens DescPane near the pointer, repositions existing content for the same row, and refreshes the dialog's detail controls. |
 | `ui_npc_server_item_menu_clear_hover_desc` | `0x00539A30` | high | Closes the shared DescPane and resets NPCServerItemMenuDialog's hovered-row field to -1. |
+| `ui_npc_server_item_menu_build_controls` | `0x00539DB0` | high | Retains NPCServerItemMenu at complete dialog +0x638. |
 | `ui_npc_server_item_menu_handle_network_event` | `0x0053A270` | high | NPCMenuDialog::NPCServerItemMenuDialog routes SStatus progression blocks to its gold-display updater. |
 | `ui_npc_server_item_menu_update_gold_from_status_packet` | `0x0053A2D0` | high | Copies SStatus gold into the NPC server-item menu and redraws the dialog. |
+| `ui_npc_server_item_menu_rebuild_categories` | `0x0053A310` | high | Iterates all u16 model rows in packet order, looks up each exact name in ItemInfoList, and groups by metadata label +0x10 or localized message 100 on lookup failure. |
+| `ui_npc_server_item_menu_select_category` | `0x0053A690` | high | Stores zero-based selected category at complete dialog +0x664, remembers its label, computes four-item page count at +0x670, and resets the selected category to page 1. |
+| `ui_npc_server_item_menu_show_item_page` | `0x0053A7E0` | high | Clamps one-based item page at complete dialog +0x66C, clears visible rows, and appends at most four u16 model indexes from the selected 0x40-byte category's nested vector. |
+| `ui_npc_server_item_menu_select_visible_category` | `0x0053A9B0` | high | Maps one of four visible category slots to first_visible_category plus slot and switches the local selected category without sending CMerchant. |
+| `ui_npc_server_item_menu_set_category_window` | `0x0053AA00` | high | Updates four category button labels from backing category records and retains the first visible category index at complete dialog +0x668; categories outside the window remain allocated. |
+| `ui_npc_item_category_ctor` | `0x0053AE90` | high | Initializes begin, end, and capacity of the nested u16 model-index vector at category +0x30/+0x34/+0x38. |
 | `ui_npc_pursuit_message_dialog_ctor` | `0x0053CC10` | high | Constructs exact RTTI NPC_Pursuit_MessageDialog, attaches Previous, Next, and Close after the four base message controls, and registers Close action 6 as the Escape cancel action. |
 | `ui_npc_pursuit_dialog_set_response_pending` | `0x0053CD10` | high | Deactivates the nested answer pane, disables Previous and Next, and clears the default action after a CPursuit response; Close action 6 remains available. |
 | `ui_npc_pursuit_message_handle_action` | `0x0053CD90` | high | Routes attachment-order actions 4, 5, and 6 to Previous, Next, and Close response builders. |
@@ -3065,7 +3080,7 @@ Roles are short summaries from the checked-in Binary Ninja YAML exports. Those e
 | `net_parse_merchant_server_skill_spell_menu` | `0x00536AD0` | high | Parses pursuit ID and u16-counted graphic type, sprite, color, and string8 name records. |
 | `net_send_merchant_client_skill_spell_selection` | `0x00536D60` | high | Maps a displayed row to its whitelisted local spell-book or skill-book slot, queues CMerchant, and enters response-pending. |
 | `net_parse_merchant_client_skill_spell_menu` | `0x00536E00` | high | Parses pursuit ID and an optional u8-counted slot whitelist; absent or zero count enumerates all learned slots 1 through 89. |
-| `net_send_merchant_server_item_selection` | `0x00538710` | high | Maps a displayed row to an ordinary retained item name or the pursuit-0x004B marker, u32 record ID, and supplied u8 quantity tail. |
+| `net_send_merchant_server_item_selection` | `0x00538710` | high | Maps the original u16 model row to an ordinary retained item name or the pursuit-0x004B marker, u32 record ID, and supplied u8 quantity tail. |
 | `net_parse_merchant_server_item_menu` | `0x005388F0` | high | Parses ordinary server item records or the larger pursuit-0x004B record with ID, quantity, optional description, and two counters. |
 | `net_send_pursuit_previous` | `0x0053D940` | high | Sends a no-argument CPursuit with current step minus one and enters response-pending without checking has_previous. |
 | `net_send_pursuit_next` | `0x0053D9D0` | high | Sends a no-argument CPursuit with current step plus one and enters response-pending without checking has_next. |

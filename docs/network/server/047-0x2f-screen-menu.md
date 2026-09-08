@@ -362,6 +362,8 @@ Types 5 and 11 can both use the ordinary or `0x004E` local-inventory layout. The
 
 The dialog uses `lnpcd.txt` for the speaker name, content, scrolling, top, and close controls. Generic nested menus, including the player-owned lists, use `lnpcd2.txt`. Server-item types 4 and 10 use the larger `lnpcd3.txt` item layout. Input is ordinary `DialogPane` input: child hit testing turns clicks into attachment-order actions, the focused text control receives keyboard and IME events, and Tab moves focus.
 
+For types 4 and 10, the client builds category tabs by looking up each received item name in `ItemInfo` metadata. Category labels and memberships are not additional wire fields. All received items remain in the model while the pane displays four members of the selected category. See [Item categories and complete lists](../../systems/npc-dialogs.md#item-categories-and-complete-lists).
+
 The outer merchant pane attaches Top as action 4 and Close as action 5. Top sends [`CRequestObjectInfo`](../client/067-0x43-request-object-info.md) subtype 1 with this screen menu's `target_id`, then closes the NPC session. Close only closes locally. Neither outer action sends `CMerchant`.
 
 See [NPC dialogs](../../systems/npc-dialogs.md) for the pane tree, control order, layouts, and full response flow. Speaker illustration lookup is described in [NPC dialog illustrations](../../systems/npc-dialog-illustrations.md).

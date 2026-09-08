@@ -1453,6 +1453,10 @@ functions:
     name: ui_npc_list_menu_submit_selected_row
     confidence: high
     evidence: "Reads the scroll control's selected row and calls the model's contextual CMerchant selection builder."
+  - address: "0x005309A0"
+    name: ui_npc_list_menu_queue_activation
+    confidence: high
+    evidence: "NPCListMenuPane primary-vtable slot +0xA0. The inherited ListPane left-double-click event queues the retained owner timer with zero delay, mode 1, argument 0; server-item construction sets owner timer ID 1. No item packet is sent until the callback activates the selected row."
   - address: "0x00534990"
     name: ui_npc_merchant_message_dialog_ctor
     confidence: high
@@ -1469,6 +1473,10 @@ functions:
     name: ui_npc_dispatch_screen_menu_type
     confidence: high
     evidence: "Maps SScreenMenu values 0 through 11 to text, input, server item, local item, server skill-spell, and local skill-spell models."
+  - address: "0x00534F80"
+    name: ui_npc_build_server_item_menu_dialog
+    confidence: high
+    evidence: "Constructs the active NPCServerItemMenu response model at outer +0x634 and a 0x674-byte NPCServerItemMenuDialog at outer +0x638 for SScreenMenu types 4 and 10."
   - address: "0x00535080"
     name: ui_npc_build_screen_menu_list
     confidence: high
@@ -1558,15 +1566,71 @@ functions:
     name: ui_npc_client_spell_menu_enumerate_all
     confidence: high
     evidence: "Collects active learned spell slots 1 through 89 when the server supplies no nonzero whitelist."
+  - address: "0x00538140"
+    name: ui_npc_server_item_menu_model_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI NPCServerItemMenu, initializes its counted item array, and calls net_parse_merchant_server_item_menu."
   - address: "0x00538710"
     name: net_send_merchant_server_item_selection
-    prototype: "u32 __thiscall net_send_merchant_server_item_selection(void *model, u8 displayed_row, u8 quantity)"
+    prototype: "u32 __thiscall net_send_merchant_server_item_selection(void *model, u16 model_row, u8 quantity)"
     confidence: high
-    evidence: "Maps a displayed row to an ordinary retained item name or the pursuit-0x004B marker, u32 record ID, and supplied u8 quantity tail."
+    evidence: "Maps the original u16 model row to an ordinary retained item name or the pursuit-0x004B marker, u32 record ID, and supplied u8 quantity tail. Disassembly uses word-width row loads; category/page positions must first be mapped through the category index vector."
   - address: "0x005388F0"
     name: net_parse_merchant_server_item_menu
     confidence: high
     evidence: "Parses ordinary server item records or the larger pursuit-0x004B record with ID, quantity, optional description, and two counters."
+  - address: "0x00538C40"
+    name: ui_npc_server_item_menu_get_item_name
+    confidence: high
+    evidence: "Returns the model row name at items + row * 0x218 + 0x0D, checking the u16 row against item_count at model +0x12."
+  - address: "0x00538D00"
+    name: ui_npc_server_item_menu_dialog_ctor
+    confidence: high
+    evidence: "Constructs exact RTTI NPCServerItemMenuDialog with primary vtable 0x0068149C and TimerHandler secondary base +0x11C; builds all categories and initializes four-tab and four-row paging."
+  - address: "0x00538FE0"
+    name: ui_npc_server_item_menu_handle_control_action
+    confidence: high
+    evidence: "Routes action 1 to selected-row activation, actions 2 through 5 to category selection, 6/7 to category paging, and 12/13 to item paging. Tab and page changes do not submit a dialog response."
+  - address: "0x005390F0"
+    name: ui_npc_server_item_menu_activate_model_row
+    confidence: high
+    evidence: "Activates the original u16 model row. Ordinary menus send quantity 1; pursuit 0x004B prompts for quantity when record +0x0C exceeds 1."
+  - address: "0x00539290"
+    name: ui_npc_server_item_menu_activate_selected_row
+    confidence: high
+    evidence: "Reads the selected eight-byte NPCListMenuPane entry and passes its original u16 model row at entry +4 to dialog primary-vtable slot +0x84, ui_npc_server_item_menu_activate_model_row. Reached by activation action 1 and the queued double-click callback."
+  - address: "0x00539340"
+    name: ui_npc_server_item_menu_timer_callback
+    confidence: high
+    evidence: "Receives TimerHandler this at complete dialog +0x11C and adjusts it back. Timer 1 mode 1 activates the selected item, mode 2 shows item detail, and mode 3 hides detail. Quantity-result timer 2 passes retained u16 model row and u8 quantity to net_send_merchant_server_item_selection; returns 1."
+  - address: "0x00539DB0"
+    name: ui_npc_server_item_menu_build_controls
+    confidence: high
+    evidence: "Retains NPCServerItemMenu at complete dialog +0x638. Attaches scrollable list 0, activation button 1, category tabs 2 through 5, category paging 6 and 7, detail fields 8 through 11, and item paging 12 and 13."
+  - address: "0x0053A310"
+    name: ui_npc_server_item_menu_rebuild_categories
+    confidence: high
+    evidence: "Iterates all u16 model rows in packet order, looks up each exact name in ItemInfoList, and groups by metadata label +0x10 or localized message 100 on lookup failure. Complete dialog +0x654/+0x658/+0x65C owns 0x40-byte category records: label[48] at +0, nested u16 model-row begin/end/capacity at +0x30/+0x34/+0x38. Disassembly confirms metadata +0x10 selection, case-sensitive byte comparisons, first-seen category order, and two-byte row insertion."
+  - address: "0x0053A690"
+    name: ui_npc_server_item_menu_select_category
+    confidence: high
+    evidence: "Stores zero-based selected category at complete dialog +0x664, remembers its label, computes four-item page count at +0x670, and resets the selected category to page 1."
+  - address: "0x0053A7E0"
+    name: ui_npc_server_item_menu_show_item_page
+    confidence: high
+    evidence: "Clamps one-based item page at complete dialog +0x66C, clears visible rows, and appends at most four u16 model indexes from the selected 0x40-byte category's nested vector. The disassembly reads word indexes and passes the original model at dialog +0x638."
+  - address: "0x0053A9B0"
+    name: ui_npc_server_item_menu_select_visible_category
+    confidence: high
+    evidence: "Maps one of four visible category slots to first_visible_category plus slot and switches the local selected category without sending CMerchant."
+  - address: "0x0053AA00"
+    name: ui_npc_server_item_menu_set_category_window
+    confidence: high
+    evidence: "Updates four category button labels from backing category records and retains the first visible category index at complete dialog +0x668; categories outside the window remain allocated."
+  - address: "0x0053AE90"
+    name: ui_npc_item_category_ctor
+    confidence: high
+    evidence: "Initializes begin, end, and capacity of the nested u16 model-index vector at category +0x30/+0x34/+0x38. Caller stores a 48-byte category label; complete category stride is 0x40."
   - address: "0x0053CC10"
     name: ui_npc_pursuit_message_dialog_ctor
     confidence: high
@@ -1674,6 +1738,8 @@ functions:
     name: ui_open_npc_session_from_pursuit_message
     confidence: high
     evidence: "Live server-packet dispatch allocates exact RTTI NPCSession for non-close typed SPursuitMessage; type 10 needs no new pane."
+data_symbols: []
+runtime_patches: []
 comments:
   - address: "0x004CF3E0"
     text: "Dormant in version 741: this FaceMenuDialog opener has no recovered reference, and the legacy type-0-through-11 dispatcher never selects it."
@@ -1697,6 +1763,8 @@ comments:
     text: "Dispatch SScreenMenu types: 0/1 text, 2/3 input, 4/10 server items, 5/11 local items, 6/7 server spell-skill, 8/9 local spell-skill."
   - address: "0x00534F4A"
     text: "The outer NPC message pane retains the current response model at +0x634 and its nested interactive pane at +0x638."
+  - address: "0x00534F80"
+    text: "Active SScreenMenu types 4/10: outer +0x634 owns NPCServerItemMenu; outer +0x638 owns the categorized NPCServerItemMenuDialog, whose own +0x638 points back to that model."
   - address: "0x005350EE"
     text: "SScreenMenu types 5 and 11 build NPCClientItemMenu from server-selected local inventory slots."
   - address: "0x005351EA"
@@ -1711,6 +1779,16 @@ comments:
     text: "A zero or absent whitelist enumerates active learned skill slots 1 through 89."
   - address: "0x005376CF"
     text: "A zero or absent whitelist enumerates active learned spell slots 1 through 89."
+  - address: "0x00538710"
+    text: "Server-item selection consumes a u16 ORIGINAL MODEL ROW, as confirmed by movzx word argument loads. Translate visible category/page positions through the category's u16 index vector first; quantity remains u8. Validate the current conversation, model count, and extended-form available quantity before calling."
+  - address: "0x00538FE0"
+    text: "Category tabs (actions 2..5) and page buttons only change the local view. Action 1 activates the selected model row and may eventually send CMerchant; single-click list selection does not send it."
+  - address: "0x0053A430"
+    text: "Successful ItemInfo lookup: use metadata record +0x10 label[48] for the tab, not numeric field +0. Failed lookup uses localized message 100; a successful empty label remains empty."
+  - address: "0x0053A644"
+    text: "Append the current u16 original model row to category +0x30 index vector. Categories have 0x40-byte stride at dialog +0x654. This retains all members, independent of the four visible rows."
+  - address: "0x0053A970"
+    text: "Zero-extend the category's u16 model index before appending a visible row. Page position is not an item identity; each page selects up to four indexes from the complete category."
   - address: "0x0053CCB1"
     text: "Register attachment-order action 6 (Close) as this dialog's Escape/cancel action."
   - address: "0x0053CD1C"

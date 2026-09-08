@@ -431,12 +431,97 @@ Useful presented class families include:
 | Exchange | `ExchangeDialog` |
 | Bulletin and mail | `BulletinSession`, `BoardListDialog`, `ArticleListDialog`, `ArticleDialog`, `MailListDialog`, `MailDialog`, `NewArticleDialog`, `NewMailDialog` |
 | Who list | `GUIBackPane::_ShowUsersPane`, `ShowUsersPane` |
-| Merchant | `MerchantSession` and classes derived from `MerchantDialogPane` |
+| Active merchant screen menu | `NPCSession`, `NPC_Merchant_MessageDialog`, and its nested `NPCMenuDialog` |
+| Dormant merchant family | `MerchantSession` and classes derived from `MerchantDialogPane`; not the active screen-menu path |
 | NPC pursuit | `NPCSession`, `NPC_Pursuit_MessageDialog`, `NPC_Pursuit_NexonIdDialog`, `NPC_Pursuit_TextInputMenuDialog`, and other `NPCMenuDialog` or `NPCMessageDialog` descendants |
 
 For a generic dialog, `DialogPane` keeps its control list at `+0x594`, default and cancel control indexes at `+0x598` and `+0x59C`, and its focused control index at `+0x5AC`. These fields describe controls owned by that dialog, not every text input in the client.
 
 The chat page test identifies an open chat pane, but exact keyboard ownership remains partly unresolved. A conservative query can report a visible, registered `ChatInputPane`, `TellInputPane`, `TellReceiverInputPane`, or `BlockListenInputPane` together with the selected page or modal context. Do not claim that a line input has focus from `DialogPane + 0x5AC` unless it is actually a control in that dialog.
+
+### NPC item categories
+
+The active `NPCServerItemMenuDialog` retains every category and item index, including entries outside the four visible tabs and four visible rows. This layout belongs to screen-menu types 4 and 10. It is separate from the dormant `ServerItemMenuDialog3`, whose category records have a different size.
+
+Resolve exact RTTI `NPCSession` through the main-thread event-handler list. Require screen-menu state `1` at `session + 0x190`, a presented outer pane at `session + 0x3BC`, and the exact nested dialog class before reading its fields:
+
+```c
+outer = read_ptr(session + 0x3BC);
+model = read_ptr(outer + 0x634);       // NPCServerItemMenu
+dialog = read_ptr(outer + 0x638);      // NPCServerItemMenuDialog
+require(read_ptr(dialog + 0x638) == model);
+```
+
+The complete dialog's primary vtable is static VA `0x0068149C`, RVA `0x0028149C`; its `TimerHandler` vtable is static VA `0x00681488`, RVA `0x00281488`. Compare against the actual module base plus the RVA. The timer subobject is at complete object `+0x11C`; the layouts below require the complete object pointer.
+
+These are selected fields, not complete class declarations. Runtime integers and pointers are little-endian; each pointer occupies four bytes.
+
+```c
+struct NPCServerItemMenuFields {
+    u16 pursuit_id;                  // model +0x10
+    u16 item_count;                  // model +0x12
+    NPCServerItemRecord *items;      // model +0x14
+};
+
+struct NPCServerItemMenuDialogFields {
+    NPCServerItemMenu *model;        // dialog +0x638
+    NPCItemCategory *categories;     // dialog +0x654
+    NPCItemCategory *categories_end; // dialog +0x658
+    NPCItemCategory *categories_cap; // dialog +0x65C
+    i32 selected_category;           // dialog +0x664, zero-based
+    i32 first_visible_category;      // dialog +0x668, zero-based
+    i32 item_page;                   // dialog +0x66C, one-based
+    i32 item_page_count;             // dialog +0x670
+};
+
+struct NPCItemCategory {
+    char label[0x30];                // +0x00, client text bytes
+    u16 *rows;                       // +0x30, zero-based model indexes
+    u16 *rows_end;                   // +0x34
+    u16 *rows_capacity;              // +0x38
+    u8 unknown_3c[4];                // +0x3C
+};                                  // size 0x40
+
+struct NPCServerItemRecord {
+    u32 record_id;                   // +0x000, pursuit 0x004B only
+    u16 sprite;                      // +0x004
+    u8 color;                        // +0x006
+    u8 padding_007;
+    u32 display_value;               // +0x008, price in 0x004B form
+    u8 available_quantity;           // +0x00C, pursuit 0x004B only
+    char name[0x100];                // +0x00D
+    u8 has_description;              // +0x10D, pursuit 0x004B only
+    char description[0x100];         // +0x10E
+    u8 padding_20e[2];
+    u32 progress_current;            // +0x210, pursuit 0x004B only
+    u32 progress_limit;              // +0x214, pursuit 0x004B only
+};                                  // size 0x218
+```
+
+The ordinary record parser does not initialize the extended-only fields. For pursuit `0x004B`, read `description` only when `has_description == 1`; the ordinary form always reads it. Copy individual initialized fields instead of exporting the entire allocation or interpreting padding.
+
+Enumerate the backing vectors rather than the visible controls:
+
+```c
+for (u32 c = 0; c < category_count; c++) {
+    category = categories + c * 0x40;
+    emit_category(read_text(category, 0x30));
+    for (u32 n = 0; n < member_count(category); n++) {
+        u16 row = read_u16(read_ptr(category + 0x30) + n * 2);
+        require(row < item_count);
+        item = items + row * 0x218;
+        emit_item(row, copy_initialized_item_fields(item, pursuit_id));
+    }
+}
+```
+
+Here `category_count = (categories_end - categories) / 0x40`, and each member count is `(rows_end - rows) / 2`. Validate ordered begin/end/capacity pointers, whole-record divisibility, readable ranges, and reader-defined allocation limits before either loop. Both counts are bounded by the model's `u16 item_count`. Treat a null begin/end pair as empty; reject inconsistent pointers. Bound text reads to the arrays above, preserve the original bytes, and do not assume UTF-8.
+
+For a visible item position `r`, translate through `category.rows[(item_page - 1) * 4 + r]`, validating `0 <= r < 4` and the category-local member bound first. The resulting **model row**, not `r`, is the `u16` argument to `net_send_merchant_server_item_selection`. The server record ID is a separate field. Retain the [current-conversation and response-pending checks](../../systems/npc-dialogs.md#invoking-a-response-without-pointer-input) before an action.
+
+Copy this state in one main-thread dispatcher tick. Return owned values to the controller, and resolve the session and model again for later commands. No pane, vector, or record pointer is stable across dialog replacement. A snapshot covers only the current server-supplied menu, not every possible bank item or another conversation.
+
+`ui_npc_server_item_menu_rebuild_categories` establishes the `0x40` stride and stores `u16` indexes. `ui_npc_server_item_menu_show_item_page` reads those indexes and appends at most four rows; `net_parse_merchant_server_item_menu` establishes the `0x218` item stride. Disassembly verifies the offsets, word-width row loads, and metadata `label` selection. Their static addresses and confidence are in the [function reference](../functions.md) and [analysis manifest](../../../analysis/exports/npc-dialogs.yaml).
 
 ## Known limits
 
