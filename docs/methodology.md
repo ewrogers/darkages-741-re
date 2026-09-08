@@ -61,6 +61,25 @@ Packet pages put that purpose before the metadata table. Use `Transform` with `r
 
 Overview pages explain how a section fits together and link to its focused topics. Keep long lookup material in the appendices, preserve useful timing values and provenance, and update the [navigation generator](../scripts/README.md) when a page is added. An editorial change should not make an uncertain finding sound established.
 
+### Reading depth
+
+A reader should be able to understand a behavior before needing its memory layout or instruction evidence. Give a focused topic this progression:
+
+| Reader's question | What belongs here |
+| --- | --- |
+| What happens? | Purpose, visible result, and a small mental model |
+| How does it happen? | Owners, a complete normal flow, state changes, and relevant failure paths |
+| What must an implementation preserve? | Exact fields, ordering, counts, bounds, timing, and exceptions |
+| How is it established? | Links to the matching layouts, named functions, and evidence reference |
+
+Use headings that describe the behavior rather than repeating these four questions on every page. Keep a short packet or format reference together when its exact layout is already the most useful explanation. Split a topic only when the reader's purpose or prerequisites change, not to satisfy a page-length target.
+
+Keep uncertainty and correctness conditions beside the behavior they qualify. A dormant path must be labeled before a reader could mistake it for live behavior. A timer's cadence, callback limit, and total duration must remain distinct. Required fields, bounds, and warnings should not depend on expanding an optional section.
+
+Put a shared layout in one canonical reference. Explain how its fields affect behavior in the main chapter, then link to the exact section. Before removing a duplicate, transfer any unique fields or exceptions. Preserve existing heading anchors when moving or regrouping sections.
+
+The [game loop](application/game-loop.md), [event system](systems/events.md), and [UI and panes](systems/ui.md) form the first worked reading path. [NPC dialogs](systems/npc-dialogs.md) applies the same progression to a larger topic with live exchanges, exact selection rules, native invocation, and dormant implementations.
+
 ## Text and localization
 
 The client may contain Korean text that renders as `????` on another Windows locale. Preserve the original bytes before guessing. Test code page 949 when the bytes support it, and say clearly when the original text cannot be recovered.

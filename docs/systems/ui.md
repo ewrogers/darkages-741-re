@@ -13,11 +13,11 @@ Screen hierarchy             Event pane tree
           local controls in attach order
 ```
 
+Begin with the two trees, the [independent pane states](#pane-state), and [dialog controls](#dialog-controls). Concrete screens follow those foundations; [runtime representation and class evidence](#runtime-representation-and-class-evidence) comes last.
+
 ## Screen hierarchy
 
 The spatial `HierList<Screen>` tracks screen relationships and positions. It helps answer questions such as "where is this pane on screen?" and "what is its parent position?"
-
-Each hierarchy record holds a parent-record pointer, an optional child list, and the caller payload. The backing list stores records contiguously. Insertion, removal, and movement can therefore change record addresses, so the `HierList` overrides those operations and repairs parent and child back-pointers for the affected range. Lookup walks child lists recursively and can return both the owning list and record index.
 
 `ui_screen_hierarchy_get_absolute_origin` walks this hierarchy to turn a local point into a screen point.
 
@@ -27,41 +27,28 @@ Each hierarchy record holds a parent-record pointer, an optional child list, and
 
 The two trees often describe the same visible objects, but they serve different jobs. Do not assume a drawing parent is automatically the event parent.
 
-## Rectangle regions
+## Pane state
 
-The RTTI-backed `Region` helper used by panes is a wrapper around one rectangle, not a general Windows region made of many pieces. It can clear, offset, intersect, union, compare, and test containment. Empty rectangles are canonicalized to four zero coordinates, and two empty rectangles compare equal even when their original coordinates differed.
+Several states that look similar are independent:
 
-Exclusion is deliberately limited by that representation. Removing an edge-aligned rectangle can shrink the stored bounds, and removing a covering rectangle clears it. An exclusion that would leave two disjoint pieces cannot be preserved as two shapes. Pane invalidation code should therefore be read as single-rectangle dirty bounds unless a separate collection is visible around it.
+- **Registered:** the pane is in the event tree.
+- **Visible:** the pane can be drawn.
+- **Input priority:** the pane is earlier or later in event traversal.
+- **Focused control:** a dialog control receives keyboard or text input.
+- **Mouse capture:** one pane receives pointer events directly.
+- **Alive:** the object still exists and can safely receive calls.
+
+When a screen behaves strangely, check each state instead of treating "shown" as one switch.
+
+Hidden panes are skipped for pointer and keyboard input. If they remain registered, application and network events can still reach them. Hiding a pane also releases mouse capture when that pane owns it.
 
 ## Dialog controls
 
 A `DialogPane` owns a local collection of controls. Controls are added with `ui_dialog_add_control` in the order chosen by the pane constructor. That order can differ from the order of definitions in the text layout file.
 
-```text
-struct DialogPaneFields {
-    ControlList *controls           // +0x594
-    s32 default_action_control_index // +0x598, -1 disables
-    s32 cancel_action_control_index  // +0x59C, -1 disables
-    u8  dialog_drag_active          // +0x5A0
-    s32 drag_anchor_x               // +0x5A4
-    s32 drag_anchor_y               // +0x5A8
-    s32 focused_control_index       // +0x5AC, -1 means none
-    u8  control_press_active        // +0x5B0
-    s32 pressed_control_index       // +0x5B4
-    u8  pressed_zone                // +0x5B8
-    s32 hovered_control_index       // +0x5BC, -1 means none
-    u8  hover_zone                  // +0x5C0, 7 means no hit
-    s32 pointer_target_control_index // +0x5C4, -1 means none
-    u8  pointer_target_zone         // +0x5C8, 7 means no hit
-    u8  drag_bounds_enabled         // +0x5CA
-    s32 minimum_drag_x              // +0x5CC
-    s32 minimum_drag_y              // +0x5D0
-    s32 maximum_drag_x              // +0x5D4
-    s32 maximum_drag_y              // +0x5D8
-}
-```
+The [dialog field reference](../appendix/runtime/panes.md#dialog-pane-fields) records the control collection, action and focus indexes, pointer state, and drag bounds.
 
-The two former setup indexes are keyboard shortcuts. `ui_dialog_set_default_action` stores the control invoked by Enter or Space. `ui_dialog_set_cancel_action` stores the control invoked by Escape. The setters accept `-1` to disable the shortcut. Otherwise they resolve the index through the current control list, so these are attachment-order indexes rather than layout definition numbers.
+The default and cancel indexes select keyboard shortcuts. `ui_dialog_set_default_action` stores the control invoked by Enter or Space. `ui_dialog_set_cancel_action` stores the control invoked by Escape. The setters accept `-1` to disable the shortcut. Otherwise they resolve the index through the current control list, so these are attachment-order indexes rather than layout definition numbers.
 
 Shortcut dispatch checks that the selected control is still enabled, then calls the dialog action handler with the control index and action code `8`. A focused control can retain Enter or Space for its own editing behavior instead of allowing the default action. Escape takes the cancel path directly.
 
@@ -85,7 +72,19 @@ The layout files supply names, rectangles, art, and palette values. They do not 
 
 The shared `ControlPane` hierarchy supplies the native button, progress, radio, scroll, and text-edit behavior. Its exact classes and state transitions are described in [Native UI controls](ui-controls.md).
 
-## List panes
+## Drawing hooks
+
+Drawing follows the spatial screen hierarchy. The event registration tree is separate. `render_screen_subtree` clips a visible pane, calls its draw-to-target virtual method, and then walks its children.
+
+Each pane can override a content hook. `ImagePane` draws an image there, while `WorldPane` draws the map and world objects. The common `ui_pane_draw_to_target` hook then copies the pane's canvas into its parent.
+
+This makes a pane similar to a small game-engine node with its own surface. Layout decides where it goes, visibility decides whether it participates, and the render hook decides what pixels it contributes. See [Rendering system](../rendering/README.md) for the full frame path and [UI composition and compact layout](../rendering/ui-composition.md) for exact traversal order and the layout-dependent world viewport.
+
+## Reusable panes and concrete screens
+
+The following panes combine the same registration, visibility, input, and drawing mechanisms. Their specific controls and lifetimes remain separate from the shared foundations.
+
+### List panes
 
 `ListPane` is the reusable base behind friends, mail, boards, legends, exchange rows, and several other scrolling lists. It owns a `List` model that stores fixed-size records in one contiguous byte buffer. The model tracks an element stride, an allocation-block size, the current count, and the buffer pointer. Insert and erase operations move the trailing bytes and grow or shrink storage in whole allocation blocks.
 
@@ -95,30 +94,7 @@ The pane arranges records in a column-major grid from an item width, item height
 
 Drawing clears the pane, intersects each item rectangle with the visible region, and calls a virtual item renderer. The base renderer is empty, so each concrete list class supplies its own row or cell appearance while reusing the same storage, selection, input, and scrolling behavior.
 
-## Main menu
-
-`MainMenuPane` loads `_nstart.txt` and builds six actions in fixed order: Create, Continue, Password, Credit, Homepage, and Exit. A small `MainMenu` model stores the count and selected action, using `-1` when nothing is selected. Pointer hit testing and the four internal navigation keys invalidate only the old and new action rectangles. Enter, Space, or pointer release activates the selected action.
-
-The pane draws the layout background, selected or unselected art for all six actions, `Version major.minor`, and optional `addimg.spf` artwork. Create, Continue, and Password open their matching dialogs. Homepage asks the Windows shell to open `http://www.darkages.com`. Exit sends `CQuit`. Credit follows its own dialog path.
-
-Asian UI modes keep the lobby connection alive from a 30-second timer and from pointer or keyboard activity. Successful login removes the lobby panes, creates the equipment, game-message, and score panes, derives the packet salt source from the character name, and queues the old terminal pane for deferred deletion.
-
-## Pane state
-
-Several states that look similar are independent:
-
-- **Registered:** the pane is in the event tree.
-- **Visible:** the pane can be drawn.
-- **Input priority:** the pane is earlier or later in event traversal.
-- **Focused control:** a dialog control receives keyboard or text input.
-- **Mouse capture:** one pane receives pointer events directly.
-- **Alive:** the object still exists and can safely receive calls.
-
-When a screen behaves strangely, check each state instead of treating "shown" as one switch.
-
-Hidden panes are skipped for pointer and keyboard input. If they remain registered, application and network events can still reach them. Hiding a pane also releases mouse capture when that pane owns it.
-
-## Dialog drawing and alerts
+### Dialog drawing and alerts
 
 `DialogPane` separates its frame from its controls. `ui_dialog_draw` calls the background and content hooks over the dialog rectangle. A named background uses the configured pixmap. Without one, the client lazily loads `DlgBack2.spf` and can tile the built-in frame pieces.
 
@@ -126,7 +102,7 @@ The dialog keeps the focused attachment index separately from the control object
 
 `AlertPane` maps attachment action `0` to its first choice and action `2` to its optional second choice. `YesNoAlertPane` retains callback state and converts those choices to `true` or `false`. After dispatch, the alert unregisters, hides, and enters the normal deferred-deletion path. The exact RTTI destructor thunks adjust the `TimerHandler` secondary base by `0x11C` before destroying the complete pane.
 
-## Dragged panes
+### Dragged panes
 
 Exact RTTI `DraggedPane` is a temporary captured pane used as the common base for dragged inventory items, map items, pictures, skills, spells, and world items. Construction captures the mouse and replaces any older active dragged pane through deferred deletion.
 
@@ -134,21 +110,15 @@ Pointer movement updates the pane position from a retained pointer origin. On re
 
 The drag pane's visibility, capture, and lifetime remain separate states. Its owner can receive a callback during registration or removal, and the exact `TimerHandler` destructor thunk adjusts `this` by `0x11C`.
 
-## Emoticon selector
+### Main menu
 
-Exact RTTI `EmoticonSelectPane_A` owns eight option rectangles and a description buffer. Pointer movement hit-tests those rectangles, invalidates the old and new option, copies the selected option description, and redraws the description area.
+`MainMenuPane` loads `_nstart.txt` and builds six actions in fixed order: Create, Continue, Password, Credit, Homepage, and Exit. A small `MainMenu` model stores the count and selected action, using `-1` when nothing is selected. Pointer hit testing and the four internal navigation keys invalidate only the old and new action rectangles. Enter, Space, or pointer release activates the selected action.
 
-A pointer selection or numeric key commits an option through the retained chat owner and shared emoticon state, then closes the pane. Other mapped keys close or refresh it without choosing. The selector clamps programmatic selection to the eight valid indexes and falls back to option zero.
+The pane draws the layout background, selected or unselected art for all six actions, `Version major.minor`, and optional `addimg.spf` artwork. Create, Continue, and Password open their matching dialogs. Homepage asks the Windows shell to open `http://www.darkages.com`. Exit sends `CQuit`. Credit follows its own dialog path.
 
-The shared label loader treats each configured option as two DBCS-aware text parts separated by a semicolon. `EquipPane` and `UserLookPane` draw the right-hand part beside the selected `HumanState` image.
+Asian UI modes keep the lobby connection alive from a 30-second timer and from pointer or keyboard activity. Successful login removes the lobby panes, creates the equipment, game-message, and score panes, derives the packet salt source from the character name, and queues the old terminal pane for deferred deletion.
 
-## Hot-key reference
-
-Exact RTTI `HotKeyPane` loads `_nhotkem.txt` and `_nhotkey.txt` and exposes 32 fixed or compound hit regions. Pointer movement updates the highlighted entry. Enter, Escape, or pointer event type 4 schedules timer 1; its callback detaches the pane and queues deferred deletion instead of freeing it inside input dispatch.
-
-Exact RTTI `HumanImageControlPane` is a smaller control used by character UI. It retains a 16-bit `HumanState` selector, clears its canvas, and asks the shared human-image renderer to draw that state.
-
-## Equipment and character views
+### Equipment and character views
 
 Exact RTTI `EquipPane` owns 18 worn-equipment entries. Each entry keeps its sprite, dye byte, name, current durability, and maximum durability. The durability values remain stored but are not drawn. The pane draws the equipment with the local character profile and can send [`CRemoveEquipment`](../network/client/068-0x44-remove-equipment.md) for a selected one-byte slot.
 
@@ -156,7 +126,21 @@ An attached exact RTTI `GroupViewPane` is a small owner-relative panel. It draws
 
 Exact RTTI `UserLookPane` is the corresponding view for another character. Its decoded body carries the viewed character ID, 18 equipment records, display strings, legend data, portrait, and profile. The pane can send an ordinary group request for the displayed name or begin an exchange with the retained character ID.
 
-## Full-screen story panes
+### Emoticon selector
+
+Exact RTTI `EmoticonSelectPane_A` owns eight option rectangles and a description buffer. Pointer movement hit-tests those rectangles, invalidates the old and new option, copies the selected option description, and redraws the description area.
+
+A pointer selection or numeric key commits an option through the retained chat owner and shared emoticon state, then closes the pane. Other mapped keys close or refresh it without choosing. The selector clamps programmatic selection to the eight valid indexes and falls back to option zero.
+
+The shared label loader treats each configured option as two DBCS-aware text parts separated by a semicolon. `EquipPane` and `UserLookPane` draw the right-hand part beside the selected `HumanState` image.
+
+### Hot-key reference
+
+Exact RTTI `HotKeyPane` loads `_nhotkem.txt` and `_nhotkey.txt` and exposes 32 fixed or compound hit regions. Pointer movement updates the highlighted entry. Enter, Escape, or pointer event type 4 schedules timer 1; its callback detaches the pane and queues deferred deletion instead of freeing it inside input dispatch.
+
+Exact RTTI `HumanImageControlPane` is a smaller control used by character UI. It retains a 16-bit `HumanState` selector, clears its canvas, and asks the shared human-image renderer to draw that state.
+
+### Full-screen story panes
 
 Two early full-screen panes combine archive text, art, input, and timers without using a dialog layout.
 
@@ -166,19 +150,25 @@ Exact RTTI `StaffPane` loads `staff.tbl` and `staff.epf`, scrolls the visible li
 
 Both panes register against the root screen and event trees, hide the Windows cursor while active, and restore the cursor and `legend01.pal` when closing. `StaffPane` uses the exact RTTI `BlackHole` owner for deferred deletion after it has detached from events and timers. This keeps stale queued callbacks from targeting an already freed pane.
 
-## Drawing hooks
+## Runtime representation and class evidence
 
-The pane tree also controls drawing. `render_screen_subtree` clips a visible pane, calls its draw-to-target virtual method, and then walks its children.
+These details explain how the shared objects are stored and destroyed. The [pane and event layouts](../appendix/runtime/panes.md) are the canonical field reference; the [pane type appendix](../appendix/pane-types.md) records exact class relationships.
 
-Each pane can override a content hook. `ImagePane` draws an image there, while `WorldPane` draws the map and world objects. The common `ui_pane_draw_to_target` hook then copies the pane's canvas into its parent.
+### Hierarchy storage
 
-This makes a pane similar to a small game-engine node with its own surface. Layout decides where it goes, visibility decides whether it participates, and the render hook decides what pixels it contributes. See [Rendering system](../rendering/README.md) for the full frame path and [UI composition and compact layout](../rendering/ui-composition.md) for exact traversal order and the layout-dependent world viewport.
+Each hierarchy record holds a parent-record pointer, an optional child list, and the caller payload. The backing list stores records contiguously. Insertion, removal, and movement can therefore change record addresses, so the `HierList` overrides those operations and repairs parent and child back-pointers for the affected range. Lookup walks child lists recursively and can return both the owning list and record index.
 
-## Pane classes
+### Rectangle regions
 
-RTTI exposes a large family of pane classes, including dialogs, controls, lists, world panes, overlays, and tabs. The inheritance data proves class relationships, but it does not prove which panes are alive at a given moment.
+The RTTI-backed `Region` helper used by panes is a wrapper around one rectangle, not a general Windows region made of many pieces. It can clear, offset, intersect, union, compare, and test containment. Empty rectangles are canonicalized to four zero coordinates, and two empty rectangles compare equal even when their original coordinates differed.
 
-### Destruction paths
+Exclusion is deliberately limited by that representation. Removing an edge-aligned rectangle can shrink the stored bounds, and removing a covering rectangle clears it. An exclusion that would leave two disjoint pieces cannot be preserved as two shapes. Pane invalidation code should therefore be read as single-rectangle dirty bounds unless a separate collection is visible around it.
+
+### Pane classes
+
+Runtime type information (RTTI), the compiler's class and inheritance records, exposes a large family of pane classes, including dialogs, controls, lists, world panes, overlays, and tabs. The inheritance data proves class relationships, but it does not prove which panes are alive at a given moment.
+
+#### Destruction paths
 
 One pane class can have three destruction functions. The ordinary destructor releases owned controls, vectors, files, or child panes. Its MSVC scalar-deleting destructor then optionally frees the complete allocation. A second deleting-destructor entry belongs to the embedded `TimerHandler` base and first subtracts `0x11C` from `this` before reaching the complete object.
 

@@ -17,6 +17,34 @@ repeat until quit
 
 After the Windows queue is empty, `event_dispatcher_tick` runs. It drains the client event queue and then handles due timers. The timer limit prevents a large timer backlog from taking over one loop pass.
 
+The [function reference](../appendix/functions.md#game-loop) identifies the loop owners. This page follows their normal work first, then background-window behavior and clock changes.
+
+## Loop and event system
+
+The loop decides **when** work runs. The event system decides **where** each event goes. Keeping those jobs separate makes the client easier to reason about:
+
+- The loop pumps messages and repeatedly gives the dispatcher a turn.
+- The event dispatcher classifies work.
+- The pane tree offers work to UI and game screens.
+- Timer handlers run time-based behavior.
+
+See [Event system](../systems/events.md) for dispatch and [UI and panes](../systems/ui.md) for the pane tree.
+
+## Main-thread rule
+
+Game objects and panes expect events on the main thread.
+
+`event_dispatch_or_queue` checks the caller:
+
+```text
+if caller is the main thread
+    dispatch now
+else
+    copy the event into the queue
+```
+
+This is why socket work can prepare a decoded packet away from the UI, while pane handlers still receive it during the normal game loop.
+
 ## Pacing and redraw checks
 
 The outer loop has no fixed frame rate. It runs an auxiliary clock check after more than 100 ms, drains Windows messages, and runs the dispatcher whenever it exists. That clock check does not drive game animation. After 402 tight passes the loop calls `Sleep(1)` and resets that pass counter.
@@ -79,29 +107,3 @@ The client has two separate speed checks:
 For a controlled client and server experiment, a scoped runtime patch is easier to reason about than a global virtual clock. Patch or hook only the owner being tested, keep the original behavior as the default, expose the interval as bounded configuration, and log every changed submission. A cast-cadence test should leave `CCheckTime`, the local clock comparison, packet sequencing, encryption, and the communications worker unchanged. Server traces should record each delay request, chant line, final `CUseSpell`, acceptance, cancellation, and correction. An observed 800 ms tolerance belongs in test results until repeated server measurements confirm it.
 
 Use the [safe launcher](../appendix/runtime-patches/safe-launcher.md) pattern for any runtime experiment: fingerprint the executable, launch suspended, resolve RVAs from the loaded module base, verify original bytes, write complete instructions, flush the instruction cache, restore protection, and leave `Darkages.exe` unchanged on disk.
-
-## Main-thread rule
-
-Game objects and panes expect events on the main thread.
-
-`event_dispatch_or_queue` checks the caller:
-
-```text
-if caller is the main thread
-    dispatch now
-else
-    copy the event into the queue
-```
-
-This is why socket work can prepare a decoded packet away from the UI, while pane handlers still receive it during the normal game loop.
-
-## Loop and event system
-
-The loop decides **when** work runs. The event system decides **where** each event goes. Keeping those jobs separate makes the client easier to reason about:
-
-- The loop pumps messages and repeatedly gives the dispatcher a turn.
-- The event dispatcher classifies work.
-- The pane tree offers work to UI and game screens.
-- Timer handlers run time-based behavior.
-
-See [Event system](../systems/events.md) for dispatch and [UI and panes](../systems/ui.md) for the pane tree.

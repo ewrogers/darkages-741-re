@@ -15,9 +15,11 @@ struct Event {
 }                               // total size 0xA8
 ```
 
-`Event` is the exact RTTI complete-object class name. It derives from the eight-byte `LObject` base. `lobject_ctor` installs the base vtable and writes `live_cookie`. `event_ctor` then installs the `Event` vtable and sets `type` to `-1`. Destruction reverses those steps and clears the cookie. `lobject_is_live` compares the cookie with `0x79736F62`, and `event_dispatch_immediate` performs that check before central dispatch.
+`Event` is the exact RTTI complete-object class name. It derives from the eight-byte `LObject` base. The vtable is the object's method lookup table. `lobject_ctor` installs the base vtable and writes `live_cookie` as the four bytes `62 6F 73 79`, or `bosy`. `event_ctor` then installs the `Event` vtable and sets `type` to `-1`. Destruction reverses those steps and clears the cookie. `lobject_is_live` compares the cookie with `0x79736F62`, and `event_dispatch_immediate` performs that check before central dispatch.
 
-The `+0x08` word is copied along with the rest of the object but is not initialized by either constructor. A review of all 26 direct `event_ctor` references found 25 stack events and one heap allocation helper. None of the stack-event functions accesses `+0x08`; the heap helper also leaves it untouched. The confirmed queue, classification, dispatch, and destruction paths do not consume it. Treat it as an unobserved or dormant member, not a zero-filled field.
+The type occupies one signed byte. The three reserved bytes after it have no confirmed use and place the family-specific payload at the four-byte-aligned offset `+0x10`.
+
+The `+0x08` word is copied along with the rest of the object but is not initialized by either constructor or the event destructor. A review of all 26 direct `event_ctor` references found 25 stack events and one heap allocation helper. None of the stack-event functions accesses `+0x08`; the heap helper also leaves it untouched. The confirmed queue, classification, dispatch, and destruction paths do not consume it. Treat it as an unobserved or dormant member, not a zero-filled field.
 
 Queue storage does not explain the word. `event_allocate_or_reuse` obtains a separate `Event*` from the dispatcher pool or creates a new `0xA8`-byte object. `event_recycle` returns that pointer to the pool. Queue push and pop copy the complete object with a fixed `0xA8`-byte copy.
 
@@ -35,6 +37,20 @@ The addresses below are static Binary Ninja virtual addresses for the preferred 
 | `lobject_ctor` | `0x004B4480` | Installs the base vtable and writes the `bosy` cookie. |
 | `lobject_dtor` | `0x004B44B0` | Restores the base vtable and clears the cookie. |
 | `lobject_is_live` | `0x004B4550` | Returns whether the cookie equals `0x79736F62`. |
+
+### Decoded server packet payload
+
+A decoded server event has type `0x13`. The body begins with the opcode. Dispatch may construct a typed packet, but a null parsed pointer does not mean the body is unused: a pane or manager can handle it directly.
+
+```text
+struct ServerEventData {
+    bytes *body                 // event +0x14, starts with opcode
+    u32 body_length             // event +0x18
+    ServerPacket *parsed        // event +0x1C, null if no class exists
+}
+```
+
+The offsets above are relative to the enclosing `Event`, not to this payload group or a fixed runtime address. See [Network events](../../systems/events.md#network-events) for delivery.
 
 ### Event types
 
@@ -248,12 +264,19 @@ struct DialogPaneFields {
     u8  hover_zone                  // +0x5C0, 7 means no hit
     s32 pointer_target_control_index // +0x5C4, -1 means none
     u8  pointer_target_zone         // +0x5C8, 7 means no hit
+    u8  drag_bounds_enabled         // +0x5CA
+    s32 minimum_drag_x              // +0x5CC
+    s32 minimum_drag_y              // +0x5D0
+    s32 maximum_drag_x              // +0x5D4
+    s32 maximum_drag_y              // +0x5D8
 }
 ```
 
-Control indexes follow attachment order. Enter and Space invoke `default_action_control_index`; Escape invokes `cancel_action_control_index`. Both shortcuts require an enabled target and use action code `8`. A value of `-1` disables the corresponding shortcut.
+Control indexes follow attachment order. Enter and Space invoke `default_action_control_index`; Escape invokes `cancel_action_control_index`. Both shortcuts require an enabled target and use action code `8`. A value of `-1` disables the corresponding shortcut. A focused control can retain Enter or Space for its own editing behavior; Escape takes the cancel path directly.
 
 Pointer press state retains the original control and zone until release. A click reaches the parent dialog action callback only when release hits that same pair. The hover pair drives visual-zone changes, while the pointer-target pair drives secondary enter/leave-style transition hooks.
+
+`ui_dialog_set_drag_bounds` enables the four drag limits; `ui_dialog_clear_drag_bounds` disables them. The base pointer handler clamps the updated pane position to those limits. The [dialog control explanation](../../systems/ui.md#dialog-controls) covers attachment order, shortcuts, pointer state, and registration.
 
 ## Window message dialogs
 

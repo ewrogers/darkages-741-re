@@ -2,6 +2,8 @@
 
 NPC conversations are a server-driven UI system with two related protocols. A screen menu asks for one merchant-style value. A pursuit message represents one step in a navigable conversation. Both enter `NPCSession`, create ordinary client panes, and return a specialized packet when the player acts.
 
+Start with the exchange and its live entry path. The [round trips](#server-and-client-round-trips) explain conversation state; the later [menu models](#menu-models-and-exact-selection-behavior) and [native response reference](#invoking-a-response-without-pointer-input) provide the exact selection rules.
+
 ## Mental model
 
 ```text
@@ -25,7 +27,7 @@ The server supplies data, not a serialized pane tree. The client chooses a compi
 
 ## Reachability in version 741
 
-RTTI proves that a dialog class was compiled into the executable. It does not prove that a server packet can open it. The current client has both a live `NPCSession` implementation and older self-contained dialog families whose root entry functions are no longer referenced.
+Runtime type information (RTTI), the compiler's class records, proves that a dialog class was compiled into the executable. It does not prove that a server packet can open it. The current client has both a live `NPCSession` implementation and older self-contained dialog families whose root entry functions are no longer referenced.
 
 | Family | Version 741 status | How it is selected |
 | --- | --- | --- |
@@ -38,6 +40,8 @@ RTTI proves that a dialog class was compiled into the executable. It does not pr
 
 A server cannot open `FaceMenuDialog` merely by choosing an undocumented `SScreenMenu.menu_type`. The live dispatcher rejects values outside 0 through 11, and the dormant merchant dispatcher uses all of those values without assigning one to the face menu.
 
+The next sections follow the live `NPCSession` path. The [dormant implementations](#dormant-implementations) remain documented later for their distinct behavior and evidence.
+
 ## Entry through `NPCSession`
 
 `ui_npc_session_handle_network_event` recognizes the exact RTTI packet classes `SScreenMenu` and `SPursuitMessage`.
@@ -47,69 +51,6 @@ For `SScreenMenu`, `ui_npc_session_open_screen_menu` copies the common fields in
 For `SPursuitMessage`, `ui_npc_session_open_pursuit_message` handles type 10 as an immediate close. Other types are copied into session state 2. Type 6 skips the normal speaker-art refresh; the other types refresh it before constructing `NPC_Pursuit_MessageDialog`.
 
 The stored session state lets the outer pane and the nested answer model read the same target ID, speaker presentation, pursuit ID, and current step without retaining the server packet object.
-
-### Dormant `MerchantSession` path
-
-The executable retains an older full-screen `MerchantSession` implementation for a raw `SScreenMenu` opcode `0x2F`. If called directly, `net_handle_screen_menu_raw` would construct this pane from the decoded body. That root function has no recovered caller or stored function-pointer reference in version 741, so this is a dormant implementation rather than an alternate server-selectable view.
-
-The session owns two nested dialog slots and `ui_merchant_session_dispatch_screen_menu` maps subtype values 0 through 11 to its compiled text, input, item, skill, and spell dialog families. A body beginning with opcode `0x30` would close the whole merchant session. Its common parser also expects an older, shorter header than the live typed `SScreenMenu` deserializer, so the current packet body should not be passed to it unchanged.
-
-This path uses `lmerc.txt` for segmented menus, `lmerd.txt` for detail panes, and the dormant `lmerc2.txt` item-list variant. The layouts are loaded together, but `ui_is_server_item_menu_dialog3_enabled` always returns false in this build, so the newer `ServerItemMenuDialog3` branch is never selected.
-
-The nested classes share `MerchantDialogPane`. Its common header contains target type, target ID, pursuit ID, content text, and seller text. A derived dialog may opt into one more trailing string. The base centers each pane, carries the owning session, sends target-information requests, and updates a shared screen origin while the player drags the dialog. Detail-style panes draw the fixed `lmerd` background; other styles can build a scalable frame from tiled 16-pixel edges and four corners.
-
-The dormant subtype factory uses these exact RTTI classes:
-
-| Types | Compiled dialog |
-| --- | --- |
-| `0` | `TextMenuDialog`, or `TextMenuDialogEx` above eight rows |
-| `1` | `ArgumentedTextMenuDialog`, or `ArgumentedTextMenuDialogEx` above eight rows |
-| `2` | `TextInputMenuDialog` |
-| `3` | `ArgumentedTextInputMenuDialog` |
-| `4`, `10` | `ServerItemMenuDialog` because the newer dialog is disabled |
-| `5`, `11` | `ClientItemMenuDialog` |
-| `6` | `ServerSpellMenuDialog` |
-| `7` | `ServerSkillMenuDialog` |
-| `8` | `ClientSpellMenuDialog` |
-| `9` | `ClientSkillMenuDialog` |
-
-The `Ex` text-menu variants are expanded layouts, not paged lists. They draw one `lmerc` middle segment and attach one text button for every row between the fixed top and bottom segments. Selecting a row sends the derived menu response and closes the dialog.
-
-The ordinary text-menu variants use `TaskListDialog` and `TaskListPane`. Each parsed row contains a display string and a server-supplied `u16` selection value. Selecting a row sends `CMerchant` with target type, target ID, and that value. Argumented variants opt into one additional string from the common header and append it to the response.
-
-`TextInputMenuDialog` builds a single-line edit control between the prompt and three actions: submit, target information, and cancel. Submit remains disabled while the input is empty. On submission the client copies at most 255 text bytes, invokes the derived response builder, and closes the dialog. The argumented input variant uses the same controls and adds its retained server string to the response.
-
-The dormant family's `ServerItemMenuDialog` allocates fixed 0x224-byte item records and reuses the `lmerd` task-list controls. Ordinary records carry an icon, palette, value, name, and detail string. Menu subtype `0x4B` selects an extended wire form with an item key, icon, palette, value, variant byte, and one name string. Both forms become the same fixed-size local row before display. The next-level `ServerItemMenuDialog3` category UI remains disabled as described above.
-
-Activating a row selects one of three `CMerchant` opcode `0x39` response shapes. Name mode returns the row name as `string8`. Quantity mode returns selector `1`, a `u32` item key, and a `u8` quantity; quantities above one first open `ItemBuyAlertPane`. Spell and skill modes return the row's variant byte, with merchant mode 3 adding a literal selector byte on each side. The shared item pane also supplies the clear-and-append operations used by the paged `ServerItemMenuDialog2` and dormant `ServerItemMenuDialog3` views.
-
-`ClientItemMenuDialog` does not receive complete item rows. It receives a counted list of one-based local inventory slots and resolves each active slot through the live inventory interface. Menu subtype `0x4E` supplies one extra `u32` display value per slot.
-
-The spell and skill dialogs follow the same two-source split. Server variants receive counted 0x108-byte rows containing kind, icon, variant, and name. Client variants receive a byte-sized local slot whitelist and resolve the current learned spell or skill. A zero whitelist count means that the client enumerates slots 1 through 89.
-
-### Dormant hair-styling dialog
-
-`FaceMenuDialog` is a complete appearance editor inside the dormant merchant family. Its visible labels are `gender`, `hair`, `color`, and `rotate`. The constructor copies the current character appearance, clamps it to six values from the parsed body, and creates `UserShapeControlPane` as its animated preview:
-
-```text
-u8 gender_min       // 1-based on input
-u8 gender_max       // 1-based on input
-u8 hair_style_min
-u8 hair_style_max
-u8 hair_color_min
-u8 hair_color_max
-u16 retained_unknown
-```
-
-The first pair is converted to the client's zero-based gender index. The other pairs are used directly. Each arrow is disabled at its corresponding limit. `rotate` changes the preview direction in five-step increments modulo 20 and is not sent to the server.
-
-The `UserShapeControlPane` is not an independently opened dialog. It is the child control that draws the selected gender, hair style, and hair color. Its timer advances a four-frame loop every 300 ms.
-
-Submit sends the distinct nine-byte `CMerchant` form: target type, target ID, hair style, one-based gender, and hair color. This field order matches the three appearance values sent during character creation. The code therefore strongly supports the project's hair-styling recollection. A server that fixed both gender bounds to the current value while allowing hair and color ranges would make it a barber dialog; broader bounds would make it a general appearance editor.
-
-No recovered version 741 path calls `ui_open_merchant_face_menu`. Server parameters alone cannot reach it in the stock client. The [Appearance editor runtime patch](../appendix/runtime-patches/appearance-editor.md) defines a private type-12 body and activates the existing dialog as a standalone pane without changing types 0 through 11.
-
-The executable also contains a complete `ServerItemMenuDialog2` with up to 15 page buttons and five items per page. Its constructor has no direct caller in this image. It is therefore documented as compiled but unreachable, separately from the active older dialog and the explicitly disabled `ServerItemMenuDialog3`. The disabled third dialog organizes items into 0xA0-byte category records with nested item-index vectors. Both newer item UIs obtain the displayed gold value from the live `StatusInfoPane`.
 
 ### Target identity
 
@@ -135,6 +76,58 @@ NPCMessageDialog
 ```
 
 `NPCMessageDialog` uses `lnpcd.txt`. It is a `DialogPane`, so the controls are real event targets rather than text drawn directly into the outer pane.
+
+## Speaker presentation
+
+The common server fields include a sprite, color, `show_graphic`, and speaker name. `NPCSession` can replace the small NPC tile with a large local illustration selected by the name. The art lookup and fallback are documented separately in [NPC dialog illustrations](npc-dialog-illustrations.md).
+
+## Server and client round trips
+
+### Screen menu
+
+The server's `menu_type` determines how the response is interpreted. Text choices return their attached `pursuit_id`; input returns entered bytes; server records return a name or record ID; local lists return a slot. The server must remember the active menu because `CMerchant` does not echo `menu_type`.
+
+The special item pursuits are part of the same flow:
+
+- `0x004B` uses record IDs and a player-selected quantity.
+- `0x004E` uses a three-byte local-slot response with literal marker bytes.
+
+See [`SScreenMenu`](../network/server/047-0x2f-screen-menu.md) and [`CMerchant`](../network/client/057-0x39-merchant.md) for every body variant.
+
+### Pursuit
+
+The pursuit pane treats the server's `step_id` as the current page. Previous sends current minus one; Next and answers send current plus one; Close returns the current step. Menu and text arguments are explicitly tagged in `CPursuit`.
+
+After queuing a navigation or answer, the client calls `ui_npc_session_set_response_pending`. The pursuit implementation deactivates the nested answer pane, disables Previous and Next, and clears the default action. It leaves Close available. The server continues by sending the next `SPursuitMessage`, which refreshes the session and pane. A type-10 message closes the session.
+
+Close is different from an ordinary answer. Action 6 queues a ten-byte, no-argument `CPursuit` for the current step and then closes the NPC session locally.
+
+Simple question and text modes also send `CSay` before their pursuit answer. The speech echo is an additional server-visible action, not a replacement for `CPursuit`.
+
+See [`SPursuitMessage`](../network/server/048-0x30-pursuit-message.md) and [`CPursuit`](../network/client/058-0x3a-pursuit.md).
+
+## Pointer, keyboard, and focus input
+
+These dialogs use the normal `DialogPane` machinery:
+
+1. Pointer input walks attached controls and tests their rectangles.
+2. A hit is converted to control-local coordinates and dispatched to that child.
+3. A completed control action returns its attachment-order index to the dialog handler.
+4. A true return consumes the event and stops lower panes from receiving it.
+
+Keyboard and IME events go to the focused edit control. Tab and reverse-Tab use the inherited wrapping focus traversal and skip controls that are disabled or not focusable.
+
+For `NPC_Pursuit_MessageDialog`, outer action IDs 4, 5, and 6 are Previous, Next, and Close. IDs 0 through 3 belong to the base message controls. The menu row handler converts a zero-based control index to the one-based choice number sent on the wire.
+
+The constructor also registers action 6 as the dialog's cancel action. The inherited keyboard handler dispatches Escape through that action. Nested `NPCMenuDialog` panes return false for Escape instead of consuming it, so the event reaches the outer pursuit pane. The visible Close button and Escape therefore use the same `net_send_pursuit_close_current` path.
+
+For `NPC_Merchant_MessageDialog`, action 4 is Top and action 5 is Close. Top sends `CRequestObjectInfo` subtype 1 with the active target ID and then closes the NPC session. Close sends no packet. Only a nested menu selection or submission produces `CMerchant`.
+
+The protected type-9 dialog has separate ID and masked-password edit controls. Its submit handler first calls the regional account manager and may wait, show a local error, or continue. Only the accepted state sends `CPursuit`, using a manager-produced nonempty result string. The two visible input buffers are not copied directly into the packet builder.
+
+## Menu models and exact selection behavior
+
+The server selects a response model through the packet subtype. These models determine which records are displayed, how a visible choice maps to a retained row, and what the client returns.
 
 ### Screen-menu classes
 
@@ -236,24 +229,11 @@ The layouts are skin and geometry contracts. Their `NAME` fields must match the 
 
 `lnpcd3.txt` supports category tabs, four visible item buttons, detail fields, paging, and a money display. It is more than a generic one-column list.
 
-## Pointer, keyboard, and focus input
+## Special response protection
 
-These dialogs use the normal `DialogPane` machinery:
+`CMerchant` and `CPursuit` are the only client opcodes that enter the dialog-response inner-wrapper branch. That layer adds two random bytes, an encoded length, CRC16 over the original bytes after the opcode, an incrementing XOR, and a terminating zero. The result then enters the normal outer transform selected independently for each opcode.
 
-1. Pointer input walks attached controls and tests their rectangles.
-2. A hit is converted to control-local coordinates and dispatched to that child.
-3. A completed control action returns its attachment-order index to the dialog handler.
-4. A true return consumes the event and stops lower panes from receiving it.
-
-Keyboard and IME events go to the focused edit control. Tab and reverse-Tab use the inherited wrapping focus traversal and skip controls that are disabled or not focusable.
-
-For `NPC_Pursuit_MessageDialog`, outer action IDs 4, 5, and 6 are Previous, Next, and Close. IDs 0 through 3 belong to the base message controls. The menu row handler converts a zero-based control index to the one-based choice number sent on the wire.
-
-The constructor also registers action 6 as the dialog's cancel action. The inherited keyboard handler dispatches Escape through that action. Nested `NPCMenuDialog` panes return false for Escape instead of consuming it, so the event reaches the outer pursuit pane. The visible Close button and Escape therefore use the same `net_send_pursuit_close_current` path.
-
-For `NPC_Merchant_MessageDialog`, action 4 is Top and action 5 is Close. Top sends `CRequestObjectInfo` subtype 1 with the active target ID and then closes the NPC session. Close sends no packet. Only a nested menu selection or submission produces `CMerchant`.
-
-The protected type-9 dialog has separate ID and masked-password edit controls. Its submit handler first calls the regional account manager and may wait, show a local error, or continue. Only the accepted state sends `CPursuit`, using a manager-produced nonempty result string. The two visible input buffers are not copied directly into the packet builder.
+This protection belongs to packet submission, not to any pane. New controls can safely reuse an existing client builder, but an external implementation must reproduce both layers. See [Packet transforms](../network/packet-transforms.md#dialog-response-inner-wrapper).
 
 ## Invoking a response without pointer input
 
@@ -313,31 +293,6 @@ Do not bypass protected type 9. Its result comes from the regional account manag
 
 The exact x86 contracts and RVAs are in [Manual native actions](../appendix/runtime/manual-actions.md#respond-to-an-npc-dialog).
 
-## Server and client round trips
-
-### Screen menu
-
-The server's `menu_type` determines how the response is interpreted. Text choices return their attached `pursuit_id`; input returns entered bytes; server records return a name or record ID; local lists return a slot. The server must remember the active menu because `CMerchant` does not echo `menu_type`.
-
-The special item pursuits are part of the same flow:
-
-- `0x004B` uses record IDs and a player-selected quantity.
-- `0x004E` uses a three-byte local-slot response with literal marker bytes.
-
-See [`SScreenMenu`](../network/server/047-0x2f-screen-menu.md) and [`CMerchant`](../network/client/057-0x39-merchant.md) for every body variant.
-
-### Pursuit
-
-The pursuit pane treats the server's `step_id` as the current page. Previous sends current minus one; Next and answers send current plus one; Close returns the current step. Menu and text arguments are explicitly tagged in `CPursuit`.
-
-After queuing a navigation or answer, the client calls `ui_npc_session_set_response_pending`. The pursuit implementation deactivates the nested answer pane, disables Previous and Next, and clears the default action. It leaves Close available. The server continues by sending the next `SPursuitMessage`, which refreshes the session and pane. A type-10 message closes the session.
-
-Close is different from an ordinary answer. Action 6 queues a ten-byte, no-argument `CPursuit` for the current step and then closes the NPC session locally.
-
-Simple question and text modes also send `CSay` before their pursuit answer. The speech echo is an additional server-visible action, not a replacement for `CPursuit`.
-
-See [`SPursuitMessage`](../network/server/048-0x30-pursuit-message.md) and [`CPursuit`](../network/client/058-0x3a-pursuit.md).
-
 ## Stale pursuit recovery
 
 The project owner reports that a timed reactor can expire while its pursuit dialog is open. If the player answers afterward, the server can ignore the answer and later reject other actions with a "You're stuck" message. The client has no target-lifetime check. It only enters response-pending and waits for another `SPursuitMessage`.
@@ -367,17 +322,74 @@ The documented [Stale pursuit runtime patch](../appendix/runtime-patches/stale-p
 
 Do not send a close automatically after a fixed timeout alone. A valid script may answer slowly or finish through another server message. A captured `SMessage` carrying the exact stuck response could become a stronger optional trigger, but its type and text bytes must be confirmed first.
 
-## Special response protection
+## Dormant implementations
 
-`CMerchant` and `CPursuit` are the only client opcodes that enter the dialog-response inner-wrapper branch. That layer adds two random bytes, an encoded length, CRC16 over the original bytes after the opcode, an incrementing XOR, and a terminating zero. The result then enters the normal outer transform selected independently for each opcode.
+The following compiled families are separate from the live `NPCSession` path above. Preserve their parser and reachability limits when using them as evidence.
 
-This protection belongs to packet submission, not to any pane. New controls can safely reuse an existing client builder, but an external implementation must reproduce both layers. See [Packet transforms](../network/packet-transforms.md#dialog-response-inner-wrapper).
+### Dormant `MerchantSession` path
 
-## Speaker presentation
+The executable retains an older full-screen `MerchantSession` implementation for a raw `SScreenMenu` opcode `0x2F`. If called directly, `net_handle_screen_menu_raw` would construct this pane from the decoded body. That root function has no recovered caller or stored function-pointer reference in version 741, so this is a dormant implementation rather than an alternate server-selectable view.
 
-The common server fields include a sprite, color, `show_graphic`, and speaker name. `NPCSession` can replace the small NPC tile with a large local illustration selected by the name. The art lookup and fallback are documented separately in [NPC dialog illustrations](npc-dialog-illustrations.md).
+The session owns two nested dialog slots and `ui_merchant_session_dispatch_screen_menu` maps subtype values 0 through 11 to its compiled text, input, item, skill, and spell dialog families. A body beginning with opcode `0x30` would close the whole merchant session. Its common parser also expects an older, shorter header than the live typed `SScreenMenu` deserializer, so the current packet body should not be passed to it unchanged.
 
-## Other dormant dialog family
+This path uses `lmerc.txt` for segmented menus, `lmerd.txt` for detail panes, and the dormant `lmerc2.txt` item-list variant. The layouts are loaded together, but `ui_is_server_item_menu_dialog3_enabled` always returns false in this build, so the newer `ServerItemMenuDialog3` branch is never selected.
+
+The nested classes share `MerchantDialogPane`. Its common header contains target type, target ID, pursuit ID, content text, and seller text. A derived dialog may opt into one more trailing string. The base centers each pane, carries the owning session, sends target-information requests, and updates a shared screen origin while the player drags the dialog. Detail-style panes draw the fixed `lmerd` background; other styles can build a scalable frame from tiled 16-pixel edges and four corners.
+
+The dormant subtype factory uses these exact RTTI classes:
+
+| Types | Compiled dialog |
+| --- | --- |
+| `0` | `TextMenuDialog`, or `TextMenuDialogEx` above eight rows |
+| `1` | `ArgumentedTextMenuDialog`, or `ArgumentedTextMenuDialogEx` above eight rows |
+| `2` | `TextInputMenuDialog` |
+| `3` | `ArgumentedTextInputMenuDialog` |
+| `4`, `10` | `ServerItemMenuDialog` because the newer dialog is disabled |
+| `5`, `11` | `ClientItemMenuDialog` |
+| `6` | `ServerSpellMenuDialog` |
+| `7` | `ServerSkillMenuDialog` |
+| `8` | `ClientSpellMenuDialog` |
+| `9` | `ClientSkillMenuDialog` |
+
+The `Ex` text-menu variants are expanded layouts, not paged lists. They draw one `lmerc` middle segment and attach one text button for every row between the fixed top and bottom segments. Selecting a row sends the derived menu response and closes the dialog.
+
+The ordinary text-menu variants use `TaskListDialog` and `TaskListPane`. Each parsed row contains a display string and a server-supplied `u16` selection value. Selecting a row sends `CMerchant` with target type, target ID, and that value. Argumented variants opt into one additional string from the common header and append it to the response.
+
+`TextInputMenuDialog` builds a single-line edit control between the prompt and three actions: submit, target information, and cancel. Submit remains disabled while the input is empty. On submission the client copies at most 255 text bytes, invokes the derived response builder, and closes the dialog. The argumented input variant uses the same controls and adds its retained server string to the response.
+
+The dormant family's `ServerItemMenuDialog` allocates fixed 0x224-byte item records and reuses the `lmerd` task-list controls. Ordinary records carry an icon, palette, value, name, and detail string. Menu subtype `0x4B` selects an extended wire form with an item key, icon, palette, value, variant byte, and one name string. Both forms become the same fixed-size local row before display. The next-level `ServerItemMenuDialog3` category UI remains disabled as described above.
+
+Activating a row selects one of three `CMerchant` opcode `0x39` response shapes. Name mode returns the row name as `string8`. Quantity mode returns selector `1`, a `u32` item key, and a `u8` quantity; quantities above one first open `ItemBuyAlertPane`. Spell and skill modes return the row's variant byte, with merchant mode 3 adding a literal selector byte on each side. The shared item pane also supplies the clear-and-append operations used by the paged `ServerItemMenuDialog2` and dormant `ServerItemMenuDialog3` views.
+
+`ClientItemMenuDialog` does not receive complete item rows. It receives a counted list of one-based local inventory slots and resolves each active slot through the live inventory interface. Menu subtype `0x4E` supplies one extra `u32` display value per slot.
+
+The spell and skill dialogs follow the same two-source split. Server variants receive counted 0x108-byte rows containing kind, icon, variant, and name. Client variants receive a byte-sized local slot whitelist and resolve the current learned spell or skill. A zero whitelist count means that the client enumerates slots 1 through 89.
+
+### Dormant hair-styling dialog
+
+`FaceMenuDialog` is a complete appearance editor inside the dormant merchant family. Its visible labels are `gender`, `hair`, `color`, and `rotate`. The constructor copies the current character appearance, clamps it to six values from the parsed body, and creates `UserShapeControlPane` as its animated preview:
+
+```text
+u8 gender_min       // 1-based on input
+u8 gender_max       // 1-based on input
+u8 hair_style_min
+u8 hair_style_max
+u8 hair_color_min
+u8 hair_color_max
+u16 retained_unknown
+```
+
+The first pair is converted to the client's zero-based gender index. The other pairs are used directly. Each arrow is disabled at its corresponding limit. `rotate` changes the preview direction in five-step increments modulo 20 and is not sent to the server.
+
+The `UserShapeControlPane` is not an independently opened dialog. It is the child control that draws the selected gender, hair style, and hair color. Its timer advances a four-frame loop every 300 ms.
+
+Submit sends the distinct nine-byte `CMerchant` form: target type, target ID, hair style, one-based gender, and hair color. This field order matches the three appearance values sent during character creation. The code therefore strongly supports the project's hair-styling recollection. A server that fixed both gender bounds to the current value while allowing hair and color ranges would make it a barber dialog; broader bounds would make it a general appearance editor.
+
+No recovered version 741 path calls `ui_open_merchant_face_menu`. Server parameters alone cannot reach it in the stock client. The [Appearance editor runtime patch](../appendix/runtime-patches/appearance-editor.md) defines a private type-12 body and activates the existing dialog as a standalone pane without changing types 0 through 11.
+
+The executable also contains a complete `ServerItemMenuDialog2` with up to 15 page buttons and five items per page. Its constructor has no direct caller in this image. It is therefore documented as compiled but unreachable, separately from the active older dialog and the explicitly disabled `ServerItemMenuDialog3`. The disabled third dialog organizes items into 0xA0-byte category records with nested item-index vectors. Both newer item UIs obtain the displayed gold value from the live `StatusInfoPane`.
+
+### Other dormant dialog family
 
 The executable also contains older raw pursuit-dialog entry code. Its exact RTTI includes `QuestionMessageDialog`, `QuestionMessageFaceDialog`, `SimpleQuestionMessageDialog`, `TextMessageDialog`, and `SimpleTextMessageDialog`. The root `net_dispatch_server_message_dialog` function has no recovered reference in version 741. These classes are separate from the server-accessible models created by `NPCSession`.
 
@@ -392,6 +404,6 @@ The cleanest ways to extend the UI depend on the desired change:
 - Reskinning, spacing, and repositioning can change the five layout files without changing packet behavior, as long as required control names remain present.
 - Additional display-only information can be drawn while building an existing row.
 - A new interactive action requires a control to be constructed, attached, handled by its attachment-order ID, and cleaned up with the pane.
-- A new answer form should feed an existing `CMerchant` or `CPursuit` builder when its wire contract matches. Calling the general packet sender with only the plaintext body is sufficient inside the client because submission applies the inner wrapper automatically.
+- A new answer form should feed an existing `CMerchant` or `CPursuit` builder when its wire contract matches. Submission applies the inner wrapper automatically, but it does not supply the current conversation context or perform the model's response-pending and local-close transitions. See [Invoking a response without pointer input](#invoking-a-response-without-pointer-input).
 
 The subtype parsers trust many server-controlled counts and lengths. Extensions should preserve the existing bounded text controls and validate new data before constructing rows.
