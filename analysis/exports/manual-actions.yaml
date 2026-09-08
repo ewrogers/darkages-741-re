@@ -314,6 +314,11 @@ functions:
     name: world_get_static_object_at_tile_side
     confidence: high
     evidence: "Resolves exact RTTI WorldObject_Static at tile X/Y; selector 0 chooses the left wire side and nonzero chooses the right wire side."
+  - address: "0x005E1D40"
+    rva: "0x001E1D40"
+    name: world_living_handle_spell_drop
+    confidence: high
+    evidence: "Hit-tests the pointer against a living object's screen rectangle, then posts the selected object for spell targeting; it does not compare caster and target tile distance."
   - address: "0x005F0C40"
     rva: "0x001F0C40"
     name: ui_world_pane_handle_direction_input
@@ -380,6 +385,11 @@ functions:
     prototype: "void *__cdecl ui_group_invite_registry_get(void)"
     confidence: high
     evidence: "Returns the process-local registry used to track requester names retained by active GroupAlertPane instances."
+  - address: "0x005F9900"
+    rva: "0x001F9900"
+    name: world_get_object_position_by_id
+    confidence: high
+    evidence: "Resolves a retained WorldObject by server ID and copies tile Y/X from +0x40/+0x44; failure means the object or coordinates are unavailable, not that the target is beyond a casting distance."
 data_symbols:
   - address: "0x0073D958"
     name: net_socket_ptr
@@ -390,10 +400,14 @@ comments:
     text: "The tilde-style helper sends CRemoveEquipment for slot 1, followed by slot 3 at 0x0045FDB6."
   - address: "0x00490969"
     text: "Caller must validate slot 1 through 60. This function subtracts one and indexes InventoryPane_A +0x1A0 without a bounds check."
+  - address: "0x0049A3F4"
+    text: "False means the selected target ID no longer resolves, so the output coordinates are unavailable. Bypassing this branch would pass uninitialized X/Y; it is not a spell-range check."
   - address: "0x0049ABFE"
     text: "Write target_x from the fourth native argument, then write target_y from the third argument at 0x0049AC1D."
   - address: "0x0049B9A8"
     text: "Starting any spell cancels all existing SpellDelayControlPane timers before scheduling or immediately submitting the replacement cast."
+  - address: "0x005E1D71"
+    text: "These four comparisons hit-test the pointer position against the living object's screen rectangle. They are not a caster-to-target tile-distance or spell-range check."
   - address: "0x005F0C49"
     text: "Manual direction input uses the same full movement-state reset as keyboard and Shift-right input."
   - address: "0x005F0C81"
@@ -408,4 +422,6 @@ comments:
     text: "Opcode 0x43 subtype 3 writes u16 tile X, u16 tile Y, and one static-side byte."
   - address: "0x005F48AA"
     text: "Invert internal static side for the wire: 1 left becomes 0 and 0 right becomes 1."
+  - address: "0x005F9945"
+    text: "Require the target ID to resolve to a retained WorldObject before copying tile coordinates. This is an object-lifetime gate, not a caster-to-target distance check."
 runtime_patches: []
