@@ -212,4 +212,4 @@ The MD5 covers the opcode, sequence, and transformed payload. `net_encrypt_clien
 
 The decoded server body is four bytes shorter than the transformed body. The server direction does not append the same four selected MD5 bytes used by the client direction.
 
-Function addresses and detailed evidence are in the [function reference](../appendix/functions.md) and the YAML exports.
+Check the direction-specific evidence in [`net_encrypt_client_packet`](../appendix/functions/network.md#fn-net_encrypt_client_packet-00567fb0) and [`net_decrypt_server_packet`](../appendix/functions/network.md#fn-net_decrypt_server_packet-00567de0). Each entry links to its source export; the [function lookup](../appendix/functions.md#function-lookup-heading) covers the other named helpers on this page.

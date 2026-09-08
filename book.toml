@@ -9,6 +9,11 @@ src = "docs"
 build-dir = "book"
 create-missing = false
 
+[preprocessor.repository-links]
+command = "python3 scripts/book_repository_links.py"
+after = ["links"]
+renderers = ["html"]
+
 [output.html]
 site-url = "/darkages-741-re/"
 default-theme = "navy"
@@ -17,8 +22,8 @@ git-repository-url = "https://github.com/ewrogers/darkages-741-re"
 git-repository-icon = "fab-github"
 edit-url-template = "https://github.com/ewrogers/darkages-741-re/edit/main/docs/{path}"
 no-section-label = true
-additional-css = ["theme/diagrams.css"]
-additional-js = ["theme/diagrams.js"]
+additional-css = ["theme/diagrams.css", "theme/function-lookup.css"]
+additional-js = ["theme/diagrams.js", "theme/function-lookup.js"]
 
 [output.html.fold]
 enable = true
@@ -26,6 +31,11 @@ level = 1
 
 [output.html.search]
 enable = true
+
+# Exact function names and addresses remain in the dedicated lookup. Keep the
+# lookup entry searchable, while evidence tables do not crowd explanation search.
+[output.html.search.chapter]
+"appendix/functions" = { enable = false }
 
 # mdBook publishes README chapters as index.html, while Markdown links can
 # retain README.html. Keep both spellings usable without changing source links.

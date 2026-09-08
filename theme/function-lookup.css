@@ -1,0 +1,148 @@
+/* Exact function lookup; prose and static references retain the book theme. */
+#function-query {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.65em 0.8em;
+    border: 1px solid var(--table-border-color);
+    border-radius: 0.25em;
+    background: var(--searchbar-bg);
+    color: var(--searchbar-fg);
+    font: inherit;
+    font-family: var(--mono-font);
+}
+
+#function-query:focus-visible,
+#function-results .function-results-scroll:focus-visible {
+    outline: 2px solid var(--links);
+    outline-offset: 3px;
+}
+
+#function-lookup-status {
+    min-height: 1.5em;
+}
+
+#function-results .function-results-scroll {
+    overflow-x: auto;
+}
+
+#function-results .function-results-scroll-hint {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    #function-results .function-results-scroll-hint {
+        display: block;
+        margin-bottom: 0.5em;
+        font-size: 0.9em;
+    }
+}
+
+#function-results table {
+    width: 100%;
+    min-width: 48rem;
+    margin: 0;
+}
+
+#function-results th,
+#function-results td {
+    padding: 0.65em 0.8em;
+    text-align: left;
+    vertical-align: top;
+}
+
+#function-results .function-result-name,
+#function-results .function-result-address {
+    font-family: var(--mono-font);
+}
+
+#function-results .function-result-name {
+    overflow-wrap: anywhere;
+}
+
+#function-results .function-result-address {
+    white-space: nowrap;
+}
+
+#function-results .function-result-conflict {
+    display: block;
+    margin-top: 0.4em;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+#mdbook-search-wrapper .function-lookup-search-hint {
+    margin: 0.75em 0;
+}
+
+.function-reference table {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.function-reference th:nth-child(1) { width: 27%; }
+.function-reference th:nth-child(2) { width: 18%; }
+.function-reference th:nth-child(3) { width: 15%; }
+.function-reference th:nth-child(4) { width: 40%; }
+
+.function-reference th,
+.function-reference td {
+    padding: 0.6em 0.65em;
+}
+
+.function-reference td {
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.function-reference td code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.function-reference td:nth-child(2) code {
+    white-space: nowrap;
+}
+
+.function-reference a:target + code {
+    outline: 1px solid var(--links);
+    outline-offset: 2px;
+}
+
+/* A source link reached from lookup must expose the complete record on a phone. */
+@media screen and (max-width: 600px) {
+    .function-reference table,
+    .function-reference tbody,
+    .function-reference tr,
+    .function-reference td {
+        display: block;
+        width: auto;
+    }
+
+    .function-reference thead {
+        display: none;
+    }
+
+    .function-reference tr {
+        border: 1px solid var(--table-border-color);
+        margin: 1em 0;
+        padding: 0.5em;
+    }
+
+    .function-reference td {
+        border: 0;
+        padding: 0.3em;
+        text-align: left;
+    }
+
+    .function-reference td:nth-child(2)::before { content: "Static address: "; }
+    .function-reference td:nth-child(3)::before { content: "Confidence: "; }
+    .function-reference td:nth-child(4)::before { content: "Evidence: "; }
+}
+
+@media print {
+    #function-lookup,
+    #mdbook-search-wrapper .function-lookup-search-hint {
+        display: none;
+    }
+}

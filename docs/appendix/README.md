@@ -6,6 +6,7 @@ The appendices hold exact lookup material that supports the main book without in
 
 | Question | Start with | Check it against |
 | --- | --- | --- |
+| I have a function name, static address, or RVA. Where is its evidence? | [Function lookup](functions.md#function-lookup-heading) | The selected entry's source records and any [identity warning](functions.md#identity-warnings) |
 | Where is a named event function, and what does its object contain? | [Event functions](functions.md#events) | The [event object layout](runtime/panes.md#event-object) and [delivery explanation](../systems/events.md#dispatch-flow) |
 | Where is live character, map, or UI state? | [Runtime state walking](runtime/state-walking.md) | The owner-specific [structure groups](runtime-structures.md#structure-groups) |
 | Which class loads a named UI layout? | [UI layout registry](ui-layout-registry.md) | [Pane types](pane-types.md) for inheritance and [UI layouts](../systems/ui-layouts.md) for the name contract |
@@ -15,7 +16,7 @@ An address or class name alone does not explain behavior. Follow the matching ch
 
 ## Read next
 
-- [Function reference](functions.md) maps project names to static addresses.
+- [Function reference](functions.md) provides exact name/address lookup and subsystem tables with links to every source record.
 - [Runtime structures](runtime-structures.md) leads to object layouts, state walking, and native action contracts.
 - [Pane types and inheritance](pane-types.md) records class relationships.
 - [UI layout registry](ui-layout-registry.md) maps layout assets to their pane owners.

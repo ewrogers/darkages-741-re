@@ -238,11 +238,11 @@ The inspected cache contains 170 groups and 26 distinct SPF filenames. Every gro
 
 ## Evidence
 
-- `net_handle_metadata`
-- `net_metadata_uncompress`
-- `file_load_metadata_compressed`
-- `file_save_metadata_compressed`
-- `net_metadata_crc32`
-- `net_parse_metadata_table`
+- [`net_handle_metadata`](../appendix/functions/network.md#fn-net_handle_metadata-004e4ea0)
+- [`net_metadata_uncompress`](../appendix/functions/network.md#fn-net_metadata_uncompress-004e54f0)
+- [`file_load_metadata_compressed`](../appendix/functions/maps-and-files.md#fn-file_load_metadata_compressed-004e5570)
+- [`file_save_metadata_compressed`](../appendix/functions/maps-and-files.md#fn-file_save_metadata_compressed-004e56e0)
+- [`net_metadata_crc32`](../appendix/functions/network.md#fn-net_metadata_crc32-004e5790)
+- [`net_parse_metadata_table`](../appendix/functions/network.md#fn-net_parse_metadata_table-004e57c0)
 
-Addresses are collected in the [function reference](../appendix/functions.md).
+Each entry gives the static address and source evidence. The [function lookup](../appendix/functions.md#function-lookup-heading) also accepts project names, static addresses, and RVAs.

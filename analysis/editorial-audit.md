@@ -124,3 +124,42 @@ Validation against the starting working tree:
 - Independent technical/editorial review, JavaScript syntax, and whitespace checks pass.
 
 Task 3 is complete for these worked examples and conventions. Tasks 4 through 6 remain pending. No client binary or analysis database was changed, and no site was published.
+
+### Task 4: evidence atlas, generated references, and search
+
+Task 3 was committed as `4ee34a9` before this work began. The [function reference](../docs/appendix/functions.md) now connects a behavioral explanation to a particular function, its evidence, and the source export. The existing function groups become twelve focused reference chapters. The original hub URL and all twelve group anchors remain valid.
+
+The generator preserves 5,379 source records as 5,263 distinct name/address entries in the starting working tree. Previously, repeated identities could silently replace an earlier evidence statement. Each entry now retains every source statement and links to the exact YAML record. Seven existing name/address disagreements remain visible, including both candidate records. These are unresolved identity warnings, not inferred aliases or new Binary Ninja findings. Incompatible metadata for the same identity fails generation before any output is written.
+
+The existing YAML exports remain the evidence source. Generated Markdown includes and the browser lookup payload live under `generated/function-reference/`, outside the authored book. The generator checks the existing schema and target fingerprint, required fields, duplicate keys, address bounds, and supplied RVAs. It adds no evidence schema or confidence scale. Its `--check` mode is read-only. The [script guide](../scripts/README.md) documents regeneration, validation, and the limits of these checks.
+
+Readers can search every exported function by full or partial name, static hexadecimal address, or explicit `rva:` query. Results retain conflicting identities and link directly to individual entries. The lookup payload is loaded with the reference hub, not every chapter. The full subsystem references remain usable without JavaScript. Metadata and packet-transform explanations now link to specific evidence entries; the same anchor scheme is available to other chapters as they are revised.
+
+The general search includes the behavioral chapters, packet pages, other appendices, and reference hub. Only the twelve generated function tables are excluded. A link beside general search carries its query into the complete function lookup, so a name or address absent from prose remains discoverable. This exclusion was enabled only after verifying complete lookup coverage.
+
+Search measurements used the official mdBook `0.5.4` build and the same source snapshot:
+
+| Variant | General index bytes | Gzip bytes | Median local initialization |
+| --- | ---: | ---: | ---: |
+| Task 3, single function appendix | 13,195,636 | 1,598,270 | 94.6 ms |
+| Split tables, all evidence still indexed | 13,907,453 | 1,656,749 | 99.0 ms |
+| Split tables, complete separate function lookup | 8,232,550 | 1,212,907 | 58.6 ms |
+
+The final general index is about 38% smaller, or 24% smaller after gzip, and no longer produces mdBook's large-index warning. Initialization is the median of nine local Node.js 24 runs executing the generated index and calling `elasticlunr.Index.load`; it excludes network transfer and rendering and is not a browser startup guarantee. The separate lookup payload is 1,031,890 bytes, or 116,500 bytes after gzip. Exhaustive checks found the correct entry for all 15,789 name, static-address, and RVA queries.
+
+Representative general-search results preserve the first destinations for walking, music fade, NPC conversations, `SScreenMenu`, `CPursuit`, and `net_encrypt_client_packet`. The first result for “packet encryption” now reaches transport behavior instead of the function table. An address present only in the exports moves to the exact lookup, with the search handoff verified in the browser.
+
+Relative repository links remain relative in Markdown. An HTML preprocessor resolves tracked targets outside the book to the configured repository reference when publishing. This repairs the fifteen repository-only links identified in Tasks 2 and 3 and supports the generated source-record links. The rendered-link checker validates pages, anchors, redirects, assets, tracked source targets, and source line bounds against the checkout. It does not contact GitHub or prove that an uncommitted source line exists on the remote branch.
+
+Validation against the starting working tree:
+
+- All 18 tests pass: eleven Python tests for generation, source links, and rendered checks; seven JavaScript tests for lookup behavior. CI runs the same suites, both freshness checks, the pinned build, and rendered-link validation.
+- All 288 navigation entries are current and appear once. The build passes; 14,785 rendered links and assets resolve without failures.
+- All original chapter heading anchors survive. All 137 packet pages, both packet indexes, and all 40 analysis-export files remain byte-identical. Both pre-existing manual-action entries remain in the reference.
+- Browser checks cover general search to exact lookup to the evidence entry, conflicting identities, static addresses, explicit RVAs, empty results, Escape clearing, light and dark themes, and a 360 px viewport. Evidence tables become readable cards on phones. Focused result regions scroll without triggering chapter navigation. No browser errors were observed.
+- An isolated checkout using only committed exports independently passes all tests, freshness checks, the pinned build, and 14,783 rendered-link checks. It contains 5,261 identities from 5,377 records. This confirms that Task 4 does not require the owner's unrelated `manual-actions.yaml` additions.
+- Whitespace checks pass. No source export, client binary, or analysis database was modified, and no site was published.
+
+The working reference intentionally reflects the owner's two uncommitted manual-action records. When committing Task 4 separately from those records, regenerate the staged artifacts against committed exports in an isolated checkout; retain the working-tree reference and source edits. The independent validation above exercised that exact source state.
+
+Task 4 is complete. Tasks 5 and 6 remain pending. Full contributor guidance and the earthy spellbook theme retain their separate scopes.
