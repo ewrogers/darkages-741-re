@@ -208,7 +208,16 @@ Body 5 has two composition exceptions. Main weapon category 8 in motion 0 is for
 
 ## Walk timeline and world displacement
 
+A local tile step uses either four or eight timed samples. Eight samples update displacement more often but keep the same nominal step duration. A sample updates both the pose and displacement, so successive samples can reuse a pose while the character continues moving.
+
 One accepted tile step creates a finite sequence. `world_living_start_move_animation` immediately calls the motion timer handler, selecting the first pose and first accumulated displacement. Each callback then schedules the next one. The last pose is held for one final interval before completion returns the image session to standing.
+
+<figure class="diagram">
+<div class="diagram-scroll" role="region" tabindex="0" aria-label="Walking sample timeline; scroll horizontally on narrow screens">
+<img src="../assets/diagrams/walking-samples.svg" alt="Nominal local walking timelines both run from an immediate sample at zero to completion at 456 milliseconds. Four samples hold poses 1, 2, 3, 4 for 114 milliseconds each. Eight samples hold poses 1, 1, 2, 2, 3, 3, 4, 4 for 57 milliseconds each. Each final pose has a full interval before standing.">
+</div>
+<figcaption><span class="diagram-hint">Scroll sideways to read the whole diagram.</span>More displacement updates, the same nominal local step duration. Numbers are poses within a stored group; delayed dispatch stretches the actual duration because walking advances by callback count. Remote timing and exact displacements follow in the tables. <a href="../assets/diagrams/walking-samples.svg">Open the full-size diagram</a>.</figcaption>
+</figure>
 
 | Actor and setting | Samples | Interval | Pose sequence | Nominal completion |
 | --- | ---: | ---: | --- | ---: |

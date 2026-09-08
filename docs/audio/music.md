@@ -1,6 +1,6 @@
 # Music
 
-Music is a single background stream. The game can fade it out, replace it, and fade the new track in. It does not keep two music streams alive for a true crossfade.
+When the music changes, the old track becomes silent before the new track starts. The game fades out its single background stream, replaces it, and fades the new track in. It does not keep two music streams alive for a true crossfade.
 
 ## Files and names
 
@@ -61,6 +61,15 @@ The setter does not clamp the value itself. The normal options pane supplies the
 
 ## Fade timer
 
+The player lowers the old stream's volume to zero before replacing it. The new stream starts at zero and rises toward the selected volume. The transition therefore has two fades with a stream replacement between them.
+
+<figure class="diagram">
+<div class="diagram-scroll" role="region" tabindex="0" aria-label="Music replacement diagram; scroll horizontally on narrow screens">
+<img src="../assets/diagrams/music-replacement.svg" alt="A pending track change fades the old stream toward zero. At zero, the player pauses and closes it, opens and starts the new stream at zero, then fades toward the target. The two streams never overlap.">
+</div>
+<figcaption><span class="diagram-hint">Scroll sideways to read the whole diagram.</span>Music replacement is an ordered sequence, not a fixed-duration timeline. Active fades use 200 ms callbacks; the volume rule below determines each step. <a href="../assets/diagrams/music-replacement.svg">Open the full-size diagram</a>.</figcaption>
+</figure>
+
 `audio_bgm_timer_callback` runs through the shared event timer system every 200 ms while a fade is active. `audio_bgm_transition_tick` moves the current volume toward its target:
 
 ```c
@@ -73,13 +82,6 @@ else
     current_volume = wanted
 ```
 
-For a track change, the state machine is:
+Each callback closes about one fifth of the remaining gap while that gap is at least ten volume units. A smaller gap snaps to the target. This makes the fade slow as it approaches the target; it is not a constant change in volume per tick.
 
-```text
-fade old stream to zero
-  -> pause and close old stream
-  -> open and start new stream at zero
-  -> fade new stream to the target
-```
-
-At the default target, one side of the fade takes roughly two seconds. There is no overlap between the old and new streams.
+At the default target of `60`, one side of the fade takes roughly two seconds. The 200 ms callback cadence is separate from that approximate duration. There is no overlap between the old and new streams.

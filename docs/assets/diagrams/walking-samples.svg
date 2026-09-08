@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 418" role="img" aria-labelledby="title desc">
+  <title id="title">Local walking: more samples, the same nominal duration</title>
+  <desc id="desc">Both local walking settings take 456 milliseconds nominally. Four samples select poses 1, 2, 3, and 4 at 0, 114, 228, and 342 milliseconds. Eight samples select poses 1, 1, 2, 2, 3, 3, 4, and 4 at 0, 57, 114, 171, 228, 285, 342, and 399 milliseconds. The first sample is immediate. Each final sample holds for a full interval before standing at 456 milliseconds. Delayed dispatch stretches actual duration.</desc>
+  <style>
+    text { font-family: sans-serif; font-size: 16px; fill: #34271f; }
+    .title { font-size: 22px; font-weight: bold; }
+    .mono { font-family: monospace; }
+    .time { font-family: monospace; font-size: 14px; text-anchor: middle; }
+    .pose { font-family: monospace; font-size: 22px; text-anchor: middle; }
+    .note { fill: #65503a; }
+    .edge { fill: none; stroke: #806648; stroke-width: 1.5; }
+  </style>
+  <rect width="640" height="418" rx="6" fill="#f5eddc"/>
+  <text x="24" y="34" class="title">One local tile step</text>
+  <text x="24" y="61" class="note">Box width is time. Each box begins with a sample.</text>
+
+  <text x="24" y="100">Four samples</text>
+  <text x="614" y="100" text-anchor="end" class="mono">ScrollLevel = 0</text>
+  <g aria-label="Four samples, 114 milliseconds each">
+    <rect x="56" y="126" width="132" height="48" fill="#e6d4b5"/>
+    <rect x="188" y="126" width="132" height="48" fill="#d9bea0"/>
+    <rect x="320" y="126" width="132" height="48" fill="#cba982"/>
+    <rect x="452" y="126" width="132" height="48" fill="#ba966e"/>
+    <path class="edge" d="M56 126H584V180 M56 180V126 M56 174H584 M188 126V180 M320 126V180 M452 126V180"/>
+    <text x="122" y="158" class="pose">1</text>
+    <text x="254" y="158" class="pose">2</text>
+    <text x="386" y="158" class="pose">3</text>
+    <text x="518" y="158" class="pose">4</text>
+    <text x="56" y="201" class="time">0</text>
+    <text x="188" y="201" class="time">114</text>
+    <text x="320" y="201" class="time">228</text>
+    <text x="452" y="201" class="time">342</text>
+    <text x="584" y="201" class="time">456</text>
+  </g>
+
+  <text x="24" y="244">Eight samples</text>
+  <text x="614" y="244" text-anchor="end" class="mono">ScrollLevel != 0</text>
+  <g aria-label="Eight samples, 57 milliseconds each">
+    <rect x="56" y="270" width="132" height="48" fill="#e6d4b5"/>
+    <rect x="188" y="270" width="132" height="48" fill="#d9bea0"/>
+    <rect x="320" y="270" width="132" height="48" fill="#cba982"/>
+    <rect x="452" y="270" width="132" height="48" fill="#ba966e"/>
+    <path class="edge" d="M56 270H584V324 M56 324V270 M56 318H584 M122 270V324 M188 270V324 M254 270V324 M320 270V324 M386 270V324 M452 270V324 M518 270V324"/>
+    <text x="89" y="302" class="pose">1</text>
+    <text x="155" y="302" class="pose">1</text>
+    <text x="221" y="302" class="pose">2</text>
+    <text x="287" y="302" class="pose">2</text>
+    <text x="353" y="302" class="pose">3</text>
+    <text x="419" y="302" class="pose">3</text>
+    <text x="485" y="302" class="pose">4</text>
+    <text x="551" y="302" class="pose">4</text>
+    <text x="56" y="345" class="time">0</text>
+    <text x="122" y="345" class="time">57</text>
+    <text x="188" y="345" class="time">114</text>
+    <text x="254" y="345" class="time">171</text>
+    <text x="320" y="345" class="time">228</text>
+    <text x="386" y="345" class="time">285</text>
+    <text x="452" y="345" class="time">342</text>
+    <text x="518" y="345" class="time">399</text>
+    <text x="584" y="345" class="time">456</text>
+  </g>
+  <text x="24" y="381" class="note">Time in ms from the immediate first sample.</text>
+  <text x="24" y="405" class="note">Both finish the final hold and enter standing at 456 ms.</text>
+</svg>

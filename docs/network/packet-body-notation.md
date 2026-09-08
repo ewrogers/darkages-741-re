@@ -22,6 +22,26 @@ Fields appear in wire order. The notation does not use semicolons because it is 
 
 A capitalized field comment such as `// Direction` names a type from [Shared protocol types](protocol-types.md). The packet page links to the matching value table and keeps only behavior unique to that packet.
 
+### A body in bytes
+
+For the first `SExample` schema above, choose an illustrative opcode of `0x7F`, `entity_id = 0x1234`, and the name `Ada`. This packet and these values are invented to teach the notation; they do not assign an opcode or document a real server packet.
+
+<figure class="diagram">
+<div class="diagram-scroll" role="region" tabindex="0" aria-label="Packet body byte map; scroll horizontally on narrow screens">
+<img src="../assets/diagrams/packet-body-example.svg" alt="Seven illustrative plaintext bytes: 7F is the opcode, 12 34 is the big-endian entity ID, and 03 41 64 61 is string8 name, a length of three followed by the bytes for Ada. Body positions run from zero through six.">
+</div>
+<figcaption><span class="diagram-hint">Scroll sideways to read the whole diagram.</span>Fields meet with no padding: <code>string8</code> includes its length byte and exactly that many text bytes. This is an invented plaintext body, before framing and transforms. <a href="../assets/diagrams/packet-body-example.svg">Open the full-size diagram</a>.</figcaption>
+</figure>
+
+| Body positions | Bytes in hexadecimal | Interpretation |
+| --- | --- | --- |
+| 0 | `7F` | Illustrative opcode |
+| 1 through 2 | `12 34` | `entity_id`: the most significant byte comes first, giving `0x1234` |
+| 3 | `03` | `name` has three text bytes |
+| 4 through 6 | `41 64 61` | The ASCII bytes for `Ada` |
+
+The complete plaintext body is `7F 12 34 03 41 64 61`, seven bytes long. No zero terminator follows the name. ASCII makes this example easy to count; other text may use more than one byte per character. The length always counts bytes. Framing, sequence, transforms, and trailers are separate from these seven bytes; see [Transport and framing](transport.md).
+
 ## Field types
 
 | Type | Wire encoding |

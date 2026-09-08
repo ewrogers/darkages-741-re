@@ -1,6 +1,6 @@
 # NPC dialogs
 
-NPC conversations are a server-driven UI system with two related protocols. A screen menu asks for one merchant-style value. A pursuit message represents one step in a navigable conversation. Both enter `NPCSession`, create ordinary client panes, and return a specialized packet when the player acts.
+When you talk to an NPC, the server supplies the conversation and the client sends back your response. A screen menu asks for one merchant-style value. A pursuit message represents one step in a navigable conversation. Both enter `NPCSession`, create ordinary client panes, and return a specialized packet when the player acts.
 
 Start with the exchange and its live entry path. The [round trips](#server-and-client-round-trips) explain conversation state; the later [menu models](#menu-models-and-exact-selection-behavior) and [native response reference](#invoking-a-response-without-pointer-input) provide the exact selection rules.
 
@@ -97,6 +97,13 @@ See [`SScreenMenu`](../network/server/047-0x2f-screen-menu.md) and [`CMerchant`]
 ### Pursuit
 
 The pursuit pane treats the server's `step_id` as the current page. Previous sends current minus one; Next and answers send current plus one; Close returns the current step. Menu and text arguments are explicitly tagged in `CPursuit`.
+
+<figure class="diagram">
+<div class="diagram-scroll" role="region" tabindex="0" aria-label="Pursuit reply sequence; scroll horizontally on narrow screens">
+<img src="../assets/diagrams/pursuit-reply.svg" alt="The server sends SPursuitMessage for the current step. Next or an accepted answer queues CPursuit for current step plus one. The client disables answer controls and Previous and Next while waiting, but leaves Close available. Another SPursuitMessage refreshes the conversation, or type 10 closes it.">
+</div>
+<figcaption><span class="diagram-hint">Scroll sideways to read the whole diagram.</span>A forward pursuit exchange: the server supplies the next conversation state. Vertical spacing shows order, not elapsed time. Previous, Close, and the conditional speech echo are explained below. <a href="../assets/diagrams/pursuit-reply.svg">Open the full-size diagram</a>.</figcaption>
+</figure>
 
 After queuing a navigation or answer, the client calls `ui_npc_session_set_response_pending`. The pursuit implementation deactivates the nested answer pane, disables Previous and Next, and clears the default action. It leaves Close available. The server continues by sending the next `SPursuitMessage`, which refreshes the session and pane. A type-10 message closes the session.
 

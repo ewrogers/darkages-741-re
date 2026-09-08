@@ -17,6 +17,8 @@ git-repository-url = "https://github.com/ewrogers/darkages-741-re"
 git-repository-icon = "fab-github"
 edit-url-template = "https://github.com/ewrogers/darkages-741-re/edit/main/docs/{path}"
 no-section-label = true
+additional-css = ["theme/diagrams.css"]
+additional-js = ["theme/diagrams.js"]
 
 [output.html.fold]
 enable = true

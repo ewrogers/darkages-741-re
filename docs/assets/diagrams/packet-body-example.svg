@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 374" role="img" aria-labelledby="title desc">
+  <title id="title">An invented seven-byte plaintext packet body</title>
+  <desc id="desc">This teaching example is not a real packet or opcode assignment. At body position zero, 7F is an illustrative opcode. At positions one and two, 12 34 encode entity_id 0x1234 in big-endian order. At position three, 03 gives the length of string8 name. Positions four through six contain 41 64 61, the ASCII bytes for Ada. There is no padding or zero terminator. Framing and transforms are outside the example.</desc>
+  <style>
+    text { font-family: sans-serif; font-size: 16px; fill: #34271f; }
+    .title { font-size: 22px; font-weight: bold; }
+    .mono { font-family: monospace; }
+    .byte { font-family: monospace; font-size: 24px; text-anchor: middle; }
+    .position { font-family: monospace; font-size: 15px; text-anchor: middle; }
+    .note { fill: #65503a; }
+    .bracket { fill: none; stroke: #806648; stroke-width: 1.5; }
+  </style>
+  <rect width="640" height="374" rx="6" fill="#f5eddc"/>
+  <text x="24" y="34" class="title">From fields to bytes</text>
+  <text x="24" y="61" class="note">Invented SExample body. No real opcode assignment.</text>
+  <text x="24" y="99" class="note">Body position (zero-based)</text>
+
+  <g aria-label="Body positions zero through six">
+    <text x="80" y="126" class="position">0</text>
+    <text x="160" y="126" class="position">1</text>
+    <text x="240" y="126" class="position">2</text>
+    <text x="320" y="126" class="position">3</text>
+    <text x="400" y="126" class="position">4</text>
+    <text x="480" y="126" class="position">5</text>
+    <text x="560" y="126" class="position">6</text>
+  </g>
+  <rect x="40" y="138" width="80" height="54" fill="#e6d4b5"/>
+  <rect x="120" y="138" width="160" height="54" fill="#d9bea0"/>
+  <rect x="280" y="138" width="320" height="54" fill="#cba982"/>
+  <path class="bracket" d="M40 138H600V192H40Z M120 138V192 M200 138V192 M280 138V192 M360 138V192 M440 138V192 M520 138V192"/>
+  <g aria-label="Hexadecimal byte values">
+    <text x="80" y="174" class="byte">7F</text>
+    <text x="160" y="174" class="byte">12</text>
+    <text x="240" y="174" class="byte">34</text>
+    <text x="320" y="174" class="byte">03</text>
+    <text x="400" y="174" class="byte">41</text>
+    <text x="480" y="174" class="byte">64</text>
+    <text x="560" y="174" class="byte">61</text>
+  </g>
+  <path class="bracket" d="M40 201V209H120V201 M126 201V209H274V201 M286 201V209H600V201"/>
+  <text x="80" y="236" text-anchor="middle" class="mono">opcode</text>
+  <text x="200" y="236" text-anchor="middle" class="mono">entity_id</text>
+  <text x="443" y="236" text-anchor="middle" class="mono">string8 name</text>
+  <text x="200" y="263" text-anchor="middle" class="mono">0x1234</text>
+  <text x="320" y="263" text-anchor="middle" class="mono">length</text>
+  <text x="400" y="263" text-anchor="middle" class="mono">A</text>
+  <text x="480" y="263" text-anchor="middle" class="mono">d</text>
+  <text x="560" y="263" text-anchor="middle" class="mono">a</text>
+  <text x="24" y="310" class="note">Read bytes left to right; all values in the strip are hex.</text>
+  <text x="24" y="335" class="note">The name has 3 text bytes. There is no zero terminator.</text>
+  <text x="24" y="360" class="note">Framing and transforms are outside this plaintext body.</text>
+</svg>

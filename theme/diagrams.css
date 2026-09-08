@@ -1,0 +1,50 @@
+/* Diagram layout only. The book theme owns prose, code, and navigation. */
+figure.diagram {
+    margin: 1.5em 0;
+}
+
+.diagram-scroll {
+    overflow-x: auto;
+}
+
+.diagram-scroll:focus-visible {
+    outline: 2px solid var(--links);
+    outline-offset: 3px;
+}
+
+.diagram-scroll img {
+    display: block;
+    width: 100%;
+    min-width: 560px;
+    max-width: none;
+}
+
+figure.diagram figcaption {
+    margin-top: 0.75em;
+    line-height: 1.5;
+}
+
+.diagram-hint {
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+    .diagram-hint {
+        display: block;
+        margin-bottom: 0.5em;
+    }
+}
+
+@media print {
+    figure.diagram {
+        break-inside: avoid;
+    }
+
+    .diagram-scroll {
+        overflow: visible;
+    }
+
+    .diagram-scroll img {
+        min-width: 0;
+    }
+}

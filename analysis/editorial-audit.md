@@ -97,3 +97,30 @@ Validation used the official mdBook `0.5.4` release, matching CI, in a temporary
 - Independent reader review, Python syntax, and whitespace checks pass. Existing analysis exports and the pre-existing function-reference edits remain unchanged.
 
 Task 2 is complete. Tasks 3 through 6 remain pending. No site was published and no system-wide mdBook installation was changed.
+
+### Task 3: voice, worked explanations, and diagrams
+
+Task 2 was committed as `bcb9aad` before this work began. Task 3 establishes the craft in four representative explanations and records reusable [voice and figure conventions](../docs/methodology.md#voice-and-worked-explanations). This is an editorial treatment of existing findings, not a new verification of binary behavior or a rewrite of every chapter.
+
+| Example | What the explanation makes visible |
+| --- | --- |
+| Local walking | Four versus eight samples share a nominal 456 ms step. The timeline aligns sample boundaries, repeated poses, and the final hold; exact displacements and remote timing stay in the original tables. |
+| Music replacement | The old stream reaches silence before the new stream starts. The ordered flow stays separate from the nonlinear volume rule and 200 ms callback cadence. |
+| Pursuit reply | Packet direction, client response-pending state, and server ownership of the next conversation step. Previous, Close, and conditional speech remain explicit in the surrounding reference. |
+| Packet body notation | An explicitly invented seven-byte example connects field order, big-endian integers, and byte-counted text to the original schema. It makes no real opcode assignment. |
+
+The four figures are editable, self-contained SVG source under `docs/assets/diagrams/`, using plain parchment, brown ink, and monospace identifiers and exact values. Each has alternative text, an SVG title and description, a caption, and a full-size source link. Prose and exact tables remain usable without the image. Existing short ASCII flows remain where they already explain their relationship.
+
+The small `theme/diagrams.css` and `theme/diagrams.js` additions serve these figures only. Narrow screens get a scrolling hint and a focusable scroll region. The script prevents mdBook's chapter shortcuts from consuming Left and Right inside that region, preserving native scrolling and normal Tab navigation. Broader visual identity, typography, and navigation styling remain for Task 6.
+
+Validation against the starting working tree:
+
+- The official mdBook `0.5.4` build passes, and all 276 navigation entries remain current. The existing search-index warning remains, at roughly 13.2 MB.
+- All chapter heading anchors, existing behavior tables, and packet schemas survive. The redundant music ASCII flow is the only removed fenced block; its sequence is retained in prose and SVG.
+- All 137 packet pages, 40 analysis exports, and pre-existing function-reference edits remain unchanged.
+- Across 3,766 rendered link checks, no new failures were introduced. The same 15 repository-only targets remain for Task 4. All eight image placements resolve, including the four in the combined print book.
+- All four SVGs render without clipped labels. The walking coordinates and timing labels match the documented intervals, and the invented byte strip encodes the stated values. The lowest text contrast is 5.27:1; labels and lines carry meaning independently of color.
+- Browser checks cover desktop presentation, light and dark themes, and every figure at a 360 px viewport. Figures scroll inside the page without widening it. Left and Right scroll a focused figure, Tab leaves it, and chapter shortcuts still work outside it. Print asset paths and print CSS were checked; printer pagination was not visually verified.
+- Independent technical/editorial review, JavaScript syntax, and whitespace checks pass.
+
+Task 3 is complete for these worked examples and conventions. Tasks 4 through 6 remain pending. No client binary or analysis database was changed, and no site was published.

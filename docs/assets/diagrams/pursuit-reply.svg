@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 650" role="img" aria-labelledby="title desc">
+  <title id="title">A forward pursuit reply and the pending client state</title>
+  <desc id="desc">The server sends SPursuitMessage for the current step. The player chooses Next or submits an accepted answer, and the client queues CPursuit for current step plus one. While the response is pending, the answer pane and Previous and Next are disabled, the default action is cleared, and Close remains available. A subsequent SPursuitMessage refreshes the conversation or, for type 10, closes it. Vertical spacing shows order, not elapsed time. Previous, Close, and the conditional CSay speech echo are covered in the surrounding text.</desc>
+  <style>
+    text { font-family: sans-serif; font-size: 16px; fill: #34271f; }
+    .title { font-size: 22px; font-weight: bold; }
+    .heading { font-size: 18px; font-weight: bold; }
+    .mono { font-family: monospace; }
+    .note { fill: #65503a; }
+    .box { fill: #e6d4b5; stroke: #806648; stroke-width: 1.5; }
+    .arrow { fill: none; stroke: #65503a; stroke-width: 2; marker-end: url(#arrow); }
+    .lifeline { stroke: #806648; stroke-width: 1.5; stroke-dasharray: 5 5; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#65503a"/>
+    </marker>
+  </defs>
+  <rect width="640" height="650" rx="6" fill="#f5eddc"/>
+  <text x="24" y="34" class="title">Who owns the next conversation step?</text>
+  <text x="24" y="61" class="note">A forward reply. Read downward; spacing is not time.</text>
+
+  <text x="94" y="105" class="heading" text-anchor="middle">Client</text>
+  <text x="552" y="105" class="heading" text-anchor="middle">Server</text>
+  <path d="M94 117V604 M552 117V604" class="lifeline"/>
+  <text x="320" y="146" text-anchor="middle" class="mono">SPursuitMessage: current step</text>
+  <path d="M550 161H96" class="arrow"/>
+
+  <rect x="48" y="189" width="418" height="52" rx="4" class="box"/>
+  <text x="67" y="220">Player chooses Next or submits an accepted answer</text>
+
+  <text x="320" y="275" text-anchor="middle" class="mono">Queue CPursuit: current step + 1</text>
+  <path d="M96 290H550" class="arrow"/>
+
+  <rect x="48" y="322" width="418" height="138" rx="4" class="box"/>
+  <text x="67" y="351" class="heading">Response pending</text>
+  <text x="67" y="380">Answer pane and Previous / Next disabled</text>
+  <text x="67" y="407">Default action cleared</text>
+  <text x="67" y="434">Close remains available</text>
+
+  <text x="320" y="500" text-anchor="middle" class="mono">SPursuitMessage</text>
+  <path d="M550 516H96" class="arrow"/>
+  <rect x="48" y="544" width="418" height="60" rx="4" class="box"/>
+  <text x="67" y="568">Refresh the conversation,</text>
+  <text x="67" y="592">or close immediately for type 10.</text>
+  <text x="24" y="632" class="note">Previous, Close, and conditional CSay: see the page text.</text>
+</svg>

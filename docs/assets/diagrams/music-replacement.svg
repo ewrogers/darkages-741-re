@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 482" role="img" aria-labelledby="title desc">
+  <title id="title">Music replacement: silence before the new stream</title>
+  <desc id="desc">BGMPlayer owns one stream. With a track change pending, each active fade callback moves the old stream toward zero volume. When its volume reaches zero, the player pauses and closes the old stream, then opens and starts the new stream at zero. Later callbacks move the new stream toward the target volume. Callbacks run every 200 milliseconds while a fade is active. The diagram shows order, not total duration, and the streams never overlap.</desc>
+  <style>
+    text { font-family: sans-serif; font-size: 17px; fill: #34271f; }
+    .title { font-size: 22px; font-weight: bold; }
+    .mono { font-family: monospace; font-size: 16px; }
+    .note { font-size: 16px; fill: #65503a; }
+    .box { fill: #e6d4b5; stroke: #806648; stroke-width: 1.5; }
+    .arrow { fill: none; stroke: #65503a; stroke-width: 2; marker-end: url(#arrow); }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#65503a"/>
+    </marker>
+  </defs>
+  <rect width="640" height="482" rx="6" fill="#f5eddc"/>
+  <text x="24" y="34" class="title">Replace the music stream</text>
+  <text x="24" y="61" class="note">BGMPlayer owns one stream. Read from top to bottom.</text>
+
+  <rect x="48" y="88" width="544" height="76" rx="4" class="box"/>
+  <text x="70" y="117">Track change pending: fade the old stream</text>
+  <text x="70" y="144" class="mono">wanted = 0</text>
+
+  <path d="M104 164V224" class="arrow"/>
+  <text x="127" y="201" class="mono">current_volume == 0</text>
+
+  <rect x="48" y="226" width="544" height="88" rx="4" class="box"/>
+  <text x="70" y="257">1. Pause and close the old stream.</text>
+  <text x="70" y="287">2. Open and start the new stream at zero.</text>
+
+  <path d="M104 314V366" class="arrow"/>
+  <text x="127" y="346" class="note">Continue with the new stream</text>
+
+  <rect x="48" y="368" width="544" height="76" rx="4" class="box"/>
+  <text x="70" y="397">Fade the new stream toward the selected volume</text>
+  <text x="70" y="424" class="mono">wanted = target_volume</text>
+  <text x="24" y="470" class="note">Active fade: 200 ms callbacks. Spacing is not duration.</text>
+</svg>
