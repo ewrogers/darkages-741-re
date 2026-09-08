@@ -2,6 +2,8 @@
 
 These messages travel from the server to the game client.
 
+Jump to the [opcode index](#packet-index) when the command is known. For a complete exchange, start with [interaction flows](../interaction-flows.md) or the [NPC conversation pairs](../README.md#npc-conversations). The [client index](../client/README.md#packet-index) describes the opposite direction.
+
 Most concrete names come directly from RTTI and the server packet factory. A decoded network event also retains the opcode-first body beside its optional packet object, so panes and managers can handle a message without a factory class.
 
 ## Raw event coverage
@@ -18,6 +20,8 @@ The raw-event audit checked every target-client function that reads the decoded 
 The central world dispatcher owns the factory-less `0x1B`, `0x31`, `0x34`, `0x35`, `0x36`, and `0x4F` routes. Their handlers open editing, bulletin, object-information, paper, user-list, and employee UI. The other direct consumers are state-specific. For example, the creation pane accepts raw `0x30` as a no-op, while `DescPane` closes when it sees raw `0x42` or `0x63` without reading either packet body.
 
 Body schemas use the shared [packet body notation](../packet-body-notation.md). All multibyte packet integers are big-endian. Reused enum and bit-flag values live in [Shared protocol types](../protocol-types.md).
+
+## Packet index
 
 | Packet | Transform |
 | --- | --- |

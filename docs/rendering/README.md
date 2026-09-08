@@ -31,6 +31,17 @@ The world view is part of the pane system. `WorldPane` has its own content hook,
 
 DirectDraw does not appear to be the sprite engine. Sprites, tiles, effects, transparency, and color blends are handled by client code before presentation.
 
+## Choose a drawing path
+
+| Question | Start with | Then inspect |
+| --- | --- | --- |
+| When is a frame drawn and presented? | [Renderer lifecycle](lifecycle.md) | [UI composition](ui-composition.md) for traversal and the world viewport |
+| How are character parts placed and combined? | [Player rendering](players.md) | [EPF frames and position companions](../file-formats/epf.md), then [blending](blending.md) |
+| How do map records become a scene? | [World rendering](world.md) | [MAP records](../file-formats/map.md) and [raw tile banks](../file-formats/map-tile-banks.md) |
+| How is a map overlay drawn? | [Tab wireframe map](tab-map.md) or [town map overlay](town-map.md) | Use the chosen overlay's projection, art, and coordinate references |
+
+For an unknown asset, begin with [File formats](../file-formats/README.md#choose-a-reader). A decoder's output and the renderer's use of its pixels are separate questions.
+
 ## Canvas drawing primitives
 
 The Canvas API supplies the small operations used by panes and higher-level sprite code. Confirmed helpers draw or fill clipped rectangles, individual pixels, lines, horizontal spans, and palette-colored diamond markers. A rectangle can also be cleared, scrolled in place, blended toward a color, or tiled with one pixmap.

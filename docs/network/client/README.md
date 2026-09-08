@@ -2,11 +2,15 @@
 
 These messages travel from the game client to the server.
 
+Jump to the [opcode index](#packet-index) when the command is known. For a complete exchange, start with [interaction flows](../interaction-flows.md) or the [NPC conversation pairs](../README.md#npc-conversations). The [server index](../server/README.md#packet-index) is separate because command values are direction-specific.
+
 The binary exposes only the client packet base class through RTTI. Concrete names therefore come from local builder behavior and project-owner protocol knowledge. Each page states its name source and lists known UI or subsystem owners without mixing in address-level lookup data.
 
 Body schemas use the shared [packet body notation](../packet-body-notation.md). All multibyte packet integers are big-endian. Reused enum and bit-flag values live in [Shared protocol types](../protocol-types.md).
 
 Plain packet bodies begin with the command byte. For ordinary client packets, `net_submit_client_packet` appends one transmitted zero byte after the builder-provided fields. `CMerchant` and `CPursuit` are the only exceptions: each receives the [dialog-response inner wrapper](../packet-transforms.md#dialog-response-inner-wrapper) before its normal outer transform. `CHello` is listed for sequence research, but its `baram` text is a special control message rather than a compiler-recovered packet class.
+
+## Packet index
 
 | Packet | Transform |
 | --- | --- |

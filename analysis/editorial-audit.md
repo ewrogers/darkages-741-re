@@ -60,7 +60,7 @@ The first implementation covers the Game loop, Events, and UI foundations, plus 
 | NPC dialogs | Keep live entry, pane composition, and round trips together; place exact selection rules and native invocation later, followed by explicitly dormant families. |
 | Pane and event layouts | Consolidate the event representation and dialog fields in the existing appendix, retaining the unique decoded-server payload and drag-bound fields from main text. |
 
-This is a restructuring of documented findings. No new client behavior is inferred from the presentation change. Existing page URLs and heading anchors remain the compatibility surface; no new book pages or export schemas are introduced. The other five tasks remain pending.
+This is a restructuring of documented findings. No new client behavior is inferred from the presentation change. Existing page URLs and heading anchors remain the compatibility surface; no new book pages or export schemas are introduced. Tasks 2 through 6 were pending after this step.
 
 Task 1 is complete for this first reading path and the NPC example. Validation compared the edited book with a snapshot of the starting working tree:
 
@@ -73,3 +73,27 @@ Task 1 is complete for this first reading path and the NPC example. Validation c
 - Independent editorial review and whitespace checks pass. No executable, analysis database, commit, or published site was changed.
 
 The baseline local build also has 32 unavailable link targets, including repository-only evidence links and `README.html` paths. Tasks 2 and 4 should resolve these against the intended published URLs after local and CI mdBook versions are aligned. This task preserves those existing links rather than claiming that the entire published link surface has passed validation.
+
+### Task 2: reader routes and section guides
+
+Task 1 was committed as `b7bbad3` before this work began. Task 2 adds purpose-based routes to the existing book entry, seven section guides, and two packet indexes. The guides still cover every topic; no parallel tutorial tree or new book page was introduced.
+
+| Area | Change |
+| --- | --- |
+| Book and repository entry | Separate reading from research setup; offer starting points for a client turn, NPC conversation, asset reader, and exact reference. |
+| Section guides | Put reader questions before the complete topic inventory. Link explanations to their existing exact references instead of duplicating their contents. |
+| Network guide and packet indexes | Keep screen-menu and pursuit pairs separate, preserve both directions, and provide direct opcode-index anchors. |
+| Sidebar | Group client behavior, lookup material, and research workflow. Put setup and methodology after the behavior and reference chapters. |
+| Published guide links | Keep ten `README.html` aliases for guide chapters published as `index.html`; preserve heading fragments through the generated redirects. |
+| Site configuration | Align the site, repository, and edit-link slug with the existing Git remote and repository README: `darkages-741-re`. |
+
+Validation used the official mdBook `0.5.4` release, matching CI, in a temporary workspace:
+
+- Navigation regeneration is idempotent, and all 276 chapters remain listed exactly once.
+- Six explicit content-link journeys reach their destination in two or three links: one client turn, an NPC screen menu, a pursuit conversation, EPF rendering, function lookup, and event layout lookup. These checks use content links rather than incidental sidebar reachability.
+- The build passes with the existing large-search-index warning. Across 3,753 rendered link checks, no new missing targets or fragments were introduced.
+- All existing guide heading anchors, coverage/status tables, packet indexes, and raw-event provenance survive. All 137 individual packet pages remain byte-identical to the starting working tree.
+- The guide aliases resolve 17 formerly missing targets. The remaining 15 links point to repository-only analysis or script files outside the published book; their publication path remains for Task 4.
+- Independent reader review, Python syntax, and whitespace checks pass. Existing analysis exports and the pre-existing function-reference edits remain unchanged.
+
+Task 2 is complete. Tasks 3 through 6 remain pending. No site was published and no system-wide mdBook installation was changed.

@@ -30,6 +30,8 @@ Mouse capture is a shortcut. While a pane owns capture, pointer events go direct
 
 Capture also sends keyboard and application events to that pane. Network events continue through the normal pane tree.
 
+Continue with [UI and panes](ui.md) for registration, visibility, and dialog control focus.
+
 ## Event families
 
 `event_dispatch` groups event types by purpose:

@@ -2,6 +2,17 @@
 
 The game systems turn window events, player input, assets, and server updates into the parts of Dark Ages that a player can see and use. Each page follows one focused mechanism so the UI, game state, and network behavior remain easy to distinguish.
 
+## Choose a starting point
+
+| Question | Start with | Then follow |
+| --- | --- | --- |
+| How does input reach a control? | [Event delivery](events.md#dispatch-flow) | [Pane state](ui.md#pane-state), then [dialog controls](ui.md#dialog-controls) |
+| How does an NPC conversation work? | [NPC dialogs](npc-dialogs.md) | The separate [screen-menu and pursuit packet pairs](../network/README.md#npc-conversations) |
+| How do assets become character art? | [Asset loading](asset-loading.md) | The [EPF reader](../file-formats/epf.md), then [player rendering](../rendering/players.md) |
+| How can existing UI be repositioned or reskinned? | [UI layout files](ui-layouts.md) | [Native controls](ui-controls.md) and the [layout registry](../appendix/ui-layout-registry.md) |
+
+The groups below cover the remaining systems. Rendering, audio, file formats, and networking have their own guides; a system page links to them where its flow crosses into those subjects.
+
 ## Shared foundations
 
 Start with [Events](events.md) for dispatch, [UI and panes](ui.md) for registration and propagation, and [Native UI controls](ui-controls.md) for buttons and text fields. [UI layout files](ui-layouts.md) explains how named asset entries supply their geometry and art.

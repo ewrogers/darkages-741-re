@@ -7,9 +7,10 @@ The writing is aimed at game and network programmers. Main pages explain behavio
 ## Start here
 
 - [Read the book](https://ewrogers.github.io/darkages-741-re/)
-- [Set up Binary Ninja and MCP](docs/getting-started.md)
-- [See the analysis method](docs/methodology.md)
-- [Browse the network reference](docs/network/README.md)
+- [Choose a reading route](docs/README.md#choose-a-route) for a client turn, NPC conversation, asset reader, or exact reference.
+- [Look up a client opcode](docs/network/client/README.md#packet-index) or [server opcode](docs/network/server/README.md#packet-index).
+
+To contribute research, [set up Binary Ninja and MCP](docs/getting-started.md), then follow the [analysis method](docs/methodology.md). Reading the book does not require the analysis tools.
 
 ## Target client
 

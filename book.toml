@@ -10,12 +10,12 @@ build-dir = "book"
 create-missing = false
 
 [output.html]
-site-url = "/darkages-re-741/"
+site-url = "/darkages-741-re/"
 default-theme = "navy"
 preferred-dark-theme = "navy"
-git-repository-url = "https://github.com/ewrogers/darkages-re-741"
+git-repository-url = "https://github.com/ewrogers/darkages-741-re"
 git-repository-icon = "fab-github"
-edit-url-template = "https://github.com/ewrogers/darkages-re-741/edit/main/docs/{path}"
+edit-url-template = "https://github.com/ewrogers/darkages-741-re/edit/main/docs/{path}"
 no-section-label = true
 
 [output.html.fold]
@@ -24,3 +24,17 @@ level = 1
 
 [output.html.search]
 enable = true
+
+# mdBook publishes README chapters as index.html, while Markdown links can
+# retain README.html. Keep both spellings usable without changing source links.
+[output.html.redirect]
+"/README.html" = "index.html"
+"/application/README.html" = "index.html"
+"/systems/README.html" = "index.html"
+"/rendering/README.html" = "index.html"
+"/audio/README.html" = "index.html"
+"/file-formats/README.html" = "index.html"
+"/network/README.html" = "index.html"
+"/network/client/README.html" = "index.html"
+"/network/server/README.html" = "index.html"
+"/appendix/README.html" = "index.html"

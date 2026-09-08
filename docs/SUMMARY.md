@@ -1,8 +1,8 @@
 # Summary
 
 - [Inside the Dark Ages client](README.md)
-- [Getting started](getting-started.md)
-- [How we study the client](methodology.md)
+
+# The client
 
 - [Application](application/README.md)
   - [Application lifecycle](application/lifecycle.md)
@@ -32,19 +32,19 @@
   - [Player exchange](systems/player-exchange.md)
   - [Bulletin boards and mail](systems/bulletin-and-mail.md)
   - [Manufacturing manuals](systems/manufacturing.md)
-  - [Item and ability descriptions](systems/item-and-ability-descriptions.md)
-  - [Messages and history](systems/messages-and-history.md)
-  - [Local command dispatcher](systems/local-command-dispatcher.md)
-  - [Game settings](systems/game-settings.md)
-  - [Character creation](systems/character-creation.md)
-  - [Changing a password](systems/change-password.md)
-  - [Screenshots and the photo album](systems/screenshots-and-photo-album.md)
-  - [Portraits and profiles](systems/portraits-and-profiles.md)
   - [NPC dialogs](systems/npc-dialogs.md)
   - [Server message dialogs](systems/message-dialogs.md)
   - [NPC dialog illustrations](systems/npc-dialog-illustrations.md)
+  - [Character creation](systems/character-creation.md)
+  - [Changing a password](systems/change-password.md)
+  - [Game settings](systems/game-settings.md)
+  - [Item and ability descriptions](systems/item-and-ability-descriptions.md)
+  - [Messages and history](systems/messages-and-history.md)
   - [Korean text input](systems/korean-text-input.md)
   - [Text color markup](systems/text-color-markup.md)
+  - [Screenshots and the photo album](systems/screenshots-and-photo-album.md)
+  - [Portraits and profiles](systems/portraits-and-profiles.md)
+  - [Local command dispatcher](systems/local-command-dispatcher.md)
   - [Event proxy design](systems/event-proxy.md)
 
 - [Rendering](rendering/README.md)
@@ -238,6 +238,8 @@
     - [0x6F - Meta Data (`SMetaData`)](network/server/111-0x6f-meta-data.md)
     - [0x7E - Hello (`SHello`)](network/server/126-0x7e-hello.md)
 
+# Lookup material
+
 - [Appendices](appendix/README.md)
   - [Function reference](appendix/functions.md)
   - [Player rendering evidence](appendix/player-rendering.md)
@@ -284,3 +286,8 @@
     - [World objects](appendix/runtime/world.md)
   - [Pane types and inheritance](appendix/pane-types.md)
   - [UI layout registry](appendix/ui-layout-registry.md)
+
+# Research workflow
+
+- [Getting started](getting-started.md)
+- [How we study the client](methodology.md)

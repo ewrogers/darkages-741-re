@@ -14,6 +14,27 @@ TCP socket
 
 Keeping these layers separate makes packet work much easier. A gameplay packet page can describe fields without repeating socket or encryption details.
 
+## Choose a starting point
+
+| Question | Start with | Then follow |
+| --- | --- | --- |
+| How does the client establish a connection? | [Initial connection](connection.md) | [Transport](transport.md) for queued work and TCP framing |
+| What does a known opcode mean? | The [client](client/README.md#packet-index) or [server](server/README.md#packet-index) index | The packet's body, owner, and paired messages; choose the direction first |
+| How do I read a body schema? | [Packet body notation](packet-body-notation.md) | [Shared protocol types](protocol-types.md) for reused enums and flags |
+| How is a body transformed for transmission? | [Packet transforms](packet-transforms.md) | [Checksums](checksums.md) and [transport framing](transport.md) |
+| How do messages form an interaction? | [Packet interaction flows](interaction-flows.md) | The referenced system and direction-specific packet pages |
+
+## NPC conversations
+
+Begin with [NPC dialogs](../systems/npc-dialogs.md) for session ownership, then follow its [round trips](../systems/npc-dialogs.md#server-and-client-round-trips) and the matching packet pair:
+
+| Conversation | Server to client | Client to server |
+| --- | --- | --- |
+| Screen menu | [SScreenMenu](server/047-0x2f-screen-menu.md) supplies the menu | [CMerchant](client/057-0x39-merchant.md) returns the selected value |
+| Pursuit | [SPursuitMessage](server/048-0x30-pursuit-message.md) supplies a conversation step | [CPursuit](client/058-0x3a-pursuit.md) returns navigation, an answer, or close |
+
+Each packet page owns its exact body variants. Keep these NPC conversations separate from [player exchange](../systems/player-exchange.md), which uses a different protocol for trading between players.
+
 <a id="start-here"></a>
 
 ## Read next

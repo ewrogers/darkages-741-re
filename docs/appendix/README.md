@@ -2,6 +2,17 @@
 
 The appendices hold exact lookup material that supports the main book without interrupting its explanations. Use them when you need a function address, runtime patch definition, object layout, pane inheritance detail, or UI layout mapping.
 
+## Choose a reference
+
+| Question | Start with | Check it against |
+| --- | --- | --- |
+| Where is a named event function, and what does its object contain? | [Event functions](functions.md#events) | The [event object layout](runtime/panes.md#event-object) and [delivery explanation](../systems/events.md#dispatch-flow) |
+| Where is live character, map, or UI state? | [Runtime state walking](runtime/state-walking.md) | The owner-specific [structure groups](runtime-structures.md#structure-groups) |
+| Which class loads a named UI layout? | [UI layout registry](ui-layout-registry.md) | [Pane types](pane-types.md) for inheritance and [UI layouts](../systems/ui-layouts.md) for the name contract |
+| What changes does a documented runtime patch make? | [Runtime patches](runtime-patches.md) | The selected patch's original bytes, replacement bytes, and [safe launcher workflow](runtime-patches/safe-launcher.md) |
+
+An address or class name alone does not explain behavior. Follow the matching chapter for the flow and [the evidence method](../methodology.md#source-of-truth) when checking a finding in the target client.
+
 ## Read next
 
 - [Function reference](functions.md) maps project names to static addresses.

@@ -15,6 +15,16 @@ game and packet events
 
 There is no separate PCM mixer in the client. The game chooses files, owns the volume rules, and schedules music fades. Miles performs the decode, resampling, and final mix.
 
+## Choose a playback path
+
+| Question | Start with | Then inspect |
+| --- | --- | --- |
+| How is audio initialized or stopped? | [Audio lifecycle](lifecycle.md) | Its driver setup, failure handling, and shutdown paths |
+| How does a music change fade? | [Music](music.md) | The [fade timer](music.md#fade-timer) for cadence, step rule, and stream lifetime |
+| How does a server message select a sound? | [Sound effects](sound-effects.md#server-trigger) | [SSoundEffect](../network/server/025-0x19-sound-effect.md) for effect and music selection, or [SDamageEffect](../network/server/019-0x13-damage-effect.md) for its sound field |
+
+[MIDI support](midi.md) documents a separate compiled path. It should not be used as the starting point for playback from the matching assets.
+
 ## Main parts
 
 | Part | Job |

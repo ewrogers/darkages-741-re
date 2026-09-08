@@ -2,6 +2,20 @@
 
 The client mixes simple archives, text lookup tables, indexed images, and a few custom codecs. Each page separates the container from the way the renderer or network system uses it. See [Asset loading](../systems/asset-loading.md) for how names and archives lead to these readers.
 
+## Choose a reader
+
+| Goal | Start with | Then follow |
+| --- | --- | --- |
+| Find or extract an archived asset | [DAT archives](dat-archives.md) | [Asset loading](../systems/asset-loading.md) for lookup order and lifetime |
+| Decode character image frames | [EPF images](epf.md) | [Palette ownership](../systems/asset-loading.md#how-an-epf-gets-its-palette), then [player rendering](../rendering/players.md) |
+| Export an image to PNG | [Exporting images](image-export.md) | The matching HPF, EPF, SPF, or EFA reader and its palette/blending limits |
+| Read a map and its art | [MAP files](map.md) | [Raw map tile banks](map-tile-banks.md), [SOTP flags](sotp.md), and [world rendering](../rendering/world.md) |
+| Read server-managed lookup data | [Metadata files](metadata.md) | The specific table grammar and the documented cache/update flow |
+
+Select the reader from its confirmed loading path, not the extension alone. The EPF route is one example; it does not describe every image family.
+
+## Format coverage
+
 | Format | Purpose | Read status | Write status |
 | --- | --- | --- | --- |
 | [DAT](dat-archives.md) | Asset archives | Legacy format confirmed | Rebuild process confirmed |
