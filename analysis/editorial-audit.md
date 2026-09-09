@@ -252,3 +252,11 @@ Validation:
 - Only the homepage changes among existing reader Markdown files, adding the decorative opening and updating its contributor handoff. Technical chapters, packet pages and indexes, code examples, figures, and all 40 source exports remain unchanged. The owner's source and generated-reference edits remain intact.
 
 Task 6 implementation is ready for review. mdBook supports this design without a platform migration. The final browser-only release checks above remain documented in the theme maintenance guide.
+
+### Follow-up: neutral paper palette and application scope
+
+At the owner's request, Parchment uses pale neutral paper, brown ink, and a muted brown binding. Lamplight uses warm charcoal, cream text, and subdued brass links. Both retain the existing layout, local outline, keyboard controls, monospaced reference content, saved theme aliases, and print overrides. Copy icons have explicit light and dark filters to retain visible contrast. The theme maintenance guide describes the final palette.
+
+The CPU affinity chapter is removed because its subject was the optional local DirectDraw wrapper. Its navigation entry and cross-links are removed from the application guide, application lifecycle, and audio lifecycle. The client-confirmed audio-before-video startup order remains in the audio chapter. No analysis export, packet reference, or other client finding changes.
+
+Validation: all 25 tests, generator freshness checks, theme syntax checks, and the pinned mdBook build pass. The rendered-link checker reports 15,451 checks with zero failures, and the removed chapter is absent from the fresh build. Browser review confirms the neutral light and dark palettes on the homepage and the dark packet reference. The earlier walking-figure, lookup, and 375 px reflow checks cover the unchanged layout. Main text contrast is 12.53:1 on Parchment and 12.17:1 on Lamplight; the weakest assigned syntax color is 4.94:1. The earlier limitations for native zoom, clipboard round trips, and real print pagination still apply.

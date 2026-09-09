@@ -70,7 +70,6 @@ def main() -> None:
         "  - [Configuration](application/configuration.md)",
         "  - [Distribution markers](application/distribution-markers.md)",
         "  - [Program Files and administrator mode](application/program-files-and-administrator.md)",
-        "  - [CPU affinity](application/cpu-affinity.md)",
         "  - [Crash reporting](application/crash-reporting.md)",
         "",
         "- [Game loop](application/game-loop.md)",

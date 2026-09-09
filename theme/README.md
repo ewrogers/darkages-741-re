@@ -1,6 +1,6 @@
 # Grimoire presentation
 
-The book uses mdBook with a brown binding, parchment pages, and an optional dark Lamplight palette. Technical language, exact data, and reading routes remain independent of the decoration. This directory contains the maintained presentation sources; generated HTML stays outside the source tree.
+The book uses mdBook with a neutral paper and brown grimoire palette. Parchment combines pale paper with brown ink and a muted brown binding. Lamplight uses warm charcoal reading surfaces, cream text, and subdued brass links. Technical language, exact data, and reading routes remain independent of the decoration. This directory contains the maintained presentation sources; generated HTML stays outside the source tree.
 
 ## Ownership
 
