@@ -1,0 +1,172 @@
+schema_version: 1
+target:
+  architecture: x86
+  file: Darkages.exe
+  image_base: '0x00400000'
+  reported_version: 741
+  sha256: 054a5d6adc56099c6bfd9d2a58675aff62dc788b63209a3d906492f5b89e96c6
+  size: 3112960
+functions:
+  - address: '0x00403FE0'
+    name: ui_alpha_screen_pane_rebuild_gradient_mask
+    confidence: high
+    evidence: Builds one uninitialized 2*width-byte allocation per gradient row, but encodes exactly width alpha values. The MMX consumer requires a further four-value tail group.
+  - address: '0x004119C0'
+    name: render_blit_pointer_rle_alpha_mmx
+    confidence: high
+    evidence: Processes draw_width>>2 full groups and unconditionally decodes one more four-alpha group; zero-count tokens are fetched without an end bound even when remainder is zero.
+  - address: '0x004463C0'
+    name: ui_dialog_draw_background
+    confidence: high
+    evidence: Passes the default DlgBack2.spf pixmap to the tiler without validating the dimensions after a failed archive lookup.
+  - address: '0x00453860'
+    name: render_canvas_tile_pixmap
+    confidence: high
+    evidence: Divides by source pixmap width and height without guarding zero dimensions; width division is at 0x0045392E.
+  - address: '0x00472470'
+    name: file_archive_find_entry
+    confidence: high
+    evidence: Returns zero when the archive entry-handle pool is exhausted even for an existing name; a misc.dat overlay hit leases from that archive instead.
+  - address: '0x00472720'
+    name: file_archive_contains
+    confidence: high
+    evidence: Existence-only helper borrows and releases one entry handle and returns 1 or 0; matches find_entry thiscall and ret 4 contract.
+  - address: '0x00474310'
+    name: ui_field_map_balloon_pane_ctor
+    confidence: high
+    evidence: Leaks the palette entry handle found at 0x004743E2 while the shared palette ID is negative; raw mapped data is used but the handle is neither released nor retained.
+  - address: '0x00474630'
+    name: ui_field_map_balloon_pane_dtor
+    confidence: high
+    evidence: Resets FieldMapBalloonPane vtables and runs the Pane destructor; the constructor did not retain its leaked palette handle for later cleanup.
+  - address: '0x00476EE0'
+    name: ui_load_field_map_assets
+    confidence: high
+    evidence: Leaks the successful name.pal existence-probe handle at 0x00476FCF; palette loading uses a second handle and text metadata releases its own handle.
+  - address: '0x0048B530'
+    name: file_load_image_frame
+    confidence: high
+    evidence: A failed SPF lookup or invalid SPF frame clears the output pixmap including its dimensions, allowing an unchecked caller to divide by zero.
+  - address: '0x00568B60'
+    name: audio_sfx_get_or_load
+    confidence: high
+    evidence: MP3 and WAV entry lookups are mutually exclusive fallback attempts; either success joins the release at 0x00568D8C, including sample-file rejection.
+  - address: '0x00575AA0'
+    name: ui_extra_status_info_format_values
+    confidence: high
+    evidence: Uses two unchecked signed 16-bit pane values to index ten local narrow-string pointers before percent-s formatting; wire values above 9 leave the array.
+  - address: '0x00575FB0'
+    name: ui_extra_status_info_update_from_status_packet
+    confidence: high
+    evidence: Copies zero-extended SStatus element fields unchanged into the pane and immediately formats them without an element-range check.
+  - address: '0x00598B30'
+    name: net_read_draw_object_record
+    confidence: high
+    evidence: Reads X and Y as u16 big-endian coordinates, widens them into the temporary record, and selects variable record layouts by tagged sprite and creature type.
+  - address: '0x005CAC60'
+    name: world_create_item_object
+    confidence: high
+    evidence: Removes an existing ID, attempts item insertion, and returns a null retained-object result when world_insert_object rejects the new item.
+  - address: '0x005E5D40'
+    name: world_object_list_insert
+    confidence: high
+    evidence: Checks both coordinates against zero and current WorldObjectList width/height before dense cell selection; rejected insertion returns false.
+  - address: '0x005F3150'
+    name: net_handle_draw_objects_server_packet
+    confidence: high
+    evidence: The item branch dereferences the creator result at 0x005F32F1 before checking null; the creature branch checks its result before appearance refresh.
+  - address: '0x005FD700'
+    name: file_open_static_tile
+    confidence: high
+    evidence: Alternate and ordinary static-tile lookups are fallback attempts, sharing a release after copying compressed bytes and before HPF decoding.
+data_symbols: []
+comments:
+  - address: '0x00404081'
+    text: Allocate 2*width uninitialized bytes for this row. Only the tokens written by render_alpha_runs_fill are initialized; allocation capacity is not encoded length.
+  - address: '0x004040C6'
+    text: Encode exactly the low-16-bit width at floor(32*row/height) alpha. Width 640 writes three tokens for 255+255+130 pixels, leaving no valid tail group.
+  - address: '0x00411C67'
+    text: 'Unconditional four-alpha tail after draw_width>>2 complete groups, even when draw_width%4 is zero. A zero store-selection mask does not suppress alpha or pixel loads.
+
+
+      Proposed bounded-tail hook replaces this TEST/JE pair (5 bytes), jumping to shared stub +0x0C0. Emulation skips remainder zero and processes 1..3 remaining pixels with word accesses; native row advance remains at 0x00411DA4. No executable patch applied.'
+  - address: '0x00411C94'
+    text: Fetch next alpha token until its count is nonzero, without a stream-end bound. A width-only gradient has already exhausted its runs on a full-width divisible-by-four draw.
+  - address: '0x004538AD'
+    text: Proposed 8-byte empty-pixmap hook before temporary-region construction. Stub checks both source extents, reproduces the LEA/call for valid input, or uses common epilogue 0x00453A5E before any clip mutation. No executable patch applied.
+  - address: '0x0045392E'
+    text: Source-width division has no zero guard. Failed default DlgBack2.spf lookup clears pixmap bounds and can reach this division through ui_dialog_draw_background.
+  - address: '0x004743E2'
+    text: Guarded balloon-palette initialization borrows a handle here and uses its raw mapped data, but neither releases the handle nor retains it in the pane. The destructor cannot recover this local.
+  - address: '0x00474434'
+    text: 'Proposed 5-byte jump to a palette-call wrapper: execute the original thiscall/ret-8 load, save post-call registers and flags, release the handle from [ebp-0x130], and continue at 0x00474439. No executable patch applied.'
+  - address: '0x00476FCF'
+    text: 'Successful name.pal existence probe leaks its handle: result is used only for a zero comparison. The palette loader obtains and releases a separate handle. file_archive_contains supplies the required Boolean contract.'
+  - address: '0x00477589'
+    text: Normal text-metadata cleanup releases the distinct handle from 0x00477031. It does not release the palette existence-probe handle from 0x00476FCF.
+  - address: '0x00568D8C'
+    text: Shared release for either successful MP3 or WAV lookup, also reached after Miles rejects the sample. The WAV attempt occurs only when MP3 lookup returned zero.
+  - address: '0x00575AF2'
+    text: Proposed 7-byte attack-index hook reproduces this signed word load, maps unsigned indexes above 9 to zero, restores flags, and returns to the original table lookup. Raw pane and packet fields are retained. No executable patch applied.
+  - address: '0x00575B1C'
+    text: Proposed 7-byte defense-index hook reproduces this signed word load, maps unsigned indexes above 9 to zero, restores flags, and returns to 0x00575B23. Raw pane and packet fields are retained. No executable patch applied.
+  - address: '0x00575B23'
+    text: Unchecked defense-element index into ten local string pointers. The wire byte was zero-extended, but values 10..255 still read outside this array before percent-s formatting.
+  - address: '0x005E5D6F'
+    text: Reject x<0, x>=current width, y<0, or y>=current height before selecting a WorldObjectCell. Invalid ground-item insertion is checked here; the later packet handler fails to handle null.
+  - address: '0x005F32EB'
+    text: Proposed 6-byte null-item hook reproduces this load, preserves flags, and branches to 0x005F32FE for normal cleanup if null, otherwise to native vtable fetch 0x005F32F1. No executable patch applied.
+  - address: '0x005F32F1'
+    text: Unconditional item-result vtable dereference. world_create_item_object returns null after rejected insertion, including off-map coordinates. The item refresh precedes the later cleanup null check.
+  - address: '0x005FD7EC'
+    text: Release the sole successful fallback lookup after copying HPF bytes and before decoding. The ordinary-art lookup runs only when alternate lookup returned zero.
+runtime_patches:
+  - id: alpha-tail
+    rva: '0x00011C67'
+    static_address: '0x00411C67'
+    file_offset_for_reference_only: '0x00011067'
+    original_bytes: F6 C6 FC 74 1F
+    replacement_template: E9 <rel32 to shared stub + 0x0C0>
+    effect: Skip a zero remainder or blend only the remaining 1..3 pixels using bounded word accesses and native MMX mask arithmetic; keep native row advance and EMMS. See the client-crash-fixes patch page for the 0x184-byte shared block and all relocation operands. Instruction-emulated with original-failure controls; Windows gameplay check pending.
+  - id: empty-pixmap
+    rva: '0x000538AD'
+    static_address: '0x004538AD'
+    file_offset_for_reference_only: '0x00052CAD'
+    original_bytes: 8D 4D 84 E8 0B D4 02 00
+    replacement_template: E9 <rel32 to shared stub + 0x080> 90 90 90
+    effect: Reject null pixmaps and nonpositive source extents before temporary region construction or clipping changes; otherwise reproduce the displaced constructor call. See the client-crash-fixes patch page for the 0x184-byte shared block and all relocation operands. Instruction-emulated with original-failure controls; Windows gameplay check pending.
+  - id: balloon-palette
+    rva: '0x00074434'
+    static_address: '0x00474434'
+    file_offset_for_reference_only: '0x00073834'
+    original_bytes: E8 17 42 0D 00
+    replacement_template: E9 <rel32 to shared stub + 0x060>
+    effect: Call the original palette loader with its existing arguments, release its borrowed entry handle, and preserve post-loader registers and flags. See the client-crash-fixes patch page for the 0x184-byte shared block and all relocation operands. Instruction-emulated with original-failure controls; Windows gameplay check pending.
+  - id: field-map-palette
+    rva: '0x00076FCF'
+    static_address: '0x00476FCF'
+    file_offset_for_reference_only: '0x000763CF'
+    original_bytes: E8 9C B4 FF FF
+    replacement_bytes: E8 4C B7 FF FF
+    effect: Use the existing find/release Boolean helper instead of leaking the name.pal existence-probe handle. See the client-crash-fixes patch page for the 0x184-byte shared block and all relocation operands. Instruction-emulated with original-failure controls; Windows gameplay check pending.
+  - id: status-attack
+    rva: '0x00175AF2'
+    static_address: '0x00575AF2'
+    file_offset_for_reference_only: '0x00174EF2'
+    original_bytes: 0F BF 88 FC 04 00 00
+    replacement_template: E9 <rel32 to shared stub + 0x020> 90 90
+    effect: Bound the loaded attack-element index to 0..9, choosing existing None for invalid indexes without rewriting pane or packet state. See the client-crash-fixes patch page for the 0x184-byte shared block and all relocation operands. Instruction-emulated with original-failure controls. Five live Arbiter status-element cases passed raw-value and formatted-label checks. See client-crash-tests for method and limits.
+  - id: status-defense
+    rva: '0x00175B1C'
+    static_address: '0x00575B1C'
+    file_offset_for_reference_only: '0x00174F1C'
+    original_bytes: 0F BF 91 FE 04 00 00
+    replacement_template: E9 <rel32 to shared stub + 0x040> 90 90
+    effect: Bound the loaded defense-element index to 0..9, choosing existing None for invalid indexes without rewriting pane or packet state. See the client-crash-fixes patch page for the 0x184-byte shared block and all relocation operands. Instruction-emulated with original-failure controls. Five live Arbiter status-element cases passed raw-value and formatted-label checks. See client-crash-tests for method and limits.
+  - id: ground-item-null
+    rva: '0x001F32EB'
+    static_address: '0x005F32EB'
+    file_offset_for_reference_only: '0x001F26EB'
+    original_bytes: 8B 85 BC FE FF FF
+    replacement_template: E9 <rel32 to shared stub + 0x000> 90
+    effect: Route null item results to native reference cleanup and the next-record path; preserve nonnull vtable refresh. See the client-crash-fixes patch page for the 0x184-byte shared block and all relocation operands. Instruction-emulated with original-failure controls. Ten live Arbiter ground-item cases passed index, insertion, image and continuation checks. See client-crash-tests for method and limits.

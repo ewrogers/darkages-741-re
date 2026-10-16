@@ -8,6 +8,8 @@ This directory contains deterministic Binary Ninja exports such as user symbols,
 
 [`crypto.yaml`](crypto.yaml) records standalone checksum and cryptographic primitives recovered during the local-function naming sweep.
 
+[`client-crash-faults.yaml`](client-crash-faults.yaml) records verified archive-handle leaks, gradient-mask tail reads, unchecked status-element indexing, rejected ground-item insertion, and the two fallback loaders ruled out as leaks on those paths. It also records seven runtime hook specifications for six repairs. The matching [client crash reference](../../docs/appendix/client-crash-faults.md) and [exact patch page](../../docs/appendix/runtime-patches/client-crash-fixes.md) separate binary/emulation findings from unverified Windows and contributor runtime reports.
+
 [`containers.yaml`](containers.yaml) records application-owned queues and other reusable container helpers recovered during the sweep.
 
 [`ui-pane-lifecycle.yaml`](ui-pane-lifecycle.yaml) records exact RTTI pane destructors, MSVC scalar-deleting destructors, and the adjusted-`this` TimerHandler thunks that reach them.

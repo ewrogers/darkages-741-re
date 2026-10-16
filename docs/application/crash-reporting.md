@@ -4,6 +4,8 @@ The client installs one application-wide Windows unhandled-exception filter duri
 
 The saved report is not uploaded while the process is crashing. A later in-world server transfer attempts to send it through [`CException`](../network/client/066-0x42-exception.md), then deletes the file.
 
+For independently traced failure paths, see [Client crash faults](../appendix/client-crash-faults.md). A reported exception address identifies a failure site; the preceding ownership, packet, and rendering paths establish its cause.
+
 ```text
 startup
   -> SetUnhandledExceptionFilter

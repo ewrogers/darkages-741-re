@@ -3,6 +3,8 @@
 Patch pages use short names based on the visible behavior. In-place changes use `diff` blocks where `-` is the verified original instruction and `+` is the replacement. Injected-code listings use `offset: bytes | assembly ; purpose`. Tables are reserved for addresses, dependencies, relocations, and variants. Zeroed `rel32` and `abs32` operands are relocation placeholders whose exact values appear in the table below each listing.
 
 - [Safe launcher](runtime-patches/safe-launcher.md)
+- [Client crash fixes](runtime-patches/client-crash-fixes.md)
+- [Testing client crash fixes](runtime-patches/client-crash-tests.md)
 - [Multiple clients](runtime-patches/multiple-clients.md)
 - [Stuck modifiers](runtime-patches/stuck-modifiers.md)
 - [Stale pursuit](runtime-patches/stale-pursuit.md)

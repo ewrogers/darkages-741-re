@@ -21,5 +21,6 @@ An address or class name alone does not explain behavior. Follow the matching ch
 - [Pane types and inheritance](pane-types.md) records class relationships.
 - [UI layout registry](ui-layout-registry.md) maps layout assets to their pane owners.
 - [Player rendering evidence](player-rendering.md) records equipment ordering, sprite anchors, walk tables, and effect geometry.
+- [Client crash faults](client-crash-faults.md) traces archive-handle exhaustion, gradient-mask reads, status-element indexing, and rejected ground-item insertion.
 - [Executable-page integrity records](executable-page-integrity.md) documents the image-page checks.
 - [Runtime patches](runtime-patches.md) leads to patch definitions and the shared launcher procedure.

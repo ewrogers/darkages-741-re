@@ -51,6 +51,16 @@ An archive also has a small bounded pool of entry handles. `file_archive_find_en
 
 The startup calls request 20 handle slots per archive. This pool limits simultaneous open entry descriptions. It is not an asset cache.
 
+### Field-map palette handle leaks
+
+Changing the field-map name can consume a handle permanently. `ui_load_field_map_assets` skips a name equal to the last successfully loaded name. Otherwise it looks up `<name>.pal` only to test for existence, then asks the palette manager to open and release a second handle for the actual load. The first handle is never released. The later `<name>.txt` handle is released on the normal completion path.
+
+Once an archive's 20 slots are busy, lookup returns zero even for an existing file. This can break other consumers of the same archive without increasing Windows handle or GDI counts. For example, a failed `DlgBack2.spf` load leaves an empty pixmap, and the default dialog background passes its zero dimensions to the tiler, which divides by them. Ordinarily these field-map and dialog resources share `setoa.dat`; an entry supplied by the global `misc.dat` overlay uses that archive's pool instead.
+
+`ui_field_map_balloon_pane_ctor` also loses its successful palette handle during guarded palette initialization. It neither retains that handle in the pane nor releases it in the destructor. This is a separate initialization leak, rather than a handle borrowed by every balloon instance. By contrast, the two lookups in the sound-effect and static-tile loaders are mutually exclusive fallback attempts with a shared release path.
+
+Use `file_archive_contains` for an existence-only query: it borrows and releases a handle internally. Holding more pool slots only postpones an ownership error. The [client crash evidence](../appendix/client-crash-faults.md#field-map-handle-exhaustion) records the exact paths and the limits of the reported ten-cycle failure.
+
 ## `misc.dat` is a global overlay
 
 The client checks `misc.dat` before the archive requested by the caller. When `file_archive_find_entry` receives any other archive object, it first asks the `misc.dat` archive whether it contains the requested name. If it does, the function returns the `misc.dat` entry instead of looking in the original archive.

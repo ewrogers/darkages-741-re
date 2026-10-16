@@ -6,6 +6,8 @@ Scripts must be cross-platform, must not depend on a hard-coded Binary Ninja ins
 
 `verify_player_rendering.py --client-root client` checks the fingerprint, Binary Ninja-verified player order/anchor/walk tables, signed EPF bounds instructions, and selected private sprite metadata. It requires only Python's standard library and reads the executable and character archives without changing or extracting them. See the [player rendering evidence](../../docs/appendix/player-rendering.md).
 
+`verify_client_crash_patches.py --binary client/Darkages.exe` checks the target fingerprint, seven original hook sequences, relocation targets, the focused manifest, and the book's complete stub listing without changing any file. Add `--emulate` to execute the original and patched instructions in isolated x86 memory, including guarded alpha/pixel buffers. That optional mode requires `unicorn==2.1.4`; it does not require Binary Ninja or a game connection. The script does not attach to processes or install patches. See [Client crash fixes](../../docs/appendix/runtime-patches/client-crash-fixes.md) and the [VM/Arbiter test procedure](../../docs/appendix/runtime-patches/client-crash-tests.md).
+
 `sync_user_analysis.py` imports and refreshes any schema-version-1 manifest under `analysis/exports/`. Install `requirements.txt` into Binary Ninja's selected Python environment, then run the script from Binary Ninja's Python console:
 
 ```python

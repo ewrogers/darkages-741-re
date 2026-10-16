@@ -33,6 +33,8 @@ The event tree is separate. Input uses child-first event propagation, while visu
 
 `AlphaScreenPane` is a small overlay pane. Its constructor resolves one palette color, and `ui_alpha_screen_pane_draw_content` fills the pane's content rectangle with that color before the normal pane-to-target copy.
 
+When its bounds are set, it builds one alpha-run buffer per row to graduate that color vertically. NPC screen-menu and pursuit sessions create this pane. The optimized row-mask copy has a confirmed [read past the encoded gradient](blending.md#gradient-mask-read-past-the-encoded-runs), so a crash in that path can belong to the dialog overlay rather than an entity sprite.
+
 `AlphaScreenPaneSegmented` builds a graduated version from 33 ordinary child panes. When the parent joins the screen tree, `ui_segmented_alpha_screen_pane_register_screen` divides its rectangle into 33 vertical strips, registers each child, and clears each child canvas with the shared overlay color. The constructor gives those children linearly stepped pane values, so the finished parent can present a segmented transition instead of one uniform overlay.
 
 ## Where the world fits

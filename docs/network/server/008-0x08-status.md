@@ -154,7 +154,9 @@ Dormant debug strings in the executable describe the same branches as â€œparcelâ
 
 `attack_element` and `defense_element` use the shared [`Element`](../protocol-types.md#element) type.
 
-The attack and defense values are not range-checked before this lookup, so valid senders must keep them between `0` and `9`. Magic resistance is displayed as `magic_resist_units * 10` followed by a percent sign.
+The attack and defense values are not range-checked before this lookup, so valid senders must keep them between `0` and `9`. The parser zero-extends each wire byte into a 16-bit packet field, and `ExtraStatusInfoPane` copies those fields unchanged. Its formatter indexes a local array of ten string pointers, then passes the selected pointer to a `%s` conversion. A value of 10 or greater reads beyond that array and may crash while the formatter reads the supposed string. A bounded output buffer does not make the input pointer valid.
+
+The [client crash evidence](../../appendix/client-crash-faults.md#unchecked-status-elements) records both lookup sites. The unsafe path is confirmed; the report did not include the offending packet, so the source of an invalid element remains unknown. Magic resistance is displayed as `magic_resist_units * 10` followed by a percent sign.
 
 ## Supplied login trace
 

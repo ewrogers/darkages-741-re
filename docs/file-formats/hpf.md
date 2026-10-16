@@ -80,6 +80,8 @@ This encoder was checked by decoding, encoding, and decoding several local stati
 
 `file_open_static_tile` ignores the first eight decoded bytes. The remaining bytes are palette indexes for an image that is 28 pixels wide.
 
+The alternate-art and ordinary-art lookups are fallback attempts: the second runs only when the first returned no handle. A successful handle is released after copying the compressed bytes and before HPF decoding. The two lookup sites therefore do not establish an archive-handle leak; see the [ownership evidence](../appendix/client-crash-faults.md#other-reported-leak-candidates).
+
 ```text
 decoded HpfStaticImage {
     bytes unknown_header[8]   // preserve exactly

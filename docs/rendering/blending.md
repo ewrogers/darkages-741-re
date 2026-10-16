@@ -71,6 +71,16 @@ One image representation locates each row by an offset relative to the packed al
 
 Separate entry points implement luminance-ramp recoloring, screen-style per-component composition, and saturating additive blending. The dispatcher selects paired RGB565 or RGB555 scalar loops, or an MMX implementation when the optimized path is active.
 
+### Gradient-mask read past the encoded runs
+
+The NPC session's `AlphaScreenPane` builds one constant-intensity run stream per row. For a pane `W` pixels wide and `H` pixels high, `ui_alpha_screen_pane_rebuild_gradient_mask` allocates `2 * W` bytes for each row, then encodes exactly `W` pixels at intensity `floor(32 * row / H)`. At width 640, the encoder writes three 16-bit tokens covering 255, 255, and 130 pixels. The remaining allocation is uninitialized.
+
+`render_blit_pointer_rle_alpha_mmx` consumes four alpha values per group and always processes one final group after the complete groups. Even when the drawn width is divisible by four, its zero destination-selection mask does not prevent the alpha reads. A full-width draw therefore consumes all 640 encoded values, then starts reading uninitialized tokens. A zero run count makes it keep fetching tokens, with no stream-end check. This can become an access violation after leaving the allocation.
+
+The defect concerns the encoded length, not an allocation smaller than the six bytes initially written. Encoding four additional pixels would cover the alpha reads for this pane width, but the MMX tail also loads source and destination pixels. Padding the alpha stream alone does not establish that every access in the tail is safe. See the [instruction evidence and validation limits](../appendix/client-crash-faults.md#gradient-mask-over-read).
+
+The [bounded-tail runtime patch](../appendix/runtime-patches/client-crash-fixes.md#alpha-tail) skips the unused tail for a width divisible by four and processes the final 1 through 3 pixels with word-sized accesses. Guarded x86 emulation checks its pixels and buffer boundaries; Windows integration remains a separate [VM test](../appendix/runtime-patches/client-crash-tests.md#prove-the-alpha-boundary-in-the-vm).
+
 ## Per-canvas blit state
 
 A canvas carries more than a pixel buffer. `render_canvas_blit_pixels_software` reads several optional inputs while copying a source rectangle:

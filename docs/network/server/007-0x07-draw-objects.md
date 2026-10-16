@@ -107,6 +107,14 @@ The ID index is an ordered tree, not a flat entity array. `WorldPane + 0x194` po
 
 The packet object is temporary. Useful retained layouts for the ID index, `WorldObject_Monster`, `MonsterObjectImageSession`, `WorldObject_Item`, and the name pane are in [World objects](../../appendix/runtime/world.md#dynamic-object-index).
 
+### Rejected ground-item positions
+
+`world_object_list_insert` checks the position against the current map: `0 <= x < width` and `0 <= y < height`. An invalid position is rejected before indexing the cell array. `world_create_item_object` then returns a null object to the packet handler, which unconditionally invokes the item's refresh method. That missing null check can crash the client. The creature branch checks its returned object before using it.
+
+The coordinates on this packet are `u16`, while [`SMapSize`](021-0x15-map-size.md) supplies one-byte dimensions. A coordinate of 255 is already outside every map this size message can describe; values below 255 can also exceed the current map's dimensions. Validate against the active map, not just the wire type's range. Record lengths vary between items, creatures, and named NPCs, so count validation must parse those layouts rather than assume one fixed record size.
+
+The [client crash evidence](../../appendix/client-crash-faults.md#rejected-ground-item-insertion) distinguishes the checked insertion from the unchecked use of its result. The binary does not establish why a sender supplied an invalid position.
+
 ## Related updates
 
 Later packets operate on the shared `entity_id`:

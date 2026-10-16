@@ -40,3 +40,33 @@ Treat this direct-call patch as an endpoint experiment, not a stock-compatible s
 Without the [official fallback patch](disable-endpoint-fallback.md), a later connection failure can still retry `da0.kru.com` even after a valid positional override.
 
 Apply it with the [safe launcher workflow](safe-launcher.md).
+
+## Arbiter loopback wrapper
+
+The [crash-fix launcher](../../../tools/crash-launcher/README.md) supports `--arbiter` without using the direct parser-call replacement above. It calls the original initializer first, preserving installation-ID setup, then changes only the resulting IPv4 and port to `127.0.0.1:2610`. `--arbiter --vanilla` retains that routing while disabling all crash repairs, so both test runs can connect through the same proxy.
+
+At RVA `0x00032253`, original `E8 28 11 00 00` becomes `E8 <rel32>` targeting the wrapper. The original call and wrapper are both argumentless calls using `ecx` for the configuration pointer. With `S` equal to the crash stub allocation, the wrapper starts at `S + 0x190`, after NOP padding following the original `0x184` bytes. The combined allocation is `0x1AD` bytes. Its 29-byte template is:
+
+```text
+56 8B F1 E8 ?? ?? ?? ??
+C7 86 95 02 00 00 7F 00 00 01
+66 C7 86 34 04 00 00 32 0A 5E C3
+```
+
+The hook operand is `(S + 0x190) - (B + 0x00032258)`. The wrapper call operand at `S + 0x194` is `(B + 0x00033380) - (S + 0x198)`. Both are signed little-endian `rel32` values. The resulting instructions are:
+
+```asm
+push esi
+mov esi, ecx
+call net_configure_default_endpoint
+mov dword ptr [esi+0x295], 0x0100007f
+mov word ptr [esi+0x434], 0x0a32
+pop esi
+ret
+```
+
+The initializer at RVA `0x00033380` preserves `esi` and returns with plain `ret`; its normal initialization includes configuration fields `+0x424` and `+0x428`. The wrapper's added instructions preserve its return value, outgoing volatile registers and flags, restore the caller's `esi`, and balance the stack. The four endpoint bytes become `7F 00 00 01`; the port remains in the configuration's host-order 16-bit field. No positional endpoint arguments or parser fallback are involved.
+
+The launcher also requires and installs the exact ten-byte [disable-fallback patch](disable-endpoint-fallback.md) at RVA `0x001655F4`. It verifies both original sites along with the crash hooks before writing, and applies the same protection, readback, cache-flush and suspended-child failure handling. Both routing changes affect process memory only.
+
+The wrapper passed isolated x86 execution at two address pairs against a mocked initializer, preserving sentinel installation fields and the call's register/flag/stack results. Windows 11 Parallels testing verified the installed bytes, an established client connection to `127.0.0.1:2610`, successful account login, and the [local packet tests](client-crash-tests.md#completed-live-checks-and-remaining-limits). Later server transfers remain untested.
