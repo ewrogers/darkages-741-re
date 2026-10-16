@@ -30,7 +30,7 @@ functions:
   - address: "0x00403FE0"
     name: ui_alpha_screen_pane_rebuild_gradient_mask
     confidence: high
-    evidence: "Rebuilds AlphaScreenPane's per-column alpha-mask buffers from the pane bounds and fills them with the configured gradient."
+    evidence: "Rebuilds AlphaScreenPane's per-row alpha-mask buffers from the pane bounds and fills them with the configured vertical gradient."
   - address: "0x00404110"
     name: ui_segmented_alpha_screen_pane_ctor
     confidence: high

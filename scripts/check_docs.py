@@ -21,6 +21,7 @@ def run(label, command):
 def validate(mdbook, destination):
     run("Check navigation and packet indexes", [sys.executable, "scripts/build_book_summary.py", "--check"])
     run("Check function references", [sys.executable, "scripts/build_function_reference.py", "--check"])
+    run("Check launcher patch constants", [sys.executable, "tools/crash-launcher/generate_patch_data.py", "--check"])
     run("Test generation and repository links", [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-p", "test_*.py"])
     run("Test exact function lookup", ["node", "--test", "scripts/tests/test_function_lookup.cjs"])
     for script in sorted((ROOT / "theme").glob("*.js")):

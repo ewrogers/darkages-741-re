@@ -12,6 +12,8 @@ Sound effects are short numbered MP3 files stored inside `Legend.dat`. The game 
 
 It looks for that entry in `Legend.dat`. If no MP3 entry exists, it tries `<id>.wav`. The matching archive contains no WAV effects, but the fallback is still active code.
 
+These two lookup sites do not borrow two live archive handles. The WAV lookup runs only after the MP3 lookup returns zero. Either successful lookup joins one load path that releases the entry after Miles accepts or rejects the sample. See the [archive-handle audit](../appendix/client-crash-faults.md#other-reported-leak-candidates).
+
 The cache is roughly:
 
 ```c
